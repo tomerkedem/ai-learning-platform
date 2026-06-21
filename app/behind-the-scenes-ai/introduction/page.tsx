@@ -138,7 +138,7 @@ export default function BehindTheScenesIntroPage() {
           {/* ══════════ OUTSIDE vs BEHIND ══════════ */}
           <section className="mt-20">
             <SectionHeading eyebrow="פותחים את המנוע" title="מה שהמשתמש רואה מול מה שהמנוע עושה">
-              אותו קלט. אותה תשובה. אבל מתחת לפני השטח מתרחש מסלול שלם - וזה בדיוק מה שנהפוך לנראה.
+              אותו קלט. אותה תשובה. אבל מתחת לפני השטח מתרחש מסלול שלם – וזה בדיוק מה שנחשוף.
             </SectionHeading>
 
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1.3fr] gap-6 items-stretch">
@@ -195,7 +195,7 @@ export default function BehindTheScenesIntroPage() {
                   <EngineTrail steps={FULL_FLOW} accent="cyan" autoplay interval={650} />
                 </div>
                 <p className="text-cyan-300/70 text-xs mt-5 text-center leading-relaxed">
-                  תשעה שלבים חשופים - כל אחד נראה לעין, וניתן לעצירה.
+                  תשעה שלבים חשופים – כל אחד גלוי לעין, נדלק צעד אחר צעד.
                 </p>
               </motion.div>
             </div>
@@ -216,18 +216,18 @@ export default function BehindTheScenesIntroPage() {
               ייצוג של <span className="text-indigo-300 font-bold">משמעות</span>, עובר
               <span className="text-indigo-300 font-bold"> דירוג</span>, הופך
               ל<span className="text-purple-300 font-bold">הסתברויות</span>, נבדק מבחינת
-              <span className="text-purple-300 font-bold"> ביטחון</span> - ורק אז מוביל
+              <span className="text-purple-300 font-bold"> ביטחון</span> – ורק אז מוביל
               ל<span className="text-cyan-300 font-bold">החלטה</span>.
             </p>
             <p className="relative text-slate-400 text-base md:text-lg mt-5">
-              הפרויקט הזה נועד להפוך את המסלול הזה לנראה.
+              הקורס הזה נועד להפוך את המסלול הזה לגלוי.
             </p>
           </motion.section>
 
           {/* ══════════ CHAT vs AGENT PREVIEW ══════════ */}
           <section className="mt-20">
-            <SectionHeading eyebrow="שני מצבים · preview" title="Chat מול Agent - שני חלונות לאותו רעיון">
-              בהמשך נראה את שני המצבים בפעולה. כאן רק הצצה: אותו מנוע, שני מסלולי עיבוד שונים.
+            <SectionHeading eyebrow="שני מצבים · הצצה מקדימה" title="Chat מול Agent – שני חלונות לאותו רעיון">
+              Chat עונה על שאלה, Agent (סוֹכֵן) מבצע משימה. בהמשך נראה את שניהם לעומק; כאן רק הצצה: אותו מנוע, שני מסלולי עיבוד שונים.
             </SectionHeading>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -286,7 +286,7 @@ export default function BehindTheScenesIntroPage() {
               מוכן לפתוח את המנוע?
             </h2>
             <p className="relative text-slate-400 text-base md:text-lg max-w-xl mx-auto mb-8 leading-relaxed">
-              בפרק הראשון נתחיל מההתחלה של המסלול - נראה איך טקסט הופך לתשובה, שלב אחר שלב.
+              בפרק הראשון נתחיל מתחילת המסלול ונראה איך טקסט הופך לתשובה, שלב אחר שלב.
             </p>
             <Link
               href="/behind-the-scenes-ai/chapter-1"

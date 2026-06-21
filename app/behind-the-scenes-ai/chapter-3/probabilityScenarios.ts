@@ -56,7 +56,7 @@ export const PROBABILITY_SCENARIOS: ProbabilityScenario[] = [
         signals: [
             {
                 signal: 'לא הגיעה',
-                effect: 'מעלה חזק את ההסתברות ל"אי מסירה" - ניסוח חד וברור.',
+                effect: 'מעלה חזק את ההסתברות ל"אי מסירה" – ניסוח חד וברור.',
                 strength: 'high',
             },
             {
@@ -115,7 +115,7 @@ export const PROBABILITY_SCENARIOS: ProbabilityScenario[] = [
         signals: [
             {
                 signal: 'לא מופיעה',
-                effect: 'יכול להתפרש גם כבעיה במערכת וגם כבעיה במסירה - מפצל את ההסתברות.',
+                effect: 'יכול להתפרש גם כבעיה במערכת וגם כבעיה במסירה – מפצל את ההסתברות.',
                 strength: 'high',
             },
             {

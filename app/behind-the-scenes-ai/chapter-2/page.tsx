@@ -64,7 +64,7 @@ export default function BehindTheScenesChapter2() {
 
                     <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">
                         שלושה ניסוחים סביב אותה חבילה שמתעכבת. בחרו ניסוח, וראו איך המנוע מנתב את הבקשה
-                        למסלול אחר: לענות, לבקש מידע, להתכונן לכלי, או לעצור לאישור. הנושא זהה - הכוונה משנה הכול.
+                        למסלול אחר: לענות, לבקש מידע, להתכונן לכלי, או לעצור לאישור. הנושא זהה – הכוונה משנה הכול.
                     </p>
 
                     <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
@@ -90,7 +90,7 @@ export default function BehindTheScenesChapter2() {
 
                 {/* פתיחה לימודית לפני המעבדה */}
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    כאן מתחיל ההבדל האמיתי בין צ&apos;ט רגיל לבין Agent.
+                    כאן מתחיל ההבדל האמיתי בין צ&apos;אט רגיל לבין Agent.
                     המנוע לא מסתכל רק על הנושא של המשפט, אלא על הכוונה שמסתתרת בניסוח.
                     שינוי קטן בפרומט יכול להפוך שאלה פשוטה לבקשת בדיקה, ובקשת בדיקה לפעולה שדורשת אישור.
                 </div>

@@ -110,7 +110,7 @@ export default function BehindTheScenesChapter1() {
                     </h1>
 
                     <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">
-                        כתבו משפט אחד. מימין - צ&apos;אט רגיל. משמאל המנוע נפתח וחושב מולכם בזמן אמת:
+                        כתבו משפט אחד. מימין – צ&apos;אט רגיל; משמאל – המנוע נפתח וחושב מולכם בזמן אמת:
                         טוקנים, הסתברויות, ביטחון והחלטה. כל מילה מזיזה את המנוע מחדש.
                     </p>
 
@@ -162,7 +162,7 @@ export default function BehindTheScenesChapter1() {
                         >
                             {isChat ? (
                                 <>
-                                    <EngineStep note="הקלט הגולמי שכתבתם - נקודת הכניסה למנוע.">
+                                    <EngineStep note="הקלט הגולמי שכתבתם – נקודת הכניסה למנוע.">
                                         <EngineMetricCard label="Input" value={conversationText} tone="cyan" />
                                     </EngineStep>
                                     <EngineStep note="הטקסט מתפרק ליחידות קטנות (טוקנים) שאיתן המנוע עובד.">
@@ -191,7 +191,7 @@ export default function BehindTheScenesChapter1() {
                                 </>
                             ) : (
                                 <>
-                                    <EngineStep note="הקלט הגולמי שכתבתם - נקודת הכניסה למנוע.">
+                                    <EngineStep note="הקלט הגולמי שכתבתם – נקודת הכניסה למנוע.">
                                         <EngineMetricCard label="Input" value={conversationText} tone="purple" />
                                     </EngineStep>
                                     <EngineStep note="הטקסט מתפרק ליחידות קטנות (טוקנים) שאיתן המנוע עובד.">
@@ -226,7 +226,7 @@ export default function BehindTheScenesChapter1() {
                                             tone={agent.canActNow ? 'emerald' : 'rose'}
                                         />
                                     </EngineStep>
-                                    <EngineStep note="הצעד הנכון הבא שנבחר - לענות, לפעול או לעצור.">
+                                    <EngineStep note="הצעד הנכון הבא שנבחר – לענות, לפעול או לעצור.">
                                         <DecisionCard decision={agent.decision} />
                                     </EngineStep>
                                     <EngineStep note="מה יקרה בפועל בעקבות ההחלטה.">
@@ -240,7 +240,7 @@ export default function BehindTheScenesChapter1() {
 
                 <p className="text-slate-400 text-sm leading-relaxed">
                     ב-<span className="text-cyan-300 font-semibold">Chat Mode</span> המערכת בוחרת תשובה.
-                    ב-<span className="text-purple-300 font-semibold">Agent Mode</span> היא בודקת מה הצעד הנכון הבא -
+                    ב-<span className="text-purple-300 font-semibold">Agent Mode</span> היא בודקת מה הצעד הנכון הבא –
                     לענות, להשתמש בכלי, או לעצור ולבקש מידע.
                 </p>
             </section>

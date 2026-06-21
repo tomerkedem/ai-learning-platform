@@ -10,7 +10,8 @@
       "Bash(grep -oE 'items-end gap-2 relative z-10\".{0,700}')",
       "Bash(grep -rn 'dir=' app/layout.tsx app/*/layout.tsx)",
       "Bash(grep -rn '<html' app/layout.tsx)",
-      "Bash(grep -oE 'border-violet-500/30[^\"]*text-right\"[^>]*>.{0,120}')"
+      "Bash(grep -oE 'border-violet-500/30[^\"]*text-right\"[^>]*>.{0,120}')",
+      "Bash(xargs wc -l)"
     ]
   }
 }

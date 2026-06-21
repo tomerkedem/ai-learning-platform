@@ -6,12 +6,29 @@ import {
     Keyboard, MessageSquare, Workflow, Play, Pause, StepForward, RotateCcw,
     FunctionSquare, Presentation, ArrowLeftRight, Lightbulb, MousePointerClick,
     Info, Hash, BarChart3, CheckCircle2, XCircle, ArrowLeft, Maximize2, Layers,
+    Globe, BookMarked, Sparkles, ShieldCheck, WifiOff, Radio, Loader2, AlertTriangle, Lock,
 } from 'lucide-react';
 
 import {
-    buildTrace, traceChat, traceAgent, SUMMARY_SCENARIOS, FORMULAS, NARRATION,
+    traceChat, traceAgent, SUMMARY_SCENARIOS, FORMULAS, NARRATION,
     type Trace, type Stage, type StagePayload, type StageState, type Tone, type SectionNarration,
 } from '@/app/behind-the-scenes-ai/chapter-13/traces';
+import {
+    SCENARIO_LIBRARY, getScenario, scenarioToTraces, DOMAIN_SWITCHER_NARRATION,
+    type LibraryScenario,
+} from '@/app/behind-the-scenes-ai/chapter-13/scenarioLibrary';
+import { useLiveCapability, type LiveCapability } from '@/components/ai-internals/useLiveCapability';
+
+/* ════════════════════════ מקור התרחיש ════════════════════════════════════ */
+
+type SourceMode = 'canonical' | 'library' | 'custom';
+
+/** תווית יושרה: הלומד תמיד יודע מאיפה הגיע התרחיש. */
+const SOURCE_BADGE: Record<SourceMode, { he: string; en: string; cls: string; icon: React.ReactNode }> = {
+    canonical: { he: 'שיעור מאומת', en: 'Verified lesson', cls: 'border-teal-500/40 bg-teal-900/15 text-teal-200', icon: <ShieldCheck size={12} /> },
+    library: { he: 'תרחיש מהספרייה', en: 'Curated scenario', cls: 'border-sky-500/40 bg-sky-900/15 text-sky-200', icon: <BookMarked size={12} /> },
+    custom: { he: 'תרחיש שנוצר ב-AI', en: 'AI generated scenario', cls: 'border-fuchsia-500/40 bg-fuchsia-900/15 text-fuchsia-200', icon: <Sparkles size={12} /> },
+};
 
 /* ════════════════════════ טון צבעוני ═════════════════════════════════════ */
 
@@ -38,82 +55,176 @@ function chipClass(state: StageState, active: boolean): string {
 
 export const BehindScenesLab: React.FC = () => {
     const reduce = !!useReducedMotion();
+    const cap = useLiveCapability();
+
+    const [source, setSource] = useState<SourceMode>('canonical');
     const [text, setText] = useState('החבילה לא הגיעה');
     const [mode, setMode] = useState<'chat' | 'agent'>('chat');
+    const [libraryId, setLibraryId] = useState(SCENARIO_LIBRARY[0].id);
 
-    const trace = useMemo(() => buildTrace(text, mode), [text, mode]);
+    // השכבה החיה (Custom): מצב הייצור והתרחיש שנוצר.
+    const [customScenario, setCustomScenario] = useState<LibraryScenario | null>(null);
+    const [customText, setCustomText] = useState('');
+    const [genState, setGenState] = useState<'idle' | 'loading' | 'error'>('idle');
+    const [genError, setGenError] = useState('');
+
+    // אם השכבה החיה לא זמינה אבל המקור הנבחר הוא Custom, חוזרים לקנוני בשקט —
+    // ה-Custom נשאר מוצג בבורר אבל מסומן "available in live mode" ולא נשבר.
+    const effectiveSource: SourceMode = source === 'custom' && cap !== 'live' ? 'canonical' : source;
+
+    // פתרון התרחיש למקור הנבחר -> שני מסלולים (chat ו-agent). canonical מחושב חי
+    // מהמנוע הדטרמיניסטי; library ו-custom עוברים דרך אותו presenter שקוף.
+    const { chat, agent, activeText, badgeSource } = useMemo(() => {
+        if (effectiveSource === 'library') {
+            const s = getScenario(libraryId) ?? SCENARIO_LIBRARY[0];
+            const t = scenarioToTraces(s);
+            return { chat: t.chat, agent: t.agent, activeText: s.prompt, badgeSource: 'library' as SourceMode };
+        }
+        if (effectiveSource === 'custom' && customScenario) {
+            const t = scenarioToTraces(customScenario);
+            return { chat: t.chat, agent: t.agent, activeText: customScenario.prompt, badgeSource: 'custom' as SourceMode };
+        }
+        return { chat: traceChat(text), agent: traceAgent(text), activeText: text, badgeSource: 'canonical' as SourceMode };
+    }, [effectiveSource, libraryId, customScenario, text]);
+
+    const activeTrace = mode === 'chat' ? chat : agent;
+    const sourceKey = `${badgeSource}:${libraryId}:${customScenario?.prompt ?? ''}:${text}`;
 
     const pick = (s: { text: string; mode: 'chat' | 'agent' }) => { setText(s.text); setMode(s.mode); };
 
+    async function generate() {
+        const t = customText.trim();
+        if (!t) return;
+        setGenState('loading');
+        setGenError('');
+        try {
+            const res = await fetch('/api/scenario', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: t }),
+            });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data?.message || 'הייצור נכשל');
+            }
+            const data = await res.json();
+            if (!data?.scenario) throw new Error('תשובה לא תקינה');
+            setCustomScenario(data.scenario as LibraryScenario);
+            setGenState('idle');
+        } catch (e) {
+            // כשל פנייה חי לא מוריד לתרחיש בודד — הלומד נשאר עם חוויית שכבה 1 המלאה.
+            setGenError(e instanceof Error ? e.message : 'הייצור נכשל');
+            setGenState('error');
+        }
+    }
+
     return (
         <div className="space-y-5">
+            {/* ── מחוון מצב (Offline / Live) ──────────────────────────────── */}
+            <ModeIndicator cap={cap} />
+
             {/* ── 1. Full Behind the Scenes Lab ──────────────────────────── */}
             <LabSection n={NARRATION.lab} icon={<Layers size={18} className="text-violet-300" />}>
                 <div className="space-y-4">
-                    {/* קלט + Mode switch */}
-                    <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_auto]">
-                        <div className="flex items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-950/60 px-3 focus-within:border-violet-500/60">
-                            <Keyboard size={15} className="shrink-0 text-violet-300" />
-                            <input
-                                type="text"
-                                value={text}
-                                onChange={(e) => setText(e.target.value)}
-                                placeholder="כתבו בקשה אחת..."
-                                dir="rtl"
-                                aria-label="שדה הקלט של המעבדה המאוחדת"
-                                className="w-full bg-transparent py-2.5 text-base font-medium text-white placeholder:text-slate-600 focus:outline-none"
-                            />
-                        </div>
-                        <ModeSwitch mode={mode} onChange={setMode} />
-                    </div>
+                    {/* בורר התחומים: Canonical / Library / Custom */}
+                    <DomainSwitcher source={source} onChange={setSource} cap={cap} />
 
-                    {/* ניסויים מהירים (טווח ההתנהגויות) */}
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[11px] font-bold text-slate-500">ניסוי מהיר:</span>
-                        {SUMMARY_SCENARIOS.map((s) => {
-                            const active = s.text === text && s.mode === mode;
-                            return (
-                                <button
-                                    key={s.id}
-                                    type="button"
-                                    onClick={() => pick(s)}
-                                    className={`rounded-lg border px-2.5 py-1 text-right leading-tight transition-colors ${active ? 'border-violet-500/50 bg-violet-900/25' : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-600'}`}
-                                >
-                                    <span className={`block text-[11px] font-bold ${active ? 'text-violet-200' : 'text-slate-300'}`}>{s.labelHe}</span>
-                                    <span className="block text-[8px] uppercase tracking-wider text-slate-500" dir="ltr">{s.behaviorHe}</span>
-                                </button>
-                            );
-                        })}
-                    </div>
+                    {/* קריינות קצרה של בורר התחומים */}
+                    <SwitcherNote />
+
+                    {/* בקרת מקור: משתנה לפי המצב הנבחר */}
+                    {source === 'canonical' && (
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_auto]">
+                                <div className="flex items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-950/60 px-3 focus-within:border-violet-500/60">
+                                    <Keyboard size={15} className="shrink-0 text-violet-300" />
+                                    <input
+                                        type="text"
+                                        value={text}
+                                        onChange={(e) => setText(e.target.value)}
+                                        placeholder="כתבו בקשה אחת..."
+                                        dir="rtl"
+                                        aria-label="שדה הקלט של המעבדה המאוחדת"
+                                        className="w-full bg-transparent py-2.5 text-base font-medium text-white placeholder:text-slate-600 focus:outline-none"
+                                    />
+                                </div>
+                                <ModeSwitch mode={mode} onChange={setMode} />
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-[11px] font-bold text-slate-500">ניסוי מהיר:</span>
+                                {SUMMARY_SCENARIOS.map((s) => {
+                                    const active = s.text === text && s.mode === mode;
+                                    return (
+                                        <button
+                                            key={s.id}
+                                            type="button"
+                                            onClick={() => pick(s)}
+                                            className={`rounded-lg border px-2.5 py-1 text-right leading-tight transition-colors ${active ? 'border-violet-500/50 bg-violet-900/25' : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-600'}`}
+                                        >
+                                            <span className={`block text-[11px] font-bold ${active ? 'text-violet-200' : 'text-slate-300'}`}>{s.labelHe}</span>
+                                            <span className="block text-[8px] uppercase tracking-wider text-slate-500" dir="ltr">{s.behaviorHe}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+                    {source === 'library' && (
+                        <LibraryPicker
+                            selectedId={libraryId}
+                            onSelect={setLibraryId}
+                            mode={mode}
+                            onMode={setMode}
+                            prompt={activeText}
+                        />
+                    )}
+
+                    {source === 'custom' && (
+                        <CustomPanel
+                            cap={cap}
+                            text={customText}
+                            onText={setCustomText}
+                            onGenerate={generate}
+                            genState={genState}
+                            genError={genError}
+                            scenario={customScenario}
+                            mode={mode}
+                            onMode={setMode}
+                        />
+                    )}
+
+                    {/* תווית יושרה למקור הפעיל */}
+                    <IntegrityBadge source={badgeSource} />
 
                     {/* Engine Pipeline + Active Stage Details (חקירה) */}
-                    <ExplorablePipeline trace={trace} reduce={reduce} />
+                    <ExplorablePipeline trace={activeTrace} reduce={reduce} />
                 </div>
             </LabSection>
 
             {/* ── 2. Chat Mode Replay ────────────────────────────────────── */}
             <LabSection n={NARRATION.chatReplay} icon={<MessageSquare size={18} className="text-violet-300" />}>
-                <StagePlayer trace={traceChat(text)} resetKey={`chat:${text}`} reduce={reduce} />
+                <StagePlayer trace={chat} resetKey={`chat:${sourceKey}`} reduce={reduce} />
             </LabSection>
 
             {/* ── 3. Agent Mode Replay ───────────────────────────────────── */}
             <LabSection n={NARRATION.agentReplay} icon={<Workflow size={18} className="text-violet-300" />}>
-                <StagePlayer trace={traceAgent(text)} resetKey={`agent:${text}`} reduce={reduce} />
+                <StagePlayer trace={agent} resetKey={`agent:${sourceKey}`} reduce={reduce} />
             </LabSection>
 
             {/* ── 4. Compare Chat vs Agent (חתימתי) ──────────────────────── */}
             <LabSection n={NARRATION.compare} icon={<ArrowLeftRight size={18} className="text-violet-300" />}>
-                <CompareView text={text} reduce={reduce} />
+                <CompareView chat={chat} agent={agent} reduce={reduce} />
             </LabSection>
 
             {/* ── 5. Formula View ────────────────────────────────────────── */}
             <LabSection n={NARRATION.formula} icon={<FunctionSquare size={18} className="text-violet-300" />}>
-                <FormulaView text={text} />
+                <FormulaView chat={chat} label={activeText} />
             </LabSection>
 
             {/* ── 6. Presentation Mode ───────────────────────────────────── */}
             <LabSection n={NARRATION.presentation} icon={<Presentation size={18} className="text-violet-300" />}>
-                <PresentationView text={text} mode={mode} reduce={reduce} />
+                <PresentationView trace={activeTrace} resetKey={`pres:${mode}:${sourceKey}`} reduce={reduce} />
             </LabSection>
 
             {/* ── disclaimer ─────────────────────────────────────────────── */}
@@ -178,6 +289,218 @@ const ModeSwitch: React.FC<{ mode: 'chat' | 'agent'; onChange: (m: 'chat' | 'age
         })}
     </div>
 );
+
+/* ════════════════════════ מחוון מצב (Offline / Live) ═════════════════════ */
+
+const ModeIndicator: React.FC<{ cap: LiveCapability }> = ({ cap }) => {
+    if (cap === 'live') {
+        return (
+            <div className="flex items-center justify-between gap-3 rounded-xl border border-teal-500/40 bg-teal-900/15 px-4 py-2" dir="rtl">
+                <div className="flex items-center gap-2 text-teal-200">
+                    <Radio size={15} className="text-teal-300" />
+                    <span className="text-sm font-bold">מצב חי <span className="text-[11px] font-medium text-teal-400/80" dir="ltr">Live mode</span></span>
+                </div>
+                <span className="text-[11px] text-teal-300/80">כל השכבות פעילות, כולל יצירת תרחיש חופשי.</span>
+            </div>
+        );
+    }
+    return (
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-amber-500/40 bg-amber-900/15 px-4 py-2" dir="rtl">
+            <div className="flex items-center gap-2 text-amber-200">
+                {cap === 'checking' ? <Loader2 size={15} className="animate-spin text-amber-300" /> : <WifiOff size={15} className="text-amber-300" />}
+                <span className="text-sm font-bold">מצב לימוד offline <span className="text-[11px] font-medium text-amber-400/80" dir="ltr">Offline learning mode</span></span>
+            </div>
+            <span className="text-[11px] text-amber-300/80">המסלול המלא וכל הספרייה זמינים. יצירת תרחיש חופשי דורשת מצב חי.</span>
+        </div>
+    );
+};
+
+/* ════════════════════════ בורר התחומים (3 מצבים) ═════════════════════════ */
+
+const DomainSwitcher: React.FC<{ source: SourceMode; onChange: (s: SourceMode) => void; cap: LiveCapability }> = ({ source, onChange, cap }) => {
+    const tabs: { id: SourceMode; he: string; en: string; icon: React.ReactNode; badge: string }[] = [
+        { id: 'canonical', he: 'חבילות', en: 'Canonical', icon: <ShieldCheck size={14} />, badge: 'Verified lesson' },
+        { id: 'library', he: 'ספרייה', en: 'Library', icon: <BookMarked size={14} />, badge: 'Curated scenario' },
+        { id: 'custom', he: 'מצב חופשי', en: 'Custom', icon: <Sparkles size={14} />, badge: 'AI generated' },
+    ];
+    const liveOnly = cap !== 'live';
+    return (
+        <div className="space-y-2">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500" dir="ltr">
+                <Globe size={13} className="text-violet-300" /> Domain Switcher
+            </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                {tabs.map((t) => {
+                    const active = source === t.id;
+                    const disabled = t.id === 'custom' && liveOnly;
+                    return (
+                        <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => onChange(t.id)}
+                            aria-pressed={active}
+                            className={`relative flex flex-col items-start gap-1 rounded-xl border px-3 py-2 text-right transition-colors ${active
+                                ? 'border-violet-500/60 bg-violet-900/25'
+                                : 'border-slate-700/60 bg-slate-900/40 hover:border-slate-600'}`}
+                            dir="rtl"
+                        >
+                            <span className={`flex items-center gap-1.5 text-sm font-bold ${active ? 'text-violet-100' : 'text-slate-200'}`}>
+                                <span className={active ? 'text-violet-300' : 'text-slate-400'}>{t.icon}</span>
+                                {t.he}
+                                <span className="text-[10px] font-medium text-slate-500" dir="ltr">{t.en}</span>
+                            </span>
+                            <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-slate-500" dir="ltr">
+                                {SOURCE_BADGE[t.id].icon}{t.badge}
+                            </span>
+                            {disabled && (
+                                <span className="mt-0.5 inline-flex items-center gap-1 rounded border border-amber-500/40 bg-amber-900/20 px-1.5 py-0.5 text-[9px] font-bold text-amber-300" dir="ltr">
+                                    <Lock size={9} /> available in live mode
+                                </span>
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
+
+const SwitcherNote: React.FC = () => (
+    <div className="rounded-xl border border-slate-700/40 bg-slate-950/30 p-3 text-[12px] leading-relaxed text-slate-400" dir="rtl">
+        <span className="font-bold text-slate-300">{DOMAIN_SWITCHER_NARRATION.titleHe}. </span>
+        {DOMAIN_SWITCHER_NARRATION.intro}
+    </div>
+);
+
+/* ════════════════════════ תווית יושרה למקור ══════════════════════════════ */
+
+const IntegrityBadge: React.FC<{ source: SourceMode }> = ({ source }) => {
+    const b = SOURCE_BADGE[source];
+    return (
+        <div className="flex items-center gap-2" dir="rtl">
+            <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold ${b.cls}`}>
+                {b.icon}{b.he}<span className="text-[9px] font-medium uppercase tracking-wider opacity-70" dir="ltr">{b.en}</span>
+            </span>
+        </div>
+    );
+};
+
+/* ════════════════════════ בורר תרחיש מהספרייה ════════════════════════════ */
+
+const LibraryPicker: React.FC<{
+    selectedId: string; onSelect: (id: string) => void;
+    mode: 'chat' | 'agent'; onMode: (m: 'chat' | 'agent') => void;
+    prompt: string;
+}> = ({ selectedId, onSelect, mode, onMode, prompt }) => {
+    const selected = getScenario(selectedId) ?? SCENARIO_LIBRARY[0];
+    return (
+        <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-500">תחום מהספרייה:</span>
+                {SCENARIO_LIBRARY.map((s) => {
+                    const active = s.id === selectedId;
+                    return (
+                        <button
+                            key={s.id}
+                            type="button"
+                            onClick={() => onSelect(s.id)}
+                            className={`rounded-lg border px-2.5 py-1 text-right leading-tight transition-colors ${active ? 'border-sky-500/50 bg-sky-900/25' : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-600'}`}
+                        >
+                            <span className={`block text-[11px] font-bold ${active ? 'text-sky-200' : 'text-slate-300'}`}>{s.domainHe}</span>
+                            <span className="block text-[8px] uppercase tracking-wider text-slate-500" dir="ltr">{s.domainEn}</span>
+                        </button>
+                    );
+                })}
+            </div>
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_auto]">
+                <div className="rounded-xl border border-slate-700/60 bg-slate-950/60 px-3 py-2.5" dir="rtl">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500" dir="ltr">Scenario prompt</div>
+                    <div className="mt-0.5 text-base font-medium text-white">&quot;{prompt}&quot;</div>
+                    <div className="mt-1 text-[11px] text-slate-400">{selected.blurbHe}</div>
+                </div>
+                <ModeSwitch mode={mode} onChange={onMode} />
+            </div>
+        </div>
+    );
+};
+
+/* ════════════════════════ פאנל המצב החופשי (השכבה החיה) ══════════════════ */
+
+const CustomPanel: React.FC<{
+    cap: LiveCapability;
+    text: string; onText: (t: string) => void;
+    onGenerate: () => void;
+    genState: 'idle' | 'loading' | 'error';
+    genError: string;
+    scenario: LibraryScenario | null;
+    mode: 'chat' | 'agent'; onMode: (m: 'chat' | 'agent') => void;
+}> = ({ cap, text, onText, onGenerate, genState, genError, scenario, mode, onMode }) => {
+    // שכבה 1: אין מפתח/רשת. מציגים הסבר ברור, לא נשברים, לא נעלמים.
+    if (cap !== 'live') {
+        return (
+            <div className="space-y-2 rounded-xl border border-amber-500/40 bg-amber-900/10 p-4" dir="rtl">
+                <div className="flex items-center gap-2 text-amber-200">
+                    <Lock size={15} className="text-amber-300" />
+                    <span className="text-sm font-bold">המצב החופשי זמין במצב חי <span className="text-[11px] font-medium text-amber-400/80" dir="ltr">available in live mode</span></span>
+                </div>
+                <p className="text-[12px] leading-relaxed text-amber-100/80">
+                    יצירת תרחיש חי מטקסט שאתם מקלידים דורשת חיבור פעיל ומפתח. גם בלעדיה, המעבדה מלאה:
+                    בחרו <span className="font-bold">חבילות</span> לתרחיש המאומת, או <span className="font-bold">ספרייה</span> כדי לראות את אותו מנוע שקוף עובד על רפואה, חיוב, IT ומשאבי אנוש.
+                </p>
+            </div>
+        );
+    }
+
+    // שכבה 2: מצב חי. שדה קלט + יצירה.
+    return (
+        <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_auto]">
+                <div className="flex items-center gap-2 rounded-xl border border-fuchsia-500/40 bg-slate-950/60 px-3 focus-within:border-fuchsia-400/60">
+                    <Sparkles size={15} className="shrink-0 text-fuchsia-300" />
+                    <input
+                        type="text"
+                        value={text}
+                        onChange={(e) => onText(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' && genState !== 'loading') onGenerate(); }}
+                        placeholder="כתבו מצב מכל תחום (רפואה, משפט, חינוך)..."
+                        dir="rtl"
+                        aria-label="שדה המצב החופשי"
+                        className="w-full bg-transparent py-2.5 text-base font-medium text-white placeholder:text-slate-600 focus:outline-none"
+                    />
+                </div>
+                <button
+                    type="button"
+                    onClick={onGenerate}
+                    disabled={genState === 'loading' || !text.trim()}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-fuchsia-500/50 bg-fuchsia-900/25 px-4 py-2 text-sm font-bold text-fuchsia-200 hover:brightness-110 disabled:opacity-40"
+                >
+                    {genState === 'loading' ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
+                    {genState === 'loading' ? 'בונה תרחיש...' : 'בנו תרחיש'}
+                </button>
+            </div>
+
+            {genState === 'error' && (
+                <div className="flex items-start gap-2 rounded-xl border border-rose-500/40 bg-rose-900/15 p-3 text-[12px] text-rose-200" dir="rtl">
+                    <AlertTriangle size={14} className="mt-0.5 shrink-0" />
+                    <span>הייצור החי נכשל ({genError}). שאר המעבדה עובדת כרגיל, אפשר לבחור חבילות או ספרייה.</span>
+                </div>
+            )}
+
+            {scenario ? (
+                <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_auto]">
+                    <div className="rounded-xl border border-fuchsia-500/30 bg-slate-950/60 px-3 py-2.5" dir="rtl">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500" dir="ltr">Generated · {scenario.domainEn}</div>
+                        <div className="mt-0.5 text-base font-medium text-white">&quot;{scenario.prompt}&quot;</div>
+                        <div className="mt-1 text-[11px] text-slate-400">תחום שזוהה: {scenario.domainHe}</div>
+                    </div>
+                    <ModeSwitch mode={mode} onChange={onMode} />
+                </div>
+            ) : (
+                <p className="text-[12px] text-slate-500" dir="rtl">הקלידו מצב ולחצו &quot;בנו תרחיש&quot;. המנוע השקוף יציג אותו דרך אותן שכבות בדיוק.</p>
+            )}
+        </div>
+    );
+};
 
 /* ════════════════════════ Engine Pipeline (chips) ════════════════════════ */
 
@@ -477,9 +800,7 @@ const StagePlayer: React.FC<{ trace: Trace; resetKey: string; reduce: boolean; p
 
 /* ════════════════════════ Compare Chat vs Agent ══════════════════════════ */
 
-const CompareView: React.FC<{ text: string; reduce: boolean }> = ({ text, reduce }) => {
-    const chat = useMemo(() => traceChat(text), [text]);
-    const agent = useMemo(() => traceAgent(text), [text]);
+const CompareView: React.FC<{ chat: Trace; agent: Trace; reduce: boolean }> = ({ chat, agent, reduce }) => {
     return (
         <div className="space-y-3">
             <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -513,9 +834,8 @@ const CompareColumn: React.FC<{ trace: Trace; icon: React.ReactNode; reduce: boo
 
 /* ════════════════════════ Formula View ═══════════════════════════════════ */
 
-const FormulaView: React.FC<{ text: string }> = ({ text }) => {
+const FormulaView: React.FC<{ chat: Trace; label: string }> = ({ chat, label }) => {
     const [open, setOpen] = useState(true);
-    const chat = useMemo(() => traceChat(text), [text]);
     const scoresStage = chat.stages.find((s) => s.id === 'scores');
     const probsStage = chat.stages.find((s) => s.id === 'probabilities');
     const scores = scoresStage && scoresStage.payload.kind === 'scores' ? scoresStage.payload.items : [];
@@ -540,7 +860,7 @@ const FormulaView: React.FC<{ text: string }> = ({ text }) => {
 
                     {/* softmax חי: scores -> probabilities */}
                     <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                        <div className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500" dir="ltr"><BarChart3 size={12} className="text-violet-300" /> Live softmax for &quot;{text}&quot;</div>
+                        <div className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500" dir="ltr"><BarChart3 size={12} className="text-violet-300" /> Live softmax for &quot;{label}&quot;</div>
                         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3" dir="ltr">
                             <div className="space-y-1">
                                 <div className="text-center text-[9px] font-bold uppercase text-slate-500">scores</div>
@@ -562,14 +882,13 @@ const FormulaView: React.FC<{ text: string }> = ({ text }) => {
 
 /* ════════════════════════ Presentation View ══════════════════════════════ */
 
-const PresentationView: React.FC<{ text: string; mode: 'chat' | 'agent'; reduce: boolean }> = ({ text, mode, reduce }) => {
-    const trace = useMemo(() => buildTrace(text, mode), [text, mode]);
+const PresentationView: React.FC<{ trace: Trace; resetKey: string; reduce: boolean }> = ({ trace, resetKey, reduce }) => {
     return (
         <div className="space-y-2">
             <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
                 <Maximize2 size={12} /> מצב הצגה: שלב אחר שלב, מסך נקי, החלק הרלוונטי בלבד.
             </div>
-            <StagePlayer trace={trace} resetKey={`pres:${mode}:${text}`} reduce={reduce} presentation />
+            <StagePlayer trace={trace} resetKey={resetKey} reduce={reduce} presentation />
         </div>
     );
 };
