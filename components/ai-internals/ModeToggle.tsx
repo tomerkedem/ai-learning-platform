@@ -1,9 +1,10 @@
 "use client";
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { MessageCircle, Workflow } from 'lucide-react';
 import { ACCENTS } from './accents';
+import { SPRING } from './motionTokens';
 import type { Accent, FlowMode } from './types';
 
 interface ModeToggleProps {
@@ -21,6 +22,7 @@ const OPTIONS: { value: FlowMode; label: string; icon: React.ReactNode }[] = [
 /** מעבר בין Chat Mode ל-Agent Mode עם גלולה נעה. אחריות יחידה: בחירת FlowMode. */
 export const ModeToggle: React.FC<ModeToggleProps> = ({ mode, onChange, accent = 'cyan' }) => {
     const a = ACCENTS[accent];
+    const reduce = useReducedMotion();
 
     return (
         <div className="relative inline-flex items-center gap-1 p-1 rounded-2xl bg-slate-900/80 border border-white/10" dir="ltr">
@@ -37,7 +39,7 @@ export const ModeToggle: React.FC<ModeToggleProps> = ({ mode, onChange, accent =
                         {active && (
                             <motion.span
                                 layoutId="mode-toggle-pill"
-                                transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                                transition={reduce ? { duration: 0 } : SPRING.pill}
                                 className={`absolute inset-0 rounded-xl ${a.solid} ${a.glow}`}
                             />
                         )}

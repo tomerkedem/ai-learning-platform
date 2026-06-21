@@ -15,7 +15,7 @@ const FORMULA_ROWS = [
     {
         condition: 'פער גדול בין הראשון לשני (התפלגות חדה)',
         routeHe: 'לענות בזהירות',
-        routeEn: 'Answer with high confidence',
+        routeEn: 'Answer carefully (still an estimate)',
         color: 'text-emerald-300',
     },
     {

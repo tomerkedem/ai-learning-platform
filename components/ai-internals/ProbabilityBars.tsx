@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { motion, useMotionValue, useTransform, animate, useReducedMotion } from 'framer-motion';
 import { ACCENTS } from './accents';
+import { DUR, EASE, SPRING } from './motionTokens';
 import type { Accent, IntentProbability } from './types';
 
 interface ProbabilityBarsProps {
@@ -20,7 +21,7 @@ const AnimatedPercent: React.FC<{ value: number }> = ({ value }) => {
 
     useEffect(() => {
         if (reduce) { mv.set(value); return; }
-        const controls = animate(mv, value, { duration: 0.7, ease: 'easeOut' });
+        const controls = animate(mv, value, { duration: DUR.data, ease: EASE.inter });
         return () => controls.stop();
     }, [value, mv, reduce]);
 
@@ -41,7 +42,7 @@ export const ProbabilityBars: React.FC<ProbabilityBarsProps> = ({ items, accent 
                 {items.map((item) => {
                     const isTop = item.value === max;
                     return (
-                        <motion.div key={item.label} layout transition={{ type: 'spring', stiffness: 380, damping: 34 }}>
+                        <motion.div key={item.label} layout transition={SPRING.reflow}>
                             <div className="flex items-center justify-between text-xs mb-1">
                                 <span className={isTop ? `font-bold ${a.text}` : 'text-slate-400'}>{item.label}</span>
                                 <span className={isTop ? `font-bold ${a.text}` : 'text-slate-500'}>
@@ -52,7 +53,7 @@ export const ProbabilityBars: React.FC<ProbabilityBarsProps> = ({ items, accent 
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: `${Math.max(0, Math.min(100, item.value))}%` }}
-                                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                                    transition={{ duration: DUR.data, ease: EASE.out }}
                                     className={`h-full rounded-full ${isTop ? `${a.barGradient} ${a.glow}` : 'bg-slate-600'}`}
                                 />
                             </div>

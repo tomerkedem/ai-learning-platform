@@ -50,7 +50,7 @@ export const PROBABILITY_SCENARIOS: ProbabilityScenario[] = [
         confidence: 'high',
         decisionKind: 'answer',
         decisionHe: 'לענות בזהירות',
-        decisionEn: 'Answer with high confidence',
+        decisionEn: 'Answer carefully (still an estimate)',
         decisionExplanation:
             'האפשרות הראשונה גבוהה בהרבה מהשנייה. יש כוונה מובילה ברורה, ולכן המנוע יכול לענות בזהירות יחסית. עדיין חשוב לזכור: זו הערכה, לא הוכחה.',
         signals: [

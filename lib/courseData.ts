@@ -737,6 +737,18 @@ export const courses: Record<string, CourseData> = {
                 id: 14,
                 href: "/behind-the-scenes-ai/chapter-14",
                 num: "14",
+                label: { he: "האם AI לומד מטעויות", en: "Does AI Learn from Mistakes" },
+                title: { he: "האם AI לומד מהטעויות שלך", en: "Does AI Learn From Your Mistakes" },
+                description: { he: "כשאתה מדבר עם המודל הוא לא לומד ממך. המשקלים שלו קפואים, והתיקון שלך חי רק כל עוד הוא בהקשר, ונעלם כשהשיחה נגמרת. אבל זו לא כל התמונה: יש שלוש שכבות למידה שונות.", en: "When you talk to the model it does not learn from you. Its weights are frozen, and your correction lives only while it is in context, and vanishes when the conversation ends. But that is not the whole picture: there are three different layers of learning." },
+                readTime: "11 דקות",
+                labelColor: "text-violet-400",
+                colorFrom: "from-violet-400",
+                colorTo: "to-amber-500"
+            },
+            {
+                id: 15,
+                href: "/behind-the-scenes-ai/chapter-15",
+                num: "15",
                 label: { he: "לעבוד נכון עם AI", en: "Working Well with AI" },
                 title: { he: "איך לעבוד נכון עם מודל ו-Agent", en: "How to Work Well with a Model and an Agent" },
                 description: { he: "פרק הסיום: מי שמבין מה קורה מאחורי הקלעים יודע לנסח בקשות טובות יותר, לזהות מגבלות, ולבחור נכון בין Chat לבין Agent. כתיבה טובה היא הגדרה, לא קסם.", en: "The closing chapter: whoever understands what happens behind the scenes writes better requests, recognizes limits, and chooses well between Chat and Agent. Good writing is definition, not magic." },

@@ -13,6 +13,7 @@ import { RiskMeter } from './RiskMeter';
 import { MissingInfoSpotlight } from './MissingInfoSpotlight';
 import { DecisionCard } from './DecisionCard';
 import { ACCENTS } from './accents';
+import { DUR, EASE } from './motionTokens';
 import type { RoutingExample } from './types';
 
 interface RequestRoutingLabProps {
@@ -46,7 +47,9 @@ export const RequestRoutingLab: React.FC<RequestRoutingLabProps> = ({ examples, 
 
     if (!current) return null;
 
-    // מפתח הפעלה: כל החלפת ניסוח מנגנת מחדש את חשיפת הלוח.
+    // מפתח מדורג ממוקד: רק לוח הרמזים (DecisionSignalsPanel) משחזר את ה-stagger
+    // שלו בכל החלפת ניסוח, כדי להראות את הרמזים החדשים. שאר הלוח אינו מנותק-ומורכב
+    // מחדש — הוא נשאר על המסך והרכיבים שבו עוברים בין הערכים (מראה מה השתנה, לא מאפס).
     const replayKey = current.id;
     const a = ACCENTS[current.accent];
 
@@ -66,12 +69,12 @@ export const RequestRoutingLab: React.FC<RequestRoutingLabProps> = ({ examples, 
             <p className="text-sm leading-relaxed text-slate-400" dir="rtl">{HELPERS.intentShift}</p>
             <IntentShiftStrip activeStage={current.intentStage} />
 
-            {/* לוח הבקרה - מתחלף בכל בחירה */}
+            {/* לוח הבקרה - נשאר מותקן; הרכיבים שבו עוברים בין הערכים בכל בחירה */}
             <motion.div
-                key={replayKey}
                 initial={reduce ? false : { opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={reduce ? { duration: 0 } : { duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={reduce ? { duration: 0 } : { duration: DUR.mid, ease: EASE.out }}
                 className="grid grid-cols-1 gap-4 lg:grid-cols-2"
             >
                 {/* 1. סוג הבקשה */}

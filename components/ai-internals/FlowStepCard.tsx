@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import { DUR } from './motionTokens';
 import type { Accent, FlowStep } from './types';
 
 interface FlowStepCardProps {
@@ -37,12 +38,13 @@ export const FlowStepCard: React.FC<FlowStepCardProps> = ({
     accent = 'cyan',
 }) => {
     const a = ACCENT[accent];
+    const reduce = useReducedMotion();
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 6 }}
+            initial={reduce ? false : { opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={reduce ? { duration: 0 } : { duration: DUR.quick }}
             className={`w-full rounded-2xl border p-4 text-right transition-all
                 ${isActive
                     ? `bg-slate-900/80 ${a.border} ring-4 ${a.ring} shadow-lg`

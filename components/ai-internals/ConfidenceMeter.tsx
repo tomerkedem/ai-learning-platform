@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Gauge } from 'lucide-react';
 import { ACCENTS } from './accents';
+import { DUR, EASE } from './motionTokens';
 import type { Accent } from './types';
 
 type Level = 'High' | 'Medium' | 'Low';
@@ -41,7 +42,7 @@ export const ConfidenceMeter: React.FC<ConfidenceMeterProps> = ({ level }) => {
                     key={level}
                     initial={reduce ? false : { width: 0 }}
                     animate={{ width: `${pct}%` }}
-                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: DUR.data, ease: EASE.out }}
                     className={`h-full rounded-full ${a.barGradient} ${a.glow}`}
                 />
                 {/* סמני סף */}

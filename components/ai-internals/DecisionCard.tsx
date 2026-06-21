@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { CheckCircle2, HelpCircle, Wrench, Hand } from 'lucide-react';
+import { DUR, EASE, SPRING, STAGGER } from './motionTokens';
 import type { DecisionKind, DecisionState } from './types';
 
 interface DecisionCardProps {
@@ -45,7 +46,7 @@ export const DecisionCard: React.FC<DecisionCardProps> = ({ decision }) => {
             key={decision.kind + decision.label}
             initial={reduce ? false : { opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: DUR.mid, ease: EASE.out }}
             className={`relative overflow-hidden rounded-2xl border bg-gradient-to-bl p-5 text-right ${s.border} ${s.grad} ${s.glow}`}
             dir="rtl"
         >
@@ -62,7 +63,7 @@ export const DecisionCard: React.FC<DecisionCardProps> = ({ decision }) => {
                 <motion.div
                     initial={reduce ? false : { scale: 0, rotate: -20 }}
                     animate={{ scale: 1, rotate: 0 }}
-                    transition={{ type: 'spring', stiffness: 320, damping: 16, delay: 0.05 }}
+                    transition={{ ...SPRING.bump, delay: STAGGER.base }}
                     className={`p-2.5 rounded-xl bg-slate-950/50 border border-white/10 ${s.text}`}
                 >
                     {s.icon}

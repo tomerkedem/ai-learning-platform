@@ -11,7 +11,11 @@
       "Bash(grep -rn 'dir=' app/layout.tsx app/*/layout.tsx)",
       "Bash(grep -rn '<html' app/layout.tsx)",
       "Bash(grep -oE 'border-violet-500/30[^\"]*text-right\"[^>]*>.{0,120}')",
-      "Bash(xargs wc -l)"
+      "Bash(xargs wc -l)",
+      "Bash(git mv *)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\USER\\.claude\\projects\\c--D-2025-AI-Engineer-AI-Math-Intuition-course\\memory"
     ]
   }
 }

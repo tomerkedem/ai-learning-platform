@@ -11,6 +11,7 @@ import { ConfidenceMarginCard } from './ConfidenceMarginCard';
 import { ProbabilitySignalsPanel } from './ProbabilitySignalsPanel';
 import { DecisionOutcomeCard } from './DecisionOutcomeCard';
 import { MostLikelyNotTruthCard } from './MostLikelyNotTruthCard';
+import { DUR, EASE } from './motionTokens';
 import type { ProbabilityScenario } from './types';
 
 interface ProbabilityEngineLabProps {
@@ -41,7 +42,9 @@ export const ProbabilityEngineLab: React.FC<ProbabilityEngineLabProps> = ({ scen
 
     if (!current) return null;
 
-    // מפתח הפעלה: כל החלפת תרחיש מנגנת מחדש את חשיפת הלוח.
+    // מפתח מדורג ממוקד: רק לוח הרמזים (ProbabilitySignalsPanel) משחזר את ה-stagger
+    // שלו בכל החלפת תרחיש. שאר הלוח נשאר מותקן והברים/הדירוג עוברים מהערך הישן
+    // לחדש (מראים את התנועה), במקום להתאפס ולהיוולד מחדש.
     const replayKey = current.id;
     const distributionValues = current.candidates.map((c) => c.probability);
 
@@ -56,12 +59,12 @@ export const ProbabilityEngineLab: React.FC<ProbabilityEngineLabProps> = ({ scen
             {/* הסבר לפני דירוג האפשרויות */}
             <p className="text-sm leading-relaxed text-slate-400" dir="rtl">{HELPERS.ranking}</p>
 
-            {/* לוח הבקרה - מתחלף בכל בחירה */}
+            {/* לוח הבקרה - נשאר מותקן; הברים והדירוג עוברים בין הערכים בכל בחירה */}
             <motion.div
-                key={replayKey}
                 initial={reduce ? false : { opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={reduce ? { duration: 0 } : { duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={reduce ? { duration: 0 } : { duration: DUR.mid, ease: EASE.out }}
                 className="space-y-4"
             >
                 {/* שורה עליונה: דירוג האפשרויות (רחב) + מדי ההתפלגות והפער */}
@@ -83,8 +86,8 @@ export const ProbabilityEngineLab: React.FC<ProbabilityEngineLabProps> = ({ scen
                     confidence={current.confidence}
                 />
 
-                {/* הרמזים שהזיזו את ההסתברות */}
-                <ProbabilitySignalsPanel signals={current.signals} accent={current.accent} />
+                {/* הרמזים שהזיזו את ההסתברות - מפתח ממוקד לשחזור ה-stagger בכל בחירה */}
+                <ProbabilitySignalsPanel key={`signals-${replayKey}`} signals={current.signals} accent={current.accent} />
 
                 {/* ההחלטה */}
                 <div className="flex items-center gap-2 pt-1 text-slate-400" dir="rtl">
