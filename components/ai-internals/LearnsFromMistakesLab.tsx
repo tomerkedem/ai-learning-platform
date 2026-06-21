@@ -417,11 +417,11 @@ const ThreeLayers: React.FC = () => {
 
             <div className="flex items-start gap-2 rounded-xl border border-violet-500/25 bg-violet-900/10 p-3 text-[11px] leading-relaxed text-violet-100/90">
                 <Info size={13} className="mt-0.5 shrink-0 text-violet-300" />
-                אף אחת משלוש השכבות אינה "המודל לומד ממך חי". האימון קפוא, ההתאמה זמנית, ולולאת הספק נפרדת ואיטית.
+                אף אחת משלוש השכבות אינה &quot;המודל לומד ממך חי&quot;. האימון קפוא, ההתאמה זמנית, ולולאת הספק נפרדת ואיטית.
             </div>
 
             <Takeaway>יש שלושה סוגי למידה שונים, ואף אחד מהם אינו עדכון חי מהשיחה שלך.</Takeaway>
-            <TryThis>לחצו על כל שכבה וקראו "מתי" ו"האם משפיע עכשיו". שימו לב שרק ההתאמה בהקשר משפיעה על השיחה הנוכחית, וגם היא זמנית.</TryThis>
+            <TryThis>לחצו על כל שכבה וקראו &quot;מתי&quot; ו&quot;האם משפיע עכשיו&quot;. שימו לב שרק ההתאמה בהקשר משפיעה על השיחה הנוכחית, וגם היא זמנית.</TryThis>
         </div>
     );
 };
@@ -465,7 +465,7 @@ const MythCardView: React.FC<{ myth: typeof MYTH_CARDS[number]; reduce: boolean 
                         <div className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-600/50 bg-slate-800/60 px-2 py-0.5 text-[10px] font-bold text-slate-300">
                             <X size={11} className="text-rose-300" /> מיתוס
                         </div>
-                        <div className="text-base font-bold text-slate-100">"{myth.mythHe}"</div>
+                        <div className="text-base font-bold text-slate-100">&quot;{myth.mythHe}&quot;</div>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -489,7 +489,7 @@ const MythVsReality: React.FC<{ reduce: boolean }> = ({ reduce }) => (
             ))}
         </div>
 
-        <Takeaway>רוב מה שאנשים מאמינים על "זיכרון" ו"למידה" של AI מתבלבל בין הקשר זמני לבין אימון.</Takeaway>
+        <Takeaway>רוב מה שאנשים מאמינים על &quot;זיכרון&quot; ו&quot;למידה&quot; של AI מתבלבל בין הקשר זמני לבין אימון.</Takeaway>
         <TryThis>הפכו כל כרטיס וקראו לא רק את הגרסה המדויקת אלא גם את המשפט שמסביר למה. שימו לב שכל תיקון נשען על אותו הבדל: הקשר זמני מול משקלים קפואים.</TryThis>
     </div>
 );
@@ -514,7 +514,7 @@ const WhyItForgets: React.FC<{ reduce: boolean }> = ({ reduce }) => {
     return (
         <div className="space-y-4">
             <LayerIntro>
-                הסיבה שהמודל "שוכח" אינה שהוא לומד או לא לומד, אלא שיש לו חלון הקשר מוגבל. רק מה שנמצא בחלון נשלח אליו בכל תור.
+                הסיבה שהמודל &quot;שוכח&quot; אינה שהוא לומד או לא לומד, אלא שיש לו חלון הקשר מוגבל. רק מה שנמצא בחלון נשלח אליו בכל תור.
                 כשהשיחה ממשיכה, הודעות ישנות נדחקות החוצה, ואיתן גם תיקונים שנתת מוקדם. זה נושא בפני עצמו שנעמיק בו בנפרד.
             </LayerIntro>
 

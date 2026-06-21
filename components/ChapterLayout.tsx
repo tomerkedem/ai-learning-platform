@@ -2,6 +2,7 @@
 
 import React, { useState, ReactNode, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { CourseHeader } from "@/components/CourseHeader";
 import { CourseSidebar } from "@/components/CourseSidebar";
 import { courses, type Language } from "@/lib/courseData"; 
@@ -24,6 +25,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     const [isScrolled, setIsScrolled] = useState(false);
     const [scrollProgress, setScrollProgress] = useState(0);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
     // פתרון לבעיית הגלילה בפרק 16: איפוס מיקום הגלילה בכל מעבר פרק
     useEffect(() => {
@@ -31,6 +33,37 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
             scrollContainerRef.current.scrollTop = 0;
         }
     }, [currentChapterId, courseId]);
+
+    // ניווט בין פרקים בעזרת מקשי החצים. ב-RTL: שמאלה=הבא, ימינה=הקודם (תואם לחיצים בפוטר).
+    // לא חוטפים מקשים כשהמשתמש מקליד בשדה או מזיז סליידר, וכשיש מקש החזקה (Ctrl/Cmd/Alt).
+    useEffect(() => {
+        const handleKeyNav = (e: KeyboardEvent) => {
+            if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+
+            const target = e.target as HTMLElement | null;
+            if (target) {
+                const tag = target.tagName;
+                if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable) return;
+            }
+
+            const course = courses[courseId];
+            if (!course) return;
+            const idx = course.chapters.findIndex(c => c.id === currentChapterId);
+            if (idx === -1) return;
+
+            const isRtl = lang === 'he';
+            const goNext = isRtl ? e.key === 'ArrowLeft' : e.key === 'ArrowRight';
+            const destination = goNext ? course.chapters[idx + 1] : course.chapters[idx - 1];
+            if (destination?.href) {
+                e.preventDefault();
+                router.push(destination.href);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyNav);
+        return () => window.removeEventListener('keydown', handleKeyNav);
+    }, [courseId, currentChapterId, lang, router]);
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
@@ -162,6 +195,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                     <div className={`flex flex-col ${isRTL ? 'items-start' : 'items-end'} gap-2 relative z-10`}>
                                         <span className="text-xs font-mono text-slate-500 group-hover:text-slate-400 transition-colors flex items-center gap-2">
                                             {isRTL ? <ChevronRight size={14} /> : null} {uiText.prev} {!isRTL ? <ChevronRight size={14} /> : null}
+                                            <kbd className="rounded border border-slate-700 bg-slate-800/80 px-1.5 py-0.5 text-[10px] leading-none text-slate-400">{isRTL ? '→' : '←'}</kbd>
                                         </span>
                                         <div className="font-bold text-lg text-slate-300 group-hover:text-white transition-colors">
                                             {prevChapter.title[lang]}
@@ -181,8 +215,9 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                             <div className={`flex flex-col ${isRTL ? 'items-start' : 'items-end'} gap-2 relative z-10`}>
                                                 <span className={`text-xs font-mono font-bold text-${nextColor}-400 group-hover:text-${nextColor}-300 transition-colors flex items-center gap-2`}>
                                                     {!isRTL ? <ChevronLeft size={14} /> : null}
-                                                    {uiText.next}: {uiText.chapter} {nextChapter.id} 
+                                                    {uiText.next}: {uiText.chapter} {nextChapter.id}
                                                     {isRTL ? <ChevronLeft size={14} /> : null}
+                                                    <kbd className={`rounded border border-${nextColor}-500/40 bg-${nextColor}-900/20 px-1.5 py-0.5 text-[10px] leading-none text-${nextColor}-300`}>{isRTL ? '←' : '→'}</kbd>
                                                 </span>
                                                 <div className="font-bold text-xl text-white group-hover:scale-[1.02] transition-transform origin-right">
                                                     {nextChapter.title[lang]}
