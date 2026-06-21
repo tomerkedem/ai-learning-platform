@@ -106,7 +106,9 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
                     </h1>
 
                     <div className={`transition-all duration-500 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 mt-0' : 'max-h-32 opacity-90 mt-2'}`}>
-                        <p className="text-sm text-slate-300 leading-relaxed font-medium max-w-2xl drop-shadow-md bg-[#0F172A]/40 p-2 rounded-md border border-white/5 backdrop-blur-sm">
+                        {/* בלי max-w-2xl: התיאור מנצל את כל רוחב בלוק הכותרת (עד max-w-5xl של ההורה),
+                            כך שבמסכים רחבים הוא נשאר בשורה אחת במקום להישבר מוקדם ולהשאיר רווח ריק. */}
+                        <p className="text-sm text-slate-300 leading-relaxed font-medium w-fit max-w-full drop-shadow-md bg-[#0F172A]/40 p-2 rounded-md border border-white/5 backdrop-blur-sm">
                             {description}
                         </p>
                     </div>

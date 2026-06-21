@@ -696,6 +696,30 @@ export const courses: Record<string, CourseData> = {
                 labelColor: "text-violet-400",
                 colorFrom: "from-violet-400",
                 colorTo: "to-emerald-500"
+            },
+            {
+                id: 11,
+                href: "/behind-the-scenes-ai/chapter-11",
+                num: "11",
+                label: { he: "הפעלת כלי ותוצאה", en: "Tool Call and Observation" },
+                title: { he: "Tool Call, Observation והחלטה הבאה", en: "Tool Call, Observation and the Next Decision" },
+                description: { he: "Agent פועל בלולאה: מחליט, מפעיל כלי, קורא תוצאה, ומחליט שוב. Tool Call אינו סוף הסיפור, הוא רק דרך להביא Observation חדשה.", en: "An agent works in a loop: it decides, calls a tool, reads the result, and decides again. A tool call is not the end of the story, only a way to bring a new observation." },
+                readTime: "15 דקות",
+                labelColor: "text-violet-400",
+                colorFrom: "from-violet-400",
+                colorTo: "to-teal-500"
+            },
+            {
+                id: 12,
+                href: "/behind-the-scenes-ai/chapter-12",
+                num: "12",
+                label: { he: "עצירה ואחריות", en: "Stop and Responsibility" },
+                title: { he: "עצירה, אישור ואחריות", en: "Stopping, Approval and Responsibility" },
+                description: { he: "Agent טוב יודע מתי לפעול ומתי לעצור. ככל שהוא קרוב יותר לפעולה אמיתית בעולם, כך הוא צריך יותר בקרה, הרשאה ואחריות. עצירה אינה כישלון.", en: "A good agent knows when to act and when to stop. The closer it gets to real-world action, the more control, permission, and responsibility it needs. Stopping is not failure." },
+                readTime: "15 דקות",
+                labelColor: "text-violet-400",
+                colorFrom: "from-violet-400",
+                colorTo: "to-rose-500"
             }
         ]
     }
