@@ -201,7 +201,7 @@ const FrozenWeights: React.FC<{ reduce: boolean }> = ({ reduce }) => {
 
             <Takeaway>ב-inference המשקלים קפואים. אתה לא מאמן את המודל כשאתה מתקן אותו.</Takeaway>
             <TryThis>
-                שלחו כמה תיקונים וצפו בבלוק המשקלים נשאר זהה, ובמונה "משקלים שהשתנו" שנשאר 0. ואז עברו ל-Training, לחצו "צעד אימון",
+                שלחו כמה תיקונים וצפו בבלוק המשקלים נשאר זהה, ובמונה &quot;משקלים שהשתנו&quot; שנשאר 0. ואז עברו ל-Training, לחצו &quot;צעד אימון&quot;,
                 וראו את אותו בלוק כן משתנה, בעבר.
             </TryThis>
         </div>
@@ -297,7 +297,7 @@ const InContextVsPersistent: React.FC<{ reduce: boolean }> = ({ reduce }) => {
 
                     <div className="min-h-[7rem] space-y-2">
                         <div className="rounded-lg border border-slate-700/50 bg-slate-900/50 px-3 py-2 text-xs text-slate-300">
-                            הודעת המשתמש: "{INCONTEXT_EXAMPLE.userTurnHe}"
+                            הודעת המשתמש: &quot;{INCONTEXT_EXAMPLE.userTurnHe}&quot;
                         </div>
                         <AnimatePresence>
                             {corrected && (
@@ -308,7 +308,7 @@ const InContextVsPersistent: React.FC<{ reduce: boolean }> = ({ reduce }) => {
                                     transition={reduce ? { duration: 0 } : { duration: 0.3 }}
                                     className="rounded-lg border border-amber-500/40 bg-amber-900/20 px-3 py-2 text-xs font-bold text-amber-100"
                                 >
-                                    התיקון: "{INCONTEXT_EXAMPLE.correctionHe}"
+                                    התיקון: &quot;{INCONTEXT_EXAMPLE.correctionHe}&quot;
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -343,7 +343,7 @@ const InContextVsPersistent: React.FC<{ reduce: boolean }> = ({ reduce }) => {
             <Takeaway>התאמה בהקשר היא זמנית. היא חיה כל עוד התיקון בקלט, ונעלמת איתו.</Takeaway>
             <TryThis>
                 תקנו את המודל וראו אותו פונה אליכם בשם הנכון, והתיקון נכנס לקופסת ההקשר. ואז פתחו שיחה חדשה, וראו את הקופסה מתרוקנת
-                ואת המודל חוזר לשם השגוי. זה הרגע שמתקן את האמונה ש"הוא זוכר אותי".
+                ואת המודל חוזר לשם השגוי. זה הרגע שמתקן את האמונה ש&quot;הוא זוכר אותי&quot;.
             </TryThis>
         </div>
     );
@@ -360,7 +360,7 @@ const ThreeLayers: React.FC = () => {
         <div className="space-y-4">
             <LayerIntro>
                 אנשים מבלבלים בין שלושה דברים שונים. למידה באימון, שקרתה בעבר. התאמה בהקשר, שזמנית. ולולאת פידבק של הספק, שאיטית
-                ונפרדת. אף אחת מהן אינה "המודל לומד ממך חי". לחצו על כל שכבה כדי לראות מתי היא קורה, ואם היא משפיעה עליכם עכשיו.
+                ונפרדת. אף אחת מהן אינה &quot;המודל לומד ממך חי&quot;. לחצו על כל שכבה כדי לראות מתי היא קורה, ואם היא משפיעה עליכם עכשיו.
             </LayerIntro>
 
             {/* בוחר השכבות */}
@@ -628,3 +628,5 @@ export const LearnsFromMistakesLab: React.FC = () => {
                 </span>
             </div>
         </div>
+    );
+};
