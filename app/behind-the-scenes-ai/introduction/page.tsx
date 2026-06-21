@@ -75,7 +75,7 @@ export default function BehindTheScenesIntroPage() {
             initial={reduce ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/80 backdrop-blur-2xl p-8 md:p-12 shadow-2xl"
+            className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/80 backdrop-blur-2xl p-6 md:p-8 shadow-2xl"
           >
             {/* הילות רקע */}
             <div className="absolute -top-16 -right-16 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
@@ -91,8 +91,8 @@ export default function BehindTheScenesIntroPage() {
             )}
 
             <div className="relative z-10">
-              <div className="text-center md:text-right pt-16 md:pt-0 md:pl-48">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/80 border border-cyan-500/30 mb-5">
+              <div className="text-center md:text-right">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-cyan-500/30 mb-3">
                   <span className="relative flex h-2 w-2">
                     {!reduce && <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping" />}
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
@@ -100,32 +100,29 @@ export default function BehindTheScenesIntroPage() {
                   <span className="text-cyan-300 text-xs font-bold tracking-wide">המעבדה השקופה · Behind the Scenes</span>
                 </div>
 
-                <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight leading-[1.05] mb-5">
-                  מה מסתתר בין
-                  <br />
+                <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-2 md:whitespace-nowrap">
+                  מה מסתתר בין{' '}
                   <span className="bg-gradient-to-l from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
                     הקלט לתשובה
                   </span>
                 </h1>
 
-                <p className="text-lg md:text-xl text-slate-300 leading-relaxed mb-3">
-                  מבחוץ זה נראה כמו רגע אחד: כתבנו משפט וקיבלנו תשובה.
-                  <br className="hidden md:block" />
-                  מבפנים זה מסלול שלם: פירוק, חישוב, דירוג, הסתברות והחלטה.
+                <p className="text-base md:text-lg text-slate-300 leading-relaxed mb-1.5">
+                  מבחוץ זה נראה כמו רגע אחד: כתבנו משפט וקיבלנו תשובה. מבפנים זה מסלול שלם: פירוק, חישוב, דירוג, הסתברות והחלטה.
                 </p>
-                <p className="text-base md:text-lg text-cyan-300/90 font-semibold">
+                <p className="text-sm md:text-base text-cyan-300/90 font-semibold">
                   בקורס הזה לא נסתפק בתשובה - נפתח את הדרך שהובילה אליה.
                 </p>
               </div>
             </div>
           </motion.section>
 
-          {/* המנטור מציץ מעל הקצה העליון-שמאלי של הכרטיס: קפיצת spring בכניסה, ואז ריחוף עדין */}
+          {/* המנטור עומד מימין לכרטיס ומבחוץ ומצביע עליו. רק במסכים רחבים (xl+) יש שם מקום; בצרים מוסתר. */}
           <motion.div
-            initial={reduce ? false : { opacity: 0, y: -48, scale: 0.55 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 230, damping: 15, delay: 0.35 }}
-            className="absolute -top-12 left-4 md:-top-16 md:left-8 z-20 w-28 md:w-52 pointer-events-none"
+            initial={reduce ? false : { opacity: 0, x: 48, scale: 0.7 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 17, delay: 0.4 }}
+            className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block w-40 2xl:w-52 pointer-events-none"
           >
             <div className="absolute inset-0 bg-cyan-500/15 blur-2xl rounded-full" />
             <motion.img

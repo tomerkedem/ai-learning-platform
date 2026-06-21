@@ -660,6 +660,18 @@ export const courses: Record<string, CourseData> = {
                 labelColor: "text-violet-400",
                 colorFrom: "from-violet-400",
                 colorTo: "to-emerald-500"
+            },
+            {
+                id: 8,
+                href: "/behind-the-scenes-ai/chapter-8",
+                num: "08",
+                label: { he: "מתי לענות ומתי לעצור", en: "When to Answer or Stop" },
+                title: { he: "Confidence - מתי לענות ומתי לעצור", en: "Confidence - When to Answer and When to Stop" },
+                description: { he: "מודל טוב לא רק יודע לענות, הוא יודע מתי לא לענות. הביטחון אינו רק מספר, הוא שער החלטה שמכריע אם הפער מספיק כדי לפעול.", en: "A good model not only knows how to answer, it knows when not to. Confidence is not just a number, it is a decision gate that decides whether the margin is enough to act." },
+                readTime: "14 דקות",
+                labelColor: "text-violet-400",
+                colorFrom: "from-violet-400",
+                colorTo: "to-teal-500"
             }
         ]
     }

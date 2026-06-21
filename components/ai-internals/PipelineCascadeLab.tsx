@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
     Compass, ArrowLeftRight, Sigma, Boxes, BarChart3, Flag, ChevronDown,
     Play, RotateCcw, Keyboard, FunctionSquare, Eye, Workflow, ScanLine,
-    CheckCircle2, AlertTriangle, Info, Gauge, Repeat,
+    CheckCircle2, AlertTriangle, Info, Gauge, Repeat, MousePointerClick, Lightbulb,
 } from 'lucide-react';
 
 import { ModeToggle } from './ModeToggle';
@@ -39,6 +39,31 @@ const CONF_STYLE: Record<ConfidenceLevel, { he: string; accent: Accent; bar: num
     'Medium-low': { he: 'נמוך-בינוני', accent: 'amber', bar: 44 },
     Low: { he: 'נמוך', accent: 'rose', bar: 26 },
 };
+
+/* ════════════════════════ שכבת קריינות לימודית ═══════════════════════════ */
+// טקסט בלבד. שלושת הרכיבים האלה מלווים כל שלב בשרשרת: הקדמה לפני, "השורה
+// התחתונה" אחרי, ו"נסו את זה" שהופך את הווידג'ט לתרגיל ללומד העצמאי.
+
+/** פסקת הקדמה: מה עומדים לראות בשלב הזה ולמה. */
+const LayerIntro: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <p className="mb-4 text-xs leading-relaxed text-slate-400">{children}</p>
+);
+
+/** השורה התחתונה של השלב, במשפט אחד. */
+const Takeaway: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <p className="mt-3 flex items-start gap-2 text-[11px] leading-relaxed text-slate-400">
+        <Lightbulb size={13} className="mt-0.5 shrink-0 text-emerald-400/80" />
+        <span><span className="font-bold text-slate-300">השורה התחתונה: </span>{children}</span>
+    </p>
+);
+
+/** הנחיה מודרכת: מה לעשות עם הווידג'ט כדי ללמוד ממנו. */
+const TryThis: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <div className="mt-3 flex items-start gap-2 rounded-xl border border-violet-500/25 bg-violet-900/10 p-3 text-[11px] leading-relaxed text-violet-100/90" dir="rtl">
+        <MousePointerClick size={13} className="mt-0.5 shrink-0 text-violet-300" />
+        <span><span className="font-bold text-violet-200">נסו את זה: </span>{children}</span>
+    </div>
+);
 
 /* ════════════════════════ קומפוננטת השרשרת ═══════════════════════════════ */
 
@@ -112,23 +137,28 @@ export const PipelineCascadeLab: React.FC = () => {
     return (
         <div className="space-y-4">
             {/* ── בקרה: מצב + תצוגת נוסחה ─────────────────────────────────── */}
-            <div className="flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between" dir="rtl">
-                <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-400">מצב:</span>
-                    <ModeToggle mode={mode} onChange={(m) => handleMode(m as 'chat' | 'agent')} accent="purple" />
+            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4" dir="rtl">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-slate-400">מצב:</span>
+                        <ModeToggle mode={mode} onChange={(m) => handleMode(m as 'chat' | 'agent')} accent="purple" />
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setFormulaView((v) => !v)}
+                        aria-pressed={formulaView}
+                        className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${
+                            formulaView ? 'border-violet-500/50 bg-violet-900/25 text-violet-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-300 hover:border-slate-600'
+                        }`}
+                    >
+                        {formulaView ? <FunctionSquare size={15} /> : <Eye size={15} />}
+                        {formulaView ? 'תצוגת נוסחה' : 'תצוגה פשוטה'}
+                        <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{formulaView ? 'Formula' : 'Simple'}</span>
+                    </button>
                 </div>
-                <button
-                    type="button"
-                    onClick={() => setFormulaView((v) => !v)}
-                    aria-pressed={formulaView}
-                    className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${
-                        formulaView ? 'border-violet-500/50 bg-violet-900/25 text-violet-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-300 hover:border-slate-600'
-                    }`}
-                >
-                    {formulaView ? <FunctionSquare size={15} /> : <Eye size={15} />}
-                    {formulaView ? 'תצוגת נוסחה' : 'תצוגה פשוטה'}
-                    <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{formulaView ? 'Formula' : 'Simple'}</span>
-                </button>
+                <p className="mt-3 border-t border-slate-700/40 pt-3 text-[11px] leading-relaxed text-slate-500">
+                    מי שרוצה לראות את החישוב עצמו יכול ללחוץ על <span className="font-bold text-slate-400">תצוגת נוסחה</span> (Formula View). המטרה אינה להפוך אתכם למתמטיקאים, אלא להראות שהגרפים והאחוזים אינם קסם, אלא תוצאה של חישוב שאפשר לעקוב אחריו. החלפה ל-<span className="font-bold text-slate-400">Agent Mode</span> מראה שאותה שרשרת מדרגת צעדים לפי מצב, לא רק כוונות.
+                </p>
             </div>
 
             {/* ── קלט לפי מצב ─────────────────────────────────────────────── */}
@@ -253,6 +283,9 @@ const AgentInput: React.FC<{ result: AnalysisResult; hasBarcode: boolean; onTogg
     const st = result.agentState;
     return (
         <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-4 text-right" dir="rtl">
+            <LayerIntro>
+                במצב Agent אותה שרשרת חישוב ממשיכה לעבוד, אבל היא מדרגת צעדים אפשריים ולא כוונות. ההבדל החשוב: הדירוג תלוי במצב, לא רק במשפט. לפני שיש ברקוד חסר מידע, ולכן הצעד המוביל הוא לבקש אותו. ברגע שמוסרים ברקוד, אותה מכונה מהפכת את הדירוג לטובת השימוש בכלי המעקב.
+            </LayerIntro>
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-2 text-xs text-slate-400">
                     <Workflow size={14} className="text-violet-300" />
@@ -290,6 +323,10 @@ const AgentInput: React.FC<{ result: AnalysisResult; hasBarcode: boolean; onTogg
                 {hasBarcode ? 'איפוס מצב (להסיר ברקוד)' : 'מסירת ברקוד'}
                 <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{hasBarcode ? 'Reset state' : 'Provide barcode'}</span>
             </button>
+
+            <TryThis>
+                לחצו &quot;מסירת ברקוד&quot; (Provide barcode) ושימו לב שהצעד המוביל בשרשרת משתנה מ&quot;לבקש ברקוד&quot; (Ask for barcode) ל&quot;להשתמש בכלי מעקב&quot; (Use tracking tool). אותה מכונת חישוב, מצב קלט שונה, החלטה שונה.
+            </TryThis>
         </div>
     );
 };
@@ -414,6 +451,9 @@ const LayerHead: React.FC<{ icon: React.ReactNode; he: string; en: string; accen
 const VectorLayer: React.FC<{ result: AnalysisResult; reduce: boolean }> = ({ result, reduce }) => (
     <div dir="rtl">
         <LayerHead icon={<Compass size={16} />} he="וקטור משמעות" en="Meaning Vector" accent="cyan" />
+        <LayerIntro>
+            כל השרשרת מתחילה כאן. המשפט שכתבתם כבר אינו מילים, אלא וקטור משמעות אחד, פרופיל מספרי שמתאר לאן המשפט מצביע על פני חמישה ממדים. זה מה שבנינו בפרק הקודם, וזו נקודת הפתיחה: כל שלב מכאן והלאה נגזר מהמספרים האלה.
+        </LayerIntro>
         <div className="space-y-2.5">
             {DIMS.map((key) => {
                 const idx = DIMS.indexOf(key);
@@ -441,9 +481,9 @@ const VectorLayer: React.FC<{ result: AnalysisResult; reduce: boolean }> = ({ re
                 );
             })}
         </div>
-        <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
-            הקלט מקובץ לווקטור משמעות אחד. זו נקודת הפתיחה של השרשרת, כל השאר נגזר ממנו.
-        </p>
+        <Takeaway>
+            הקלט מקובץ לווקטור משמעות אחד. כל מספר כאן הוא תוצאה של חישוב על המילים שהקלדתם, לא ניחוש ולא ערך קבוע מראש.
+        </Takeaway>
     </div>
 );
 
@@ -471,6 +511,15 @@ const SimilarityLayer: React.FC<{
                     </span>
                 }
             />
+            {isAgent ? (
+                <LayerIntro>
+                    השלב הראשון שואל כמה כל צעד אפשרי רלוונטי למשימה. זו אותה מדידת קרבה כמו ב-Chat, רק שכאן היא בודקת צעדים ולא כוונות. שימו לב שזה ציון רלוונטיות, לא הסתברות.
+                </LayerIntro>
+            ) : (
+                <LayerIntro>
+                    השלב הראשון הוא לשאול למה המשפט שכתבתם הכי קרוב. המנוע משווה את הפרופיל המספרי של המשפט לפרופיל של כל כוונה שהוא מכיר, ומודד כמה הם מצביעים לאותו כיוון. זה נקרא Cosine Similarity, ואפשר לחשוב עליו פשוט: שני חצים שמצביעים לאותו כיוון מקבלים ציון גבוה, שני חצים בכיוונים שונים מקבלים ציון נמוך. שימו לב לדבר חשוב, המנוע לא מחפש מילים זהות. &quot;החבילה לא הגיעה&quot; ו&quot;המשלוח לא נמסר&quot; הן מילים שונות, אבל הכיוון דומה, ולכן הדמיון גבוה.
+                </LayerIntro>
+            )}
             <div className="space-y-2">
                 {items.map((it) => {
                     const a = ACCENTS[it.accent];
@@ -524,11 +573,16 @@ const SimilarityLayer: React.FC<{
                     );
                 })}
             </div>
-            <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
-                {isAgent
-                    ? 'כמה כל צעד רלוונטי למשימה. זה ציון, לא הסתברות, והוא לא מסתכם ל-100%.'
-                    : 'ציון דמיון 0.94 אינו 94 אחוז. זו קרבת כיוון בין וקטורים, והיא לא מסתכמת ל-100%. רחפו על שורה כדי לראות את שני הווקטורים.'}
-            </p>
+            {isAgent ? (
+                <Takeaway>המספרים כאן הם ציוני רלוונטיות, לא הסתברות, והם לא מסתכמים ל-100%. הם רק אומרים מי הצעד הכי קשור למשימה.</Takeaway>
+            ) : (
+                <>
+                    <Takeaway>המספרים כאן הם ציוני דמיון, לא הסתברות. 0.94 לא אומר 94 אחוז נכון, הוא אומר שהמשפט קרוב מאוד לכוונה הזאת. ציוני דמיון לא מסתכמים ל-100%.</Takeaway>
+                    <TryThis>
+                        רחפו על שורה כדי לראות את שני הווקטורים זה מול זה. ואז שנו את &quot;הגיעה&quot; ל&quot;מופיעה במערכת&quot; ושימו לב איך הדמיון לכוונת תקלת מערכת (System issue) מטפס.
+                    </TryThis>
+                </>
+            )}
         </div>
     );
 };
@@ -558,6 +612,10 @@ const ScoresLayer: React.FC<{ items: RankItem[]; formulaView: boolean; reduce: b
                     </span>
                 }
             />
+
+            <LayerIntro>
+                הדמיון לבדו לא מספיק. הציון הגולמי מחבר כמה גורמים יחד: הדמיון, ועוד השפעת מילים בודדות (word impact), ועוד בונוס על צמדי מילים בהקשר (context bonus). התוצאה היא ציון אחד לכל כוונה. שימו לב, זה עדיין לא אחוז, והציונים לא מסתכמים ל-100. הם רק אומרים מי מוביל, לא בכמה.
+            </LayerIntro>
 
             <div className="overflow-x-auto">
                 <div className="min-w-[34rem] space-y-1.5">
@@ -598,9 +656,12 @@ const ScoresLayer: React.FC<{ items: RankItem[]; formulaView: boolean; reduce: b
                     score = {WEIGHTS.similarity}·similarity + {WEIGHTS.wordImpact}·word_impact + {WEIGHTS.contextBonus}·context_bonus
                 </div>
             )}
-            <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
-                כל ציון הוא סכום משוקלל של שלושת הרכיבים. הציונים הגולמיים לא מסתכמים ל-100%, הם רק חומר הגלם ל-Softmax.
-            </p>
+            <Takeaway>
+                Score הוא ציון גולמי, לא אחוז. הוא סכום משוקלל של שלושת הרכיבים, והוא מתחיל את התחרות, אבל עוד לא מכריע אותה. הציונים הגולמיים הם רק חומר הגלם ל-Softmax.
+            </Takeaway>
+            <TryThis>
+                פתחו את תצוגת הנוסחה (Formula View) למעלה, ועקבו אחרי שורה אחת: איך similarity ועוד word impact ועוד context בונים יחד ציון אחד.
+            </TryThis>
         </div>
     );
 };
@@ -616,6 +677,10 @@ const SoftmaxLayer: React.FC<{ items: RankItem[]; temperature: number; formulaVi
             accent="purple"
             badge={<span className="rounded-full border border-purple-500/40 bg-purple-900/15 px-2.5 py-1 font-mono text-[10px] font-bold text-purple-300" dir="ltr">T = {temperature}</span>}
         />
+
+        <LayerIntro>
+            כאן נכנסת מכונת ה-Softmax. היא לוקחת את הציונים הגולמיים והופכת אותם להתפלגות הסתברויות שמסתכמת ל-100 אחוז. הרעיון החשוב אינו הנוסחה אלא התחרות שהיא יוצרת: כשאפשרות אחת עולה, האחרות חייבות לרדת, כי הכל יחד חייב להסתכם ל-100.
+        </LayerIntro>
 
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3" dir="ltr">
             {/* כניסה: ציונים */}
@@ -660,9 +725,12 @@ const SoftmaxLayer: React.FC<{ items: RankItem[]; temperature: number; formulaVi
                 p_i = exp(score_i / T) / Σ_j exp(score_j / T)
             </div>
         )}
-        <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
-            כאן הציונים הופכים להסתברויות שמסתכמות ל-100%. כשאחת עולה, האחרות חייבות לרדת. זה ההבדל בין ציון להסתברות.
-        </p>
+        <Takeaway>
+            עכשיו אלה אחוזים, והם מתחרים זה בזה. סכום הכל הוא 100. זה בדיוק ההבדל בין ציון להסתברות.
+        </Takeaway>
+        <TryThis>
+            שימו לב שכשעמודה אחת גדלה, האחרות מתכווצות. זה לא מקרי, זה בדיוק מה ש-Softmax עושה: מחלק 100 אחוז בין כל האפשרויות.
+        </TryThis>
     </div>
 );
 
@@ -674,10 +742,16 @@ const ProbabilitiesLayer: React.FC<{ result: AnalysisResult; reduce: boolean }> 
     return (
         <div dir="rtl">
             <LayerHead icon={<BarChart3 size={16} />} he="הסתברויות" en="Probabilities" accent="emerald" />
+            <LayerIntro>
+                זה היעד הסופי של כל השרשרת: ההתפלגות שעליה תתקבל ההחלטה. עברנו מווקטור, לדמיון, לציון גולמי, דרך Softmax, וכל זה כדי להגיע לעמודות שאתם רואים כאן.
+            </LayerIntro>
             <ProbabilityBars items={bars} accent={leaderAccent} />
-            <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
-                היעד הסופי של השרשרת. אלה ההסתברויות שעליהן מתבססת ההחלטה.
-            </p>
+            <Takeaway>
+                זו התוצאה הסופית, אבל היא נולדה משרשרת חישובים, לא מהשמיים.
+            </Takeaway>
+            <TryThis>
+                שנו מילה אחת במשפט (או לחצו &quot;החלפת מילה&quot;) וצפו בכל השרשרת זזה בבת אחת, מהדמיון למעלה ועד האחוזים כאן למטה.
+            </TryThis>
         </div>
     );
 };
@@ -692,6 +766,9 @@ const DecisionLayer: React.FC<{ result: AnalysisResult; reduce: boolean }> = ({ 
     return (
         <div dir="rtl">
             <LayerHead icon={<Flag size={16} />} he="החלטה" en="Decision" accent="rose" />
+            <LayerIntro>
+                ורק עכשיו, אחרי שיש התפלגות הסתברויות, המנוע בוחר. ההחלטה אינה רק &quot;מי המוביל&quot;, אלא גם כמה הוא בולט מעל השני: פער גדול מאפשר לענות בביטחון, פער קטן מוביל לשאלת הבהרה במקום ניחוש.
+            </LayerIntro>
             <div className={`rounded-xl border ${ta.border} ${ta.bgSoft} p-4`}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">

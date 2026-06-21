@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { GitBranch, MousePointerClick, Waves, FlaskConical, Map, ArrowLeft } from 'lucide-react';
+import { GitBranch, MousePointerClick, Waves, FlaskConical, Map, ArrowLeft, BookOpen } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
@@ -41,6 +41,45 @@ const ChainStrip: React.FC = () => {
         </div>
     );
 };
+
+/** ארבעת השלבים של השרשרת, לטובת מסלול הקריאה בראש הפרק. */
+const READING_STEPS = [
+    { num: '1', he: 'דמיון', en: 'Similarity', desc: 'בודק למה המשפט הכי קרוב' },
+    { num: '2', he: 'ציון גולמי', en: 'Score', desc: 'נותן לכל אפשרות ציון אחד' },
+    { num: '3', he: 'Softmax', en: 'Softmax', desc: 'הופך ציונים להסתברויות שמסתכמות ל-100%' },
+    { num: '4', he: 'החלטה', en: 'Decision', desc: 'בוחר לפי ההתפלגות' },
+];
+
+/** מסלול קריאה: מספר את כל השרשרת במילים, לפני שמראים אותה בתנועה. */
+const ReadingPath: React.FC = () => (
+    <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 text-right leading-relaxed text-slate-300" dir="rtl">
+        <div className="mb-4 flex items-center gap-2">
+            <BookOpen size={16} className="text-violet-300" />
+            <div className="leading-tight">
+                <div className="text-sm font-bold text-slate-200">לפני שנכנסים למפל</div>
+                <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Read this first</div>
+            </div>
+        </div>
+        <p className="text-sm">
+            עד עכשיו ראינו איך משפט הופך לפרופיל מספרי. בפרק הזה נראה מה המנוע עושה עם הפרופיל. הוא לא קופץ ממנו ישר לתשובה,
+            אלא עובר שרשרת של ארבעה שלבים: קודם בודק למה המשפט דומה, אחר כך נותן לכל אפשרות ציון גולמי, אחר כך הופך את הציונים
+            להסתברויות שמסתכמות ל-100 אחוז, ורק אז בוחר. נעבור על כל שלב בנפרד, ובסוף נראה את כולם זזים יחד. דבר אחד שכדאי
+            לזכור כבר עכשיו, כל מספר שתראו הוא תוצאה של חישוב, לא ניחוש.
+        </p>
+        <ol className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {READING_STEPS.map((s) => (
+                <li key={s.en} className="flex items-start gap-2.5 rounded-xl border border-slate-700/40 bg-slate-950/30 p-3">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-500/20 font-mono text-[11px] font-bold text-violet-200" dir="ltr">{s.num}</span>
+                    <span className="leading-tight">
+                        <span className="text-xs font-bold text-slate-200">{s.he} </span>
+                        <span className="text-[9px] uppercase tracking-wider text-slate-500" dir="ltr">{s.en}</span>
+                        <span className="mt-0.5 block text-[11px] text-slate-400">{s.desc}</span>
+                    </span>
+                </li>
+            ))}
+        </ol>
+    </div>
+);
 
 /** מפת הדרכים: בפרק 7 כל הצמתים פעילים עד Probabilities. */
 const Roadmap: React.FC = () => {
@@ -133,6 +172,11 @@ export default function BehindTheScenesChapter7() {
                 </div>
             </motion.section>
 
+            {/* ══════════ מסלול קריאה ══════════ */}
+            <section className="mt-12 text-right" dir="rtl">
+                <ReadingPath />
+            </section>
+
             {/* ══════════ Pipeline Cascade Lab ══════════ */}
             <section className="mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
@@ -144,9 +188,12 @@ export default function BehindTheScenesChapter7() {
                 </div>
 
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    זו השרשרת המלאה במקום אחד. כל שכבה מזינה את הבאה אחריה: וקטור המשמעות הופך לדמיון, הדמיון לציונים, הציונים עוברים
-                    דרך Softmax להסתברויות, ומשם נגזרת ההחלטה. הפעילו את <span className="font-bold text-violet-200">תצוגת הנוסחה</span> כדי לראות שכל מספר על המסך הוא חישוב חי,
-                    והחליפו ל-<span className="font-bold text-violet-200">Agent Mode</span> כדי לראות שאותה שרשרת מדרגת צעדים לפי מצב, לא רק כוונות.
+                    זו השרשרת המלאה במקום אחד. כל שכבה מזינה את הבאה אחריה: וקטור המשמעות הופך לדמיון, הדמיון לציונים גולמיים, הציונים
+                    עוברים דרך Softmax להסתברויות, ומשם נגזרת ההחלטה. המטרה כאן היא לראות שרשרת, לא קפיצה: שום מספר לא מופיע משום מקום,
+                    כל אחד הוא תוצאה של השלב שלפניו. כל שלב במפל מלווה בהסבר משלו, אז אפשר לקרוא אותו מלמעלה למטה כמו סיפור.
+                    <span className="mt-3 block text-sm text-slate-400">
+                        הפעילו את <span className="font-bold text-violet-200">תצוגת הנוסחה</span> כדי לראות שכל מספר על המסך הוא חישוב חי, והחליפו ל-<span className="font-bold text-violet-200">Agent Mode</span> כדי לראות שאותה שרשרת מדרגת צעדים לפי מצב, לא רק כוונות.
+                    </span>
                 </div>
 
                 <PipelineCascadeLab />
@@ -160,7 +207,7 @@ export default function BehindTheScenesChapter7() {
             {/* ══════════ סיכום ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
-                    <span className="block font-bold text-violet-200">המערכת משווה, מדרגת, ואז הופכת ציונים להסתברויות. האחוזים הם השלב האחרון בשרשרת חישובים.</span>
+                    <span className="block font-bold text-violet-200">המערכת לא קופצת ממשפט לתשובה. היא הופכת משמעות לדמיון, דמיון לציון, ציון להסתברות, והסתברות להחלטה. האחוזים הם השלב האחרון בשרשרת חישובים, לא קסם.</span>
                     ראינו ארבעה שלבים נפרדים: וקטור המשמעות, דמיון (Cosine Similarity, שהוא קרבת כיוון ולא הסתברות), ציונים גולמיים
                     (שלא מסתכמים ל-100%), ורק אחרי Softmax, הסתברויות אמיתיות. שינוי מילה אחת שלח גל שינוי במורד כל השרשרת והפך את
                     המוביל. וב-Agent Mode ראינו שאותה מכונת חישוב מדרגת צעדים לפי מצב: מסירת ברקוד הפכה את הדירוג מ-&quot;לבקש ברקוד&quot; ל-&quot;להשתמש בכלי מעקב&quot;.
