@@ -128,6 +128,28 @@ export default function BehindTheScenesChapter8() {
                 </div>
             </motion.section>
 
+            {/* ══════════ מסלול קריאה ══════════ */}
+            <section className="mt-12 text-right" dir="rtl">
+                <div className="space-y-3 rounded-2xl border border-slate-700/50 bg-slate-900/50 p-6 leading-relaxed text-slate-300">
+                    <div className="flex items-center gap-2">
+                        <ShieldCheck size={18} className="text-violet-300" />
+                        <div className="leading-tight">
+                            <div className="text-sm font-bold text-slate-200">מה נלמד בפרק הזה</div>
+                            <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Reading path</div>
+                        </div>
+                    </div>
+                    <p>
+                        בפרק הקודם הגענו להתפלגות הסתברויות: המנוע מדרג אפשרויות ויודע מי מוביל. עכשיו נשאל שאלה של אחריות, מתי בכלל מותר להשתמש בהחלטה הזאת.
+                    </p>
+                    <p>
+                        הרעיון המרכזי: לא מספיק לדעת מי מוביל, צריך לדעת בכמה. נכיר את <span className="font-bold text-violet-200">פער הביטחון</span> (ההפרש בין האפשרות הראשונה לשנייה), <span className="font-bold text-violet-200">שער</span> שנפתח או נסגר לפיו, ו<span className="font-bold text-violet-200">סף וסיכון</span> שיכולים לשנות את ההחלטה על אותה התפלגות בדיוק.
+                    </p>
+                    <p className="font-bold text-violet-200">
+                        המסר: מודל טוב לא רק יודע לענות, הוא יודע מתי לא לענות. עצירה ובקשת הקשר אינן כישלון, הן הצעד המקצועי.
+                    </p>
+                </div>
+            </section>
+
             {/* ══════════ Confidence Gate Lab ══════════ */}
             <section className="mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">

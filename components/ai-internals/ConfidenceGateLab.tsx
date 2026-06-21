@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
     Gauge, ShieldAlert, ShieldCheck, Ban, CheckCircle2, ArrowDown, Lock,
     Info, ScanLine, MessageSquare, SlidersHorizontal,
-    Workflow, Keyboard, Split, Wrench,
+    Workflow, Keyboard, Split, Wrench, Lightbulb, MousePointerClick,
 } from 'lucide-react';
 
 import { ModeToggle } from './ModeToggle';
@@ -51,6 +51,31 @@ const TONE_STYLE = {
     stop: { border: 'border-rose-500/40', bg: 'bg-rose-900/15', text: 'text-rose-300', bar: 'bg-gradient-to-l from-rose-400 to-pink-500' },
 };
 
+/* ════════════════════════ שכבת קריינות לימודית ═══════════════════════════ */
+// טקסט בלבד, נלווה לכל רכיב אינטראקטיבי: הקדמה לפני, "השורה התחתונה" אחרי,
+// ו"נסו את זה" שהופך את הווידג'ט לתרגיל ללומד העצמאי. אותו pattern כמו פרק 7.
+
+/** פסקת הקדמה: מה עומדים לראות ולמה. */
+const LayerIntro: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <p className="mb-4 text-xs leading-relaxed text-slate-400">{children}</p>
+);
+
+/** השורה התחתונה של השלב, במשפט אחד. */
+const Takeaway: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <p className="mt-3 flex items-start gap-2 text-[11px] leading-relaxed text-slate-400">
+        <Lightbulb size={13} className="mt-0.5 shrink-0 text-emerald-400/80" />
+        <span><span className="font-bold text-slate-300">השורה התחתונה: </span>{children}</span>
+    </p>
+);
+
+/** הנחיה מודרכת: מה לעשות עם הווידג'ט כדי ללמוד ממנו. */
+const TryThis: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <div className="mt-3 flex items-start gap-2 rounded-xl border border-violet-500/25 bg-violet-900/10 p-3 text-[11px] leading-relaxed text-violet-100/90" dir="rtl">
+        <MousePointerClick size={13} className="mt-0.5 shrink-0 text-violet-300" />
+        <span><span className="font-bold text-violet-200">נסו את זה: </span>{children}</span>
+    </div>
+);
+
 /* ════════════════════════ קומפוננטה ראשית ════════════════════════════════ */
 
 export const ConfidenceGateLab: React.FC = () => {
@@ -91,6 +116,10 @@ export const ConfidenceGateLab: React.FC = () => {
 
     return (
         <div className="space-y-4">
+            <LayerIntro>
+                בחרו תרחיש מוכן או הקלידו משפט משלכם, וכל שאר הלוח יגיב: הפער, השער וההחלטה. ב-Chat המנוע מנסה לזהות את כוונת המשתמש, ב-Agent הוא שוקל גם את הסיכון של הפעולה. כל המספרים כאן מגיעים ישירות מהמנוע של פרק 7, השער רק מחליט מה לעשות איתם.
+            </LayerIntro>
+
             {/* ── בקרה ───────────────────────────────────────────────────── */}
             <div className="flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4" dir="rtl">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -177,9 +206,24 @@ export const ConfidenceGateLab: React.FC = () => {
                 )}
             </div>
 
+            <TryThis>
+                החליפו תרחיש (או הקלידו משפט משלכם) וצפו איך הפער, השער וההחלטה שבהמשך הדף משתנים יחד, בלי שנגעתם בשום מספר.
+            </TryThis>
+
             {/* ── Risk selector (Agent בלבד) ─────────────────────────────── */}
             {mode === 'agent' && action && (
-                <RiskSelector actionId={riskActionId} onSelect={setRiskActionId} />
+                <>
+                    <LayerIntro>
+                        במצב Agent נכנס גורם שני לשער: הסיכון של הפעולה. לא כל פעולה דורשת אותו ביטחון, וככל שהפעולה רגישה יותר נדרש ביטחון גבוה יותר כדי לבצע אותה לבד. הכלל המלא הוא: Decision allowed = הפער מעל הסף וגם הסיכון נסבל. Explain concept הוא סיכון נמוך, ואילו Send message to customer הוא סיכון גבוה שדורש אישור אנושי.
+                    </LayerIntro>
+                    <RiskSelector actionId={riskActionId} onSelect={setRiskActionId} />
+                    <Takeaway>
+                        סיכון הוא הגורם השני בשער. פער מספיק לבדו אינו מספיק כשהפעולה מסוכנת.
+                    </Takeaway>
+                    <TryThis>
+                        החליפו את הפעולה ל-Send message to customer וראו שער שהיה פתוח על סמך הפער נסגר ודורש אישור אנושי.
+                    </TryThis>
+                </>
             )}
 
             {/* ── Live Decision Gate (הרכיב החתימתי) ─────────────────────── */}
@@ -206,6 +250,9 @@ export const ConfidenceGateLab: React.FC = () => {
                     </div>
                     <ConfidenceBadge confidence={dist.confidence} />
                 </div>
+                <LayerIntro>
+                    זו ההתפלגות המלאה שמגיעה ממנוע פרק 7, אותו מנוע בדיוק. השער לא מחשב הסתברויות מחדש, הוא רק קורא מתוכה את הפער בין שתי האפשרויות המובילות ומחליט לפיו.
+                </LayerIntro>
                 <ProbabilityBars items={dist.items.map((it): IntentProbability => ({ label: it.labelHe, value: pct(it.prob) }))} accent={top?.accent ?? 'cyan'} />
             </div>
 
@@ -291,12 +338,24 @@ const LiveDecisionGate: React.FC<GateViewProps> = ({ dist, top, second, threshol
                 </div>
             </div>
 
+            <LayerIntro>
+                כאן הכל מתחבר לשער אחד חי. שלושה דברים נפגשים בו: הפער בין המוביל לשני, שהוא הקלט; הסף הנדרש, שהוא הכוונון; ובמצב Agent גם הסיכון של הפעולה, שהוא הגורם השני. נתחיל מהפער. שלושת המספרים שלמטה הם המוביל, האפשרות השנייה, והפער ביניהם (confidence_margin = top פחות second).
+            </LayerIntro>
+
             {/* Winner Margin Meter */}
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <MeterCell labelHe="המוביל" labelEn="Top" value={top ? pct(top.prob) : 0} sub={top?.labelHe ?? ''} accent={top?.accent ?? 'cyan'} />
                 <MeterCell labelHe="השני" labelEn="Second" value={second ? pct(second.prob) : 0} sub={second?.labelHe ?? ''} accent="slate" />
                 <MeterCell labelHe="הפער" labelEn="Margin" value={margin} sub="top minus second" accent={tone === TONE_STYLE.open ? 'emerald' : 'amber'} highlight />
             </div>
+
+            <Takeaway>
+                לא מספיק לדעת מי מוביל, צריך לדעת בכמה. מוביל בולט עם פער גדול הוא החלטה ברורה; שני מובילים קרובים עם פער זעיר משאירים את המערכת מתלבטת, גם כשיש מקום ראשון.
+            </Takeaway>
+
+            <LayerIntro>
+                עכשיו הסף. הסף הנדרש אינו חוק טבע, הוא בחירה. גררו אותו ושימו לב לדבר מפתיע: אותה התפלגות בדיוק, בלי לשנות אף מילה, עוברת מ-Answer ל-Ask for more context ברגע שקו הסף חוצה את עמודת הפער. הביטחון אינו רק מספר שנמדד, הוא מדיניות שנקבעת. בצ׳אט לימודי אפשר להסתפק בסף נמוך, במערכת ארגונית מול לקוח נרצה סף גבוה בהרבה.
+            </LayerIntro>
 
             {/* Threshold track: קו הסף נפגש עם עמודת ה-Margin */}
             <div className="mt-5">
@@ -362,10 +421,25 @@ const LiveDecisionGate: React.FC<GateViewProps> = ({ dist, top, second, threshol
                 )}
             </div>
 
+            <Takeaway>
+                הביטחון הוא מדיניות, לא מספר. אותם נתונים בדיוק, סף אחר, החלטה אחרת.
+            </Takeaway>
+            <TryThis>
+                במשפט החד הפער גדול: העלו את הסף עד שהוא עובר את עמודת הפער, וראו את השער נסגר. במשפט העמום הפער קטן: הורידו את הסף מתחת לפער, וראו את השער נפתח. לא שיניתם אף מילה, רק את הסף.
+            </TryThis>
+
+            <LayerIntro>
+                וזה השער עצמו. הוא מחליט אם להמשיך לתשובה, לעצור ולבקש הקשר, או לדרוש אישור. פער גדול פותח אותו, פער קטן סוגר אותו. כשהוא נסגר, המערכת לא נכשלה, היא בחרה לא לנחש.
+            </LayerIntro>
+
             {/* השער עצמו */}
             <div className="mt-5">
                 <GateDoors open={gate.open} kind={gate.kind} reduce={reduce} />
             </div>
+
+            <Takeaway>
+                גם כשיש מנצח, לא תמיד כדאי להכריז עליו. שער סגור הוא זהירות, לא שגיאה.
+            </Takeaway>
 
             {/* ההחלטה הנגזרת */}
             <div className={`mt-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border ${tone.border} ${tone.bg} p-3`}>
@@ -470,6 +544,7 @@ const OutcomeSection: React.FC<OutcomeProps> = ({ top, second, gate, action, red
                 </div>
                 <p className="text-sm leading-relaxed text-slate-200">{top.answerHe}</p>
                 <p className="mt-2 text-[11px] text-slate-500">הפער עבר את הסף והסיכון נסבל, אז ההחלטה מותרת. עדיין ראוי לציין שזו הערכה מובילה.</p>
+                <Takeaway>שער פתוח: הפער היה גדול מספיק ביחס לסף, אז כדאי וראוי להחזיר את התשובה.</Takeaway>
             </div>
         );
     }
@@ -488,6 +563,7 @@ const OutcomeSection: React.FC<OutcomeProps> = ({ top, second, gate, action, red
                     המנוע עוצר ומבקש אישור אדם לפני ביצוע.
                 </p>
                 <p className="mt-2 text-[11px] text-slate-500">ככל שהפעולה רגישה יותר, נדרש ביטחון גבוה יותר. כאן מתחיל החיבור בין הסתברות לאחריות.</p>
+                <Takeaway>פער מספיק לבדו אינו מספיק כשהפעולה מסוכנת. עצירה לאישור היא בקרה אחראית, לא כשל.</Takeaway>
             </div>
         );
     }
@@ -495,6 +571,10 @@ const OutcomeSection: React.FC<OutcomeProps> = ({ top, second, gate, action, red
     // שער סגור בגלל פער קטן: Answer Suppression + Clarifying Question.
     const question = buildClarifyingQuestion(top.clarifyOptionHe, second?.clarifyOptionHe ?? 'משהו אחר');
     return (
+        <>
+        <LayerIntro>
+            כשהשער נסגר, המערכת לא אומרת &quot;אני לא יודע&quot;, היא בחרה לא לנחש. במקום זה היא עושה שני דברים: משהה את התשובה שכבר ניסחה, ובונה במקומה שאלה ממוקדת משתי האפשרויות שהתחרו על ההובלה.
+        </LayerIntro>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {/* Answer Suppression */}
             <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-right" dir="rtl">
@@ -564,6 +644,13 @@ const OutcomeSection: React.FC<OutcomeProps> = ({ top, second, gate, action, red
                 </motion.div>
             </div>
         </div>
+        <Takeaway>
+            לדעת תשובה ולא לשלוח אותה זו בקרה, לא חולשה. ושאלה טובה נבנית מההתלבטות עצמה, היא מכוונת בדיוק למקום שבו ההתפלגות לא הכריעה.
+        </Takeaway>
+        <TryThis>
+            שימו לב לתשובה שהמערכת הכינה ואז חסמה (Suppressed), ולשאלה שהיא בנתה משתי האפשרויות המובילות ושלחה במקומה.
+        </TryThis>
+        </>
     );
 };
 
@@ -591,6 +678,9 @@ const RiskTable: React.FC<{ activeId: string }> = ({ activeId }) => (
                 <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Required confidence by risk</div>
             </div>
         </div>
+        <LayerIntro>
+            זו הטבלה שמתרגמת רגישות לסף. ככל שהפעולה משמעותית יותר עבור הלקוח, כך הביטחון הנדרש עולה, עד כדי דרישת אישור אנושי. הפעולה שבחרתם למעלה מודגשת כאן.
+        </LayerIntro>
         <div className="space-y-2">
             {RISK_ACTIONS.map((r) => {
                 const a = ACCENTS[r.accent];

@@ -672,6 +672,30 @@ export const courses: Record<string, CourseData> = {
                 labelColor: "text-violet-400",
                 colorFrom: "from-violet-400",
                 colorTo: "to-teal-500"
+            },
+            {
+                id: 9,
+                href: "/behind-the-scenes-ai/chapter-9",
+                num: "09",
+                label: { he: "מ-Prompt למשימה", en: "From Prompt to Task" },
+                title: { he: "מ-Prompt למשימה - איך Agent מבין מה לעשות", en: "From Prompt to Task - How an Agent Understands What to Do" },
+                description: { he: "מילה אחת מהפכת שאלה למשימה. Agent מתחיל בלהבין את המשימה: מה המטרה, מה חסר, ומה מותר. זיהוי משימה אינו אישור לפעול.", en: "One word turns a question into a task. An agent starts by understanding the task: the goal, what is missing, and what is allowed. Detecting a task is not approval to act." },
+                readTime: "14 דקות",
+                labelColor: "text-violet-400",
+                colorFrom: "from-violet-400",
+                colorTo: "to-fuchsia-500"
+            },
+            {
+                id: 10,
+                href: "/behind-the-scenes-ai/chapter-10",
+                num: "10",
+                label: { he: "בחירת כלי", en: "Tool Selection" },
+                title: { he: "בחירת Tool - מתי Agent צריך כלי", en: "Tool Selection - When an Agent Needs a Tool" },
+                description: { he: "Agent לא אמור לנחש מידע שאפשר לבדוק בכלי, אבל גם לא להשתמש בכלי כשלא צריך. בחירת כלי היא החלטה רב-גורמית: התאמה, נתונים, סיכון והרשאה.", en: "An agent should not guess data a tool could check, but also should not use a tool when none is needed. Tool selection is a multi-factor decision: match, data, risk, and permission." },
+                readTime: "15 דקות",
+                labelColor: "text-violet-400",
+                colorFrom: "from-violet-400",
+                colorTo: "to-emerald-500"
             }
         ]
     }
