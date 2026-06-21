@@ -557,5 +557,98 @@ export const courses: Record<string, CourseData> = {
                 colorTo: "to-cyan-500"
             }
         ]
+    },
+
+    // --- קורס 4: מאחורי הקלעים של AI ---
+    "behind-the-scenes-ai": {
+        id: "behind-the-scenes-ai",
+        title: { he: "מאחורי הקלעים של AI", en: "Behind the Scenes of AI" },
+        description: { he: "מה קורה כשכותבים לצ'ט או ל-Agent", en: "What happens when you write to a chat or an agent" },
+        chapters: [
+            {
+                id: 0,
+                href: "/behind-the-scenes-ai/introduction",
+                num: "מבוא",
+                label: { he: "פתיח", en: "Intro" },
+                title: { he: "מבוא: מה קורה מאחורי הקלעים של AI", en: "Intro: Behind the Scenes of AI" },
+                description: { he: "מהקלט ועד התשובה: איך טקסט הופך לטוקנים, מספרים, הסתברויות והחלטה - ומה משתנה כשזה Agent.", en: "From input to answer: how text becomes tokens, numbers, probabilities and a decision." },
+                readTime: "6 דקות",
+                labelColor: "text-cyan-400",
+                colorFrom: "from-cyan-400",
+                colorTo: "to-blue-500"
+            },
+            {
+                id: 1,
+                href: "/behind-the-scenes-ai/chapter-1",
+                num: "פרק 1",
+                label: { he: "הדרך אל התשובה", en: "The Path to the Answer" },
+                title: { he: "לא רק תשובה - הדרך שמאחורי התשובה", en: "Not Just an Answer - The Path Behind It" },
+                description: { he: "אותו משפט, שני מצבי צפייה ושני מסלולי עיבוד: איך תשובה נולדת ב-Chat ואיך משימה מנוהלת ב-Agent.", en: "One sentence, two view modes and two processing paths." },
+                readTime: "8 דקות",
+                labelColor: "text-blue-400",
+                colorFrom: "from-blue-400",
+                colorTo: "to-indigo-500"
+            },
+            {
+                id: 2,
+                href: "/behind-the-scenes-ai/chapter-2",
+                num: "פרק 2",
+                label: { he: "ההחלטה הראשונה", en: "The First Decision" },
+                title: { he: "שאלה, בדיקה או פעולה - ההחלטה הראשונה של המנוע", en: "Question, Check or Action - The Engine's First Decision" },
+                description: { he: "אותו נושא, שלושה ניסוחים, ארבעה מסלולים: איך כוונת הבקשה קובעת לאן המנוע מנתב אותה.", en: "Same topic, three phrasings, four routes: how intent decides where the engine sends a request." },
+                readTime: "8 דקות",
+                labelColor: "text-indigo-400",
+                colorFrom: "from-indigo-400",
+                colorTo: "to-violet-500"
+            },
+            {
+                id: 3,
+                href: "/behind-the-scenes-ai/chapter-3",
+                num: "03",
+                label: { he: "הלב ההסתברותי", en: "The Probabilistic Heart" },
+                title: { he: "AI כמנוע הסתברותי", en: "AI as a Probabilistic Engine" },
+                description: { he: "המודל לא מחזיר אמת מוחלטת. הוא מדרג אפשרויות ובוחר את מה שנראה הכי סביר.", en: "The model does not return absolute truth. It ranks possible options and chooses what looks most likely." },
+                readTime: "9 דקות",
+                labelColor: "text-purple-400",
+                colorFrom: "from-purple-400",
+                colorTo: "to-emerald-500"
+            },
+            {
+                id: 4,
+                href: "/behind-the-scenes-ai/chapter-4",
+                num: "04",
+                label: { he: "מילה אחר מילה", en: "Word by Word" },
+                title: { he: "כל מילה מזיזה את המנוע", en: "Every Word Moves the Engine" },
+                description: { he: "משפט לא נכנס כגוש אחד. הוא נבנה מילה אחר מילה, וכל מילה מזיזה את ההסתברות, את הביטחון ואת ההחלטה.", en: "A sentence does not enter as one block. It is built word by word, and each word moves the probability, the confidence, and the decision." },
+                readTime: "12 דקות",
+                labelColor: "text-violet-400",
+                colorFrom: "from-violet-400",
+                colorTo: "to-fuchsia-500"
+            },
+            {
+                id: 5,
+                href: "/behind-the-scenes-ai/chapter-5",
+                num: "05",
+                label: { he: "טקסט מתפרק", en: "Text Splits" },
+                title: { he: "Tokenization - הטקסט מתפרק לחלקים", en: "Tokenization - Text Splits Into Parts" },
+                description: { he: "AI לא מתחיל בלהבין, הוא מתחיל בלפרק. לפני חישוב המשמעות, הטקסט הופך ליחידות עבודה שנקראות Tokens.", en: "AI does not start by understanding, it starts by splitting. Before meaning, text becomes work units called Tokens." },
+                readTime: "11 דקות",
+                labelColor: "text-fuchsia-400",
+                colorFrom: "from-fuchsia-400",
+                colorTo: "to-violet-500"
+            },
+            {
+                id: 6,
+                href: "/behind-the-scenes-ai/chapter-6",
+                num: "06",
+                label: { he: "ממילים למספרים", en: "Words to Numbers" },
+                title: { he: "ממילים למספרים ולמשמעות", en: "From Words to Numbers to Meaning" },
+                description: { he: "המנוע לא עובד עם מילים אלא עם מספרים. כל טוקן הופך ל-Token ID ואז לווקטור משמעות, וכך שני משפטים שונים יכולים להצביע לאותו כיוון.", en: "The engine works with numbers, not words. Each token becomes a Token ID and then a meaning vector, so two different sentences can point in the same direction." },
+                readTime: "13 דקות",
+                labelColor: "text-violet-400",
+                colorFrom: "from-violet-400",
+                colorTo: "to-cyan-500"
+            }
+        ]
     }
 };

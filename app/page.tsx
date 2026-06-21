@@ -3,7 +3,7 @@
 import React, { useCallback } from 'react';
 import Link from 'next/link';
 import { courses } from "@/lib/courseData";
-import { ArrowLeft, CodeXml, Sigma, BrainCog, BookOpen } from "lucide-react";
+import { ArrowLeft, CodeXml, Sigma, BrainCog, BookOpen, Eye } from "lucide-react";
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import type { Engine, ISourceOptions } from "tsparticles-engine";
@@ -49,6 +49,7 @@ export default function HomePage() {
 
   const getIcon = (id: string) => {
     if (id === 'python') return <CodeXml size={32} />;
+    if (id === 'behind-the-scenes-ai') return <Eye size={32} />;
     if (id.includes('math')) return <BrainCog size={32} />;
     return <Sigma size={32} />;
   };
@@ -61,6 +62,8 @@ export default function HomePage() {
             return 'bg-gradient-to-br from-blue-400/20 to-cyan-500/20 text-blue-300 border-blue-400/30 shadow-[0_0_15px_rgba(96,165,250,0.3)]';
         case 'mathProbabilistic':
             return 'bg-gradient-to-br from-pink-400/20 to-purple-500/20 text-pink-300 border-pink-400/30 shadow-[0_0_15px_rgba(232,121,249,0.3)]';
+        case 'behind-the-scenes-ai':
+            return 'bg-gradient-to-br from-cyan-400/20 to-blue-500/20 text-cyan-300 border-cyan-400/30 shadow-[0_0_15px_rgba(34,211,238,0.3)]';
         default:
             return 'bg-gradient-to-br from-blue-400/20 to-cyan-500/20 text-blue-300 border-blue-400/30 shadow-[0_0_15px_rgba(96,165,250,0.3)]';
     }
@@ -93,6 +96,15 @@ similarity = dot(a, b) / (norm(a)*norm(b))
 x = x - lr * slope(x)
 # P(Spam | Words)`,
         snippetColor: "text-pink-400"
+    },
+    {
+        id: 'behind-the-scenes-ai',
+        title: "מאחורי הקלעים של AI",
+        description: "מה קורה כשכותבים לצ'ט או ל-Agent: מטקסט להסתברות, החלטה ופעולה.",
+        snippet: `Input -> Tokens -> Numbers
+-> Probabilities -> Decision
+# Chat & Agent, exposed`,
+        snippetColor: "text-cyan-400"
     }
   ];
 
@@ -136,7 +148,7 @@ x = x - lr * slope(x)
             </div>
 
             {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full relative z-20 pb-20">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full relative z-20 pb-20">
                 {heroCards.map((card) => {
                     const originalCourseData = courses[card.id];
                     if (!originalCourseData) return null;

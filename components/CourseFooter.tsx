@@ -1,12 +1,37 @@
 // src/components/CourseFooter.tsx
+"use client";
 
 import Image from 'next/image';
 import React from 'react';
+import { usePathname } from 'next/navigation';
+import { courses } from '@/lib/courseData';
 
 // הנתיב לתמונה השניה שנמצאת בתיקיית public (השתמשתי בסיומת .png כפי שציינת)
 const IMAGE_TWO_PATH = "/01dbd09c-b44a-4b1a-b364-bd4881435ef2.png";
 
+// טקסט ברירת מחדל כשאין קורס פעיל (למשל בדף הבית).
+const DEFAULT_LABEL = "קורסים אינטראקטיביים למפתחי AI";
+
+/**
+ * מזהה את הקורס הפעיל לפי ה-URL ומחזיר את שמו, באופן דינמי מתוך courseData.
+ * הבסיס של כל קורס נגזר מה-href של המבוא שלו (ללא הסגמנט האחרון), כך שאין כתיב קשיח.
+ */
+function getActiveCourseTitle(pathname: string): string {
+    for (const course of Object.values(courses)) {
+        const firstHref = course.chapters[0]?.href;
+        if (!firstHref) continue;
+        const base = firstHref.slice(0, firstHref.lastIndexOf('/'));
+        if (base && pathname.startsWith(base)) {
+            return course.title.he;
+        }
+    }
+    return DEFAULT_LABEL;
+}
+
 export function CourseFooter() {
+    const pathname = usePathname();
+    const courseTitle = getActiveCourseTitle(pathname ?? '');
+
     return (
         // הוספנו 'group' והגדלנו את הריפוד העליון ל-pt-64 כדי למנוע חפיפה עם התמונה
         <footer className="relative w-full bg-slate-950 pt-64 border-t border-slate-800/50 group">
@@ -32,11 +57,8 @@ export function CourseFooter() {
             {/* תוכן הפוטר (חלק תחתון) */}
             <div className="relative z-10 text-center py-2 px-2 text-slate-400 max-w-4xl mx-auto">
                 {/* ... (שאר התוכן נשאר זהה) */}
-                <h3 className="text-xl font-bold text-white mb-2 tracking-wider">
-                    מתוך הסדרה &quot;AI Developer World-Class Series&quot;
-                </h3>
                 {/* הוספת שורה כדי שהטקסט לא יעלה על התמונה */}
-                <p className="text-sm text-slate-400 mb-1">ספר 2: מתמטיקה אינטואיטיבית למפתחים ללמוד ל-AI</p> 
+                <p className="text-sm text-slate-400 mb-1">{courseTitle}</p>
                 <p className="text-xs mb-4">
                    © 2026 תומר קדם. כל הזכויות שמורות.
                 </p>

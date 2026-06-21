@@ -64,7 +64,7 @@ export default function Chapter15() {
             <div className="bg-slate-800/50 border-r-4 border-purple-500 p-6 rounded-l-xl space-y-4 shadow-xl">
                 <h2 className="text-xl font-bold text-white">למה async חשוב בפרויקטי AI?</h2>
                 <p className="text-slate-300 leading-relaxed">
-                    עולם ה-AI בנוי על תקשורת רשת. כל קריאה למודל — בין אם זה OpenAI, Hugging Face או שירות פנימי — היא קריאה חיצונית, ולכן איטית יחסית לפעולות CPU.
+                    עולם ה-AI בנוי על תקשורת רשת. כל קריאה למודל - בין אם זה OpenAI, Hugging Face או שירות פנימי - היא קריאה חיצונית, ולכן איטית יחסית לפעולות CPU.
                 </p>
                 <p className="text-slate-300 leading-relaxed">
                     כאשר אתה שולח עשרות או מאות בקשות במקביל (למודלי שפה, שירותי Embedding, APIs חיצוניים), הגישה הסינכרונית הקלאסית פשוט לא מספיקה. הלולאה הראשית נתקעת, וכל משימה מחכה לסיום הקודמת.
@@ -347,7 +347,7 @@ async def fetch_many(urls, concurrency=10):
         <section className="mt-20 space-y-6">
             <h3 className="text-2xl font-bold text-white">סיכום: למה async ו-aiohttp הם חובה?</h3>
             <p className="text-slate-300 leading-relaxed">
-                בעולם של מערכות AI, כמעט כל שלב כולל תקשורת רשת — בקשות למודל שפה, שאילתות למנוע Embeddings, או גישה ל-API של חיפוש. כל בקשה כזו אורכת שניות, לא מילישניות, וכשיש עשרות מהן, ביצוע סינכרוני פשוט לא עומד בקצב.
+                בעולם של מערכות AI, כמעט כל שלב כולל תקשורת רשת - בקשות למודל שפה, שאילתות למנוע Embeddings, או גישה ל-API של חיפוש. כל בקשה כזו אורכת שניות, לא מילישניות, וכשיש עשרות מהן, ביצוע סינכרוני פשוט לא עומד בקצב.
             </p>
             <p className="text-slate-300 leading-relaxed font-bold border-r-4 border-purple-500 pr-4">
                 השילוב של async, gather, Semaphore, ו-Retry הוא לא טריק של מתכנתים מתקדמים. זהו הסטנדרט. בלי async, כל מערכת AI תהפוך לצוואר בקבוק. עם async, היא הופכת לרשת חכמה של משימות שמדברות זו עם זו במקביל, חוסכות זמן, ומפיקות יותר תובנות בפחות משאבים.

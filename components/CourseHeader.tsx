@@ -83,7 +83,9 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
             <div className="w-full h-full px-6 md:px-10 relative z-10 flex items-start justify-between">
                 
                 {/* צד ימין: כותרת */}
-                <div className="flex flex-col items-start justify-center max-w-3xl">
+                {/* flex-1 + min-w-0 מאפשרים לכותרת לנצל את כל הרוחב הפנוי עד התקרה הרחבה (max-w-5xl),
+                    כך שכותרות ארוכות לא נשברות מוקדם בדסקטופ. במובייל הקונטיינר צר יותר מהתקרה ולכן השבירה טבעית. */}
+                <div className="flex flex-1 min-w-0 flex-col items-start justify-center max-w-5xl">
                     
                     {/* שורת הפרק והתווית */}
                     <div className="flex items-center gap-3 text-[11px] font-mono font-bold tracking-widest mb-2">

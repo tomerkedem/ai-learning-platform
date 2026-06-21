@@ -48,7 +48,7 @@ const LiveCodeEditor = dynamic(() => import('@/components/content/LiveCodeEditor
                 ממשק שורת פקודה (CLI)
             </h1>
             <p className="text-lg text-slate-300 leading-relaxed">
-                בפרויקטי AI, גם הקוד הכי חכם חסר ערך אם אי אפשר להפעיל אותו בקלות. ממשק שורת הפקודה (CLI) הוא הדרך להפוך קוד גולמי לכלי אמיתי — כזה שאפשר להריץ, לבדוק ולשלב בתהליכים אחרים בלי לפתוח את העורך.
+                בפרויקטי AI, גם הקוד הכי חכם חסר ערך אם אי אפשר להפעיל אותו בקלות. ממשק שורת הפקודה (CLI) הוא הדרך להפוך קוד גולמי לכלי אמיתי - כזה שאפשר להריץ, לבדוק ולשלב בתהליכים אחרים בלי לפתוח את העורך.
             </p>
         </section>
 
@@ -122,7 +122,7 @@ const LiveCodeEditor = dynamic(() => import('@/components/content/LiveCodeEditor
 
             <InsightBox type="warning" title="למה לא להסתפק ב-sys.argv?">
                 <p className="text-sm leading-relaxed">
-                    בלי argparse, הדרך היחידה לדעת מה המשתמש כתב היא לבדוק את <code>sys.argv</code>. זה שביר ומסורבל. אם המשתמש שכח פרמטר — הקוד יקרוס. 
+                    בלי argparse, הדרך היחידה לדעת מה המשתמש כתב היא לבדוק את <code>sys.argv</code>. זה שביר ומסורבל. אם המשתמש שכח פרמטר - הקוד יקרוס. 
                     argparse פותרת את זה: היא בודקת תקינות, מפרשת את כל הדגלים (Flags), ומייצרת עזרה אוטומטית (<code>--help</code>).
                 </p>
             </InsightBox>
@@ -221,7 +221,7 @@ if __name__ == "__main__":
             </h3>
             <div className="space-y-4 text-slate-300 leading-relaxed">
                 <p>
-                    מאחורי הקלעים, כל תוכנית CLI מסיימת עם קוד יציאה — מספר שמסמן למערכת האם הפעולה הצליחה. זהו הקו שמפריד בין תהליך תקין לשגוי באוטומציה ו-pipelines.
+                    מאחורי הקלעים, כל תוכנית CLI מסיימת עם קוד יציאה - מספר שמסמן למערכת האם הפעולה הצליחה. זהו הקו שמפריד בין תהליך תקין לשגוי באוטומציה ו-pipelines.
                 </p>
                 <ul className="list-disc list-inside space-y-3 bg-slate-900/40 p-6 rounded-xl border border-slate-800">
                     <li><strong className="text-emerald-400">0 – הצלחה:</strong> הכל עבר בשלום, ה-CI יכול להמשיך לשלב הבא.</li>
@@ -250,7 +250,7 @@ if __name__ == "__main__":
                 </div>
                 <div className="space-y-3">
                     <h4 className="font-bold text-white text-lg underline decoration-blue-500 underline-offset-4">הודעות פלט (Feedback)</h4>
-                    <p className="text-sm">CLI נוח גם מדבר יפה. אל תשארו שקטים מדי — ספרו למשתמש מה בדיוק קרה (למשל: {`"Cleaned 324 lines"`}).</p>
+                    <p className="text-sm">CLI נוח גם מדבר יפה. אל תשארו שקטים מדי - ספרו למשתמש מה בדיוק קרה (למשל: {`"Cleaned 324 lines"`}).</p>
                 </div>
                 <div className="space-y-3">
                     <h4 className="font-bold text-white text-lg underline decoration-blue-500 underline-offset-4">קונסיסטנטיות</h4>
@@ -266,7 +266,7 @@ if __name__ == "__main__":
                 CLI הוא לא קישוט, אלא שכבת שליטה שמעניקה לקוד שלכם חיים אמיתיים מחוץ לעורך. בעולם של AI, שבו סקריפטים מתמזגים עם תהליכים אוטומטיים, זה ההבדל בין קוד שעובד רק אצלכם לבין כלי שיכול לעבוד בכל מקום.
             </p>
             <p className="text-slate-300 leading-relaxed font-bold italic border-r-4 border-emerald-500 pr-4">
-                הכוח האמיתי של CLI הוא בפשטות: פקודה אחת, פרמטר אחד, והרבה בהירות. כשכלי ה-AI שלכם מגיע לשלב שבו אחרים צריכים להריץ אותו — CLI הוא הדרך המקצועית ביותר לעשות זאת.
+                הכוח האמיתי של CLI הוא בפשטות: פקודה אחת, פרמטר אחד, והרבה בהירות. כשכלי ה-AI שלכם מגיע לשלב שבו אחרים צריכים להריץ אותו - CLI הוא הדרך המקצועית ביותר לעשות זאת.
             </p>
         </section>
 
