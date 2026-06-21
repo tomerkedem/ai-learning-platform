@@ -125,12 +125,6 @@ export default function BehindTheScenesChapter9() {
                         <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">Behind the Scenes · 09</span>
                     </div>
 
-                    <div className="mb-5 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-slate-300 leading-relaxed">
-                        עד עכשיו ראינו מה קורה כשמשתמש שואל.
-                        <br />
-                        עכשיו נראה מה קורה כשהוא מבקש פעולה. כאן נפתח חצי ה-Agent של הקורס.
-                    </div>
-
                     <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
                         מילה אחת{' '}
                         <span className="bg-gradient-to-l from-violet-400 via-fuchsia-400 to-teal-400 bg-clip-text text-transparent">

@@ -720,6 +720,18 @@ export const courses: Record<string, CourseData> = {
                 labelColor: "text-violet-400",
                 colorFrom: "from-violet-400",
                 colorTo: "to-rose-500"
+            },
+            {
+                id: 13,
+                href: "/behind-the-scenes-ai/chapter-13",
+                num: "13",
+                label: { he: "המעבדה המאוחדת", en: "The Unified Lab" },
+                title: { he: "Behind the Scenes Lab - המודל וה-Agent על אותו מסך", en: "Behind the Scenes Lab - The Model and the Agent on One Screen" },
+                description: { he: "פרק השיא: כל החלקים מתאחדים למעבדה אחת, שבה אותו קלט מפעיל מנוע תשובה (Chat) או מנוע פעולה (Agent). לא ראינו רק תשובה, ראינו איך היא נבנתה.", en: "The capstone: all the parts unite into one lab where the same input drives an answer engine (Chat) or an action engine (Agent). We did not just see an answer, we saw how it was built." },
+                readTime: "16 דקות",
+                labelColor: "text-violet-400",
+                colorFrom: "from-violet-400",
+                colorTo: "to-cyan-500"
             }
         ]
     }

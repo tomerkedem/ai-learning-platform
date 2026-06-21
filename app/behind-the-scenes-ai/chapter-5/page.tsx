@@ -33,13 +33,6 @@ export default function BehindTheScenesChapter5() {
                         <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">Behind the Scenes · 05</span>
                     </div>
 
-                    {/* משפט מעבר מפרק 4 */}
-                    <div className="mb-5 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-slate-300 leading-relaxed">
-                        בפרק הקודם ראינו שכל מילה מזיזה את המנוע.
-                        <br />
-                        אבל לפני שמילה יכולה להזיז משהו, צריך קודם להפוך את הטקסט ליחידות עבודה. כאן זה מתחיל.
-                    </div>
-
                     <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
                         AI לא מתחיל בלהבין.{' '}
                         <span className="bg-gradient-to-l from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">

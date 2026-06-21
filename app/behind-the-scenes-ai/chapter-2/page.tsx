@@ -55,13 +55,6 @@ export default function BehindTheScenesChapter2() {
                         <span className="font-mono text-[11px] tracking-widest uppercase text-indigo-300">Behind the Scenes · 02</span>
                     </div>
 
-                    {/* משפט מעבר מפרק 1 */}
-                    <div className="mb-5 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-slate-300 leading-relaxed">
-                        בפרק הקודם ראינו שהמנוע לא קופץ ישירות מהקלט לתשובה.
-                        <br />
-                        עכשיו נראה את ההחלטה הראשונה שלו: לאן בכלל לשלוח את הבקשה?
-                    </div>
-
                     <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
                         אותו נושא,{' '}
                         <span className="bg-gradient-to-l from-cyan-400 via-indigo-400 to-rose-400 bg-clip-text text-transparent">

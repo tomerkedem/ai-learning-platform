@@ -139,12 +139,6 @@ export default function BehindTheScenesChapter7() {
                         <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">Behind the Scenes · 07</span>
                     </div>
 
-                    <div className="mb-5 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-slate-300 leading-relaxed">
-                        בפרק הקודם הפכנו מילים לווקטור משמעות.
-                        <br />
-                        עכשיו נראה מה קורה איתו: המערכת משווה, מדרגת, ואז הופכת ציונים להסתברויות. כל מה שבנינו עד כה מתאחד כאן לשרשרת אחת.
-                    </div>
-
                     <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
                         האחוזים אינם קסם.{' '}
                         <span className="bg-gradient-to-l from-violet-400 via-fuchsia-400 to-emerald-400 bg-clip-text text-transparent">

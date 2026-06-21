@@ -50,7 +50,7 @@ const AgentFlowStrip: React.FC = () => {
                 ))}
             </div>
             <p className="mt-4 text-xs leading-relaxed text-slate-400">
-                בפרק 10 ה-Agent בחר כלי מתאים והגיע ל-Ready for tool call. כאן הוא מפעיל אותו, קורא את התוצאה, ומחליט מה הצעד הבא. אישור הפעולה הרגישה מחכה לפרק 12.
+השלב הפעיל כאן הוא הפעלת הכלי וקריאת התוצאה: בחירת הכלי כבר מאחורינו, ואישור הפעולה הרגישה מחכה לפרק 12.
             </p>
         </div>
     );
@@ -77,12 +77,6 @@ export default function BehindTheScenesChapter11() {
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
                         <Repeat size={14} className="text-violet-400" />
                         <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">Behind the Scenes · 11</span>
-                    </div>
-
-                    <div className="mb-5 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-slate-300 leading-relaxed">
-                        בפרק הקודם ה-Agent בחר כלי מתאים והגיע ל-Ready for tool call.
-                        <br />
-                        עכשיו נראה מה קורה כשהוא מפעיל אותו: שלושה מושגים, Tool Call (הוא מפעיל), Observation (הכלי מחזיר), ו-Next Decision (הוא קורא ומחליט).
                     </div>
 
                     <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">

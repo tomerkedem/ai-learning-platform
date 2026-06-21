@@ -55,13 +55,6 @@ export default function BehindTheScenesChapter3() {
                         <span className="font-mono text-[11px] tracking-widest uppercase text-purple-300">Behind the Scenes · 03</span>
                     </div>
 
-                    {/* משפט מעבר מפרק 2 */}
-                    <div className="mb-5 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-slate-300 leading-relaxed">
-                        בפרקים הקודמים ראינו שהמנוע מקבל החלטות.
-                        <br />
-                        עכשיו נראה ממה ההחלטות האלה נולדות: לא מידע ודאי, אלא דירוג של אפשרויות.
-                    </div>
-
                     <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
                         AI לא יודע.{' '}
                         <span className="bg-gradient-to-l from-purple-400 via-violet-400 to-emerald-400 bg-clip-text text-transparent">

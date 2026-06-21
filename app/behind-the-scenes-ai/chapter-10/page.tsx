@@ -50,7 +50,7 @@ const AgentFlowStrip: React.FC = () => {
                 ))}
             </div>
             <p className="mt-4 text-xs leading-relaxed text-slate-400">
-                בפרק 9 ה-Agent הבין את המשימה והגיע ל-Ready for tool selection. כאן הוא עושה את הבחירה עצמה. הפעלת הכלי בפועל מחכה לפרק 11.
+השלב הפעיל כאן הוא בחירת הכלי: הבנת המשימה כבר מאחורינו, והפעלת הכלי בפועל מחכה לפרק 11.
             </p>
         </div>
     );
@@ -77,12 +77,6 @@ export default function BehindTheScenesChapter10() {
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
                         <Wrench size={14} className="text-violet-400" />
                         <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">Behind the Scenes · 10</span>
-                    </div>
-
-                    <div className="mb-5 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-slate-300 leading-relaxed">
-                        בפרק הקודם ה-Agent הבין את המשימה והגיע ל-Ready for tool selection.
-                        <br />
-                        עכשיו נשאל שאלה חדשה: האם הוא יכול לענות בעצמו, או שהוא צריך כלי, ואם כן, איזה, והאם בכלל מותר להפעיל אותו.
                     </div>
 
                     <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">

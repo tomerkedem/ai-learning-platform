@@ -54,13 +54,6 @@ export default function BehindTheScenesChapter4() {
                         <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">Behind the Scenes · 04</span>
                     </div>
 
-                    {/* משפט מעבר מפרק 3 */}
-                    <div className="mb-5 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-slate-300 leading-relaxed">
-                        בפרק הקודם ראינו שהמנוע מדרג אפשרויות ובוחר את מה שנראה הכי סביר.
-                        <br />
-                        עכשיו נראה מאיפה הדירוג הזה נולד: לא מהמשפט כגוש אחד, אלא ממילה אחר מילה.
-                    </div>
-
                     <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
                         כל מילה{' '}
                         <span className="bg-gradient-to-l from-violet-400 via-fuchsia-400 to-rose-400 bg-clip-text text-transparent">
