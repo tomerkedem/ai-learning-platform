@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(awk '/^C:/{f=$0} /error/{print f}')"
+      "Bash(awk '/^C:/{f=$0} /error/{print f}')",
+      "Bash(curl -s http://localhost:3000/behind-the-scenes-ai/chapter-13)",
+      "Bash(grep -oE '<a [^>]*-500/30[^>]*>.{0,400}')",
+      "Bash(netstat -ano)",
+      "Bash(awk '{print $5}')",
+      "Bash(xargs -r taskkill //F //PID)",
+      "Bash(grep -oE 'items-end gap-2 relative z-10\".{0,700}')",
+      "Bash(grep -rn 'dir=' app/layout.tsx app/*/layout.tsx)",
+      "Bash(grep -rn '<html' app/layout.tsx)",
+      "Bash(grep -oE 'border-violet-500/30[^\"]*text-right\"[^>]*>.{0,120}')"
     ]
   }
 }

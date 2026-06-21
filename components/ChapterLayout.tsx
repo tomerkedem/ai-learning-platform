@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { CourseHeader } from "@/components/CourseHeader";
 import { CourseSidebar } from "@/components/CourseSidebar";
 import { courses, type Language } from "@/lib/courseData"; 
-import { ChevronRight, ChevronLeft, BookOpen } from "lucide-react";
+import { ChevronRight, ChevronLeft, BookOpen, Trophy } from "lucide-react";
 
 interface ChapterLayoutProps {
     children: ReactNode;
@@ -80,7 +80,8 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
         next: isRTL ? "הבא" : "Next",
         prev: isRTL ? "הקודם" : "Prev",
         chapter: isRTL ? "פרק" : "Chapter",
-        finished: isRTL ? "סיימת את כל הפרקים! 🚀" : "All chapters completed! 🚀"
+        finishedTitle: isRTL ? "סיימת את כל הפרקים!" : "You finished every chapter!",
+        finishedSub: isRTL ? "כל הכבוד — הגעת עד הסוף." : "Well done — you made it all the way through."
     };
 
     const chapterNumDisplay = activeChapter.id === 0 ? activeChapter.num : `${uiText.chapter} ${activeChapter.id}`;
@@ -174,10 +175,10 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                 (() => {
                                     const nextColor = extractColorName(nextChapter.colorFrom);
                                     return (
-                                        <Link href={nextChapter.href || "#"} className={`group relative overflow-hidden rounded-2xl border border-${nextColor}-500/30 bg-${nextColor}-900/10 p-6 transition-all hover:bg-${nextColor}-900/20 hover:border-${nextColor}-500/50 text-left`}>
+                                        <Link href={nextChapter.href || "#"} className={`group relative overflow-hidden rounded-2xl border border-${nextColor}-500/30 bg-${nextColor}-900/10 p-6 transition-all hover:bg-${nextColor}-900/20 hover:border-${nextColor}-500/50 ${isRTL ? 'text-right' : 'text-left'}`}>
                                             <div className={`absolute inset-0 bg-linear-to-r from-transparent via-${nextColor}-500/5 to-${nextColor}-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
                                             
-                                            <div className={`flex flex-col ${isRTL ? 'items-end' : 'items-start'} gap-2 relative z-10`}>
+                                            <div className={`flex flex-col ${isRTL ? 'items-start' : 'items-end'} gap-2 relative z-10`}>
                                                 <span className={`text-xs font-mono font-bold text-${nextColor}-400 group-hover:text-${nextColor}-300 transition-colors flex items-center gap-2`}>
                                                     {!isRTL ? <ChevronLeft size={14} /> : null}
                                                     {uiText.next}: {uiText.chapter} {nextChapter.id} 
@@ -195,8 +196,10 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                     );
                                 })()
                             ) : (
-                                <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/30 flex flex-col items-center justify-center text-center text-slate-500">
-                                    <span className="text-sm">{uiText.finished}</span>
+                                <div className="p-6 rounded-2xl border border-amber-500/30 bg-amber-900/10 flex flex-col items-center justify-center text-center gap-2">
+                                    <Trophy size={28} className="text-amber-400" />
+                                    <span className="font-bold text-lg text-white">{uiText.finishedTitle}</span>
+                                    <span className="text-sm text-slate-400">{uiText.finishedSub}</span>
                                 </div>
                             )}
 
