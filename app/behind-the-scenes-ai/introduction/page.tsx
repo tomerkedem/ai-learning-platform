@@ -69,6 +69,8 @@ export default function BehindTheScenesIntroPage() {
         <div className="max-w-5xl mx-auto">
 
           {/* ══════════ HERO ══════════ */}
+          {/* עוטף relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+          <div className="relative">
           <motion.section
             initial={reduce ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -88,8 +90,8 @@ export default function BehindTheScenesIntroPage() {
               />
             )}
 
-            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-              <div className="flex-1 text-center md:text-right">
+            <div className="relative z-10">
+              <div className="text-center md:text-right pt-16 md:pt-0 md:pl-48">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/80 border border-cyan-500/30 mb-5">
                   <span className="relative flex h-2 w-2">
                     {!reduce && <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping" />}
@@ -115,19 +117,26 @@ export default function BehindTheScenesIntroPage() {
                   בקורס הזה לא נסתפק בתשובה - נפתח את הדרך שהובילה אליה.
                 </p>
               </div>
-
-              <div className="w-36 h-36 md:w-48 md:h-48 shrink-0 relative">
-                <div className="absolute inset-0 bg-cyan-500/15 blur-2xl rounded-full" />
-                <motion.img
-                  animate={reduce ? undefined : { y: [0, -10, 0] }}
-                  transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                  src="/assets/mentor-hero.png"
-                  alt="Mentor"
-                  className="relative w-full h-full object-contain drop-shadow-[0_15px_35px_rgba(34,211,238,0.35)]"
-                />
-              </div>
             </div>
           </motion.section>
+
+          {/* המנטור מציץ מעל הקצה העליון-שמאלי של הכרטיס: קפיצת spring בכניסה, ואז ריחוף עדין */}
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: -48, scale: 0.55 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 230, damping: 15, delay: 0.35 }}
+            className="absolute -top-12 left-4 md:-top-16 md:left-8 z-20 w-28 md:w-52 pointer-events-none"
+          >
+            <div className="absolute inset-0 bg-cyan-500/15 blur-2xl rounded-full" />
+            <motion.img
+              animate={reduce ? undefined : { y: [0, -10, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+              src="/assets/mentor-hero.png"
+              alt="Mentor"
+              className="relative w-full h-auto object-contain drop-shadow-[0_15px_35px_rgba(34,211,238,0.35)]"
+            />
+          </motion.div>
+          </div>
 
           {/* ══════════ OUTSIDE vs BEHIND ══════════ */}
           <section className="mt-20">

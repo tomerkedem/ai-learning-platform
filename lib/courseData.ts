@@ -648,6 +648,18 @@ export const courses: Record<string, CourseData> = {
                 labelColor: "text-violet-400",
                 colorFrom: "from-violet-400",
                 colorTo: "to-cyan-500"
+            },
+            {
+                id: 7,
+                href: "/behind-the-scenes-ai/chapter-7",
+                num: "07",
+                label: { he: "דמיון וציונים", en: "Similarity and Scores" },
+                title: { he: "דמיון, ציונים והסתברויות", en: "Similarity, Scores and Probabilities" },
+                description: { he: "המערכת משווה, מדרגת, ואז הופכת ציונים להסתברויות. האחוזים אינם קסם, הם השלב האחרון בשרשרת חישובים שלמה.", en: "The system compares, ranks, then turns scores into probabilities. The percentages are not magic, they are the final step in a full computation chain." },
+                readTime: "15 דקות",
+                labelColor: "text-violet-400",
+                colorFrom: "from-violet-400",
+                colorTo: "to-emerald-500"
             }
         ]
     }
