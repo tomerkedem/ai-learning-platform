@@ -6,11 +6,13 @@ import {
     Compass, ArrowLeftRight, Sigma, Boxes, BarChart3, Flag, ChevronDown,
     Play, RotateCcw, Keyboard, FunctionSquare, Eye, Workflow, ScanLine,
     CheckCircle2, AlertTriangle, Info, Gauge, Repeat, MousePointerClick, Lightbulb,
+    Pause, SkipForward, Zap, Scale,
 } from 'lucide-react';
 
 import { ModeToggle } from './ModeToggle';
 import { ProbabilityBars } from './ProbabilityBars';
 import { ACCENTS } from './accents';
+import { DUR, EASE } from './motionTokens';
 import type { Accent, IntentProbability } from './types';
 
 import {
@@ -362,7 +364,7 @@ const PipelineCascade: React.FC<CascadeProps> = ({ result, waveKey, formulaView,
         },
         {
             key: 'softmax',
-            node: <SoftmaxLayer items={scoreSorted} temperature={result.temperature} formulaView={formulaView} reduce={reduce} />,
+            node: <SoftmaxLayer items={scoreSorted} temperature={result.temperature} formulaView={formulaView} hasInput={result.hasInput} waveKey={waveKey} reduce={reduce} />,
         },
         {
             key: 'probabilities',
@@ -667,72 +669,221 @@ const ScoresLayer: React.FC<{ items: RankItem[]; formulaView: boolean; reduce: b
 };
 
 /* ── שכבה 4: Softmax machine ──────────────────────────────────────────────── */
+// רגע ה-Softmax: אנימציית ההוראה המרכזית של הקורס. שתי פעימות שמגלמות את שתי
+// הפעולות של Softmax — (1) הגברה: exp מותח את ההפרשים, חלקו של המוביל גדל יותר
+// מפרופורציונלית; (2) נרמול: המשקלים נשפכים למיכל בעל קיבולת קבועה של 100%
+// ומתחרים על מקום. כל הערכים נקראים חי מהמנוע; האנימציה נוחתת בדיוק על
+// ההסתברויות שהמנוע נתן (it.prob), בלי לשנות אף מספר.
 
-const SoftmaxLayer: React.FC<{ items: RankItem[]; temperature: number; formulaView: boolean; reduce: boolean }> = ({ items, temperature, formulaView, reduce }) => (
-    <div dir="rtl">
-        <LayerHead
-            icon={<Sigma size={16} />}
-            he="מכונת ה-Softmax"
-            en="Softmax"
-            accent="purple"
-            badge={<span className="rounded-full border border-purple-500/40 bg-purple-900/15 px-2.5 py-1 font-mono text-[10px] font-bold text-purple-300" dir="ltr">T = {temperature}</span>}
-        />
+type SoftmaxPhase = 'idle' | 'amplify' | 'normalize' | 'done';
 
-        <LayerIntro>
-            כאן נכנסת מכונת ה-Softmax. היא לוקחת את הציונים הגולמיים והופכת אותם להתפלגות הסתברויות שמסתכמת ל-100 אחוז. הרעיון החשוב אינו הנוסחה אלא התחרות שהיא יוצרת: כשאפשרות אחת עולה, האחרות חייבות לרדת, כי הכל יחד חייב להסתכם ל-100.
-        </LayerIntro>
+const BEAT1_FILL = 0.66;   // כמה הפעימה הראשונה ממלאת מהמיכל (< 1 = "עוד לא 100%")
+const RAW_HOLD_MS = 450;   // הצגת הציונים הגולמיים לפני ההגברה
+const AMPLIFY_MS = 1100;   // משך פעימת ההגברה
+const NORMALIZE_MS = 1200; // משך פעימת הנרמול
 
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3" dir="ltr">
-            {/* כניסה: ציונים */}
-            <div className="space-y-1.5">
-                <div className="text-center text-[9px] font-bold uppercase tracking-wider text-slate-500">Raw scores in</div>
-                {items.map((it) => (
-                    <div key={it.id} className="rounded-md border border-slate-700/50 bg-slate-950/40 px-2 py-1 text-center font-mono text-xs text-slate-300">{f2(it.score)}</div>
-                ))}
-            </div>
-
-            {/* המכונה */}
-            <div className="flex flex-col items-center gap-2">
-                <motion.div
-                    animate={reduce ? {} : { boxShadow: ['0 0 0 0 rgba(168,85,247,0.0)', '0 0 22px -2px rgba(168,85,247,0.55)', '0 0 0 0 rgba(168,85,247,0.0)'] }}
-                    transition={reduce ? { duration: 0 } : { duration: 2.2, repeat: Infinity }}
-                    className="flex h-16 w-16 items-center justify-center rounded-2xl border border-purple-500/50 bg-purple-900/20"
-                >
-                    <Sigma size={26} className="text-purple-300" />
-                </motion.div>
-                <span className="font-mono text-[9px] text-slate-500">exp(s/T) / Σexp</span>
-            </div>
-
-            {/* יציאה: הסתברויות */}
-            <div className="space-y-1.5">
-                <div className="text-center text-[9px] font-bold uppercase tracking-wider text-slate-500">Probabilities out</div>
-                {items.map((it) => {
-                    const a = ACCENTS[it.accent];
-                    return (
-                        <div key={it.id} className={`rounded-md border px-2 py-1 text-center font-mono text-xs font-bold ${a.border} ${a.bgSoft} ${a.text}`}>{pct(it.prob)}%</div>
-                    );
-                })}
-            </div>
-        </div>
-
-        <div className="mt-3 flex items-center justify-center gap-2 text-[11px]">
-            <span className="text-slate-500">סכום ההסתברויות:</span>
-            <span className="rounded-md bg-emerald-500/15 px-2 py-0.5 font-mono font-bold text-emerald-300" dir="ltr">{items.reduce((s, it) => s + pct(it.prob), 0)}%</span>
-        </div>
-
-        {formulaView && (
-            <div className="mt-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 font-mono text-[11px] text-slate-300" dir="ltr">
-                p_i = exp(score_i / T) / Σ_j exp(score_j / T)
-            </div>
-        )}
-        <Takeaway>
-            עכשיו אלה אחוזים, והם מתחרים זה בזה. סכום הכל הוא 100. זה בדיוק ההבדל בין ציון להסתברות.
-        </Takeaway>
-        <TryThis>
-            שימו לב שכשעמודה אחת גדלה, האחרות מתכווצות. זה לא מקרי, זה בדיוק מה ש-Softmax עושה: מחלק 100 אחוז בין כל האפשרויות.
-        </TryThis>
-    </div>
+const BeatPill: React.FC<{ n: number; he: string; en: string; icon: React.ReactNode; active: boolean; done: boolean }> = ({ n, he, en, icon, active, done }) => (
+    <span
+        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold transition-colors ${
+            active
+                ? 'border-purple-400/70 bg-purple-500/25 text-purple-100'
+                : done
+                    ? 'border-emerald-500/40 bg-emerald-900/15 text-emerald-300'
+                    : 'border-slate-700/60 bg-slate-900/40 text-slate-500'
+        }`}
+        dir="rtl"
+    >
+        {icon}
+        <span>{n}. {he}</span>
+        <span className="font-medium uppercase opacity-70" dir="ltr">{en}</span>
+    </span>
 );
+
+const SoftmaxLayer: React.FC<{
+    items: RankItem[];
+    temperature: number;
+    formulaView: boolean;
+    hasInput: boolean;
+    waveKey: number;
+    reduce: boolean;
+}> = ({ items, temperature, formulaView, hasInput, waveKey, reduce }) => {
+    // ── הכל נקרא חי מהמנוע. שכבת הצגה בלבד — איננו משנים אף ערך. ──
+    const scores = items.map((it) => it.score);
+    const sumScores = scores.reduce((a, b) => a + Math.max(0, b), 0) || 1;
+    // יחס הציון הגולמי (לפני ההגברה) מול ההסתברות הסופית של המנוע (אחרי exp+נרמול,
+    // כולל ה-temperature הקנונית). ההפרש בין השניים הוא בדיוק ההגברה ש-exp(s/T) יוצר.
+    const rawShare = scores.map((s) => Math.max(0, s) / sumScores);
+    const probShare = items.map((it) => it.prob); // אמת המנוע — נקודת הנחיתה הסופית
+
+    const [phase, setPhase] = useState<SoftmaxPhase>(reduce || !hasInput ? 'done' : 'idle');
+    const [auto, setAuto] = useState(true);
+    const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const clearTimer = () => { if (timer.current) { clearTimeout(timer.current); timer.current = null; } };
+
+    // אתחול שתי הפעימות בכל פעם שהשרשרת זזה (waveKey) או שמצב הקלט משתנה.
+    useEffect(() => {
+        clearTimer();
+        setPhase(reduce || !hasInput ? 'done' : 'idle');
+        return clearTimer;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [waveKey, hasInput, reduce]);
+
+    // התקדמות אוטומטית בין הפעימות. במצב השהיה (auto=false) נעצרים בין הפעימות.
+    useEffect(() => {
+        clearTimer();
+        if (reduce || !auto || !hasInput) return;
+        if (phase === 'idle') timer.current = setTimeout(() => setPhase('amplify'), RAW_HOLD_MS);
+        else if (phase === 'amplify') timer.current = setTimeout(() => setPhase('normalize'), AMPLIFY_MS);
+        else if (phase === 'normalize') timer.current = setTimeout(() => setPhase('done'), NORMALIZE_MS);
+        return clearTimer;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [phase, auto, hasInput, reduce]);
+
+    const replay = () => { clearTimer(); setAuto(true); setPhase('idle'); };
+    const stepNext = () => setPhase((p) => (p === 'idle' ? 'amplify' : p === 'amplify' ? 'normalize' : 'done'));
+
+    // רוחב הסגמנט לכל פעימה. idle: יחסי הציון הגולמי. amplify: יחסי ההסתברות
+    // (ההגברה — אותו מיכל חלקי, אבל חלקו של המוביל גדל). normalize/done: מילוי מלא.
+    const widthPctFor = (i: number): number => {
+        if (phase === 'idle') return rawShare[i] * BEAT1_FILL * 100;
+        if (phase === 'amplify') return probShare[i] * BEAT1_FILL * 100;
+        return probShare[i] * 100; // normalize / done — Σ=100%
+    };
+
+    const normalized = phase === 'normalize' || phase === 'done';
+    const animating = phase === 'amplify' || phase === 'normalize';
+    const segTransition = reduce ? { duration: 0 } : { duration: DUR.data, ease: EASE.out };
+
+    return (
+        <div dir="rtl">
+            <LayerHead
+                icon={<Sigma size={16} />}
+                he="מכונת ה-Softmax"
+                en="Softmax"
+                accent="purple"
+                badge={<span className="rounded-full border border-purple-500/40 bg-purple-900/15 px-2.5 py-1 font-mono text-[10px] font-bold text-purple-300" dir="ltr">T = {temperature}</span>}
+            />
+
+            <LayerIntro>
+                כאן נכנסת מכונת ה-Softmax. היא לוקחת את הציונים הגולמיים והופכת אותם להתפלגות הסתברויות שמסתכמת ל-100 אחוז. הרעיון החשוב אינו הנוסחה אלא התחרות שהיא יוצרת: כשאפשרות אחת עולה, האחרות חייבות לרדת, כי הכל יחד חייב להסתכם ל-100.
+            </LayerIntro>
+
+            {/* ── רגע ה-Softmax: הגברה ואז נרמול (האנימציה הלימודית) ── */}
+            {hasInput && (
+                <div className="mb-4 rounded-2xl border border-purple-500/25 bg-purple-950/10 p-4">
+                    <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5">
+                            <BeatPill n={1} he="הגברה" en="Amplify" icon={<Zap size={11} />} active={phase === 'amplify'} done={normalized} />
+                            <BeatPill n={2} he="נרמול" en="Normalize" icon={<Scale size={11} />} active={phase === 'normalize'} done={phase === 'done'} />
+                        </div>
+                        {!reduce && (
+                            <div className="flex items-center gap-1.5">
+                                {!auto && phase !== 'done' && (
+                                    <button type="button" onClick={stepNext} className="inline-flex items-center gap-1 rounded-lg border border-purple-500/40 bg-purple-900/20 px-2 py-1 text-[11px] font-bold text-purple-200 transition-colors hover:bg-purple-900/35">
+                                        <SkipForward size={12} /> שלב הבא
+                                    </button>
+                                )}
+                                <button type="button" onClick={() => setAuto((x) => !x)} aria-pressed={!auto} className="inline-flex items-center gap-1 rounded-lg border border-slate-700/60 bg-slate-800/40 px-2 py-1 text-[11px] font-bold text-slate-300 transition-colors hover:border-slate-600">
+                                    {auto ? <><Pause size={12} /> השהה</> : <><Play size={12} /> המשך</>}
+                                </button>
+                                <button type="button" onClick={replay} className="inline-flex items-center gap-1 rounded-lg border border-slate-700/60 bg-slate-800/40 px-2 py-1 text-[11px] font-bold text-slate-300 transition-colors hover:border-slate-600">
+                                    <RotateCcw size={12} /> הרצה חוזרת
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* המיכל: קיבולת קבועה של 100%. בפעימה 1 הוא חלקי; בפעימה 2 הוא מתמלא. */}
+                    <div className="relative h-9 w-full overflow-hidden rounded-xl border border-slate-700/60 bg-slate-950/50" dir="ltr">
+                        <div className="absolute inset-y-0 right-0 z-10 w-0.5 bg-emerald-400/50" title="100%" />
+                        <div className="flex h-full w-full">
+                            {items.map((it, i) => {
+                                const a = ACCENTS[it.accent];
+                                const isLeader = i === 0;
+                                const p = pct(it.prob);
+                                return (
+                                    <motion.div
+                                        key={it.id}
+                                        animate={{ width: `${widthPctFor(i)}%` }}
+                                        transition={segTransition}
+                                        className={`relative h-full ${a.barFill} ${i > 0 ? 'border-l border-slate-950/50' : ''} ${isLeader && animating ? a.glow : ''}`}
+                                        title={`${it.labelHe}: ${p}%`}
+                                    >
+                                        {normalized && p >= 8 && (
+                                            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-slate-950/90">{p}%</span>
+                                        )}
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="mt-2 flex items-center justify-between gap-3 text-[11px]">
+                        <span className="text-slate-400">
+                            {phase === 'idle' && 'ציונים גולמיים — לא בטווח 0–100% ולא מסתכמים ל-100%'}
+                            {phase === 'amplify' && 'exp(s/T): ההפרשים נמתחים — חלקו של המוביל גדל יותר'}
+                            {phase === 'normalize' && 'נשפך למיכל ה-100% — כשהמוביל לוקח יותר, האחרים נדחקים'}
+                            {phase === 'done' && 'נחת על ההסתברויות של המנוע'}
+                        </span>
+                        <span className={`shrink-0 rounded-md px-2 py-0.5 font-mono font-bold ${normalized ? 'bg-emerald-500/15 text-emerald-300' : 'bg-amber-500/15 text-amber-300'}`} dir="ltr">
+                            {normalized ? 'Σ = 100%' : 'Σ < 100%'}
+                        </span>
+                    </div>
+                </div>
+            )}
+
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3" dir="ltr">
+                {/* כניסה: ציונים */}
+                <div className="space-y-1.5">
+                    <div className="text-center text-[9px] font-bold uppercase tracking-wider text-slate-500">Raw scores in</div>
+                    {items.map((it) => (
+                        <div key={it.id} className="rounded-md border border-slate-700/50 bg-slate-950/40 px-2 py-1 text-center font-mono text-xs text-slate-300">{f2(it.score)}</div>
+                    ))}
+                </div>
+
+                {/* המכונה (ה-pulse המתמשך מעומעם בזמן ההפיכה — תנועה אחת בכל רגע) */}
+                <div className="flex flex-col items-center gap-2">
+                    <motion.div
+                        animate={reduce || animating ? {} : { boxShadow: ['0 0 0 0 rgba(168,85,247,0.0)', '0 0 22px -2px rgba(168,85,247,0.55)', '0 0 0 0 rgba(168,85,247,0.0)'] }}
+                        transition={reduce || animating ? { duration: 0 } : { duration: 2.2, repeat: Infinity }}
+                        className="flex h-16 w-16 items-center justify-center rounded-2xl border border-purple-500/50 bg-purple-900/20"
+                    >
+                        <Sigma size={26} className="text-purple-300" />
+                    </motion.div>
+                    <span className="font-mono text-[9px] text-slate-500">exp(s/T) / Σexp</span>
+                </div>
+
+                {/* יציאה: הסתברויות */}
+                <div className="space-y-1.5">
+                    <div className="text-center text-[9px] font-bold uppercase tracking-wider text-slate-500">Probabilities out</div>
+                    {items.map((it) => {
+                        const a = ACCENTS[it.accent];
+                        return (
+                            <div key={it.id} className={`rounded-md border px-2 py-1 text-center font-mono text-xs font-bold ${a.border} ${a.bgSoft} ${a.text}`}>{pct(it.prob)}%</div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            <div className="mt-3 flex items-center justify-center gap-2 text-[11px]">
+                <span className="text-slate-500">סכום ההסתברויות:</span>
+                <span className="rounded-md bg-emerald-500/15 px-2 py-0.5 font-mono font-bold text-emerald-300" dir="ltr">{items.reduce((s, it) => s + pct(it.prob), 0)}%</span>
+            </div>
+
+            {formulaView && (
+                <div className="mt-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 font-mono text-[11px] text-slate-300" dir="ltr">
+                    p_i = exp(score_i / T) / Σ_j exp(score_j / T)
+                </div>
+            )}
+            <Takeaway>
+                עכשיו אלה אחוזים, והם מתחרים זה בזה. סכום הכל הוא 100. זה בדיוק ההבדל בין ציון להסתברות.
+            </Takeaway>
+            <TryThis>
+                שימו לב שכשעמודה אחת גדלה, האחרות מתכווצות. זה לא מקרי, זה בדיוק מה ש-Softmax עושה: מחלק 100 אחוז בין כל האפשרויות.
+            </TryThis>
+        </div>
+    );
+};
 
 /* ── שכבה 5: Probabilities ────────────────────────────────────────────────── */
 
