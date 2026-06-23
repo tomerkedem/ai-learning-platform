@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Play, Pause, SkipForward, RotateCcw } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
 
@@ -38,6 +38,11 @@ interface EngineTrailProps {
     compact?: boolean;
     /** אם true - אפשר ללחוץ על תחנה (עם detail) כדי לפתוח הסבר. */
     interactive?: boolean;
+    /**
+     * אם true - מציג סרגל בקרה (הרצה/השהיה/צעד/מהתחלה) שנותן ללומד שליטה על
+     * קצב הזרימה. דורש autoplay. במצב reduced-motion הסרגל מוסתר (הכול סטטי).
+     */
+    controls?: boolean;
 }
 
 // הילת זוהר סטטית לכל גוון (ללא template-strings דינמיים, כדי ש-Tailwind יזהה).
@@ -64,9 +69,13 @@ export const EngineTrail: React.FC<EngineTrailProps> = ({
     interval = 700,
     compact = false,
     interactive = false,
+    controls = false,
 }) => {
     const reduce = useReducedMotion();
     const [tick, setTick] = useState(0);
+    // מצב ההרצה. מאותחל מ-autoplay; סרגל הבקרה (אם קיים) משנה אותו. ללא סרגל
+    // הוא נשאר על ערך ההתחלה, כך שההתנהגות זהה לחלוטין למסלולים קיימים.
+    const [playing, setPlaying] = useState(autoplay);
     // התחנה הפתוחה כרגע (accordion - אחת בכל פעם). null = הכל סגור.
     const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -78,7 +87,7 @@ export const EngineTrail: React.FC<EngineTrailProps> = ({
     }, [steps]);
 
     // כשפותחים הסבר עוצרים את אנימציית הזרימה כדי לא להסיח בזמן קריאה.
-    const animate = autoplay && !reduce && expandedId === null;
+    const animate = playing && !reduce && expandedId === null;
 
     useEffect(() => {
         if (!animate) return;
@@ -90,8 +99,54 @@ export const EngineTrail: React.FC<EngineTrailProps> = ({
     // במצב סטטי / reduced-motion: הכול דולק.
     const active = animate ? (tick % (steps.length + 2)) - 1 : steps.length;
 
+    // ── בקרת קצב (opt-in) ──
+    const showControls = controls && !reduce && steps.length > 1;
+    const stepForward = () => { setPlaying(false); setTick((t) => t + 1); };
+    const restart = () => { setTick(0); setPlaying(true); };
+    // מספר השלב הדולק כעת (0 = עדיין כלום, steps.length = הכול דולק).
+    const litCount = Math.max(0, Math.min(active + 1, steps.length));
+
     return (
-        <div className="flex flex-col items-stretch" dir="rtl">
+        <div>
+            {showControls && (
+                <div className="mb-4 flex items-center justify-between gap-2 rounded-xl border border-slate-700/50 bg-slate-950/50 px-3 py-2" dir="rtl">
+                    <div className="flex items-center gap-1.5">
+                        <button
+                            type="button"
+                            onClick={() => setPlaying((p) => !p)}
+                            aria-pressed={playing}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/40 bg-cyan-900/20 px-2.5 py-1 text-xs font-bold text-cyan-200 transition-colors hover:bg-cyan-900/35"
+                        >
+                            {playing ? <Pause size={13} /> : <Play size={13} />}
+                            {playing ? 'השהה' : 'הרץ'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={stepForward}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700/60 bg-slate-800/40 px-2.5 py-1 text-xs font-bold text-slate-300 transition-colors hover:border-slate-600"
+                        >
+                            <SkipForward size={13} /> צעד
+                        </button>
+                        <button
+                            type="button"
+                            onClick={restart}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700/60 bg-slate-800/40 px-2.5 py-1 text-xs font-bold text-slate-300 transition-colors hover:border-slate-600"
+                        >
+                            <RotateCcw size={13} /> מהתחלה
+                        </button>
+                    </div>
+                    <span
+                        role="status"
+                        aria-live="polite"
+                        aria-label={`שלב ${litCount} מתוך ${steps.length}`}
+                        className="font-mono text-[11px] font-bold text-slate-500"
+                        dir="ltr"
+                    >
+                        {litCount}/{steps.length}
+                    </span>
+                </div>
+            )}
+            <div className="flex flex-col items-stretch" dir="rtl">
             {steps.map((step, i) => {
                 const acc = step.accent ?? accent;
                 const a = ACCENTS[acc];
@@ -243,6 +298,7 @@ export const EngineTrail: React.FC<EngineTrailProps> = ({
                     </React.Fragment>
                 );
             })}
+            </div>
         </div>
     );
 };

@@ -194,7 +194,7 @@ export default function BehindTheScenesChapter6() {
                         href="/math/mathIntuitive/chapter-5"
                         className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-300 transition-colors hover:text-cyan-200"
                     >
-                        רוצים את המתמטיקה שמאחורי הוקטורים לעומק? הפרק &quot;וקטורים – הלב של כל מודל&quot; בקורס המתמטיקה האינטואיטיבית
+                        רוצים את המתמטיקה שמאחורי הוקטורים לעומק? הפרק &quot;וקטורים – הלב של כל מודל&quot; בלומדת המתמטיקה האינטואיטיבית
                         <ArrowLeft size={14} />
                     </Link>
                 </InsightBox>

@@ -319,7 +319,7 @@ export default function BehindTheScenesIntroPage() {
                   </div>
                 </div>
                 <div className="relative">
-                  <EngineTrail steps={FULL_FLOW} accent="cyan" autoplay interval={650} interactive />
+                  <EngineTrail steps={FULL_FLOW} accent="cyan" autoplay interval={650} interactive controls />
                 </div>
                 <p className="text-cyan-300/70 text-xs mt-5 text-center leading-relaxed">
                   המסלול המלא – בלי דילוג על שלבים. לחצו על כל שלב כדי להציץ פנימה: מה קורה שם, עם דוגמה.
@@ -332,7 +332,7 @@ export default function BehindTheScenesIntroPage() {
           {/* טעימה אינטראקטיבית: המשפט של הלומד עצמו עובר את השלב הראשון, חי וביושר. */}
           <section className="mt-20">
             <SectionHeading eyebrow="נסו בעצמכם" title="ראיתם את 15 השלבים. עכשיו תורכם.">
-              לא צריך לחכות לסוף הקורס כדי לראות את המנוע עובד. כתבו משפט משלכם, וצפו בשלב הראשון קורה בזמן אמת - על המילים שלכם.
+              לא צריך לחכות לסוף הלומדה כדי לראות את המנוע עובד. כתבו משפט משלכם, וצפו בשלב הראשון קורה בזמן אמת - על המילים שלכם.
             </SectionHeading>
             <LiveTokenizeTaste reduce={!!reduce} />
           </section>
