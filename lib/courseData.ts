@@ -28,7 +28,7 @@ export interface CourseData {
 
 export const courses: Record<string, CourseData> = {
     
-    // --- קורס 1: מתמטיקה אינטואיטיבית ---
+    // --- לומדה 1: מתמטיקה אינטואיטיבית ---
     mathIntuitive: {
         id: "mathIntuitive",
         title: { he: "מתמטיקה אינטואיטיבית ל-AI", en: "Intuitive Math for AI" },
@@ -193,7 +193,7 @@ export const courses: Record<string, CourseData> = {
         ]
     },
 
-    // --- קורס 2: פייתון פרקטי ---
+    // --- לומדה 2: פייתון פרקטי ---
     python: {
         id: "python",
         title: { he: "פייתון פרקטי למתכנתים לעידן ה-AI", en: "Practical Python for AI Era" },
@@ -430,7 +430,7 @@ export const courses: Record<string, CourseData> = {
         ]
     },
 
-    // --- קורס 3: מתמטיקה והיגיון הסתברותי ---
+    // --- לומדה 3: מתמטיקה והיגיון הסתברותי ---
     mathProbabilistic: {
         id: "mathProbabilistic",
         title: { he: "מתמטיקה והיגיון הסתברותי", en: "Math & Probabilistic Logic" },
@@ -559,7 +559,7 @@ export const courses: Record<string, CourseData> = {
         ]
     },
 
-    // --- קורס 4: מאחורי הקלעים של AI ---
+    // --- לומדה 4: מאחורי הקלעים של AI ---
     "behind-the-scenes-ai": {
         id: "behind-the-scenes-ai",
         title: { he: "מאחורי הקלעים של AI", en: "Behind the Scenes of AI" },

@@ -322,7 +322,7 @@ else:
                     </div>
                     <div className="flex flex-col gap-1">
                         <h2 className="text-3xl font-black text-white tracking-tight">בוחן הסמכה: פרק 1</h2>
-                        <p className="text-slate-500 text-base font-medium opacity-70">הוכח שליטה באבני היסוד של ה-AI להמשך הקורס</p>
+                        <p className="text-slate-500 text-base font-medium opacity-70">הוכח שליטה באבני היסוד של ה-AI להמשך הלומדה</p>
                     </div>
                 </div>
                 

@@ -107,7 +107,7 @@ function buildSystemPrompt(mode: WordMode): string {
     const candidates = CANDIDATES.map((c) => `- ${c.id}: ${c.he} (${c.en})`).join('\n');
     const axes = VECTOR_LABELS.map((v) => `- ${v.key}: ${v.he} (${v.en})`).join('\n');
 
-    return `אתה "מנוע המילים" הלימודי של קורס AI, בהקשר של מוקד שירות לחברת משלוחים.
+    return `אתה "מנוע המילים" הלימודי של לומדת AI, בהקשר של מוקד שירות לחברת משלוחים.
 המשתמש מקליד הודעה בעברית, ואתה מנתח אותה כפי שמנוע שפה היה מדרג כוונות.
 
 עליך לדרג את ההודעה על פני חמש האפשרויות הקבועות (probabilities, מספרים שלמים שסכומם בדיוק 100):

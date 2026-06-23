@@ -9,12 +9,12 @@ import { courses } from '@/lib/courseData';
 // הנתיב לתמונה השניה שנמצאת בתיקיית public (השתמשתי בסיומת .png כפי שציינת)
 const IMAGE_TWO_PATH = "/01dbd09c-b44a-4b1a-b364-bd4881435ef2.png";
 
-// טקסט ברירת מחדל כשאין קורס פעיל (למשל בדף הבית).
-const DEFAULT_LABEL = "קורסים אינטראקטיביים למפתחי AI";
+// טקסט ברירת מחדל כשאין לומדה פעילה (למשל בדף הבית).
+const DEFAULT_LABEL = "לומדות אינטראקטיביות למפתחי AI";
 
 /**
- * מזהה את הקורס הפעיל לפי ה-URL ומחזיר את שמו, באופן דינמי מתוך courseData.
- * הבסיס של כל קורס נגזר מה-href של המבוא שלו (ללא הסגמנט האחרון), כך שאין כתיב קשיח.
+ * מזהה את הלומדה הפעילה לפי ה-URL ומחזיר את שמה, באופן דינמי מתוך courseData.
+ * הבסיס של כל לומדה נגזר מה-href של המבוא שלה (ללא הסגמנט האחרון), כך שאין כתיב קשיח.
  */
 function getActiveCourseTitle(pathname: string): string {
     for (const course of Object.values(courses)) {

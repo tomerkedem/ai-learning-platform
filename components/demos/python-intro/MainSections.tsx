@@ -43,14 +43,13 @@ export const AILeverageHero = () => (
                 </div>
                 <StaticCodeBlock
                     language="python"
-                    code={`# מה שדרש פעם שבועות ב-C++, קורה היום ב-3 שורות
-from transformers import pipeline
+                    code={`from transformers import pipeline
 
-# Orchestrating massive intelligence with one call
-agent = pipeline("sentiment-analysis", model="bert-base-multilingual-cased")
-insight = agent("This architectural shift is a game changer.")
+# Calling a trained model through a Python library
+classifier = pipeline("sentiment-analysis", model="bert-base-multilingual-cased")
+result = classifier("I really enjoy learning Python.")
 
-print(f"Confidence: {insight[0]['score']:.4f}")`}
+print(f"Confidence: {result[0]['score']:.4f}")`}
                 />
             </div>
         </div>
@@ -60,24 +59,59 @@ print(f"Confidence: {insight[0]['score']:.4f}")`}
 // --- רכיב ה-Roadmap ההנדסי: ה-Pipeline ---
 export const IndustrialRoadmap = () => {
     const steps = [
-        { icon: Terminal, title: "The Foundation", desc: "שליטה בתחביר לא כפקודות, אלא כבסיס לארכיטקטורה מודרנית.", phase: "01" },
-        { icon: Box, title: "Modern OOP", desc: "בניית רכיבים מודולריים (Classes) שניתן להרחיב ולתחזק ב-Production.", phase: "02" },
-        { icon: Layers, title: "Data Engines", desc: "עיבוד נתונים מאסיבי בזיכרון בעזרת Numpy ו-Vectorization.", phase: "03" },
-        { icon: ShieldCheck, title: "Production Ready", desc: "חיבור למודלים, ניהול תלויות וארכיטקטורת שכבות מתקדמת.", phase: "04" },
+        { icon: Terminal, title: "היסודות", desc: "שליטה בתחביר לא כפקודות, אלא כבסיס לארכיטקטורה מודרנית.", phase: "01" },
+        { icon: Box, title: "OOP מודרני", desc: "בניית רכיבים מודולריים (Classes) שניתן להרחיב ולתחזק ב-Production.", phase: "02" },
+        { icon: Layers, title: "מנועי נתונים", desc: "עיבוד נתונים מאסיבי בזיכרון בעזרת Numpy ו-Vectorization.", phase: "03" },
+        { icon: ShieldCheck, title: "מוכן ל-Production", desc: "חיבור למודלים, ניהול תלויות וארכיטקטורת שכבות מתקדמת.", phase: "04" },
     ];
 
     return (
-        <div className="grid md:grid-cols-4 gap-6 mt-4">
-            {steps.map((step, i) => (
-                <motion.div key={i} className="bg-slate-900/40 border border-slate-800 p-6 rounded-3xl transition-all shadow-xl group">
-                    <div className="text-[10px] font-mono text-emerald-500 mb-4 uppercase opacity-60">Phase {step.phase}</div>
-                    <div className="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 mb-4 group-hover:text-emerald-400">
-                        <step.icon size={24} />
-                    </div>
-                    <h4 className="text-white font-bold mb-2 text-right" dir="rtl">{step.title}</h4>
-                    <p className="text-xs text-slate-500 leading-relaxed text-right" dir="rtl">{step.desc}</p>
-                </motion.div>
-            ))}
+        <div className="relative mt-4">
+            {/* פס החיבור שמשדר את רעיון ה-Pipeline (md ומעלה) */}
+            <motion.div
+                aria-hidden
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                className="hidden md:block absolute top-[4.75rem] inset-x-6 h-px origin-right bg-linear-to-l from-emerald-500/0 via-emerald-500/40 to-emerald-500/0"
+            />
+
+            <div className="grid md:grid-cols-4 gap-6">
+                {steps.map((step, i) => (
+                    <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 26 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-80px" }}
+                        transition={{ duration: 0.5, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+                        whileHover={{ y: -6 }}
+                        className="group relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/40 p-6 shadow-xl transition-colors duration-300 hover:border-emerald-500/40 hover:bg-slate-900/70"
+                    >
+                        {/* זוהר רקע ב-hover */}
+                        <div className="pointer-events-none absolute -inset-px rounded-3xl bg-linear-to-b from-emerald-500/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                        {/* מספר-רפאים ענק */}
+                        <span className="pointer-events-none absolute -top-4 left-3 select-none font-mono text-7xl font-black leading-none text-white/[0.03] transition-colors duration-300 group-hover:text-emerald-500/[0.07]">
+                            {step.phase}
+                        </span>
+
+                        <div className="relative">
+                            <div className="mb-5 text-[10px] font-mono tracking-widest text-emerald-500/70">
+                                שלב {step.phase}
+                            </div>
+
+                            {/* אריח האייקון שמאיר בגרדיאנט */}
+                            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-700/60 bg-slate-800/80 text-slate-300 shadow-inner transition-all duration-300 group-hover:border-transparent group-hover:bg-linear-to-br group-hover:from-emerald-500 group-hover:to-cyan-500 group-hover:text-slate-950">
+                                <step.icon size={26} />
+                            </div>
+
+                            <h4 className="mb-2 text-right font-bold text-white" dir="rtl">{step.title}</h4>
+                            <p className="text-right text-xs leading-relaxed text-slate-500 transition-colors duration-300 group-hover:text-slate-400" dir="rtl">{step.desc}</p>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
         </div>
     );
 };

@@ -15,11 +15,12 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { SmartMentor } from "@/components/mentor/SmartMentor";
 
 // ייבוא הרכיבים מהתיקיות שבנית
-import { 
-    IndustrialRoadmap, 
+import {
+    IndustrialRoadmap,
     TechScannerImage,
     FireText,
-    CodeShowcase 
+    CodeShowcase,
+    PythonVelocityDemo
 } from "@/components/demos/python-intro";
 
 export default function PythonIntroPage() {
@@ -76,9 +77,9 @@ export default function PythonIntroPage() {
           {/* --- הוכחת היכולת: הסבר + קוד --- */}
           <section ref={codeRef} className="w-full py-16 bg-slate-950/30 border-y border-slate-900 mt-12 text-right" dir="rtl">
              <div className="max-w-5xl mx-auto px-6 mb-10">
-                <h3 className="text-2xl font-bold text-white mb-4 italic underline underline-offset-8 decoration-emerald-500/50">למה פייתון? הוכחת המהירות (Velocity)</h3>
+                <h3 className="text-2xl font-bold text-white mb-4 italic underline underline-offset-8 decoration-emerald-500/50">למה פייתון? מעט קוד, הרבה כוח מאחור</h3>
                 <p className="text-slate-400 text-lg leading-relaxed">
-                מה שאתה רואה כאן הוא לא רק קוד - זו **הפשטה הנדסית**. מה שדרש בעבר חודשי פיתוח ב-C++, ניהול זיכרון ידני ועבודה מול דרייברים של GPU, קורה היום ב-3 שורות פייתון המשתמשות ב-Ecosystem העצום של השפה.
+                פייתון לא נבחרה לעולם ה-AI כי היא שפת הריצה הכי מהירה – היא לא. היא ניצחה בזכות שילוב של כמה סיבות: היא מקצרת את הדרך <b>מרעיון לקוד עובד</b>, היא מצוינת להתנסות מהירה ולמחקר, ומסביבה צמח האקוסיסטם הגדול בעולם של ספריות ומודלים מאומנים. הקוד הקצר שאתה רואה כאן רק מתזמר – החישוב הכבד עצמו רץ בספריות שנכתבו ב-C/C++ ועל ה-GPU.
                 </p>
              </div>
 
@@ -86,26 +87,28 @@ export default function PythonIntroPage() {
 
              <div className="max-w-5xl mx-auto px-6 mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
                 <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/10 text-right">
-                    <span className="text-blue-400 font-bold block mb-1">ה-Ecosystem</span>
-                    <p className="text-slate-500">שימוש בספריות כמו Transformers מאפשר גישה למודלים המתקדמים בעולם בייבוא אחד.</p>
+                    <span className="text-blue-400 font-bold block mb-1">מהירות פיתוח</span>
+                    <p className="text-slate-500">מרעיון לקוד עובד בשורות בודדות. זו המהירות שפייתון באמת נותנת, ולא מהירות הריצה של השפה.</p>
                 </div>
                 <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10 text-right">
-                    <span className="text-emerald-400 font-bold block mb-1">Orchestration</span>
-                    <p className="text-slate-500">פייתון מנהלת את ה-Pipeline: טעינת המודל ל-VRAM והרצת חישובי מטריצות מאחורי הקלעים.</p>
+                    <span className="text-emerald-400 font-bold block mb-1">פייתון מתזמרת</span>
+                    <p className="text-slate-500">הקוד שלך רק מנהל את התהליך. החישוב הכבד עצמו רץ בספריות שנכתבו ב-C/C++ ועל ה-GPU, מאחורי הקלעים.</p>
                 </div>
                 <div className="p-4 rounded-xl bg-orange-500/5 border border-orange-500/10 text-right">
-                    <span className="text-orange-400 font-bold block mb-1">Production Ready</span>
-                    <p className="text-slate-500">זהו קוד אמיתי שיכול לרוץ על שרתים ולהגיב למשתמשים בזמן אמת.</p>
+                    <span className="text-orange-400 font-bold block mb-1">ה-Ecosystem</span>
+                    <p className="text-slate-500">ייבוא אחד פותח גישה למודלים מאומנים ולספריות שאחרים כבר בנו, במקום להתחיל הכול מאפס.</p>
                 </div>
              </div>
+
+             <PythonVelocityDemo />
           </section>
 
           {/* --- Industrial Pipeline --- */}
           <section ref={roadmapRef} className="w-full max-w-7xl mx-auto py-16 px-6 text-right" dir="rtl">
                 <div className="relative inline-flex flex-col mb-10 pr-6">
                     <div className="absolute right-0 top-0 w-1.5 h-full bg-emerald-500 rounded-full" />
-                    <h2 className="text-3xl font-black text-white uppercase tracking-wider leading-none">
-                        Industrial Pipeline
+                    <h2 className="text-3xl font-black text-white leading-none">
+                        מסלול הלמידה שלך
                     </h2>
                     <p className="text-emerald-400/90 text-lg font-medium mt-2 italic">
                         {"\"אתה כבר יודע לחשוב כמו מפתח - פייתון מביאה דרך חשיבה אחרת\""}

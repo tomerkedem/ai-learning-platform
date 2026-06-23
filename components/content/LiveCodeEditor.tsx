@@ -872,6 +872,13 @@ export const LiveCodeEditor: React.FC<LiveCodeEditorProps> = ({
         }
     }, [code, isRunning, pyodide, maxExecutionTime, onRun, onSuccess, onError]);
 
+    const handleReset = useCallback(() => {
+        reset();
+        setOutput("");
+        setError(null);
+        setExecutionTime(null);
+    }, [reset]);
+
     const handleCopy = useCallback(() => {
         navigator.clipboard.writeText(code);
         setCopied(true);
@@ -964,7 +971,7 @@ export const LiveCodeEditor: React.FC<LiveCodeEditorProps> = ({
                 canUndo={canUndo}
                 canRedo={canRedo}
                 onRun={handleRun}
-                onReset={reset}
+                onReset={handleReset}
                 onUndo={undo}
                 onRedo={redo}
                 onCopy={handleCopy}
@@ -1040,7 +1047,6 @@ export const LiveCodeEditor: React.FC<LiveCodeEditorProps> = ({
                         style={{
                             ...COMMON_STYLES,
                             color: 'transparent',
-                            top: '8px',
                         }}
                         aria-label="Python code editor"
                         aria-describedby="editor-instructions"

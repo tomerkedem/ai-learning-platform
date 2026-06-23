@@ -111,7 +111,7 @@ export default function BehindTheScenesIntroPage() {
                   מבחוץ זה נראה כמו רגע אחד: כתבנו משפט וקיבלנו תשובה. מבפנים זה מסלול שלם: פירוק, חישוב, דירוג, הסתברות והחלטה.
                 </p>
                 <p className="text-sm md:text-base text-cyan-300/90 font-semibold">
-                  בקורס הזה לא נסתפק במה שהמודל עונה. ננסה להבין איך הוא הגיע לשם.
+                  בלומדה הזו לא נסתפק במה שהמודל עונה. ננסה להבין איך הוא הגיע לשם.
                 </p>
               </div>
             </div>
@@ -216,11 +216,11 @@ export default function BehindTheScenesIntroPage() {
               ייצוג של <span className="text-indigo-300 font-bold">משמעות</span>, עובר
               <span className="text-indigo-300 font-bold"> דירוג</span>, הופך
               ל<span className="text-purple-300 font-bold">הסתברויות</span>, נבדק מבחינת
-              <span className="text-purple-300 font-bold"> ביטחון</span> – ורק אז מוביל
+              <span className="text-purple-300 font-bold"> ביטחון</span>  ורק אז מוביל
               ל<span className="text-cyan-300 font-bold">החלטה</span>.
             </p>
             <p className="relative text-slate-400 text-base md:text-lg mt-5">
-              הקורס הזה נועד להפוך את המסלול הזה לגלוי.
+              הלומדה הזו נועדה להפוך את המסלול הזה לגלוי.
             </p>
           </motion.section>
 
@@ -286,7 +286,7 @@ export default function BehindTheScenesIntroPage() {
               מוכן לפתוח את המנוע?
             </h2>
             <p className="relative text-slate-400 text-base md:text-lg max-w-xl mx-auto mb-8 leading-relaxed">
-              בפרק הראשון נתחיל מתחילת המסלול ונראה איך טקסט הופך לתשובה, שלב אחר שלב.
+              בפרק הראשון נתחיל מההתחלה של המסלול - נראה איך טקסט הופך לתשובה, שלב אחר שלב.
             </p>
             <Link
               href="/behind-the-scenes-ai/chapter-1"

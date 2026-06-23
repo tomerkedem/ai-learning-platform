@@ -11,6 +11,7 @@ import {
 
 import { ModeToggle } from './ModeToggle';
 import { ProbabilityBars } from './ProbabilityBars';
+import { StickyInputDock, type DockReadout } from './StickyInputDock';
 import { ACCENTS } from './accents';
 import { DUR, EASE } from './motionTokens';
 import type { Accent, IntentProbability } from './types';
@@ -134,7 +135,27 @@ export const PipelineCascadeLab: React.FC = () => {
 
     const handleReset = () => { stopAuto(); setText(''); setHoverId(null); };
 
+    // Replay מה-dock: בועט ב-waveKey, מה שמאתחל מחדש את אנימציית ה-Softmax (ואת
+    // גל השרשרת) בלי לגעת בלוגיקה או בערכים — בדיוק כמו שינוי מצב היה עושה.
+    const replaySoftmax = () => setWaveKey((k) => k + 1);
+
     const canSwap = mode === 'chat' && (text.includes(WORD_SWAP.from) || text.includes(WORD_SWAP.to));
+
+    // readout ל-dock הדביק: קריאה בלבד מתוך ה-state של המנוע, ללא שינוי ערך.
+    const leader = result.items[0];
+    const dockReadout: DockReadout = {
+        hasInput: result.hasInput,
+        leaderHe: leader?.labelHe ?? '',
+        leaderEn: leader?.labelEn ?? '',
+        leaderAccent: leader?.accent ?? 'cyan',
+        probPct: pct(leader?.prob ?? 0),
+        marginPct: result.marginPct,
+        decisionHe: result.decision.he,
+        decisionEn: result.decision.en,
+        decisionKind: result.decision.kind,
+        bars: result.items.map((it) => ({ accent: it.accent, pct: pct(it.prob), labelHe: it.labelHe })),
+        waitingHe: 'ממתין לקלט',
+    };
 
     return (
         <div className="space-y-4">
@@ -163,21 +184,25 @@ export const PipelineCascadeLab: React.FC = () => {
                 </p>
             </div>
 
-            {/* ── קלט לפי מצב ─────────────────────────────────────────────── */}
-            {mode === 'chat' ? (
-                <ChatInput
-                    text={text}
-                    autoTyping={autoTyping}
-                    canSwap={canSwap}
-                    onChange={handleChange}
-                    onAutoType={handleAutoType}
-                    onSwap={handleSwap}
-                    onReset={handleReset}
-                    reduce={!!reduce}
-                />
-            ) : (
-                <AgentInput result={result} hasBarcode={hasBarcode} onToggleBarcode={() => setHasBarcode((b) => !b)} reduce={!!reduce} />
-            )}
+            {/* ── dock קלט דביק: הקלט + התוצאה הראשית נשארים צמודים וגלויים ─────
+                שדה הקלט הקיים מקודם לתוך ה-dock (children) — מקור קלט יחיד, בלי
+                כפילות. ה-readout קורא את ה-state של המנוע בלבד. ── */}
+            <StickyInputDock readout={dockReadout} onReplay={replaySoftmax} reduce={!!reduce}>
+                {mode === 'chat' ? (
+                    <ChatInput
+                        text={text}
+                        autoTyping={autoTyping}
+                        canSwap={canSwap}
+                        onChange={handleChange}
+                        onAutoType={handleAutoType}
+                        onSwap={handleSwap}
+                        onReset={handleReset}
+                        reduce={!!reduce}
+                    />
+                ) : (
+                    <AgentInput result={result} hasBarcode={hasBarcode} onToggleBarcode={() => setHasBarcode((b) => !b)} reduce={!!reduce} />
+                )}
+            </StickyInputDock>
 
             {/* ── מפל השרשרת (Pipeline Cascade) ───────────────────────────── */}
             <PipelineCascade
@@ -669,7 +694,7 @@ const ScoresLayer: React.FC<{ items: RankItem[]; formulaView: boolean; reduce: b
 };
 
 /* ── שכבה 4: Softmax machine ──────────────────────────────────────────────── */
-// רגע ה-Softmax: אנימציית ההוראה המרכזית של הקורס. שתי פעימות שמגלמות את שתי
+// רגע ה-Softmax: אנימציית ההוראה המרכזית של הלומדה. שתי פעימות שמגלמות את שתי
 // הפעולות של Softmax — (1) הגברה: exp מותח את ההפרשים, חלקו של המוביל גדל יותר
 // מפרופורציונלית; (2) נרמול: המשקלים נשפכים למיכל בעל קיבולת קבועה של 100%
 // ומתחרים על מקום. כל הערכים נקראים חי מהמנוע; האנימציה נוחתת בדיוק על

@@ -338,7 +338,7 @@ export default function ChapterTwelve() {
               <div className="inline-block p-4 rounded-full bg-slate-900 border border-slate-800 mb-6 shadow-2xl">
                   <span className="text-4xl">🚀</span>
               </div>
-              <h3 className="text-3xl font-black text-white mb-4">סיימת את הקורס בהצלחה!</h3>
+              <h3 className="text-3xl font-black text-white mb-4">סיימת את הלומדה בהצלחה!</h3>
               <p className="text-slate-400 mb-8 max-w-xl mx-auto leading-relaxed">
                   יש לך עכשיו יתרון עצום: בזמן שאחרים רואים מודל כ&quot;קופסה שחורה&quot;, 
                   אתה רואה אותו כאוסף של צעדים מתמטיים פשוטים והגיוניים.

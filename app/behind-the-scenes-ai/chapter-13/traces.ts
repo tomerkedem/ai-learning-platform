@@ -306,7 +306,7 @@ export function buildTrace(text: string, mode: 'chat' | 'agent'): Trace {
     return mode === 'chat' ? traceChat(text) : traceAgent(text);
 }
 
-/* ════════════════════════ נוסחאות הקורס ══════════════════════════════════ */
+/* ════════════════════════ נוסחאות הלומדה ══════════════════════════════════ */
 
 export const FORMULAS: { he: string; en: string; chapter: string }[] = [
     { he: 'ציון', en: 'score = similarity + word_impact + context_bonus', chapter: 'פרק 7' },

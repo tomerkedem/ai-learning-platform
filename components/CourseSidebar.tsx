@@ -29,8 +29,8 @@ export function CourseSidebar() {
   // הלוגיקה החדשה והחכמה יותר:
 const segments = pathname?.split('/').filter(Boolean) || [];
 
-// אם החלק הראשון הוא 'math', ניקח את החלק השני כ-ID של הקורס
-// אחרת, ניקח את החלק הראשון (עבור קורסים כמו 'python')
+// אם החלק הראשון הוא 'math', ניקח את החלק השני כ-ID של הלומדה
+// אחרת, ניקח את החלק הראשון (עבור לומדות כמו 'python')
 let courseIdFromPath = segments[0];
 
 if (segments[0] === 'math' && segments[1]) {
@@ -72,7 +72,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                 className="flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-indigo-400 transition-colors mb-6 group"
             >
                 <ArrowRight size={14} className="group-hover:-translate-x-1 transition-transform" />
-                <span>חזרה לקטלוג הקורסים</span>
+                <span>חזרה לקטלוג הלומדות</span>
             </Link>
 
             <div className="flex items-center gap-3 mb-6">
@@ -118,7 +118,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
             {/* Progress Bar */}
             <div className="mt-5">
                 <div className="flex justify-between text-[10px] text-slate-400 mb-1.5 font-mono">
-                    <span>התקדמות בקורס</span>
+                    <span>התקדמות בלומדה</span>
                     <span className={progress === 100 ? 'text-emerald-400' : ''}>{progress}%</span>
                 </div>
                 <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
