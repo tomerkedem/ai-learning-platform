@@ -8,7 +8,6 @@ import {
     PenLine, AlertTriangle, ArrowLeft, ArrowDown, Workflow, ListChecks, ScrollText,
 } from 'lucide-react';
 
-import { StickyContextBar, type ContextTone } from './StickyContextBar';
 import {
     buildControl, SCENARIOS, DEFAULT_SCENARIO_ID, RISK_SAMPLES, NARRATION,
     ACTION_META, RISK_META, RISK_ORDER, PERMISSION_BOUNDARIES,
@@ -41,14 +40,6 @@ const PERMISSION_TONE: Record<Permission, 'continue' | 'draft' | 'stop'> = {
     blocked: 'stop',
 };
 
-// טון ההחלטה → טון פס ההקשר הדביק.
-const DECISION_CTX_TONE: Record<DecisionTone, ContextTone> = {
-    continue: 'go',
-    draft: 'caution',
-    ask: 'caution',
-    stop: 'stop',
-};
-
 /* ════════════════════════ קומפוננטה ראשית ════════════════════════════════ */
 
 export const ControlLayerLab: React.FC = () => {
@@ -61,8 +52,12 @@ export const ControlLayerLab: React.FC = () => {
 
     return (
         <div className="space-y-5">
-            {/* ── בקרה: תרחישים ──────────────────────────────────────────── */}
-            <div className="flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4" dir="rtl">
+            {/* ── בקרה: תרחישים ─ נצמד בראש כדי להחליף תרחיש תוך כדי גלילת שכבות הבקרה ─ */}
+            <div
+                className="sticky z-20 flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/85 p-4 shadow-xl shadow-black/30 backdrop-blur-xl"
+                dir="rtl"
+                style={{ top: 'var(--bts-sticky-top, 88px)' }}
+            >
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-bold text-slate-400">תרחיש:</span>
                     {SCENARIOS.map((s) => {
@@ -85,18 +80,6 @@ export const ControlLayerLab: React.FC = () => {
                     <Info size={13} /> הבקשה: <span className="rounded bg-slate-800/70 px-1.5 py-0.5 font-bold text-slate-300">&quot;{text}&quot;</span>
                 </span>
             </div>
-
-            {/* פס הקשר דביק: הבקשה הפעילה + ההחלטה שנגזרה ממנה, גלוי לאורך גלילת שכבות הבקרה */}
-            <StickyContextBar
-                inputText={text.trim() || 'ממתין לבקשה'}
-                labelHe={scenario?.labelHe ?? 'בקשה חופשית'}
-                labelEn={scenario?.labelEn ?? 'Free request'}
-                decisionHe={DECISION_META[state.decision].he}
-                decisionEn={DECISION_META[state.decision].en}
-                tone={DECISION_CTX_TONE[DECISION_META[state.decision].tone]}
-                metricHe={`סיכון ${RISK_META[state.risk].he}`}
-                reduce={reduce}
-            />
 
             {/* ── שכבת הבקרה (תרשים חתימתי) ───────────────────────────────── */}
             <ControlLayerPipeline state={state} reduce={reduce} />

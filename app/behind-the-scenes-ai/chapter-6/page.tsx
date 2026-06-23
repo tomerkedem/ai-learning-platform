@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Binary, MousePointerClick, ArrowLeftRight, FlaskConical, Sigma, Map, ArrowLeft, Lock } from 'lucide-react';
 
@@ -181,7 +182,7 @@ export default function BehindTheScenesChapter6() {
             {/* ══════════ סיכום + גשר לפרק 7 ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
-                    <span className="block font-bold text-violet-200">המנוע לא עובד עם מילים, הוא עובד עם ייצוגים מספריים.</span>
+                    <span className="block font-bold text-violet-200">המנוע לא עובד עם מילים, הוא עובד עם וקטורים - רשימות מספרים שמייצגות משמעות. הפרופיל שראינו כאן הוא בדיוק זה: וקטור. וזו צורת הייצוג המרכזית בכל מודל AI.</span>
                     כל מילה מקבלת Token ID, שהוא כתובת במילון ולא משמעות, ומרצף ה-IDs נבנה וקטור משמעות. ראינו את הרגע המפתיע:
                     &quot;החבילה לא הגיעה&quot; ({idsA}) ו-&quot;המשלוח לא נמסר&quot; ({idsB}) מקבלים Token IDs שונים לגמרי, אבל וקטור משמעות כמעט
                     זהה. המודל לא צריך לראות בדיוק אותן מילים כדי לזהות כיוון דומה. וב-Agent Mode ראינו שאותו פרופיל מספרי מבדיל בין
@@ -189,6 +190,13 @@ export default function BehindTheScenesChapter6() {
                     <span className="mt-3 block text-sm text-slate-400">
                         גשר לפרק הבא: ראינו ששני משפטים יכולים להצביע לאותו כיוון. בפרק הבא ניכנס למרחב המשמעות עצמו, איך מילים הופכות לנקודות וחצים, למה הכיוון חשוב יותר מהמרחק, ואיך נמדדת קרבה בין משמעויות. את החישוב המלא שהופך קרבה לאחוזים נפתח בהמשך.
                     </span>
+                    <Link
+                        href="/math/mathIntuitive/chapter-5"
+                        className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-300 transition-colors hover:text-cyan-200"
+                    >
+                        רוצים את המתמטיקה שמאחורי הוקטורים לעומק? הפרק &quot;וקטורים – הלב של כל מודל&quot; בקורס המתמטיקה האינטואיטיבית
+                        <ArrowLeft size={14} />
+                    </Link>
                 </InsightBox>
             </section>
 

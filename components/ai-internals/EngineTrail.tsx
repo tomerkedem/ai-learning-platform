@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { ACCENTS } from './accents';
@@ -18,6 +18,12 @@ export interface TrailStep {
     detail?: string;
     /** דוגמה מוחשית שמוצגת בתוך פאנל ההסבר. */
     example?: string;
+    /**
+     * מערכה (act) - קיבוץ-על אופציונלי. כשהערך משתנה בין תחנה לקודמת, מוצגת
+     * כותרת-מערכה לפני התחנה (overview-first, להפחתת עומס במסלולים ארוכים).
+     * תאימות לאחור: מסלולים שלא מגדירים act לא מציגים שום כותרת.
+     */
+    act?: string;
 }
 
 interface EngineTrailProps {
@@ -64,6 +70,13 @@ export const EngineTrail: React.FC<EngineTrailProps> = ({
     // התחנה הפתוחה כרגע (accordion - אחת בכל פעם). null = הכל סגור.
     const [expandedId, setExpandedId] = useState<string | null>(null);
 
+    // סדר המערכות (acts) כפי שהן מופיעות, לחישוב מספור "מערכה N/M". ריק אם אין.
+    const actOrder = useMemo(() => {
+        const seen: string[] = [];
+        for (const s of steps) if (s.act && !seen.includes(s.act)) seen.push(s.act);
+        return seen;
+    }, [steps]);
+
     // כשפותחים הסבר עוצרים את אנימציית הזרימה כדי לא להסיח בזמן קריאה.
     const animate = autoplay && !reduce && expandedId === null;
 
@@ -87,6 +100,8 @@ export const EngineTrail: React.FC<EngineTrailProps> = ({
                 const connectorLit = i < active;   // ה-connator שמתחת לתחנה זו זרם
                 const canExpand = interactive && !!step.detail;
                 const isExpanded = expandedId === step.id;
+                // כותרת-מערכה מוצגת רק כשה-act משתנה ביחס לתחנה הקודמת.
+                const showActHeader = !!step.act && step.act !== (i > 0 ? steps[i - 1].act : undefined);
 
                 const toggle = () => {
                     if (!canExpand) return;
@@ -95,6 +110,16 @@ export const EngineTrail: React.FC<EngineTrailProps> = ({
 
                 return (
                     <React.Fragment key={step.id}>
+                        {showActHeader && (
+                            <div className={`flex items-center gap-2.5 pb-1.5 ${i === 0 ? '' : 'pt-4'}`} dir="rtl">
+                                <span className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-black ${a.border} ${a.bgSoft} ${a.text}`}>
+                                    <span>מערכה</span>
+                                    <span dir="ltr">{actOrder.indexOf(step.act!) + 1}/{actOrder.length}</span>
+                                </span>
+                                <span className={`text-xs font-black tracking-wide ${a.text}`}>{step.act}</span>
+                                <span className="h-px flex-1 bg-white/10" />
+                            </div>
+                        )}
                         <motion.div
                             initial={reduce ? false : { opacity: 0, y: 14 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -155,7 +180,7 @@ export const EngineTrail: React.FC<EngineTrailProps> = ({
                                     )}
                                 </div>
 
-                                {/* מחוון "אפשר ללחוץ" — מסתובב כשפתוח */}
+                                {/* מחוון "אפשר ללחוץ" - מסתובב כשפתוח */}
                                 {canExpand && (
                                     <motion.div
                                         aria-hidden

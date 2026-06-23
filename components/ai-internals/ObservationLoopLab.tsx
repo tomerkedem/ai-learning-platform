@@ -9,7 +9,6 @@ import {
     Terminal, Repeat, Lock, AlertTriangle, Boxes, Loader,
 } from 'lucide-react';
 
-import { StickyContextBar, type ContextTone } from './StickyContextBar';
 import {
     buildLoop, OUTCOMES, DEFAULT_OUTCOME_ID, TOOL_CALL, TIMELINE_STEPS,
     NARRATION, DECISION_META, PANEL_SLOTS, QUALITY_META, CONFIDENCE_META, RISK_META,
@@ -32,14 +31,6 @@ const TONE: Record<DecisionTone, { border: string; bg: string; text: string; sof
 
 const METER_TONE = { high: TONE.answer, mid: TONE.ask, low: TONE.stop };
 
-// טון ההחלטה → טון פס ההקשר הדביק.
-const DECISION_TONE: Record<DecisionTone, ContextTone> = {
-    answer: 'go',
-    tool: 'go',
-    ask: 'caution',
-    stop: 'stop',
-};
-
 /* ════════════════════════ קומפוננטה ראשית ════════════════════════════════ */
 
 export const ObservationLoopLab: React.FC = () => {
@@ -53,8 +44,12 @@ export const ObservationLoopLab: React.FC = () => {
 
     return (
         <div className="space-y-5">
-            {/* ── בקרה: תוצאה + ברקוד + סיכון ─────────────────────────────── */}
-            <div className="flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4" dir="rtl">
+            {/* ── בקרה: תוצאה + ברקוד + סיכון ─ נצמד בראש כדי להחליף תרחיש תוך כדי גלילת הלולאה ─ */}
+            <div
+                className="sticky z-20 flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/85 p-4 shadow-xl shadow-black/30 backdrop-blur-xl"
+                dir="rtl"
+                style={{ top: 'var(--bts-sticky-top, 88px)' }}
+            >
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-bold text-slate-400">מה הכלי מחזיר:</span>
                     {OUTCOMES.map((o) => {
@@ -98,18 +93,6 @@ export const ObservationLoopLab: React.FC = () => {
                     </div>
                 </div>
             </div>
-
-            {/* פס הקשר דביק: התרחיש הפעיל (מה הכלי מחזיר) + החלטת הצעד הבא, גלוי לאורך הלולאה */}
-            <StickyContextBar
-                inputText={OUTCOMES.find((o) => o.id === outcomeId)?.labelHe ?? ''}
-                labelHe="מה הכלי מחזיר"
-                labelEn={OUTCOMES.find((o) => o.id === outcomeId)?.labelEn}
-                decisionHe={DECISION_META[loop.decision].he}
-                decisionEn={DECISION_META[loop.decision].en}
-                tone={DECISION_TONE[DECISION_META[loop.decision].tone]}
-                metricHe={riskHigh ? 'פעולה רגישה' : undefined}
-                reduce={reduce}
-            />
 
             {/* ── הלולאה (תרשים חתימתי) ───────────────────────────────────── */}
             <AgentLoopDiagram loop={loop} reduce={reduce} />

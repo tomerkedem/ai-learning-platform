@@ -10,84 +10,85 @@ import {
 import Link from 'next/link';
 import { ChapterLayout } from "@/components/ChapterLayout";
 import { EngineTrail, type TrailStep } from "@/components/ai-internals/EngineTrail";
+import { GuessRevealGate, LiveTokenizeTaste } from "@/components/ai-internals/IntroInteractions";
 
 // ─── המסלול הפנימי המלא: מקלט ועד תשובה ───
 // המסלול האמיתי, בלי דילוג על שלבים: מתווים גולמיים, דרך הקשב ושכבות ה-Transformer,
 // ועד תשובה שנבנית מילה-אחר-מילה. כל שלב לחיץ ופותח הסבר + דוגמה.
 const FULL_FLOW: TrailStep[] = [
   {
-    id: 'input', label: 'Input', sub: 'מה שכתבת בצ׳אט', icon: <Keyboard size={18} />, accent: 'cyan',
-    detail: 'הטקסט הגולמי שהקלדת. בשלב הזה למודל אין שום "הבנה" עדיין — מבחינתו זה רק רצף של תווים, רווחים וסימנים.',
+    id: 'input', label: 'Input', sub: 'מה שכתבת בצ׳אט', icon: <Keyboard size={18} />, accent: 'cyan', act: 'הבנה',
+    detail: 'הטקסט הגולמי שהקלדת. בשלב הזה למודל אין שום "הבנה" עדיין - מבחינתו זה רק רצף של תווים, רווחים וסימנים.',
     example: 'מה מזג האוויר בתל אביב?',
   },
   {
-    id: 'tokens', label: 'Tokenization', sub: 'הטקסט נחתך ליחידות', icon: <Scissors size={18} />, accent: 'cyan',
-    detail: 'הטקסט נחתך ליחידות קטנות (Tokens) — לפעמים מילה שלמה, לפעמים רק חלק ממילה או אפילו תו בודד. זו השפה שהמודל באמת עובד איתה.',
+    id: 'tokens', label: 'Tokenization', sub: 'הטקסט נחתך ליחידות', icon: <Scissors size={18} />, accent: 'cyan', act: 'הבנה',
+    detail: 'הטקסט נחתך ליחידות קטנות (Tokens) - לפעמים מילה שלמה, לפעמים רק חלק ממילה או אפילו תו בודד. זו השפה שהמודל באמת עובד איתה.',
     example: '"תל-אביב" → ["תל", "-", "אביב"]',
   },
   {
-    id: 'ids', label: 'Token IDs', sub: 'כל טוקן → מספר מזהה', icon: <Hash size={18} />, accent: 'blue',
+    id: 'ids', label: 'Token IDs', sub: 'כל טוקן → מספר מזהה', icon: <Hash size={18} />, accent: 'blue', act: 'הבנה',
     detail: 'לכל טוקן יש מספר קבוע מתוך אוצר מילים (Vocabulary) של עשרות אלפי ערכים. אותו טוקן תמיד מקבל את אותו מזהה.',
     example: '"אביב" → 8423',
   },
   {
-    id: 'embeddings', label: 'Embeddings', sub: 'כל מזהה → וקטור משמעות', icon: <Network size={18} />, accent: 'blue',
+    id: 'embeddings', label: 'Embeddings', sub: 'כל מזהה → וקטור משמעות', icon: <Network size={18} />, accent: 'blue', act: 'הבנה',
     detail: 'כל מזהה הופך לרשימה ארוכה של מספרים (וקטור) שמייצגת משמעות. מילים בעלות משמעות קרובה מקבלות וקטורים קרובים במרחב.',
     example: '"מלך" ו"מלכה" יושבים קרוב זה לזה במרחב',
   },
   {
-    id: 'position', label: 'Positional Encoding', sub: 'לאן כל טוקן שייך ברצף', icon: <ListOrdered size={18} />, accent: 'indigo',
-    detail: 'וקטור לבדו לא יודע אם המילה ראשונה או אחרונה. כאן מוסיפים לכל טוקן מידע על מיקומו — כי הסדר משנה את המשמעות לחלוטין.',
+    id: 'position', label: 'Positional Encoding', sub: 'לאן כל טוקן שייך ברצף', icon: <ListOrdered size={18} />, accent: 'indigo', act: 'חשיבה',
+    detail: 'וקטור לבדו לא יודע אם המילה ראשונה או אחרונה. כאן מוסיפים לכל טוקן מידע על מיקומו - כי הסדר משנה את המשמעות לחלוטין.',
     example: '"כלב נשך אדם" ≠ "אדם נשך כלב"',
   },
   {
-    id: 'attention', label: 'Attention', sub: 'כל טוקן מסתכל על האחרים', icon: <Focus size={18} />, accent: 'indigo',
+    id: 'attention', label: 'Attention', sub: 'כל טוקן מסתכל על האחרים', icon: <Focus size={18} />, accent: 'indigo', act: 'חשיבה',
     detail: 'הלב של המודל. כל טוקן "מסתכל" על שאר הטוקנים ומחליט אילו מהם רלוונטיים לו. ככה נבנה ההקשר, וככה מילה כמו "הוא" יודעת למי היא מתייחסת.',
-    example: 'ב"הכלב רץ כי הוא שמח" — "הוא" מתחבר ל"כלב"',
+    example: 'ב"הכלב רץ כי הוא שמח" - "הוא" מתחבר ל"כלב"',
   },
   {
-    id: 'layers', label: 'Transformer Layers', sub: 'עיבוד שחוזר עשרות פעמים', icon: <Layers size={18} />, accent: 'purple',
-    detail: 'הקשב והעיבוד חוזרים שוב ושוב, בעשרות שכבות. בכל שכבה הייצוג הופך מעודן ומופשט יותר — ממילים בודדות אל משמעות המשפט כולו.',
+    id: 'layers', label: 'Transformer Layers', sub: 'עיבוד שחוזר עשרות פעמים', icon: <Layers size={18} />, accent: 'purple', act: 'חשיבה',
+    detail: 'הקשב והעיבוד חוזרים שוב ושוב, בעשרות שכבות. בכל שכבה הייצוג הופך מעודן ומופשט יותר - ממילים בודדות אל משמעות המשפט כולו.',
     example: '32, 80 ולפעמים יותר שכבות במודלים גדולים',
   },
   {
-    id: 'logits', label: 'Logits / Scores', sub: 'ציון לכל אפשרות', icon: <BarChart3 size={18} />, accent: 'purple',
-    detail: 'בסוף השכבות המודל מייצר ציון (Logit) לכל טוקן אפשרי באוצר המילים — כמה הוא מתאים להיות הטוקן הבא. אלה מספרים גולמיים, עדיין לא אחוזים.',
+    id: 'logits', label: 'Logits / Scores', sub: 'ציון לכל אפשרות', icon: <BarChart3 size={18} />, accent: 'purple', act: 'הכרעה',
+    detail: 'בסוף השכבות המודל מייצר ציון (Logit) לכל טוקן אפשרי באוצר המילים - כמה הוא מתאים להיות הטוקן הבא. אלה מספרים גולמיים, עדיין לא אחוזים.',
     example: '"שמש": 8.2 · "גשם": 6.1 · "פיל": -3.4',
   },
   {
-    id: 'probs', label: 'Softmax → Probabilities', sub: 'ציונים הופכים לאחוזים', icon: <Percent size={18} />, accent: 'purple',
+    id: 'probs', label: 'Softmax → Probabilities', sub: 'ציונים הופכים לאחוזים', icon: <Percent size={18} />, accent: 'purple', act: 'הכרעה',
     detail: 'פונקציית Softmax הופכת את הציונים הגולמיים להתפלגות הסתברות שמסתכמת ל-100%. עכשיו לכל אפשרות יש אחוז ברור.',
     example: '"שמש" 72% · "גשם" 19% · "ענן" 6%',
   },
   {
-    id: 'sampling', label: 'Sampling / Temperature', sub: 'איך בוחרים מתוך ההתפלגות', icon: <Thermometer size={18} />, accent: 'amber',
+    id: 'sampling', label: 'Sampling / Temperature', sub: 'איך בוחרים מתוך ההתפלגות', icon: <Thermometer size={18} />, accent: 'amber', act: 'הכרעה',
     detail: 'המודל לא תמיד בוחר את הכי סביר. פרמטרים כמו Temperature ו-top-p קובעים כמה "להעז": טמפרטורה נמוכה = צפוי ויציב, גבוהה = יצירתי ומגוון.',
     example: 'טמפרטורה נמוכה → תמיד "שמש"; גבוהה → לפעמים "ענן"',
   },
   {
-    id: 'confidence', label: 'Confidence', sub: 'כמה המערכת בטוחה', icon: <Gauge size={18} />, accent: 'amber',
+    id: 'confidence', label: 'Confidence', sub: 'כמה המערכת בטוחה', icon: <Gauge size={18} />, accent: 'amber', act: 'הכרעה',
     detail: 'המודל בוחן את הפער בין האפשרות המובילה לבאות אחריה. פער גדול = ביטחון גבוה. פער קטן = חוסר ודאות, ולפעמים עדיף לסייג או לשאול.',
     example: '72% מול 19% → פער גדול, ביטחון גבוה',
   },
   {
-    id: 'decision', label: 'Decision', sub: 'טוקן אחד נבחר', icon: <GitBranch size={18} />, accent: 'rose',
-    detail: 'מתוך כל החישוב נבחר טוקן אחד בלבד — המילה (או חלק המילה) הבאה בתשובה.',
+    id: 'decision', label: 'Decision', sub: 'טוקן אחד נבחר', icon: <GitBranch size={18} />, accent: 'rose', act: 'הכרעה',
+    detail: 'מתוך כל החישוב נבחר טוקן אחד בלבד - המילה (או חלק המילה) הבאה בתשובה.',
     example: 'נבחר: "שמש"',
   },
   {
-    id: 'loop', label: 'Autoregressive Loop', sub: 'מילה אחר מילה', icon: <Repeat size={18} />, accent: 'rose',
+    id: 'loop', label: 'Autoregressive Loop', sub: 'מילה אחר מילה', icon: <Repeat size={18} />, accent: 'rose', act: 'בנייה',
     detail: 'הטוקן שנבחר מצורף לקלט, והכל רץ מחדש כדי לייצר את הטוקן הבא. כך התשובה נבנית מילה-אחר-מילה, עד שהמודל מייצר סימן עצירה.',
     example: '"היום" → "היום צפוי" → "היום צפוי מזג..."',
   },
   {
-    id: 'detok', label: 'Detokenization', sub: 'טוקנים → טקסט קריא', icon: <Type size={18} />, accent: 'cyan',
-    detail: 'רצף הטוקנים שנוצר מורכב בחזרה לטקסט רגיל, עם רווחים וסימני פיסוק — בדיוק כמו שאתה רואה אותו על המסך.',
+    id: 'detok', label: 'Detokenization', sub: 'טוקנים → טקסט קריא', icon: <Type size={18} />, accent: 'cyan', act: 'בנייה',
+    detail: 'רצף הטוקנים שנוצר מורכב בחזרה לטקסט רגיל, עם רווחים וסימני פיסוק - בדיוק כמו שאתה רואה אותו על המסך.',
     example: '["היום","צפוי","שמש"] → "היום צפוי שמש"',
   },
   {
-    id: 'response', label: 'Response', sub: 'מה שחזר אליך', icon: <Send size={18} />, accent: 'cyan',
-    detail: 'הטקסט הסופי מוצג לך בצ׳אט. מבחוץ זה הרגע היחיד שראית — אבל עכשיו אתה יודע כמה שלבים עמדו מאחוריו.',
+    id: 'response', label: 'Response', sub: 'מה שחזר אליך', icon: <Send size={18} />, accent: 'cyan', act: 'בנייה',
+    detail: 'הטקסט הסופי מוצג לך בצ׳אט. מבחוץ זה הרגע היחיד שראית - אבל עכשיו אתה יודע כמה שלבים עמדו מאחוריו.',
     example: 'היום צפוי מזג אוויר שמשי בתל אביב 🌞',
   },
 ];
@@ -103,27 +104,27 @@ const OUTSIDE_FLOW: TrailStep[] = [
 const CHAT_FLOW: TrailStep[] = [
   {
     id: 'c1', label: 'Input', icon: <Keyboard size={15} />,
-    detail: 'בצ׳אט המטרה אחת ויחידה: לייצר תשובה טקסטואלית. אין משימה לבצע — רק שאלה לענות עליה.',
+    detail: 'בצ׳אט המטרה אחת ויחידה: לייצר תשובה טקסטואלית. אין משימה לבצע - רק שאלה לענות עליה.',
     example: '"כתוב לי סיכום קצר על תל אביב"',
   },
   {
     id: 'c2', label: 'Tokens', icon: <Scissors size={15} />,
-    detail: 'אותו פירוק לטוקנים מהמסלול המלא. זה הקלט האמיתי של המנוע — גם ב-Chat וגם ב-Agent.',
+    detail: 'אותו פירוק לטוקנים מהמסלול המלא. זה הקלט האמיתי של המנוע - גם ב-Chat וגם ב-Agent.',
     example: '"סיכום" → ["סי", "כום"]',
   },
   {
     id: 'c3', label: 'Probabilities', icon: <Percent size={15} />,
-    detail: 'המנוע מחשב הסתברות לכל טוקן הבא. ב-Chat זה כל הסיפור — החישוב הזה חוזר על עצמו לכל מילה בתשובה.',
+    detail: 'המנוע מחשב הסתברות לכל טוקן הבא. ב-Chat זה כל הסיפור - החישוב הזה חוזר על עצמו לכל מילה בתשובה.',
     example: 'המילה הבאה: "תל" 64% · "עיר" 21%',
   },
   {
     id: 'c4', label: 'Decision', icon: <GitBranch size={15} />,
-    detail: 'בכל צעד נבחר הטוקן הבא. אין כאן כלים, אין פעולות בעולם — רק בחירת מילים, אחת אחרי השנייה.',
+    detail: 'בכל צעד נבחר הטוקן הבא. אין כאן כלים, אין פעולות בעולם - רק בחירת מילים, אחת אחרי השנייה.',
     example: 'נבחר: "תל"',
   },
   {
     id: 'c5', label: 'Response', icon: <Send size={15} />,
-    detail: 'התוצר הסופי הוא בלוק טקסט אחד שחוזר אליך. כאן הסיפור נגמר — המנוע לא עושה שום דבר מעבר.',
+    detail: 'התוצר הסופי הוא בלוק טקסט אחד שחוזר אליך. כאן הסיפור נגמר - המנוע לא עושה שום דבר מעבר.',
     example: '"תל אביב היא עיר החוף הגדולה..."',
   },
 ];
@@ -133,12 +134,12 @@ const CHAT_FLOW: TrailStep[] = [
 const AGENT_FLOW: TrailStep[] = [
   {
     id: 'a1', label: 'Task', icon: <Workflow size={15} />,
-    detail: 'Agent לא רק עונה — הוא מזהה משימה. השאלה הראשונה היא לא "מה לכתוב" אלא "מה המטרה שצריך להשיג".',
+    detail: 'Agent לא רק עונה - הוא מזהה משימה. השאלה הראשונה היא לא "מה לכתוב" אלא "מה המטרה שצריך להשיג".',
     example: '"תזמן לי פגישה עם דנה מחר ב-10"',
   },
   {
     id: 'a2', label: 'Missing Info', icon: <AlertCircle size={15} />,
-    detail: 'לפני פעולה ה-Agent בודק מה חסר לו. חוסר מידע משמעו לשאול או לברר — לא לנחש. זה ההבדל מ-Chat.',
+    detail: 'לפני פעולה ה-Agent בודק מה חסר לו. חוסר מידע משמעו לשאול או לברר - לא לנחש. זה ההבדל מ-Chat.',
     example: 'חסר: עם איזו דנה? באיזה יומן?',
   },
   {
@@ -153,7 +154,7 @@ const AGENT_FLOW: TrailStep[] = [
   },
   {
     id: 'a5', label: 'Next Step', icon: <CornerDownRight size={15} />,
-    detail: 'Agent פועל בלולאה: צעד, תוצאה, החלטה הבאה — שוב ושוב, עד שהמשימה הושלמה. לא תשובה אחת, אלא מסלול.',
+    detail: 'Agent פועל בלולאה: צעד, תוצאה, החלטה הבאה - שוב ושוב, עד שהמשימה הושלמה. לא תשובה אחת, אלא מסלול.',
     example: 'נוצר אירוע → לאשר מול המשתמש',
   },
 ];
@@ -219,10 +220,13 @@ export default function BehindTheScenesIntroPage() {
                 </h1>
 
                 <p className="text-base md:text-lg text-slate-300 leading-relaxed mb-1.5">
-                  מבחוץ זה נראה כמו רגע אחד: כתבנו משפט וקיבלנו תשובה. מבפנים זה מסלול שלם: פירוק, מספרים, הקשר, חישוב, הסתברות והחלטה — שלב אחר שלב.
+                  מבחוץ זה נראה כמו רגע אחד: כתבנו משפט וקיבלנו תשובה. מבפנים זה מסלול שלם: פירוק, מספרים, הקשר, חישוב, הסתברות והחלטה - שלב אחר שלב.
                 </p>
                 <p className="text-sm md:text-base text-cyan-300/90 font-semibold">
                   בלומדה הזו לא נסתפק במה שהמודל עונה. ננסה להבין איך הוא הגיע לשם.
+                </p>
+                <p className="text-sm md:text-base text-slate-400 leading-relaxed mt-2">
+                  כשמבינים את המסלול, מפסיקים לנחש מול המודל: יודעים למה הוא בטוח, מתי לחשוד בתשובה, ואיך לנסח טוב יותר. בלי נוסחאות מפחידות - רק אינטואיציה.
                 </p>
               </div>
             </div>
@@ -245,6 +249,18 @@ export default function BehindTheScenesIntroPage() {
             />
           </motion.div>
           </div>
+
+          {/* ══════════ GUESS GATE ══════════ */}
+          {/* רגע "נחש לפני שתחשוף": מייצר הפתעה רגשית לפני חשיפת 15 השלבים. */}
+          <motion.section
+            initial={reduce ? false : { opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.6 }}
+            className="mt-20"
+          >
+            <GuessRevealGate reduce={!!reduce} />
+          </motion.section>
 
           {/* ══════════ OUTSIDE vs BEHIND ══════════ */}
           <section className="mt-20">
@@ -312,6 +328,15 @@ export default function BehindTheScenesIntroPage() {
             </div>
           </section>
 
+          {/* ══════════ LIVE TOKENIZE TASTE ══════════ */}
+          {/* טעימה אינטראקטיבית: המשפט של הלומד עצמו עובר את השלב הראשון, חי וביושר. */}
+          <section className="mt-20">
+            <SectionHeading eyebrow="נסו בעצמכם" title="ראיתם את 15 השלבים. עכשיו תורכם.">
+              לא צריך לחכות לסוף הקורס כדי לראות את המנוע עובד. כתבו משפט משלכם, וצפו בשלב הראשון קורה בזמן אמת - על המילים שלכם.
+            </SectionHeading>
+            <LiveTokenizeTaste reduce={!!reduce} />
+          </section>
+
           {/* ══════════ NARRATIVE ══════════ */}
           <motion.section
             initial={reduce ? false : { opacity: 0, y: 24 }}
@@ -333,7 +358,10 @@ export default function BehindTheScenesIntroPage() {
               <span className="text-rose-300 font-bold"> מילה אחר מילה</span> עד
               ל<span className="text-cyan-300 font-bold">תשובה</span>.
             </p>
-            <p className="relative text-slate-400 text-base md:text-lg mt-5">
+            <p className="relative text-cyan-200/90 text-base md:text-lg mt-5 font-semibold max-w-3xl mx-auto leading-relaxed">
+              ובלב כל השלבים האלה עומד דבר אחד: ה<span className="text-cyan-300 font-bold">וקטור</span> - רשימת מספרים שמייצגת משמעות. זו שפת האם של המודל: כל מה שקורה כאן - ההקשר, הדירוג וההסתברות - קורה על וקטורים.
+            </p>
+            <p className="relative text-slate-400 text-base md:text-lg mt-4">
               הלומדה הזו נועדה להפוך את המסלול הזה לגלוי.
             </p>
           </motion.section>
@@ -341,7 +369,7 @@ export default function BehindTheScenesIntroPage() {
           {/* ══════════ CHAT vs AGENT PREVIEW ══════════ */}
           <section className="mt-20">
             <SectionHeading eyebrow="שני מצבים · הצצה מקדימה" title="Chat מול Agent – שני חלונות לאותו רעיון">
-              Chat עונה על שאלה, Agent (סוֹכֵן) מבצע משימה. בהמשך נראה את שניהם לעומק; כאן הצצה מהירה — לחצו על כל שלב כדי לראות מה מייחד כל מצב.
+              Chat עונה על שאלה, Agent (סוֹכֵן) מבצע משימה. בהמשך נראה את שניהם לעומק; כאן הצצה מהירה - לחצו על כל שלב כדי לראות מה מייחד כל מצב.
             </SectionHeading>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

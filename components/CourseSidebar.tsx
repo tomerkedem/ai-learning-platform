@@ -201,7 +201,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
               <Menu size={20} />
           </button>
           
-          {/* סרגל דסקטופ — מתקפל בתנועת spring חלקה במצב מיקוד, התוכן מתרחב לתוך המקום שהתפנה */}
+          {/* סרגל דסקטופ - מתקפל בתנועת spring חלקה במצב מיקוד, התוכן מתרחב לתוך המקום שהתפנה */}
           <motion.aside
               initial={false}
               animate={{ width: isFocusMode ? 0 : 320 }}

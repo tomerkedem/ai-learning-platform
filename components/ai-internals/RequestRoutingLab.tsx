@@ -12,10 +12,9 @@ import { RouteSwitchboard } from './RouteSwitchboard';
 import { RiskMeter } from './RiskMeter';
 import { MissingInfoSpotlight } from './MissingInfoSpotlight';
 import { DecisionCard } from './DecisionCard';
-import { StickyContextBar, type ContextTone } from './StickyContextBar';
 import { ACCENTS } from './accents';
 import { DUR, EASE } from './motionTokens';
-import type { RouteKind, RoutingExample } from './types';
+import type { RoutingExample } from './types';
 
 interface RequestRoutingLabProps {
     examples: RoutingExample[];
@@ -23,20 +22,6 @@ interface RequestRoutingLabProps {
 }
 
 // טקסטי הסבר לימודיים קצרים, קבועים לכל אזור (לא תלויי בחירה).
-// מיפוי מסלול → טון ההחלטה לפס ההקשר הדביק, ותווית אנגלית קצרה.
-const ROUTE_TONE: Record<RouteKind, ContextTone> = {
-    answer: 'go',
-    tool: 'go',
-    ask: 'caution',
-    stop: 'stop',
-};
-const ROUTE_EN: Record<RouteKind, string> = {
-    answer: 'Answer',
-    tool: 'Prepare tool',
-    ask: 'Ask for info',
-    stop: 'Stop for approval',
-};
-
 const HELPERS = {
     intentShift: 'זהו שינוי הכוונה. המילים בפרומט הן הרמזים הראשונים: האם המשתמש שואל, מבקש בדיקה, או מבקש פעולה?',
     detector: 'כאן המנוע מנסה להבין איזה סוג בקשה עומדת מולו. הוא לא בודק עדיין את החבילה עצמה, אלא רק מסווג את הפרומט: שאלה כללית, בדיקה ספציפית או בקשת פעולה.',
@@ -64,7 +49,7 @@ export const RequestRoutingLab: React.FC<RequestRoutingLabProps> = ({ examples, 
 
     // מפתח מדורג ממוקד: רק לוח הרמזים (DecisionSignalsPanel) משחזר את ה-stagger
     // שלו בכל החלפת ניסוח, כדי להראות את הרמזים החדשים. שאר הלוח אינו מנותק-ומורכב
-    // מחדש — הוא נשאר על המסך והרכיבים שבו עוברים בין הערכים (מראה מה השתנה, לא מאפס).
+    // מחדש - הוא נשאר על המסך והרכיבים שבו עוברים בין הערכים (מראה מה השתנה, לא מאפס).
     const replayKey = current.id;
     const a = ACCENTS[current.accent];
 
@@ -74,18 +59,14 @@ export const RequestRoutingLab: React.FC<RequestRoutingLabProps> = ({ examples, 
             <p className="text-sm leading-relaxed text-slate-400" dir="rtl">
                 בחרו אחד משלושת הניסוחים. כולם עוסקים באותו נושא - חבילה שמתעכבת - אבל כל אחד מהם גורם למנוע לבחור מסלול אחר.
             </p>
-            <RequestExampleSelector examples={examples} selectedId={current.id} onSelect={setSelectedId} />
-
-            {/* פס הקשר דביק: הניסוח הפעיל + המסלול שנגזר ממנו, גלוי לאורך גלילת הניתוח */}
-            <StickyContextBar
-                inputText={current.requestText}
-                labelHe={current.label}
-                inputAccent={current.accent}
-                decisionHe={current.decision.label}
-                decisionEn={ROUTE_EN[current.selectedRoute]}
-                tone={ROUTE_TONE[current.selectedRoute]}
-                reduce={!!reduce}
-            />
+            {/* הבורר עצמו נצמד בראש אזור הניתוח: כך אפשר להחליף ניסוח בכל שלב של הגלילה
+                בלי לחזור למעלה. ה-offset (top) מגיע מ--bts-sticky-top ש-ChapterLayout מודד
+                מגובה הכותרת בפועל, עם נפילה ל-88px. רקע אטום+blur כדי שהניתוח שנגלל מאחור לא יזלוג. */}
+            <div className="sticky z-20" style={{ top: 'var(--bts-sticky-top, 88px)' }}>
+                <div className="rounded-2xl border border-slate-700/40 bg-slate-950/75 p-2 shadow-xl shadow-black/30 backdrop-blur-xl">
+                    <RequestExampleSelector examples={examples} selectedId={current.id} onSelect={setSelectedId} />
+                </div>
+            </div>
 
             {/* רמזי החלטה: מה בפרומט גרם למנוע לזהות כוונה ולבחור מסלול */}
             <p className="text-sm leading-relaxed text-slate-400" dir="rtl">{HELPERS.signals}</p>

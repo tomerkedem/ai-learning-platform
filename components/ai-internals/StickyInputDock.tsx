@@ -12,7 +12,7 @@
 // ── גבולות אחריות ────────────────────────────────────────────────────────────
 // שכבת הצגה ופריסה בלבד. ה-readout *קורא* את ה-state של המנוע (props) ואינו
 // משנה לוגיקה, engine, או ערך. הקלט עצמו מגיע כ-children (slot), כך שיש מקור
-// קלט אחד בלבד — הפרק מקדם את שדה הקלט הקיים לתוך ה-dock, בלי שדה כפול.
+// קלט אחד בלבד - הפרק מקדם את שדה הקלט הקיים לתוך ה-dock, בלי שדה כפול.
 //
 // ── שימוש חוזר (פרקים 3, 4, 8) ───────────────────────────────────────────────
 // הקומפוננטה גנרית: היא לא יודעת דבר על פרק מסוים. הפרק מחשב readout מתוך ה-state
@@ -37,7 +37,7 @@ export interface DockBar {
 }
 
 /**
- * ה"תוצאה הראשית" שה-dock מציג. כל השדות נקראים מה-state של המנוע — תצוגה בלבד.
+ * ה"תוצאה הראשית" שה-dock מציג. כל השדות נקראים מה-state של המנוע - תצוגה בלבד.
  */
 export interface DockReadout {
     hasInput: boolean;
@@ -54,7 +54,7 @@ export interface DockReadout {
     decisionEn: string;
     /** משפיע על צבע תג ההחלטה בלבד (אזהרה מול ביטחון). */
     decisionKind: 'answer' | 'answer-careful' | 'clarify' | 'tool' | 'ask' | 'stop' | 'idle' | string;
-    /** mini-bars אופציונליים — הסכום אמור להיות ~100%. */
+    /** mini-bars אופציונליים - הסכום אמור להיות ~100%. */
     bars?: DockBar[];
     /** טקסט המתנה כשאין קלט. */
     waitingHe?: string;
@@ -69,8 +69,9 @@ export interface StickyInputDockProps {
     replayLabelHe?: string;
     reduce: boolean;
     /**
-     * עוקף את ה-offset הדביק. ברירת המחדל מכוונת לכותרת הפרק הדביקה של
-     * ChapterLayout במצב מכווץ (~84px). הקלאסים חייבים להיות סטטיים ל-Tailwind JIT.
+     * עוקף את מחלקות העגינה הדביקה. ה-offset עצמו (top) נשלט במשתנה ה-CSS
+     * ‎--bts-sticky-top ש-ChapterLayout מודד מגובה הכותרת בפועל, עם נפילה
+     * ל-88px כשהוא לא קיים (SSR / מחוץ ל-ChapterLayout).
      */
     stickyClassName?: string;
 }
@@ -112,7 +113,7 @@ export const StickyInputDock: React.FC<StickyInputDockProps> = ({
     onReplay,
     replayLabelHe = 'הרצה חוזרת',
     reduce,
-    stickyClassName = 'sticky top-[88px] z-10',
+    stickyClassName = 'sticky z-10',
 }) => {
     // מצב מקופל לטובת מובייל: מראה רק הסתברות + החלטה. ברירת מחדל פתוח.
     const [collapsed, setCollapsed] = useState(false);
@@ -122,7 +123,7 @@ export const StickyInputDock: React.FC<StickyInputDockProps> = ({
     const waiting = !readout.hasInput;
 
     return (
-        <div className={stickyClassName}>
+        <div className={stickyClassName} style={{ top: 'var(--bts-sticky-top, 88px)' }}>
             {/* משטח ה-dock: רקע אטום-למחצה + blur כדי שהמפל שנגלל מאחור לא יזלוג. */}
             <div className="space-y-2 rounded-3xl border border-slate-700/50 bg-slate-950/85 p-2 shadow-2xl shadow-black/40 backdrop-blur-xl">
 
@@ -144,7 +145,7 @@ export const StickyInputDock: React.FC<StickyInputDockProps> = ({
                                 <span className="text-sm font-bold text-slate-400">{readout.waitingHe ?? 'ממתין לקלט'}</span>
                             ) : (
                                 <>
-                                    {/* המוביל — מתחלף בהחלקה רק כשהזהות משתנה (אירוע משמעותי) */}
+                                    {/* המוביל - מתחלף בהחלקה רק כשהזהות משתנה (אירוע משמעותי) */}
                                     <AnimatePresence mode="wait" initial={false}>
                                         <motion.span
                                             key={readout.leaderEn}
@@ -162,10 +163,10 @@ export const StickyInputDock: React.FC<StickyInputDockProps> = ({
                                         </motion.span>
                                     </AnimatePresence>
 
-                                    {/* הסתברות המוביל — תמיד גלויה (גם במצב מקופל) */}
+                                    {/* הסתברות המוביל - תמיד גלויה (גם במצב מקופל) */}
                                     <span className={`shrink-0 font-mono text-xl font-black ${la.text}`} dir="ltr">{readout.probPct}%</span>
 
-                                    {/* פער — מוסתר במצב מקופל */}
+                                    {/* פער - מוסתר במצב מקופל */}
                                     {!collapsed && (
                                         <span className="hidden shrink-0 items-center gap-1 rounded-md border border-slate-700/60 bg-slate-950/40 px-2 py-0.5 text-[10px] font-bold text-slate-400 sm:inline-flex" dir="ltr">
                                             <Gauge size={11} /> Δ {Math.round(readout.marginPct)}%
@@ -197,7 +198,7 @@ export const StickyInputDock: React.FC<StickyInputDockProps> = ({
                                 </button>
                             )}
 
-                            {/* קיפול — שימושי בעיקר במובייל. מראה רק הסתברות + החלטה. */}
+                            {/* קיפול - שימושי בעיקר במובייל. מראה רק הסתברות + החלטה. */}
                             <button
                                 type="button"
                                 onClick={() => setCollapsed((c) => !c)}
@@ -210,7 +211,7 @@ export const StickyInputDock: React.FC<StickyInputDockProps> = ({
                         </div>
                     </div>
 
-                    {/* mini-bars — מוסתרים במצב מקופל */}
+                    {/* mini-bars - מוסתרים במצב מקופל */}
                     {!waiting && !collapsed && readout.bars && readout.bars.length > 0 && (
                         <MiniBars bars={readout.bars} reduce={reduce} />
                     )}

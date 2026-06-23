@@ -371,7 +371,7 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                                     {reduce ? (
                                         <span className="flex flex-col items-center leading-none">
                                             <span className="text-sm font-bold text-slate-200">{tok}</span>
-                                            <span className={`mt-0.5 font-mono text-xs ${a.text}`} dir="ltr">{id ?? '—'}</span>
+                                            <span className={`mt-0.5 font-mono text-xs ${a.text}`} dir="ltr">{id ?? '-'}</span>
                                         </span>
                                     ) : (
                                         <AnimatePresence mode="wait" initial={false}>
@@ -385,7 +385,7 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                                                     transition={{ type: 'spring', stiffness: 360, damping: 26, delay: i * 0.05 }}
                                                     className={`font-mono text-base font-bold ${a.text}`}
                                                 >
-                                                    {id ?? '—'}
+                                                    {id ?? '-'}
                                                 </motion.span>
                                             ) : (
                                                 <motion.span
@@ -492,7 +492,7 @@ const TokenIdTable: React.FC<TokenIdTableProps> = ({ tokens, selected, accent, o
                         >
                             <span className={`px-3 py-2 text-sm font-bold ${isSel ? a.text : 'text-slate-200'}`}>{w}</span>
                             <span className="px-2 py-2 text-center text-slate-600">→</span>
-                            <span className={`px-3 py-2 text-left font-mono text-sm ${isSel ? a.text : 'text-slate-300'}`} dir="ltr">{id ?? '—'}</span>
+                            <span className={`px-3 py-2 text-left font-mono text-sm ${isSel ? a.text : 'text-slate-300'}`} dir="ltr">{id ?? '-'}</span>
                         </button>
                     );
                 })}
@@ -678,7 +678,7 @@ const SimilarColumn: React.FC<{ item: typeof SIMILAR_PAIR.left; dims: DimKey[]; 
             {item.tokens.map((t, i) => (
                 <span key={`${t}-${i}`} className="flex flex-col items-center rounded-lg border border-slate-700/50 bg-slate-800/40 px-2 py-1 leading-none">
                     <span className="text-xs font-bold text-slate-200">{t}</span>
-                    <span className="mt-0.5 font-mono text-[10px] text-slate-400" dir="ltr">{idForWord(t) ?? '—'}</span>
+                    <span className="mt-0.5 font-mono text-[10px] text-slate-400" dir="ltr">{idForWord(t) ?? '-'}</span>
                 </span>
             ))}
         </div>

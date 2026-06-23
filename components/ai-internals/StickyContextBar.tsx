@@ -13,7 +13,7 @@
 //
 // ── גבולות אחריות ────────────────────────────────────────────────────────────
 // שכבת הצגה בלבד. כל השדות *נקראים* מה-state של הפרק (props); הפס אינו משנה לוגיקה,
-// אינו מחזיק state, ואינו מקור קלט שני — הבחירה נשארת בבורר הקיים של הפרק.
+// אינו מחזיק state, ואינו מקור קלט שני - הבחירה נשארת בבורר הקיים של הפרק.
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,7 +23,7 @@ import { ACCENTS } from './accents';
 import { DUR, EASE } from './motionTokens';
 import type { Accent } from './types';
 
-/** טון ההחלטה — מנותק מהאנומים הספציפיים של כל פרק. */
+/** טון ההחלטה - מנותק מהאנומים הספציפיים של כל פרק. */
 export type ContextTone = 'go' | 'caution' | 'stop' | 'neutral';
 
 /** טון ההחלטה → גוון תג. צעד בטוח=ירוק, זהירות=ענבר, עצירה=ורוד. */
@@ -50,8 +50,9 @@ export interface StickyContextBarProps {
     metricHe?: string;
     reduce: boolean;
     /**
-     * עוקף את ה-offset הדביק. ברירת המחדל מכוונת לכותרת הפרק הדביקה של
-     * ChapterLayout במצב מכווץ (~88px), זהה ל-StickyInputDock.
+     * עוקף את מחלקות העגינה הדביקה. ה-offset עצמו (top) נשלט במשתנה ה-CSS
+     * ‎--bts-sticky-top ש-ChapterLayout מודד מגובה הכותרת בפועל, עם נפילה
+     * ל-88px כשהוא לא קיים (SSR / מחוץ ל-ChapterLayout). זהה ל-StickyInputDock.
      */
     stickyClassName?: string;
 }
@@ -66,13 +67,13 @@ export const StickyContextBar: React.FC<StickyContextBarProps> = ({
     tone,
     metricHe,
     reduce,
-    stickyClassName = 'sticky top-[88px] z-10',
+    stickyClassName = 'sticky z-10',
 }) => {
     const ia = ACCENTS[inputAccent];
     const da = ACCENTS[TONE_ACCENT[tone]];
 
     return (
-        <div className={stickyClassName}>
+        <div className={stickyClassName} style={{ top: 'var(--bts-sticky-top, 88px)' }}>
             {/* רקע אטום-למחצה + blur כדי שהניתוח שנגלל מאחור לא יזלוג. */}
             <div
                 className="flex items-center justify-between gap-3 rounded-2xl border border-slate-700/50 bg-slate-950/85 px-3 py-2 shadow-xl shadow-black/30 backdrop-blur-xl"
@@ -94,7 +95,7 @@ export const StickyContextBar: React.FC<StickyContextBarProps> = ({
                                 {labelEn && <span className="ms-1 opacity-70" dir="ltr">{labelEn}</span>}
                             </span>
                         )}
-                        {/* הקלט עצמו — טקסט פשוט (ללא אנימציה פר-תו, נוח לשדה הקלדה חי). */}
+                        {/* הקלט עצמו - טקסט פשוט (ללא אנימציה פר-תו, נוח לשדה הקלדה חי). */}
                         <span className="block truncate text-sm font-bold text-slate-100">{inputText}</span>
                     </span>
                 </div>
@@ -107,7 +108,7 @@ export const StickyContextBar: React.FC<StickyContextBarProps> = ({
                         </span>
                     )}
 
-                    {/* תג ההחלטה — מתחלף בהחלקה עדינה כשההחלטה משתנה (אירוע נדיר, לא ג'אנקי). */}
+                    {/* תג ההחלטה - מתחלף בהחלקה עדינה כשההחלטה משתנה (אירוע נדיר, לא ג'אנקי). */}
                     <AnimatePresence mode="wait" initial={false}>
                         <motion.span
                             key={decisionHe}

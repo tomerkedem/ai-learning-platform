@@ -68,7 +68,7 @@ export const BehindScenesLab: React.FC = () => {
     const [genState, setGenState] = useState<'idle' | 'loading' | 'error'>('idle');
     const [genError, setGenError] = useState('');
 
-    // אם השכבה החיה לא זמינה אבל המקור הנבחר הוא Custom, חוזרים לקנוני בשקט —
+    // אם השכבה החיה לא זמינה אבל המקור הנבחר הוא Custom, חוזרים לקנוני בשקט -
     // ה-Custom נשאר מוצג בבורר אבל מסומן "available in live mode" ולא נשבר.
     const effectiveSource: SourceMode = source === 'custom' && cap !== 'live' ? 'canonical' : source;
 
@@ -112,7 +112,7 @@ export const BehindScenesLab: React.FC = () => {
             setCustomScenario(data.scenario as LibraryScenario);
             setGenState('idle');
         } catch (e) {
-            // כשל פנייה חי לא מוריד לתרחיש בודד — הלומד נשאר עם חוויית שכבה 1 המלאה.
+            // כשל פנייה חי לא מוריד לתרחיש בודד - הלומד נשאר עם חוויית שכבה 1 המלאה.
             setGenError(e instanceof Error ? e.message : 'הייצור נכשל');
             setGenState('error');
         }
@@ -568,7 +568,7 @@ const StagePayloadView: React.FC<{ payload: StagePayload }> = ({ payload: p }) =
                     {p.pairs.map((pr, i) => (
                         <span key={i} className="flex flex-col items-center rounded-lg border border-slate-700/50 bg-slate-800/40 px-2 py-1 leading-none">
                             <span className="text-xs font-bold text-slate-200">{pr.token}</span>
-                            <span className="mt-0.5 font-mono text-[11px] text-violet-300" dir="ltr">{pr.id ?? '—'}</span>
+                            <span className="mt-0.5 font-mono text-[11px] text-violet-300" dir="ltr">{pr.id ?? '-'}</span>
                         </span>
                     ))}
                 </div>

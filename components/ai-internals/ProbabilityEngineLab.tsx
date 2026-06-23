@@ -11,21 +11,13 @@ import { ConfidenceMarginCard } from './ConfidenceMarginCard';
 import { ProbabilitySignalsPanel } from './ProbabilitySignalsPanel';
 import { DecisionOutcomeCard } from './DecisionOutcomeCard';
 import { MostLikelyNotTruthCard } from './MostLikelyNotTruthCard';
-import { StickyContextBar, type ContextTone } from './StickyContextBar';
 import { DUR, EASE } from './motionTokens';
-import type { ProbabilityDecisionKind, ProbabilityScenario } from './types';
+import type { ProbabilityScenario } from './types';
 
 interface ProbabilityEngineLabProps {
     scenarios: ProbabilityScenario[];
     defaultId?: string;
 }
-
-// מיפוי החלטה הסתברותית → טון לפס ההקשר הדביק.
-const DECISION_TONE: Record<ProbabilityDecisionKind, ContextTone> = {
-    answer: 'go',
-    context: 'caution',
-    clarify: 'caution',
-};
 
 // טקסטי הסבר לימודיים קצרים, קבועים לכל אזור (לא תלויי בחירה).
 const HELPERS = {
@@ -62,20 +54,14 @@ export const ProbabilityEngineLab: React.FC<ProbabilityEngineLabProps> = ({ scen
             <p className="text-sm leading-relaxed text-slate-400" dir="rtl">
                 בחרו אחד משלושת הניסוחים. כולם עוסקים באותה חבילה, אבל כל אחד מייצר התפלגות הסתברות שונה לגמרי.
             </p>
-            <PromptScenarioSelector scenarios={scenarios} selectedId={current.id} onSelect={setSelectedId} />
-
-            {/* פס הקשר דביק: הניסוח הפעיל + ההחלטה שנגזרה מההתפלגות, גלוי לאורך הניתוח */}
-            <StickyContextBar
-                inputText={current.prompt}
-                labelHe={current.labelHe}
-                labelEn={current.labelEn}
-                inputAccent={current.accent}
-                decisionHe={current.decisionHe}
-                decisionEn={current.decisionEn}
-                tone={DECISION_TONE[current.decisionKind]}
-                metricHe={`פער ${Math.round(current.margin)}%`}
-                reduce={!!reduce}
-            />
+            {/* הבורר עצמו נצמד בראש אזור הניתוח: כך אפשר להחליף ניסוח בכל שלב של הגלילה
+                בלי לחזור למעלה. ה-offset (top) מגיע מ--bts-sticky-top ש-ChapterLayout מודד
+                מגובה הכותרת בפועל, עם נפילה ל-88px. רקע אטום+blur כדי שהניתוח שנגלל מאחור לא יזלוג. */}
+            <div className="sticky z-20" style={{ top: 'var(--bts-sticky-top, 88px)' }}>
+                <div className="rounded-2xl border border-slate-700/40 bg-slate-950/75 p-2 shadow-xl shadow-black/30 backdrop-blur-xl">
+                    <PromptScenarioSelector scenarios={scenarios} selectedId={current.id} onSelect={setSelectedId} />
+                </div>
+            </div>
 
             {/* הסבר לפני דירוג האפשרויות */}
             <p className="text-sm leading-relaxed text-slate-400" dir="rtl">{HELPERS.ranking}</p>

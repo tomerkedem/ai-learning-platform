@@ -28,10 +28,26 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     const [isFocusMode, setIsFocusMode] = useState(false);
     const [showFocusHint, setShowFocusHint] = useState(false);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    // הכותרת הדביקה היא overlay אטום ב-z גבוה; הגובה שלה משתנה (כותרת ארוכה נשברת
+    // לשתי שורות, מובייל, שינוי רוחב). פסים דביקים (StickyContextBar/StickyInputDock)
+    // חייבים להיצמד *מתחת* לכותרת ולא להסתתר מאחוריה - לכן מודדים את הגובה האמיתי
+    // וחושפים אותו כמשתנה CSS שיורש לכל העץ, במקום offset קשיח של 88px.
+    const headerRef = useRef<HTMLDivElement>(null);
+    const [headerHeight, setHeaderHeight] = useState<number | null>(null);
     const router = useRouter();
 
+    useEffect(() => {
+        const el = headerRef.current;
+        if (!el || typeof ResizeObserver === 'undefined') return;
+        const update = () => setHeaderHeight(el.offsetHeight);
+        update();
+        const ro = new ResizeObserver(update);
+        ro.observe(el);
+        return () => ro.disconnect();
+    }, []);
+
     // מצב מיקוד: שחזור ההעדפה לאורך ה-session. נטען רק אחרי mount בצד הלקוח (ולא ב-initial state)
-    // כדי למנוע אי-התאמת hydration — השרת תמיד מרנדר מצב רגיל.
+    // כדי למנוע אי-התאמת hydration - השרת תמיד מרנדר מצב רגיל.
     useEffect(() => {
         if (sessionStorage.getItem('lesson-focus-mode') === '1') {
             // eslint-disable-next-line react-hooks/set-state-in-effect -- הסנכרון עם sessionStorage חייב לקרות אחרי mount בצד הלקוח
@@ -44,7 +60,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     }, [isFocusMode]);
 
     // קיצורי מקלדת למצב מיקוד: Esc יוצא, F מחליף מצב.
-    // לא חוטפים מקשים בזמן הקלדה בשדה/סליידר וכשיש מקש החזקה — כדי לא לשבור מעבדות אינטראקטיביות.
+    // לא חוטפים מקשים בזמן הקלדה בשדה/סליידר וכשיש מקש החזקה - כדי לא לשבור מעבדות אינטראקטיביות.
     useEffect(() => {
         const handleFocusKeys = (e: KeyboardEvent) => {
             if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -166,7 +182,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
         prev: isRTL ? "הקודם" : "Prev",
         chapter: isRTL ? "פרק" : "Chapter",
         finishedTitle: isRTL ? "סיימת את כל הפרקים!" : "You finished every chapter!",
-        finishedSub: isRTL ? "כל הכבוד — הגעת עד הסוף." : "Well done — you made it all the way through."
+        finishedSub: isRTL ? "כל הכבוד - הגעת עד הסוף." : "Well done - you made it all the way through."
     };
 
     const chapterNumDisplay = activeChapter.id === 0 ? activeChapter.num : `${uiText.chapter} ${activeChapter.id}`;
@@ -181,9 +197,12 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     const themeColorName = extractColorName(activeChapter.colorFrom); 
 
     return (
-        <div 
-            className="flex min-h-screen bg-[#050B14] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-hidden relative" 
+        <div
+            className="flex min-h-screen bg-[#050B14] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-hidden relative"
             dir={isRTL ? "rtl" : "ltr"}
+            // נקודת העגינה לפסים הדביקים: גובה הכותרת בפועל + מרווח קטן. עד שנמדד
+            // (SSR / לפני mount) נופלים חזרה ל-88px דרך ה-fallback שב-StickyContextBar.
+            style={headerHeight != null ? ({ ['--bts-sticky-top']: `${headerHeight + 8}px` } as React.CSSProperties) : undefined}
         >
             {/* --- רקע גלובלי --- */}
             <div className="fixed inset-0 z-0 pointer-events-none">
@@ -213,7 +232,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
 
             <CourseSidebar isFocusMode={isFocusMode} />
 
-            {/* מצב מיקוד: כפתור זכוכית צף (דסקטופ בלבד) — לא מתנגש עם ה-Header או הסרגל */}
+            {/* מצב מיקוד: כפתור זכוכית צף (דסקטופ בלבד) - לא מתנגש עם ה-Header או הסרגל */}
             <motion.button
                 onClick={() => setIsFocusMode((prev) => !prev)}
                 title={isRTL ? "הסתר ניווט והרחב את אזור הלמידה" : "Hide navigation and widen the learning area"}
@@ -273,7 +292,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
             <div className="flex-1 relative h-screen flex flex-col z-10">
                 
                 {/* Header */}
-                <div className="absolute top-0 left-0 right-0 z-30 pointer-events-none">
+                <div ref={headerRef} className="absolute top-0 left-0 right-0 z-30 pointer-events-none">
                     <div className="pointer-events-auto">
                         <CourseHeader 
                             chapterLable={chapterLabel}

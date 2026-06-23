@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Compass, MousePointerClick, Move3d, FlaskConical, MapPin, Navigation, Sigma, BookOpen } from 'lucide-react';
+import { Hand, Target, Move3d, FlaskConical, MapPin, Navigation, Sigma, BookOpen } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
@@ -100,10 +100,10 @@ export default function BehindTheScenesChapter7() {
 
                     <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
                         <span className="inline-flex items-center gap-1.5">
-                            <MousePointerClick size={14} className="text-violet-400" /> לחצו על מילה וראו מה קרוב אליה
+                            <Hand size={14} className="text-violet-400" /> גררו מילה במרחב וראו את הקרבה משתנה חי
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                            <Compass size={14} className="text-cyan-400" /> גלו את הקרבה לפי כיוון, לא לפי מרחק
+                            <Target size={14} className="text-cyan-400" /> נחשו לאן נוחתת האנלוגיה, ובדקו כמה דייקתם
                         </span>
                     </div>
                 </div>
@@ -129,9 +129,9 @@ export default function BehindTheScenesChapter7() {
                 </div>
 
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    כאן אפשר לגעת במרחב המשמעות. בניסוי הראשון, &quot;קרבה במרחב&quot;, כל מילה היא חץ מהראשית. לחצו על מילה, וכל השאר
-                    ידורגו לפי קרבת הכיוון אליה: &quot;חתול&quot; קרוב ל&quot;כלב&quot; ורחוק מ&quot;מכונית&quot;. בניסוי השני, &quot;אנלוגיית וקטורים&quot;, נראה
-                    איך אותו כיוון בדיוק מחבר בין &quot;גבר&quot; ל&quot;אישה&quot; ובין &quot;מלך&quot; ל&quot;מלכה&quot;.
+                    כאן לא רק צופים, פועלים. בניסוי הראשון גררו מילה במרחב וצפו בדירוג הקרבה מתעדכן בזמן אמת. הסוד יתגלה כשתגררו
+                    מילה לאורך אותו קו כיוון: הקרבה כמעט לא משתנה, גם כשהמרחק מהראשית משתנה. בניסוי השני נחשו בעצמכם לאן נוחתת
+                    &quot;מלך פחות גבר ועוד אישה&quot;, גררו את הסמן, ובדקו כמה דייקתם.
                 </div>
 
                 <SemanticSpaceLab />

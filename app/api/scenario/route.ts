@@ -1,11 +1,11 @@
 // API route של "מחולל התרחיש החי" (השכבה החיה, layer 2) של המעבדה המאוחדת.
 //
 // תפקיד יחיד ואופציונלי: להפוך טקסט חופשי שהלומד מקליד לתרחיש בסכמה הקנונית,
-// כדי שהמנוע השקוף יציג אותו דרך אותו pipeline בדיוק. רץ אך ורק בצד שרת —
+// כדי שהמנוע השקוף יציג אותו דרך אותו pipeline בדיוק. רץ אך ורק בצד שרת -
 // ANTHROPIC_API_KEY לעולם לא מגיע לדפדפן.
 //
 // גארדריילים:
-//   * זו שכבה 2 בלבד. בלי מפתח / בלי רשת — ה-route מחזיר 503/502 והלקוח נופל
+//   * זו שכבה 2 בלבד. בלי מפתח / בלי רשת - ה-route מחזיר 503/502 והלקוח נופל
 //     לחוויית שכבה 1 המלאה (canonical + ספרייה). שום דבר לא נשבר.
 //   * structured output כפוי + ולידציה בצד שרת, כדי שהפלט תמיד תואם לסכמה
 //     שה-presenter (scenarioLibrary.ts) יודע לצייר.
@@ -127,7 +127,7 @@ const SCENARIO_SCHEMA = {
 
 const SYSTEM_PROMPT = `אתה "מחולל התרחיש" של מעבדת AI שקופה. הלומד מקליד מצב חופשי מכל תחום
 (רפואה, IT, משפט, חינוך, פיננסים, וכו'), ואתה בונה לו תרחיש מובנה שמראה איך מנוע
-שפה היה מנתח אותו — גם כמנוע תשובה (Chat) וגם כמנוע פעולה (Agent).
+שפה היה מנתח אותו - גם כמנוע תשובה (Chat) וגם כמנוע פעולה (Agent).
 
 עליך להפיק (דרך הכלי emit_scenario בלבד):
 - domainHe/domainEn: שם התחום שזיהית מהטקסט.
@@ -175,13 +175,13 @@ function toScenario(raw: Record<string, unknown>, prompt: string): LibraryScenar
     if (tokens.length === 0) throw new Error('no tokens');
 
     const dimsRaw = Array.isArray(raw.dims) ? (raw.dims as Record<string, unknown>[]) : [];
-    const dims = dimsRaw.slice(0, 6).map((d) => ({ he: str(d.he, '—'), en: str(d.en, '—'), value: clamp(d.value, 0, 100, 0) / 100 }));
+    const dims = dimsRaw.slice(0, 6).map((d) => ({ he: str(d.he, '-'), en: str(d.en, '-'), value: clamp(d.value, 0, 100, 0) / 100 }));
     if (dims.length === 0) throw new Error('no dims');
 
     const candRaw = Array.isArray(raw.candidates) ? (raw.candidates as Record<string, unknown>[]) : [];
     const candidates = candRaw.slice(0, 6).map((c) => ({
-        labelHe: str(c.labelHe, '—'),
-        labelEn: str(c.labelEn, '—'),
+        labelHe: str(c.labelHe, '-'),
+        labelEn: str(c.labelEn, '-'),
         similarity: clamp(c.similarity, 0, 130, 0) / 100,
         score: clamp(c.score, 0, 200, 0) / 100,
         prob: clamp(c.prob, 0, 100, 0),
@@ -198,13 +198,13 @@ function toScenario(raw: Record<string, unknown>, prompt: string): LibraryScenar
         .includes(agentBehaviorRaw as LibAgentBehavior) ? (agentBehaviorRaw as LibAgentBehavior) : 'answer-direct';
 
     const missingItems = Array.isArray(agent.missingItems)
-        ? (agent.missingItems as Record<string, unknown>[]).slice(0, 6).map((m) => ({ he: str(m.he, '—'), present: !!m.present }))
+        ? (agent.missingItems as Record<string, unknown>[]).slice(0, 6).map((m) => ({ he: str(m.he, '-'), present: !!m.present }))
         : [];
     const tools = Array.isArray(agent.tools)
-        ? (agent.tools as Record<string, unknown>[]).slice(0, 5).map((t) => ({ nameEn: str(t.nameEn, '—'), match: clamp(t.match, 0, 100, 0) }))
+        ? (agent.tools as Record<string, unknown>[]).slice(0, 5).map((t) => ({ nameEn: str(t.nameEn, '-'), match: clamp(t.match, 0, 100, 0) }))
         : [];
     const obsFields = Array.isArray(agent.observationFields)
-        ? (agent.observationFields as Record<string, unknown>[]).slice(0, 8).map((f) => ({ key: str(f.key, '—'), value: str(f.value, '—') }))
+        ? (agent.observationFields as Record<string, unknown>[]).slice(0, 8).map((f) => ({ key: str(f.key, '-'), value: str(f.value, '-') }))
         : [];
 
     return {
@@ -221,32 +221,32 @@ function toScenario(raw: Record<string, unknown>, prompt: string): LibraryScenar
         confidence: { levelHe: str(raw.confidenceLevelHe, 'בינוני'), levelEn: str(raw.confidenceLevelEn, 'Medium') },
         chat: {
             behavior: chatBehavior,
-            responseHe: str(chat.responseHe, '—'),
+            responseHe: str(chat.responseHe, '-'),
             decisionHe: str(chat.decisionHe, chatBehavior === 'answer' ? 'מתן תשובה' : 'בקשת הקשר נוסף'),
             outcomeHe: str(chat.outcomeHe, chatBehavior === 'answer' ? 'תשובה' : 'בקשת הקשר נוסף'),
         },
         agent: {
             behavior: agentBehavior,
-            taskActionHe: str(agent.taskActionHe, '—'),
+            taskActionHe: str(agent.taskActionHe, '-'),
             requestHe: str(agent.requestHe, 'משימה'),
             missing: { items: missingItems, note: str(agent.missingNote, missingItems.some((m) => !m.present) ? 'יש מידע חסר' : 'כל המידע הנדרש קיים') },
             tools,
             selectedEn: str(agent.selectedEn) || (tools[0]?.nameEn ?? null),
-            call: { code: str(agent.callCode, '—'), called: !!agent.callCalled },
+            call: { code: str(agent.callCode, '-'), called: !!agent.callCalled },
             observation: { available: !!agent.observationAvailable, fields: obsFields },
             risk: {
-                actionHe: str(agent.riskActionHe, '—'),
+                actionHe: str(agent.riskActionHe, '-'),
                 riskHe: str(agent.riskHe, 'סיכון נמוך'),
                 approvalHe: str(agent.approvalHe, 'לא נדרש'),
                 tone: asTone(agent.riskTone),
             },
             decision: {
-                he: str(agent.decisionHe, '—'),
-                en: str(agent.decisionEn, '—'),
-                detail: str(agent.decisionDetail, '—'),
+                he: str(agent.decisionHe, '-'),
+                en: str(agent.decisionEn, '-'),
+                detail: str(agent.decisionDetail, '-'),
                 tone: asTone(agent.decisionTone),
             },
-            outcomeHe: str(agent.outcomeHe, '—'),
+            outcomeHe: str(agent.outcomeHe, '-'),
         },
     };
 }

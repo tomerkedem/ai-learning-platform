@@ -136,7 +136,7 @@ export const PipelineCascadeLab: React.FC = () => {
     const handleReset = () => { stopAuto(); setText(''); setHoverId(null); };
 
     // Replay מה-dock: בועט ב-waveKey, מה שמאתחל מחדש את אנימציית ה-Softmax (ואת
-    // גל השרשרת) בלי לגעת בלוגיקה או בערכים — בדיוק כמו שינוי מצב היה עושה.
+    // גל השרשרת) בלי לגעת בלוגיקה או בערכים - בדיוק כמו שינוי מצב היה עושה.
     const replaySoftmax = () => setWaveKey((k) => k + 1);
 
     const canSwap = mode === 'chat' && (text.includes(WORD_SWAP.from) || text.includes(WORD_SWAP.to));
@@ -185,7 +185,7 @@ export const PipelineCascadeLab: React.FC = () => {
             </div>
 
             {/* ── dock קלט דביק: הקלט + התוצאה הראשית נשארים צמודים וגלויים ─────
-                שדה הקלט הקיים מקודם לתוך ה-dock (children) — מקור קלט יחיד, בלי
+                שדה הקלט הקיים מקודם לתוך ה-dock (children) - מקור קלט יחיד, בלי
                 כפילות. ה-readout קורא את ה-state של המנוע בלבד. ── */}
             <StickyInputDock readout={dockReadout} onReplay={replaySoftmax} reduce={!!reduce}>
                 {mode === 'chat' ? (
@@ -695,7 +695,7 @@ const ScoresLayer: React.FC<{ items: RankItem[]; formulaView: boolean; reduce: b
 
 /* ── שכבה 4: Softmax machine ──────────────────────────────────────────────── */
 // רגע ה-Softmax: אנימציית ההוראה המרכזית של הלומדה. שתי פעימות שמגלמות את שתי
-// הפעולות של Softmax — (1) הגברה: exp מותח את ההפרשים, חלקו של המוביל גדל יותר
+// הפעולות של Softmax - (1) הגברה: exp מותח את ההפרשים, חלקו של המוביל גדל יותר
 // מפרופורציונלית; (2) נרמול: המשקלים נשפכים למיכל בעל קיבולת קבועה של 100%
 // ומתחרים על מקום. כל הערכים נקראים חי מהמנוע; האנימציה נוחתת בדיוק על
 // ההסתברויות שהמנוע נתן (it.prob), בלי לשנות אף מספר.
@@ -732,13 +732,13 @@ const SoftmaxLayer: React.FC<{
     waveKey: number;
     reduce: boolean;
 }> = ({ items, temperature, formulaView, hasInput, waveKey, reduce }) => {
-    // ── הכל נקרא חי מהמנוע. שכבת הצגה בלבד — איננו משנים אף ערך. ──
+    // ── הכל נקרא חי מהמנוע. שכבת הצגה בלבד - איננו משנים אף ערך. ──
     const scores = items.map((it) => it.score);
     const sumScores = scores.reduce((a, b) => a + Math.max(0, b), 0) || 1;
     // יחס הציון הגולמי (לפני ההגברה) מול ההסתברות הסופית של המנוע (אחרי exp+נרמול,
     // כולל ה-temperature הקנונית). ההפרש בין השניים הוא בדיוק ההגברה ש-exp(s/T) יוצר.
     const rawShare = scores.map((s) => Math.max(0, s) / sumScores);
-    const probShare = items.map((it) => it.prob); // אמת המנוע — נקודת הנחיתה הסופית
+    const probShare = items.map((it) => it.prob); // אמת המנוע - נקודת הנחיתה הסופית
 
     const [phase, setPhase] = useState<SoftmaxPhase>(reduce || !hasInput ? 'done' : 'idle');
     const [auto, setAuto] = useState(true);
@@ -768,11 +768,11 @@ const SoftmaxLayer: React.FC<{
     const stepNext = () => setPhase((p) => (p === 'idle' ? 'amplify' : p === 'amplify' ? 'normalize' : 'done'));
 
     // רוחב הסגמנט לכל פעימה. idle: יחסי הציון הגולמי. amplify: יחסי ההסתברות
-    // (ההגברה — אותו מיכל חלקי, אבל חלקו של המוביל גדל). normalize/done: מילוי מלא.
+    // (ההגברה - אותו מיכל חלקי, אבל חלקו של המוביל גדל). normalize/done: מילוי מלא.
     const widthPctFor = (i: number): number => {
         if (phase === 'idle') return rawShare[i] * BEAT1_FILL * 100;
         if (phase === 'amplify') return probShare[i] * BEAT1_FILL * 100;
-        return probShare[i] * 100; // normalize / done — Σ=100%
+        return probShare[i] * 100; // normalize / done - Σ=100%
     };
 
     const normalized = phase === 'normalize' || phase === 'done';
@@ -845,9 +845,9 @@ const SoftmaxLayer: React.FC<{
 
                     <div className="mt-2 flex items-center justify-between gap-3 text-[11px]">
                         <span className="text-slate-400">
-                            {phase === 'idle' && 'ציונים גולמיים — לא בטווח 0–100% ולא מסתכמים ל-100%'}
-                            {phase === 'amplify' && 'exp(s/T): ההפרשים נמתחים — חלקו של המוביל גדל יותר'}
-                            {phase === 'normalize' && 'נשפך למיכל ה-100% — כשהמוביל לוקח יותר, האחרים נדחקים'}
+                            {phase === 'idle' && 'ציונים גולמיים - לא בטווח 0–100% ולא מסתכמים ל-100%'}
+                            {phase === 'amplify' && 'exp(s/T): ההפרשים נמתחים - חלקו של המוביל גדל יותר'}
+                            {phase === 'normalize' && 'נשפך למיכל ה-100% - כשהמוביל לוקח יותר, האחרים נדחקים'}
                             {phase === 'done' && 'נחת על ההסתברויות של המנוע'}
                         </span>
                         <span className={`shrink-0 rounded-md px-2 py-0.5 font-mono font-bold ${normalized ? 'bg-emerald-500/15 text-emerald-300' : 'bg-amber-500/15 text-amber-300'}`} dir="ltr">
@@ -866,7 +866,7 @@ const SoftmaxLayer: React.FC<{
                     ))}
                 </div>
 
-                {/* המכונה (ה-pulse המתמשך מעומעם בזמן ההפיכה — תנועה אחת בכל רגע) */}
+                {/* המכונה (ה-pulse המתמשך מעומעם בזמן ההפיכה - תנועה אחת בכל רגע) */}
                 <div className="flex flex-col items-center gap-2">
                     <motion.div
                         animate={reduce || animating ? {} : { boxShadow: ['0 0 0 0 rgba(168,85,247,0.0)', '0 0 22px -2px rgba(168,85,247,0.55)', '0 0 0 0 rgba(168,85,247,0.0)'] }}
