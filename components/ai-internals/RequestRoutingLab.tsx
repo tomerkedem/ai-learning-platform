@@ -12,9 +12,10 @@ import { RouteSwitchboard } from './RouteSwitchboard';
 import { RiskMeter } from './RiskMeter';
 import { MissingInfoSpotlight } from './MissingInfoSpotlight';
 import { DecisionCard } from './DecisionCard';
+import { StickyContextBar, type ContextTone } from './StickyContextBar';
 import { ACCENTS } from './accents';
 import { DUR, EASE } from './motionTokens';
-import type { RoutingExample } from './types';
+import type { RouteKind, RoutingExample } from './types';
 
 interface RequestRoutingLabProps {
     examples: RoutingExample[];
@@ -22,6 +23,20 @@ interface RequestRoutingLabProps {
 }
 
 // טקסטי הסבר לימודיים קצרים, קבועים לכל אזור (לא תלויי בחירה).
+// מיפוי מסלול → טון ההחלטה לפס ההקשר הדביק, ותווית אנגלית קצרה.
+const ROUTE_TONE: Record<RouteKind, ContextTone> = {
+    answer: 'go',
+    tool: 'go',
+    ask: 'caution',
+    stop: 'stop',
+};
+const ROUTE_EN: Record<RouteKind, string> = {
+    answer: 'Answer',
+    tool: 'Prepare tool',
+    ask: 'Ask for info',
+    stop: 'Stop for approval',
+};
+
 const HELPERS = {
     intentShift: 'זהו שינוי הכוונה. המילים בפרומט הן הרמזים הראשונים: האם המשתמש שואל, מבקש בדיקה, או מבקש פעולה?',
     detector: 'כאן המנוע מנסה להבין איזה סוג בקשה עומדת מולו. הוא לא בודק עדיין את החבילה עצמה, אלא רק מסווג את הפרומט: שאלה כללית, בדיקה ספציפית או בקשת פעולה.',
@@ -60,6 +75,17 @@ export const RequestRoutingLab: React.FC<RequestRoutingLabProps> = ({ examples, 
                 בחרו אחד משלושת הניסוחים. כולם עוסקים באותו נושא - חבילה שמתעכבת - אבל כל אחד מהם גורם למנוע לבחור מסלול אחר.
             </p>
             <RequestExampleSelector examples={examples} selectedId={current.id} onSelect={setSelectedId} />
+
+            {/* פס הקשר דביק: הניסוח הפעיל + המסלול שנגזר ממנו, גלוי לאורך גלילת הניתוח */}
+            <StickyContextBar
+                inputText={current.requestText}
+                labelHe={current.label}
+                inputAccent={current.accent}
+                decisionHe={current.decision.label}
+                decisionEn={ROUTE_EN[current.selectedRoute]}
+                tone={ROUTE_TONE[current.selectedRoute]}
+                reduce={!!reduce}
+            />
 
             {/* רמזי החלטה: מה בפרומט גרם למנוע לזהות כוונה ולבחור מסלול */}
             <p className="text-sm leading-relaxed text-slate-400" dir="rtl">{HELPERS.signals}</p>

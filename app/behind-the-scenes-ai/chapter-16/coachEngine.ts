@@ -1,14 +1,14 @@
-// מנוע כלי האימון של פרק 14: "איך לעבוד נכון עם מודל ו-Agent".
+// מנוע כלי האימון של פרק 16: "איך לעבוד נכון עם מודל ו-Agent".
 // קובץ טהור: אין כאן React, אין LLM, אין רשת, אין פעולה אמיתית. אלה כלי
-// אימון לימודיים. המנוע צורך את ה-task parser של פרק 9 כדי לזהות משימה,
+// אימון לימודיים. המנוע צורך את ה-task parser של פרק 10 כדי לזהות משימה,
 // מטרה, מידע חסר וסיכון, ובונה מעליו הערכת איכות בקשה והמלצת מצב.
 //
 // זה לא פרק על "לרמות" את המודל. זה שיתוף פעולה מקצועי. נוסחת העבודה:
 //   good_request = clear_goal + relevant_context + required_data
 //                 + output_expectation + safety_boundaries
 
-import { parse } from '@/app/behind-the-scenes-ai/chapter-9/taskData';
-import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/chapter-9/taskEngine';
+import { parse } from '@/app/behind-the-scenes-ai/chapter-10/taskData';
+import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/chapter-10/taskEngine';
 
 export type { TaskAnalysis };
 
@@ -103,7 +103,7 @@ export interface CoachResult {
 
 /** מעריך בקשה דרך כל הממדים. מקור האמת היחיד למסך. */
 export function coach(text: string): CoachResult {
-    const p = parse(text); // פרק 9
+    const p = parse(text); // פרק 10
     const dims = [evalGoal(p, text), evalData(p), evalContext(text), evalRisk(p, text), evalOutput(text)];
     const goodCount = dims.filter((d) => d.level === 'high' || d.level === 'na').length;
     const scorePct = Math.round((goodCount / dims.length) * 100);

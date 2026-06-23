@@ -22,4 +22,7 @@ def analyze(text):
     return {"label": label, "score": confidence}
 
 sentence = "Python makes AI development fast and fun"
-print(json.dumps(analyze(sentence), indent=2))`;
+result = analyze(sentence)
+
+print(json.dumps(result, indent=2))
+print(f'\\nThe text "{sentence}" is {result["label"]} (confidence {result["score"]}).')`;

@@ -131,7 +131,7 @@ export default function PythonIntroPage() {
                 <div className="max-w-3xl mx-auto mb-16 space-y-6">
                     <h3 className="text-3xl font-bold text-white italic">פייתון היא רק ההתחלה.</h3>
                     <p className="text-xl text-slate-300 leading-relaxed">
-                    להראות איך להשתמש בפייתון בצורה ברורה ונכונה, כדי שתוכל להמשיך למסע הגדול של הסדרה: הבנה מתמטית אינטואיטיבית, הנדסת נתונים ופרויקטי AI מלאים.
+                    כאן נבנה בסיס ברור ונכון לעבודה עם פייתון, כדי שתוכל להמשיך למסע הגדול של הסדרה: הבנה מתמטית אינטואיטיבית, הנדסת נתונים ופרויקטי AI מלאים.
                     </p>
                     <p className="text-emerald-400 font-bold text-2xl">
                     וזו התחלה מצוינת.

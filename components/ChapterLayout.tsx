@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { CourseHeader } from "@/components/CourseHeader";
 import { CourseSidebar } from "@/components/CourseSidebar";
 import { courses, type Language } from "@/lib/courseData"; 
-import { ChevronRight, ChevronLeft, BookOpen, Trophy } from "lucide-react";
+import { ChevronRight, ChevronLeft, BookOpen, Trophy, Maximize2, Minimize2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ChapterLayoutProps {
     children: ReactNode;
@@ -24,8 +25,59 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     // --- 1. Hooks & Refs ---
     const [isScrolled, setIsScrolled] = useState(false);
     const [scrollProgress, setScrollProgress] = useState(0);
+    const [isFocusMode, setIsFocusMode] = useState(false);
+    const [showFocusHint, setShowFocusHint] = useState(false);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
+
+    // מצב מיקוד: שחזור ההעדפה לאורך ה-session. נטען רק אחרי mount בצד הלקוח (ולא ב-initial state)
+    // כדי למנוע אי-התאמת hydration — השרת תמיד מרנדר מצב רגיל.
+    useEffect(() => {
+        if (sessionStorage.getItem('lesson-focus-mode') === '1') {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- הסנכרון עם sessionStorage חייב לקרות אחרי mount בצד הלקוח
+            setIsFocusMode(true);
+        }
+    }, []);
+
+    useEffect(() => {
+        sessionStorage.setItem('lesson-focus-mode', isFocusMode ? '1' : '0');
+    }, [isFocusMode]);
+
+    // קיצורי מקלדת למצב מיקוד: Esc יוצא, F מחליף מצב.
+    // לא חוטפים מקשים בזמן הקלדה בשדה/סליידר וכשיש מקש החזקה — כדי לא לשבור מעבדות אינטראקטיביות.
+    useEffect(() => {
+        const handleFocusKeys = (e: KeyboardEvent) => {
+            if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+
+            const target = e.target as HTMLElement | null;
+            if (target) {
+                const tag = target.tagName;
+                if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable) return;
+            }
+
+            if (e.key === 'Escape') {
+                setIsFocusMode((prev) => (prev ? false : prev));
+            } else if (e.key === 'f' || e.key === 'F') {
+                e.preventDefault();
+                setIsFocusMode((prev) => !prev);
+            }
+        };
+
+        window.addEventListener('keydown', handleFocusKeys);
+        return () => window.removeEventListener('keydown', handleFocusKeys);
+    }, []);
+
+    // רמז כניסה אלגנטי: בכל פעם שנכנסים למצב מיקוד מציגים תזכורת חולפת ("Esc ליציאה") שנעלמת לבד.
+    useEffect(() => {
+        if (!isFocusMode) return;
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- הצגת הרמז היא תגובת UI חולפת למעבר מצב
+        setShowFocusHint(true);
+        const t = setTimeout(() => setShowFocusHint(false), 2800);
+        return () => {
+            clearTimeout(t);
+            setShowFocusHint(false);
+        };
+    }, [isFocusMode]);
 
     // פתרון לבעיית הגלילה בפרק 16: איפוס מיקום הגלילה בכל מעבר פרק
     useEffect(() => {
@@ -150,12 +202,78 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050B14_120%)]"></div>
             </div>
 
-            <CourseSidebar />
+            {/* מצב מיקוד: וינייטה אווירתית שמכהה את הקצוות וממקדת את העין במרכז הקריאה */}
+            <motion.div
+                aria-hidden
+                initial={false}
+                animate={{ opacity: isFocusMode ? 1 : 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="fixed inset-0 z-[5] pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_center,transparent_55%,rgba(2,4,10,0.85)_100%)]"
+            />
+
+            <CourseSidebar isFocusMode={isFocusMode} />
+
+            {/* מצב מיקוד: כפתור זכוכית צף (דסקטופ בלבד) — לא מתנגש עם ה-Header או הסרגל */}
+            <motion.button
+                onClick={() => setIsFocusMode((prev) => !prev)}
+                title={isRTL ? "הסתר ניווט והרחב את אזור הלמידה" : "Hide navigation and widen the learning area"}
+                aria-pressed={isFocusMode}
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 400, damping: 26 }}
+                className="group hidden md:flex fixed bottom-6 left-6 z-50 items-center gap-2.5 rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-sm font-semibold text-slate-100 shadow-[0_8px_32px_rgba(2,6,23,0.6)] backdrop-blur-xl transition-colors hover:border-indigo-400/40 hover:text-white"
+            >
+                {/* הילה רכה בריחוף */}
+                <span className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r from-indigo-500/0 via-indigo-500/20 to-cyan-500/0 opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
+
+                <AnimatePresence mode="wait" initial={false}>
+                    <motion.span
+                        key={isFocusMode ? "min" : "max"}
+                        initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+                        animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                        exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex"
+                    >
+                        {isFocusMode
+                            ? <Minimize2 size={16} className="text-cyan-300" />
+                            : <Maximize2 size={16} className="text-indigo-300" />}
+                    </motion.span>
+                </AnimatePresence>
+
+                <span>{isFocusMode ? (isRTL ? "יציאה ממצב מיקוד" : "Exit focus mode") : (isRTL ? "מצב מיקוד" : "Focus mode")}</span>
+
+                <kbd className="ms-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] leading-none text-slate-400 transition-colors group-hover:text-slate-200">F</kbd>
+            </motion.button>
+
+            {/* מצב מיקוד: רמז כניסה חולף ממורכז למעלה */}
+            <div className="hidden md:block fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+                <AnimatePresence>
+                    {showFocusHint && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -16, scale: 0.96 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -16, scale: 0.96 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 26 }}
+                            className="flex items-center gap-2.5 rounded-full border border-white/10 bg-slate-900/80 px-4 py-2 text-xs font-medium text-slate-200 shadow-[0_8px_30px_rgba(2,6,23,0.6)] backdrop-blur-xl"
+                        >
+                            <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+                            <span>{isRTL ? "מצב מיקוד פעיל" : "Focus mode on"}</span>
+                            <span className="text-slate-600">·</span>
+                            <span className="flex items-center gap-1.5 text-slate-400">
+                                {isRTL ? "הקש" : "Press"}
+                                <kbd className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] leading-none">Esc</kbd>
+                                {isRTL ? "ליציאה" : "to exit"}
+                            </span>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
 
             <div className="flex-1 relative h-screen flex flex-col z-10">
                 
                 {/* Header */}
-                <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none">
+                <div className="absolute top-0 left-0 right-0 z-30 pointer-events-none">
                     <div className="pointer-events-auto">
                         <CourseHeader 
                             chapterLable={chapterLabel}
@@ -178,8 +296,9 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                     className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth"
                     onScroll={handleScroll}
                 >
-                    <main className={`max-w-4xl mx-auto px-8 md:px-12 pb-32 space-y-24 
-                        ${isIntro ? 'pt-12' : 'pt-52 py-12'} 
+                    <main className={`mx-auto px-8 md:px-12 pb-32 space-y-24 transition-[max-width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+                        ${isFocusMode ? 'max-w-5xl' : 'max-w-4xl'}
+                        ${isIntro ? 'pt-12' : 'pt-52 py-12'}
                     `}>
                         
                         <div className="min-h-[50vh]">

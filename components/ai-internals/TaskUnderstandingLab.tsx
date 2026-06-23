@@ -8,17 +8,18 @@ import {
     Hand, Gauge, ScanText, Workflow, ScanLine, Info, Lightbulb,
 } from 'lucide-react';
 
+import { StickyContextBar, type ContextTone } from './StickyContextBar';
 import {
     parse, SCENARIOS, NARRATION, SIGNAL_WORDS, PIPELINE_STEPS,
     BARCODE_SAMPLE, DEFAULT_SCENARIO_ID, type SectionNarration,
-} from '@/app/behind-the-scenes-ai/chapter-9/taskData';
+} from '@/app/behind-the-scenes-ai/chapter-10/taskData';
 import {
     DECISION_META, type TaskAnalysis, type TaskDecisionKind, type ClarityLevel,
-} from '@/app/behind-the-scenes-ai/chapter-9/taskEngine';
+} from '@/app/behind-the-scenes-ai/chapter-10/taskEngine';
 
 /* ════════════════════════ טון צבעוני לפי החלטה ═══════════════════════════ */
 // Answer נייטרלי-teal, Ask ב-amber של זהירות, Use tool ברמז violet קדימה,
-// Stop for approval ב-crimson (rose), כמו הסיכון בפרק 8.
+// Stop for approval ב-crimson (rose), כמו הסיכון בפרק 9.
 
 type Tone = 'answer' | 'ask' | 'tool' | 'stop';
 
@@ -37,6 +38,14 @@ const DECISION_ICON: Record<TaskDecisionKind, React.ReactNode> = {
 };
 
 const DECISION_OPTIONS: TaskDecisionKind[] = ['answer', 'ask-info', 'use-tool', 'stop-approval'];
+
+// טון ההחלטה → טון פס ההקשר הדביק.
+const DECISION_TONE: Record<Tone, ContextTone> = {
+    answer: 'go',
+    tool: 'go',
+    ask: 'caution',
+    stop: 'stop',
+};
 
 const CLARITY_META: Record<ClarityLevel, { he: string; en: string; tone: Tone; fill: number }> = {
     low: { he: 'נמוך', en: 'Low', tone: 'stop', fill: 1 },
@@ -117,6 +126,17 @@ export const TaskUnderstandingLab: React.FC = () => {
                 </div>
             </div>
 
+            {/* פס הקשר דביק: הבקשה הפעילה + ההחלטה שנגזרה ממנה, גלוי לאורך גלילת הניתוח */}
+            <StickyContextBar
+                inputText={text.trim() || 'ממתין לבקשה'}
+                labelHe={SCENARIOS.find((s) => s.text === text)?.labelHe ?? 'בקשה חופשית'}
+                labelEn={SCENARIOS.find((s) => s.text === text)?.labelEn ?? 'Free request'}
+                decisionHe={DECISION_META[a.decision].he}
+                decisionEn={DECISION_META[a.decision].en}
+                tone={DECISION_TONE[DECISION_META[a.decision].tone]}
+                reduce={reduce}
+            />
+
             {/* ── מסלול ה-Agent (החתימתי) ─────────────────────────────────── */}
             <AgentPipeline a={a} reduce={reduce} />
 
@@ -174,7 +194,7 @@ export const TaskUnderstandingLab: React.FC = () => {
                 <span>
                     זהו מודל לימודי של ניתוח משימה: המנוע מפרק את הבקשה לפי טבלת חוקים קבועה ושקופה. <span className="font-bold text-slate-400">Agents אמיתיים מפרקים משימות בצורה עשירה הרבה יותר</span>,
                     אבל העיקרון של מטרה, מידע חסר והחלטה תקף. וזכרו: <span className="font-bold text-slate-400">Action signal אינו אישור לפעול</span>. זיהוי משימה הוא תחילת תהליך, לא אישור ביצוע.
-                    כש-&quot;Ready for tool selection&quot; מופיע, השלב הבא הוא בחירת כלי, וזה כבר פרק 10.
+                    כש-&quot;Ready for tool selection&quot; מופיע, השלב הבא הוא בחירת כלי, וזה כבר פרק 11.
                 </span>
             </div>
         </div>

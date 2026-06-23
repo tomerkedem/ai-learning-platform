@@ -205,7 +205,7 @@ export const courses: Record<string, CourseData> = {
                 num: "מבוא",
                 label: { he: "התחלה", en: "Start" },
                 title: { he: "מבוא: פייתון היא שפת ההנדסה של ה-AI", en: "Intro: Python is the Engineering Language of AI" },
-                description: { he: "למה הספר הזה נכתב למתכנתים מנוסים ולא למתחילים.", en: "Why this book is for experienced devs." },
+                description: { he: "למה הלומדה הזו נכתבה למתכנתים מנוסים ולא למתחילים.", en: "Why this book is for experienced devs." },
                 readTime: "5 דקות",
                 labelColor: "text-slate-400",
                 colorFrom: "from-slate-400",
@@ -653,6 +653,18 @@ export const courses: Record<string, CourseData> = {
                 id: 7,
                 href: "/behind-the-scenes-ai/chapter-7",
                 num: "07",
+                label: { he: "מרחב המשמעות", en: "The Meaning Space" },
+                title: { he: "הגיאומטריה של המשמעות", en: "The Geometry of Meaning" },
+                description: { he: "וקטור הוא לא רק רשימת מספרים, הוא נקודה וחץ במרחב. כאן נבין למה הכיוון חשוב יותר מהמרחק, איך מילים קרובות במשמעות שוכנות באותו אזור, ומהי אנלוגיה בין וקטורים.", en: "A vector is not just a list of numbers, it is a point and an arrow in space. Here we see why direction matters more than distance, how words close in meaning sit in the same region, and what a vector analogy is." },
+                readTime: "12 דקות",
+                labelColor: "text-violet-400",
+                colorFrom: "from-violet-400",
+                colorTo: "to-fuchsia-500"
+            },
+            {
+                id: 8,
+                href: "/behind-the-scenes-ai/chapter-8",
+                num: "08",
                 label: { he: "דמיון וציונים", en: "Similarity and Scores" },
                 title: { he: "דמיון, ציונים והסתברויות", en: "Similarity, Scores and Probabilities" },
                 description: { he: "המערכת משווה, מדרגת, ואז הופכת ציונים להסתברויות. האחוזים אינם קסם, הם השלב האחרון בשרשרת חישובים שלמה.", en: "The system compares, ranks, then turns scores into probabilities. The percentages are not magic, they are the final step in a full computation chain." },
@@ -662,9 +674,9 @@ export const courses: Record<string, CourseData> = {
                 colorTo: "to-emerald-500"
             },
             {
-                id: 8,
-                href: "/behind-the-scenes-ai/chapter-8",
-                num: "08",
+                id: 9,
+                href: "/behind-the-scenes-ai/chapter-9",
+                num: "09",
                 label: { he: "מתי לענות ומתי לעצור", en: "When to Answer or Stop" },
                 title: { he: "Confidence - מתי לענות ומתי לעצור", en: "Confidence - When to Answer and When to Stop" },
                 description: { he: "מודל טוב לא רק יודע לענות, הוא יודע מתי לא לענות. הביטחון אינו רק מספר, הוא שער החלטה שמכריע אם הפער מספיק כדי לפעול.", en: "A good model not only knows how to answer, it knows when not to. Confidence is not just a number, it is a decision gate that decides whether the margin is enough to act." },
@@ -674,9 +686,9 @@ export const courses: Record<string, CourseData> = {
                 colorTo: "to-teal-500"
             },
             {
-                id: 9,
-                href: "/behind-the-scenes-ai/chapter-9",
-                num: "09",
+                id: 10,
+                href: "/behind-the-scenes-ai/chapter-10",
+                num: "10",
                 label: { he: "מ-Prompt למשימה", en: "From Prompt to Task" },
                 title: { he: "מ-Prompt למשימה - איך Agent מבין מה לעשות", en: "From Prompt to Task - How an Agent Understands What to Do" },
                 description: { he: "מילה אחת מהפכת שאלה למשימה. Agent מתחיל בלהבין את המשימה: מה המטרה, מה חסר, ומה מותר. זיהוי משימה אינו אישור לפעול.", en: "One word turns a question into a task. An agent starts by understanding the task: the goal, what is missing, and what is allowed. Detecting a task is not approval to act." },
@@ -686,9 +698,9 @@ export const courses: Record<string, CourseData> = {
                 colorTo: "to-fuchsia-500"
             },
             {
-                id: 10,
-                href: "/behind-the-scenes-ai/chapter-10",
-                num: "10",
+                id: 11,
+                href: "/behind-the-scenes-ai/chapter-11",
+                num: "11",
                 label: { he: "בחירת כלי", en: "Tool Selection" },
                 title: { he: "בחירת Tool - מתי Agent צריך כלי", en: "Tool Selection - When an Agent Needs a Tool" },
                 description: { he: "Agent לא אמור לנחש מידע שאפשר לבדוק בכלי, אבל גם לא להשתמש בכלי כשלא צריך. בחירת כלי היא החלטה רב-גורמית: התאמה, נתונים, סיכון והרשאה.", en: "An agent should not guess data a tool could check, but also should not use a tool when none is needed. Tool selection is a multi-factor decision: match, data, risk, and permission." },
@@ -698,9 +710,9 @@ export const courses: Record<string, CourseData> = {
                 colorTo: "to-emerald-500"
             },
             {
-                id: 11,
-                href: "/behind-the-scenes-ai/chapter-11",
-                num: "11",
+                id: 12,
+                href: "/behind-the-scenes-ai/chapter-12",
+                num: "12",
                 label: { he: "הפעלת כלי ותוצאה", en: "Tool Call and Observation" },
                 title: { he: "Tool Call, Observation והחלטה הבאה", en: "Tool Call, Observation and the Next Decision" },
                 description: { he: "Agent פועל בלולאה: מחליט, מפעיל כלי, קורא תוצאה, ומחליט שוב. Tool Call אינו סוף הסיפור, הוא רק דרך להביא Observation חדשה.", en: "An agent works in a loop: it decides, calls a tool, reads the result, and decides again. A tool call is not the end of the story, only a way to bring a new observation." },
@@ -710,9 +722,9 @@ export const courses: Record<string, CourseData> = {
                 colorTo: "to-teal-500"
             },
             {
-                id: 12,
-                href: "/behind-the-scenes-ai/chapter-12",
-                num: "12",
+                id: 13,
+                href: "/behind-the-scenes-ai/chapter-13",
+                num: "13",
                 label: { he: "עצירה ואחריות", en: "Stop and Responsibility" },
                 title: { he: "עצירה, אישור ואחריות", en: "Stopping, Approval and Responsibility" },
                 description: { he: "Agent טוב יודע מתי לפעול ומתי לעצור. ככל שהוא קרוב יותר לפעולה אמיתית בעולם, כך הוא צריך יותר בקרה, הרשאה ואחריות. עצירה אינה כישלון.", en: "A good agent knows when to act and when to stop. The closer it gets to real-world action, the more control, permission, and responsibility it needs. Stopping is not failure." },
@@ -722,9 +734,9 @@ export const courses: Record<string, CourseData> = {
                 colorTo: "to-rose-500"
             },
             {
-                id: 13,
-                href: "/behind-the-scenes-ai/chapter-13",
-                num: "13",
+                id: 14,
+                href: "/behind-the-scenes-ai/chapter-14",
+                num: "14",
                 label: { he: "המעבדה המאוחדת", en: "The Unified Lab" },
                 title: { he: "Behind the Scenes Lab - המודל וה-Agent על אותו מסך", en: "Behind the Scenes Lab - The Model and the Agent on One Screen" },
                 description: { he: "פרק השיא: כל החלקים מתאחדים למעבדה אחת, שבה אותו קלט מפעיל מנוע תשובה (Chat) או מנוע פעולה (Agent). לא ראינו רק תשובה, ראינו איך היא נבנתה.", en: "The capstone: all the parts unite into one lab where the same input drives an answer engine (Chat) or an action engine (Agent). We did not just see an answer, we saw how it was built." },
@@ -734,9 +746,9 @@ export const courses: Record<string, CourseData> = {
                 colorTo: "to-cyan-500"
             },
             {
-                id: 14,
-                href: "/behind-the-scenes-ai/chapter-14",
-                num: "14",
+                id: 15,
+                href: "/behind-the-scenes-ai/chapter-15",
+                num: "15",
                 label: { he: "האם AI לומד מטעויות", en: "Does AI Learn from Mistakes" },
                 title: { he: "האם AI לומד מהטעויות שלך", en: "Does AI Learn From Your Mistakes" },
                 description: { he: "כשאתה מדבר עם המודל הוא לא לומד ממך. המשקלים שלו קפואים, והתיקון שלך חי רק כל עוד הוא בהקשר, ונעלם כשהשיחה נגמרת. אבל זו לא כל התמונה: יש שלוש שכבות למידה שונות.", en: "When you talk to the model it does not learn from you. Its weights are frozen, and your correction lives only while it is in context, and vanishes when the conversation ends. But that is not the whole picture: there are three different layers of learning." },
@@ -746,9 +758,9 @@ export const courses: Record<string, CourseData> = {
                 colorTo: "to-amber-500"
             },
             {
-                id: 15,
-                href: "/behind-the-scenes-ai/chapter-15",
-                num: "15",
+                id: 16,
+                href: "/behind-the-scenes-ai/chapter-16",
+                num: "16",
                 label: { he: "לעבוד נכון עם AI", en: "Working Well with AI" },
                 title: { he: "איך לעבוד נכון עם מודל ו-Agent", en: "How to Work Well with a Model and an Agent" },
                 description: { he: "פרק הסיום: מי שמבין מה קורה מאחורי הקלעים יודע לנסח בקשות טובות יותר, לזהות מגבלות, ולבחור נכון בין Chat לבין Agent. כתיבה טובה היא הגדרה, לא קסם.", en: "The closing chapter: whoever understands what happens behind the scenes writes better requests, recognizes limits, and chooses well between Chat and Agent. Good writing is definition, not magic." },

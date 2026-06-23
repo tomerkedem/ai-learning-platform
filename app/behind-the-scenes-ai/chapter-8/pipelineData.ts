@@ -1,4 +1,4 @@
-// נתוני פרק 7: "דמיון, ציונים והסתברויות".
+// נתוני פרק 8: "דמיון, ציונים והסתברויות".
 // כאן יושב כל מה שניתן לכוונן: וקטורי הכוונות, טבלאות המילים והצמדים,
 // המשקלים w1/w2/w3, ה-temperature, ותרחישי ה-Agent. החישוב עצמו (cosine,
 // score, softmax) חי בקובץ scoringEngine.ts הטהור. כאן רק הנתונים והרכבתם.
@@ -33,7 +33,7 @@ import {
 export type { ConfidenceLevel };
 
 /* ════════════════════════════ ממדי הווקטור ═══════════════════════════════ */
-// 5 הממדים של פרק 7, בסדר הווקטור [Delivery, Failure, System, Payment, Address].
+// 5 הממדים של פרק 8, בסדר הווקטור [Delivery, Failure, System, Payment, Address].
 // משתמשים בצבעים ובתוויות של פרק 6 לשמירת רציפות ויזואלית.
 
 export const DIMS: DimKey[] = ['delivery', 'failure', 'system', 'payment', 'address'];
@@ -420,7 +420,7 @@ export function analyzeAgent(hasBarcode: boolean): AnalysisResult {
 }
 
 /* ════════════════════════════ מפת הדרכים ═════════════════════════════════ */
-// פרק 7: כל הצמתים פעילים עד Probabilities (ועד Decision בהמשך).
+// פרק 8: כל הצמתים פעילים עד Probabilities (ועד Decision בהמשך).
 
 export const ROADMAP_STEPS_7: { he: string; en: string; active: boolean }[] = [
     { he: 'טקסט', en: 'Text', active: true },

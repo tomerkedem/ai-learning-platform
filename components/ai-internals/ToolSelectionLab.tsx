@@ -9,6 +9,7 @@ import {
     ArrowLeft, KeyRound, CircleSlash,
 } from 'lucide-react';
 
+import { StickyContextBar, type ContextTone } from './StickyContextBar';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
 
@@ -16,9 +17,9 @@ import {
     selectFor, TOOLS, SCENARIOS, NARRATION, DECISION_META, RISK_META, PERMISSION_META,
     GATE_STEPS, BARCODE_SAMPLE, DEFAULT_SCENARIO_ID,
     type SectionNarration, type DecisionTone,
-} from '@/app/behind-the-scenes-ai/chapter-10/toolData';
-import type { ToolEval, ToolSelection } from '@/app/behind-the-scenes-ai/chapter-10/toolEngine';
-import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/chapter-9/taskEngine';
+} from '@/app/behind-the-scenes-ai/chapter-11/toolData';
+import type { ToolEval, ToolSelection } from '@/app/behind-the-scenes-ai/chapter-11/toolEngine';
+import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/chapter-10/taskEngine';
 
 /* ════════════════════════ טון צבעוני ═════════════════════════════════════ */
 // Selected ב-emerald, No tool needed נייטרלי-teal (כבוד), Ask/Approval ב-amber,
@@ -43,6 +44,15 @@ const STATE_TONE_BG: Record<StateTone, string> = {
 };
 
 const pctOf = (n: number) => Math.round(n * 100);
+
+// טון החלטת בחירת הכלי → טון פס ההקשר הדביק.
+const DECISION_TONE: Record<DecisionTone, ContextTone> = {
+    selected: 'go',
+    answer: 'go',
+    ask: 'caution',
+    approval: 'caution',
+    blocked: 'stop',
+};
 
 /* ════════════════════════ קומפוננטה ראשית ════════════════════════════════ */
 
@@ -117,6 +127,17 @@ export const ToolSelectionLab: React.FC = () => {
                 </div>
             </div>
 
+            {/* פס הקשר דביק: הבקשה הפעילה + החלטת בחירת הכלי, גלוי לאורך גלילת הדירוג והשערים */}
+            <StickyContextBar
+                inputText={text.trim() || 'ממתין לבקשה'}
+                labelHe={SCENARIOS.find((s) => s.text === text)?.labelHe ?? 'בקשה חופשית'}
+                labelEn={SCENARIOS.find((s) => s.text === text)?.labelEn ?? 'Free request'}
+                decisionHe={DECISION_META[selection.decision].he}
+                decisionEn={DECISION_META[selection.decision].en}
+                tone={DECISION_TONE[DECISION_META[selection.decision].tone]}
+                reduce={reduce}
+            />
+
             {/* ── הרכיב החתימתי: Tool Decision Gate ───────────────────────── */}
             <LabSection n={NARRATION.gate} icon={<Workflow size={18} className="text-violet-300" />}
                 tryButtons={[
@@ -169,13 +190,13 @@ export const ToolSelectionLab: React.FC = () => {
                 <PermissionWarning selection={selection} />
             </LabSection>
 
-            {/* ── disclaimer + גשר לפרק 11 ───────────────────────────────── */}
+            {/* ── disclaimer + גשר לפרק 12 ───────────────────────────────── */}
             <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500" dir="rtl">
                 <Info size={14} className="mt-0.5 shrink-0" />
                 <span>
-                    זהו מודל לימודי של בחירת כלי: המנוע מדרג כלים לפי טבלת חוקים קבועה ושקופה, וצורך את מצב המשימה מפרק 9. <span className="font-bold text-slate-400">Agents אמיתיים בוחרים כלים בצורה עשירה הרבה יותר</span>,
+                    זהו מודל לימודי של בחירת כלי: המנוע מדרג כלים לפי טבלת חוקים קבועה ושקופה, וצורך את מצב המשימה מפרק 10. <span className="font-bold text-slate-400">Agents אמיתיים בוחרים כלים בצורה עשירה הרבה יותר</span>,
                     אבל העיקרון של התאמה, נתונים, סיכון והרשאה תקף. וזכרו: <span className="font-bold text-slate-400">כלי רלוונטי אינו כלי שאפשר להפעיל עכשיו</span>. הפרק עוצר רגע לפני הפעלת הכלי.
-                    הפעלת הכלי עצמה, הקלט שנשלח אליו והתוצאה שחוזרת, הם פרק 11.
+                    הפעלת הכלי עצמה, הקלט שנשלח אליו והתוצאה שחוזרת, הם פרק 12.
                 </span>
             </div>
         </div>
@@ -509,7 +530,7 @@ const SelectedToolHighlight: React.FC<{ ctx: TaskAnalysis; selection: ToolSelect
                     <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300/80" dir="ltr">Selected tool, ready to call</span>
                 </div>
                 <div className="mt-2 text-xl font-black text-emerald-100" dir="ltr">{selected.nameEn}</div>
-                <p className="text-sm text-slate-300">{selected.canDoHe}. כל ארבעת השערים ירוקים, אז אפשר להתקדם להפעלה (פרק 11).</p>
+                <p className="text-sm text-slate-300">{selected.canDoHe}. כל ארבעת השערים ירוקים, אז אפשר להתקדם להפעלה (פרק 12).</p>
             </motion.div>
         );
     }

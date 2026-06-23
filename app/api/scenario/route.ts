@@ -13,7 +13,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextResponse } from 'next/server';
 
-import type { LibraryScenario, Tone, LibAgentBehavior, LibChatBehavior } from '@/app/behind-the-scenes-ai/chapter-13/scenarioLibrary';
+import type { LibraryScenario, Tone, LibAgentBehavior, LibChatBehavior } from '@/app/behind-the-scenes-ai/chapter-14/scenarioLibrary';
 
 export const runtime = 'nodejs';
 

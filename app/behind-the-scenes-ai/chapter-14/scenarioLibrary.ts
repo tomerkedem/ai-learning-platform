@@ -1,4 +1,4 @@
-// ספריית התרחישים ה-offline של המעבדה המאוחדת (פרק 13).
+// ספריית התרחישים ה-offline של המעבדה המאוחדת (פרק 14).
 //
 // העיקרון: המנוע השקוף אינו "על החבילות" אלא על *כל* מצב. כדי להראות זאת גם
 // בלי מפתח ובלי רשת, הקובץ הזה מחזיק תרחישים מוכנים (curated) בכמה תחומים,
@@ -103,20 +103,20 @@ const CHAT_META = [
     { id: 'tokens', he: 'טוקנים', en: 'Tokens', explainHe: 'הטקסט נשבר ליחידות עבודה. כל מילה הופכת לטוקן (פרק 5).' },
     { id: 'ids', he: 'מזהים', en: 'Token IDs', explainHe: 'כל טוקן מקבל מזהה מספרי מהמילון. ה-ID הוא כתובת, לא משמעות (פרק 6).' },
     { id: 'vector', he: 'וקטור', en: 'Vector', explainHe: 'מרצף המזהים נבנה וקטור משמעות: לאן המשפט מצביע (פרק 6).' },
-    { id: 'similarity', he: 'דמיון', en: 'Similarity', explainHe: 'Cosine Similarity בין הווקטור לכל כוונה. זה ציון קרבה, לא הסתברות (פרק 7).' },
-    { id: 'scores', he: 'ציונים', en: 'Scores', explainHe: 'score = similarity + word_impact + context_bonus. הציונים הגולמיים לא מסתכמים ל-100% (פרק 7).' },
-    { id: 'probabilities', he: 'הסתברויות', en: 'Probabilities', explainHe: 'Softmax הופך את הציונים להסתברויות שמסתכמות ל-100% (פרק 7).' },
-    { id: 'confidence', he: 'ביטחון', en: 'Confidence', explainHe: 'הפער בין הראשון לשני הוא שקובע אם בכלל לענות (פרק 8).' },
+    { id: 'similarity', he: 'דמיון', en: 'Similarity', explainHe: 'Cosine Similarity בין הווקטור לכל כוונה. זה ציון קרבה, לא הסתברות (פרק 8).' },
+    { id: 'scores', he: 'ציונים', en: 'Scores', explainHe: 'score = similarity + word_impact + context_bonus. הציונים הגולמיים לא מסתכמים ל-100% (פרק 8).' },
+    { id: 'probabilities', he: 'הסתברויות', en: 'Probabilities', explainHe: 'Softmax הופך את הציונים להסתברויות שמסתכמות ל-100% (פרק 8).' },
+    { id: 'confidence', he: 'ביטחון', en: 'Confidence', explainHe: 'הפער בין הראשון לשני הוא שקובע אם בכלל לענות (פרק 9).' },
 ] as const;
 
 const AGENT_META = [
     { id: 'input', he: 'קלט', en: 'Input', explainHe: 'הבקשה של המשתמש. אותו קלט בדיוק כמו ב-Chat, אבל כאן הוא מפעיל מנוע פעולה.' },
-    { id: 'task', he: 'משימה', en: 'Task', explainHe: 'מילת פעולה הופכת שאלה למשימה. ה-Agent מזהה מה צריך לעשות (פרק 9).' },
-    { id: 'missing', he: 'מידע חסר', en: 'Missing Info', explainHe: 'ה-Agent בודק מה עדיין חסר כדי לפעול. מידע חסר מוביל לבקשה, לא לניחוש (פרק 9).' },
-    { id: 'tools', he: 'בחירת כלי', en: 'Tool Selection', explainHe: 'ה-Agent מדרג כמה כל כלי מתאים, ובוחר את המוביל (פרק 10).' },
-    { id: 'call', he: 'הפעלת כלי', en: 'Tool Call', explainHe: 'קריאה מוגדרת לכלי, עם קלט מדויק. בלי קלט תקין או הרשאה, הקריאה לא מופעלת (פרק 11).' },
-    { id: 'observation', he: 'תוצאה', en: 'Observation', explainHe: 'מה שהכלי החזיר. זה מידע חדש שהגיע מבחוץ, לא ידע שהיה למודל (פרק 11).' },
-    { id: 'risk', he: 'בדיקת סיכון', en: 'Risk Check', explainHe: 'גם אחרי שהתוצאה חזרה, יש שער: סיכון והרשאה. סיכון גבוה דורש אישור (פרק 12).' },
+    { id: 'task', he: 'משימה', en: 'Task', explainHe: 'מילת פעולה הופכת שאלה למשימה. ה-Agent מזהה מה צריך לעשות (פרק 10).' },
+    { id: 'missing', he: 'מידע חסר', en: 'Missing Info', explainHe: 'ה-Agent בודק מה עדיין חסר כדי לפעול. מידע חסר מוביל לבקשה, לא לניחוש (פרק 10).' },
+    { id: 'tools', he: 'בחירת כלי', en: 'Tool Selection', explainHe: 'ה-Agent מדרג כמה כל כלי מתאים, ובוחר את המוביל (פרק 11).' },
+    { id: 'call', he: 'הפעלת כלי', en: 'Tool Call', explainHe: 'קריאה מוגדרת לכלי, עם קלט מדויק. בלי קלט תקין או הרשאה, הקריאה לא מופעלת (פרק 12).' },
+    { id: 'observation', he: 'תוצאה', en: 'Observation', explainHe: 'מה שהכלי החזיר. זה מידע חדש שהגיע מבחוץ, לא ידע שהיה למודל (פרק 12).' },
+    { id: 'risk', he: 'בדיקת סיכון', en: 'Risk Check', explainHe: 'גם אחרי שהתוצאה חזרה, יש שער: סיכון והרשאה. סיכון גבוה דורש אישור (פרק 13).' },
     { id: 'decision', he: 'החלטה', en: 'Decision', explainHe: 'הצעד הסופי: תשובה, בקשת מידע, שימוש בכלי, או עצירה לאישור.' },
 ] as const;
 

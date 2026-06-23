@@ -243,7 +243,7 @@ const NextSteps = () => {
                 <Network className="text-blue-400 mb-4 group-hover:scale-110 transition-transform" size={32} />
                 <h4 className="font-bold text-white mb-2">מרחבים ומימדים</h4>
                 <p className="text-sm text-slate-400 leading-relaxed">
-                    ראינו וקטורים קטנים. בספר הבא נראה איך עובדים במרחב של 4096 מימדים ואיך &quot;מקפלים&quot; אותם.
+                    ראינו וקטורים קטנים. בלומדה הבאה נראה איך עובדים במרחב של 4096 מימדים ואיך &quot;מקפלים&quot; אותם.
                 </p>
             </div>
             <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl hover:border-purple-500/30 transition-colors group">
@@ -321,12 +321,12 @@ export default function ChapterTwelve() {
           <section id="part-3" className="scroll-mt-24 mt-8">
             <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 bg-purple-500/10 rounded-xl text-purple-400 border border-purple-500/20"><BookOpen size={24} /></div>
-                <h2 className="text-3xl font-bold text-white">3. איפה פוגשים את זה בספר הבא?</h2>
+                <h2 className="text-3xl font-bold text-white">3. איפה פוגשים את זה בלומדה הבאה?</h2>
             </div>
             <div className="prose prose-invert text-slate-400 text-lg leading-relaxed max-w-none">
                 <p>
-                    הספר הזה נתן לך את האינטואיציה. את השפה.
-                    הספר הבא בסדרה (&quot;מתמטיקה יישומית למפתחי AI&quot;) ייקח את הכלים האלו צעד אחד קדימה ויבנה איתם מודלים מאפס.
+                    הלומדה הזו נתנה לך את האינטואיציה. את השפה.
+                    הלומדה הבאה בסדרה (&quot;מתמטיקה יישומית למפתחי AI&quot;) תיקח את הכלים האלו צעד אחד קדימה ותבנה איתם מודלים מאפס.
                 </p>
             </div>
             

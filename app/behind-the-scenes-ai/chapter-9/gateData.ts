@@ -1,6 +1,6 @@
-// נתוני פרק 8: "Confidence - מתי לענות ומתי לעצור".
-// כל ההתפלגויות מגיעות ממנוע פרק 7 (analyzeSentence / analyzeAgent / softmax).
-// פרק 8 לא מחשב הסתברויות בדרך אחרת, הוא צורך את הפלט של פרק 7 ובונה מעליו
+// נתוני פרק 9: "Confidence - מתי לענות ומתי לעצור".
+// כל ההתפלגויות מגיעות ממנוע פרק 8 (analyzeSentence / analyzeAgent / softmax).
+// פרק 9 לא מחשב הסתברויות בדרך אחרת, הוא צורך את הפלט של פרק 8 ובונה מעליו
 // את שכבת השער. כאן יושבים רק נתוני השער: ספים, טבלת רמות סיכון, מטא של
 // התשובות ושאלות ההבהרה, ותרחישי ה-Agent.
 //
@@ -9,13 +9,13 @@
 //   * דרישת ביטחון לפי פעולה ואישור אנושי: RISK_ACTIONS (requiredConfidence,
 //     humanApproval). פעולה רגישה = סף גבוה יותר ולעיתים אישור.
 //   * ניסוחי תשובה ושאלת הבהרה לכל כוונה: INTENT_META.
-//   * תרחישי Chat: CHAT_SCENARIOS (טקסט שעובר ב-analyzeSentence של פרק 7).
+//   * תרחישי Chat: CHAT_SCENARIOS (טקסט שעובר ב-analyzeSentence של פרק 8).
 //   * תרחישי Agent: AGENT_SCENARIOS. ה"בקשה העמומה" מחושבת דרך אותו softmax
-//     של פרק 7 על ציוני VAGUE_STEPS.
+//     של פרק 8 על ציוני VAGUE_STEPS.
 
 import type { Accent } from '@/components/ai-internals/types';
-import { analyzeSentence, analyzeAgent, AGENT_TEMPERATURE } from '@/app/behind-the-scenes-ai/chapter-7/pipelineData';
-import { softmax, confidenceFromMargin, type ConfidenceLevel } from '@/app/behind-the-scenes-ai/chapter-7/scoringEngine';
+import { analyzeSentence, analyzeAgent, AGENT_TEMPERATURE } from '@/app/behind-the-scenes-ai/chapter-8/pipelineData';
+import { softmax, confidenceFromMargin, type ConfidenceLevel } from '@/app/behind-the-scenes-ai/chapter-8/scoringEngine';
 import type { RiskLevel } from './gateLogic';
 
 /* ════════════════════════════ ספים ═══════════════════════════════════════ */
@@ -52,7 +52,7 @@ export function getRiskAction(id: string): RiskActionDef {
 
 /* ════════════════════════════ מטא לכוונות ════════════════════════════════ */
 // ניסוח התשובה (ל-Answer Suppression) ואופציית ההבהרה (ל-Clarifying Question)
-// לכל כוונה של פרק 7. שאלת ההבהרה נבנית מהאופציות, היא לא גנרית.
+// לכל כוונה של פרק 8. שאלת ההבהרה נבנית מהאופציות, היא לא גנרית.
 
 export interface IntentMeta {
     answerHe: string;
@@ -108,7 +108,7 @@ export const CHAT_SCENARIOS: ChatScenario[] = [
     { id: 'ambiguous', text: 'החבילה לא מופיעה במערכת', labelHe: 'ניסוח עמום', labelEn: 'Ambiguous' },
 ];
 
-/** התפלגות Chat ממנוע פרק 7, עטופה למבנה השער. */
+/** התפלגות Chat ממנוע פרק 8, עטופה למבנה השער. */
 export function distributionForChat(text: string): Distribution {
     const r = analyzeSentence(text);
     const items: DistItem[] = r.items.map((it) => {
@@ -137,7 +137,7 @@ export const AGENT_SCENARIOS: AgentScenario[] = [
     { id: 'vague', kind: 'vague', labelHe: 'בקשה עמומה', labelEn: 'Vague request', promptHe: 'תטפל בזה', taskHe: 'לא זוהתה משימה ברורה', taskEn: 'No clear task' },
 ];
 
-/** צעדי ה"בקשה העמומה". הציונים עוברים דרך softmax של פרק 7 (אותו מנוע). */
+/** צעדי ה"בקשה העמומה". הציונים עוברים דרך softmax של פרק 8 (אותו מנוע). */
 export interface VagueStep {
     id: string;
     labelHe: string;
@@ -155,7 +155,7 @@ export const VAGUE_STEPS: VagueStep[] = [
     { id: 'other', labelHe: 'אחר', labelEn: 'Other', accent: 'slate', score: 0.0, clarifyOptionHe: 'משהו אחר', answerHe: 'משהו אחר.' },
 ];
 
-/** התפלגות ה"בקשה העמומה" דרך softmax של פרק 7. ביטחון נמוך שמונע פעולה. */
+/** התפלגות ה"בקשה העמומה" דרך softmax של פרק 8. ביטחון נמוך שמונע פעולה. */
 export function distributionForVague(): Distribution {
     const probs = softmax(VAGUE_STEPS.map((s) => s.score), AGENT_TEMPERATURE);
     const items: DistItem[] = VAGUE_STEPS
@@ -165,7 +165,7 @@ export function distributionForVague(): Distribution {
     return { items, margin, confidence: confidenceFromMargin(margin), topId: items[0]?.id ?? '' };
 }
 
-/** התפלגות תרחיש החקירה ממנוע פרק 7 (דירוג הצעדים). */
+/** התפלגות תרחיש החקירה ממנוע פרק 8 (דירוג הצעדים). */
 export function distributionForBarcode(hasBarcode: boolean): Distribution {
     const r = analyzeAgent(hasBarcode);
     const items: DistItem[] = r.items.map((it) => {
@@ -176,7 +176,7 @@ export function distributionForBarcode(hasBarcode: boolean): Distribution {
 }
 
 /* ════════════════════════════ מפת הדרכים ═════════════════════════════════ */
-// פרק 8: מגיעים עד צומת ההחלטה (Decision), והשער הוא מה שמכריע אם פועלים עליה.
+// פרק 9: מגיעים עד צומת ההחלטה (Decision), והשער הוא מה שמכריע אם פועלים עליה.
 
 export const ROADMAP_STEPS_8: { he: string; en: string; active: boolean }[] = [
     { he: 'טקסט', en: 'Text', active: true },

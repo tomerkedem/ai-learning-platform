@@ -7,7 +7,7 @@ import { Circle, PlayCircle, Menu, X, Terminal, Sigma, BrainCircuit, ArrowRight 
 import { motion, AnimatePresence } from 'framer-motion';
 import { courses } from "@/lib/courseData"; 
 
-export function CourseSidebar() {
+export function CourseSidebar({ isFocusMode = false }: { isFocusMode?: boolean }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -171,7 +171,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                                 <span className={`text-[10px] font-mono leading-none mb-0.5 opacity-80 ${isActive ? activeTextColor : ''}`}>
                                     {chapter.id === 0 ? "מבוא" : `פרק ${chapter.id}`}
                                 </span>
-                                <span className={`truncate leading-tight font-medium ${isActive ? 'text-white' : ''}`}>
+                                <span className={`line-clamp-2 leading-tight font-medium ${isActive ? 'text-white' : ''}`}>
                                     {chapter.title.he}
                                 </span>
                             </div>
@@ -201,9 +201,22 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
               <Menu size={20} />
           </button>
           
-          <aside className="hidden md:flex w-80 bg-[#0f172a] border-l border-slate-800/60 flex-col h-screen shrink-0 sticky top-0 shadow-2xl z-30" dir="rtl">
-              {sidebarContent}
-          </aside>
+          {/* סרגל דסקטופ — מתקפל בתנועת spring חלקה במצב מיקוד, התוכן מתרחב לתוך המקום שהתפנה */}
+          <motion.aside
+              initial={false}
+              animate={{ width: isFocusMode ? 0 : 320 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 34, mass: 0.9 }}
+              className="hidden md:flex bg-[#0f172a] border-l border-slate-800/60 flex-col h-screen shrink-0 sticky top-0 shadow-2xl z-30 overflow-hidden"
+              dir="rtl"
+          >
+              <motion.div
+                  animate={{ opacity: isFocusMode ? 0 : 1, x: isFocusMode ? 28 : 0 }}
+                  transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                  className="w-80 shrink-0 h-full"
+              >
+                  {sidebarContent}
+              </motion.div>
+          </motion.aside>
 
           <AnimatePresence>
               {isOpen && (

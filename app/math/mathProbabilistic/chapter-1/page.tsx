@@ -193,7 +193,7 @@ export default function Chapter1() {
                     המשימה שלך: שנה את הערכים בוקטור <code>vector_b</code> כך שהמודל יזהה דמיון של 98% לפחות (0.98 ומעלה).
                 </p>
                 <div className="bg-black/30 p-4 rounded-xl text-xs border border-white/5 italic">
-                    💡 <strong>רמז מהספר:</strong> דמיון קוסינוס בוחן כיוון. נסה לשמור על יחס דומה בין המספרים לזה של וקטור המטרה.
+                    💡 <strong>רמז מהלומדה:</strong> דמיון קוסינוס בוחן כיוון. נסה לשמור על יחס דומה בין המספרים לזה של וקטור המטרה.
                 </div>
             </div>
 

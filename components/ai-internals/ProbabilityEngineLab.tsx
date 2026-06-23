@@ -11,13 +11,21 @@ import { ConfidenceMarginCard } from './ConfidenceMarginCard';
 import { ProbabilitySignalsPanel } from './ProbabilitySignalsPanel';
 import { DecisionOutcomeCard } from './DecisionOutcomeCard';
 import { MostLikelyNotTruthCard } from './MostLikelyNotTruthCard';
+import { StickyContextBar, type ContextTone } from './StickyContextBar';
 import { DUR, EASE } from './motionTokens';
-import type { ProbabilityScenario } from './types';
+import type { ProbabilityDecisionKind, ProbabilityScenario } from './types';
 
 interface ProbabilityEngineLabProps {
     scenarios: ProbabilityScenario[];
     defaultId?: string;
 }
+
+// מיפוי החלטה הסתברותית → טון לפס ההקשר הדביק.
+const DECISION_TONE: Record<ProbabilityDecisionKind, ContextTone> = {
+    answer: 'go',
+    context: 'caution',
+    clarify: 'caution',
+};
 
 // טקסטי הסבר לימודיים קצרים, קבועים לכל אזור (לא תלויי בחירה).
 const HELPERS = {
@@ -55,6 +63,19 @@ export const ProbabilityEngineLab: React.FC<ProbabilityEngineLabProps> = ({ scen
                 בחרו אחד משלושת הניסוחים. כולם עוסקים באותה חבילה, אבל כל אחד מייצר התפלגות הסתברות שונה לגמרי.
             </p>
             <PromptScenarioSelector scenarios={scenarios} selectedId={current.id} onSelect={setSelectedId} />
+
+            {/* פס הקשר דביק: הניסוח הפעיל + ההחלטה שנגזרה מההתפלגות, גלוי לאורך הניתוח */}
+            <StickyContextBar
+                inputText={current.prompt}
+                labelHe={current.labelHe}
+                labelEn={current.labelEn}
+                inputAccent={current.accent}
+                decisionHe={current.decisionHe}
+                decisionEn={current.decisionEn}
+                tone={DECISION_TONE[current.decisionKind]}
+                metricHe={`פער ${Math.round(current.margin)}%`}
+                reduce={!!reduce}
+            />
 
             {/* הסבר לפני דירוג האפשרויות */}
             <p className="text-sm leading-relaxed text-slate-400" dir="rtl">{HELPERS.ranking}</p>

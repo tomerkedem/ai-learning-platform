@@ -8,13 +8,14 @@ import {
     PenLine, AlertTriangle, ArrowLeft, ArrowDown, Workflow, ListChecks, ScrollText,
 } from 'lucide-react';
 
+import { StickyContextBar, type ContextTone } from './StickyContextBar';
 import {
     buildControl, SCENARIOS, DEFAULT_SCENARIO_ID, RISK_SAMPLES, NARRATION,
     ACTION_META, RISK_META, RISK_ORDER, PERMISSION_BOUNDARIES,
     GATE_META, DECISION_META, CONTROL_NODES, STOP_INDEX,
     type ControlState, type Scenario, type SectionNarration, type DecisionTone,
     type RiskLevel, type Permission,
-} from '@/app/behind-the-scenes-ai/chapter-12/controlData';
+} from '@/app/behind-the-scenes-ai/chapter-13/controlData';
 
 /* ════════════════════════ טון צבעוני ═════════════════════════════════════ */
 // Continue/Answer ב-teal, Draft/Ask ב-amber, Stop ב-crimson של זהירות אחראית.
@@ -38,6 +39,14 @@ const PERMISSION_TONE: Record<Permission, 'continue' | 'draft' | 'stop'> = {
     allowed: 'continue',
     'requires-approval': 'draft',
     blocked: 'stop',
+};
+
+// טון ההחלטה → טון פס ההקשר הדביק.
+const DECISION_CTX_TONE: Record<DecisionTone, ContextTone> = {
+    continue: 'go',
+    draft: 'caution',
+    ask: 'caution',
+    stop: 'stop',
 };
 
 /* ════════════════════════ קומפוננטה ראשית ════════════════════════════════ */
@@ -76,6 +85,18 @@ export const ControlLayerLab: React.FC = () => {
                     <Info size={13} /> הבקשה: <span className="rounded bg-slate-800/70 px-1.5 py-0.5 font-bold text-slate-300">&quot;{text}&quot;</span>
                 </span>
             </div>
+
+            {/* פס הקשר דביק: הבקשה הפעילה + ההחלטה שנגזרה ממנה, גלוי לאורך גלילת שכבות הבקרה */}
+            <StickyContextBar
+                inputText={text.trim() || 'ממתין לבקשה'}
+                labelHe={scenario?.labelHe ?? 'בקשה חופשית'}
+                labelEn={scenario?.labelEn ?? 'Free request'}
+                decisionHe={DECISION_META[state.decision].he}
+                decisionEn={DECISION_META[state.decision].en}
+                tone={DECISION_CTX_TONE[DECISION_META[state.decision].tone]}
+                metricHe={`סיכון ${RISK_META[state.risk].he}`}
+                reduce={reduce}
+            />
 
             {/* ── שכבת הבקרה (תרשים חתימתי) ───────────────────────────────── */}
             <ControlLayerPipeline state={state} reduce={reduce} />
@@ -120,11 +141,11 @@ export const ControlLayerLab: React.FC = () => {
                 <DraftInsteadOfSend scenario={scenario} state={state} reduce={reduce} />
             </LabSection>
 
-            {/* ── disclaimer + גשר לפרק 13 ───────────────────────────────── */}
+            {/* ── disclaimer + גשר לפרק 14 ───────────────────────────────── */}
             <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500" dir="rtl">
                 <Info size={14} className="mt-0.5 shrink-0" />
                 <span>
-                    זהו מודל לימודי שמאחד את שער הביטחון (פרק 8), ההרשאות (פרק 10), ושער הסיכון (פרק 11). אף פעולה אמיתית לא מתבצעת.
+                    זהו מודל לימודי שמאחד את שער הביטחון (פרק 9), ההרשאות (פרק 11), ושער הסיכון (פרק 12). אף פעולה אמיתית לא מתבצעת.
                     <span className="font-bold text-slate-400"> מערכות אמיתיות מנהלות ממשל והרשאות מורכבים יותר</span>, אבל העיקרון של סיכון, הרשאה ואישור תקף.
                     וזכרו: <span className="font-bold text-slate-400">עצירה אינה כישלון, היא אחריות</span>. ה-Agent מוגבל בכוונה, וזה מה שהופך אותו למקצועי.
                 </span>

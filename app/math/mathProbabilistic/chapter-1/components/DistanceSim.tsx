@@ -131,7 +131,7 @@ export const DistanceSim = () => {
             <div className="p-6 bg-blue-600/5 rounded-3xl border border-blue-500/10 flex gap-4">
                 <Lightbulb className="text-blue-400 shrink-0 mt-1" size={20} />
                 <div className="text-[11px] text-slate-400 leading-relaxed italic text-justify">
-                    <strong>מסקנה מפרק 1:</strong> כפי שמוסבר בספר, מודלים לומדים מטעויות[cite: 105]. כאשר מדד ה-Loss גדל, המודל מקבל &quot;אות&quot; חזק המורה לו לשנות את הפרמטרים הפנימיים שלו כדי להקטין את השגיאה ולהתקרב לפתרון הרצוי [cite: 119-120, 136].
+                    <strong>מסקנה מפרק 1:</strong> כפי שמוסבר בלומדה, מודלים לומדים מטעויות[cite: 105]. כאשר מדד ה-Loss גדל, המודל מקבל &quot;אות&quot; חזק המורה לו לשנות את הפרמטרים הפנימיים שלו כדי להקטין את השגיאה ולהתקרב לפתרון הרצוי [cite: 119-120, 136].
                 </div>
             </div>
         </div>

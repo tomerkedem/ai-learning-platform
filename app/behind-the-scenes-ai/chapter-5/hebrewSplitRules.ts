@@ -13,7 +13,7 @@ export interface HebrewSplit {
     word: string;
     /** פירוק פשוט: המילה כיחידה אחת. */
     simple: string[];
-    /** פירוק לימודי: אות השימוש נפרדת מהגרעין. */
+    /** פירוק לימודי: אות השימוש נפרדת מהמילה הבסיסית. */
     educational: string[];
     roleHe: string;
     roleEn: string;
@@ -28,7 +28,7 @@ export const HEBREW_SPLITS: HebrewSplit[] = [
         educational: ['ל', 'לקוח'],
         roleHe: 'הקשר נמען',
         roleEn: 'Recipient context',
-        noteHe: 'אות השימוש "ל" מסמנת כיוון: אל מי. הגרעין הוא "לקוח".',
+        noteHe: 'אות השימוש "ל" מסמנת כיוון: אל מי. המילה הבסיסית היא "לקוח".',
     },
     {
         word: 'מהמערכת',
@@ -36,7 +36,7 @@ export const HEBREW_SPLITS: HebrewSplit[] = [
         educational: ['מ', 'המערכת'],
         roleHe: 'מקור מהמערכת',
         roleEn: 'System source',
-        noteHe: 'אות השימוש "מ" מסמנת מקור: מאיפה. הגרעין הוא "המערכת".',
+        noteHe: 'אות השימוש "מ" מסמנת מקור: מאיפה. המילה הבסיסית היא "המערכת".',
     },
     {
         word: 'שהמשלוח',
@@ -44,7 +44,7 @@ export const HEBREW_SPLITS: HebrewSplit[] = [
         educational: ['ש', 'המשלוח'],
         roleHe: 'משלוח עם מילת חיבור',
         roleEn: 'Shipment with conjunction',
-        noteHe: 'אות השימוש "ש" היא מילת חיבור. הגרעין הוא "המשלוח".',
+        noteHe: 'אות השימוש "ש" היא מילת חיבור. המילה הבסיסית היא "המשלוח".',
     },
     {
         word: 'במרכז',
@@ -52,7 +52,7 @@ export const HEBREW_SPLITS: HebrewSplit[] = [
         educational: ['ב', 'מרכז'],
         roleHe: 'מיקום',
         roleEn: 'Location',
-        noteHe: 'אות השימוש "ב" מסמנת מיקום: היכן. הגרעין הוא "מרכז".',
+        noteHe: 'אות השימוש "ב" מסמנת מיקום: היכן. המילה הבסיסית היא "מרכז".',
     },
     {
         word: 'החבילה',
@@ -60,6 +60,6 @@ export const HEBREW_SPLITS: HebrewSplit[] = [
         educational: ['ה', 'חבילה'],
         roleHe: 'אובייקט עם יידוע',
         roleEn: 'Object with article',
-        noteHe: 'אות השימוש "ה" מסמנת יידוע: איזו חבילה. הגרעין הוא "חבילה".',
+        noteHe: 'אות השימוש "ה" מסמנת יידוע: איזו חבילה. המילה הבסיסית היא "חבילה".',
     },
 ];

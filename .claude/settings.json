@@ -12,10 +12,19 @@
       "Bash(grep -rn '<html' app/layout.tsx)",
       "Bash(grep -oE 'border-violet-500/30[^\"]*text-right\"[^>]*>.{0,120}')",
       "Bash(xargs wc -l)",
-      "Bash(git mv *)"
+      "Bash(git mv *)",
+      "WebSearch",
+      "WebFetch(domain:poloclub.github.io)",
+      "WebFetch(domain:distill.pub)",
+      "PowerShell(npx tsc --noEmit 2>&1)",
+      "Bash(command -v chromium-cli)",
+      "Bash(cd \"c:/D/2025/AI Engineer/AI-Math-Intuition-course\" && sed -i '1s/פרק 15/פרק 16/' app/behind-the-scenes-ai/chapter-16/coachEngine.ts app/behind-the-scenes-ai/chapter-16/coachData.ts && grep -n \"פרק 16\" app/behind-the-scenes-ai/chapter-16/coachEngine.ts app/behind-the-scenes-ai/chapter-16/coachData.ts)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/behind-the-scenes-ai/introduction)",
+      "Bash(sort -t- -k4 -n)"
     ],
     "additionalDirectories": [
-      "c:\\Users\\USER\\.claude\\projects\\c--D-2025-AI-Engineer-AI-Math-Intuition-course\\memory"
+      "c:\\Users\\USER\\.claude\\projects\\c--D-2025-AI-Engineer-AI-Math-Intuition-course\\memory",
+      "c:\\D\\2025\\AI Engineer\\AI-Math-Intuition-course\\app\\behind-the-scenes-ai\\chapter-16"
     ]
   }
 }

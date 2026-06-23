@@ -1,4 +1,4 @@
-// מנוע בחירת הכלי של פרק 10: "בחירת Tool, מתי Agent צריך כלי".
+// מנוע בחירת הכלי של פרק 11: "בחירת Tool, מתי Agent צריך כלי".
 // קובץ טהור לחלוטין: אין כאן React, אין נתוני תוכן, אין LLM, אין רשת, אין
 // קריאת API אמיתית. זהו tool selector דטרמיניסטי ושקוף: הוא מדרג כלים לפי
 // טבלת חוקים קבועה ומכריע אם כלי נבחר, נחסם, או לא נדרש כלל.
@@ -11,10 +11,10 @@
 //   ארבעת השערים: Match high AND Input ready AND Risk acceptable AND Permission allowed
 //   כלי נבחר רק כשכל הארבעה ירוקים.
 //
-// המנוע צורך את מצב המשימה של פרק 9 (TaskAnalysis) ואינו מחשב מחדש את הפירוק.
+// המנוע צורך את מצב המשימה של פרק 10 (TaskAnalysis) ואינו מחשב מחדש את הפירוק.
 // כל הנתונים הניתנים לכוונון (לוח הכלים, חוקי ההתאמה) יושבים ב-toolData.ts.
 
-import type { TaskAnalysis, ActionCategory } from '@/app/behind-the-scenes-ai/chapter-9/taskEngine';
+import type { TaskAnalysis, ActionCategory } from '@/app/behind-the-scenes-ai/chapter-10/taskEngine';
 import type { Accent } from '@/components/ai-internals/types';
 
 /* ─────────────────────────────── טיפוסים ────────────────────────────────── */
@@ -75,7 +75,7 @@ export interface ToolDef {
     matchRules: MatchRule[];
 }
 
-/* ─────────────────────── עזרי התאמת גזע (כמו פרק 9) ─────────────────────── */
+/* ─────────────────────── עזרי התאמת גזע (כמו פרק 10) ─────────────────────── */
 
 function hasAny(tokens: string[], stems: string[]): boolean {
     return stems.some((s) => tokens.some((t) => t.includes(s)));

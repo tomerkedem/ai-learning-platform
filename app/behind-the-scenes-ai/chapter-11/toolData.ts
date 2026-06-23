@@ -1,7 +1,7 @@
-// נתוני פרק 10: "בחירת Tool, מתי Agent צריך כלי".
+// נתוני פרק 11: "בחירת Tool, מתי Agent צריך כלי".
 // כאן יושב לוח הכלים הקבוע (כל כלי עם גבולותיו), חוקי ההתאמה, התרחישים
 // הקנוניים, תוויות ההחלטה, ומלל הקריינות לכל רכיב. המנוע (toolEngine.ts)
-// גנרי, וצורך את מצב המשימה של פרק 9 דרך parse. כל מה שניתן לכוונן יושב כאן.
+// גנרי, וצורך את מצב המשימה של פרק 10 דרך parse. כל מה שניתן לכוונן יושב כאן.
 //
 // ── איך להרחיב ────────────────────────────────────────────────────────────
 //   * להוסיף כלי: שורה ל-TOOLS עם הגבולות שלו (canDo, requiredInput, risk,
@@ -12,8 +12,8 @@
 //     permission: 'missing' או 'approval' חוסמת גם כשהכלי מתאים והקלט קיים.
 //   * תרחישים קנוניים: SCENARIOS. כל אחד הוא טקסט שעובר ב-selectFor.
 
-import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/chapter-9/taskEngine';
-import { parse } from '@/app/behind-the-scenes-ai/chapter-9/taskData';
+import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/chapter-10/taskEngine';
+import { parse } from '@/app/behind-the-scenes-ai/chapter-10/taskData';
 import {
     selectTool,
     type ToolDef,
@@ -214,7 +214,7 @@ export const BARCODE_SAMPLE = '123456789';
 
 /* ════════════════════════ עוטף נוח ═══════════════════════════════════════ */
 
-/** מקור האמת היחיד למסך: מפרק את הבקשה (פרק 9) ובוחר כלי (פרק 10). */
+/** מקור האמת היחיד למסך: מפרק את הבקשה (פרק 10) ובוחר כלי (פרק 11). */
 export function selectFor(text: string): { ctx: TaskAnalysis; selection: ToolSelection } {
     const ctx = parse(text);
     const selection = selectTool(ctx, text, TOOLS);

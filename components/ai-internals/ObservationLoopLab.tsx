@@ -9,15 +9,16 @@ import {
     Terminal, Repeat, Lock, AlertTriangle, Boxes, Loader,
 } from 'lucide-react';
 
+import { StickyContextBar, type ContextTone } from './StickyContextBar';
 import {
     buildLoop, OUTCOMES, DEFAULT_OUTCOME_ID, TOOL_CALL, TIMELINE_STEPS,
     NARRATION, DECISION_META, PANEL_SLOTS, QUALITY_META, CONFIDENCE_META, RISK_META,
     LOOP_NODES,
     type LoopState, type SectionNarration, type DecisionTone,
-} from '@/app/behind-the-scenes-ai/chapter-11/observationData';
+} from '@/app/behind-the-scenes-ai/chapter-12/observationData';
 import {
     timelineStates, maxReplayStep, type StepState,
-} from '@/app/behind-the-scenes-ai/chapter-11/loopEngine';
+} from '@/app/behind-the-scenes-ai/chapter-12/loopEngine';
 
 /* ════════════════════════ טון צבעוני ═════════════════════════════════════ */
 // Answer ב-teal, Use another tool ב-violet, Ask ב-amber, Stop ב-crimson.
@@ -30,6 +31,14 @@ const TONE: Record<DecisionTone, { border: string; bg: string; text: string; sof
 };
 
 const METER_TONE = { high: TONE.answer, mid: TONE.ask, low: TONE.stop };
+
+// טון ההחלטה → טון פס ההקשר הדביק.
+const DECISION_TONE: Record<DecisionTone, ContextTone> = {
+    answer: 'go',
+    tool: 'go',
+    ask: 'caution',
+    stop: 'stop',
+};
 
 /* ════════════════════════ קומפוננטה ראשית ════════════════════════════════ */
 
@@ -90,6 +99,18 @@ export const ObservationLoopLab: React.FC = () => {
                 </div>
             </div>
 
+            {/* פס הקשר דביק: התרחיש הפעיל (מה הכלי מחזיר) + החלטת הצעד הבא, גלוי לאורך הלולאה */}
+            <StickyContextBar
+                inputText={OUTCOMES.find((o) => o.id === outcomeId)?.labelHe ?? ''}
+                labelHe="מה הכלי מחזיר"
+                labelEn={OUTCOMES.find((o) => o.id === outcomeId)?.labelEn}
+                decisionHe={DECISION_META[loop.decision].he}
+                decisionEn={DECISION_META[loop.decision].en}
+                tone={DECISION_TONE[DECISION_META[loop.decision].tone]}
+                metricHe={riskHigh ? 'פעולה רגישה' : undefined}
+                reduce={reduce}
+            />
+
             {/* ── הלולאה (תרשים חתימתי) ───────────────────────────────────── */}
             <AgentLoopDiagram loop={loop} reduce={reduce} />
 
@@ -123,13 +144,13 @@ export const ObservationLoopLab: React.FC = () => {
                 <AgentLoopReplay loop={loop} hasBarcode={hasBarcode} resetKey={loopKey} reduce={reduce} />
             </LabSection>
 
-            {/* ── disclaimer + גשר לפרק 12 ───────────────────────────────── */}
+            {/* ── disclaimer + גשר לפרק 13 ───────────────────────────────── */}
             <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500" dir="rtl">
                 <Info size={14} className="mt-0.5 shrink-0" />
                 <span>
                     זהו מודל לימודי: הכלי מדומה וה-Observation מגיעה מטבלת תרחישים, אין כאן קריאה לשירות חיצוני. <span className="font-bold text-slate-400">Agents אמיתיים מנהלים לולאות ארוכות ומורכבות יותר</span>,
                     אבל העיקרון של Tool Call, Observation והחלטה חוזרת תקף. וזכרו: <span className="font-bold text-slate-400">Observation מגיעה מהכלי, לא מהמודל</span>, ותוצאה חלשה מובילה לזהירות, לא להמצאה.
-                    גם כשיש תשובה אפשרית, לפעמים הצעד הנכון הוא לעצור ולבקש אישור, וזה פרק 12.
+                    גם כשיש תשובה אפשרית, לפעמים הצעד הנכון הוא לעצור ולבקש אישור, וזה פרק 13.
                 </span>
             </div>
         </div>

@@ -260,7 +260,7 @@ export default function IntroPage() {
                          </div>
                      </div>
                      <p className="text-sm text-slate-400 italic mt-4 border-r-2 border-slate-700 pr-4">
-                         &quot;אחת המטרות של הספר היא להראות שכל זה מתחבר לכלים שאתה כבר מכיר בפייתון.&quot;
+                         &quot;אחת המטרות של הלומדה היא להראות שכל זה מתחבר לכלים שאתה כבר מכיר בפייתון.&quot;
                      </p>
                  </div>
 

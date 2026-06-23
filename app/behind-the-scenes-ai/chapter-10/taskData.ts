@@ -1,4 +1,4 @@
-// נתוני פרק 9: "מ-Prompt למשימה".
+// נתוני פרק 10: "מ-Prompt למשימה".
 // כאן יושבות טבלאות החוקים שהמנוע (taskEngine.ts) צורך, התרחישים הקנוניים,
 // שלבי מסלול ה-Agent, ומלל הקריינות לכל רכיב. המנוע עצמו גנרי, כל מה שניתן
 // לכוונן יושב כאן.
@@ -85,7 +85,7 @@ export const TABLES: EngineTables = {
     vagueRefs: VAGUE_REFS,
 };
 
-/** עוטף נוח: מפרק טקסט עם טבלאות פרק 9. מקור האמת היחיד למסך. */
+/** עוטף נוח: מפרק טקסט עם טבלאות פרק 10. מקור האמת היחיד למסך. */
 export function parse(text: string): TaskAnalysis {
     return analyzeTask(text, TABLES);
 }
@@ -115,7 +115,7 @@ export const DEFAULT_SCENARIO_ID = 'task-missing';
 export const BARCODE_SAMPLE = '123456789';
 
 /* ════════════════════════ מסלול ה-Agent ══════════════════════════════════ */
-// המסלול החתימתי של הפרק. מקביל למפל של פרק 7, אבל לעולם ה-Agent.
+// המסלול החתימתי של הפרק. מקביל למפל של פרק 8, אבל לעולם ה-Agent.
 
 export const PIPELINE_STEPS: { id: string; he: string; en: string }[] = [
     { id: 'understand', he: 'הבנת המשימה', en: 'Task Understanding' },

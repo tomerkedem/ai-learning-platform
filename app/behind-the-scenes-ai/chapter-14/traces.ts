@@ -1,26 +1,26 @@
-// תזמור המעבדה המאוחדת של פרק 13: "Behind the Scenes Lab".
+// תזמור המעבדה המאוחדת של פרק 14: "Behind the Scenes Lab".
 // זה פרק אינטגרציה, לא מושג חדש. העיקרון ההנדסי: reuse, לא rebuild, ומקור
 // אמת אחד. הקובץ הזה אינו מחשב דבר בעצמו, הוא מתזמר את המנועים שכבר נבנו:
 //   * Token IDs        -> פרק 6  (idForWord)
-//   * Vector/Similarity/Scores/Probabilities -> פרק 7 (analyzeSentence)
-//   * Confidence/Gate  -> פרק 8  (distributionForChat, evaluateGate)
-//   * Task parsing     -> פרק 9  (parse)
-//   * Tool selection   -> פרק 10 (selectFor)
-//   * Tool call/Observation -> פרק 11 (TOOL_CALL, getObservation)
-//   * Risk/Control     -> פרק 12 (evaluate)
+//   * Vector/Similarity/Scores/Probabilities -> פרק 8 (analyzeSentence)
+//   * Confidence/Gate  -> פרק 9  (distributionForChat, evaluateGate)
+//   * Task parsing     -> פרק 10  (parse)
+//   * Tool selection   -> פרק 11 (selectFor)
+//   * Tool call/Observation -> פרק 12 (TOOL_CALL, getObservation)
+//   * Risk/Control     -> פרק 13 (evaluate)
 // כל מספר שמוצג במעבדה מגיע מהמנועים האלה, בלי קידוד קשיח ובלי חישוב סותר.
 
 import { idForWord } from '@/app/behind-the-scenes-ai/chapter-6/embeddingEngine';
-import { analyzeSentence, DIMS, DIM_INFO } from '@/app/behind-the-scenes-ai/chapter-7/pipelineData';
-import { INTENT_META, metaFor } from '@/app/behind-the-scenes-ai/chapter-8/gateData';
-import { evaluateGate, buildClarifyingQuestion } from '@/app/behind-the-scenes-ai/chapter-8/gateLogic';
-import { DEFAULT_THRESHOLD } from '@/app/behind-the-scenes-ai/chapter-8/gateData';
-import { parse } from '@/app/behind-the-scenes-ai/chapter-9/taskData';
-import { selectFor, getTool } from '@/app/behind-the-scenes-ai/chapter-10/toolData';
-import { TOOL_CALL, getObservation } from '@/app/behind-the-scenes-ai/chapter-11/observationData';
-import { evaluate as evaluateControl } from '@/app/behind-the-scenes-ai/chapter-12/controlEngine';
-import { ACTION_META, RISK_META as CONTROL_RISK_META } from '@/app/behind-the-scenes-ai/chapter-12/controlData';
-import type { ConfidenceLevel } from '@/app/behind-the-scenes-ai/chapter-7/scoringEngine';
+import { analyzeSentence, DIMS, DIM_INFO } from '@/app/behind-the-scenes-ai/chapter-8/pipelineData';
+import { INTENT_META, metaFor } from '@/app/behind-the-scenes-ai/chapter-9/gateData';
+import { evaluateGate, buildClarifyingQuestion } from '@/app/behind-the-scenes-ai/chapter-9/gateLogic';
+import { DEFAULT_THRESHOLD } from '@/app/behind-the-scenes-ai/chapter-9/gateData';
+import { parse } from '@/app/behind-the-scenes-ai/chapter-10/taskData';
+import { selectFor, getTool } from '@/app/behind-the-scenes-ai/chapter-11/toolData';
+import { TOOL_CALL, getObservation } from '@/app/behind-the-scenes-ai/chapter-12/observationData';
+import { evaluate as evaluateControl } from '@/app/behind-the-scenes-ai/chapter-13/controlEngine';
+import { ACTION_META, RISK_META as CONTROL_RISK_META } from '@/app/behind-the-scenes-ai/chapter-13/controlData';
+import type { ConfidenceLevel } from '@/app/behind-the-scenes-ai/chapter-8/scoringEngine';
 
 /* ════════════════════════ טיפוסי שלב במסלול ══════════════════════════════ */
 
@@ -79,17 +79,17 @@ const f2 = (n: number) => Number(n.toFixed(2));
 
 /**
  * בונה את מסלול ה-Chat המלא מהמנועים. כל המספרים מגיעים מ-analyzeSentence
- * (פרק 7) ומשער הביטחון (פרק 8). אין כאן חישוב נוסף.
+ * (פרק 8) ומשער הביטחון (פרק 9). אין כאן חישוב נוסף.
  */
 export function traceChat(text: string): Trace {
-    const r = analyzeSentence(text); // פרק 7: tokens, vector, items (sim/score/prob), margin, confidence
+    const r = analyzeSentence(text); // פרק 8: tokens, vector, items (sim/score/prob), margin, confidence
     const hasInput = r.hasInput;
 
     const ids = r.tokens.map((t) => idForWord(t)); // פרק 6
     const simSorted = [...r.items].sort((a, b) => b.similarity - a.similarity);
     const topItems = r.items.slice(0, 4);
 
-    // שער הביטחון (פרק 8): האם הפער מספיק כדי לענות.
+    // שער הביטחון (פרק 9): האם הפער מספיק כדי לענות.
     const gate = evaluateGate(r.marginPct, DEFAULT_THRESHOLD, 'chat');
     const top = r.items[0];
     const second = r.items[1];
@@ -127,22 +127,22 @@ export function traceChat(text: string): Trace {
         },
         {
             id: 'similarity', he: 'דמיון', en: 'Similarity', state: st(4),
-            explainHe: 'Cosine Similarity בין הווקטור לכל כוונה. זה ציון קרבה, לא הסתברות (פרק 7).',
+            explainHe: 'Cosine Similarity בין הווקטור לכל כוונה. זה ציון קרבה, לא הסתברות (פרק 8).',
             payload: { kind: 'sim', items: simSorted.slice(0, 4).map((it) => ({ labelHe: it.labelHe, labelEn: it.labelEn, value: f2(it.similarity) })) },
         },
         {
             id: 'scores', he: 'ציונים', en: 'Scores', state: st(5),
-            explainHe: 'score = similarity + word_impact + context_bonus. הציונים הגולמיים לא מסתכמים ל-100% (פרק 7).',
+            explainHe: 'score = similarity + word_impact + context_bonus. הציונים הגולמיים לא מסתכמים ל-100% (פרק 8).',
             payload: { kind: 'scores', items: topItems.map((it) => ({ labelHe: it.labelHe, value: f2(it.score) })) },
         },
         {
             id: 'probabilities', he: 'הסתברויות', en: 'Probabilities', state: st(6),
-            explainHe: 'Softmax הופך את הציונים להסתברויות שמסתכמות ל-100% (פרק 7).',
+            explainHe: 'Softmax הופך את הציונים להסתברויות שמסתכמות ל-100% (פרק 8).',
             payload: { kind: 'probs', items: topItems.map((it) => ({ labelHe: it.labelHe, value: round(it.prob * 100), lead: it.id === top?.id })) },
         },
         {
             id: 'confidence', he: 'ביטחון', en: 'Confidence', state: st(7),
-            explainHe: 'הפער בין הראשון לשני הוא שקובע אם בכלל לענות (פרק 8).',
+            explainHe: 'הפער בין הראשון לשני הוא שקובע אם בכלל לענות (פרק 9).',
             payload: { kind: 'confidence', top: round((top?.prob ?? 0) * 100), second: round((second?.prob ?? 0) * 100), margin: round(r.marginPct), levelHe: CONF_HE[r.confidence], levelEn: r.confidence },
         },
         {
@@ -175,8 +175,8 @@ interface AgentPlan {
 }
 
 function planAgent(text: string): AgentPlan {
-    const task = parse(text); // פרק 9
-    const sel = selectFor(text).selection; // פרק 10
+    const task = parse(text); // פרק 10
+    const sel = selectFor(text).selection; // פרק 11
 
     if (task.requestType === 'question') {
         return {
@@ -235,11 +235,11 @@ function planAgent(text: string): AgentPlan {
 
 /** בונה את מסלול ה-Agent המלא מהמנועים של פרקים 9 עד 12. */
 export function traceAgent(text: string): Trace {
-    const task = parse(text); // פרק 9
-    const sel = selectFor(text).selection; // פרק 10
-    const control = evaluateControl(text, { confidence: 'high', conflict: false, evidenceVerified: false }); // פרק 12
+    const task = parse(text); // פרק 10
+    const sel = selectFor(text).selection; // פרק 11
+    const control = evaluateControl(text, { confidence: 'high', conflict: false, evidenceVerified: false }); // פרק 13
     const plan = planAgent(text);
-    const obs = getObservation('clear'); // פרק 11: התוצאה כשהכלי מופעל
+    const obs = getObservation('clear'); // פרק 12: התוצאה כשהכלי מופעל
 
     const topTools = [...sel.evals].sort((a, b) => b.match - a.match).slice(0, 4);
     const selectedTool = sel.selectedToolId ? getTool(sel.selectedToolId) : (sel.topRelevantId ? getTool(sel.topRelevantId) : undefined);
@@ -254,35 +254,35 @@ export function traceAgent(text: string): Trace {
         },
         {
             id: 'task', he: 'משימה', en: 'Task', state: plan.reached.task ? 'done' : 'pending',
-            explainHe: 'מילת פעולה הופכת שאלה למשימה. ה-Agent מזהה מה צריך לעשות (פרק 9).',
+            explainHe: 'מילת פעולה הופכת שאלה למשימה. ה-Agent מזהה מה צריך לעשות (פרק 10).',
             payload: { kind: 'task', actionHe: task.action ? `${task.action.word} (${task.action.en})` : 'אין פעולה', requestHe: task.requestType === 'task' ? 'משימה' : 'שאלה' },
         },
         {
             id: 'missing', he: 'מידע חסר', en: 'Missing Info',
             state: plan.behavior === 'ask-barcode' ? 'active' : stateFrom(plan.reached.missing, false),
-            explainHe: 'ה-Agent בודק מה עדיין חסר כדי לפעול. מידע חסר מוביל לבקשה, לא לניחוש (פרק 9).',
+            explainHe: 'ה-Agent בודק מה עדיין חסר כדי לפעול. מידע חסר מוביל לבקשה, לא לניחוש (פרק 10).',
             payload: { kind: 'missing', items: task.requiredData.map((d) => ({ he: d.def.he, present: d.present })), note: task.missingData.length ? `חסר: ${task.missingData.map((d) => d.he).join(', ')}` : 'כל המידע הנדרש קיים' },
         },
         {
             id: 'tools', he: 'בחירת כלי', en: 'Tool Selection', state: stateFrom(plan.reached.tools, false),
-            explainHe: 'ה-Agent מדרג כמה כל כלי מתאים, ובוחר את המוביל (פרק 10).',
+            explainHe: 'ה-Agent מדרג כמה כל כלי מתאים, ובוחר את המוביל (פרק 11).',
             payload: { kind: 'tools', items: topTools.map((e) => ({ nameEn: e.tool.nameEn, match: round(e.match * 100) })), selectedEn: selectedTool?.nameEn ?? null },
         },
         {
             id: 'call', he: 'הפעלת כלי', en: 'Tool Call',
             state: plan.reached.call ? 'done' : (plan.reached.tools && !plan.reached.call ? 'blocked' : 'pending'),
-            explainHe: 'קריאה מוגדרת לכלי, עם קלט מדויק. בלי קלט תקין או הרשאה, הקריאה לא מופעלת (פרק 11).',
+            explainHe: 'קריאה מוגדרת לכלי, עם קלט מדויק. בלי קלט תקין או הרשאה, הקריאה לא מופעלת (פרק 12).',
             payload: { kind: 'call', code: `trackingApi.${TOOL_CALL.method}({ ${TOOL_CALL.inputKey}: "${TOOL_CALL.inputValue}" })`, called: plan.reached.call },
         },
         {
             id: 'observation', he: 'תוצאה', en: 'Observation', state: stateFrom(plan.reached.observation, false),
-            explainHe: 'מה שהכלי החזיר. זה מידע חדש שהגיע מבחוץ, לא ידע שהיה למודל (פרק 11).',
+            explainHe: 'מה שהכלי החזיר. זה מידע חדש שהגיע מבחוץ, לא ידע שהיה למודל (פרק 12).',
             payload: { kind: 'observation', fields: plan.reached.observation ? obs.fields.map((fld) => ({ key: fld.key, value: fld.value })) : [], available: plan.reached.observation },
         },
         {
             id: 'risk', he: 'בדיקת סיכון', en: 'Risk Check',
             state: (plan.behavior === 'stop-approval' || plan.behavior === 'blocked') ? 'active' : stateFrom(plan.reached.risk, false),
-            explainHe: 'גם אחרי שהתוצאה חזרה, יש שער: סיכון והרשאה. סיכון גבוה דורש אישור (פרק 12).',
+            explainHe: 'גם אחרי שהתוצאה חזרה, יש שער: סיכון והרשאה. סיכון גבוה דורש אישור (פרק 13).',
             payload: { kind: 'risk', actionHe: control.action ? ACTION_META[control.action].he : 'הסבר סטטוס', riskHe: CONTROL_RISK_META[control.risk].he, approvalHe: control.gate === 'open' ? 'לא נדרש' : 'נדרש', tone: control.gate === 'open' ? 'answer' : 'stop' },
         },
         {
@@ -309,11 +309,11 @@ export function buildTrace(text: string, mode: 'chat' | 'agent'): Trace {
 /* ════════════════════════ נוסחאות הלומדה ══════════════════════════════════ */
 
 export const FORMULAS: { he: string; en: string; chapter: string }[] = [
-    { he: 'ציון', en: 'score = similarity + word_impact + context_bonus', chapter: 'פרק 7' },
-    { he: 'הסתברויות', en: 'probabilities = softmax(scores)', chapter: 'פרק 7' },
-    { he: 'פער ביטחון', en: 'confidence_margin = top - second', chapter: 'פרק 8' },
-    { he: 'ציון כלי', en: 'tool_score = task_match + data_match - risk_penalty', chapter: 'פרק 10' },
-    { he: 'אישור פעולה', en: 'action_allowed = confidence_high AND risk_low AND permission_granted', chapter: 'פרק 12' },
+    { he: 'ציון', en: 'score = similarity + word_impact + context_bonus', chapter: 'פרק 8' },
+    { he: 'הסתברויות', en: 'probabilities = softmax(scores)', chapter: 'פרק 8' },
+    { he: 'פער ביטחון', en: 'confidence_margin = top - second', chapter: 'פרק 9' },
+    { he: 'ציון כלי', en: 'tool_score = task_match + data_match - risk_penalty', chapter: 'פרק 11' },
+    { he: 'אישור פעולה', en: 'action_allowed = confidence_high AND risk_low AND permission_granted', chapter: 'פרק 13' },
 ];
 
 /* ════════════════════════ הניסוי המסכם ═══════════════════════════════════ */

@@ -10,6 +10,7 @@ import {
 
 import { ModeToggle } from './ModeToggle';
 import { ProbabilityBars } from './ProbabilityBars';
+import { StickyContextBar, type ContextTone } from './StickyContextBar';
 import { ACCENTS } from './accents';
 import type { Accent, IntentProbability } from './types';
 
@@ -26,13 +27,13 @@ import {
     THRESHOLD_PRESETS,
     type Distribution,
     type RiskActionDef,
-} from '@/app/behind-the-scenes-ai/chapter-8/gateData';
+} from '@/app/behind-the-scenes-ai/chapter-9/gateData';
 import {
     evaluateGate,
     buildClarifyingQuestion,
     GATE_KIND_META,
-} from '@/app/behind-the-scenes-ai/chapter-8/gateLogic';
-import type { ConfidenceLevel } from '@/app/behind-the-scenes-ai/chapter-7/scoringEngine';
+} from '@/app/behind-the-scenes-ai/chapter-9/gateLogic';
+import type { ConfidenceLevel } from '@/app/behind-the-scenes-ai/chapter-8/scoringEngine';
 
 /* ════════════════════════ עזרי תצוגה ═════════════════════════════════════ */
 
@@ -51,9 +52,16 @@ const TONE_STYLE = {
     stop: { border: 'border-rose-500/40', bg: 'bg-rose-900/15', text: 'text-rose-300', bar: 'bg-gradient-to-l from-rose-400 to-pink-500' },
 };
 
+// טון השער → טון פס ההקשר הדביק.
+const GATE_TONE: Record<keyof typeof TONE_STYLE, ContextTone> = {
+    open: 'go',
+    caution: 'caution',
+    stop: 'stop',
+};
+
 /* ════════════════════════ שכבת קריינות לימודית ═══════════════════════════ */
 // טקסט בלבד, נלווה לכל רכיב אינטראקטיבי: הקדמה לפני, "השורה התחתונה" אחרי,
-// ו"נסו את זה" שהופך את הווידג'ט לתרגיל ללומד העצמאי. אותו pattern כמו פרק 7.
+// ו"נסו את זה" שהופך את הווידג'ט לתרגיל ללומד העצמאי. אותו pattern כמו פרק 8.
 
 /** פסקת הקדמה: מה עומדים לראות ולמה. */
 const LayerIntro: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -107,6 +115,13 @@ export const ConfidenceGateLab: React.FC = () => {
     const top = dist.items[0];
     const second = dist.items[1];
 
+    // פס הקשר דביק: הקלט הפעיל + החלטת השער שנגזרה ממנו (קריאה בלבד מה-state).
+    const gateMeta = GATE_KIND_META[gate.kind];
+    const chatScenario = CHAT_SCENARIOS.find((s) => s.text === text);
+    const ctxInputText = mode === 'chat' ? (text.trim() || 'ממתין לקלט') : agentScenario.promptHe;
+    const ctxLabelHe = mode === 'chat' ? (chatScenario?.labelHe ?? 'הקלדה חופשית') : agentScenario.labelHe;
+    const ctxLabelEn = mode === 'chat' ? (chatScenario?.labelEn ?? 'Free text') : agentScenario.labelEn;
+
     const handleMode = (m: 'chat' | 'agent') => {
         if (m === mode) return;
         setMode(m);
@@ -117,7 +132,7 @@ export const ConfidenceGateLab: React.FC = () => {
     return (
         <div className="space-y-4">
             <LayerIntro>
-                בחרו תרחיש מוכן או הקלידו משפט משלכם, וכל שאר הלוח יגיב: הפער, השער וההחלטה. ב-Chat המנוע מנסה לזהות את כוונת המשתמש, ב-Agent הוא שוקל גם את הסיכון של הפעולה. כל המספרים כאן מגיעים ישירות מהמנוע של פרק 7, השער רק מחליט מה לעשות איתם.
+                בחרו תרחיש מוכן או הקלידו משפט משלכם, וכל שאר הלוח יגיב: הפער, השער וההחלטה. ב-Chat המנוע מנסה לזהות את כוונת המשתמש, ב-Agent הוא שוקל גם את הסיכון של הפעולה. כל המספרים כאן מגיעים ישירות מהמנוע של פרק 8, השער רק מחליט מה לעשות איתם.
             </LayerIntro>
 
             {/* ── בקרה ───────────────────────────────────────────────────── */}
@@ -206,6 +221,19 @@ export const ConfidenceGateLab: React.FC = () => {
                 )}
             </div>
 
+            {/* פס הקשר דביק: הקלט הפעיל + החלטת השער, גלוי לאורך גלילת השער, התוצאה והטבלאות */}
+            <StickyContextBar
+                inputText={ctxInputText}
+                labelHe={ctxLabelHe}
+                labelEn={ctxLabelEn}
+                inputAccent={top?.accent ?? 'purple'}
+                decisionHe={gateMeta.he}
+                decisionEn={gateMeta.en}
+                tone={GATE_TONE[gateMeta.tone]}
+                metricHe={`פער ${Math.round(dist.margin)}%`}
+                reduce={!!reduce}
+            />
+
             <TryThis>
                 החליפו תרחיש (או הקלידו משפט משלכם) וצפו איך הפער, השער וההחלטה שבהמשך הדף משתנים יחד, בלי שנגעתם בשום מספר.
             </TryThis>
@@ -241,17 +269,17 @@ export const ConfidenceGateLab: React.FC = () => {
             {/* ── תוצאה: תשובה / השהיה+הבהרה / אישור ─────────────────────── */}
             <OutcomeSection dist={dist} top={top} second={second} gate={gate} action={action} reduce={!!reduce} />
 
-            {/* ── Probability Bars (הקשר, ממנוע פרק 7) ───────────────────── */}
+            {/* ── Probability Bars (הקשר, ממנוע פרק 8) ───────────────────── */}
             <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-right" dir="rtl">
                 <div className="mb-4 flex items-center justify-between gap-2">
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-200">ההתפלגות שמגיעה מפרק 7</div>
+                        <div className="text-sm font-bold text-slate-200">ההתפלגות שמגיעה מפרק 8</div>
                         <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Probabilities (from chapter 7)</div>
                     </div>
                     <ConfidenceBadge confidence={dist.confidence} />
                 </div>
                 <LayerIntro>
-                    זו ההתפלגות המלאה שמגיעה ממנוע פרק 7, אותו מנוע בדיוק. השער לא מחשב הסתברויות מחדש, הוא רק קורא מתוכה את הפער בין שתי האפשרויות המובילות ומחליט לפיו.
+                    זו ההתפלגות המלאה שמגיעה ממנוע פרק 8, אותו מנוע בדיוק. השער לא מחשב הסתברויות מחדש, הוא רק קורא מתוכה את הפער בין שתי האפשרויות המובילות ומחליט לפיו.
                 </LayerIntro>
                 <ProbabilityBars items={dist.items.map((it): IntentProbability => ({ label: it.labelHe, value: pct(it.prob) }))} accent={top?.accent ?? 'cyan'} />
             </div>
@@ -263,7 +291,7 @@ export const ConfidenceGateLab: React.FC = () => {
             <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500" dir="rtl">
                 <Info size={14} className="mt-0.5 shrink-0" />
                 <span>
-                    ההתפלגויות כאן מגיעות ישירות ממנוע פרק 7, פרק 8 רק בונה מעליהן את השער. <span className="font-bold text-slate-400">עצירה ובקשת הקשר אינן שגיאה</span> -
+                    ההתפלגויות כאן מגיעות ישירות ממנוע פרק 8, פרק 9 רק בונה מעליהן את השער. <span className="font-bold text-slate-400">עצירה ובקשת הקשר אינן שגיאה</span> -
                     הן הצעד המקצועי כשהפער קטן מהסף. זה מודל לימודי של מדיניות החלטה: מערכות אמיתיות משתמשות בביטחון מכויל (calibrated),
                     אבל העיקרון של פער מול סף, ושל סיכון כגורם שני, תקף. כאן מתחיל החיבור בין הסתברות לאחריות.
                 </span>

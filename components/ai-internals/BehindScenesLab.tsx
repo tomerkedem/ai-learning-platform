@@ -12,11 +12,11 @@ import {
 import {
     traceChat, traceAgent, SUMMARY_SCENARIOS, FORMULAS, NARRATION,
     type Trace, type Stage, type StagePayload, type StageState, type Tone, type SectionNarration,
-} from '@/app/behind-the-scenes-ai/chapter-13/traces';
+} from '@/app/behind-the-scenes-ai/chapter-14/traces';
 import {
     SCENARIO_LIBRARY, getScenario, scenarioToTraces, DOMAIN_SWITCHER_NARRATION,
     type LibraryScenario,
-} from '@/app/behind-the-scenes-ai/chapter-13/scenarioLibrary';
+} from '@/app/behind-the-scenes-ai/chapter-14/scenarioLibrary';
 import { useLiveCapability, type LiveCapability } from '@/components/ai-internals/useLiveCapability';
 
 /* ════════════════════════ מקור התרחיש ════════════════════════════════════ */

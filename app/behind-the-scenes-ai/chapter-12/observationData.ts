@@ -1,17 +1,17 @@
-// נתוני פרק 11: "Tool Call, Observation והחלטה הבאה".
+// נתוני פרק 12: "Tool Call, Observation והחלטה הבאה".
 // כאן יושבות שלוש ה-Observations הקנוניות, הגדרת קריאת הכלי, תוויות ההחלטה
 // והאיכות, ומלל הקריינות לכל רכיב. המנוע (loopEngine.ts) גנרי. הכלי וה-
 // Observation הם מודל לימודי מקומי, אין כאן קריאה לשום שירות חיצוני.
 //
-// פרק 11 צורך את מצב בחירת הכלי מפרק 10 (selectFor) כדי לדעת איזה כלי נבחר.
+// פרק 12 צורך את מצב בחירת הכלי מפרק 11 (selectFor) כדי לדעת איזה כלי נבחר.
 //
 // ── איך להרחיב ────────────────────────────────────────────────────────────
 //   * להוסיף תרחיש תוצאה: שורה ל-OBSERVATIONS עם השדות שהכלי מחזיר, איכות
 //     התוצאה (quality), הביטחון (confidence), ודגלי conflict / hasStatus.
 //     ההחלטה הבאה מחושבת חי מ-decideNext, היא לא מקודדת קשיח.
-//   * לשנות את הקריאה: TOOL_CALL (method, inputKey). הכלי עצמו מגיע מפרק 10.
+//   * לשנות את הקריאה: TOOL_CALL (method, inputKey). הכלי עצמו מגיע מפרק 11.
 
-import { selectFor, getTool, BARCODE_SAMPLE } from '@/app/behind-the-scenes-ai/chapter-10/toolData';
+import { selectFor, getTool, BARCODE_SAMPLE } from '@/app/behind-the-scenes-ai/chapter-11/toolData';
 import {
     decideNext, canAnswer, TIMELINE_STEPS,
     type ObservationQuality, type Confidence, type RiskLevel,
@@ -22,7 +22,7 @@ export { TIMELINE_STEPS };
 export type { ObservationQuality, Confidence, RiskLevel, NextDecision };
 
 /* ════════════════════════ הבקשה והכלי שנבחר ══════════════════════════════ */
-// הבקשה הקנונית של הפרק. פרק 10 בוחר עבורה את Tracking API. אנחנו צורכים את
+// הבקשה הקנונית של הפרק. פרק 11 בוחר עבורה את Tracking API. אנחנו צורכים את
 // הבחירה הזו, לא מחשבים אותה מחדש.
 
 export const REQUEST = 'בדוק למה החבילה 123456789 לא הגיעה';

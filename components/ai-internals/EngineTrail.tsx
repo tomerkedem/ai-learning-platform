@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
@@ -14,6 +14,10 @@ export interface TrailStep {
     icon?: React.ReactNode;
     /** גוון לתחנה. אם לא מוגדר - נופל ל-accent של המסלול. */
     accent?: Accent;
+    /** הסבר מורחב שנפתח בלחיצה (רק כש-interactive=true). */
+    detail?: string;
+    /** דוגמה מוחשית שמוצגת בתוך פאנל ההסבר. */
+    example?: string;
 }
 
 interface EngineTrailProps {
@@ -26,6 +30,8 @@ interface EngineTrailProps {
     interval?: number;
     /** גרסה צפופה לתצוגות preview (Chat/Agent). */
     compact?: boolean;
+    /** אם true - אפשר ללחוץ על תחנה (עם detail) כדי לפתוח הסבר. */
+    interactive?: boolean;
 }
 
 // הילת זוהר סטטית לכל גוון (ללא template-strings דינמיים, כדי ש-Tailwind יזהה).
@@ -51,10 +57,15 @@ export const EngineTrail: React.FC<EngineTrailProps> = ({
     autoplay = false,
     interval = 700,
     compact = false,
+    interactive = false,
 }) => {
     const reduce = useReducedMotion();
-    const animate = autoplay && !reduce;
     const [tick, setTick] = useState(0);
+    // התחנה הפתוחה כרגע (accordion - אחת בכל פעם). null = הכל סגור.
+    const [expandedId, setExpandedId] = useState<string | null>(null);
+
+    // כשפותחים הסבר עוצרים את אנימציית הזרימה כדי לא להסיח בזמן קריאה.
+    const animate = autoplay && !reduce && expandedId === null;
 
     useEffect(() => {
         if (!animate) return;
@@ -74,6 +85,13 @@ export const EngineTrail: React.FC<EngineTrailProps> = ({
                 const lit = i <= active;          // התחנה כבר "נדלקה"
                 const isHead = i === active;       // ראש הגל הנוכחי
                 const connectorLit = i < active;   // ה-connator שמתחת לתחנה זו זרם
+                const canExpand = interactive && !!step.detail;
+                const isExpanded = expandedId === step.id;
+
+                const toggle = () => {
+                    if (!canExpand) return;
+                    setExpandedId((cur) => (cur === step.id ? null : step.id));
+                };
 
                 return (
                     <React.Fragment key={step.id}>
@@ -82,13 +100,21 @@ export const EngineTrail: React.FC<EngineTrailProps> = ({
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: '-40px' }}
                             transition={{ duration: 0.4, delay: reduce ? 0 : i * 0.06 }}
-                            whileHover={reduce ? undefined : { scale: 1.025 }}
+                            whileHover={reduce || !canExpand ? undefined : { scale: 1.025 }}
+                            onClick={toggle}
+                            role={canExpand ? 'button' : undefined}
+                            tabIndex={canExpand ? 0 : undefined}
+                            aria-expanded={canExpand ? isExpanded : undefined}
+                            onKeyDown={canExpand ? (e) => {
+                                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+                            } : undefined}
                             className={`group relative w-full rounded-2xl border text-right transition-colors duration-300
                                 ${compact ? 'p-3' : 'p-4'}
+                                ${canExpand ? 'cursor-pointer' : ''}
                                 ${lit
                                     ? `bg-slate-900/80 ${a.border} ${a.bgSoft}`
                                     : 'bg-slate-900/40 border-white/5'}
-                                ${isHead ? `ring-2 ${a.ringSoft} ${GLOW[acc]}` : ''}`}
+                                ${isExpanded ? `ring-2 ${a.ringSoft} ${GLOW[acc]}` : isHead ? `ring-2 ${a.ringSoft} ${GLOW[acc]}` : ''}`}
                         >
                             <div className="flex items-center gap-3">
                                 {/* תג מספר / נקודת מצב */}
@@ -128,7 +154,46 @@ export const EngineTrail: React.FC<EngineTrailProps> = ({
                                         </div>
                                     )}
                                 </div>
+
+                                {/* מחוון "אפשר ללחוץ" — מסתובב כשפתוח */}
+                                {canExpand && (
+                                    <motion.div
+                                        aria-hidden
+                                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                                        transition={{ duration: 0.25 }}
+                                        className={`shrink-0 transition-colors duration-300 ${isExpanded || lit ? a.text : 'text-slate-500'}`}
+                                    >
+                                        <ChevronDown size={16} />
+                                    </motion.div>
+                                )}
                             </div>
+
+                            {/* פאנל הסבר נפתח */}
+                            {canExpand && (
+                                <AnimatePresence initial={false}>
+                                    {isExpanded && (
+                                        <motion.div
+                                            key="detail"
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.3, ease: 'easeOut' }}
+                                            className="overflow-hidden"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <div className={`mt-3 border-t ${a.border} pt-3`}>
+                                                <p className="text-sm text-slate-200 leading-relaxed">{step.detail}</p>
+                                                {step.example && (
+                                                    <div className="mt-3 flex items-start gap-2 rounded-lg bg-slate-950/60 border border-white/5 px-3 py-2">
+                                                        <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-slate-500 mt-0.5">דוגמה</span>
+                                                        <code dir="auto" className={`text-xs leading-relaxed ${a.text}`}>{step.example}</code>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            )}
                         </motion.div>
 
                         {/* connector בין תחנות */}
