@@ -240,6 +240,18 @@ export default function BehindTheScenesIntroPage() {
             className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block w-40 2xl:w-52 pointer-events-none"
           >
             <div className="absolute inset-0 bg-cyan-500/15 blur-2xl rounded-full" />
+            {/* בועת-דיבור: הופכת את המנטור מקישוט למלווה שמזמין פנימה */}
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 8, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 18, delay: 1 }}
+              className="absolute -top-12 left-1/2 -translate-x-1/2 w-max max-w-[11rem]"
+            >
+              <div className="relative rounded-2xl border border-cyan-500/40 bg-slate-900/95 px-3 py-2 text-center shadow-lg backdrop-blur-sm">
+                <p className="text-[11px] font-bold leading-snug text-cyan-200">בואו נפתח את המכסה ביחד 👀</p>
+                <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-3 w-3 rotate-45 border-b border-r border-cyan-500/40 bg-slate-900/95" />
+              </div>
+            </motion.div>
             <motion.img
               animate={reduce ? undefined : { y: [0, -10, 0] }}
               transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}

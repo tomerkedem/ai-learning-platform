@@ -86,7 +86,7 @@ export const GuessRevealGate: React.FC<{ reduce: boolean; actual?: number }> = (
                             transition={reduce ? { duration: 0 } : { duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                             className="overflow-hidden"
                         >
-                            <div className="mt-6 flex flex-col items-center gap-1.5">
+                            <div className="mt-6 flex flex-col items-center gap-1.5" role="status" aria-live="polite">
                                 <p className="inline-flex items-center gap-2 text-base font-bold text-cyan-300 md:text-lg">
                                     <Sparkles size={16} />
                                     {guess === actual ? 'בול! זיהיתם נכון.' : `התשובה: ${actual} שלבים.`}
@@ -175,7 +175,15 @@ export const LiveTokenizeTaste: React.FC<{ reduce: boolean }> = ({ reduce }) => 
             <div className="mt-6">
                 <div className="mb-2.5 flex items-center justify-between">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">הטוקנים שלכם</span>
-                    <span className="font-mono text-xs font-bold text-cyan-300" dir="ltr">{tokens.length} tokens</span>
+                    <span
+                        role="status"
+                        aria-live="polite"
+                        aria-label={`${tokens.length} טוקנים`}
+                        className="font-mono text-xs font-bold text-cyan-300"
+                        dir="ltr"
+                    >
+                        {tokens.length} tokens
+                    </span>
                 </div>
                 <div className="flex min-h-[3rem] flex-wrap gap-2">
                     <AnimatePresence mode="popLayout" initial={false}>
