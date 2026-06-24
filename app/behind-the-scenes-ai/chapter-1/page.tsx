@@ -5,6 +5,8 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Terminal, ScanSearch, Sparkles, ArrowDown, ScanLine, SlidersHorizontal, GitCompare, Route, Split, X } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
+import { AssessmentEngine } from '@/components/content/AssessmentEngine';
+import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { TransparentLabLayout } from '@/components/ai-internals/TransparentLabLayout';
@@ -452,6 +454,11 @@ export default function BehindTheScenesChapter1() {
                 </InsightBox>
             </section>
 
+
+            {/* ══════════ מבדק הבנה ══════════ */}
+            <section className="mt-16 mb-4" dir="rtl">
+                <AssessmentEngine {...behindAiChapterQuizzes[1]} />
+            </section>
         </ChapterLayout>
     );
 }

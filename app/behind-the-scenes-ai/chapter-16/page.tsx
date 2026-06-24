@@ -5,6 +5,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { PenLine, MousePointerClick, GitFork, FlaskConical, Compass } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
+import { AssessmentEngine } from '@/components/content/AssessmentEngine';
+import { behindAiChapterQuizzes, behindAiFinalExam } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { PromptCoachLab } from '@/components/ai-internals/PromptCoachLab';
@@ -129,6 +131,20 @@ export default function BehindTheScenesChapter15() {
                 </InsightBox>
             </section>
 
+
+            {/* ══════════ מבדק הבנה ══════════ */}
+            <section className="mt-16 mb-4" dir="rtl">
+                <AssessmentEngine {...behindAiChapterQuizzes[16]} />
+            </section>
+
+            {/* ══════════ מבחן סיום הלומדה ══════════ */}
+            <section className="mt-16 mb-4" dir="rtl">
+                <AssessmentEngine
+                    {...behindAiFinalExam}
+                    reviewHref="/behind-the-scenes-ai/introduction"
+                    reviewLabel="חזרה לתחילת הלומדה"
+                />
+            </section>
         </ChapterLayout>
     );
 }

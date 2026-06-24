@@ -208,7 +208,7 @@ if __name__ == "__main__":
           <div className="relative">
           {/* המנטור (xl+, משמאל) */}
           <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-            <Mentor pose="explain" line="פייתון היא מערכת העצבים של ה-AI" width={160} accent={EMERALD_ACCENT} />
+            <Mentor pose="code" line="פייתון היא מערכת העצבים של ה-AI" width={160} accent={EMERALD_ACCENT} />
           </div>
           <section className="space-y-6">
             <div className="flex items-center gap-3 text-emerald-400 mb-2">

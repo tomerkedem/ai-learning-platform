@@ -19,9 +19,7 @@ export const SmartMentor = ({ activeSection }: { activeSection: string }) => {
     },
     code: {
       text: "שים לב - רק 3 שורות קוד כדי להפעיל בינה מלאכותית עוצמתית!",
-      // נכס זמני: mentor-code.png עדיין לא קיים. mentor-type.png מציג את הדמות מקלידה
-      // ומתאים לסקשן הקוד. להחליף ל-mentor-code.png ברגע שייווצר.
-      img: "/assets/mentor-type.png"
+      img: "/assets/mentor-code.png"
     },
     roadmap: { 
       text: "זה המסלול שלנו. כל שלב כאן הוא קריטי לבניית מערכות Production.", 

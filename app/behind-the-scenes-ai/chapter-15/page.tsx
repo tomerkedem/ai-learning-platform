@@ -5,6 +5,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { BrainCircuit, RotateCcw, Layers, FlaskConical, Compass } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
+import { AssessmentEngine } from '@/components/content/AssessmentEngine';
+import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { LearnsFromMistakesLab } from '@/components/ai-internals/LearnsFromMistakesLab';
@@ -133,6 +135,11 @@ export default function BehindTheScenesChapter14() {
                 </InsightBox>
             </section>
 
+
+            {/* ══════════ מבדק הבנה ══════════ */}
+            <section className="mt-16 mb-4" dir="rtl">
+                <AssessmentEngine {...behindAiChapterQuizzes[15]} />
+            </section>
         </ChapterLayout>
     );
 }

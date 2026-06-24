@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Check, X, Lightbulb, 
-  Trophy, ChevronRight, ChevronLeft, 
-  Timer, Eye, EyeOff, Flame, Volume2, VolumeX, Play
+import Link from "next/link";
+import {
+  Check, X, Lightbulb,
+  Trophy, ChevronRight, ChevronLeft,
+  Timer, Eye, EyeOff, Flame, Volume2, VolumeX, Play, ArrowLeft, RotateCcw
 } from "lucide-react";
 import confetti from 'canvas-confetti';
 
@@ -17,13 +18,48 @@ interface Question {
     explanation: string;
 }
 
+export interface ScoreTier {
+    /** ציון מינימלי (באחוזים) שמזכה בדרגה הזו. המערך ממוין מהגבוה לנמוך. */
+    min: number;
+    label: string;
+    color: string;
+    sub: string;
+}
+
 interface AssessmentProps {
     title: string;
     subtitle: string;
     questions: Question[];
+    /** סף ההצלחה באחוזים (משפיע על קונפטי, צבע ועל הצגת כפתור ההמשך). ברירת מחדל: 70. */
+    passScore?: number;
+    /** דרגות ציון מותאמות. אם לא מסופק, נעשה שימוש בדרגות ברירת המחדל. */
+    scoreTiers?: ScoreTier[];
+    /** קישור לפרק הבא, מוצג בסיום כאשר עוברים את סף ההצלחה. */
+    nextHref?: string;
+    nextLabel?: string;
+    /** קישור לחזרה על החומר, מוצג בסיום כאשר לא עוברים את סף ההצלחה. */
+    reviewHref?: string;
+    reviewLabel?: string;
 }
 
-export const AssessmentEngine = ({ title, subtitle, questions }: AssessmentProps) => {
+const DEFAULT_TIERS: ScoreTier[] = [
+    { min: 90, label: "מצוין!", color: "text-emerald-400", sub: "שליטה מלאה בחומר" },
+    { min: 70, label: "טוב מאוד", color: "text-blue-400", sub: "הבנה טובה מאוד" },
+    { min: 50, label: "עבר", color: "text-amber-400", sub: "יש מקום לשיפור" },
+    { min: 0, label: "נכשל", color: "text-red-400", sub: "מומלץ ללמוד שוב" },
+];
+
+export const AssessmentEngine = ({
+    title,
+    subtitle,
+    questions,
+    passScore = 70,
+    scoreTiers,
+    nextHref,
+    nextLabel = "המשך לפרק הבא",
+    reviewHref,
+    reviewLabel = "חזרה לחזרה קצרה",
+}: AssessmentProps) => {
     // States
     const [isStarted, setIsStarted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -53,11 +89,9 @@ export const AssessmentEngine = ({ title, subtitle, questions }: AssessmentProps
     }, [isMuted]);
 
     // פונקציית עזר להערכת ציון (במקום אחוזים יבשים)
-    const getScoreFeedback = (score: number) => {
-        if (score >= 90) return { label: "מצוין!", color: "text-emerald-400", sub: "שליטה מלאה בחומר" };
-        if (score >= 70) return { label: "טוב מאוד", color: "text-blue-400", sub: "הבנה טובה מאוד" };
-        if (score >= 50) return { label: "עבר", color: "text-amber-400", sub: "יש מקום לשיפור" };
-        return { label: "נכשל", color: "text-red-400", sub: "מומלץ ללמוד שוב" };
+    const getScoreFeedback = (score: number): ScoreTier => {
+        const tiers = scoreTiers ?? DEFAULT_TIERS;
+        return tiers.find(t => score >= t.min) ?? tiers[tiers.length - 1];
     };
 
     useEffect(() => {
@@ -107,12 +141,12 @@ export const AssessmentEngine = ({ title, subtitle, questions }: AssessmentProps
             setIsSubmitted(true);
             setIsActive(false);
             const score = (questions.reduce((acc, q) => answers[q.id] === q.correctAnswer ? acc + 1 : acc, 0) / questions.length) * 100;
-            if (score >= 70) {
+            if (score >= passScore) {
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 playSound('complete');
             }
         }
-    }, [currentIndex, questions, isReviewMode, answers, playSound]);
+    }, [currentIndex, questions, isReviewMode, answers, playSound, passScore]);
 
     const handleBack = useCallback(() => {
         if (currentIndex > 0) {
@@ -163,6 +197,7 @@ export const AssessmentEngine = ({ title, subtitle, questions }: AssessmentProps
         const correctCount = questions.reduce((acc, q) => answers[q.id] === q.correctAnswer ? acc + 1 : acc, 0);
         const scoreValue = Math.round((correctCount / questions.length) * 100);
         const feedback = getScoreFeedback(scoreValue);
+        const passed = scoreValue >= passScore;
 
         return (
             <motion.div 
@@ -179,8 +214,9 @@ export const AssessmentEngine = ({ title, subtitle, questions }: AssessmentProps
 
                 <div className="grid grid-cols-1 gap-4 mb-8">
                     <div className="bg-white/5 p-6 rounded-2xl border border-white/10 relative overflow-hidden group">
-                        <div className="text-slate-500 text-xs font-bold uppercase mb-2">הערכה סופית</div>
-                        <div className={`text-3xl font-black mb-1 ${feedback.color}`}>{feedback.label}</div>
+                        <div className="text-slate-500 text-xs font-bold uppercase mb-2">הציון הסופי</div>
+                        <div className={`text-6xl font-black mb-1 tabular-nums ${feedback.color}`}>{scoreValue}%</div>
+                        <div className={`text-xl font-black mb-1 ${feedback.color}`}>{feedback.label}</div>
                         <div className="text-slate-400 text-xs">{feedback.sub}</div>
                         <div className="mt-4 pt-4 border-t border-white/5 flex justify-around">
                             <div>
@@ -196,15 +232,31 @@ export const AssessmentEngine = ({ title, subtitle, questions }: AssessmentProps
                 </div>
 
                 <div className="space-y-3">
-                    <button 
+                    {passed && nextHref && (
+                        <Link
+                            href={nextHref}
+                            className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2 no-underline"
+                        >
+                            {nextLabel} <ArrowLeft size={18} />
+                        </Link>
+                    )}
+                    {!passed && reviewHref && (
+                        <Link
+                            href={reviewHref}
+                            className="w-full py-3 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 rounded-xl font-bold border border-amber-500/20 transition-all flex items-center justify-center gap-2 no-underline"
+                        >
+                            <RotateCcw size={18} /> {reviewLabel}
+                        </Link>
+                    )}
+                    <button
                         onClick={() => setIsReviewMode(true)}
                         className="w-full py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold border border-white/10 transition-all flex items-center justify-center gap-2"
                     >
                         <Eye size={18} /> סקירת תשובות
                     </button>
-                    <button 
-                        onClick={() => window.location.reload()}
-                        className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20"
+                    <button
+                        onClick={() => { setAnswers({}); setCurrentIndex(0); setIsSubmitted(false); setIsReviewMode(false); setStreak(0); setSeconds(0); setIsActive(true); setDirection(0); }}
+                        className="w-full py-3 bg-white/5 hover:bg-white/10 text-slate-300 rounded-xl font-bold border border-white/10 transition-all"
                     >
                         ניסיון חוזר
                     </button>

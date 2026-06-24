@@ -5,6 +5,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Network, Split, MousePointerClick, ArrowLeftRight } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
+import { AssessmentEngine } from '@/components/content/AssessmentEngine';
+import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { RequestRoutingLab } from '@/components/ai-internals/RequestRoutingLab';
@@ -151,6 +153,11 @@ export default function BehindTheScenesChapter2() {
                 </InsightBox>
             </section>
 
+
+            {/* ══════════ מבדק הבנה ══════════ */}
+            <section className="mt-16 mb-4" dir="rtl">
+                <AssessmentEngine {...behindAiChapterQuizzes[2]} />
+            </section>
         </ChapterLayout>
     );
 }
