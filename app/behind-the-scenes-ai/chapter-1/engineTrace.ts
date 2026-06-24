@@ -81,7 +81,7 @@ export function traceChatEngine(text: string): EngineTraceStep[] {
     return [
         { id: 'c1', act: ACT.intake.he, actEn: ACT.intake.en, title: 'קלט גולמי', titleEn: 'Raw input', note: 'הטקסט שכתבתם, בדיוק כפי שהגיע.', kind: 'raw', value: text || '-' },
         { id: 'c2', act: ACT.intake.he, actEn: ACT.intake.en, title: 'ניקוי וניקוד', titleEn: 'Normalize', note: 'רווחים מיותרים נחתכים, הטקסט מיושר לעיבוד.', kind: 'normalize', original: text, normalized: tokens.join(' '), changed: text !== tokens.join(' ') },
-        { id: 'c3', act: ACT.intake.he, actEn: ACT.intake.en, title: 'טוקניזציה', titleEn: 'Tokenize', note: 'פיצול ליחידות. הפשטה לימודית: לפי מילים, לא טוקנייזר אמיתי.', kind: 'tokens', tokens },
+        { id: 'c3', act: ACT.intake.he, actEn: ACT.intake.en, title: 'טוקניזציה', titleEn: 'Tokenize', note: 'מפצלים את הטקסט ליחידות. הפיצול נעשה לפי מילים שלמות, לשם ההמחשה. מודל אמיתי מפצל לתת-מילים (subword), והפיצול עצמו משתנה ממודל למודל, כך שאותו משפט מתפרק למספר טוקנים שונה בכל מודל.', kind: 'tokens', tokens },
         { id: 'c4', act: ACT.intake.he, actEn: ACT.intake.en, title: 'אורך הקלט', titleEn: 'Token count', note: 'כמה יחידות יש לעבד. אות ראשון לגודל הבקשה.', kind: 'count', value: tokens.length, unit: 'טוקנים' },
 
         { id: 'c5', act: ACT.analyze.he, actEn: ACT.analyze.en, title: 'סריקת מילות-מפתח', titleEn: 'Keyword scan', note: 'אילו מילים מהקלט מפעילות איזו כוונה. אלה הרמזים שמזיזים את הדירוג.', kind: 'keywords', groups },
@@ -114,7 +114,7 @@ export function traceAgentEngine(text: string): EngineTraceStep[] {
     return [
         { id: 'a1', act: ACT.intake.he, actEn: ACT.intake.en, title: 'קלט גולמי', titleEn: 'Raw input', note: 'הבקשה שכתבתם, נקודת הכניסה למנוע הפעולה.', kind: 'raw', value: text || '-' },
         { id: 'a2', act: ACT.intake.he, actEn: ACT.intake.en, title: 'ניקוי וניקוד', titleEn: 'Normalize', note: 'רווחים מיותרים נחתכים, הטקסט מיושר לעיבוד.', kind: 'normalize', original: text, normalized: tokens.join(' '), changed: text !== tokens.join(' ') },
-        { id: 'a3', act: ACT.intake.he, actEn: ACT.intake.en, title: 'טוקניזציה', titleEn: 'Tokenize', note: 'פיצול ליחידות. הפשטה לימודית: לפי מילים, לא טוקנייזר אמיתי.', kind: 'tokens', tokens },
+        { id: 'a3', act: ACT.intake.he, actEn: ACT.intake.en, title: 'טוקניזציה', titleEn: 'Tokenize', note: 'מפצלים את הטקסט ליחידות. הפיצול נעשה לפי מילים שלמות, לשם ההמחשה. מודל אמיתי מפצל לתת-מילים (subword), והפיצול עצמו משתנה ממודל למודל, כך שאותו משפט מתפרק למספר טוקנים שונה בכל מודל.', kind: 'tokens', tokens },
         { id: 'a4', act: ACT.intake.he, actEn: ACT.intake.en, title: 'אורך הקלט', titleEn: 'Token count', note: 'כמה יחידות יש לעבד.', kind: 'count', value: tokens.length, unit: 'טוקנים' },
 
         { id: 'a5', act: ACT.task.he, actEn: ACT.task.en, title: 'סריקת מילות-פעולה', titleEn: 'Action words', note: 'מילים כמו "בדוק" או "שלח" מסמנות שזו משימה, לא שאלה.', kind: 'keywords', groups: [{ label: 'מילות פעולה', matched: actionMatched, total: ACTION_WORDS.length }] },

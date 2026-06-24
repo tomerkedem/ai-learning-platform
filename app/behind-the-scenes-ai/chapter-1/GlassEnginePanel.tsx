@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
     motion, AnimatePresence, useMotionValue, useTransform, animate, useReducedMotion, type Variants,
 } from 'framer-motion';
@@ -22,6 +22,8 @@ interface GlassEnginePanelProps {
     accent: Accent;
     replayKey: string | number;
     steps: EngineTraceStep[];
+    /** ספירת טוקנים אמיתית מ-Claude (count_tokens) לקלט הנוכחי, במצב חי. null => לא זמין. */
+    liveTokenCount?: number | null;
     /** טוקן מודגש כרגע (קישור חי בין הצ'אט למנוע). */
     highlightToken?: string | null;
     /** דיווח על ריחוף/נגיעה בטוקן בתוך המנוע, להדגשה הדדית. */
@@ -285,7 +287,7 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
 
 /* ════════════════════════ הפאנל ══════════════════════════════════════════ */
 
-export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subtitle, accent, replayKey, steps, highlightToken, onTokenHover }) => {
+export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subtitle, accent, replayKey, steps, liveTokenCount, highlightToken, onTokenHover }) => {
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
 
@@ -300,6 +302,25 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
         const d = steps.find((s) => s.kind === 'decision');
         return d && d.kind === 'decision' ? CLIMAX_RGB[d.decision.kind] : null;
     }, [steps]);
+
+    // נגינה דינמית: בכל שליחה (replayKey משתנה) הצינור גולל מעצמו מלמעלה אל
+    // התחתית בקצב ההופעה של השלבים, כדי שתמיד רואים את כל התהליך עד ההחלטה והתשובה
+    // ולא נשארים תקועים בראש הרשימה. הגלילה רכה וניתנת להחלפה ידנית אחריה.
+    const bodyRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const el = bodyRef.current;
+        if (!el || reduce) return;
+        el.scrollTop = 0;
+        const max = el.scrollHeight - el.clientHeight;
+        if (max <= 0) return;
+        const controls = animate(0, max, {
+            duration: 2.4,
+            delay: 0.35,
+            ease: [0.4, 0, 0.2, 1],
+            onUpdate: (v) => { el.scrollTop = v; },
+        });
+        return () => controls.stop();
+    }, [replayKey, reduce]);
 
     return (
         <div className="relative flex h-[640px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/80" dir="rtl">
@@ -364,7 +385,7 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
             </div>
 
             {/* גוף הצינור */}
-            <div className="custom-scrollbar relative flex-1 overflow-y-auto p-5">
+            <div ref={bodyRef} className="custom-scrollbar relative flex-1 overflow-y-auto p-5">
                 <motion.div
                     key={replayKey}
                     variants={container}
@@ -426,6 +447,16 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                                                 <span className="font-mono text-[11px] uppercase tracking-widest text-slate-500" dir="ltr">{step.titleEn}</span>
                                             </div>
                                             <StepVisual step={step} accent={accent} reduce={!!reduce} highlightToken={highlightToken} onTokenHover={onTokenHover} />
+                                            {step.kind === 'count' && liveTokenCount != null && (
+                                                <div className="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-emerald-500/30 bg-emerald-900/10 px-2.5 py-1.5">
+                                                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300">
+                                                        <Sparkles size={12} /> Claude (אמיתי): {liveTokenCount} טוקנים
+                                                    </span>
+                                                    <span className="text-[11px] leading-relaxed text-slate-400">
+                                                        למעלה נספר לפי מילים. המספר האמיתי שונה כי המודל מפצל לתת-מילים - ואת החלוקה עצמה הוא לא חושף, רק את הספירה.
+                                                    </span>
+                                                </div>
+                                            )}
                                             <p className="mt-2.5 flex items-start gap-1.5 text-xs leading-relaxed text-slate-400">
                                                 <Scan size={11} className={`mt-0.5 shrink-0 ${a.text} opacity-70`} />
                                                 <span>{step.note}</span>

@@ -414,7 +414,7 @@ export default function BehindTheScenesChapter7() {
             </motion.section>
             {/* המנטור על כיוון במרחב (xl+, מימין) */}
             <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="explain" line="למשמעות יש כיוון 🧭" width={165} />
+              <Mentor pose="explain-opposite" line="למשמעות יש כיוון 🧭" width={165} />
             </div>
             </div>
 

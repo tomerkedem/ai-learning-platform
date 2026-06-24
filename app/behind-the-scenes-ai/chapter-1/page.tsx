@@ -52,6 +52,9 @@ export default function BehindTheScenesChapter1() {
     // בתשובת ה-mock הדטרמיניסטית. live = האם המנוע החי בכלל זמין (יש מפתח).
     const [live, setLive] = useState(false);
     const [liveReply, setLiveReply] = useState<string | null>(null);
+    // ספירת טוקנים אמיתית מ-Claude (count_tokens) עבור הטקסט הנוכחי. null => לא זמין
+    // (אין מפתח / כשל / אין טקסט). Claude לא חושף את החלוקה עצמה, רק את המספר.
+    const [liveTokens, setLiveTokens] = useState<number | null>(null);
     const [streaming, setStreaming] = useState(false);
     const replyAbortRef = useRef<AbortController | null>(null);
 
@@ -122,6 +125,28 @@ export default function BehindTheScenesChapter1() {
             setLiveReply(null); // נפילה חיננית לתשובת ה-mock
         }
     }, [live]);
+
+    // ספירת טוקנים אמיתית מ-Claude עבור אותו טקסט שהמנוע מציג. רק במצב חי, ו-debounced
+    // כדי לא להציף את ה-API בכל הקלדה. הספירה היא מספר אמיתי; את החלוקה עצמה Claude
+    // לא חושף, ולכן הלוח נשאר מבוסס-מילים והמספר הזה מוצג לצדו כהשוואה.
+    useEffect(() => {
+        const t = liveText.trim();
+        if (!live || !t) { setLiveTokens(null); return; }
+        let cancelled = false;
+        const ac = new AbortController();
+        const id = setTimeout(() => {
+            fetch('/api/count-tokens', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: t }),
+                signal: ac.signal,
+            })
+                .then((r) => (r.ok ? r.json() : null))
+                .then((d) => { if (!cancelled && d && typeof d.tokens === 'number') setLiveTokens(d.tokens); })
+                .catch(() => { /* כשל/קטיעה: פשוט לא מציגים ספירה חיה */ });
+        }, 280);
+        return () => { cancelled = true; ac.abort(); clearTimeout(id); };
+    }, [live, liveText]);
 
     // 15 שלבי המנוע השקוף - שיקוף כן של אותה ריצה (חיה), מקובץ ל-4 מערכות.
     const engineSteps = useMemo(
@@ -323,6 +348,7 @@ export default function BehindTheScenesChapter1() {
                                 accent={accent}
                                 replayKey={replayKey}
                                 steps={engineSteps}
+                                liveTokenCount={live ? liveTokens : null}
                                 highlightToken={hoverToken}
                                 onTokenHover={setHoverToken}
                             />

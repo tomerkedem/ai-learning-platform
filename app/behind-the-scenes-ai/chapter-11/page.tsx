@@ -106,7 +106,7 @@ export default function BehindTheScenesChapter10() {
             </motion.section>
             {/* המנטור: כלי הוא החלטה, לא כפתור (xl+, מימין) */}
             <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="explain" line="כלי הוא החלטה, לא כפתור 🔧" width={165} />
+              <Mentor pose="explain-opposite" line="כלי הוא החלטה, לא כפתור 🔧" width={165} />
             </div>
             </div>
 
