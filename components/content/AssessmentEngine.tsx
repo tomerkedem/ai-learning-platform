@@ -6,9 +6,11 @@ import Link from "next/link";
 import {
   Check, X, Lightbulb,
   Trophy, ChevronRight, ChevronLeft,
-  Timer, Eye, EyeOff, Flame, Volume2, VolumeX, Play, ArrowLeft, RotateCcw
+  Timer, Eye, EyeOff, Flame, Volume2, VolumeX, Play, ArrowLeft, RotateCcw,
+  ListChecks
 } from "lucide-react";
 import confetti from 'canvas-confetti';
+import { Mentor, type MentorAccent } from '../ai-internals/Mentor';
 
 interface Question {
     id: number;
@@ -72,6 +74,10 @@ interface AssessmentProps {
     showTimer?: boolean;
     /** האם להפעיל אפקטי סאונד חיצוניים. ברירת מחדל: true (תאימות לאחור). */
     soundEnabled?: boolean;
+    /** האם להציג את המנטור במסכי הפתיחה והתוצאות. ברירת מחדל: true. */
+    showMentor?: boolean;
+    /** צבע ההדגשה של המנטור. ברירת מחדל: ציאן (תואם BTS-AI). */
+    mentorAccent?: MentorAccent;
 }
 
 const DEFAULT_TIERS: ScoreTier[] = [
@@ -98,6 +104,8 @@ export const AssessmentEngine = ({
     completedTitle = "הבחינה הושלמה!",
     showTimer = true,
     soundEnabled = true,
+    showMentor = true,
+    mentorAccent,
 }: AssessmentProps) => {
     // States
     const [isStarted, setIsStarted] = useState(false);
@@ -112,6 +120,10 @@ export const AssessmentEngine = ({
     const [seconds, setSeconds] = useState(0);
     const [isActive, setIsActive] = useState(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    // גוון ההדגשה לכרום של מסכי הפתיחה/תוצאות (הילות, מסגרות, כפתור ראשי).
+    // נגזר מצבע המנטור כדי שהכול ירגיש מתוך עולם אחד; ברירת המחדל ציאן (תואם BTS-AI).
+    const accent = mentorAccent ?? { base: '6 182 212', shadow: '34 211 238', text: '#a5f3fc' };
 
     // פונקציית סאונד מעודכנת
     const playSound = useCallback((type: 'correct' | 'wrong' | 'click' | 'complete') => {
@@ -233,37 +245,76 @@ export const AssessmentEngine = ({
     // 1. מסך פתיחה - Start Screen
     if (!isStarted) {
         return (
-            <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                className="max-w-md mx-auto p-8 rounded-3xl bg-slate-900 border border-white/10 text-center shadow-2xl"
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+                className="relative max-w-md mx-auto overflow-hidden p-8 pt-10 rounded-[2rem] bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 text-center shadow-2xl"
                 dir="rtl"
             >
-                <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
-                    <Play size={32} className="text-blue-400 fill-current ml-1" />
-                </div>
-                <h2 className="text-2xl font-black text-white mb-2">{title}</h2>
-                <p className="text-slate-400 text-sm mb-8 leading-relaxed">{subtitle}</p>
-                
-                <div className={`grid ${showTimer ? 'grid-cols-2' : 'grid-cols-1'} gap-4 mb-8`}>
-                    <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                        <div className="text-slate-500 text-[10px] font-bold uppercase mb-1">שאלות</div>
-                        <div className="text-white font-black">{questions.length}</div>
-                    </div>
-                    {showTimer && (
-                        <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                            <div className="text-slate-500 text-[10px] font-bold uppercase mb-1">זמן מומלץ</div>
-                            <div className="text-white font-black">{Math.ceil(questions.length * 0.5)} דק&apos;</div>
+                {/* הילת הדגשה רכה בראש הכרטיס */}
+                <div
+                    className="pointer-events-none absolute -top-24 left-1/2 h-52 w-52 -translate-x-1/2 rounded-full blur-3xl"
+                    style={{ background: `rgb(${accent.base} / 0.18)` }}
+                />
+
+                <div className="relative">
+                    {showMentor ? (
+                        <div className="flex justify-center mb-8">
+                            <Mentor pose="hello" width={140} line="מוכן? בוא נראה מה קלטת" accent={mentorAccent} />
+                        </div>
+                    ) : (
+                        <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
+                            <Play size={32} className="text-blue-400 fill-current ml-1" />
                         </div>
                     )}
-                </div>
+                    <h2 className="text-2xl font-black text-white mb-2">{title}</h2>
+                    <p className="text-slate-400 text-sm mb-8 leading-relaxed">{subtitle}</p>
 
-                <button
-                    onClick={handleStart}
-                    className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black transition-all shadow-lg shadow-blue-900/40 flex items-center justify-center gap-2 group"
-                >
-                    {startLabel}
-                    <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-                </button>
+                    <div className={`grid ${showTimer ? 'grid-cols-2' : 'grid-cols-1'} gap-3 mb-8`}>
+                        <div className="flex items-center gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10 text-right">
+                            <span
+                                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                                style={{ background: `rgb(${accent.base} / 0.12)`, color: `rgb(${accent.shadow})` }}
+                            >
+                                <ListChecks size={18} />
+                            </span>
+                            <div>
+                                <div className="text-slate-500 text-[10px] font-bold uppercase">שאלות</div>
+                                <div className="text-white font-black text-lg leading-tight">{questions.length}</div>
+                            </div>
+                        </div>
+                        {showTimer && (
+                            <div className="flex items-center gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10 text-right">
+                                <span
+                                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                                    style={{ background: `rgb(${accent.base} / 0.12)`, color: `rgb(${accent.shadow})` }}
+                                >
+                                    <Timer size={18} />
+                                </span>
+                                <div>
+                                    <div className="text-slate-500 text-[10px] font-bold uppercase">זמן מומלץ</div>
+                                    <div className="text-white font-black text-lg leading-tight">{Math.ceil(questions.length * 0.5)} דק&apos;</div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <button
+                        onClick={handleStart}
+                        className="group relative w-full overflow-hidden py-4 rounded-2xl font-black text-slate-950 transition-all hover:-translate-y-0.5"
+                        style={{
+                            background: `linear-gradient(135deg, rgb(${accent.shadow}), rgb(${accent.base}))`,
+                            boxShadow: `0 12px 32px rgb(${accent.base} / 0.35)`,
+                        }}
+                    >
+                        <span className="relative z-10 flex items-center justify-center gap-2">
+                            {startLabel}
+                            <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                        </span>
+                        {/* ברק חולף בריחוף */}
+                        <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+                    </button>
+                </div>
             </motion.div>
         );
     }
@@ -275,42 +326,89 @@ export const AssessmentEngine = ({
         const feedback = getScoreFeedback(scoreValue);
         const passed = scoreValue >= passScore;
         const reviewLinks = getReviewLinks ? getReviewLinks(weakConcepts).slice(0, 3) : [];
+        const ring = 2 * Math.PI * 52; // היקף טבעת ההתקדמות (r=52)
 
         return (
             <motion.div
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                className="max-w-md mx-auto p-8 rounded-3xl bg-slate-950 border border-white/10 text-center shadow-2xl"
+                transition={{ type: 'spring', stiffness: 220, damping: 24 }}
+                className="relative max-w-md mx-auto overflow-hidden p-8 pt-10 rounded-[2rem] bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 text-center shadow-2xl"
                 dir="rtl"
                 role="status"
                 aria-live="polite"
             >
-                <div className="mb-8">
-                    <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-blue-500/5">
-                        <Trophy size={40} className="text-blue-400" />
-                    </div>
-                    <h2 className="text-2xl font-black text-white">{completedTitle}</h2>
-                </div>
+                {/* הילת הדגשה רכה, חמה יותר במעבר ורכה יותר בכישלון */}
+                <div
+                    className="pointer-events-none absolute -top-24 left-1/2 h-52 w-52 -translate-x-1/2 rounded-full blur-3xl"
+                    style={{ background: passed ? `rgb(${accent.base} / 0.20)` : 'rgb(245 158 11 / 0.14)' }}
+                />
 
-                <div className="grid grid-cols-1 gap-4 mb-6">
-                    <div className="bg-white/5 p-6 rounded-2xl border border-white/10 relative overflow-hidden group">
-                        <div className="text-slate-500 text-xs font-bold uppercase mb-2">הציון הסופי</div>
-                        <div className={`text-6xl font-black mb-1 tabular-nums ${feedback.color}`}>{scoreValue}%</div>
-                        <div className={`text-xl font-black mb-1 ${feedback.color}`}>{feedback.label}</div>
-                        <div className="text-slate-400 text-xs">{feedback.sub}</div>
-                        <div className="mt-4 pt-4 border-t border-white/5 flex justify-around">
-                            <div>
-                                <div className="text-[10px] text-slate-500 font-bold uppercase">נכונות</div>
-                                <div className="text-white font-bold">{correctCount} / {questions.length}</div>
+                <div className="relative">
+                    <div className="mb-6">
+                        {showMentor ? (
+                            <div className="flex justify-center mb-5">
+                                <Mentor
+                                    pose={passed ? 'celebrate' : 'reassure'}
+                                    width={160}
+                                    line={passed ? (scoreValue >= 90 ? 'מצוין, שליטה מלאה!' : 'יפה, עברת!') : 'לא נורא, נחזור על זה יחד'}
+                                    accent={mentorAccent}
+                                />
                             </div>
-                            {showTimer && (
-                                <div>
-                                    <div className="text-[10px] text-slate-500 font-bold uppercase">זמן</div>
-                                    <div className="text-white font-bold">{formatTime(seconds)}</div>
-                                </div>
-                            )}
+                        ) : (
+                            <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-blue-500/5">
+                                <Trophy size={40} className="text-blue-400" />
+                            </div>
+                        )}
+                        <h2 className="text-2xl font-black text-white">{completedTitle}</h2>
+                    </div>
+
+                    {/* טבעת ציון מונפשת */}
+                    <div className="relative mx-auto mb-6 h-44 w-44">
+                        <svg className="h-full w-full -rotate-90" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="9" />
+                            <motion.circle
+                                cx="60" cy="60" r="52" fill="none"
+                                className={feedback.color}
+                                stroke="currentColor" strokeWidth="9" strokeLinecap="round"
+                                strokeDasharray={ring}
+                                initial={{ strokeDashoffset: ring }}
+                                animate={{ strokeDashoffset: ring * (1 - scoreValue / 100) }}
+                                transition={{ duration: 1.2, ease: 'easeOut', delay: 0.15 }}
+                                style={{ filter: 'drop-shadow(0 0 6px currentColor)' }}
+                            />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.3, type: 'spring', stiffness: 240, damping: 16 }}
+                                className={`text-5xl font-black tabular-nums leading-none ${feedback.color}`}
+                            >
+                                {scoreValue}%
+                            </motion.div>
+                            <div className={`mt-1.5 text-base font-black ${feedback.color}`}>{feedback.label}</div>
+                            <div className="text-slate-500 text-[11px] font-medium">{feedback.sub}</div>
                         </div>
                     </div>
-                </div>
+
+                    {/* סטטיסטיקות: נכונות וזמן */}
+                    <div className={`grid ${showTimer ? 'grid-cols-2' : 'grid-cols-1'} gap-3 mb-6`}>
+                        <div className="flex items-center justify-center gap-2.5 bg-white/5 p-3.5 rounded-2xl border border-white/10">
+                            <Check size={16} className="text-emerald-400 stroke-[3px]" />
+                            <div className="text-right">
+                                <div className="text-[10px] text-slate-500 font-bold uppercase">נכונות</div>
+                                <div className="text-white font-black leading-tight">{correctCount} / {questions.length}</div>
+                            </div>
+                        </div>
+                        {showTimer && (
+                            <div className="flex items-center justify-center gap-2.5 bg-white/5 p-3.5 rounded-2xl border border-white/10">
+                                <Timer size={16} className="text-amber-400" />
+                                <div className="text-right">
+                                    <div className="text-[10px] text-slate-500 font-bold uppercase">זמן</div>
+                                    <div className="text-white font-black leading-tight">{formatTime(seconds)}</div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                 {/* אבחון מושגים: מה חזק ומה כדאי לחזק */}
                 {(strongConcepts.length > 0 || weakConcepts.length > 0) && (
@@ -386,6 +484,7 @@ export const AssessmentEngine = ({
                     >
                         ניסיון חוזר
                     </button>
+                </div>
                 </div>
             </motion.div>
         );
