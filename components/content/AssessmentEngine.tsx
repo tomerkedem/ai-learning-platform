@@ -248,7 +248,7 @@ export const AssessmentEngine = ({
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 220, damping: 22 }}
-                className="relative max-w-md mx-auto overflow-hidden p-8 pt-10 rounded-[2rem] bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 text-center shadow-2xl"
+                className="relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 text-center shadow-2xl"
                 dir="rtl"
             >
                 {/* הילת הדגשה רכה בראש הכרטיס */}
@@ -260,7 +260,7 @@ export const AssessmentEngine = ({
                 <div className="relative">
                     {showMentor ? (
                         <div className="flex justify-center mb-8">
-                            <Mentor pose="hello" width={140} line="מוכן? בוא נראה מה קלטת" accent={mentorAccent} />
+                            <Mentor pose="ready" width={140} line="מוכן? בוא נראה מה קלטת" accent={mentorAccent} />
                         </div>
                     ) : (
                         <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
@@ -332,7 +332,7 @@ export const AssessmentEngine = ({
             <motion.div
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 220, damping: 24 }}
-                className="relative max-w-md mx-auto overflow-hidden p-8 pt-10 rounded-[2rem] bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 text-center shadow-2xl"
+                className="relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 text-center shadow-2xl"
                 dir="rtl"
                 role="status"
                 aria-live="polite"

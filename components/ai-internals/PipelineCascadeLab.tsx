@@ -3,10 +3,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
-    Compass, ArrowLeftRight, Sigma, Boxes, BarChart3, Flag, ChevronDown,
+    Compass, ArrowLeftRight, Sigma, Boxes, BarChart3, Flag, ChevronDown, ChevronRight,
     Play, RotateCcw, Keyboard, FunctionSquare, Eye, Workflow, ScanLine,
     CheckCircle2, AlertTriangle, Info, Gauge, Repeat, MousePointerClick, Lightbulb,
-    Pause, SkipForward, Zap, Scale,
+    Pause, SkipForward, Zap, Scale, Layers, Waves,
 } from 'lucide-react';
 
 import { ModeToggle } from './ModeToggle';
@@ -49,21 +49,21 @@ const CONF_STYLE: Record<ConfidenceLevel, { he: string; accent: Accent; bar: num
 
 /** פסקת הקדמה: מה עומדים לראות בשלב הזה ולמה. */
 const LayerIntro: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <p className="mb-4 text-xs leading-relaxed text-slate-400">{children}</p>
+    <p className="mb-4 text-sm leading-relaxed text-slate-300">{children}</p>
 );
 
 /** השורה התחתונה של השלב, במשפט אחד. */
 const Takeaway: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <p className="mt-3 flex items-start gap-2 text-[11px] leading-relaxed text-slate-400">
-        <Lightbulb size={13} className="mt-0.5 shrink-0 text-emerald-400/80" />
-        <span><span className="font-bold text-slate-300">השורה התחתונה: </span>{children}</span>
+    <p className="mt-3 flex items-start gap-2 text-[13px] leading-relaxed text-slate-300">
+        <Lightbulb size={15} className="mt-0.5 shrink-0 text-emerald-400/80" />
+        <span><span className="font-bold text-slate-200">השורה התחתונה: </span>{children}</span>
     </p>
 );
 
 /** הנחיה מודרכת: מה לעשות עם הווידג'ט כדי ללמוד ממנו. */
 const TryThis: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <div className="mt-3 flex items-start gap-2 rounded-xl border border-violet-500/25 bg-violet-900/10 p-3 text-[11px] leading-relaxed text-violet-100/90" dir="rtl">
-        <MousePointerClick size={13} className="mt-0.5 shrink-0 text-violet-300" />
+    <div className="mt-3 flex items-start gap-2 rounded-xl border border-violet-500/25 bg-violet-900/10 p-3 text-[13px] leading-relaxed text-violet-100/90" dir="rtl">
+        <MousePointerClick size={15} className="mt-0.5 shrink-0 text-violet-300" />
         <span><span className="font-bold text-violet-200">נסו את זה: </span>{children}</span>
     </div>
 );
@@ -80,6 +80,10 @@ export const PipelineCascadeLab: React.FC = () => {
     const [autoTyping, setAutoTyping] = useState(false);
     const [hoverId, setHoverId] = useState<string | null>(null);
     const [waveKey, setWaveKey] = useState(0);
+    // שכבת עומק: כבוי כברירת מחדל. המסלול הבסיסי מראה את הצינור הזורם ואת ההבדל
+    // בין דמיון, ציון והסתברות. שכבת העומק מוסיפה Agent Mode, תצוגת נוסחה ואת
+    // מכונת ה-Softmax עם play/pause/step.
+    const [depth, setDepth] = useState(false);
 
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -107,6 +111,20 @@ export const PipelineCascadeLab: React.FC = () => {
         stopAuto();
         setMode(m);
         setHoverId(null);
+    };
+
+    // מעבר בין מסלול בסיסי לשכבת עומק. ביציאה מהעומק מחזירים את הלומד למצב נקי:
+    // Chat, בלי תצוגת נוסחה ובלי ברקוד, כדי שהמסלול הבסיסי יישאר עקבי.
+    const handleDepth = (next: boolean) => {
+        if (next === depth) return;
+        stopAuto();
+        if (!next) {
+            setMode('chat');
+            setFormulaView(false);
+            setHasBarcode(false);
+            setHoverId(null);
+        }
+        setDepth(next);
     };
 
     const handleChange = (v: string) => { stopAuto(); setText(v); };
@@ -159,30 +177,53 @@ export const PipelineCascadeLab: React.FC = () => {
 
     return (
         <div className="space-y-4">
-            {/* ── בקרה: מצב + תצוגת נוסחה ─────────────────────────────────── */}
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4" dir="rtl">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-400">מצב:</span>
-                        <ModeToggle mode={mode} onChange={(m) => handleMode(m as 'chat' | 'agent')} accent="purple" />
-                    </div>
-                    <button
-                        type="button"
-                        onClick={() => setFormulaView((v) => !v)}
-                        aria-pressed={formulaView}
-                        className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${
-                            formulaView ? 'border-violet-500/50 bg-violet-900/25 text-violet-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-300 hover:border-slate-600'
-                        }`}
-                    >
-                        {formulaView ? <FunctionSquare size={15} /> : <Eye size={15} />}
-                        {formulaView ? 'תצוגת נוסחה' : 'תצוגה פשוטה'}
-                        <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{formulaView ? 'Formula' : 'Simple'}</span>
-                    </button>
-                </div>
-                <p className="mt-3 border-t border-slate-700/40 pt-3 text-[11px] leading-relaxed text-slate-500">
-                    מי שרוצה לראות את החישוב עצמו יכול ללחוץ על <span className="font-bold text-slate-400">תצוגת נוסחה</span> (Formula View). המטרה אינה להפוך אתכם למתמטיקאים, אלא להראות שהגרפים והאחוזים אינם קסם, אלא תוצאה של חישוב שאפשר לעקוב אחריו. החלפה ל-<span className="font-bold text-slate-400">Agent Mode</span> מראה שאותה שרשרת מדרגת צעדים לפי מצב, לא רק כוונות.
-                </p>
+            {/* ── שער חשיפה הדרגתית: פתיחת שכבת העומק (אותו דפוס כמו פרק 1) ──
+                ברירת המחדל היא מסלול ממוקד. המפל המלא, מכונת ה-Softmax, הנוסחאות
+                ו-Agent Mode פתוחים רק מאחורי השער הזה, ולכן הם אופציה מודעת. ── */}
+            <div className="text-center" dir="rtl">
+                <button
+                    type="button"
+                    onClick={() => handleDepth(!depth)}
+                    aria-expanded={depth}
+                    className="group inline-flex items-center gap-3 rounded-2xl border border-violet-500/40 bg-violet-900/15 px-6 py-3.5 text-base font-bold text-violet-200 transition-colors hover:border-violet-400/60 hover:bg-violet-900/25"
+                >
+                    <Layers size={18} className="text-violet-300" />
+                    {depth ? 'סגרו את שכבת העומק' : 'פתחו את שכבת העומק'}
+                    <ChevronDown size={18} className={`text-violet-300 transition-transform ${depth ? 'rotate-180' : ''}`} />
+                </button>
+                {!depth && (
+                    <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">
+                        כאן נפתח את החישוב המלא: כל 6 השכבות, Softmax צעד-אחר-צעד, נוסחאות ו-Agent Mode.
+                    </p>
+                )}
             </div>
+
+            {/* ── בקרות עומק: מצב Chat/Agent + תצוגת נוסחה. גלויות רק בשכבת העומק. ── */}
+            {depth && (
+                <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4" dir="rtl">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-slate-400">מצב:</span>
+                            <ModeToggle mode={mode} onChange={(m) => handleMode(m as 'chat' | 'agent')} accent="purple" />
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setFormulaView((v) => !v)}
+                            aria-pressed={formulaView}
+                            className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${
+                                formulaView ? 'border-violet-500/50 bg-violet-900/25 text-violet-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-300 hover:border-slate-600'
+                            }`}
+                        >
+                            {formulaView ? <FunctionSquare size={15} /> : <Eye size={15} />}
+                            {formulaView ? 'תצוגת נוסחה' : 'תצוגה פשוטה'}
+                            <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{formulaView ? 'Formula' : 'Simple'}</span>
+                        </button>
+                    </div>
+                    <p className="mt-3 border-t border-slate-700/40 pt-3 text-[13px] leading-relaxed text-slate-400">
+                        שכבת העומק חושפת את החישוב המלא: <span className="font-bold text-slate-400">תצוגת נוסחה</span> (Formula View) מראה שכל מספר על המסך הוא חישוב חי, ומכונת ה-Softmax מקבלת בקרת <span className="font-bold text-slate-400">הגברה ונרמול</span> צעד-אחר-צעד. החלפה ל-<span className="font-bold text-slate-400">Agent Mode</span> מראה שאותה שרשרת מדרגת צעדים לפי מצב, לא רק כוונות.
+                    </p>
+                </div>
+            )}
 
             {/* ── dock קלט דביק: הקלט + התוצאה הראשית נשארים צמודים וגלויים ─────
                 שדה הקלט הקיים מקודם לתוך ה-dock (children) - מקור קלט יחיד, בלי
@@ -204,24 +245,122 @@ export const PipelineCascadeLab: React.FC = () => {
                 )}
             </StickyInputDock>
 
-            {/* ── מפל השרשרת (Pipeline Cascade) ───────────────────────────── */}
-            <PipelineCascade
-                result={result}
-                waveKey={waveKey}
-                formulaView={formulaView}
-                hoverId={hoverId}
-                setHoverId={setHoverId}
-                reduce={!!reduce}
-            />
+            {depth ? (
+                <>
+                    {/* ── מפל השרשרת המלא (שכבת עומק בלבד) ───────────────────── */}
+                    <PipelineCascade
+                        result={result}
+                        waveKey={waveKey}
+                        formulaView={formulaView}
+                        depth={depth}
+                        hoverId={hoverId}
+                        setHoverId={setHoverId}
+                        reduce={!!reduce}
+                    />
 
-            {/* ── disclaimer + גשר ───────────────────────────────────────── */}
-            <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500" dir="rtl">
-                <Info size={14} className="mt-0.5 shrink-0" />
-                <span>
-                    כל המספרים כאן מחושבים חי: Cosine Similarity אמיתי בין הווקטורים, ציון = w1·דמיון + w2·השפעת מילה + w3·בונוס הקשר,
-                    ואז Softmax עם temperature הופך ציונים להסתברויות. <span className="font-bold text-slate-400">דמיון אינו הסתברות, וציון אינו הסתברות</span> -
-                    רק אחרי Softmax הערכים מסתכמים ל-100%. דירוג הכוונות הוא ההפשטה הלימודית שלנו: מודל אמיתי מדרג את ה-token הבא, לא כוונות שלמות.
-                </span>
+                    {/* ── disclaimer + גשר ───────────────────────────────── */}
+                    <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[13px] leading-relaxed text-slate-400" dir="rtl">
+                        <Info size={15} className="mt-0.5 shrink-0" />
+                        <span>
+                            כל המספרים כאן מחושבים חי: Cosine Similarity אמיתי בין הווקטורים, ציון = w1·דמיון + w2·השפעת מילה + w3·בונוס הקשר,
+                            ואז Softmax עם temperature הופך ציונים להסתברויות. <span className="font-bold text-slate-400">דמיון אינו הסתברות, וציון אינו הסתברות</span> -
+                            רק אחרי Softmax הערכים מסתכמים ל-100%. דירוג הכוונות הוא ההפשטה הלימודית שלנו: מודל אמיתי מדרג את ה-token הבא, לא כוונות שלמות.
+                        </span>
+                    </div>
+                </>
+            ) : (
+                /* ── מסלול בסיסי: גרסה ממוקדת וקלילה, בלי המפל הכבד ── */
+                <LightPath result={result} waveKey={waveKey} reduce={!!reduce} />
+            )}
+        </div>
+    );
+};
+
+/* ════════════════════════ מסלול בסיסי (Light Path) ═══════════════════════ */
+// תצוגת ברירת המחדל. שדה הקלט והחלפת המילה חיים ב-dock הדביק למעלה; כאן מוצגים
+// רק שלושת הדברים שצריך כדי לתפוס את הרעיון: גל השינוי שעובר בשלוש תחנות
+// (דמיון -> ציון -> הסתברות), ההחלטה הסופית, ומשפט המפתח. המפל המלא, מכונת
+// ה-Softmax והנוסחאות שמורים לשכבת העומק.
+
+const LIGHT_STEPS = [
+    { key: 'similarity', he: 'דמיון', en: 'Similarity', accent: 'amber' as Accent, note: 'קרבת כיוון, לא אחוז' },
+    { key: 'score', he: 'ציון', en: 'Score', accent: 'indigo' as Accent, note: 'ציון גולמי, לא מסתכם ל-100%' },
+    { key: 'probability', he: 'הסתברות', en: 'Probability', accent: 'emerald' as Accent, note: 'רק Softmax יוצר אחוזים' },
+] as const;
+
+const LightPath: React.FC<{ result: AnalysisResult; waveKey: number; reduce: boolean }> = ({ result, waveKey, reduce }) => {
+    const leader = result.items[0];
+    const valueFor = (key: string): string => {
+        if (key === 'similarity') return f2(leader?.similarity ?? 0);
+        if (key === 'score') return f2(leader?.score ?? 0);
+        return `${pct(leader?.prob ?? 0)}%`;
+    };
+
+    return (
+        <div className="space-y-4">
+            {/* ── הסבר תלת-שלבי קומפקטי + גל השינוי ── */}
+            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5" dir="rtl">
+                <div className="mb-3 flex items-center gap-2.5">
+                    <ArrowLeftRight size={18} className="text-violet-300" />
+                    <div className="leading-tight">
+                        <div className="text-base font-bold text-slate-100">מהקלט להחלטה, בשלוש תחנות</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Similarity → Score → Probability</div>
+                    </div>
+                </div>
+
+                <p className="mb-4 text-sm leading-relaxed text-slate-300">
+                    {result.hasInput ? (
+                        <>
+                            המנוע לא קופץ מהמשפט ישר לאחוזים. הוא עובר שרשרת: קודם <span className="font-bold text-amber-200">דמיון</span>, אחר כך <span className="font-bold text-indigo-200">ציון גולמי</span>, ורק Softmax הופך את הציון ל<span className="font-bold text-emerald-200">הסתברות</span>. שימו לב שאותה אפשרות מובילה ({leader?.labelHe}) מקבלת שלושה מספרים שונים לגמרי.
+                        </>
+                    ) : (
+                        <>הקלידו משפט למעלה (או בחרו ניסוי מהיר) כדי לראות את שלוש התחנות מתמלאות.</>
+                    )}
+                </p>
+
+                <div className="flex items-stretch gap-2" dir="ltr">
+                    {LIGHT_STEPS.map((s, i) => {
+                        const a = ACCENTS[s.accent];
+                        return (
+                            <React.Fragment key={s.key}>
+                                {i > 0 && <ChevronRight size={22} className="shrink-0 self-center text-slate-600" aria-hidden />}
+                                <motion.div
+                                    key={`${s.key}-${waveKey}`}
+                                    initial={reduce ? false : { opacity: 0, y: 10, scale: 0.96 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    transition={reduce ? { duration: 0 } : { duration: 0.35, delay: i * 0.14 }}
+                                    className={`flex-1 rounded-2xl border ${a.border} ${a.bgSoft} p-3.5 text-center`}
+                                >
+                                    <div className={`text-sm font-bold ${a.text}`} dir="rtl">{s.he}</div>
+                                    <div className="text-[9px] uppercase tracking-wider text-slate-500">{s.en}</div>
+                                    <div className="my-1.5 font-mono text-2xl font-black text-slate-100">
+                                        {result.hasInput ? valueFor(s.key) : '--'}
+                                    </div>
+                                    <div className="text-[11px] leading-snug text-slate-400" dir="rtl">{s.note}</div>
+                                </motion.div>
+                            </React.Fragment>
+                        );
+                    })}
+                </div>
+
+                <div className="mt-3 flex items-start gap-2 rounded-xl border border-violet-500/25 bg-violet-900/10 p-3 text-[13px] leading-relaxed text-violet-100/90" dir="rtl">
+                    <Waves size={15} className="mt-0.5 shrink-0 text-violet-300" />
+                    <span>
+                        <span className="font-bold text-violet-200">גל השינוי: </span>
+                        לחצו &quot;החלפת מילה&quot; למעלה (או שנו מילה אחת) וראו את הגל עובר דרך שלוש התחנות בבת אחת. שינוי מילה אחת יכול להפוך את ההחלטה.
+                    </span>
+                </div>
+            </div>
+
+            {/* ── ההחלטה הסופית (אותה שכבה מהמפל המלא) ── */}
+            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5">
+                <DecisionLayer result={result} reduce={reduce} />
+            </div>
+
+            {/* ── משפט המפתח של המסלול הבסיסי ── */}
+            <div className="flex items-start gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-950/10 p-4 text-sm font-bold leading-relaxed text-emerald-100" dir="rtl">
+                <Lightbulb size={16} className="mt-0.5 shrink-0 text-emerald-300" />
+                <span>דמיון אינו הסתברות. ציון אינו הסתברות. רק Softmax הופך ציונים להתפלגות.</span>
             </div>
         </div>
     );
@@ -364,12 +503,13 @@ interface CascadeProps {
     result: AnalysisResult;
     waveKey: number;
     formulaView: boolean;
+    depth: boolean;
     hoverId: string | null;
     setHoverId: (id: string | null) => void;
     reduce: boolean;
 }
 
-const PipelineCascade: React.FC<CascadeProps> = ({ result, waveKey, formulaView, hoverId, setHoverId, reduce }) => {
+const PipelineCascade: React.FC<CascadeProps> = ({ result, waveKey, formulaView, depth, hoverId, setHoverId, reduce }) => {
     const simSorted = [...result.items].sort((a, b) => b.similarity - a.similarity);
     const scoreSorted = [...result.items].sort((a, b) => b.score - a.score);
     const isAgent = result.mode === 'agent';
@@ -385,11 +525,11 @@ const PipelineCascade: React.FC<CascadeProps> = ({ result, waveKey, formulaView,
         },
         {
             key: 'scores',
-            node: <ScoresLayer items={scoreSorted} formulaView={formulaView} reduce={reduce} />,
+            node: <ScoresLayer items={scoreSorted} formulaView={formulaView} depth={depth} reduce={reduce} />,
         },
         {
             key: 'softmax',
-            node: <SoftmaxLayer items={scoreSorted} temperature={result.temperature} formulaView={formulaView} hasInput={result.hasInput} waveKey={waveKey} reduce={reduce} />,
+            node: <SoftmaxLayer items={scoreSorted} temperature={result.temperature} formulaView={formulaView} depth={depth} hasInput={result.hasInput} waveKey={waveKey} reduce={reduce} />,
         },
         {
             key: 'probabilities',
@@ -456,16 +596,25 @@ const CascadeLayer: React.FC<{ index: number; waveKey: number; active: boolean; 
     </div>
 );
 
-/** כותרת שכבה אחידה. */
-const LayerHead: React.FC<{ icon: React.ReactNode; he: string; en: string; accent: Accent; badge?: React.ReactNode }> = ({ icon, he, en, accent, badge }) => {
+/** כותרת שכבה אחידה. step/total מציגים את מיקום השלב ברצף הצינור (1 עד 6). */
+const LayerHead: React.FC<{ icon: React.ReactNode; he: string; en: string; accent: Accent; step?: number; total?: number; badge?: React.ReactNode }> = ({ icon, he, en, accent, step, total, badge }) => {
     const a = ACCENTS[accent];
     return (
         <div className="mb-4 flex items-center justify-between gap-2" dir="rtl">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
+                {step != null && (
+                    <span
+                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-violet-500/40 bg-violet-500/15 font-mono text-sm font-bold text-violet-200"
+                        dir="ltr"
+                        title={total ? `שלב ${step} מתוך ${total}` : `שלב ${step}`}
+                    >
+                        {step}
+                    </span>
+                )}
                 <span className={a.text}>{icon}</span>
                 <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">{he}</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">{en}</div>
+                    <div className="text-base font-bold text-slate-100">{he}</div>
+                    <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">{en}</div>
                 </div>
             </div>
             {badge}
@@ -477,7 +626,7 @@ const LayerHead: React.FC<{ icon: React.ReactNode; he: string; en: string; accen
 
 const VectorLayer: React.FC<{ result: AnalysisResult; reduce: boolean }> = ({ result, reduce }) => (
     <div dir="rtl">
-        <LayerHead icon={<Compass size={16} />} he="וקטור משמעות" en="Meaning Vector" accent="cyan" />
+        <LayerHead icon={<Compass size={16} />} he="וקטור משמעות" en="Meaning Vector" accent="cyan" step={1} total={6} />
         <LayerIntro>
             כל השרשרת מתחילה כאן. המשפט שכתבתם כבר אינו מילים, אלא וקטור משמעות אחד, פרופיל מספרי שמתאר לאן המשפט מצביע על פני חמישה ממדים. זה מה שבנינו בפרק הקודם, וזו נקודת הפתיחה: כל שלב מכאן והלאה נגזר מהמספרים האלה.
         </LayerIntro>
@@ -489,11 +638,11 @@ const VectorLayer: React.FC<{ result: AnalysisResult; reduce: boolean }> = ({ re
                 const info = DIM_INFO[key];
                 return (
                     <div key={key} className="flex items-center gap-3">
-                        <span className="flex w-20 shrink-0 items-center gap-1.5 leading-tight">
+                        <span className="flex w-24 shrink-0 items-center gap-1.5 leading-tight">
                             <span className={`h-2 w-2 shrink-0 rounded-full ${s.dot}`} />
                             <span>
-                                <span className="block text-xs font-bold text-slate-300">{info.he}</span>
-                                <span className="block text-[8px] uppercase tracking-[0.12em] text-slate-500" dir="ltr">{info.en}</span>
+                                <span className="block text-[13px] font-bold text-slate-200">{info.he}</span>
+                                <span className="block text-[9px] uppercase tracking-[0.12em] text-slate-500" dir="ltr">{info.en}</span>
                             </span>
                         </span>
                         <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-800/80">
@@ -503,7 +652,7 @@ const VectorLayer: React.FC<{ result: AnalysisResult; reduce: boolean }> = ({ re
                                 className={`h-full rounded-full ${value > 0 ? s.bar : 'bg-slate-700'}`}
                             />
                         </div>
-                        <span className="w-10 shrink-0 text-left font-mono text-xs text-slate-400" dir="ltr">{f2(value)}</span>
+                        <span className="w-11 shrink-0 text-left font-mono text-[13px] text-slate-300" dir="ltr">{f2(value)}</span>
                     </div>
                 );
             })}
@@ -532,6 +681,8 @@ const SimilarityLayer: React.FC<{
                 he={isAgent ? 'דירוג רלוונטיות' : 'דירוג דמיון'}
                 en={isAgent ? 'Step Relevance' : 'Similarity Ranking'}
                 accent="amber"
+                step={2}
+                total={6}
                 badge={
                     <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-900/15 px-2.5 py-1 text-[10px] font-bold text-amber-300" dir="ltr">
                         <AlertTriangle size={11} /> {isAgent ? 'Relevance, not probability' : 'Similarity, not probability'}
@@ -543,9 +694,23 @@ const SimilarityLayer: React.FC<{
                     השלב הראשון שואל כמה כל צעד אפשרי רלוונטי למשימה. זו אותה מדידת קרבה כמו ב-Chat, רק שכאן היא בודקת צעדים ולא כוונות. שימו לב שזה ציון רלוונטיות, לא הסתברות.
                 </LayerIntro>
             ) : (
-                <LayerIntro>
-                    השלב הראשון הוא לשאול למה המשפט שכתבתם הכי קרוב. המנוע משווה את הפרופיל המספרי של המשפט לפרופיל של כל כוונה שהוא מכיר, ומודד כמה הם מצביעים לאותו כיוון. זה נקרא Cosine Similarity, ואפשר לחשוב עליו פשוט: שני חצים שמצביעים לאותו כיוון מקבלים ציון גבוה, שני חצים בכיוונים שונים מקבלים ציון נמוך. שימו לב לדבר חשוב, המנוע לא מחפש מילים זהות. &quot;החבילה לא הגיעה&quot; ו&quot;המשלוח לא נמסר&quot; הן מילים שונות, אבל הכיוון דומה, ולכן הדמיון גבוה.
-                </LayerIntro>
+                <>
+                    <LayerIntro>
+                        השלב הראשון הוא לשאול למה המשפט שכתבתם הכי קרוב. המנוע משווה את הפרופיל המספרי של המשפט לפרופיל של כל כוונה שהוא מכיר, ומודד כמה הם מצביעים לאותו כיוון. שימו לב לדבר חשוב, המנוע לא מחפש מילים זהות. &quot;החבילה לא הגיעה&quot; ו&quot;המשלוח לא נמסר&quot; הן מילים שונות, אבל הכיוון דומה, ולכן הדמיון גבוה.
+                    </LayerIntro>
+                    {/* הגדרה מפורשת של Cosine Similarity במסלול הבסיסי: שאלה 5 במבדק מתייחסת
+                        אליו כמושג ידוע, ולכן הוא חייב לקבל הגדרה ברורה ובולטת כאן. */}
+                    <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-950/15 p-3.5 leading-relaxed text-slate-200" dir="rtl">
+                        <div className="mb-1.5 flex flex-wrap items-center gap-1.5 text-sm font-bold text-amber-200">
+                            <Compass size={15} />
+                            מה זה דמיון (Cosine Similarity)?
+                            <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500" dir="ltr">Cosine Similarity</span>
+                        </div>
+                        <p className="text-[13px]">
+                            זה מדד של <span className="font-bold text-slate-100">קרבת כיוון</span> בין שני וקטורים. חשבו על כל פרופיל מספרי כעל חץ: שני חצים שמצביעים לאותו כיוון מקבלים דמיון גבוה (קרוב ל-1), וחצים בכיוונים מנוגדים מקבלים דמיון נמוך. הוא מודד כיוון, לא גודל, ולכן הוא <span className="font-bold text-amber-200">קרבה, לא אחוז ולא הסתברות</span>.
+                        </p>
+                    </div>
+                </>
             )}
             <div className="space-y-2">
                 {items.map((it) => {
@@ -561,9 +726,9 @@ const SimilarityLayer: React.FC<{
                             className={`cursor-default rounded-xl border p-2.5 transition-colors ${open ? `${a.border} ${a.bgSoft}` : 'border-slate-700/40 bg-slate-950/30 hover:border-slate-600/60'}`}
                         >
                             <div className="flex items-center gap-3">
-                                <span className="w-32 shrink-0 leading-tight">
-                                    <span className={`block text-xs font-bold ${a.text}`}>{it.labelHe}</span>
-                                    <span className="block text-[9px] uppercase tracking-wider text-slate-500" dir="ltr">{it.labelEn}</span>
+                                <span className="w-36 shrink-0 leading-tight">
+                                    <span className={`block text-[13px] font-bold ${a.text}`}>{it.labelHe}</span>
+                                    <span className="block text-[10px] uppercase tracking-wider text-slate-500" dir="ltr">{it.labelEn}</span>
                                 </span>
                                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-800/80">
                                     <motion.div
@@ -572,7 +737,7 @@ const SimilarityLayer: React.FC<{
                                         className={`h-full rounded-full ${a.barGradient}`}
                                     />
                                 </div>
-                                <span className="w-12 shrink-0 text-left font-mono text-xs font-bold text-slate-300" dir="ltr">{f2(it.similarity)}</span>
+                                <span className="w-12 shrink-0 text-left font-mono text-[13px] font-bold text-slate-200" dir="ltr">{f2(it.similarity)}</span>
                             </div>
 
                             {/* hover: שני הווקטורים והקרבה (Chat בלבד) */}
@@ -624,7 +789,7 @@ const VecRow: React.FC<{ label: string; labelHe: string; vec: number[] }> = ({ l
 
 /* ── שכבה 3: Raw Scores ───────────────────────────────────────────────────── */
 
-const ScoresLayer: React.FC<{ items: RankItem[]; formulaView: boolean; reduce: boolean }> = ({ items, formulaView }) => {
+const ScoresLayer: React.FC<{ items: RankItem[]; formulaView: boolean; depth: boolean; reduce: boolean }> = ({ items, formulaView, depth }) => {
     const sumScores = items.reduce((s, it) => s + it.score, 0);
     return (
         <div dir="rtl">
@@ -633,6 +798,8 @@ const ScoresLayer: React.FC<{ items: RankItem[]; formulaView: boolean; reduce: b
                 he="ציונים גולמיים"
                 en="Raw Scores"
                 accent="indigo"
+                step={3}
+                total={6}
                 badge={
                     <span className="inline-flex items-center gap-1 rounded-full border border-indigo-500/40 bg-indigo-900/15 px-2.5 py-1 text-[10px] font-bold text-indigo-300" dir="ltr">
                         Sum = {sumScores.toFixed(2)} (not 100%)
@@ -647,7 +814,7 @@ const ScoresLayer: React.FC<{ items: RankItem[]; formulaView: boolean; reduce: b
             <div className="overflow-x-auto">
                 <div className="min-w-[34rem] space-y-1.5">
                     {/* כותרות עמודות */}
-                    <div className="grid grid-cols-[1fr_repeat(3,4.6rem)_4.6rem] items-center gap-2 px-2 pb-1 text-[9px] font-bold uppercase tracking-wider text-slate-500" dir="ltr">
+                    <div className="grid grid-cols-[1fr_repeat(3,4.6rem)_4.6rem] items-center gap-2 px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500" dir="ltr">
                         <span className="text-right" dir="rtl">Intent</span>
                         {items[0]?.breakdown.map((b) => (
                             <span key={b.key} className="text-center">{b.labelEn}</span>
@@ -660,7 +827,7 @@ const ScoresLayer: React.FC<{ items: RankItem[]; formulaView: boolean; reduce: b
                         return (
                             <div key={it.id} className="grid grid-cols-[1fr_repeat(3,4.6rem)_4.6rem] items-center gap-2 rounded-lg border border-slate-700/40 bg-slate-950/30 px-2 py-2">
                                 <span className="min-w-0 leading-tight" dir="rtl">
-                                    <span className={`block truncate text-xs font-bold ${a.text}`}>{it.labelHe}</span>
+                                    <span className={`block truncate text-[13px] font-bold ${a.text}`}>{it.labelHe}</span>
                                 </span>
                                 {it.breakdown.map((b) => (
                                     <span key={b.key} className="text-center leading-tight" dir="ltr">
@@ -679,16 +846,18 @@ const ScoresLayer: React.FC<{ items: RankItem[]; formulaView: boolean; reduce: b
             </div>
 
             {formulaView && (
-                <div className="mt-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 font-mono text-[11px] text-slate-300" dir="ltr">
+                <div className="mt-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 font-mono text-[13px] text-slate-300" dir="ltr">
                     score = {WEIGHTS.similarity}·similarity + {WEIGHTS.wordImpact}·word_impact + {WEIGHTS.contextBonus}·context_bonus
                 </div>
             )}
             <Takeaway>
                 Score הוא ציון גולמי, לא אחוז. הוא סכום משוקלל של שלושת הרכיבים, והוא מתחיל את התחרות, אבל עוד לא מכריע אותה. הציונים הגולמיים הם רק חומר הגלם ל-Softmax.
             </Takeaway>
-            <TryThis>
-                פתחו את תצוגת הנוסחה (Formula View) למעלה, ועקבו אחרי שורה אחת: איך similarity ועוד word impact ועוד context בונים יחד ציון אחד.
-            </TryThis>
+            {depth && (
+                <TryThis>
+                    פתחו את תצוגת הנוסחה (Formula View) למעלה, ועקבו אחרי שורה אחת: איך similarity ועוד word impact ועוד context בונים יחד ציון אחד.
+                </TryThis>
+            )}
         </div>
     );
 };
@@ -728,10 +897,11 @@ const SoftmaxLayer: React.FC<{
     items: RankItem[];
     temperature: number;
     formulaView: boolean;
+    depth: boolean;
     hasInput: boolean;
     waveKey: number;
     reduce: boolean;
-}> = ({ items, temperature, formulaView, hasInput, waveKey, reduce }) => {
+}> = ({ items, temperature, formulaView, depth, hasInput, waveKey, reduce }) => {
     // ── הכל נקרא חי מהמנוע. שכבת הצגה בלבד - איננו משנים אף ערך. ──
     const scores = items.map((it) => it.score);
     const sumScores = scores.reduce((a, b) => a + Math.max(0, b), 0) || 1;
@@ -740,7 +910,9 @@ const SoftmaxLayer: React.FC<{
     const rawShare = scores.map((s) => Math.max(0, s) / sumScores);
     const probShare = items.map((it) => it.prob); // אמת המנוע - נקודת הנחיתה הסופית
 
-    const [phase, setPhase] = useState<SoftmaxPhase>(reduce || !hasInput ? 'done' : 'idle');
+    // במסלול הבסיסי (depth=false) המכונה מוסתרת, ולכן הפעימה קופאת על 'done'
+    // כדי שהבלוק הסטטי יישאר יציב ולא יהבהב בעקבות טיימרים שרצים ברקע.
+    const [phase, setPhase] = useState<SoftmaxPhase>(reduce || !hasInput || !depth ? 'done' : 'idle');
     const [auto, setAuto] = useState(true);
     const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const clearTimer = () => { if (timer.current) { clearTimeout(timer.current); timer.current = null; } };
@@ -748,21 +920,20 @@ const SoftmaxLayer: React.FC<{
     // אתחול שתי הפעימות בכל פעם שהשרשרת זזה (waveKey) או שמצב הקלט משתנה.
     useEffect(() => {
         clearTimer();
-        setPhase(reduce || !hasInput ? 'done' : 'idle');
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setPhase(reduce || !hasInput || !depth ? 'done' : 'idle');
         return clearTimer;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [waveKey, hasInput, reduce]);
+    }, [waveKey, hasInput, reduce, depth]);
 
     // התקדמות אוטומטית בין הפעימות. במצב השהיה (auto=false) נעצרים בין הפעימות.
     useEffect(() => {
         clearTimer();
-        if (reduce || !auto || !hasInput) return;
+        if (reduce || !auto || !hasInput || !depth) return;
         if (phase === 'idle') timer.current = setTimeout(() => setPhase('amplify'), RAW_HOLD_MS);
         else if (phase === 'amplify') timer.current = setTimeout(() => setPhase('normalize'), AMPLIFY_MS);
         else if (phase === 'normalize') timer.current = setTimeout(() => setPhase('done'), NORMALIZE_MS);
         return clearTimer;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [phase, auto, hasInput, reduce]);
+    }, [phase, auto, hasInput, reduce, depth]);
 
     const replay = () => { clearTimer(); setAuto(true); setPhase('idle'); };
     const stepNext = () => setPhase((p) => (p === 'idle' ? 'amplify' : p === 'amplify' ? 'normalize' : 'done'));
@@ -786,6 +957,8 @@ const SoftmaxLayer: React.FC<{
                 he="מכונת ה-Softmax"
                 en="Softmax"
                 accent="purple"
+                step={4}
+                total={6}
                 badge={<span className="rounded-full border border-purple-500/40 bg-purple-900/15 px-2.5 py-1 font-mono text-[10px] font-bold text-purple-300" dir="ltr">T = {temperature}</span>}
             />
 
@@ -793,8 +966,10 @@ const SoftmaxLayer: React.FC<{
                 כאן נכנסת מכונת ה-Softmax. היא לוקחת את הציונים הגולמיים והופכת אותם להתפלגות הסתברויות שמסתכמת ל-100 אחוז. הרעיון החשוב אינו הנוסחה אלא התחרות שהיא יוצרת: כשאפשרות אחת עולה, האחרות חייבות לרדת, כי הכל יחד חייב להסתכם ל-100.
             </LayerIntro>
 
-            {/* ── רגע ה-Softmax: הגברה ואז נרמול (האנימציה הלימודית) ── */}
-            {hasInput && (
+            {/* ── רגע ה-Softmax: הגברה ואז נרמול (האנימציה הלימודית) ──
+                שכבת עומק בלבד: ה-play/pause/step כבד מדי למסלול הבסיסי. במסלול
+                הבסיסי נשאר הבלוק הסטטי "ציונים נכנסים -> הסתברויות יוצאות, Σ=100%". */}
+            {hasInput && depth && (
                 <div className="mb-4 rounded-2xl border border-purple-500/25 bg-purple-950/10 p-4">
                     <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5">
@@ -843,9 +1018,9 @@ const SoftmaxLayer: React.FC<{
                         </div>
                     </div>
 
-                    <div className="mt-2 flex items-center justify-between gap-3 text-[11px]">
-                        <span className="text-slate-400">
-                            {phase === 'idle' && 'ציונים גולמיים - לא בטווח 0–100% ולא מסתכמים ל-100%'}
+                    <div className="mt-2 flex items-center justify-between gap-3 text-[13px]">
+                        <span className="text-slate-300">
+                            {phase === 'idle' && 'ציונים גולמיים - לא בטווח 0 עד 100% ולא מסתכמים ל-100%'}
                             {phase === 'amplify' && 'exp(s/T): ההפרשים נמתחים - חלקו של המוביל גדל יותר'}
                             {phase === 'normalize' && 'נשפך למיכל ה-100% - כשהמוביל לוקח יותר, האחרים נדחקים'}
                             {phase === 'done' && 'נחת על ההסתברויות של המנוע'}
@@ -890,22 +1065,24 @@ const SoftmaxLayer: React.FC<{
                 </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-center gap-2 text-[11px]">
-                <span className="text-slate-500">סכום ההסתברויות:</span>
+            <div className="mt-3 flex items-center justify-center gap-2 text-[13px]">
+                <span className="text-slate-400">סכום ההסתברויות:</span>
                 <span className="rounded-md bg-emerald-500/15 px-2 py-0.5 font-mono font-bold text-emerald-300" dir="ltr">{items.reduce((s, it) => s + pct(it.prob), 0)}%</span>
             </div>
 
             {formulaView && (
-                <div className="mt-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 font-mono text-[11px] text-slate-300" dir="ltr">
+                <div className="mt-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 font-mono text-[13px] text-slate-300" dir="ltr">
                     p_i = exp(score_i / T) / Σ_j exp(score_j / T)
                 </div>
             )}
             <Takeaway>
                 עכשיו אלה אחוזים, והם מתחרים זה בזה. סכום הכל הוא 100. זה בדיוק ההבדל בין ציון להסתברות.
             </Takeaway>
-            <TryThis>
-                שימו לב שכשעמודה אחת גדלה, האחרות מתכווצות. זה לא מקרי, זה בדיוק מה ש-Softmax עושה: מחלק 100 אחוז בין כל האפשרויות.
-            </TryThis>
+            {depth && (
+                <TryThis>
+                    שימו לב שכשעמודה אחת גדלה, האחרות מתכווצות. זה לא מקרי, זה בדיוק מה ש-Softmax עושה: מחלק 100 אחוז בין כל האפשרויות.
+                </TryThis>
+            )}
         </div>
     );
 };
@@ -917,7 +1094,7 @@ const ProbabilitiesLayer: React.FC<{ result: AnalysisResult; reduce: boolean }> 
     const bars: IntentProbability[] = result.items.map((it) => ({ label: it.labelHe, value: pct(it.prob) }));
     return (
         <div dir="rtl">
-            <LayerHead icon={<BarChart3 size={16} />} he="הסתברויות" en="Probabilities" accent="emerald" />
+            <LayerHead icon={<BarChart3 size={16} />} he="הסתברויות" en="Probabilities" accent="emerald" step={5} total={6} />
             <LayerIntro>
                 זה היעד הסופי של כל השרשרת: ההתפלגות שעליה תתקבל ההחלטה. עברנו מווקטור, לדמיון, לציון גולמי, דרך Softmax, וכל זה כדי להגיע לעמודות שאתם רואים כאן.
             </LayerIntro>
@@ -941,7 +1118,7 @@ const DecisionLayer: React.FC<{ result: AnalysisResult; reduce: boolean }> = ({ 
     const ta = ACCENTS[top?.accent ?? 'purple'];
     return (
         <div dir="rtl">
-            <LayerHead icon={<Flag size={16} />} he="החלטה" en="Decision" accent="rose" />
+            <LayerHead icon={<Flag size={16} />} he="החלטה" en="Decision" accent="rose" step={6} total={6} />
             <LayerIntro>
                 ורק עכשיו, אחרי שיש התפלגות הסתברויות, המנוע בוחר. ההחלטה אינה רק &quot;מי המוביל&quot;, אלא גם כמה הוא בולט מעל השני: פער גדול מאפשר לענות בביטחון, פער קטן מוביל לשאלת הבהרה במקום ניחוש.
             </LayerIntro>

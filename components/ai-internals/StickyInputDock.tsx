@@ -157,8 +157,8 @@ export const StickyInputDock: React.FC<StickyInputDockProps> = ({
                                         >
                                             <span className={`h-2 w-2 shrink-0 rounded-full ${la.dot}`} />
                                             <span className="min-w-0 leading-tight">
-                                                <span className={`block truncate text-sm font-bold ${la.text}`}>{readout.leaderHe}</span>
-                                                <span className="block truncate text-[8px] uppercase tracking-wider text-slate-500" dir="ltr">{readout.leaderEn}</span>
+                                                <span className={`block truncate text-[15px] font-bold ${la.text}`}>{readout.leaderHe}</span>
+                                                <span className="block truncate text-[9px] uppercase tracking-wider text-slate-500" dir="ltr">{readout.leaderEn}</span>
                                             </span>
                                         </motion.span>
                                     </AnimatePresence>

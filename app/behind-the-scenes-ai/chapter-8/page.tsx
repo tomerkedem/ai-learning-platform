@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { GitBranch, MousePointerClick, Waves, FlaskConical, Map, ArrowLeft, BookOpen } from 'lucide-react';
+import { GitBranch, MousePointerClick, Waves, FlaskConical, Map, ArrowLeft, BookOpen, ListChecks } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine } from '@/components/content/AssessmentEngine';
@@ -36,8 +36,10 @@ const ChainStrip: React.FC = () => {
                         transition={reduce ? { duration: 0 } : { duration: 0.3, delay: i * 0.07 }}
                         className="rounded-xl border border-violet-500/30 bg-violet-900/15 px-3 py-1.5 text-center leading-tight"
                     >
-                        <span className="block text-[11px] font-bold text-violet-200">{step.he}</span>
-                        <span className="block text-[8px] uppercase tracking-wider text-slate-500" dir="ltr">{step.en}</span>
+                        <span className="block text-xs font-bold text-violet-200">
+                            <span className="font-mono text-violet-400">{i + 1}.</span> {step.he}
+                        </span>
+                        <span className="block text-[9px] uppercase tracking-wider text-slate-500" dir="ltr">{step.en}</span>
                     </motion.div>
                 </React.Fragment>
             ))}
@@ -45,12 +47,14 @@ const ChainStrip: React.FC = () => {
     );
 };
 
-/** ארבעת השלבים של השרשרת, לטובת מסלול הקריאה בראש הפרק. */
+/** ששת השלבים של השרשרת, באותו מספור ובאותו סדר שבו הם מופיעים במעבדה. */
 const READING_STEPS = [
-    { num: '1', he: 'דמיון', en: 'Similarity', desc: 'בודק למה המשפט הכי קרוב' },
-    { num: '2', he: 'ציון גולמי', en: 'Score', desc: 'נותן לכל אפשרות ציון אחד' },
-    { num: '3', he: 'Softmax', en: 'Softmax', desc: 'הופך ציונים להסתברויות שמסתכמות ל-100%' },
-    { num: '4', he: 'החלטה', en: 'Decision', desc: 'בוחר לפי ההתפלגות' },
+    { num: '1', he: 'וקטור משמעות', en: 'Meaning Vector', desc: 'הפרופיל המספרי של המשפט, נקודת הפתיחה' },
+    { num: '2', he: 'דמיון', en: 'Similarity', desc: 'בודק למה המשפט הכי קרוב' },
+    { num: '3', he: 'ציון גולמי', en: 'Score', desc: 'נותן לכל אפשרות ציון אחד' },
+    { num: '4', he: 'Softmax', en: 'Softmax', desc: 'הופך ציונים להסתברויות שמסתכמות ל-100%' },
+    { num: '5', he: 'הסתברויות', en: 'Probabilities', desc: 'ההתפלגות הסופית שעליה מחליטים' },
+    { num: '6', he: 'החלטה', en: 'Decision', desc: 'בוחר לפי ההתפלגות' },
 ];
 
 /** מסלול קריאה: מספר את כל השרשרת במילים, לפני שמראים אותה בתנועה. */
@@ -65,18 +69,18 @@ const ReadingPath: React.FC = () => (
         </div>
         <p className="text-sm">
             עד עכשיו ראינו איך משפט הופך לפרופיל מספרי. בפרק הזה נראה מה המנוע עושה עם הפרופיל. הוא לא קופץ ממנו ישר לתשובה,
-            אלא עובר שרשרת של ארבעה שלבים: קודם בודק למה המשפט דומה, אחר כך נותן לכל אפשרות ציון גולמי, אחר כך הופך את הציונים
-            להסתברויות שמסתכמות ל-100 אחוז, ורק אז בוחר. נעבור על כל שלב בנפרד, ובסוף נראה את כולם זזים יחד. דבר אחד שכדאי
-            לזכור כבר עכשיו, כל מספר שתראו הוא תוצאה של חישוב, לא ניחוש.
+            אלא עובר שרשרת ממוספרת: מתחיל מווקטור המשמעות, בודק למה המשפט דומה, נותן לכל אפשרות ציון גולמי, מפעיל Softmax שהופך
+            את הציונים להסתברויות שמסתכמות ל-100 אחוז, ורק אז בוחר. ששת השלבים למטה ממוספרים באותו סדר ובאותם מספרים שתראו
+            במעבדה, כדי שתמיד תדעו באיזה שלב אתם. דבר אחד שכדאי לזכור כבר עכשיו, כל מספר שתראו הוא תוצאה של חישוב, לא ניחוש.
         </p>
         <ol className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {READING_STEPS.map((s) => (
                 <li key={s.en} className="flex items-start gap-2.5 rounded-xl border border-slate-700/40 bg-slate-950/30 p-3">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-500/20 font-mono text-[11px] font-bold text-violet-200" dir="ltr">{s.num}</span>
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-500/20 font-mono text-xs font-bold text-violet-200" dir="ltr">{s.num}</span>
                     <span className="leading-tight">
-                        <span className="text-xs font-bold text-slate-200">{s.he} </span>
-                        <span className="text-[9px] uppercase tracking-wider text-slate-500" dir="ltr">{s.en}</span>
-                        <span className="mt-0.5 block text-[11px] text-slate-400">{s.desc}</span>
+                        <span className="text-sm font-bold text-slate-100">{s.he} </span>
+                        <span className="text-[10px] uppercase tracking-wider text-slate-500" dir="ltr">{s.en}</span>
+                        <span className="mt-0.5 block text-[13px] text-slate-300">{s.desc}</span>
                     </span>
                 </li>
             ))}
@@ -106,18 +110,57 @@ const Roadmap: React.FC = () => {
                             transition={reduce ? { duration: 0 } : { duration: 0.3, delay: i * 0.05 }}
                             className="relative rounded-xl border border-violet-500/50 bg-violet-900/25 px-3 py-1.5 text-center leading-tight"
                         >
-                            <span className="block text-[11px] font-bold text-violet-200">{s.he}</span>
-                            <span className="block text-[8px] uppercase tracking-wider text-slate-500" dir="ltr">{s.en}</span>
+                            <span className="block text-xs font-bold text-violet-200">{s.he}</span>
+                            <span className="block text-[9px] uppercase tracking-wider text-slate-500" dir="ltr">{s.en}</span>
                         </motion.div>
                     </React.Fragment>
                 ))}
             </div>
-            <p className="mt-4 text-xs leading-relaxed text-slate-400">
+            <p className="mt-4 text-sm leading-relaxed text-slate-300">
                 כל הצמתים פעילים עכשיו. מהטקסט ועד ההסתברויות, ראינו את כל השרשרת רצה. זה סוף המחצית הראשונה: הבנו איך הקלט הופך לפלט מספרי. מכאן והלאה נפתח איך המנוע לומד את הייצוגים האלה מלכתחילה.
             </p>
         </div>
     );
 };
+
+/** שלוש נקודות שמכינות בדיוק למושגים שהמבדק בודק, ממש לפני המבדק. */
+const BEFORE_QUIZ_POINTS = [
+    {
+        he: 'דמיון אינו הסתברות',
+        desc: 'הדמיון (Cosine Similarity) מודד קרבת כיוון בין שני וקטורים, כמו שני חצים: אותו כיוון נותן דמיון גבוה. הוא רק השלב הראשון בשרשרת, ולא אומר באיזו הסתברות המנוע יבחר.',
+    },
+    {
+        he: 'ציון גולמי אינו אחוז',
+        desc: 'כל אפשרות מקבלת ציון אחד, אבל הציונים הגולמיים לא מסתכמים ל-100%. רק Softmax הופך אותם להסתברויות שמסתכמות ל-100%.',
+    },
+    {
+        he: 'שרשרת, לא קפיצה',
+        desc: 'המנוע עובר דמיון, ציון, הסתברות, החלטה. שינוי מילה אחת שולח גל שינוי במורד כל השכבות ויכול להפוך את ההחלטה.',
+    },
+];
+
+const BeforeQuizCard: React.FC = () => (
+    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/10 p-5 text-right" dir="rtl">
+        <div className="mb-4 flex items-center gap-2">
+            <ListChecks size={18} className="text-emerald-300" />
+            <div className="leading-tight">
+                <div className="text-sm font-bold text-slate-100">שלוש נקודות שכדאי לזכור</div>
+                <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Before the quiz</div>
+            </div>
+        </div>
+        <ol className="space-y-2.5">
+            {BEFORE_QUIZ_POINTS.map((p, i) => (
+                <li key={p.he} className="flex items-start gap-3 rounded-xl border border-slate-700/40 bg-slate-950/30 p-3">
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 font-mono text-xs font-bold text-emerald-200" dir="ltr">{i + 1}</span>
+                    <span className="leading-relaxed">
+                        <span className="block text-base font-bold text-emerald-100">{p.he}</span>
+                        <span className="mt-1 block text-sm leading-relaxed text-slate-300">{p.desc}</span>
+                    </span>
+                </li>
+            ))}
+        </ol>
+    </div>
+);
 
 export default function BehindTheScenesChapter7() {
     const reduce = useReducedMotion();
@@ -192,11 +235,11 @@ export default function BehindTheScenesChapter7() {
                 </div>
 
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    זו השרשרת המלאה במקום אחד. כל שכבה מזינה את הבאה אחריה: וקטור המשמעות הופך לדמיון, הדמיון לציונים גולמיים, הציונים
-                    עוברים דרך Softmax להסתברויות, ומשם נגזרת ההחלטה. המטרה כאן היא לראות שרשרת, לא קפיצה: שום מספר לא מופיע משום מקום,
-                    כל אחד הוא תוצאה של השלב שלפניו. כל שלב במפל מלווה בהסבר משלו, אז אפשר לקרוא אותו מלמעלה למטה כמו סיפור.
+                    נתחיל ממסלול ממוקד: הקלידו משפט, וראו אותו עובר שלוש תחנות, דמיון, ציון גולמי, ואז הסתברות. המטרה כאן היא לראות שרשרת,
+                    לא קפיצה: אותה אפשרות מובילה מקבלת שלושה מספרים שונים, ושום אחוז לא מופיע משום מקום. החליפו מילה אחת וצפו בגל השינוי
+                    עובר דרך שלוש התחנות בבת אחת.
                     <span className="mt-3 block text-sm text-slate-400">
-                        הפעילו את <span className="font-bold text-violet-200">תצוגת הנוסחה</span> כדי לראות שכל מספר על המסך הוא חישוב חי, והחליפו ל-<span className="font-bold text-violet-200">Agent Mode</span> כדי לראות שאותה שרשרת מדרגת צעדים לפי מצב, לא רק כוונות.
+                        זה כל מה שצריך כדי לתפוס את הרעיון: <span className="font-bold text-violet-200">דמיון אינו הסתברות, וגם ציון גולמי אינו הסתברות</span>. מי שרוצה לראות את החישוב המלא, את כל שש השכבות, את מכונת ה-Softmax צעד-אחר-צעד ואת Agent Mode, יכול לפתוח את <span className="font-bold text-violet-200">שכבת העומק</span> בכפתור שבראש המעבדה.
                     </span>
                 </div>
 
@@ -230,8 +273,13 @@ export default function BehindTheScenesChapter7() {
             </section>
 
 
+            {/* ══════════ שלוש נקודות לפני המבדק ══════════ */}
+            <section className="mt-12 text-right" dir="rtl">
+                <BeforeQuizCard />
+            </section>
+
             {/* ══════════ מבדק הבנה ══════════ */}
-            <section className="mt-16 mb-4" dir="rtl">
+            <section className="mt-12 mb-4" dir="rtl">
                 <AssessmentEngine {...behindAiChapterQuizzes[8]} />
             </section>
         </ChapterLayout>

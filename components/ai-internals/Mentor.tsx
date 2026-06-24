@@ -15,6 +15,7 @@ export type MentorPose =
     | 'headsup'
     | 'celebrate'
     | 'hello'
+    | 'ready'
     | 'reassure'
     | 'explain'
     | 'explain-opposite'
@@ -34,6 +35,7 @@ const POSE_SRC: Record<MentorPose, string> = {
     headsup: '/assets/mentor-headsup.png',
     celebrate: '/assets/mentor-celebrate.png',
     hello: '/assets/mentor-hello.png',
+    ready: '/assets/mentor-ready.png',
     reassure: '/assets/mentor-reassure.png',
     explain: '/assets/mentor-explain.png',
     'explain-opposite': '/assets/mentor-explain-opposite.png',
@@ -53,6 +55,7 @@ const POSE_SRC: Record<MentorPose, string> = {
 // כדי שהחלפת פוזה באותו slot לא "תקפיץ" את המנטור. ערך 1 = ברירת מחדל.
 const POSE_SCALE: Partial<Record<MentorPose, number>> = {
     hero: 1.12,
+    ready: 1.12,
     explain: 1.12,
     'explain-opposite': 1.12,
     token: 1.08,
