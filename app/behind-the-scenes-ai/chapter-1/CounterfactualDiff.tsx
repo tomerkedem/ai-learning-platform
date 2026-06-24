@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { GitCompare, ArrowUp, ArrowDown, Minus, Zap, RotateCcw } from 'lucide-react';
+import { GitCompare, ArrowUp, ArrowDown, Minus, Zap, Lightbulb } from 'lucide-react';
 
 import { ACCENTS } from '@/components/ai-internals/accents';
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
@@ -22,49 +22,88 @@ interface CounterfactualDiffProps {
     accent: Accent;
 }
 
-interface Preset {
-    /** המשפט שמכיל את מילת-הציר. */
-    textWith: string;
-    /** אותו משפט בלי מילת-הציר. */
-    textWithout: string;
-    /** המילה היחידה שמשתנה. */
-    pivotWord: string;
-    /** מה המילה אומרת, לכיתוב. */
-    pivotMeaning: string;
+interface Variant {
+    /** הניסוח עצמו. */
+    text: string;
+    /** המילה היחידה שמייחדת אותו (להדגשה). ריק = הניסוח בלי מילת-הציר. */
+    pivot: string;
 }
 
-const PRESETS: Record<FlowMode, Preset> = {
-    chat: {
-        textWith: 'החבילה לא הגיעה',
-        textWithout: 'החבילה הגיעה',
-        pivotWord: 'לא',
-        pivotMeaning: 'מילת שלילה',
-    },
-    agent: {
-        textWith: 'בדוק את החבילה 123456789',
-        textWithout: 'בדוק את החבילה',
-        pivotWord: '123456789',
-        pivotMeaning: 'מספר ברקוד',
-    },
+interface Experiment {
+    key: string;
+    /** תווית הצ'יפ בבורר הניסויים. */
+    chip: string;
+    /** ההסבר הסיבתי: למה מילה אחת מזיזה את ההחלטה. */
+    why: string;
+    /** שני ניסוחים שנבדלים במילה אחת בלבד. */
+    variants: [Variant, Variant];
+}
+
+// כל ניסוי מבודד "מנוף" סיבתי אחד: מילה יחידה שמשנה את ההחלטה. שתי הריצות אמיתיות
+// (אותו mockEngine על שני משפטים שנבדלים במילה אחת) - כך הסיבתיות נראית, לא מסופרת.
+const EXPERIMENTS: Record<FlowMode, Experiment[]> = {
+    chat: [
+        {
+            key: 'neg',
+            chip: 'מילת שלילה',
+            why: 'מילת שלילה אחת הופכת "הכול בסדר" ל"יש בעיה". בלעדיה אין מה לפתור, ולכן הכוונה המובילה וההחלטה משתנות.',
+            variants: [
+                { text: 'החבילה לא הגיעה', pivot: 'לא' },
+                { text: 'החבילה הגיעה', pivot: '' },
+            ],
+        },
+        {
+            key: 'kw',
+            chip: 'מילת מפתח',
+            why: 'אותו מבנה משפט בדיוק, מילת-מפתח אחת אחרת - והכוונה המובילה קופצת לקטגוריה אחרת לגמרי.',
+            variants: [
+                { text: 'יש בעיה בתשלום', pivot: 'בתשלום' },
+                { text: 'יש בעיה במערכת', pivot: 'במערכת' },
+            ],
+        },
+    ],
+    agent: [
+        {
+            key: 'barcode',
+            chip: 'מזהה (ברקוד)',
+            why: 'בלי מזהה המנוע לא יכול לפעול: הוא עוצר ומבקש את המידע החסר. ברגע שהברקוד נכנס, הוא ניגש לכלי המעקב.',
+            variants: [
+                { text: 'בדוק את החבילה 123456789', pivot: '123456789' },
+                { text: 'בדוק את החבילה', pivot: '' },
+            ],
+        },
+        {
+            key: 'sensitive',
+            chip: 'פעולה רגישה',
+            why: 'מילת הפעולה קובעת את הסיכון: "בדוק" היא קריאה בטוחה, "שלח" משפיעה על לקוח - ולכן המנוע עוצר לאישור במקום לפעול.',
+            variants: [
+                { text: 'שלח ללקוח שהחבילה אבדה', pivot: 'שלח' },
+                { text: 'בדוק שהחבילה אבדה', pivot: 'בדוק' },
+            ],
+        },
+    ],
 };
 
 /**
- * "מה-אם": החלפת מילה אחת בלבד, ולצדה רוח-רפאים של הריצה הקודמת. חיצי ↑/↓ על כל
- * כוונה והבזק על ההחלטה שהתהפכה. שתי הריצות אמיתיות (אותו mockEngine על שני
- * משפטים שנבדלים במילה אחת) - כך הסיבתיות נראית, לא מסופרת.
+ * "מה-אם": מעבדת ניסויים סיבתיים. הלומד בוחר מנוף (איזו מילה לשנות) ובוחר בין שני
+ * ניסוחים שנבדלים במילה אחת. שתי הריצות אמיתיות, ולצד החדשה מוצגת "רוח רפאים" של
+ * הקודמת עם דלתות והבזק כשההחלטה מתהפכת - כך רואים שמילה אחת מזיזה החלטה שלמה.
  */
 export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, accent }) => {
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
     const isChat = mode === 'chat';
-    const preset = PRESETS[mode];
+    const experiments = EXPERIMENTS[mode];
 
-    const [included, setIncluded] = useState(true);
-    const activeText = included ? preset.textWith : preset.textWithout;
-    const ghostText = included ? preset.textWithout : preset.textWith;
+    const [expKey, setExpKey] = useState(experiments[0].key);
+    const [selected, setSelected] = useState(0);
 
-    const active = isChat ? runChatEngine(activeText) : runAgentEngine(activeText);
-    const ghost = isChat ? runChatEngine(ghostText) : runAgentEngine(ghostText);
+    const exp = experiments.find((e) => e.key === expKey) ?? experiments[0];
+    const activeVariant = exp.variants[selected] ?? exp.variants[0];
+    const ghostVariant = exp.variants[selected === 0 ? 1 : 0];
+
+    const active = isChat ? runChatEngine(activeVariant.text) : runAgentEngine(activeVariant.text);
+    const ghost = isChat ? runChatEngine(ghostVariant.text) : runAgentEngine(ghostVariant.text);
 
     const flipped = active.decision.kind !== ghost.decision.kind;
 
@@ -78,42 +117,69 @@ export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, ac
                 </div>
             </div>
 
-            <p className="mb-4 text-xs leading-relaxed text-slate-400">
-                שנו מילה אחת בלבד (<span className={`font-bold ${a.text}`}>{preset.pivotWord}</span> - {preset.pivotMeaning})
-                וראו את הריצה הקודמת הופכת ל&quot;רוח רפאים&quot; לצד החדשה. החיצים מראים מה עלה ומה ירד, וההבזק מסמן אם
-                ההחלטה עצמה התהפכה.
+            <p className="mb-3 text-sm leading-relaxed text-slate-300">
+                <span className="font-bold text-white">הרעיון:</span> מילה אחת יכולה לשנות איך המנוע מבין את כל המשפט.
+                כאן מבודדים מילה אחת, מחליפים רק אותה, ורואים בזמן אמת איך הפירוש, התשובה ולפעמים ההחלטה משתנים.
             </p>
+            <div className="mb-4 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
+                <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500">איך מפעילים</div>
+                <ol className="space-y-1 text-xs leading-relaxed text-slate-400">
+                    <li><span className={`font-bold ${a.text}`}>1.</span> בחרו מנוף סיבתי - איזו מילה לבדוק.</li>
+                    <li><span className={`font-bold ${a.text}`}>2.</span> לחצו בין שני הניסוחים שנבדלים במילה אחת בלבד.</li>
+                    <li><span className={`font-bold ${a.text}`}>3.</span> השוו: העמודות זזות, התשובה משתנה, וההבזק מסמן אם ההחלטה התהפכה.</li>
+                </ol>
+            </div>
 
-            {/* המשפט + כפתור החלפה */}
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-700/50 bg-slate-950/50 p-3">
-                <div className="flex flex-wrap items-center gap-1.5">
-                    {tokenize(activeText).map((tk, i) => {
-                        const isPivot = tk === preset.pivotWord;
-                        return (
-                            <span
-                                key={`${tk}-${i}`}
-                                className={`rounded-lg px-2.5 py-1 text-sm font-mono border ${isPivot ? `${a.border} ${a.bgSoft} ${a.text} font-bold` : 'border-white/10 bg-slate-900/60 text-slate-300'}`}
-                            >
-                                {tk}
-                            </span>
-                        );
-                    })}
-                </div>
-                <button
-                    type="button"
-                    onClick={() => setIncluded((v) => !v)}
-                    aria-pressed={included}
-                    className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-bold transition-colors ${a.border} ${a.bgSoft} ${a.text} hover:brightness-125`}
-                >
-                    <RotateCcw size={13} />
-                    {included ? `הסר את "${preset.pivotWord}"` : `הוסף את "${preset.pivotWord}"`}
-                </button>
+            {/* בורר הניסוי */}
+            <div className="mb-3 flex flex-wrap items-center gap-1.5">
+                <span className="text-[11px] text-slate-500">נסו מנוף:</span>
+                {experiments.map((e) => (
+                    <button
+                        key={e.key}
+                        type="button"
+                        onClick={() => { setExpKey(e.key); setSelected(0); }}
+                        className={`rounded-full border px-2.5 py-1 text-xs font-bold transition-colors ${e.key === expKey ? `${a.border} ${a.bgSoft} ${a.text}` : 'border-slate-700/60 bg-slate-800/40 text-slate-400 hover:border-slate-600'}`}
+                    >
+                        {e.chip}
+                    </button>
+                ))}
+            </div>
+
+            {/* בחירת ניסוח: שני משפטים שנבדלים במילה אחת */}
+            <div className="mb-4 grid grid-cols-2 gap-2">
+                {exp.variants.map((v, idx) => {
+                    const isActive = selected === idx;
+                    return (
+                        <button
+                            key={v.text}
+                            type="button"
+                            onClick={() => setSelected(idx)}
+                            aria-pressed={isActive}
+                            className={`rounded-xl border p-3 transition-colors ${isActive ? `${a.border} ${a.bgSoft}` : 'border-slate-700/60 bg-slate-900/40 hover:border-slate-600'}`}
+                        >
+                            <div className="flex flex-wrap items-center justify-center gap-1.5">
+                                {tokenize(v.text).map((tk, i) => {
+                                    const isPivot = !!v.pivot && tk === v.pivot;
+                                    return (
+                                        <span
+                                            key={`${tk}-${i}`}
+                                            className={`rounded-md border px-2 py-0.5 text-sm font-mono ${isPivot ? `${a.border} ${a.bgSoft} ${a.text} font-bold` : isActive ? 'border-white/10 bg-slate-900/60 text-slate-200' : 'border-transparent text-slate-400'}`}
+                                        >
+                                            {tk}
+                                        </span>
+                                    );
+                                })}
+                            </div>
+                            {!v.pivot && <div className="mt-1.5 text-[10px] text-slate-500">בלי מילת-הציר</div>}
+                        </button>
+                    );
+                })}
             </div>
 
             {/* ההבזק על החלטה שהתהפכה */}
             {flipped && (
                 <motion.div
-                    key={`${active.decision.kind}-${included}`}
+                    key={`${active.decision.kind}-${expKey}-${selected}`}
                     initial={reduce ? false : { opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 18 }}
@@ -122,7 +188,7 @@ export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, ac
                     aria-live="polite"
                 >
                     <Zap size={13} />
-                    ההחלטה התהפכה: {ghost.decision.label} → {active.decision.label}
+                    ההחלטה התהפכה: {ghost.decision.label} -&gt; {active.decision.label}
                 </motion.div>
             )}
 
@@ -132,6 +198,12 @@ export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, ac
             ) : (
                 <AgentDiff active={active as AgentEngineResult} ghost={ghost as AgentEngineResult} />
             )}
+
+            {/* ההסבר הסיבתי של הניסוי הנבחר */}
+            <div className="mt-4 flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-xs leading-relaxed text-slate-400">
+                <Lightbulb size={14} className={`mt-0.5 shrink-0 ${a.text}`} />
+                <span>{exp.why}</span>
+            </div>
         </div>
     );
 };
@@ -183,8 +255,21 @@ const ChatDiff: React.FC<{ active: ChatEngineResult; ghost: ChatEngineResult; ac
                 </p>
             </div>
 
-            <div className="md:w-56">
+            <div className="space-y-3 md:w-56">
                 <DecisionCard decision={active.decision} />
+                {/* התשובה שתיווצר משתנה עם המילה - כך "החלטה אחרת" מורגשת גם כשסוג ההחלטה זהה. */}
+                <div className="rounded-xl border border-white/10 bg-slate-950/50 p-3">
+                    <div className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">התשובה שתיווצר</div>
+                    <motion.p
+                        key={active.reply}
+                        initial={reduce ? false : { opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={reduce ? { duration: 0 } : { duration: 0.3 }}
+                        className="text-xs leading-relaxed text-slate-300"
+                    >
+                        {active.reply}
+                    </motion.p>
+                </div>
             </div>
         </div>
     );

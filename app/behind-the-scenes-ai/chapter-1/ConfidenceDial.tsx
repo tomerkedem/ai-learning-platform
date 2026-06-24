@@ -114,11 +114,19 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
             </div>
 
             {/* הסיפור: על מה מדובר */}
-            <p className="mb-4 text-sm leading-relaxed text-slate-300">
-                לפני שהמנוע עונה, הוא מתלבט בין כמה פירושים לאותו משפט. <span className="font-bold text-white">הפער</span> בין
-                הפירוש המוביל לשני הוא מידת הביטחון שלו. השאלה שלכם: <span className="font-bold text-cyan-300">כמה ביטחון לדרוש</span> לפני
-                שנותנים לו לענות לבד, ומתי עדיף שיעצור וישאל.
+            <p className="mb-3 text-sm leading-relaxed text-slate-300">
+                <span className="font-bold text-white">הרעיון:</span> לפני שהמנוע עונה, הוא מתלבט בין כמה פירושים לאותו משפט.
+                ה<span className="font-bold text-white">פער</span> בין הפירוש המוביל לשני הוא מידת הביטחון שלו. השאלה שלכם:
+                <span className="font-bold text-cyan-300"> כמה ביטחון לדרוש</span> לפני שנותנים לו לענות לבד, ומתי עדיף שיעצור וישאל.
             </p>
+            <div className="mb-4 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
+                <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500">איך מפעילים</div>
+                <ol className="space-y-1 text-xs leading-relaxed text-slate-400">
+                    <li><span className="font-bold text-cyan-300">1.</span> בחרו קלט (שלכם או דוגמה). האורב יזוז למידת הביטחון של המנוע.</li>
+                    <li><span className="font-bold text-cyan-300">2.</span> גררו את הרף לאורך הציר, או בחרו רמת סיכון.</li>
+                    <li><span className="font-bold text-cyan-300">3.</span> כשהרף חוצה את האורב, ההחלטה מתהפכת בין <span className="font-bold text-emerald-300">ענה לבד</span> ל<span className="font-bold text-amber-300">עצור ושאל</span>.</li>
+                </ol>
+            </div>
 
             {/* שתי האפשרויות המתחרות + הפער ביניהן */}
             <div className="mb-3 grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
