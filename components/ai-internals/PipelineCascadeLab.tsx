@@ -177,54 +177,6 @@ export const PipelineCascadeLab: React.FC = () => {
 
     return (
         <div className="space-y-4">
-            {/* ── שער חשיפה הדרגתית: פתיחת שכבת העומק (אותו דפוס כמו פרק 1) ──
-                ברירת המחדל היא מסלול ממוקד. המפל המלא, מכונת ה-Softmax, הנוסחאות
-                ו-Agent Mode פתוחים רק מאחורי השער הזה, ולכן הם אופציה מודעת. ── */}
-            <div className="text-center" dir="rtl">
-                <button
-                    type="button"
-                    onClick={() => handleDepth(!depth)}
-                    aria-expanded={depth}
-                    className="group inline-flex items-center gap-3 rounded-2xl border border-violet-500/40 bg-violet-900/15 px-6 py-3.5 text-base font-bold text-violet-200 transition-colors hover:border-violet-400/60 hover:bg-violet-900/25"
-                >
-                    <Layers size={18} className="text-violet-300" />
-                    {depth ? 'סגרו את שכבת העומק' : 'פתחו את שכבת העומק'}
-                    <ChevronDown size={18} className={`text-violet-300 transition-transform ${depth ? 'rotate-180' : ''}`} />
-                </button>
-                {!depth && (
-                    <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">
-                        כאן נפתח את החישוב המלא: כל 6 השכבות, Softmax צעד-אחר-צעד, נוסחאות ו-Agent Mode.
-                    </p>
-                )}
-            </div>
-
-            {/* ── בקרות עומק: מצב Chat/Agent + תצוגת נוסחה. גלויות רק בשכבת העומק. ── */}
-            {depth && (
-                <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4" dir="rtl">
-                    <div className="flex flex-wrap items-center gap-3">
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-slate-400">מצב:</span>
-                            <ModeToggle mode={mode} onChange={(m) => handleMode(m as 'chat' | 'agent')} accent="purple" />
-                        </div>
-                        <button
-                            type="button"
-                            onClick={() => setFormulaView((v) => !v)}
-                            aria-pressed={formulaView}
-                            className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${
-                                formulaView ? 'border-violet-500/50 bg-violet-900/25 text-violet-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-300 hover:border-slate-600'
-                            }`}
-                        >
-                            {formulaView ? <FunctionSquare size={15} /> : <Eye size={15} />}
-                            {formulaView ? 'תצוגת נוסחה' : 'תצוגה פשוטה'}
-                            <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{formulaView ? 'Formula' : 'Simple'}</span>
-                        </button>
-                    </div>
-                    <p className="mt-3 border-t border-slate-700/40 pt-3 text-[13px] leading-relaxed text-slate-400">
-                        שכבת העומק חושפת את החישוב המלא: <span className="font-bold text-slate-400">תצוגת נוסחה</span> (Formula View) מראה שכל מספר על המסך הוא חישוב חי, ומכונת ה-Softmax מקבלת בקרת <span className="font-bold text-slate-400">הגברה ונרמול</span> צעד-אחר-צעד. החלפה ל-<span className="font-bold text-slate-400">Agent Mode</span> מראה שאותה שרשרת מדרגת צעדים לפי מצב, לא רק כוונות.
-                    </p>
-                </div>
-            )}
-
             {/* ── dock קלט דביק: הקלט + התוצאה הראשית נשארים צמודים וגלויים ─────
                 שדה הקלט הקיים מקודם לתוך ה-dock (children) - מקור קלט יחיד, בלי
                 כפילות. ה-readout קורא את ה-state של המנוע בלבד. ── */}
@@ -245,9 +197,59 @@ export const PipelineCascadeLab: React.FC = () => {
                 )}
             </StickyInputDock>
 
-            {depth ? (
+            {/* ── מסלול בסיסי: גרסה ממוקדת וקלילה, בלי המפל הכבד. גלוי כברירת
+                מחדל ומוסתר בשכבת העומק, שם המפל המלא תופס את מקומו. ── */}
+            {!depth && <LightPath result={result} waveKey={waveKey} reduce={!!reduce} />}
+
+            {/* ── שער חשיפה הדרגתית: יושב מתחת למסלול הבסיסי (אותו דפוס כמו פרק 1).
+                הטיזר מתאר את מה שייפתח בלחיצה, לא את מה שמעליו. ── */}
+            <div className="text-center" dir="rtl">
+                <button
+                    type="button"
+                    onClick={() => handleDepth(!depth)}
+                    aria-expanded={depth}
+                    className="group inline-flex items-center gap-3 rounded-2xl border border-violet-500/40 bg-violet-900/15 px-6 py-3.5 text-base font-bold text-violet-200 transition-colors hover:border-violet-400/60 hover:bg-violet-900/25"
+                >
+                    <Layers size={18} className="text-violet-300" />
+                    {depth ? 'סגרו את שכבת העומק' : 'פתחו את שכבת העומק'}
+                    <ChevronDown size={18} className={`text-violet-300 transition-transform ${depth ? 'rotate-180' : ''}`} />
+                </button>
+                {!depth && (
+                    <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">
+                        בלחיצה ייפתח החישוב המלא: כל שש השכבות, Softmax צעד-אחר-צעד, נוסחאות ו-Agent Mode.
+                    </p>
+                )}
+            </div>
+
+            {/* ── שכבת העומק: בקרות + המפל המלא + disclaimer. הכל מאחורי השער. ── */}
+            {depth && (
                 <>
-                    {/* ── מפל השרשרת המלא (שכבת עומק בלבד) ───────────────────── */}
+                    {/* בקרות עומק: מצב Chat/Agent + תצוגת נוסחה. */}
+                    <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4" dir="rtl">
+                        <div className="flex flex-wrap items-center gap-3">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs font-bold text-slate-400">מצב:</span>
+                                <ModeToggle mode={mode} onChange={(m) => handleMode(m as 'chat' | 'agent')} accent="purple" />
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setFormulaView((v) => !v)}
+                                aria-pressed={formulaView}
+                                className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${
+                                    formulaView ? 'border-violet-500/50 bg-violet-900/25 text-violet-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-300 hover:border-slate-600'
+                                }`}
+                            >
+                                {formulaView ? <FunctionSquare size={15} /> : <Eye size={15} />}
+                                {formulaView ? 'תצוגת נוסחה' : 'תצוגה פשוטה'}
+                                <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{formulaView ? 'Formula' : 'Simple'}</span>
+                            </button>
+                        </div>
+                        <p className="mt-3 border-t border-slate-700/40 pt-3 text-[13px] leading-relaxed text-slate-400">
+                            שכבת העומק חושפת את החישוב המלא: <span className="font-bold text-slate-400">תצוגת נוסחה</span> (Formula View) מראה שכל מספר על המסך הוא חישוב חי, ומכונת ה-Softmax מקבלת בקרת <span className="font-bold text-slate-400">הגברה ונרמול</span> צעד-אחר-צעד. החלפה ל-<span className="font-bold text-slate-400">Agent Mode</span> מראה שאותה שרשרת מדרגת צעדים לפי מצב, לא רק כוונות.
+                        </p>
+                    </div>
+
+                    {/* מפל השרשרת המלא */}
                     <PipelineCascade
                         result={result}
                         waveKey={waveKey}
@@ -258,7 +260,7 @@ export const PipelineCascadeLab: React.FC = () => {
                         reduce={!!reduce}
                     />
 
-                    {/* ── disclaimer + גשר ───────────────────────────────── */}
+                    {/* disclaimer + גשר */}
                     <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[13px] leading-relaxed text-slate-400" dir="rtl">
                         <Info size={15} className="mt-0.5 shrink-0" />
                         <span>
@@ -268,9 +270,6 @@ export const PipelineCascadeLab: React.FC = () => {
                         </span>
                     </div>
                 </>
-            ) : (
-                /* ── מסלול בסיסי: גרסה ממוקדת וקלילה, בלי המפל הכבד ── */
-                <LightPath result={result} waveKey={waveKey} reduce={!!reduce} />
             )}
         </div>
     );

@@ -70,7 +70,7 @@ export default function BehindTheScenesChapter3() {
                     <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">
                         תשובה שנשמעת בטוחה אינה הוכחה. מאחורי כל תשובה יש תחרות בין כמה פירושים אפשריים, וכל אחד
                         מקבל ציון הסתברות. בחרו ניסוח, וראו מתי יש מוביל ברור שמאפשר לענות, ומתי האפשרויות קרובות
-                        מדי – ואז הצעד המקצועי הוא דווקא לא לענות מיד, אלא לבקש הבהרה.
+                        מדי, ואז הצעד המקצועי הוא דווקא לא לענות מיד, אלא לבקש הבהרה.
                     </p>
 
                     <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">

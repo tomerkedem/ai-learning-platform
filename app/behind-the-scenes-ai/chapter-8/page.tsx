@@ -195,8 +195,9 @@ export default function BehindTheScenesChapter7() {
                     </h1>
 
                     <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">
-                        מווקטור משמעות, דרך דמיון וציונים גולמיים, ועד הסתברויות והחלטה. הקלידו משפט וראו את כל השרשרת רצה כמפל. ואז שנו
-                        מילה אחת, וצפו בגל שינוי שמתפשט במורד כל השכבות ומהפך את ההחלטה. כל מספר על המסך מחושב חי.
+                        בפרק הזה נראה איך משפט אחד הופך בהדרגה להחלטה. המנוע לא קופץ מהטקסט לתשובה, אלא עובר שרשרת שלבים: וקטור משמעות,
+                        דמיון, ציונים גולמיים, Softmax, ואז הסתברויות. המטרה היא להבין שדמיון אינו הסתברות וציון גולמי אינו אחוז. רק בסוף
+                        השרשרת מתקבלת התפלגות שאפשר להחליט לפיה.
                     </p>
 
                     <div className="mt-6">
@@ -208,7 +209,7 @@ export default function BehindTheScenesChapter7() {
                             <MousePointerClick size={14} className="text-violet-400" /> הקלידו או בחרו ניסוי מהיר
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                            <Waves size={14} className="text-emerald-400" /> לחצו &quot;החלפת מילה&quot; וצפו בגל השינוי
+                            <Waves size={14} className="text-emerald-400" /> לחצו &quot;החלפת מילה&quot; וראו את כל השלבים מתעדכנים
                         </span>
                     </div>
                 </div>
