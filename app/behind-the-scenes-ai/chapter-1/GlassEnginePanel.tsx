@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
     motion, AnimatePresence, useMotionValue, useTransform, animate, useReducedMotion, type Variants,
 } from 'framer-motion';
@@ -303,25 +303,6 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
         return d && d.kind === 'decision' ? CLIMAX_RGB[d.decision.kind] : null;
     }, [steps]);
 
-    // נגינה דינמית: בכל שליחה (replayKey משתנה) הצינור גולל מעצמו מלמעלה אל
-    // התחתית בקצב ההופעה של השלבים, כדי שתמיד רואים את כל התהליך עד ההחלטה והתשובה
-    // ולא נשארים תקועים בראש הרשימה. הגלילה רכה וניתנת להחלפה ידנית אחריה.
-    const bodyRef = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        const el = bodyRef.current;
-        if (!el || reduce) return;
-        el.scrollTop = 0;
-        const max = el.scrollHeight - el.clientHeight;
-        if (max <= 0) return;
-        const controls = animate(0, max, {
-            duration: 2.4,
-            delay: 0.35,
-            ease: [0.4, 0, 0.2, 1],
-            onUpdate: (v) => { el.scrollTop = v; },
-        });
-        return () => controls.stop();
-    }, [replayKey, reduce]);
-
     return (
         <div className="relative flex h-[640px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/80" dir="rtl">
             {/* רקע גריד */}
@@ -385,7 +366,7 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
             </div>
 
             {/* גוף הצינור */}
-            <div ref={bodyRef} className="custom-scrollbar relative flex-1 overflow-y-auto p-5">
+            <div className="custom-scrollbar relative flex-1 overflow-y-auto p-5">
                 <motion.div
                     key={replayKey}
                     variants={container}
