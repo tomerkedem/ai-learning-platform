@@ -1608,7 +1608,7 @@ for (let n = 1; n <= 16; n++) {
         startLabel: "התחילו את המבדק",
         submitLabel: "סיום המבדק",
         completedTitle: "סיימתם את המבדק",
-        showTimer: false,
+        showTimer: true,
         soundEnabled: false,
     };
 }

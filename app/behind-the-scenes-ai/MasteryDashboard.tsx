@@ -9,7 +9,8 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Target, TrendingUp, GraduationCap, ArrowLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2, Target, TrendingUp, GraduationCap, ArrowLeft, ChevronDown } from "lucide-react";
 import {
     getMasterySummary,
     MASTERY_UPDATED_EVENT,
@@ -140,53 +141,105 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
 
 // ────────────────────────────────────────────────────────────────────────
 // גרסה קומפקטית לסרגל הצד. נטענת רק אם כבר יש נתונים, כדי לא להכביד.
+// מתקפלת (ברירת מחדל מכווצת) כדי לא לדחוק את רשימת הפרקים. ההעדפה נשמרת.
 // ────────────────────────────────────────────────────────────────────────
+const SIDEBAR_OPEN_KEY = "behindAiMasterySidebarOpen";
+
 export function SidebarMastery() {
     const summary = useMasterySummary();
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        try {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- שחזור העדפת הקיפול חייב לקרות אחרי mount בצד הלקוח, כדי למנוע אי-התאמת hydration
+            setOpen(window.localStorage.getItem(SIDEBAR_OPEN_KEY) === "1");
+        } catch {
+            // אין localStorage: נשארים במצב מכווץ כברירת מחדל.
+        }
+    }, []);
+
+    const toggle = () => {
+        setOpen(prev => {
+            const next = !prev;
+            try {
+                window.localStorage.setItem(SIDEBAR_OPEN_KEY, next ? "1" : "0");
+            } catch {
+                // התעלמות בשקט אם אי אפשר לשמור העדפה.
+            }
+            return next;
+        });
+    };
+
     if (!summary || !summary.hasAnyData) return null;
 
     const exam = finalExamText(summary.finalExam);
 
     return (
         <div className="mt-5 pt-5 border-t border-slate-800/80" dir="rtl">
-            <div className="flex justify-between items-center mb-2">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">שליטה במבדקים</span>
-                {summary.averageScore !== null && (
-                    <span className="text-[10px] font-mono text-slate-400">ממוצע {summary.averageScore}%</span>
-                )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 mb-3">
-                <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 px-2.5 py-1.5">
-                    <div className="text-[9px] text-slate-500 font-bold">הושלמו</div>
-                    <div className="text-white text-sm font-bold">{summary.completedChapters}/{summary.totalChapters}</div>
-                </div>
-                <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 px-2.5 py-1.5">
-                    <div className="text-[9px] text-slate-500 font-bold">עברו</div>
-                    <div className="text-emerald-400 text-sm font-bold">{summary.passedChapters}/{summary.totalChapters}</div>
-                </div>
-            </div>
-
-            {summary.weakConcepts.length > 0 && (
-                <div className="mb-3">
-                    <div className="text-[9px] text-amber-400 font-bold mb-1.5">כדאי לחזק</div>
-                    <div className="flex flex-wrap gap-1">
-                        {summary.weakConcepts.slice(0, 3).map(c => (
-                            <span key={c} className="text-[10px] font-medium text-amber-200/90 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{c}</span>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            <Link
-                href={FINAL_EXAM_HREF}
-                className="flex items-center justify-between gap-2 bg-slate-800/40 hover:bg-slate-800 px-2.5 py-2 rounded-lg border border-slate-700/50 transition-colors no-underline group"
+            {/* כותרת לחיצה: מציגה סיכום קצר גם כשמכווץ, ומתקפלת בלחיצה */}
+            <button
+                type="button"
+                onClick={toggle}
+                aria-expanded={open}
+                className="w-full flex items-center justify-between gap-2 group"
             >
-                <span className="flex items-center gap-1.5 text-[11px] font-bold text-slate-300">
-                    <GraduationCap size={13} className="text-blue-400" /> מבחן סיום
+                <span className="flex items-center gap-2 min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-300 transition-colors">שליטה במבדקים</span>
                 </span>
-                <span className={`text-[10px] font-bold ${exam.color}`}>{exam.label}</span>
-            </Link>
+                <span className="flex items-center gap-2 shrink-0">
+                    <span className="text-[10px] font-mono text-slate-400">{summary.completedChapters}/{summary.totalChapters}</span>
+                    {summary.averageScore !== null && (
+                        <span className="text-[10px] font-mono text-slate-500">· {summary.averageScore}%</span>
+                    )}
+                    <ChevronDown size={14} className={`text-slate-500 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+                </span>
+            </button>
+
+            <AnimatePresence initial={false}>
+                {open && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                    >
+                        <div className="pt-3">
+                            <div className="grid grid-cols-2 gap-2 mb-3">
+                                <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 px-2.5 py-1.5">
+                                    <div className="text-[9px] text-slate-500 font-bold">הושלמו</div>
+                                    <div className="text-white text-sm font-bold">{summary.completedChapters}/{summary.totalChapters}</div>
+                                </div>
+                                <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 px-2.5 py-1.5">
+                                    <div className="text-[9px] text-slate-500 font-bold">עברו</div>
+                                    <div className="text-emerald-400 text-sm font-bold">{summary.passedChapters}/{summary.totalChapters}</div>
+                                </div>
+                            </div>
+
+                            {summary.weakConcepts.length > 0 && (
+                                <div className="mb-3">
+                                    <div className="text-[9px] text-amber-400 font-bold mb-1.5">כדאי לחזק</div>
+                                    <div className="flex flex-wrap gap-1">
+                                        {summary.weakConcepts.slice(0, 3).map(c => (
+                                            <span key={c} className="text-[10px] font-medium text-amber-200/90 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{c}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <Link
+                                href={FINAL_EXAM_HREF}
+                                className="flex items-center justify-between gap-2 bg-slate-800/40 hover:bg-slate-800 px-2.5 py-2 rounded-lg border border-slate-700/50 transition-colors no-underline"
+                            >
+                                <span className="flex items-center gap-1.5 text-[11px] font-bold text-slate-300">
+                                    <GraduationCap size={13} className="text-blue-400" /> מבחן סיום
+                                </span>
+                                <span className={`text-[10px] font-bold ${exam.color}`}>{exam.label}</span>
+                            </Link>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
