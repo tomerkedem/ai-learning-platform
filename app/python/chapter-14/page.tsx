@@ -183,7 +183,7 @@ print(merged)`;
         <div className="relative">
           {/* המנטור (xl+, משמאל) */}
           <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-            <Mentor pose="chart" line="טבלאות ענק, בכמה שורות" width={160} accent={EMERALD_ACCENT} />
+            <Mentor pose="chart" line="טבלאות ענק, בכמה שורות" width={160} accent={EMERALD_ACCENT} bubbleSide="bottom" />
           </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-emerald-400 mb-2">

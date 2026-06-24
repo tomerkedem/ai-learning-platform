@@ -122,7 +122,7 @@ def simple_word_stats(text: str) -> dict:
         <div className="relative">
           {/* המנטור (xl+, משמאל) */}
           <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-            <Mentor pose="inspect" line="המבנה הנכון = חצי מהפתרון" width={160} accent={EMERALD_ACCENT} />
+            <Mentor pose="inspect" line="המבנה הנכון = חצי מהפתרון" width={160} accent={EMERALD_ACCENT} bubbleSide="bottom" />
           </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-indigo-400 mb-2">

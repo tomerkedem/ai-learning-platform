@@ -22,7 +22,7 @@ export default function Chapter17() {
         <div className="relative">
           {/* המנטור (xl+, משמאל) */}
           <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-            <Mentor pose="celebrate" line="מחברים הכל לכלי אחד" width={160} accent={EMERALD_ACCENT} />
+            <Mentor pose="celebrate" line="מחברים הכל לכלי אחד" width={160} accent={EMERALD_ACCENT} bubbleSide="bottom" />
           </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-emerald-400 mb-2">

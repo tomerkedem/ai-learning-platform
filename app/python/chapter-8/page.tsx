@@ -181,7 +181,7 @@ run_pipeline([])`;
         <div className="relative">
           {/* המנטור (xl+, משמאל) */}
           <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-            <Mentor pose="headsup" line="תקלה טובה מדווחת על עצמה" width={160} accent={EMERALD_ACCENT} />
+            <Mentor pose="headsup" line="תקלה טובה מדווחת על עצמה" width={160} accent={EMERALD_ACCENT} bubbleSide="bottom" />
           </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-red-400 mb-2">
