@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { GitCompare, ArrowUp, ArrowDown, Minus, Zap, Lightbulb } from 'lucide-react';
+import { GitCompare, ArrowUp, ArrowDown, Minus, Zap, Lightbulb, Target } from 'lucide-react';
 
 import { ACCENTS } from '@/components/ai-internals/accents';
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
@@ -118,15 +118,16 @@ export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, ac
             </div>
 
             <p className="mb-3 text-sm leading-relaxed text-slate-300">
-                <span className="font-bold text-white">הרעיון:</span> מילה אחת יכולה לשנות איך המנוע מבין את כל המשפט.
-                כאן מבודדים מילה אחת, מחליפים רק אותה, ורואים בזמן אמת איך הפירוש, התשובה ולפעמים ההחלטה משתנים.
+                <span className="font-bold text-white">למה זה חשוב:&nbsp;</span> ההחלטה של המנוע אף פעם לא מקרית - תמיד יש מילה אחת שמכריעה.
+                כאן עושים שני דברים: קודם <span className={`font-bold ${a.text}`}>מאתרים</span> את המילה שגרמה להחלטה, ואז <span className={`font-bold ${a.text}`}>מוכיחים</span> שזו היא -
+                משנים רק אותה ורואים את ההחלטה מתהפכת.
             </p>
             <div className="mb-4 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
                 <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500">איך מפעילים</div>
                 <ol className="space-y-1 text-xs leading-relaxed text-slate-400">
                     <li><span className={`font-bold ${a.text}`}>1.</span> בחרו מנוף סיבתי - איזו מילה לבדוק.</li>
-                    <li><span className={`font-bold ${a.text}`}>2.</span> לחצו בין שני הניסוחים שנבדלים במילה אחת בלבד.</li>
-                    <li><span className={`font-bold ${a.text}`}>3.</span> השוו: העמודות זזות, התשובה משתנה, וההבזק מסמן אם ההחלטה התהפכה.</li>
+                    <li><span className={`font-bold ${a.text}`}>2.</span> ראו למטה איזו מילה הכריעה את ההחלטה הנוכחית.</li>
+                    <li><span className={`font-bold ${a.text}`}>3.</span> החליפו בין שני הניסוחים שנבדלים רק במילה הזו, וראו את ההחלטה מתהפכת.</li>
                 </ol>
             </div>
 
@@ -174,6 +175,27 @@ export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, ac
                         </button>
                     );
                 })}
+            </div>
+
+            {/* ייחוס: המילה שהכריעה את ההחלטה הנוכחית (ה"למה" שמאחורי ההחלטה) */}
+            <div className="mb-4 flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-xs leading-relaxed text-slate-300">
+                <Target size={14} className={`mt-0.5 shrink-0 ${a.text}`} />
+                <span>
+                    המנוע בחר <span className="font-mono font-bold text-slate-100">{active.decision.label}</span>.{' '}
+                    {activeVariant.pivot ? (
+                        <>
+                            ה<span className="font-bold text-white">למה</span> הוא המילה{' '}
+                            <span className={`mx-0.5 inline-block rounded-md border px-1.5 py-0.5 align-middle font-mono text-[13px] font-bold ${a.border} ${a.bgSoft} ${a.text}`}>{activeVariant.pivot}</span>.
+                            רוצים לוודא שהיא באמת זו שמכריעה? שנו רק אותה למטה.
+                        </>
+                    ) : (
+                        <>
+                            ה<span className="font-bold text-white">למה</span> הוא דווקא ש<span className="font-bold text-white">חסרה</span> כאן המילה{' '}
+                            <span className={`mx-0.5 inline-block rounded-md border px-1.5 py-0.5 align-middle font-mono text-[13px] font-bold ${a.border} ${a.bgSoft} ${a.text}`}>{ghostVariant.pivot}</span>.
+                            גם היעדר של מילה הוא סיבה. החזירו אותה למטה וראו.
+                        </>
+                    )}
+                </span>
             </div>
 
             {/* ההבזק על החלטה שהתהפכה */}

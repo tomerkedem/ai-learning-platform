@@ -6,14 +6,13 @@ import { SlidersHorizontal, ShieldCheck, HelpCircle, ShieldAlert, Hand, Sparkles
 
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
 import { EngineMetricCard } from '@/components/ai-internals/EngineMetricCard';
-import type { Accent, DecisionState, FlowMode } from '@/components/ai-internals/types';
+import type { DecisionState, FlowMode } from '@/components/ai-internals/types';
 
 import { runChatEngine, runAgentEngine } from './mockEngine';
 
 interface ConfidenceDialProps {
     text: string;
     mode: FlowMode;
-    accent: Accent;
 }
 
 // סף ברירת המחדל של המנוע הלימודי: confidenceFrom מסווג פער < 15% כביטחון נמוך,

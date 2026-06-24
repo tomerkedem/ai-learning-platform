@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Terminal, ScanSearch, ArrowDown, ScanLine, SlidersHorizontal, GitCompare, Route, Split, X, Layers, ChevronDown, Eye } from 'lucide-react';
+import { Terminal, ScanSearch, ArrowDown, ScanLine, SlidersHorizontal, GitCompare, Split, X, Layers, ChevronDown, Eye, ListChecks } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine } from '@/components/content/AssessmentEngine';
@@ -22,7 +22,6 @@ import { ReadHeadLab } from './ReadHeadLab';
 import { PredictDecision } from './PredictDecision';
 import { ConfidenceDial } from './ConfidenceDial';
 import { CounterfactualDiff } from './CounterfactualDiff';
-import { DecisionTrace } from './DecisionTrace';
 import { ForkView } from './ForkView';
 
 const DEFAULT_INPUT = 'החבילה לא הגיעה';
@@ -433,7 +432,7 @@ export default function BehindTheScenesChapter1() {
             >
             <p className="mt-8 flex items-start gap-2.5 text-lg leading-relaxed text-slate-200" dir="rtl">
                 <ScanSearch size={20} className="mt-1 shrink-0 text-cyan-400" />
-                ראו שכבת עומק: מכאן זה נעשה טכני יותר. כל כלי מראה זווית אחרת של אותו מסלול. אין צורך לסיים הכול ברצף.
+                ראו שכבת עומק: מכאן זה נעשה טכני יותר. לפניכם ארבע מעבדות ממוספרות, כל אחת מראה זווית אחרת של אותו מסלול. אין צורך לסיים הכול ברצף.
             </p>
             <p className="mt-3 text-base leading-relaxed text-slate-300" dir="rtl">
                 ב-<span className="text-cyan-300 font-semibold">Chat Mode</span> המערכת בוחרת תשובה.
@@ -441,9 +440,10 @@ export default function BehindTheScenesChapter1() {
                 לענות, להשתמש בכלי, או לעצור ולבקש מידע. החליפו ביניהם במתג שבראש הצ&apos;אט.
             </p>
 
-            {/* ══════════ Read Head ══════════ */}
+            {/* ══════════ מעבדה 1 · Read Head ══════════ */}
             <section className="mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">1</span>
                     <ScanLine size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
                     <div>
                         <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>קריאה חיה</div>
@@ -456,9 +456,10 @@ export default function BehindTheScenesChapter1() {
                 <ReadHeadLab key={`${mode}:${conversationText}`} text={conversationText} mode={mode} accent={accent} />
             </section>
 
-            {/* ══════════ Confidence Dial ══════════ */}
+            {/* ══════════ מעבדה 2 · Confidence Dial ══════════ */}
             <section className="mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">2</span>
                     <SlidersHorizontal size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
                     <div>
                         <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>מתי לסמוך, מתי לעצור</div>
@@ -466,35 +467,27 @@ export default function BehindTheScenesChapter1() {
                     </div>
                 </div>
 
-                <ConfidenceDial key={`dial:${mode}:${conversationText}`} text={conversationText} mode={mode} accent={accent} />
+                <ConfidenceDial key={`dial:${mode}:${conversationText}`} text={conversationText} mode={mode} />
             </section>
 
-            {/* ══════════ Counterfactual + Trace ══════════ */}
+            {/* ══════════ מעבדה 3 · Causality (Counterfactual) ══════════ */}
             <section className="mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">3</span>
                     <GitCompare size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
                     <div>
                         <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>סיבתיות</div>
-                        <h3 className="text-2xl font-bold text-white">מילה אחת, החלטה אחרת</h3>
+                        <h3 className="text-2xl font-bold text-white">איזו מילה הכריעה את ההחלטה</h3>
                     </div>
                 </div>
 
                 <CounterfactualDiff key={`cf:${mode}`} mode={mode} accent={accent} />
-
-                <div className="flex items-center gap-3 pt-2">
-                    <Route size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
-                    <div>
-                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>למה זה?</div>
-                        <h3 className="text-2xl font-bold text-white">עקבו אחורה מההחלטה אל הסיבות</h3>
-                    </div>
-                </div>
-
-                <DecisionTrace key={`trace:${mode}:${conversationText}`} text={conversationText} mode={mode} accent={accent} />
             </section>
 
-            {/* ══════════ Fork View ══════════ */}
+            {/* ══════════ מעבדה 4 · Fork View ══════════ */}
             <section className="mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">4</span>
                     <Split size={24} className="text-slate-300" />
                     <div>
                         <div className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">פיצול</div>
@@ -522,9 +515,47 @@ export default function BehindTheScenesChapter1() {
             )}
             </AnimatePresence>
 
+            {/* ══════════ לפני המבדק: עיגון מושגי הליבה בזרימה הראשית ══════════ */}
+            {/* גם מי שלא פתח את שכבת העומק רואה כאן את שלושת הרעיונות שהמבדק בודק. */}
+            <section className="mt-16 text-right" dir="rtl">
+                <div className="rounded-[1.75rem] border border-cyan-500/30 bg-gradient-to-b from-slate-900/70 to-slate-950/60 p-6 md:p-7">
+                    <div className="mb-4 flex items-center gap-2.5">
+                        <ListChecks size={20} className="text-cyan-300" />
+                        <h3 className="text-xl font-bold text-white">לפני המבדק: שלוש נקודות שכדאי לזכור</h3>
+                    </div>
+                    <ul className="space-y-3.5">
+                        <li className="flex gap-3">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 font-bold text-cyan-300">1</span>
+                            <p className="text-base leading-relaxed text-slate-200">
+                                <span className="font-bold text-white">מסלול, לא קסם.</span> מאחורי כל תשובה רץ מסלול: המנוע מפרק את המשפט לטוקנים,
+                                מדרג אפשרויות לפי הסתברות, בודק כמה הוא בטוח, ורק אז מחליט. ההערכה נבנית תוך כדי קריאה, וכל מילה נוספת יכולה לשנות את האפשרות המובילה.
+                            </p>
+                        </li>
+                        <li className="flex gap-3">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 font-bold text-cyan-300">2</span>
+                            <p className="text-base leading-relaxed text-slate-200">
+                                <span className="font-bold text-white">שתי שאלות שונות.</span> ב-<span className="font-semibold text-cyan-300">Chat</span> המנוע שואל &quot;מה התשובה?&quot;.
+                                ב-<span className="font-semibold text-purple-300">Agent</span> הוא שואל &quot;מה הצעד הנכון הבא?&quot; - לענות, להשתמש בכלי, או לעצור ולבקש מידע.
+                            </p>
+                        </li>
+                        <li className="flex gap-3">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 font-bold text-cyan-300">3</span>
+                            <p className="text-base leading-relaxed text-slate-200">
+                                <span className="font-bold text-white">ביטחון פוגש אחריות.</span> הביטחון נמדד לפי הפער בין האפשרות המובילה לבאה אחריה.
+                                פער גדול וסיכון נמוך, אפשר לתת למנוע לענות. פער קטן או פעולה רגישה, הצעד האחראי הוא לעצור ולשאול, לא לנחש.
+                            </p>
+                        </li>
+                    </ul>
+                    {!deepOpen && (
+                        <p className="mt-4 text-sm leading-relaxed text-slate-400">
+                            רוצים לראות את שלושת אלה חיים? פתחו למעלה את <span className="font-semibold text-cyan-300">המנוע המלא</span> ושחקו עם ראש הקריאה, חוגת הביטחון והשוואת המנועים.
+                        </p>
+                    )}
+                </div>
+            </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
-            <section className="mt-16 mb-4" dir="rtl">
+            <section className="mt-10 mb-4" dir="rtl">
                 <AssessmentEngine {...behindAiChapterQuizzes[1]} />
             </section>
         </ChapterLayout>
