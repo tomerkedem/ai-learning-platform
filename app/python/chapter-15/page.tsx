@@ -5,6 +5,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 import { Quiz } from '@/components/content/Quiz';
 import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 import { SyncVsAsyncRace, SemaphoreVis } from '@/components/demos/chapter-15';
 import { 
     Zap, Globe, ShieldAlert, 
@@ -52,6 +53,11 @@ export default function Chapter15() {
     <ChapterLayout courseId="python" currentChapterId={15}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="think" line="לחכות לרשת בלי לעצור הכל" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-purple-400 mb-2">
                 <Globe size={24} />
@@ -77,6 +83,7 @@ export default function Chapter15() {
                 </div>
             </div>
         </section>
+        </div>
 
         {/* --- 1. Basic Async/Await --- */}
         <section className="mt-16 space-y-8">

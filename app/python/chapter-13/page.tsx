@@ -5,6 +5,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
 import { Quiz } from '@/components/content/Quiz';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 import { MemoryVisualizer, VectorizationRace } from '@/components/demos/chapter-13';
 import { 
     Gauge, Activity, Database, Zap, 
@@ -148,6 +149,11 @@ print(word_freq_numpy(words))`;
     <ChapterLayout courseId="python" currentChapterId={13}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="chart" line="וקטוריזציה במקום לולאות" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-yellow-400 mb-2">
                 <Gauge size={24} />
@@ -161,6 +167,7 @@ print(word_freq_numpy(words))`;
                 בפרק הזה נלמד איך למדוד ביצועים, לחסוך בזיכרון עם Generators, ולהאיץ חישובים עם NumPy.
             </p>
         </section>
+        </div>
 
         {/* --- 1. Measuring Performance --- */}
         <section className="mt-16 space-y-8">

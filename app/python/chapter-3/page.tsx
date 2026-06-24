@@ -11,6 +11,7 @@ import {
     Layers, CheckCircle2, XCircle, Search, Sparkles, BrainCircuit
 } from 'lucide-react';
 import { ChapterLayout } from '@/components/ChapterLayout';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 
 // --- רכיב עזר ויזואלי לסיכום ---
 const XRayCard = ({ icon, term, reality, color }: { icon: React.ReactNode, term: string, reality: string, color: string }) => {
@@ -118,6 +119,11 @@ def simple_word_stats(text: str) -> dict:
     <ChapterLayout courseId="python" currentChapterId={3}>
         
         {/* --- HERO SECTION --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="inspect" line="המבנה הנכון = חצי מהפתרון" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-indigo-400 mb-2">
                 <Database size={24} />
@@ -144,6 +150,7 @@ def simple_word_stats(text: str) -> dict:
                 </div>
             </div>
         </section>
+        </div>
 
         {/* --- SECTION 1: LISTS --- */}
         <section className="mt-16 space-y-8">

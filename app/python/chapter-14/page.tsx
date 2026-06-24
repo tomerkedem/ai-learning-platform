@@ -5,6 +5,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
 import { Quiz } from '@/components/content/Quiz';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 import { DataFrameVis, PandasLab } from '@/components/demos/chapter-14';
 import { 
     Table2, Database, Filter, FileSpreadsheet, 
@@ -179,6 +180,11 @@ print(merged)`;
     <ChapterLayout courseId="python" currentChapterId={14}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="chart" line="טבלאות ענק, בכמה שורות" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-emerald-400 mb-2">
                 <Table2 size={24} />
@@ -192,6 +198,7 @@ print(merged)`;
                 זהו הכלי המרכזי לניקוי, סינון והכנת דאטה למודלים.
             </p>
         </section>
+        </div>
 
         {/* --- 1. Why Pandas? --- */}
         <section className="mt-16 space-y-8">

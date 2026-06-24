@@ -6,6 +6,7 @@ import { InsightBox } from '@/components/content/InsightBox';
 import { Quiz } from '@/components/content/Quiz';
 
 import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 import { CLITerminalSim, ArgparseVsTyper } from '@/components/demos/chapter-16';
 import { 
     Terminal as TerminalIcon, Zap, 
@@ -39,6 +40,11 @@ const LiveCodeEditor = dynamic(() => import('@/components/content/LiveCodeEditor
     <ChapterLayout courseId="python" currentChapterId={16}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="type" line="הופכים סקריפט לכלי אמיתי" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-emerald-400 mb-2">
                 <TerminalIcon size={24} />
@@ -51,6 +57,7 @@ const LiveCodeEditor = dynamic(() => import('@/components/content/LiveCodeEditor
                 בפרויקטי AI, גם הקוד הכי חכם חסר ערך אם אי אפשר להפעיל אותו בקלות. ממשק שורת הפקודה (CLI) הוא הדרך להפוך קוד גולמי לכלי אמיתי - כזה שאפשר להריץ, לבדוק ולשלב בתהליכים אחרים בלי לפתוח את העורך.
             </p>
         </section>
+        </div>
 
         <section className="mt-16 space-y-8">
             <h3 className="text-2xl font-bold text-white border-r-4 border-emerald-500 pr-4 flex items-center gap-2">

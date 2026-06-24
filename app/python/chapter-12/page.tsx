@@ -6,6 +6,7 @@ import { InsightBox } from '@/components/content/InsightBox';
 import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
 import { StaticCodeBlock } from '@/components/content/StaticCodeBlock';
 import { Quiz } from '@/components/content/Quiz';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 import { TestRunnerVis, MockingLab } from '@/components/demos/chapter-12';
 import { 
     TestTube, ShieldCheck, Beaker, PlayCircle, 
@@ -134,6 +135,11 @@ Action triggered: Tests passed ✅`;
     <ChapterLayout courseId="python" currentChapterId={12}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="headsup" line="בלי טסטים מתכנתים בעיניים עצומות" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-emerald-400 mb-2">
                 <TestTube size={24} />
@@ -148,6 +154,7 @@ Action triggered: Tests passed ✅`;
                 בפרק זה נלמד איך לוודא שהקוד שלך עובד, גם כשהמודל מחליט להזות.
             </p>
         </section>
+        </div>
 
         {/* --- 1. Pytest & Fixtures --- */}
         <section className="mt-16 space-y-8">

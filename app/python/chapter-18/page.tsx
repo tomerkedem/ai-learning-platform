@@ -5,8 +5,9 @@ import dynamic from 'next/dynamic';
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { Quiz } from '@/components/content/Quiz';
 import { InsightBox } from '@/components/content/InsightBox';
-import { 
-    FolderTree, GitBranch, CheckCircle2, 
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
+import {
+    FolderTree, GitBranch, CheckCircle2,
     Share2, ShieldCheck, Folder, File, 
     Cpu, Database, Boxes, Terminal, Code2
 } from 'lucide-react';
@@ -52,6 +53,11 @@ export default function Chapter18() {
     <ChapterLayout courseId="python" currentChapterId={18}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="roadmap" line="התבנית שתחזור אליה בכל פרויקט" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-emerald-400 mb-2">
                 <Cpu size={24} />
@@ -64,6 +70,7 @@ export default function Chapter18() {
                 הגענו לקו הסיום של מסלול פייתון ל-AI. בפרק זה נלמד כיצד לאגד את כל היכולות שרכשנו לכדי שלד (Skeleton) מקצועי. המטרה היא לעבור מכתיבת פונקציות בודדות לבניית מערכת חסינה, מודולרית וברת-הרחבה שניתן להפעיל בסביבות עבודה אמיתיות.
             </p>
         </section>
+        </div>
 
         <div className="space-y-20 text-right" dir="rtl">
 

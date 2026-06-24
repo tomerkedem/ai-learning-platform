@@ -15,6 +15,7 @@ import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
 import { InsightBox } from '@/components/content/InsightBox';
 import { Quiz } from '@/components/content/Quiz';
 import { ChapterLayout } from '@/components/ChapterLayout';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 
 // --- X-RAY CARD ---
 const XRayCard = ({ icon, term, reality, color }: { icon: React.ReactNode, term: string, reality: string, color: string }) => {
@@ -204,6 +205,11 @@ if __name__ == "__main__":
    <ChapterLayout courseId="python" currentChapterId={1}>
           
           {/* --- Hero Section --- */}
+          <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="explain" line="פייתון היא מערכת העצבים של ה-AI" width={160} accent={EMERALD_ACCENT} />
+          </div>
           <section className="space-y-6">
             <div className="flex items-center gap-3 text-emerald-400 mb-2">
                 <Terminal size={24} />
@@ -216,6 +222,7 @@ if __name__ == "__main__":
                 בפרק הזה נהפוך את פייתון מכלי &quot;סקריפטים&quot; לשפת תשתית הנדסית שמחזיקה מערכות AI אמיתיות.
             </p>
           </section>
+          </div>
 
           {/* --- פתיחה: למה אנחנו כאן? --- */}
           <section className="space-y-6">

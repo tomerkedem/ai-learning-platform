@@ -5,6 +5,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox'; // הרכיב שיצרנו
 import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
 import { Quiz } from '@/components/content/Quiz';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 import { TryExceptVis, LoggerLab, ErrorFlowChart } from '@/components/demos/chapter-8';
 import { 
     AlertTriangle, ShieldAlert, Activity, FileText, 
@@ -177,6 +178,11 @@ run_pipeline([])`;
     <ChapterLayout courseId="python" currentChapterId={8}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="headsup" line="תקלה טובה מדווחת על עצמה" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-red-400 mb-2">
                 <AlertTriangle size={24} />
@@ -192,6 +198,7 @@ run_pipeline([])`;
                 מפתח בלי לוגים הוא כמו טייס שטס בלי מכשירים בערפל.
             </p>
         </section>
+        </div>
 
         {/* --- 1. Try / Except Structure --- */}
         <section className="mt-16 space-y-8">

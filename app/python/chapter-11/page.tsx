@@ -5,6 +5,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
 import { Quiz } from '@/components/content/Quiz';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 import { DecoratorBuilder, ContextManagerVis } from '@/components/demos/chapter-11';
 import { 
     Wand2, DoorOpen, Stamp, Timer, 
@@ -203,6 +204,11 @@ print(res)`;
     <ChapterLayout courseId="python" currentChapterId={11}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="happy" line="קסם סביב הקוד, בלי לגעת בו" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-emerald-400 mb-2">
                 <Wand2 size={24} />
@@ -216,6 +222,7 @@ print(res)`;
                 הם לא רק &quot;חכמים&quot;, הם הדרך הפייתונית לכתוב קוד נקי, מודולרי ובטוח.
             </p>
         </section>
+        </div>
 
         {/* --- 1. Decorators --- */}
         <section className="mt-16 space-y-8">

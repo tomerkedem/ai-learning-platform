@@ -5,6 +5,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
 import { Quiz } from '@/components/content/Quiz';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 import { ProjectStructureTree, TheBigAssembler } from '@/components/demos/chapter-17';
 import { 
     Rocket, Layout, Cpu, Layers, Settings, ShieldCheck, 
@@ -18,6 +19,11 @@ export default function Chapter17() {
     <ChapterLayout courseId="python" currentChapterId={17}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="celebrate" line="מחברים הכל לכלי אחד" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-emerald-400 mb-2">
                 <Rocket size={24} />
@@ -31,6 +37,7 @@ export default function Chapter17() {
                 כל תרגיל הוא לבנה נוספת בבניין. קראו את ההסבר ההנדסי לפני שתתחילו לכתוב.
             </p>
         </section>
+        </div>
 
         <div className="space-y-32 text-right" dir="rtl">
 

@@ -5,6 +5,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
 import { Quiz } from '@/components/content/Quiz';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 import { ClassVsInstance, DataclassLab, CompositionVis } from '@/components/demos/chapter-9';
 import { 
     Box, Layers, Combine, PackageCheck, 
@@ -191,6 +192,11 @@ print(cleaner.clean("!שלום, עולם!!!"))`;
     <ChapterLayout courseId="python" currentChapterId={9}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="explain" line="מחלקה היא תבנית, לא קסם" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-indigo-400 mb-2">
                 <Box size={24} />
@@ -205,6 +211,7 @@ print(cleaner.clean("!שלום, עולם!!!"))`;
                 אבל כשמערכת גדלה, הנתונים והפעולות צריכים &quot;בית&quot;. המחלקה (Class) היא הדרך לארגן מחשבה הנדסית ולבנות רכיבים עם זהות.
             </p>
         </section>
+        </div>
 
         {/* --- 1. Basic Class --- */}
         <section className="mt-16 space-y-8">

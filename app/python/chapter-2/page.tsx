@@ -13,6 +13,7 @@ import {
     Sparkles, Edit3
 } from 'lucide-react';
 import { ChapterLayout } from '@/components/ChapterLayout';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 
 export default function Chapter2() {
 
@@ -74,6 +75,11 @@ export default function Chapter2() {
     <ChapterLayout courseId="python" currentChapterId={2}>
         
         {/* --- פתיחה --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="type" line="תחביר נקי = קוד שמתחזק את עצמו" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-yellow-400 mb-2">
                 <Variable size={24} />
@@ -88,6 +94,7 @@ export default function Chapter2() {
                 זו אחת התפיסות החשובות ביותר להבין לפני שמתחילים לעבוד איתה ברצינות.
             </p>
         </section>
+        </div>
 
         {/* --- משתנים וטיפוסים --- */}
         <section className="mt-12 space-y-8">

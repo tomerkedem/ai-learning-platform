@@ -7,6 +7,7 @@ import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
 import { StaticCodeBlock } from '@/components/content/StaticCodeBlock';
 import { Quiz } from '@/components/content/Quiz';
 import { VenvSimulator, ConfigComparator } from '@/components/demos/chapter-6';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 import { 
     Box, ShieldCheck, Terminal, FileCode, Lock, 
     Layers, GitBranch 
@@ -124,6 +125,11 @@ Git will now ignore .venv and secrets.`;
     <ChapterLayout courseId="python" currentChapterId={6}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="token" line="כל פרויקט בבועה משלו" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-emerald-400 mb-2">
                 <Box size={24} />
@@ -139,6 +145,7 @@ Git will now ignore .venv and secrets.`;
                 הפרק הזה עוסק ביצירת &quot;בועות&quot; מבודדות (Virtual Environments) ובניהול חכם של ספריות.
             </p>
         </section>
+        </div>
 
         {/* --- 1. Virtual Environments (venv) --- */}
         <section className="mt-16 space-y-8">

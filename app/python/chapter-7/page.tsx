@@ -5,6 +5,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
 import { Quiz } from '@/components/content/Quiz';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 import { PathNavigator, EnvConfigLab } from '@/components/demos/chapter-7';
 import { 
     FolderOpen, FileJson, Settings, HardDrive, 
@@ -160,6 +161,11 @@ DataFrame[rows=100, cols=5]`;
     <ChapterLayout courseId="python" currentChapterId={7}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="inspect" line="קונפיג בחוץ, קוד בפנים" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-purple-400 mb-2">
                 <FolderOpen size={24} />
@@ -175,6 +181,7 @@ DataFrame[rows=100, cols=5]`;
                 הפרק הזה מלמד איך לבנות מערכת קבצים הנדסית, חוצת פלטפורמות ומאובטחת.
             </p>
         </section>
+        </div>
 
         {/* --- 1. pathlib --- */}
         <section className="mt-16 space-y-8">

@@ -25,6 +25,7 @@ export type MentorPose =
     | 'peek'
     | 'pointdown'
     | 'chart'
+    | 'code'
     | 'type';
 
 const POSE_SRC: Record<MentorPose, string> = {
@@ -43,6 +44,7 @@ const POSE_SRC: Record<MentorPose, string> = {
     peek: '/assets/mentor-peek.png',
     pointdown: '/assets/mentor-pointdown.png',
     chart: '/assets/mentor-chart.png',
+    code: '/assets/mentor-code.png',
     type: '/assets/mentor-type.png',
 };
 
@@ -59,6 +61,22 @@ const POSE_SCALE: Partial<Record<MentorPose, number>> = {
     pointdown: 1.12,
 };
 
+// צבע ההדגשה (הילה, בועת-דיבור, drop-shadow). ברירת המחדל מעתיקה במדויק את גווני
+// הציאן המקוריים, כך שכל שימוש קיים (BTS-AI) נשאר זהה לחלוטין. לומדות אחרות יכולות
+// להעביר accent משלהן (למשל אמרלד לפייתון). base/shadow הם שלשות RGB ("r g b").
+export interface MentorAccent {
+    /** גוון הבסיס להילה ולמסגרת הבועה (שלשת RGB, למשל "6 182 212"). */
+    base: string;
+    /** גוון ה-drop-shadow מתחת לדמות (שלשת RGB, למשל "34 211 238"). */
+    shadow: string;
+    /** צבע טקסט הבועה (כל ערך CSS תקין, למשל "#a5f3fc"). */
+    text: string;
+}
+
+const CYAN_ACCENT: MentorAccent = { base: '6 182 212', shadow: '34 211 238', text: '#a5f3fc' };
+
+export const EMERALD_ACCENT: MentorAccent = { base: '16 185 129', shadow: '52 211 153', text: '#a7f3d0' };
+
 export interface MentorProps {
     pose?: MentorPose;
     /** טקסט בועת-דיבור. ללא טקסט — אין בועה. */
@@ -71,8 +89,10 @@ export interface MentorProps {
     float?: boolean;
     /** צד בועת-הדיבור ביחס לדמות. */
     bubbleSide?: 'top' | 'bottom';
-    /** הילת רקע ציאנית רכה. ברירת מחדל true. */
+    /** הילת רקע רכה. ברירת מחדל true. */
     glow?: boolean;
+    /** צבע ההדגשה. ברירת מחדל ציאן (תואם BTS-AI). */
+    accent?: MentorAccent;
     className?: string;
 }
 
@@ -84,6 +104,7 @@ export const Mentor: React.FC<MentorProps> = ({
     float = true,
     bubbleSide = 'top',
     glow = true,
+    accent = CYAN_ACCENT,
     className = '',
 }) => {
     const reduce = useReducedMotion();
@@ -98,7 +119,12 @@ export const Mentor: React.FC<MentorProps> = ({
             className={`relative ${className}`}
             style={{ width }}
         >
-            {glow && <div className="pointer-events-none absolute inset-0 rounded-full bg-cyan-500/15 blur-2xl" />}
+            {glow && (
+                <div
+                    className="pointer-events-none absolute inset-0 rounded-full blur-2xl"
+                    style={{ backgroundColor: `rgb(${accent.base} / 0.15)` }}
+                />
+            )}
 
             {/* בועת-דיבור — מחוץ לעטיפת ה-flip כדי שהטקסט לא יתהפך */}
             {line && (
@@ -107,12 +133,17 @@ export const Mentor: React.FC<MentorProps> = ({
                         bubbleSide === 'top' ? '-top-2 -translate-y-full' : '-bottom-2 translate-y-full'
                     }`}
                 >
-                    <div className="relative rounded-2xl border border-cyan-500/40 bg-slate-900/95 px-3 py-2 text-center shadow-lg backdrop-blur-sm" dir="rtl">
-                        <p className="text-[11px] font-bold leading-snug text-cyan-200">{line}</p>
+                    <div
+                        className="relative rounded-2xl border bg-slate-900/95 px-3 py-2 text-center shadow-lg backdrop-blur-sm"
+                        style={{ borderColor: `rgb(${accent.base} / 0.4)` }}
+                        dir="rtl"
+                    >
+                        <p className="text-[11px] font-bold leading-snug" style={{ color: accent.text }}>{line}</p>
                         <span
-                            className={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-cyan-500/40 bg-slate-900/95 ${
+                            className={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 bg-slate-900/95 ${
                                 bubbleSide === 'top' ? '-bottom-1.5 border-b border-r' : '-top-1.5 border-l border-t'
                             }`}
+                            style={{ borderColor: `rgb(${accent.base} / 0.4)` }}
                         />
                     </div>
                 </div>
@@ -125,8 +156,8 @@ export const Mentor: React.FC<MentorProps> = ({
                     alt="המנטור של הלומדה"
                     animate={doFloat ? { y: [0, -10, 0] } : undefined}
                     transition={doFloat ? { repeat: Infinity, duration: 4, ease: 'easeInOut' } : undefined}
-                    className="relative mx-auto block h-auto w-full object-contain drop-shadow-[0_15px_35px_rgba(34,211,238,0.35)]"
-                    style={{ scale }}
+                    className="relative mx-auto block h-auto w-full object-contain"
+                    style={{ scale, filter: `drop-shadow(0 15px 35px rgb(${accent.shadow} / 0.35))` }}
                     draggable={false}
                 />
             </div>

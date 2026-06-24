@@ -5,6 +5,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 import { LiveCodeEditor } from '@/components/content/LiveCodeEditor';
 import { Quiz } from '@/components/content/Quiz';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 import { TypeSafetyLab, ProtocolVis } from '@/components/demos/chapter-10';
 import { 
     Scale, ShieldCheck, FileJson, Combine, 
@@ -170,6 +171,11 @@ print(stats)`;
     <ChapterLayout courseId="python" currentChapterId={10}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="type" line="טיפוסים תופסים באגים לפני ההרצה" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-blue-400 mb-2">
                 <Scale size={24} />
@@ -184,6 +190,7 @@ print(stats)`;
                 רמזי טיפוס (Type Hints) הם כמו תמרורים בכביש: הם לא עוצרים את התנועה, אבל מונעים תאונות יקרות.
             </p>
         </section>
+        </div>
 
         {/* --- 1. Basic Types --- */}
         <section className="mt-16 space-y-8">

@@ -11,6 +11,7 @@ import {
     Share2, Terminal, ShieldAlert, Library
 } from 'lucide-react';
 import { ChapterLayout } from '@/components/ChapterLayout';
+import { Mentor, EMERALD_ACCENT } from '@/components/ai-internals/Mentor';
 
 export default function Chapter5() {
 
@@ -96,6 +97,11 @@ def normalize(text):
     <ChapterLayout courseId="python" currentChapterId={5}>
         
         {/* --- Hero Section --- */}
+        <div className="relative">
+          {/* המנטור (xl+, משמאל) */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="roadmap" line="ארגון נכון = פרויקט שגדל בלי כאב" width={160} accent={EMERALD_ACCENT} />
+          </div>
         <section className="space-y-6">
             <div className="flex items-center gap-3 text-yellow-400 mb-2">
                 <Package size={24} />
@@ -110,6 +116,7 @@ def normalize(text):
                 הפתרון הוא לא &quot;פחות קוד&quot;, אלא קוד מחולק נכון. בפרק זה נלמד איך להפוך אוסף סקריפטים למערכת הנדסית.
             </p>
         </section>
+        </div>
 
         {/* --- 1. Imports --- */}
         <section className="mt-16 space-y-8">
