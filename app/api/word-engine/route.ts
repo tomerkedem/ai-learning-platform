@@ -6,6 +6,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextResponse } from 'next/server';
 
+import { rateLimit } from '@/lib/rateLimit';
 import {
     CANDIDATES,
     VECTOR_LABELS,
@@ -131,6 +132,9 @@ ${mode === 'agent'
 }
 
 export async function POST(req: Request) {
+    const limited = rateLimit(req);
+    if (limited) return limited;
+
     if (!hasApiKey()) {
         return NextResponse.json(
             { error: 'missing_api_key', message: 'לא הוגדר ANTHROPIC_API_KEY ב-.env.local.' },

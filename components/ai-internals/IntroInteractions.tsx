@@ -15,17 +15,27 @@
 
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HelpCircle, Sparkles, Check, ArrowDown, Scissors, Keyboard, Info } from 'lucide-react';
+import { HelpCircle, Sparkles, Check, ArrowDown, RotateCcw, Scissors, Keyboard, Info } from 'lucide-react';
 
 import { Mentor } from './Mentor';
 
 /* ════════════════════════ רגע "נחש לפני שתחשוף" ══════════════════════════ */
 
-const GUESS_OPTIONS = [2, 8, 15];
+// האמת (actual=15) נמצאת בין האפשרויות כדי שאפשר יהיה לנחש אותה ולצדוק. מצורף
+// מסיח גבוה ממנה (25) כך שבחירת המספר הגבוה ביותר אינה ניצחון מובטח - צריך לכוון.
+const GUESS_OPTIONS = [2, 8, 15, 25];
 
 export const GuessRevealGate: React.FC<{ reduce: boolean; actual?: number }> = ({ reduce, actual = 15 }) => {
     const [guess, setGuess] = useState<number | null>(null);
     const revealed = guess !== null;
+    const correct = guess === actual;
+
+    // פידבק מדורג: צדקתם / ניחשתם נמוך מדי / ניחשתם גבוה מדי.
+    const subFeedback = correct
+        ? 'רוב האנשים מנחשים שניים-שלושה. אתם כבר חושבים כמו מהנדסי מנוע.'
+        : guess !== null && guess > actual
+          ? `ניחשתם גבוה - מרשים שזיהיתם כמה זה מורכב. המספר המדויק הוא ${actual}.`
+          : `רוב האנשים מנחשים נמוך, וזו בדיוק ההפתעה. כל ${actual} השלבים מחכים לכם בהמשך.`;
 
     return (
         <div
@@ -36,11 +46,7 @@ export const GuessRevealGate: React.FC<{ reduce: boolean; actual?: number }> = (
 
             {/* מנטור מגיב מושתל בכרטיס: think לפני ניחוש → celebrate אם צדק, headsup אם טעה */}
             <div className="pointer-events-none absolute bottom-0 left-4 z-0 hidden lg:block">
-                <Mentor
-                    pose={!revealed ? 'think' : guess === actual ? 'celebrate' : 'headsup'}
-                    width={130}
-                    glow={false}
-                />
+                <Mentor pose={!revealed ? 'think' : correct ? 'celebrate' : 'headsup'} width={130} glow={false} />
             </div>
 
             <div className="relative">
@@ -51,10 +57,10 @@ export const GuessRevealGate: React.FC<{ reduce: boolean; actual?: number }> = (
                     כמה שלבים מתרחשים בין הקלט לתשובה?
                 </h3>
                 <p className="mx-auto mb-6 max-w-xl text-sm text-slate-400 md:text-base">
-                    מבחוץ ראינו שניים: כתבנו, קיבלנו. כמה באמת קורים מאחורי הקלעים? נחשו לפני שנפתח את המכסה.
+                    מבחוץ ראינו שני שלבים: (כתבנו, קיבלנו). כמה באמת קורים מאחורי הקלעים? נחשו לפני שנפתח את המכסה.
                 </p>
 
-                <div className="flex flex-wrap items-center justify-center gap-3">
+                <div className="flex flex-wrap items-end justify-center gap-3">
                     {GUESS_OPTIONS.map((opt) => {
                         const isGuess = guess === opt;
                         const isAnswer = opt === actual;
@@ -69,12 +75,12 @@ export const GuessRevealGate: React.FC<{ reduce: boolean; actual?: number }> = (
                                 className={[
                                     'relative min-w-[5rem] rounded-2xl border px-6 py-4 text-2xl font-black transition-all',
                                     state === 'idle' && 'cursor-pointer border-slate-700/60 bg-slate-800/40 text-slate-200 hover:scale-105 hover:border-cyan-500/50 hover:bg-cyan-900/15',
-                                    state === 'answer' && 'scale-110 border-cyan-500/60 bg-cyan-900/25 text-cyan-200',
+                                    state === 'answer' && 'scale-110 border-cyan-400/70 bg-cyan-900/30 text-cyan-200 shadow-[0_0_30px_-6px_rgba(34,211,238,0.6)]',
                                     state === 'wrong' && 'border-rose-500/50 bg-rose-900/20 text-rose-300/80',
                                     state === 'dim' && 'border-slate-700/40 bg-slate-800/20 text-slate-600',
                                 ].filter(Boolean).join(' ')}
                             >
-                                {opt === actual && !revealed ? '?' : opt}
+                                {opt}
                                 {revealed && isAnswer && (
                                     <motion.span
                                         initial={reduce ? false : { scale: 0 }}
@@ -84,6 +90,11 @@ export const GuessRevealGate: React.FC<{ reduce: boolean; actual?: number }> = (
                                     >
                                         <Check size={14} strokeWidth={3} />
                                     </motion.span>
+                                )}
+                                {revealed && isGuess && !isAnswer && (
+                                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-rose-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
+                                        {guess !== null && guess > actual ? 'גבוה מדי' : 'נמוך מדי'}
+                                    </span>
                                 )}
                             </button>
                         );
@@ -98,17 +109,22 @@ export const GuessRevealGate: React.FC<{ reduce: boolean; actual?: number }> = (
                             transition={reduce ? { duration: 0 } : { duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                             className="overflow-hidden"
                         >
-                            <div className="mt-6 flex flex-col items-center gap-1.5" role="status" aria-live="polite">
+                            <div className="mt-8 flex flex-col items-center gap-1.5" role="status" aria-live="polite">
                                 <p className="inline-flex items-center gap-2 text-base font-bold text-cyan-300 md:text-lg">
                                     <Sparkles size={16} />
-                                    {guess === actual ? 'בול! זיהיתם נכון.' : `התשובה: ${actual} שלבים.`}
+                                    {correct ? `בול! ${actual} שלבים בדיוק.` : `התשובה: ${actual} שלבים.`}
                                 </p>
-                                <p className="max-w-md text-sm text-slate-400">
-                                    {guess === actual
-                                        ? 'רוב האנשים מנחשים שניים־שלושה. אתם כבר חושבים כמו מהנדסי מנוע.'
-                                        : 'רוב האנשים מנחשים שניים־שלושה - וזו בדיוק ההפתעה. כל 15 השלבים מחכים לכם בהמשך.'}
-                                </p>
-                                {!reduce && <ArrowDown size={18} className="mt-2 animate-bounce text-cyan-400/60" />}
+                                <p className="max-w-md text-sm text-slate-400">{subFeedback}</p>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setGuess(null)}
+                                    className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-slate-700/60 bg-slate-800/40 px-4 py-1.5 text-xs font-bold text-slate-300 transition-colors hover:border-cyan-500/50 hover:bg-cyan-900/15 hover:text-cyan-200"
+                                >
+                                    <RotateCcw size={13} /> נסו שוב
+                                </button>
+
+                                {!reduce && <ArrowDown size={18} className="mt-3 animate-bounce text-cyan-400/60" />}
                             </div>
                         </motion.div>
                     )}

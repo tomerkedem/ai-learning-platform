@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { HelpCircle, CheckCircle2, Wrench, Hand, Sparkles, ArrowDown } from 'lucide-react';
+import { HelpCircle, CheckCircle2, Wrench, Hand, Sparkles, ArrowDown, RotateCcw, Lightbulb } from 'lucide-react';
 
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
 import type { DecisionKind, FlowMode } from '@/components/ai-internals/types';
@@ -65,6 +65,11 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
     const accentBg = isChat ? 'bg-cyan-900/25' : 'bg-purple-900/25';
     const accentGlow = isChat ? 'bg-cyan-500/10' : 'bg-purple-500/10';
 
+    // תוויות עבריות לכפתורים, לשימוש בפידבק (אותן תוויות שהלומד לחץ עליהן).
+    const labelOf = (k: DecisionKind | null) => options.find((o) => o.kind === k)?.he ?? '';
+    const guessHe = labelOf(guess);
+    const actualHe = labelOf(actualKind);
+
     return (
         <div
             dir="rtl"
@@ -72,7 +77,7 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
         >
             <div className={`pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full ${accentGlow} blur-[80px]`} />
             <div className="relative">
-                <span className={`mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] ${accentText}`}>
+                <span className={`mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] ${accentText}`}>
                     <HelpCircle size={14} /> ניחוש מהיר
                 </span>
                 <h3 className="mb-2 text-xl font-black text-white md:text-2xl">
@@ -80,8 +85,8 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
                 </h3>
                 <p className="mx-auto mb-6 max-w-xl text-sm text-slate-400">
                     {isChat
-                        ? 'לפני שתפעילו את הסורק - נחשו: המנוע יענה ישר, או יעצור ויבקש הבהרה?'
-                        : 'לפני שתפעילו את הסורק - נחשו את הצעד הבא: לענות, להשתמש בכלי, לבקש מידע, או לעצור לאישור?'}
+                        ? 'לפני שתפעילו את הסורק - נחשו איך המנוע יגיב.'
+                        : 'לפני שתפעילו את הסורק - נחשו מה יהיה הצעד הבא של המנוע.'}
                 </p>
 
                 <div className="flex flex-wrap items-center justify-center gap-3">
@@ -130,15 +135,24 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
                             className="overflow-hidden"
                         >
                             <div className="mt-6 flex flex-col items-center gap-2" role="status" aria-live="polite">
-                                <p className={`inline-flex items-center gap-2 text-base font-bold ${accentText}`}>
-                                    <Sparkles size={16} />
-                                    {correct ? 'בול! זיהיתם את ההחלטה.' : 'לא בדיוק - וזה החלק המעניין.'}
-                                </p>
+                                {correct ? (
+                                    <p className={`inline-flex items-center gap-2 text-base font-bold ${accentText}`}>
+                                        <Sparkles size={16} />
+                                        בול! המנוע באמת בחר &quot;{actualHe}&quot;.
+                                    </p>
+                                ) : (
+                                    <p className="inline-flex items-center gap-2 text-base font-bold text-amber-300">
+                                        <Lightbulb size={16} />
+                                        ניחשתם &quot;{guessHe}&quot;, אבל המנוע בחר &quot;{actualHe}&quot;.
+                                    </p>
+                                )}
                                 <p className="max-w-md text-sm text-slate-400">
-                                    הפעילו עכשיו את הסורק שלמטה כדי לראות איך המנוע הגיע להחלטה הזו, מילה-אחר-מילה.
+                                    {correct
+                                        ? 'זיהיתם נכון לאן הקלט נוטה. הפעילו עכשיו את הסורק שלמטה וראו למה - מילה-אחר-מילה.'
+                                        : 'וזה בדיוק החלק המעניין: הקלט נוטה לכיוון אחר ממה שציפיתם. הפעילו את הסורק שלמטה וראו איך המנוע הגיע לזה, מילה-אחר-מילה.'}
                                 </p>
                                 {guessedImpossible && (
-                                    <p className="max-w-md rounded-xl border border-amber-500/30 bg-amber-900/10 px-3 py-2 text-[13px] leading-relaxed text-amber-100/90">
+                                    <p className="max-w-md rounded-xl border border-amber-500/30 bg-amber-900/10 px-3 py-2 text-sm leading-relaxed text-amber-100/90">
                                         {isChat
                                             ? 'שימו לב: ב-Chat ההכרעה היא תמיד אחת משתיים - לענות או לבקש הבהרה. לעצור או להשתמש בכלי שמורים ל-Agent. בדיוק כאן עובר הגבול בין השניים.'
                                             : 'הפעולה הזו לא רלוונטית למשימה הנוכחית, אבל היא חלק מארגז ההחלטות של ה-Agent בתרחישים אחרים.'}
@@ -147,6 +161,13 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
                                 <div className="mt-2 w-full max-w-sm text-right">
                                     <DecisionCard decision={result.decision} />
                                 </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setGuess(null)}
+                                    className="mt-2 inline-flex items-center gap-1.5 rounded-xl border border-slate-700/60 bg-slate-800/40 px-3 py-1.5 text-xs font-bold text-slate-300 transition-colors hover:border-slate-600 hover:bg-slate-800/70 hover:text-white"
+                                >
+                                    <RotateCcw size={14} /> נחשו שוב
+                                </button>
                                 {!reduce && <ArrowDown size={18} className={`mt-1 animate-bounce ${accentText} opacity-60`} />}
                             </div>
                         </motion.div>

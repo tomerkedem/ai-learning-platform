@@ -26,7 +26,7 @@ export const ProbabilityRiver: React.FC<ProbabilityRiverProps> = ({ items, order
     const lanes = order.length ? order : items.map((it) => it.label);
 
     return (
-        <div className="flex h-56 flex-col gap-1.5" dir="rtl">
+        <div className="flex h-44 flex-col gap-1" dir="rtl">
             {lanes.map((label) => {
                 const value = map.get(label) ?? 0;
                 const isLead = value > 0 && value === maxVal;
@@ -37,7 +37,7 @@ export const ProbabilityRiver: React.FC<ProbabilityRiverProps> = ({ items, order
                         animate={{ flexGrow: Math.max(value, 1.5) }}
                         transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 120, damping: 20 }}
                         style={{ flexBasis: 0 }}
-                        className={`group relative flex items-center overflow-hidden rounded-lg border
+                        className={`group relative flex min-h-[2rem] items-center overflow-hidden rounded-lg border
                             ${isLead ? `${a.border} ${a.glow}` : 'border-white/10'}`}
                     >
                         {/* מילוי הערוץ */}

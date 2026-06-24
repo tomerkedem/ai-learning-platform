@@ -9,6 +9,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { WordToNumberLab } from '@/components/ai-internals/WordToNumberLab';
+import { Mentor } from '@/components/ai-internals/Mentor';
 import {
     FORMULA_DIMS,
     FORMULA_ROWS,
@@ -114,6 +115,8 @@ export default function BehindTheScenesChapter6() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={6}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -153,9 +156,14 @@ export default function BehindTheScenesChapter6() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור מציג שהמנוע רואה מספרים (xl+, מימין) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="chart" line="המנוע רואה מספרים, לא מילים 🔢" width={165} />
+            </div>
+            </div>
 
             {/* ══════════ Word To Number Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -171,6 +179,10 @@ export default function BehindTheScenesChapter6() {
                 </div>
 
                 <WordToNumberLab />
+                {/* המנטור מסביר את ההמרה (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="explain" line="מאותיות למספרים למשמעות" width={160} />
+                </div>
             </section>
 
             {/* ══════════ נוסחה + מפת דרכים ══════════ */}
@@ -180,7 +192,11 @@ export default function BehindTheScenesChapter6() {
             </section>
 
             {/* ══════════ סיכום + גשר לפרק 7 ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור מסכם על הוקטור (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="reassure" line="הוקטור - שפת האם של המודל" width={160} />
+                </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-violet-200">המנוע לא עובד עם מילים, הוא עובד עם וקטורים - רשימות מספרים שמייצגות משמעות. הפרופיל שראינו כאן הוא בדיוק זה: וקטור. וזו צורת הייצוג המרכזית בכל מודל AI.</span>
                     כל מילה מקבלת Token ID, שהוא כתובת במילון ולא משמעות, ומרצף ה-IDs נבנה וקטור משמעות. ראינו את הרגע המפתיע:

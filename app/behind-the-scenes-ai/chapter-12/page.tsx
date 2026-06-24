@@ -8,6 +8,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { ObservationLoopLab } from '@/components/ai-internals/ObservationLoopLab';
+import { Mentor } from '@/components/ai-internals/Mentor';
 
 /** מיקום הפרק במסלול ה-Agent: בחירת הכלי מאחורינו, הפעלת הכלי כאן. */
 const AGENT_FLOW: { he: string; en: string; state: 'done' | 'active' | 'locked' }[] = [
@@ -63,6 +64,8 @@ export default function BehindTheScenesChapter11() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={12}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -101,6 +104,11 @@ export default function BehindTheScenesChapter11() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור: ה-Agent פועל בלולאה (xl+, מימין) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="explain" line="ה-Agent פועל בלולאה 🔁" width={165} />
+            </div>
+            </div>
 
             {/* ══════════ מסלול קריאה ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
@@ -130,7 +138,7 @@ export default function BehindTheScenesChapter11() {
             </section>
 
             {/* ══════════ Observation Loop Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -146,10 +154,18 @@ export default function BehindTheScenesChapter11() {
                 </div>
 
                 <ObservationLoopLab />
+                {/* המנטור: אותו כלי, שלוש החלטות (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="inspect" line="אותו כלי, שלוש החלטות" width={160} />
+                </div>
             </section>
 
             {/* ══════════ סיכום ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור: מחליט, מפעיל, קורא, שוב (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="happy" line="מחליט, מפעיל, קורא, שוב" width={160} />
+                </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-violet-200">Tool Call הוא לא סוף הסיפור, הוא רק דרך להביא Observation חדשה.</span>
                     ראינו שאחרי שהמידע חוזר, ה-Agent מחליט מחדש מה נכון לעשות. תוצאה ברורה הובילה לתשובה, תוצאה חלקית לצעד אחר בלי המצאת

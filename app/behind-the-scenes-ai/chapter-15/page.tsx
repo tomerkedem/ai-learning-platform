@@ -8,6 +8,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { LearnsFromMistakesLab } from '@/components/ai-internals/LearnsFromMistakesLab';
+import { Mentor } from '@/components/ai-internals/Mentor';
 
 export default function BehindTheScenesChapter14() {
     const reduce = useReducedMotion();
@@ -16,6 +17,8 @@ export default function BehindTheScenesChapter14() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={15}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -61,6 +64,11 @@ export default function BehindTheScenesChapter14() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור: המודל לא לומד ממך חי (xl+, מימין) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="headsup" line="המודל לא לומד ממך חי ☝️" width={165} />
+            </div>
+            </div>
 
             {/* ══════════ מסלול קריאה ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
@@ -87,7 +95,7 @@ export default function BehindTheScenesChapter14() {
             </section>
 
             {/* ══════════ Learns From Mistakes Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -102,10 +110,18 @@ export default function BehindTheScenesChapter14() {
                 </div>
 
                 <LearnsFromMistakesLab />
+                {/* המנטור: שלוש שכבות למידה (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="explain" line="שלוש שכבות למידה" width={160} />
+                </div>
             </section>
 
             {/* ══════════ סיכום + גשר לפרק הכתיבה ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור: מתאים זמנית, לא זוכר (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="reassure" line="מתאים זמנית, לא זוכר" width={160} />
+                </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-violet-200">המודל לא לומד ממך חי, אבל זו לא אומרת שהוא בכלל לא לומד.</span>
                     למידה אמיתית קרתה באימון, שעכשיו קפוא. בתוך השיחה יש התאמה זמנית שנעלמת ברגע שההקשר נמחק. ואם המודל משתפר,

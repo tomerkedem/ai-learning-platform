@@ -13,6 +13,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextResponse } from 'next/server';
 
+import { rateLimit } from '@/lib/rateLimit';
 import type { LibraryScenario, Tone, LibAgentBehavior, LibChatBehavior } from '@/app/behind-the-scenes-ai/chapter-14/scenarioLibrary';
 
 export const runtime = 'nodejs';
@@ -252,6 +253,9 @@ function toScenario(raw: Record<string, unknown>, prompt: string): LibraryScenar
 }
 
 export async function POST(req: Request) {
+    const limited = rateLimit(req);
+    if (limited) return limited;
+
     if (!hasApiKey()) {
         return NextResponse.json(
             { error: 'missing_api_key', message: 'השכבה החיה לא זמינה (לא הוגדר ANTHROPIC_API_KEY).' },

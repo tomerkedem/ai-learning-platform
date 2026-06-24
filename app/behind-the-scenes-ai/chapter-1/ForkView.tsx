@@ -33,13 +33,13 @@ export const ForkView: React.FC<ForkViewProps> = ({ text }) => {
                 <Split size={16} className="text-slate-300" />
                 <div className="leading-tight">
                     <div className="text-sm font-bold text-slate-200">פיצול: אותו קלט, שני מנועים</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Fork View</div>
+                    <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Fork View</div>
                 </div>
             </div>
 
             {/* טוקנים משותפים */}
             <div className="mb-4 rounded-xl border border-white/10 bg-slate-950/50 p-3">
-                <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">אותם טוקנים נכנסים לשני המנועים</div>
+                <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500">אותם טוקנים נכנסים לשני המנועים</div>
                 <TokenPreview tokens={tokens} accent="slate" />
             </div>
 
@@ -62,7 +62,7 @@ export const ForkView: React.FC<ForkViewProps> = ({ text }) => {
                     <div className="mb-3 flex items-center gap-2 text-cyan-300">
                         <MessageSquare size={15} />
                         <span className="text-sm font-bold">Chat</span>
-                        <span className="text-[10px] uppercase tracking-widest text-slate-500">בחירת תשובה</span>
+                        <span className="text-[11px] uppercase tracking-widest text-slate-500">בחירת תשובה</span>
                     </div>
                     <div className="space-y-3">
                         <EngineMetricCard label="Leading intent" value={`${chat.intents[0]?.label ?? '-'} (${chat.intents[0]?.value ?? 0}%)`} tone="cyan" />
@@ -75,7 +75,7 @@ export const ForkView: React.FC<ForkViewProps> = ({ text }) => {
                     <div className="mb-3 flex items-center gap-2 text-purple-300">
                         <Workflow size={15} />
                         <span className="text-sm font-bold">Agent</span>
-                        <span className="text-[10px] uppercase tracking-widest text-slate-500">החלטת פעולה</span>
+                        <span className="text-[11px] uppercase tracking-widest text-slate-500">החלטת פעולה</span>
                     </div>
                     <div className="space-y-3">
                         <EngineMetricCard label="Task detected" value={agent.task} tone="purple" />
@@ -84,7 +84,7 @@ export const ForkView: React.FC<ForkViewProps> = ({ text }) => {
                 </div>
             </div>
 
-            <p className="mt-4 text-[11px] leading-relaxed text-slate-500">
+            <p className="mt-4 text-xs leading-relaxed text-slate-500">
                 אותם טוקנים בדיוק, שתי החלטות. ההבדל אינו בקלט אלא בשאלה שכל מנוע שואל עליו: Chat שואל &quot;מה התשובה?&quot;,
                 Agent שואל &quot;מה הצעד הבטוח הבא?&quot;.
             </p>

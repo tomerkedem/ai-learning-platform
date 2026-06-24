@@ -17,17 +17,20 @@ interface TransparentLabLayoutProps {
 }
 
 const STREAM_SLOTS = 5;
-const STREAM_DUR = 2.8;
+const STREAM_DUR = 4.4;
 
 /** מחבר ויזואלי: טוקנים אמיתיים זורמים מהצ'אט אל המנוע (דסקטופ בלבד). */
 const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[] }> = ({ accent, tokens }) => {
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
     const hasTokens = tokens.length > 0;
+    // כמה צ'יפים זורמים בפועל: לכל היותר STREAM_SLOTS, ולעולם לא יותר ממספר הטוקנים
+    // שיש במשפט. כך הגל לא גולש בחזרה להתחלה ואותה מילה לא חוזרת על עצמה ברצף.
+    const slotCount = Math.min(STREAM_SLOTS, tokens.length);
 
     return (
         <div className="hidden lg:flex flex-col items-center px-1">
-            <span className="mb-2 text-[9px] font-mono uppercase tracking-widest text-slate-600 [writing-mode:vertical-rl] rotate-180">
+            <span className="mb-2 text-[11px] font-mono uppercase tracking-widest text-slate-600 [writing-mode:vertical-rl] rotate-180">
                 tokens
             </span>
             <div className="relative w-14 flex-1 min-h-[220px]">
@@ -48,15 +51,15 @@ const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[] }> = ({ acc
 
                 {/* צ'יפים של טוקנים אמיתיים, זורמים מהצ'אט (למעלה) אל המנוע (למטה).
                     גל אחד בכל החלפת משפט (ה-key מבחוץ מנגן אותו מחדש), ואז נעצר. */}
-                {hasTokens && !reduce && Array.from({ length: STREAM_SLOTS }).map((_, i) => {
-                    const token = tokens[i % tokens.length];
+                {hasTokens && !reduce && Array.from({ length: slotCount }).map((_, i) => {
+                    const token = tokens[i];
                     return (
                         <motion.span
                             key={i}
-                            className={`absolute left-1/2 max-w-[3.25rem] -translate-x-1/2 truncate rounded-md border px-1.5 py-0.5 text-center text-[9px] font-mono ${a.border} ${a.bgSoft} ${a.text}`}
+                            className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md border px-1.5 py-0.5 text-center text-[11px] font-mono ${a.border} ${a.bgSoft} ${a.text}`}
                             initial={{ top: '-8%', opacity: 0 }}
                             animate={{ top: ['-8%', '104%'], opacity: [0, 1, 1, 0] }}
-                            transition={{ duration: STREAM_DUR, ease: 'easeIn', delay: i * (STREAM_DUR / STREAM_SLOTS) }}
+                            transition={{ duration: STREAM_DUR, ease: 'easeIn', delay: i * (STREAM_DUR / slotCount) }}
                         >
                             {token}
                         </motion.span>
@@ -67,7 +70,7 @@ const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[] }> = ({ acc
                 {hasTokens && reduce && tokens.slice(0, 3).map((token, i) => (
                     <span
                         key={i}
-                        className={`absolute left-1/2 max-w-[3.25rem] -translate-x-1/2 truncate rounded-md border px-1.5 py-0.5 text-center text-[9px] font-mono ${a.border} ${a.bgSoft} ${a.text}`}
+                        className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md border px-1.5 py-0.5 text-center text-[11px] font-mono ${a.border} ${a.bgSoft} ${a.text}`}
                         style={{ top: `${20 + i * 30}%` }}
                     >
                         {token}

@@ -8,6 +8,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { ProbabilityEngineLab } from '@/components/ai-internals/ProbabilityEngineLab';
+import { Mentor } from '@/components/ai-internals/Mentor';
 import { PROBABILITY_SCENARIOS } from './probabilityScenarios';
 
 // "נוסחה" מנטלית - שלוש שורות שמראות איך הפער קובע את ההחלטה.
@@ -39,6 +40,8 @@ export default function BehindTheScenesChapter3() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={3}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -78,9 +81,14 @@ export default function BehindTheScenesChapter3() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור מציג שזו הערכה הסתברותית (xl+, מימין) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="chart" line="AI לא יודע - הוא מעריך 📊" width={165} />
+            </div>
+            </div>
 
             {/* ══════════ Probability Engine Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <SlidersHorizontal size={24} className="text-purple-400" />
                     <div>
@@ -97,6 +105,10 @@ export default function BehindTheScenesChapter3() {
                 </div>
 
                 <ProbabilityEngineLab scenarios={PROBABILITY_SCENARIOS} defaultId="clear-delivery-failure" />
+                {/* המנטור מזהיר על פער קטן (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="headsup" line="פער קטן? עדיף לשאול" width={160} />
+                </div>
             </section>
 
             {/* ══════════ נוסחה מנטלית ══════════ */}
@@ -128,7 +140,11 @@ export default function BehindTheScenesChapter3() {
             </section>
 
             {/* ══════════ סיכום ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור מסכם בעידוד (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="reassure" line="לפעמים לא לענות זו התשובה" width={160} />
+                </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-purple-200">AI לא יודע. AI מעריך מה הכי סביר.</span>
                     הנקודה החשובה היא לא ש-AI בחר את האפשרות עם המספר הגבוה ביותר. הנקודה היא שהוא לא מחזיק אמת מוחלטת.

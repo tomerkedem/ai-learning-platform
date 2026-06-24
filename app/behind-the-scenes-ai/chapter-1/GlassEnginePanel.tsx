@@ -95,7 +95,7 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
                     <div className="rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2">
                         <span className={`font-mono text-sm ${a.text}`} dir="auto">{step.normalized || '-'}</span>
                     </div>
-                    <span className="text-[11px] text-slate-500">רווחים מיותרים נחתכו לעומת הקלט המקורי.</span>
+                    <span className="text-xs text-slate-500">רווחים מיותרים נחתכו לעומת הקלט המקורי.</span>
                 </div>
             ) : (
                 <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-900/10 px-3 py-1.5 text-xs font-bold text-emerald-300">
@@ -155,8 +155,8 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
                 <div className="space-y-2">
                     {step.groups.map((g) => (
                         <div key={g.label} className="flex flex-wrap items-center gap-1.5">
-                            <span className="text-[11px] font-bold text-slate-400">{g.label}</span>
-                            <span className={`rounded-md px-1.5 py-0.5 font-mono text-[10px] font-bold ${g.matched.length ? `${a.bgSoft} ${a.text}` : 'bg-slate-800/60 text-slate-500'}`} dir="ltr">
+                            <span className="text-xs font-bold text-slate-400">{g.label}</span>
+                            <span className={`rounded-md px-1.5 py-0.5 font-mono text-[11px] font-bold ${g.matched.length ? `${a.bgSoft} ${a.text}` : 'bg-slate-800/60 text-slate-500'}`} dir="ltr">
                                 {g.matched.length}/{g.total}
                             </span>
                             <div className="flex flex-wrap gap-1">
@@ -176,7 +176,7 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
                                         );
                                     })
                                 ) : (
-                                    <span className="text-[11px] text-slate-600">- אין התאמה</span>
+                                    <span className="text-xs text-slate-600">- אין התאמה</span>
                                 )}
                             </div>
                         </div>
@@ -200,7 +200,7 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
                         {step.on ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
                         {step.on ? step.onLabel : step.offLabel}
                     </motion.span>
-                    {step.detail && <span className="text-[11px] text-slate-500">{step.detail}</span>}
+                    {step.detail && <span className="text-xs text-slate-500">{step.detail}</span>}
                 </div>
             );
         }
@@ -214,10 +214,10 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
                         return (
                             <span
                                 key={it.label}
-                                className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 text-[11px] ${lead ? `${a.border} ${a.bgSoft} ${a.text} font-bold` : 'border-white/10 bg-slate-900/50 text-slate-400'}`}
+                                className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 text-xs ${lead ? `${a.border} ${a.bgSoft} ${a.text} font-bold` : 'border-white/10 bg-slate-900/50 text-slate-400'}`}
                             >
                                 {it.label}
-                                <span className={`rounded px-1 font-mono text-[9px] ${lead ? a.solid + ' ' + a.solidText : 'bg-slate-800 text-slate-500'}`} dir="ltr">{it.hits}</span>
+                                <span className={`rounded px-1 font-mono text-[11px] ${lead ? a.solid + ' ' + a.solidText : 'bg-slate-800 text-slate-500'}`} dir="ltr">{it.hits}</span>
                             </span>
                         );
                     })}
@@ -255,9 +255,9 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
                             className="absolute inset-y-0 z-10 border-l-2 border-dashed border-white/60"
                             style={{ left: `${Math.max(0, Math.min(100, step.second))}%` }}
                         />
-                        <span className="absolute inset-y-0 left-2 flex items-center font-mono text-[11px] font-black text-slate-950/80">{step.top}%</span>
+                        <span className="absolute inset-y-0 left-2 flex items-center font-mono text-xs font-black text-slate-950/80">{step.top}%</span>
                     </div>
-                    <div className="flex items-center justify-between font-mono text-[10px] text-slate-500">
+                    <div className="flex items-center justify-between font-mono text-[11px] text-slate-500">
                         <span>second {step.second}%</span>
                         <span className={`font-bold ${a.text}`}>gap = {step.margin}%</span>
                     </div>
@@ -343,7 +343,7 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                         </motion.div>
                     </div>
                     <div className="overflow-hidden">
-                        <div className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Transparent Engine</div>
+                        <div className="font-mono text-[11px] uppercase tracking-widest text-slate-500">Transparent Engine</div>
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={title}
@@ -358,7 +358,7 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                         </AnimatePresence>
                     </div>
                 </div>
-                <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border ${a.border} ${a.bgSoft} px-2.5 py-1 font-mono text-[10px] font-bold ${a.text}`}>
+                <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border ${a.border} ${a.bgSoft} px-2.5 py-1 font-mono text-[11px] font-bold ${a.text}`}>
                     <Sparkles size={11} /> {steps.length} שלבים
                 </span>
             </div>
@@ -378,12 +378,12 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                             <React.Fragment key={step.id}>
                                 {showActHeader && (
                                     <motion.div variants={reduce ? undefined : itemVar} className={`flex items-center gap-2.5 ${i === 0 ? 'pb-3' : 'pb-3 pt-5'}`}>
-                                        <span className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-black ${a.border} ${a.bgSoft} ${a.text}`}>
+                                        <span className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-black ${a.border} ${a.bgSoft} ${a.text}`}>
                                             <span>מערכה</span>
                                             <span dir="ltr">{actOrder.indexOf(step.act) + 1}/{actOrder.length}</span>
                                         </span>
                                         <span className={`text-sm font-black tracking-wide ${a.text}`}>{step.act}</span>
-                                        <span className="text-[10px] font-mono uppercase tracking-widest text-slate-600" dir="ltr">{step.actEn}</span>
+                                        <span className="text-[11px] font-mono uppercase tracking-widest text-slate-600" dir="ltr">{step.actEn}</span>
                                         <span className="h-px flex-1 bg-white/10" />
                                     </motion.div>
                                 )}
@@ -423,10 +423,10 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                                             ${stepLinked(step, highlightToken) ? `${a.border} ${a.bgSoft} ring-1 ${a.ringSoft}` : 'border-white/10 bg-slate-900/40 hover:border-white/20'}`}>
                                             <div className="mb-2 flex items-baseline justify-between gap-2">
                                                 <span className="text-sm font-bold text-white">{step.title}</span>
-                                                <span className="font-mono text-[9px] uppercase tracking-widest text-slate-500" dir="ltr">{step.titleEn}</span>
+                                                <span className="font-mono text-[11px] uppercase tracking-widest text-slate-500" dir="ltr">{step.titleEn}</span>
                                             </div>
                                             <StepVisual step={step} accent={accent} reduce={!!reduce} highlightToken={highlightToken} onTokenHover={onTokenHover} />
-                                            <p className="mt-2.5 flex items-start gap-1.5 text-[11px] leading-relaxed text-slate-400">
+                                            <p className="mt-2.5 flex items-start gap-1.5 text-xs leading-relaxed text-slate-400">
                                                 <Scan size={11} className={`mt-0.5 shrink-0 ${a.text} opacity-70`} />
                                                 <span>{step.note}</span>
                                             </p>

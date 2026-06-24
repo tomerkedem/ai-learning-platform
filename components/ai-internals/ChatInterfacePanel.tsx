@@ -18,6 +18,10 @@ interface ChatInterfacePanelProps {
     onSend: () => void;
     /** האם להציג אינדיקטור הקלדה במקום תגובת ה-AI. */
     isTyping?: boolean;
+    /** תשובת ה-AI נכתבת כרגע חי (streaming) - מוסיף סמן מהבהב לבועה. */
+    streaming?: boolean;
+    /** האם המנוע החי (Claude אמיתי) זמין - קובע את תווית התג Live/דמו. */
+    live?: boolean;
     /** דוגמאות מהירות שמופיעות מעל הקלט. */
     suggestions?: string[];
     onSuggestion?: (text: string) => void;
@@ -58,6 +62,8 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
     onInputChange,
     onSend,
     isTyping = false,
+    streaming = false,
+    live = false,
     suggestions = [],
     onSuggestion,
     accent = 'cyan',
@@ -118,16 +124,19 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                             <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${a.dot}`} />
                         </span>
                         <div>
-                            <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500">{title}</div>
+                            <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500">{title}</div>
                             {subtitle && <div className="text-xs text-slate-400">{subtitle}</div>}
                         </div>
                     </div>
-                    <span className={`inline-flex items-center gap-1.5 rounded-full border ${a.border} ${a.bgSoft} px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest ${a.text}`}>
+                    <span
+                        title={live ? 'מודל אמיתי (Claude) מחובר' : 'מצב דמו: תשובות מתוסרטות, בלי מודל חי'}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-widest border ${live ? `${a.border} ${a.bgSoft} ${a.text}` : 'border-white/10 bg-slate-800/60 text-slate-400'}`}
+                    >
                         <span className="relative flex h-1.5 w-1.5">
-                            {!reduce && <span className={`absolute inline-flex h-full w-full rounded-full ${a.dot} opacity-75 animate-ping`} />}
-                            <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${a.dot}`} />
+                            {!reduce && live && <span className={`absolute inline-flex h-full w-full rounded-full ${a.dot} opacity-75 animate-ping`} />}
+                            <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${live ? a.dot : 'bg-slate-500'}`} />
                         </span>
-                        Live
+                        {live ? 'Live' : 'דמו'}
                     </span>
                 </div>
                 <ModeToggle mode={mode} onChange={onModeChange} accent={accent} />
@@ -138,7 +147,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                 <AnimatePresence initial={false} mode="popLayout">
                     {visible.map((m) => (
                         <motion.div
-                            key={m.id + m.text}
+                            key={m.id}
                             layout
                             initial={reduce ? false : { opacity: 0, y: 12, scale: 0.96 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -151,11 +160,19 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                                 }`}
                         >
                             {m.role === 'ai' && (
-                                <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mb-1">
+                                <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-1">
                                     <Bot size={11} /> AI
                                 </div>
                             )}
                             {m.role === 'user' ? renderUserText(m.text) : m.text}
+                            {m.role === 'ai' && streaming && (
+                                <motion.span
+                                    aria-hidden
+                                    className={`ml-0.5 inline-block h-3.5 w-[2px] translate-y-0.5 rounded-sm ${a.dot}`}
+                                    animate={reduce ? undefined : { opacity: [1, 0.2, 1] }}
+                                    transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
+                                />
+                            )}
                         </motion.div>
                     ))}
 
@@ -169,7 +186,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                             transition={{ duration: 0.3 }}
                             className="self-end rounded-2xl px-4 py-3 bg-slate-800 border border-white/10"
                         >
-                            <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mb-1.5">
+                            <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-1.5">
                                 <Bot size={11} /> AI מקליד
                             </div>
                             <TypingDots accent={accent} />
@@ -181,7 +198,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
             {/* דוגמאות מהירות */}
             {suggestions.length > 0 && (
                 <div className="relative z-10 px-4 pt-3 shrink-0">
-                    <div className="flex items-center gap-1.5 text-[10px] text-slate-500 mb-2">
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-2">
                         <Sparkles size={11} /> נסו דוגמה
                     </div>
                     <div className="flex flex-wrap gap-2">

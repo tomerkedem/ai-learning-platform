@@ -8,6 +8,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { TaskUnderstandingLab } from '@/components/ai-internals/TaskUnderstandingLab';
+import { Mentor } from '@/components/ai-internals/Mentor';
 import { PIPELINE_STEPS } from './taskData';
 
 /** מסלול ה-Agent כפס עליון, עמוד השדרה הוויזואלי של הפרק. */
@@ -109,6 +110,8 @@ export default function BehindTheScenesChapter9() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={10}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -151,6 +154,11 @@ export default function BehindTheScenesChapter9() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור: מילה אחת - שאלה או משימה (xl+, מימין) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="explain-opposite" line="מילה אחת - שאלה או משימה" width={165} />
+            </div>
+            </div>
 
             {/* ══════════ מסלול קריאה ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
@@ -163,7 +171,7 @@ export default function BehindTheScenesChapter9() {
             </section>
 
             {/* ══════════ Task Understanding Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -179,10 +187,18 @@ export default function BehindTheScenesChapter9() {
                 </div>
 
                 <TaskUnderstandingLab />
+                {/* המנטור: זיהוי משימה אינו אישור (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="headsup" line="זיהוי משימה אינו אישור לפעול" width={160} />
+                </div>
             </section>
 
             {/* ══════════ סיכום ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור: קודם להבין, אז לפעול (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="reassure" line="קודם להבין, אז לפעול" width={160} />
+                </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-violet-200">Agent לא מתחיל מלהפעיל כלי. הוא מתחיל מלהבין את המשימה, לבדוק מה חסר, ורק אז להחליט מה הצעד הבא.</span>
                     ראינו שאותו נושא בדיוק מתפצל לשני מסלולים: &quot;למה החבילה לא הגיעה&quot; היא שאלה שמובילה לתשובה, ו&quot;בדוק למה החבילה

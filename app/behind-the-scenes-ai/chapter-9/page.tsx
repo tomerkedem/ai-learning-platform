@@ -8,6 +8,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { ConfidenceGateLab } from '@/components/ai-internals/ConfidenceGateLab';
+import { Mentor } from '@/components/ai-internals/Mentor';
 import { ROADMAP_STEPS_8 } from './gateData';
 
 /** מפת הדרכים: בפרק 9 מגיעים עד צומת ההחלטה, והשער מכריע אם פועלים עליה. */
@@ -83,6 +84,8 @@ export default function BehindTheScenesChapter8() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={9}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -121,6 +124,11 @@ export default function BehindTheScenesChapter8() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור: לפעמים לא לענות זה מקצועי (xl+, מימין) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="headsup" line="לפעמים לא לענות זה מקצועי ☝️" width={165} />
+            </div>
+            </div>
 
             {/* ══════════ מסלול קריאה ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
@@ -145,7 +153,7 @@ export default function BehindTheScenesChapter8() {
             </section>
 
             {/* ══════════ Confidence Gate Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -161,6 +169,10 @@ export default function BehindTheScenesChapter8() {
                 </div>
 
                 <ConfidenceGateLab />
+                {/* המנטור מסביר את השער (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="explain" line="גררו את הסף - השער זז" width={160} />
+                </div>
             </section>
 
             {/* ══════════ נוסחה + מפת דרכים ══════════ */}
@@ -170,7 +182,11 @@ export default function BehindTheScenesChapter8() {
             </section>
 
             {/* ══════════ סיכום ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור: עצירה היא צעד מקצועי (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="reassure" line="עצירה היא צעד מקצועי" width={160} />
+                </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-violet-200">מודל טוב לא רק יודע לענות, הוא יודע מתי לא לענות.</span>
                     ראינו שאותה התפלגות בדיוק יכולה להוביל לשתי החלטות הפוכות, תלוי בסף ובסיכון. הפער הוא הקלט, הסף הוא הכוונון, והסיכון

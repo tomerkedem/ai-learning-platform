@@ -9,6 +9,7 @@ import { InsightBox } from '@/components/content/InsightBox';
 
 import { TokenizationLab } from '@/components/ai-internals/TokenizationLab';
 import { TokenizationRoadmap } from '@/components/ai-internals/TokenizationRoadmap';
+import { Mentor } from '@/components/ai-internals/Mentor';
 
 export default function BehindTheScenesChapter5() {
     const reduce = useReducedMotion();
@@ -17,6 +18,8 @@ export default function BehindTheScenesChapter5() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={5}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -55,9 +58,14 @@ export default function BehindTheScenesChapter5() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור מחזיק טוקן - קודם מפרקים (xl+, מימין) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="token" line="קודם מפרקים, אז מבינים 🧊" width={165} />
+            </div>
+            </div>
 
             {/* ══════════ Tokenization Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <Layers size={24} className="text-violet-400" />
                     <div>
@@ -73,6 +81,10 @@ export default function BehindTheScenesChapter5() {
                 </div>
 
                 <TokenizationLab />
+                {/* המנטור בוחן כל טוקן (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="inspect" line="כל טוקן - יחידת עבודה" width={160} />
+                </div>
             </section>
 
             {/* ══════════ נוסחה + מפת דרכים ══════════ */}
@@ -96,7 +108,11 @@ export default function BehindTheScenesChapter5() {
             </section>
 
             {/* ══════════ סיכום + גשר לפרקים הבאים ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור מסכם בעידוד (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="happy" line="זאת נקודת הכניסה למסלול" width={160} />
+                </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-violet-200">AI לא מתחיל בלהבין. הוא מתחיל בלפרק.</span>
                     מה שנראה לנו כמו משפט שלם, נראה למנוע כמו רצף של יחידות עבודה. הפירוק הזה הוא נקודת הכניסה: בלעדיו אין בכלל

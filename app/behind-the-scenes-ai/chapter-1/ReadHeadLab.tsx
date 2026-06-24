@@ -130,22 +130,27 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
     const prefixText = tokens.slice(0, clampedHead + 1).join(' ');
 
     return (
-        <div className={`rounded-[2rem] border ${a.border} bg-slate-950/70 ${a.glow} overflow-hidden`} dir="rtl">
+        <div className={`rounded-2xl border ${a.border} bg-slate-950/70 ${a.glow} overflow-hidden`} dir="rtl">
             {/* כותרת */}
-            <div className="flex items-center gap-3 p-5 border-b border-white/10">
-                <div className={`p-2 rounded-xl bg-slate-900 border border-white/10 ${a.text}`}>
-                    <ScanLine size={18} />
+            <div className="flex items-center gap-3 p-4 border-b border-white/10">
+                <div className={`p-1.5 rounded-lg bg-slate-900 border border-white/10 ${a.text}`}>
+                    <ScanLine size={16} />
                 </div>
                 <div>
-                    <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500">Read Head</div>
-                    <div className={`font-black text-lg ${a.text}`}>ראש הקריאה</div>
+                    <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500">Read Head</div>
+                    <div className={`font-black text-base ${a.text}`}>ראש הקריאה</div>
                 </div>
             </div>
 
-            <div className="p-5 space-y-5">
+            <div className="p-4 space-y-4">
                 <p className="text-sm text-slate-300 leading-relaxed">
                     הסורק קורא מילה-אחר-מילה. בכל עצירה מורץ <span className={a.text}>אותו מנוע</span> על
                     המילים שנקראו עד כה - כך אפשר לראות את המודל <span className="text-white font-semibold">משנה את דעתו תוך כדי קריאה</span>.
+                </p>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                    מה לוקחים מכאן: למודל אין תשובה מוכנה מראש. הוא בונה אותה מההקשר שמצטבר, וכל מילה
+                    חדשה יכולה להסיט את הניחוש המוביל - עד שההחלטה מתייצבת בסוף המשפט. בגלל זה גם סדר המילים
+                    והניסוח משפיעים על התוצאה.
                 </p>
 
                 {/* פס בקרה */}
@@ -189,7 +194,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                         role="status"
                         aria-live="polite"
                         aria-label={`מילה ${clampedHead + 1} מתוך ${n}`}
-                        className="font-mono text-[11px] font-bold text-slate-500"
+                        className="font-mono text-xs font-bold text-slate-500"
                         dir="ltr"
                     >
                         {clampedHead + 1}/{n}
@@ -263,23 +268,23 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
 
                 {/* פאנלים */}
                 {isChatRun(current) ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         {/* נהר ההסתברויות - ויזואל החתימה */}
-                        <div className="rounded-xl border border-white/10 bg-slate-900/50 p-4">
+                        <div className="rounded-xl border border-white/10 bg-slate-900/50 p-3">
                             <div className="mb-3 flex items-center justify-between">
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Probability river</span>
-                                <span className="text-[10px] text-slate-500">העובי = ההסתברות כרגע</span>
+                                <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Probability river</span>
+                                <span className="text-[11px] text-slate-500">העובי = ההסתברות כרגע</span>
                             </div>
                             <ProbabilityRiver items={current.intents} order={riverOrder} accent={accent} reduce={!!reduce} />
                         </div>
-                        <div className="grid gap-4 md:grid-cols-2">
+                        <div className="grid gap-3 md:grid-cols-2 md:items-start">
                             <ConfidenceMeter level={current.confidence} />
                             <DecisionCard decision={current.decision} />
                         </div>
                     </div>
                 ) : (
-                    <div className="grid gap-4 md:grid-cols-2">
-                        <div className="space-y-4">
+                    <div className="grid gap-3 md:grid-cols-2 md:items-start">
+                        <div className="space-y-3">
                             <EngineMetricCard label="Task detected" value={current.task} tone={accent} />
                             <EngineMetricCard
                                 label="Missing information"
@@ -292,7 +297,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                 )}
 
                 {/* כיתוב יושרה: קפיצות בדידות הן תקינות */}
-                <p className="flex items-start gap-1.5 text-[11px] leading-relaxed text-slate-500">
+                <p className="flex items-start gap-1.5 text-xs leading-relaxed text-slate-500">
                     <span className={`mt-[5px] h-1 w-1 shrink-0 rounded-full ${a.dot}`} />
                     {n === 1 ? (
                         <span>

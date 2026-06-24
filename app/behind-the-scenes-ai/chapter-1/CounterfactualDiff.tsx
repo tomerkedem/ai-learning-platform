@@ -74,7 +74,7 @@ export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, ac
                 <GitCompare size={16} className={a.text} />
                 <div className="leading-tight">
                     <div className="text-sm font-bold text-slate-200">מה-אם</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Counterfactual Diff</div>
+                    <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Counterfactual Diff</div>
                 </div>
             </div>
 
@@ -146,7 +146,7 @@ const ChatDiff: React.FC<{ active: ChatEngineResult; ghost: ChatEngineResult; ac
     return (
         <div className="grid gap-4 md:grid-cols-[1fr_auto]">
             <div className="space-y-2.5">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Intent probabilities</div>
+                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Intent probabilities</div>
                 {active.intents.map((item) => {
                     const before = ghostMap.get(item.label) ?? 0;
                     const delta = item.value - before;
@@ -177,7 +177,7 @@ const ChatDiff: React.FC<{ active: ChatEngineResult; ghost: ChatEngineResult; ac
                         </div>
                     );
                 })}
-                <p className="flex items-center gap-1.5 pt-1 text-[10px] text-slate-500">
+                <p className="flex items-center gap-1.5 pt-1 text-[11px] text-slate-500">
                     <span className="inline-block h-2 w-3 rounded-sm border border-dashed border-slate-500/60" />
                     המתאר המקווקו = הריצה הקודמת (רוח הרפאים)
                 </p>
@@ -193,20 +193,20 @@ const ChatDiff: React.FC<{ active: ChatEngineResult; ghost: ChatEngineResult; ac
 const DeltaTag: React.FC<{ delta: number }> = ({ delta }) => {
     if (delta > 0) {
         return (
-            <span className="inline-flex items-center gap-0.5 font-mono text-[10px] font-bold text-emerald-300" dir="ltr">
+            <span className="inline-flex items-center gap-0.5 font-mono text-[11px] font-bold text-emerald-300" dir="ltr">
                 <ArrowUp size={11} /> {delta}
             </span>
         );
     }
     if (delta < 0) {
         return (
-            <span className="inline-flex items-center gap-0.5 font-mono text-[10px] font-bold text-rose-300" dir="ltr">
+            <span className="inline-flex items-center gap-0.5 font-mono text-[11px] font-bold text-rose-300" dir="ltr">
                 <ArrowDown size={11} /> {delta}
             </span>
         );
     }
     return (
-        <span className="inline-flex items-center gap-0.5 font-mono text-[10px] font-bold text-slate-500" dir="ltr">
+        <span className="inline-flex items-center gap-0.5 font-mono text-[11px] font-bold text-slate-500" dir="ltr">
             <Minus size={11} /> 0
         </span>
     );
@@ -217,7 +217,7 @@ const DeltaTag: React.FC<{ delta: number }> = ({ delta }) => {
 const AgentDiff: React.FC<{ active: AgentEngineResult; ghost: AgentEngineResult }> = ({ active, ghost }) => (
     <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-3">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">לפני / אחרי</div>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500">לפני / אחרי</div>
             <DiffRow label="Missing information" before={ghost.missingInfo} after={active.missingInfo} />
             <DiffRow label="Can act now" before={ghost.canActNow ? 'Yes' : 'No'} after={active.canActNow ? 'Yes' : 'No'} />
             <DiffRow label="Tool" before={ghost.toolNeed.needed ? ghost.toolNeed.tool : '-'} after={active.toolNeed.needed ? active.toolNeed.tool : '-'} />
@@ -231,7 +231,7 @@ const DiffRow: React.FC<{ label: string; before: string; after: string }> = ({ l
     const changed = before !== after;
     return (
         <div className={`rounded-xl border p-3 ${changed ? 'border-amber-500/40 bg-amber-900/10' : 'border-white/10 bg-slate-900/40'}`}>
-            <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">{label}</div>
+            <div className="mb-1 text-[11px] font-bold uppercase tracking-widest text-slate-500">{label}</div>
             <div className="flex items-center gap-2 text-sm" dir="ltr">
                 <span className={`font-mono ${changed ? 'text-slate-500 line-through' : 'text-slate-300'}`}>{before}</span>
                 {changed && <ArrowDown size={13} className="-rotate-90 text-amber-300" />}

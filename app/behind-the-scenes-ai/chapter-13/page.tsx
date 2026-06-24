@@ -8,6 +8,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { ControlLayerLab } from '@/components/ai-internals/ControlLayerLab';
+import { Mentor } from '@/components/ai-internals/Mentor';
 
 /** מיקום הפרק במסלול ה-Agent: הפעולה כבר על השולחן, שכבת הבקרה כאן. */
 const AGENT_FLOW: { he: string; en: string; state: 'done' | 'active' }[] = [
@@ -60,6 +61,8 @@ export default function BehindTheScenesChapter12() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={13}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -98,6 +101,11 @@ export default function BehindTheScenesChapter12() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור: מתי לפעול ומתי לעצור (xl+, מימין) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="headsup" line="מתי לפעול, ומתי לעצור ✋" width={165} />
+            </div>
+            </div>
 
             {/* ══════════ מסלול קריאה ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
@@ -127,7 +135,7 @@ export default function BehindTheScenesChapter12() {
             </section>
 
             {/* ══════════ Control Layer Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -143,10 +151,18 @@ export default function BehindTheScenesChapter12() {
                 </div>
 
                 <ControlLayerLab />
+                {/* המנטור: סיכון, הרשאה, אישור (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="explain" line="סיכון, הרשאה, אישור" width={160} />
+                </div>
             </section>
 
             {/* ══════════ סיכום ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור: עצירה היא אחריות (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="reassure" line="עצירה היא אחריות" width={160} />
+                </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-violet-200">ככל שה-Agent קרוב יותר לפעולה אמיתית בעולם, כך הוא צריך יותר בקרה, הרשאה ואחריות.</span>
                     ראינו ש-Agent טוב לא רק יודע איך לפעול, הוא יודע מתי אסור לו לפעול לבד. סיכון נמוך זרם לתשובה, סיכון בינוני הפך

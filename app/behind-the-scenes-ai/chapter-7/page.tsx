@@ -10,6 +10,7 @@ import {
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 import { SemanticSpaceLab } from '@/components/ai-internals/SemanticSpaceLab';
+import { Mentor } from '@/components/ai-internals/Mentor';
 
 /* ════════════════════════════ מפת דרכים ════════════════════════════════ */
 // אותה שרשרת כמו בפרקים השכנים. בפרק הזה הצומת הפעיל הוא Vectors:
@@ -370,6 +371,8 @@ export default function BehindTheScenesChapter7() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={7}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -409,6 +412,11 @@ export default function BehindTheScenesChapter7() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור על כיוון במרחב (xl+, מימין) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="explain" line="למשמעות יש כיוון 🧭" width={165} />
+            </div>
+            </div>
 
             {/* ══════════ מפת דרכים ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
@@ -430,7 +438,7 @@ export default function BehindTheScenesChapter7() {
             </section>
 
             {/* ══════════ Semantic Space Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -446,6 +454,10 @@ export default function BehindTheScenesChapter7() {
                 </div>
 
                 <SemanticSpaceLab />
+                {/* המנטור מזמין לנחש לאן נוחתת האנלוגיה (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="think" line="גררו מילה - הקרבה משתנה" width={160} />
+                </div>
             </section>
 
             {/* ══════════ הסבר Cosine ══════════ */}
@@ -459,7 +471,11 @@ export default function BehindTheScenesChapter7() {
             </section>
 
             {/* ══════════ סיכום + גשר לפרק 8 ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור מסכם: כיוון לפני מרחק (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="happy" line="כיוון, לא מרחק 🧭" width={160} />
+                </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-violet-200">משמעות אינה מספר בודד, היא כיוון במרחב. קרבה במשמעות היא קרבה בכיוון, לא במרחק.</span>
                     ראינו שמילים בעלות משמעות דומה מצביעות לאותו כיוון, ולכן &quot;אריה&quot; ו&quot;חתול&quot; נשארים קרובים גם כשאחד מהם רחוק

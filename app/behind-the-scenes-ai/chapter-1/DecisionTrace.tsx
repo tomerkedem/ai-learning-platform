@@ -65,7 +65,7 @@ export const DecisionTrace: React.FC<DecisionTraceProps> = ({ text, mode, accent
                 <Route size={16} className={a.text} />
                 <div className="leading-tight">
                     <div className="text-sm font-bold text-slate-200">עקוב אחר ההחלטה</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Trace the decision</div>
+                    <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Trace the decision</div>
                 </div>
             </div>
 
@@ -82,13 +82,13 @@ export const DecisionTrace: React.FC<DecisionTraceProps> = ({ text, mode, accent
                             className={`rounded-xl border p-3 transition-colors duration-300 ${traced ? `${a.border} ${a.bgSoft}` : 'border-white/10 bg-slate-950/40'}`}
                         >
                             <div className="flex items-center justify-between gap-2">
-                                <span className={`text-[10px] font-bold uppercase tracking-widest ${traced ? a.text : 'text-slate-500'}`}>{f.label}</span>
+                                <span className={`text-[11px] font-bold uppercase tracking-widest ${traced ? a.text : 'text-slate-500'}`}>{f.label}</span>
                                 {traced && (
                                     <motion.span
                                         initial={reduce ? false : { opacity: 0, x: 6 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.25, delay: reduce ? 0 : i * 0.06 }}
-                                        className={`text-[10px] font-bold ${a.text}`}
+                                        className={`text-[11px] font-bold ${a.text}`}
                                     >
                                         ← הוביל להחלטה
                                     </motion.span>

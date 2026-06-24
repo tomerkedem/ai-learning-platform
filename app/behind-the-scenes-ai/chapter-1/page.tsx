@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Terminal, ScanSearch, Sparkles, MousePointerClick, ScanLine, SlidersHorizontal, GitCompare, Route, Split, X } from 'lucide-react';
+import { Terminal, ScanSearch, Sparkles, ArrowDown, ScanLine, SlidersHorizontal, GitCompare, Route, Split, X } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { TransparentLabLayout } from '@/components/ai-internals/TransparentLabLayout';
 import { ChatInterfacePanel } from '@/components/ai-internals/ChatInterfacePanel';
+import { Mentor } from '@/components/ai-internals/Mentor';
 import type { Accent, ChatMessage, FlowMode } from '@/components/ai-internals/types';
 
 import { runChatEngine, runAgentEngine } from './mockEngine';
@@ -48,6 +48,13 @@ export default function BehindTheScenesChapter1() {
     // קישור חי: הטוקן שמרחפים עליו (בצ'אט או במנוע), להדגשה הדדית.
     const [hoverToken, setHoverToken] = useState<string | null>(null);
 
+    // צ'אט חי: תשובת Claude אמיתית מוזרמת מהשרת. liveReply===null => משתמשים
+    // בתשובת ה-mock הדטרמיניסטית. live = האם המנוע החי בכלל זמין (יש מפתח).
+    const [live, setLive] = useState(false);
+    const [liveReply, setLiveReply] = useState<string | null>(null);
+    const [streaming, setStreaming] = useState(false);
+    const replyAbortRef = useRef<AbortController | null>(null);
+
     const isChat = mode === 'chat';
     const accent: Accent = isChat ? 'cyan' : 'purple';
 
@@ -62,6 +69,59 @@ export default function BehindTheScenesChapter1() {
         const id = setTimeout(() => setLiveText(v || conversationText), 220);
         return () => clearTimeout(id);
     }, [inputValue, conversationText]);
+
+    // זיהוי יכולת פעם אחת: האם הצ'אט החי זמין (יש ANTHROPIC_API_KEY בשרת).
+    useEffect(() => {
+        let cancelled = false;
+        fetch('/api/chat-reply')
+            .then((r) => (r.ok ? r.json() : { live: false }))
+            .then((d) => { if (!cancelled) setLive(!!d.live); })
+            .catch(() => { if (!cancelled) setLive(false); });
+        return () => { cancelled = true; };
+    }, []);
+
+    // מייצר את תשובת הצ'אט. במצב חי: מזרים תשובת Claude אמיתית טוקן-אחר-טוקן.
+    // אחרת (או בכשל/קטיעה): liveReply=null והתצוגה נופלת לתשובת ה-mock.
+    const generateReply = useCallback(async (text: string, m: FlowMode) => {
+        replyAbortRef.current?.abort(); // קטע זרם קודם אם עוד רץ
+
+        const t = text.trim();
+        if (!live || !t) {
+            setStreaming(false);
+            setLiveReply(null);
+            return;
+        }
+
+        const ac = new AbortController();
+        replyAbortRef.current = ac;
+        setStreaming(true);
+        setLiveReply('');
+
+        try {
+            const res = await fetch('/api/chat-reply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: t, mode: m }),
+                signal: ac.signal,
+            });
+            if (!res.ok || !res.body) throw new Error('chat-reply unavailable');
+
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let acc = '';
+            for (;;) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                acc += decoder.decode(value, { stream: true });
+                setLiveReply(acc);
+            }
+            setStreaming(false);
+        } catch (err) {
+            if ((err as Error).name === 'AbortError') return; // זרם הוחלף - אל תיגע במצב
+            setStreaming(false);
+            setLiveReply(null); // נפילה חיננית לתשובת ה-mock
+        }
+    }, [live]);
 
     // 15 שלבי המנוע השקוף - שיקוף כן של אותה ריצה (חיה), מקובץ ל-4 מערכות.
     const engineSteps = useMemo(
@@ -78,10 +138,23 @@ export default function BehindTheScenesChapter1() {
         return () => clearTimeout(t);
     }, [conversationText, mode, sendCount]);
 
+    // תשובת ה-AI: התשובה החיה (אם קיימת) גוברת על תשובת ה-mock.
+    const mockReply = isChat ? chat.reply : agent.reply;
+    const replyText = liveReply !== null ? liveReply : mockReply;
+    // אינדיקטור ההקלדה: במצב חי (streaming) מציגים נקודות רק עד שמגיע הטוקן הראשון,
+    // בלי תלות בטיימר ה-850ms של ה-mock. במצב mock: לפי הטיימר הרגיל.
+    const showTyping = streaming
+        ? liveReply === ''
+        : liveReply === null
+            ? isTyping
+            : false;
+
+    // id כולל את sendCount כדי שכל שליחה חדשה תנפיש כניסה, אבל צמיחת טוקנים
+    // באותה שליחה לא תרמאונט את הבועה (הזרמה חלקה).
     const messages = useMemo<ChatMessage[]>(() => [
-        { id: 'user', role: 'user', text: conversationText },
-        { id: 'ai', role: 'ai', text: isChat ? chat.reply : agent.reply },
-    ], [conversationText, isChat, chat.reply, agent.reply]);
+        { id: `user-${sendCount}`, role: 'user', text: conversationText },
+        { id: `ai-${sendCount}`, role: 'ai', text: replyText },
+    ], [conversationText, sendCount, replyText]);
 
     const commit = (text: string) => {
         const next = text.trim();
@@ -90,6 +163,7 @@ export default function BehindTheScenesChapter1() {
         setConversationText(next);
         setLiveText(next); // עדכון מיידי כדי שהמנוע יהיה עקבי עם השליחה, בלי המתנה ל-debounce
         setSendCount((c) => c + 1);
+        generateReply(next, mode); // תשובה חיה (או נפילה ל-mock)
     };
 
     const handleSend = () => {
@@ -103,12 +177,14 @@ export default function BehindTheScenesChapter1() {
     const handleModeChange = (m: FlowMode) => {
         setIsTyping(true);
         setMode(m);
+        generateReply(conversationText, m); // החלפת מצב מייצרת תשובה מתאימה מחדש
     };
 
     return (
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={1}>
 
             {/* ══════════ HERO ══════════ */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -122,7 +198,7 @@ export default function BehindTheScenesChapter1() {
                 <div className="relative z-10">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-cyan-500/30 mb-5">
                         <Terminal size={14} className="text-cyan-400" />
-                        <span className="font-mono text-[11px] tracking-widest uppercase text-cyan-300">Behind the Scenes · 01</span>
+                        <span className="font-mono text-xs tracking-widest uppercase text-cyan-300">Behind the Scenes · 01</span>
                     </div>
 
                     <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
@@ -142,7 +218,7 @@ export default function BehindTheScenesChapter1() {
 
                     <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
                         <span className="inline-flex items-center gap-1.5">
-                            <ScanLine size={14} className="text-cyan-400" /> גררו את ראש הקריאה וראו את המוביל מתחלף
+                            <ScanLine size={14} className="text-cyan-400" /> גררו את ראש הקריאה וראו איך הניחוש המוביל מתחלף
                         </span>
                         <span className="inline-flex items-center gap-1.5">
                             <SlidersHorizontal size={14} className="text-cyan-400" /> הזיזו את סף הביטחון בין ענה לשאל
@@ -153,51 +229,50 @@ export default function BehindTheScenesChapter1() {
                     </div>
                 </div>
             </motion.section>
-
-            {/* ══════════ מנטור מלווה + first-run ══════════ */}
-            <div className="mt-6 flex items-start gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-900/10 p-4" dir="rtl">
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border-2 border-emerald-500/60 bg-slate-950">
-                    <Image src="/assets/mentor-think.png" alt="המנטור" fill sizes="56px" className="object-cover" />
-                </div>
-                <div className="flex-1 text-sm leading-relaxed text-slate-200">
-                    <span className="font-bold text-emerald-300">שנייה לפני שמתחילים: </span>
-                    כל מספר בלוח הזה מחושב חי על המשפט שלכם. אל תאמינו לי - גררו את הסורק וראו את המנוע מתלבט בעצמכם.
-                    <AnimatePresence>
-                        {coachOpen && (
-                            <motion.div
-                                initial={reduce ? false : { opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={reduce ? undefined : { opacity: 0, height: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="overflow-hidden"
-                            >
-                                <div className="mt-3 flex items-start justify-between gap-2 rounded-xl border border-emerald-500/30 bg-slate-950/40 p-3">
-                                    <span className="flex items-start gap-2 text-[13px] text-emerald-100/90">
-                                        <MousePointerClick size={14} className="mt-0.5 shrink-0 text-emerald-300" />
-                                        <span><span className="font-bold text-emerald-200">התחילו כאן: </span>כתבו משפט או בחרו דוגמה מהירה, ואז גללו אל &quot;ראש הקריאה&quot; והפעילו אותו.</span>
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() => setCoachOpen(false)}
-                                        aria-label="סגירת ההדרכה"
-                                        className="shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
-                                    >
-                                        <X size={15} />
-                                    </button>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
+            {/* המנטור מזמין להציץ פנימה - תלוי מימין לכרטיס (xl+) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="peek" line="הצצה ראשונה אל תוך המנוע 👀" width={175} />
+            </div>
             </div>
 
+            {/* ══════════ מנטור מלווה + first-run: הכוונה אופרטיבית אל המעבדה שמתחת ══════════ */}
+            <AnimatePresence>
+                {coachOpen && (
+                    <motion.div
+                        initial={reduce ? false : { opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={reduce ? undefined : { opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="mt-6 flex items-center gap-4 overflow-hidden rounded-2xl border border-emerald-500/30 bg-emerald-900/10 p-4"
+                        dir="rtl"
+                    >
+                        <div className="-my-2 shrink-0">
+                            <Mentor pose="think" width={92} float={false} glow={false} />
+                        </div>
+                        <div className="flex-1 text-sm leading-relaxed text-slate-200">
+                            <span className="font-bold text-emerald-300">התחילו כאן: </span>
+                            כתבו משפט משלכם במעבדה שמתחת, או בחרו דוגמה מהירה.
+                        </div>
+                        <ArrowDown size={18} className="hidden shrink-0 animate-bounce text-emerald-300 sm:block" aria-hidden />
+                        <button
+                            type="button"
+                            onClick={() => setCoachOpen(false)}
+                            aria-label="סגירת ההדרכה"
+                            className="shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+                        >
+                            <X size={15} />
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* ══════════ Transparent Chat Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <ScanSearch size={24} className="text-cyan-400" />
                     <div>
-                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-cyan-400">המעבדה השקופה</div>
-                        <h3 className="text-2xl font-bold text-white">Transparent Chat Lab</h3>
+                        <h3 className="text-2xl font-bold text-white">הצ'ט השקוף</h3>
+                        <div className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">Transparent Chat Lab</div>
                     </div>
                 </div>
 
@@ -229,7 +304,9 @@ export default function BehindTheScenesChapter1() {
                                 inputValue={inputValue}
                                 onInputChange={setInputValue}
                                 onSend={handleSend}
-                                isTyping={isTyping}
+                                isTyping={showTyping}
+                                streaming={streaming}
+                                live={live}
                                 suggestions={SUGGESTIONS}
                                 onSuggestion={handleSuggestion}
                                 accent={accent}
@@ -259,6 +336,16 @@ export default function BehindTheScenesChapter1() {
                     ב-<span className="text-purple-300 font-semibold">Agent Mode</span> היא בודקת מה הצעד הנכון הבא –
                     לענות, להשתמש בכלי, או לעצור ולבקש מידע.
                 </p>
+
+                <p className="text-xs leading-relaxed text-slate-500">
+                    {live
+                        ? 'התשובה בצ׳אט נכתבת על ידי מודל אמיתי (Claude) בזמן אמת, מילה אחר מילה - בדיוק הלולאה האוטו-רגרסיבית. הלוח מימין נשאר המחשה לימודית: ה-API לא חושף את ההסתברויות הפנימיות של המודל.'
+                        : 'מצב דמו: התשובות בצ׳אט מתוסרטות וקבועות. הגדרת ANTHROPIC_API_KEY בשרת מפעילה מודל אמיתי שכותב את התשובה חי, מילה אחר מילה.'}
+                </p>
+                {/* מנטור קטן צמוד לכרטיס הצ'אט השקוף (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="inspect" line="הצ'אט מימין, המנוע משמאל 🔍" width={130} />
+                </div>
             </section>
 
             {/* ══════════ Read Head ══════════ */}
@@ -266,7 +353,7 @@ export default function BehindTheScenesChapter1() {
                 <div className="flex items-center gap-3">
                     <ScanLine size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
                     <div>
-                        <div className={`text-[11px] font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>קריאה חיה</div>
+                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>קריאה חיה</div>
                         <h3 className="text-2xl font-bold text-white">המנוע משנה את דעתו תוך כדי קריאה</h3>
                     </div>
                 </div>
@@ -281,7 +368,7 @@ export default function BehindTheScenesChapter1() {
                 <div className="flex items-center gap-3">
                     <SlidersHorizontal size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
                     <div>
-                        <div className={`text-[11px] font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>מתי לסמוך, מתי לעצור</div>
+                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>מתי לסמוך, מתי לעצור</div>
                         <h3 className="text-2xl font-bold text-white">חוגת הביטחון</h3>
                     </div>
                 </div>
@@ -294,7 +381,7 @@ export default function BehindTheScenesChapter1() {
                 <div className="flex items-center gap-3">
                     <GitCompare size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
                     <div>
-                        <div className={`text-[11px] font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>סיבתיות</div>
+                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>סיבתיות</div>
                         <h3 className="text-2xl font-bold text-white">מילה אחת, החלטה אחרת</h3>
                     </div>
                 </div>
@@ -304,7 +391,7 @@ export default function BehindTheScenesChapter1() {
                 <div className="flex items-center gap-3 pt-2">
                     <Route size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
                     <div>
-                        <div className={`text-[11px] font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>למה זה?</div>
+                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>למה זה?</div>
                         <h3 className="text-2xl font-bold text-white">עקבו אחורה מההחלטה אל הסיבות</h3>
                     </div>
                 </div>
@@ -317,7 +404,7 @@ export default function BehindTheScenesChapter1() {
                 <div className="flex items-center gap-3">
                     <Split size={24} className="text-slate-300" />
                     <div>
-                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-slate-400">פיצול</div>
+                        <div className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">פיצול</div>
                         <h3 className="text-2xl font-bold text-white">אותו משפט, שני מנועים</h3>
                     </div>
                 </div>

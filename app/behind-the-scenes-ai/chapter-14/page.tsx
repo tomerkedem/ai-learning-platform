@@ -8,6 +8,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { BehindScenesLab } from '@/components/ai-internals/BehindScenesLab';
+import { Mentor } from '@/components/ai-internals/Mentor';
 
 export default function BehindTheScenesChapter13() {
     const reduce = useReducedMotion();
@@ -16,6 +17,8 @@ export default function BehindTheScenesChapter13() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={14}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -60,6 +63,11 @@ export default function BehindTheScenesChapter13() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור: X-Ray של המנוע (xl+, מימין) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="inspect" line="X-Ray של המנוע 🔍" width={165} />
+            </div>
+            </div>
 
             {/* ══════════ מסלול קריאה ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
@@ -84,7 +92,7 @@ export default function BehindTheScenesChapter13() {
             </section>
 
             {/* ══════════ Behind the Scenes Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -99,10 +107,18 @@ export default function BehindTheScenesChapter13() {
                 </div>
 
                 <BehindScenesLab />
+                {/* המנטור: אותו קלט, שתי צורות חשיבה (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="explain-opposite" line="אותו קלט, שתי צורות חשיבה" width={160} />
+                </div>
             </section>
 
             {/* ══════════ סיכום (רגע הוואו) ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור: ראינו איך התשובה נבנתה (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="happy" line="ראינו איך התשובה נבנתה" width={160} />
+                </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-violet-200">המעבר בין שתי רמות הבנה.</span>
                     בהתחלה ראינו &quot;אני כותב, AI עונה&quot;. עכשיו אנחנו רואים &quot;אני כותב, והמערכת מפרקת, מייצגת, מדרגת, מעריכה ביטחון,

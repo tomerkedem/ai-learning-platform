@@ -8,6 +8,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { PromptCoachLab } from '@/components/ai-internals/PromptCoachLab';
+import { Mentor } from '@/components/ai-internals/Mentor';
 
 export default function BehindTheScenesChapter15() {
     const reduce = useReducedMotion();
@@ -16,6 +17,8 @@ export default function BehindTheScenesChapter15() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={16}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -60,6 +63,11 @@ export default function BehindTheScenesChapter15() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור: כתיבה טובה היא הגדרה (xl+, מימין) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="type" line="כתיבה טובה היא הגדרה ⌨️" width={165} />
+            </div>
+            </div>
 
             {/* ══════════ מסלול קריאה ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
@@ -84,7 +92,7 @@ export default function BehindTheScenesChapter15() {
             </section>
 
             {/* ══════════ Prompt Coach Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -99,10 +107,18 @@ export default function BehindTheScenesChapter15() {
                 </div>
 
                 <PromptCoachLab />
+                {/* המנטור: מה חסר ואיך לשפר (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="explain" line="מה חסר, ואיך לשפר" width={160} />
+                </div>
             </section>
 
             {/* ══════════ סיכום הלומדה (רגע האסימון) ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור חוגג את סיום הלומדה (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="celebrate" line="סיימתם את הלומדה! 🎉" width={165} />
+                </div>
                 <InsightBox type="intuition" title="סוף הלומדה: רגע האסימון">
                     <span className="block font-bold text-violet-200">כתיבה טובה ל-AI אינה קסם של מילים, אלא הגדרה.</span>
                     הגדרה ברורה של מטרה, הקשר, מידע חסר, תוצאה רצויה וגבולות פעולה. ככל שהמשתמש מגדיר טוב יותר את המשימה והגבולות, כך

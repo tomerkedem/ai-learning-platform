@@ -8,6 +8,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { ToolSelectionLab } from '@/components/ai-internals/ToolSelectionLab';
+import { Mentor } from '@/components/ai-internals/Mentor';
 
 /** מיקום הפרק במסלול ה-Agent: הבנת המשימה כבר מאחורינו, בחירת הכלי כאן. */
 const AGENT_FLOW: { he: string; en: string; state: 'done' | 'active' | 'locked' }[] = [
@@ -63,6 +64,8 @@ export default function BehindTheScenesChapter10() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={11}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -101,6 +104,11 @@ export default function BehindTheScenesChapter10() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור: כלי הוא החלטה, לא כפתור (xl+, מימין) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="explain" line="כלי הוא החלטה, לא כפתור 🔧" width={165} />
+            </div>
+            </div>
 
             {/* ══════════ מסלול קריאה ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
@@ -130,7 +138,7 @@ export default function BehindTheScenesChapter10() {
             </section>
 
             {/* ══════════ Tool Selection Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -145,10 +153,18 @@ export default function BehindTheScenesChapter10() {
                 </div>
 
                 <ToolSelectionLab />
+                {/* המנטור: ארבעה שערים לכל כלי (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="inspect" line="ארבעה שערים לכל כלי" width={160} />
+                </div>
             </section>
 
             {/* ══════════ סיכום ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור: גם לא להשתמש זה צעד נכון (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="reassure" line="גם לא להשתמש זה צעד נכון" width={160} />
+                </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-violet-200">Tool Selection הוא החלטה, לא כפתור. כלי הוא ממשק מוגדר עם גבולות, לא יכולת על.</span>
                     ראינו ש-Agent משתמש בכלי רק כשכל ארבעת השערים ירוקים: המשימה דורשת אותו, הנתונים קיימים, הסיכון מתאים, וההרשאה

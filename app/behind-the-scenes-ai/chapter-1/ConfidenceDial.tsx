@@ -62,7 +62,7 @@ const ChatConfidenceDial: React.FC<{ text: string; accent: Accent; reduce: boole
                 <SlidersHorizontal size={16} className="text-cyan-300" />
                 <div className="leading-tight">
                     <div className="text-sm font-bold text-slate-200">חוגת הביטחון</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Confidence Dial</div>
+                    <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Confidence Dial</div>
                 </div>
             </div>
 
@@ -75,7 +75,7 @@ const ChatConfidenceDial: React.FC<{ text: string; accent: Accent; reduce: boole
             {/* פס פער מול סף */}
             <div className="mb-2 flex items-center justify-between text-xs">
                 <span className="font-bold text-slate-300">פער מול סף</span>
-                <span className="font-mono text-[11px] text-slate-400" dir="ltr">
+                <span className="font-mono text-xs text-slate-400" dir="ltr">
                     margin {margin}% {passes ? '≥' : '<'} threshold {threshold}%
                 </span>
             </div>
@@ -93,7 +93,7 @@ const ChatConfidenceDial: React.FC<{ text: string; accent: Accent; reduce: boole
                     transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 200, damping: 24 }}
                     className="absolute -top-2 bottom-[-8px] z-10 w-0.5 bg-cyan-200"
                 >
-                    <span className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-cyan-500/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-cyan-200">
+                    <span className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-cyan-500/20 px-1.5 py-0.5 font-mono text-[11px] font-bold text-cyan-200">
                         {threshold}%
                     </span>
                 </motion.div>
@@ -103,7 +103,7 @@ const ChatConfidenceDial: React.FC<{ text: string; accent: Accent; reduce: boole
                     style={{ left: `${ENGINE_DEFAULT_THRESHOLD}%` }}
                     aria-hidden
                 />
-                <span className="absolute inset-y-0 left-2 flex items-center font-mono text-[11px] font-black text-slate-950/80">{margin}%</span>
+                <span className="absolute inset-y-0 left-2 flex items-center font-mono text-xs font-black text-slate-950/80">{margin}%</span>
             </div>
 
             {/* סליידר + presets */}
@@ -126,7 +126,7 @@ const ChatConfidenceDial: React.FC<{ text: string; accent: Accent; reduce: boole
                             key={p}
                             type="button"
                             onClick={() => setThreshold(p)}
-                            className={`rounded-md border px-2 py-1 font-mono text-[11px] font-bold transition-colors ${threshold === p ? 'border-cyan-500/50 bg-cyan-900/25 text-cyan-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-400 hover:border-slate-600'}`}
+                            className={`rounded-md border px-2 py-1 font-mono text-xs font-bold transition-colors ${threshold === p ? 'border-cyan-500/50 bg-cyan-900/25 text-cyan-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-400 hover:border-slate-600'}`}
                         >
                             {p}%
                         </button>
@@ -140,7 +140,7 @@ const ChatConfidenceDial: React.FC<{ text: string; accent: Accent; reduce: boole
             </div>
 
             {/* יושרה: הסבר על המספרים */}
-            <div className="mt-4 flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-[11px] leading-relaxed text-slate-500">
+            <div className="mt-4 flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-xs leading-relaxed text-slate-500">
                 <Info size={14} className="mt-0.5 shrink-0" />
                 <span>
                     {atEngineDefault ? (
@@ -166,7 +166,7 @@ const AgentGatePanel: React.FC<{ text: string }> = ({ text }) => {
                 {canAct ? <ShieldCheck size={16} className="text-purple-300" /> : <ShieldAlert size={16} className="text-amber-300" />}
                 <div className="leading-tight">
                     <div className="text-sm font-bold text-slate-200">שער ההחלטה ב-Agent</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Agent decision gate</div>
+                    <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Agent decision gate</div>
                 </div>
             </div>
 
@@ -175,7 +175,7 @@ const AgentGatePanel: React.FC<{ text: string }> = ({ text }) => {
                 האם המשימה ברורה, האם חסר מזהה, והאם הפעולה רגישה. לכן כאן אין חוגת-פער - ההחלטה נקבעת מהגורמים שלמטה.
             </p>
 
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2 md:items-start">
                 <div className="space-y-4">
                     <EngineMetricCard label="Task detected" value={result.task} tone="purple" />
                     <EngineMetricCard
@@ -195,7 +195,7 @@ const AgentGatePanel: React.FC<{ text: string }> = ({ text }) => {
                 </div>
             </div>
 
-            <div className="mt-4 flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-[11px] leading-relaxed text-slate-500">
+            <div className="mt-4 flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-xs leading-relaxed text-slate-500">
                 <HelpCircle size={14} className="mt-0.5 shrink-0" />
                 <span>
                     החליפו ל-<span className="font-bold text-cyan-300">Chat</span> כדי לגרור את חוגת הביטחון על הפער. ב-Agent
