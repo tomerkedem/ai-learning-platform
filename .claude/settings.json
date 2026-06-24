@@ -23,7 +23,17 @@
       "Bash(sort -t- -k4 -n)",
       "Bash(node -e \"const s=require\\('./package.json'\\).scripts; console.log\\(JSON.stringify\\({typecheck:s.typecheck, lint:s.lint, build:s.build}, null, 2\\)\\)\")",
       "Bash(echo \"TSC_EXIT: $?\")",
-      "Bash(grep -iE \"error|\\\\.tsx$|\\\\.ts$\")"
+      "Bash(grep -iE \"error|\\\\.tsx$|\\\\.ts$\")",
+      "PowerShell(npx tsc --noEmit -p tsconfig.json; \"EXIT: $LASTEXITCODE\")",
+      "PowerShell(npx eslint \"app/behind-the-scenes-ai/chapter-1/ReadHeadLab.tsx\" \"app/behind-the-scenes-ai/chapter-1/page.tsx\"; \"EXIT: $LASTEXITCODE\")",
+      "PowerShell(npx eslint \"app/behind-the-scenes-ai/chapter-1/ReadHeadLab.tsx\" \"app/behind-the-scenes-ai/chapter-1/page.tsx\"; \"ESLINT_EXIT: $LASTEXITCODE\")",
+      "PowerShell(git checkout -b feat/glass-engine-chapter-1; \"BRANCH_EXIT: $LASTEXITCODE\"; git branch --show-current)",
+      "PowerShell(npx tsc --noEmit -p tsconfig.json; \"TSC_EXIT: $LASTEXITCODE\")",
+      "PowerShell(npm run build 2>&1 | Select-Object -Last 40; \"BUILD_EXIT: $LASTEXITCODE\")",
+      "PowerShell(npx tsc --noEmit -p tsconfig.json; \"TSC_EXIT: $LASTEXITCODE\"; npx eslint \"app/behind-the-scenes-ai/chapter-1/PredictDecision.tsx\" \"app/behind-the-scenes-ai/chapter-1/ConfidenceDial.tsx\" \"app/behind-the-scenes-ai/chapter-1/page.tsx\"; \"ESLINT_EXIT: $LASTEXITCODE\")",
+      "PowerShell(npx tsc --noEmit -p tsconfig.json; \"TSC_EXIT: $LASTEXITCODE\"; npm run build 2>&1 | Select-Object -Last 6; \"BUILD_EXIT: $LASTEXITCODE\")",
+      "PowerShell(npx tsc --noEmit -p tsconfig.json; \"TSC_EXIT: $LASTEXITCODE\"; npx eslint \"app/behind-the-scenes-ai/chapter-1/CounterfactualDiff.tsx\" \"app/behind-the-scenes-ai/chapter-1/DecisionTrace.tsx\" \"app/behind-the-scenes-ai/chapter-1/page.tsx\"; \"ESLINT_EXIT: $LASTEXITCODE\")",
+      "PowerShell(npm run build 2>&1 | Select-Object -Last 6; \"BUILD_EXIT: $LASTEXITCODE\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\USER\\.claude\\projects\\c--D-2025-AI-Engineer-AI-Math-Intuition-course\\memory",

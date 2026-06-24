@@ -5,19 +5,19 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CourseHeader } from "@/components/CourseHeader";
 import { CourseSidebar } from "@/components/CourseSidebar";
-import { courses, type Language } from "@/lib/courseData"; 
+import { courses, type Language } from "@/lib/courseData";
 import { ChevronRight, ChevronLeft, BookOpen, Trophy, Maximize2, Minimize2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ChapterLayoutProps {
     children: ReactNode;
-    courseId: string;        
+    courseId: string;
     currentChapterId: number;
-    lang?: Language;         
+    lang?: Language;
 }
 
-export const ChapterLayout: React.FC<ChapterLayoutProps> = ({ 
-    children, 
+export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
+    children,
     courseId,
     currentChapterId,
     lang = 'he'

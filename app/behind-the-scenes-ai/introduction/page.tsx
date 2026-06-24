@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { ChapterLayout } from "@/components/ChapterLayout";
 import { EngineTrail, type TrailStep } from "@/components/ai-internals/EngineTrail";
 import { GuessRevealGate, LiveTokenizeTaste } from "@/components/ai-internals/IntroInteractions";
+import { Mentor } from "@/components/ai-internals/Mentor";
 
 // ─── המסלול הפנימי המלא: מקלט ועד תשובה ───
 // המסלול האמיתי, בלי דילוג על שלבים: מתווים גולמיים, דרך הקשב ושכבות ה-Transformer,
@@ -232,34 +233,11 @@ export default function BehindTheScenesIntroPage() {
             </div>
           </motion.section>
 
-          {/* המנטור עומד מימין לכרטיס ומבחוץ ומצביע עליו. רק במסכים רחבים (xl+) יש שם מקום; בצרים מוסתר. */}
-          <motion.div
-            initial={reduce ? false : { opacity: 0, x: 48, scale: 0.7 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 17, delay: 0.4 }}
-            className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block w-40 2xl:w-52 pointer-events-none"
-          >
-            <div className="absolute inset-0 bg-cyan-500/15 blur-2xl rounded-full" />
-            {/* בועת-דיבור: הופכת את המנטור מקישוט למלווה שמזמין פנימה */}
-            <motion.div
-              initial={reduce ? false : { opacity: 0, y: 8, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 18, delay: 1 }}
-              className="absolute -top-12 left-1/2 -translate-x-1/2 w-max max-w-[11rem]"
-            >
-              <div className="relative rounded-2xl border border-cyan-500/40 bg-slate-900/95 px-3 py-2 text-center shadow-lg backdrop-blur-sm">
-                <p className="text-[11px] font-bold leading-snug text-cyan-200">בואו נפתח את המכסה ביחד 👀</p>
-                <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-3 w-3 rotate-45 border-b border-r border-cyan-500/40 bg-slate-900/95" />
-              </div>
-            </motion.div>
-            <motion.img
-              animate={reduce ? undefined : { y: [0, -10, 0] }}
-              transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-              src="/assets/mentor-hero.png"
-              alt="Mentor"
-              className="relative w-full h-auto object-contain drop-shadow-[0_15px_35px_rgba(34,211,238,0.35)]"
-            />
-          </motion.div>
+          {/* המנטור עומד מימין לכרטיס המרכזי ומצביע אליו. רק במסכים רחבים (xl+); בצרים מוסתר.
+              עטיפת-מיקום סטטית כדי שטרנספורם-המיקום לא יתנגש באנימציות הפנימיות של <Mentor>. */}
+          <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+            <Mentor pose="hero" line="בואו נפתח את המכסה ביחד 👀" width={185} />
+          </div>
           </div>
 
           {/* ══════════ GUESS GATE ══════════ */}
@@ -280,6 +258,7 @@ export default function BehindTheScenesIntroPage() {
               אותו קלט. אותה תשובה. אבל מתחת לפני השטח מתרחש מסלול שלם – וזה בדיוק מה שנחשוף.
             </SectionHeading>
 
+            <div className="relative">
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1.3fr] gap-6 items-stretch">
               {/* Outside View */}
               <motion.div
@@ -338,6 +317,11 @@ export default function BehindTheScenesIntroPage() {
                 </p>
               </motion.div>
             </div>
+            {/* המנטור בודק עם זכוכית מגדלת - "פותחים את המנוע" (xl+, מצד שמאל) */}
+            <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="inspect" line="בואו נציץ פנימה 🔍" width={170} />
+            </div>
+            </div>
           </section>
 
           {/* ══════════ LIVE TOKENIZE TASTE ══════════ */}
@@ -346,7 +330,13 @@ export default function BehindTheScenesIntroPage() {
             <SectionHeading eyebrow="נסו בעצמכם" title="ראיתם את 15 השלבים. עכשיו תורכם.">
               לא צריך לחכות לסוף הלומדה כדי לראות את המנוע עובד. כתבו משפט משלכם, וצפו בשלב הראשון קורה בזמן אמת - על המילים שלכם.
             </SectionHeading>
-            <LiveTokenizeTaste reduce={!!reduce} />
+            <div className="relative">
+              <LiveTokenizeTaste reduce={!!reduce} />
+              {/* המנטור מציג את הטוקן מימין לכרטיס (xl+ בלבד) */}
+              <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                <Mentor pose="token" line="זה הטוקן שלכם 🧊" width={165} />
+              </div>
+            </div>
           </section>
 
           {/* ══════════ NARRATIVE ══════════ */}
@@ -384,6 +374,7 @@ export default function BehindTheScenesIntroPage() {
               Chat עונה על שאלה, Agent (סוֹכֵן) מבצע משימה. בהמשך נראה את שניהם לעומק; כאן הצצה מהירה - לחצו על כל שלב כדי לראות מה מייחד כל מצב.
             </SectionHeading>
 
+            <div className="relative">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Chat Mode */}
               <motion.div
@@ -425,6 +416,11 @@ export default function BehindTheScenesIntroPage() {
                 <EngineTrail steps={AGENT_FLOW} accent="purple" autoplay interval={750} compact interactive />
               </motion.div>
             </div>
+            {/* המנטור מציג את ההסתברויות (xl+, מצד שמאל) */}
+            <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="chart" line="ככה נראות ההסתברויות 📊" width={160} flip />
+            </div>
+            </div>
           </section>
 
           {/* ══════════ CTA ══════════ */}
@@ -436,6 +432,10 @@ export default function BehindTheScenesIntroPage() {
             className="mt-20 relative overflow-hidden rounded-[2.5rem] border border-cyan-500/30 bg-gradient-to-br from-slate-900 to-slate-900/60 p-10 md:p-14 text-center shadow-2xl"
           >
             <div className="absolute -top-20 right-1/2 translate-x-1/2 w-80 h-40 bg-cyan-500/15 blur-[80px] rounded-full pointer-events-none" />
+            {/* המנטור מצביע אל כפתור ההתחלה (מושתל בכרטיס, lg+ בלבד) */}
+            <div className="pointer-events-none absolute bottom-0 left-6 z-0 hidden lg:block">
+              <Mentor pose="pointdown" width={140} glow={false} float={false} />
+            </div>
             <h2 className="relative text-2xl md:text-4xl font-black text-white mb-4 tracking-tight">
               מוכן לפתוח את המנוע?
             </h2>

@@ -8,6 +8,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { RequestRoutingLab } from '@/components/ai-internals/RequestRoutingLab';
+import { Mentor } from '@/components/ai-internals/Mentor';
 import { ROUTING_EXAMPLES } from './routingExamples';
 
 // "נוסחה" מנטלית - שלוש שורות שמראות איך הקלט מנותב למסלול.
@@ -39,6 +40,8 @@ export default function BehindTheScenesChapter2() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={2}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -77,9 +80,14 @@ export default function BehindTheScenesChapter2() {
                     </div>
                 </div>
             </motion.section>
+            {/* המנטור מקדם בברכה מימין לכרטיס (xl+) */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <Mentor pose="hello" line="כל ניסוח - מסלול אחר 👋" width={170} />
+            </div>
+            </div>
 
             {/* ══════════ Request Routing Lab ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
                     <Split size={24} className="text-indigo-400" />
                     <div>
@@ -96,6 +104,10 @@ export default function BehindTheScenesChapter2() {
                 </div>
 
                 <RequestRoutingLab examples={ROUTING_EXAMPLES} defaultId="general" />
+                {/* המנטור מסביר את הניתוב (xl+, משמאל) */}
+                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="explain" line="אותה חבילה, החלטות שונות" width={160} />
+                </div>
             </section>
 
             {/* ══════════ נוסחה מנטלית ══════════ */}
@@ -127,7 +139,11 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ סיכום ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="relative mt-12 text-right" dir="rtl">
+                {/* המנטור מסכם בעידוד (xl+, מימין) */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                  <Mentor pose="reassure" line="זאת הנקודה החשובה" width={160} />
+                </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-indigo-200">הפרומט לא רק מבקש תשובה. הוא מכוון את המנוע למסלול.</span>
                     אותו נושא יכול להוביל לתשובה, לבדיקה, להכנה לשימוש בכלי או לעצירה לאישור. ההבדל מתחיל בכוונה שהפרומט משדר.

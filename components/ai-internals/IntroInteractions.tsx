@@ -17,6 +17,8 @@ import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HelpCircle, Sparkles, Check, ArrowDown, Scissors, Keyboard, Info } from 'lucide-react';
 
+import { Mentor } from './Mentor';
+
 /* ════════════════════════ רגע "נחש לפני שתחשוף" ══════════════════════════ */
 
 const GUESS_OPTIONS = [2, 8, 15];
@@ -31,6 +33,16 @@ export const GuessRevealGate: React.FC<{ reduce: boolean; actual?: number }> = (
             className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/60 p-6 text-center backdrop-blur-xl md:p-8"
         >
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[80px]" />
+
+            {/* מנטור מגיב מושתל בכרטיס: think לפני ניחוש → celebrate אם צדק, headsup אם טעה */}
+            <div className="pointer-events-none absolute bottom-0 left-4 z-0 hidden lg:block">
+                <Mentor
+                    pose={!revealed ? 'think' : guess === actual ? 'celebrate' : 'headsup'}
+                    width={130}
+                    glow={false}
+                />
+            </div>
+
             <div className="relative">
                 <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] text-cyan-400">
                     <HelpCircle size={14} /> ניחוש מהיר

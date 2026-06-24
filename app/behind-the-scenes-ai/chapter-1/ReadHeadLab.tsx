@@ -5,11 +5,12 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, RotateCcw, ScanLine } from 'lucide-react';
 
 import { ACCENTS } from '@/components/ai-internals/accents';
-import { ProbabilityBars } from '@/components/ai-internals/ProbabilityBars';
 import { ConfidenceMeter } from '@/components/ai-internals/ConfidenceMeter';
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
 import { EngineMetricCard } from '@/components/ai-internals/EngineMetricCard';
 import type { Accent, FlowMode } from '@/components/ai-internals/types';
+
+import { ProbabilityRiver } from './ProbabilityRiver';
 
 import {
     tokenize,
@@ -30,6 +31,21 @@ type Run = ChatEngineResult | AgentEngineResult;
 const isChatRun = (r: Run): r is ChatEngineResult => 'intents' in r;
 
 const STEP_MS = 780;
+
+// memoization לפי מחרוזת-prefix: אותו prefix לעולם לא מחושב פעמיים, גם בין ריצות.
+// המנוע טהור (אין Date/Math.random) ולכן cache תקף לכל החיים.
+const chatCache = new Map<string, ChatEngineResult>();
+const agentCache = new Map<string, AgentEngineResult>();
+const cachedChat = (s: string): ChatEngineResult => {
+    let v = chatCache.get(s);
+    if (!v) { v = runChatEngine(s); chatCache.set(s, v); }
+    return v;
+};
+const cachedAgent = (s: string): AgentEngineResult => {
+    let v = agentCache.get(s);
+    if (!v) { v = runAgentEngine(s); agentCache.set(s, v); }
+    return v;
+};
 
 // צבע ה-thumb של ה-slider לכל גוון (accent-color דורש ערך, לא מחלקת Tailwind דינמית).
 const RANGE_COLOR: Record<Accent, string> = {
@@ -56,39 +72,43 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
         () =>
             tokens.map((_, i) => {
                 const prefix = tokens.slice(0, i + 1).join(' ');
-                return isChat ? runChatEngine(prefix) : runAgentEngine(prefix);
+                return isChat ? cachedChat(prefix) : cachedAgent(prefix);
             }),
         [tokens, isChat],
     );
 
+    // סדר ערוצי הנהר נגזר מהריצה על המשפט המלא (דירוג סופי), כדי שהערוצים
+    // יתעבו/יידללו במקום ולא יקפצו תוך כדי הסריקה.
+    const riverOrder = useMemo(() => {
+        const last = runs[runs.length - 1];
+        if (!last || !isChatRun(last)) return [];
+        return last.intents.slice().sort((x, y) => y.value - x.value).map((it) => it.label);
+    }, [runs]);
+
+    // אתחול דטרמיניסטי (לא תלוי ב-reduce) כדי שה-SSR וה-hydration יתאימו: המשפט
+    // השלם מוצג סטטית. האיפוס על טקסט/מצב חדש נעשה ב-key מצד ההורה (remount).
     const [head, setHead] = useState(Math.max(0, n - 1));
     const [playing, setPlaying] = useState(false);
 
-    // טקסט/מצב חדש: התחל לקרוא מהמילה הראשונה. ב-reduced-motion נוחתים סטטית על הסוף.
-    useEffect(() => {
-        if (reduce || n <= 1) {
-            setHead(Math.max(0, n - 1));
-            setPlaying(false);
-            return;
-        }
-        setHead(0);
-        setPlaying(true);
-    }, [text, isChat, n, reduce]);
-
-    // לולאת הסורק.
-    useEffect(() => {
-        if (!playing) return;
-        const id = setInterval(() => setHead((h) => Math.min(n - 1, h + 1)), STEP_MS);
-        return () => clearInterval(id);
-    }, [playing, n]);
-
-    // עצירה בסוף המשפט.
-    useEffect(() => {
-        if (head >= n - 1) setPlaying(false);
-    }, [head, n]);
-
     const clampedHead = Math.min(Math.max(0, head), Math.max(0, n - 1));
     const current = runs[clampedHead];
+    const atEnd = clampedHead >= n - 1;
+    const isRunning = playing && !atEnd;
+
+    // הפעלה אוטומטית מהמילה הראשונה - רק כשאין העדפת תנועה מופחתת. נעשה ב-setTimeout
+    // (לא סינכרוני בגוף ה-effect) כדי להימנע מ-setState ישיר ב-effect וממיסמטץ' hydration.
+    useEffect(() => {
+        if (reduce || n <= 1) return;
+        const id = setTimeout(() => { setHead(0); setPlaying(true); }, 0);
+        return () => clearTimeout(id);
+    }, [reduce, n]);
+
+    // לולאת הסורק. נעצרת מעצמה בסוף המשפט (atEnd -> cleanup), בלי setState בתוך effect.
+    useEffect(() => {
+        if (!playing || atEnd) return;
+        const id = setInterval(() => setHead((h) => Math.min(n - 1, h + 1)), STEP_MS);
+        return () => clearInterval(id);
+    }, [playing, atEnd, n]);
 
     const stepBack = () => { setPlaying(false); setHead((h) => Math.max(0, h - 1)); };
     const stepForward = () => { setPlaying(false); setHead((h) => Math.min(n - 1, h + 1)); };
@@ -98,8 +118,6 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
         setPlaying((p) => !p);
     };
     const seek = (i: number) => { setPlaying(false); setHead(i); };
-
-    const atEnd = clampedHead >= n - 1;
 
     if (n === 0 || !current) {
         return (
@@ -136,12 +154,12 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                         <button
                             type="button"
                             onClick={togglePlay}
-                            aria-pressed={playing}
+                            aria-pressed={isRunning}
                             disabled={n <= 1}
                             className={`inline-flex items-center gap-1.5 rounded-lg border ${a.border} ${a.bgSoft} px-2.5 py-1 text-xs font-bold ${a.text} transition-colors hover:brightness-125 disabled:opacity-40`}
                         >
-                            {playing ? <Pause size={13} /> : <Play size={13} />}
-                            {playing ? 'השהה' : atEnd ? 'שוב' : 'הרץ'}
+                            {isRunning ? <Pause size={13} /> : <Play size={13} />}
+                            {isRunning ? 'השהה' : atEnd ? 'שוב' : 'הרץ'}
                         </button>
                         <button
                             type="button"
@@ -245,11 +263,16 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
 
                 {/* פאנלים */}
                 {isChatRun(current) ? (
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-4">
+                        {/* נהר ההסתברויות - ויזואל החתימה */}
                         <div className="rounded-xl border border-white/10 bg-slate-900/50 p-4">
-                            <ProbabilityBars title="Intent probabilities" items={current.intents} accent={accent} />
+                            <div className="mb-3 flex items-center justify-between">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Probability river</span>
+                                <span className="text-[10px] text-slate-500">העובי = ההסתברות כרגע</span>
+                            </div>
+                            <ProbabilityRiver items={current.intents} order={riverOrder} accent={accent} reduce={!!reduce} />
                         </div>
-                        <div className="space-y-4">
+                        <div className="grid gap-4 md:grid-cols-2">
                             <ConfidenceMeter level={current.confidence} />
                             <DecisionCard decision={current.decision} />
                         </div>
@@ -271,10 +294,16 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                 {/* כיתוב יושרה: קפיצות בדידות הן תקינות */}
                 <p className="flex items-start gap-1.5 text-[11px] leading-relaxed text-slate-500">
                     <span className={`mt-[5px] h-1 w-1 shrink-0 rounded-full ${a.dot}`} />
-                    <span>
-                        לפעמים העמודות קופצות בבת אחת כשמילת-מפתח נכנסת (למשל &quot;{prefixText}&quot;). זה לא באג:
-                        ככה אמונה משתנה ברגע שמגיעה הראיה המכריעה.
-                    </span>
+                    {n === 1 ? (
+                        <span>
+                            מילה אחת בלבד: אין מה לסרוק עדיין. הוסיפו עוד מילים בצ&apos;אט וראו את ההסתברויות זזות עם כל מילה.
+                        </span>
+                    ) : (
+                        <span>
+                            לפעמים העמודות קופצות בבת אחת כשמילת-מפתח נכנסת (למשל &quot;{prefixText}&quot;). זה לא באג:
+                            ככה אמונה משתנה ברגע שמגיעה הראיה המכריעה.
+                        </span>
+                    )}
                 </p>
             </div>
         </div>

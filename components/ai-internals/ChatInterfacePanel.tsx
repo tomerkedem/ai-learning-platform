@@ -22,6 +22,10 @@ interface ChatInterfacePanelProps {
     suggestions?: string[];
     onSuggestion?: (text: string) => void;
     accent?: Accent;
+    /** טוקן מודגש כרגע (קישור חי למנוע). */
+    highlightToken?: string | null;
+    /** ריחוף/נגיעה במילה בהודעת המשתמש - מדגיש את אותו טוקן במנוע. */
+    onTokenHover?: (token: string | null) => void;
 }
 
 const TypingDots: React.FC<{ accent: Accent }> = ({ accent }) => {
@@ -57,10 +61,32 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
     suggestions = [],
     onSuggestion,
     accent = 'cyan',
+    highlightToken,
+    onTokenHover,
 }) => {
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    // הודעת המשתמש מוצגת כמילים לחיצות (כשיש onTokenHover), כדי לקשר חי למנוע.
+    const renderUserText = (text: string): React.ReactNode => {
+        if (!onTokenHover) return text;
+        return text.split(/(\s+)/).map((part, i) => {
+            if (part === '' || /^\s+$/.test(part)) return part;
+            const hl = highlightToken === part;
+            return (
+                <span
+                    key={i}
+                    onMouseEnter={() => onTokenHover(part)}
+                    onMouseLeave={() => onTokenHover(null)}
+                    onClick={(e) => { e.stopPropagation(); onTokenHover(hl ? null : part); }}
+                    className={`cursor-pointer rounded transition-colors ${hl ? 'bg-slate-950/40 px-0.5 ring-1 ring-white/50' : 'hover:bg-slate-950/20'}`}
+                >
+                    {part}
+                </span>
+            );
+        });
+    };
 
     // גלילה אוטומטית לתחתית בכל הודעה / בזמן הקלדה.
     useEffect(() => {
@@ -78,24 +104,37 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
     const visible = isTyping ? messages.filter((m) => m.role !== 'ai') : messages;
 
     return (
-        <div className={`flex flex-col rounded-[2rem] border border-white/10 bg-slate-950/70 shadow-2xl h-[640px] overflow-hidden`} dir="rtl">
+        <div className="relative isolate flex flex-col rounded-[2rem] border border-white/10 bg-slate-950/80 h-[640px] overflow-hidden" dir="rtl">
+            {/* רקע גריד עדין + הילת פינה (המסגרת והזוהר מגיעים מ-HoloFrame) */}
+            <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+            <div className={`pointer-events-none absolute -top-24 -right-16 -z-10 h-52 w-52 rounded-full blur-[80px] ${a.bgSoft}`} />
+
             {/* כותרת + מצב */}
-            <div className="p-5 border-b border-white/10 shrink-0 space-y-3 bg-slate-900/40">
-                <div className="flex items-center gap-2.5">
-                    <span className="relative flex h-2.5 w-2.5">
-                        {!reduce && <span className={`absolute inline-flex h-full w-full rounded-full ${a.dot} opacity-60 animate-ping`} />}
-                        <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${a.dot}`} />
-                    </span>
-                    <div>
-                        <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500">{title}</div>
-                        {subtitle && <div className="text-xs text-slate-400">{subtitle}</div>}
+            <div className="relative z-10 p-5 border-b border-white/10 shrink-0 space-y-3 bg-slate-900/50">
+                <div className="flex items-center justify-between gap-2.5">
+                    <div className="flex items-center gap-2.5">
+                        <span className="relative flex h-2.5 w-2.5">
+                            {!reduce && <span className={`absolute inline-flex h-full w-full rounded-full ${a.dot} opacity-60 animate-ping`} />}
+                            <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${a.dot}`} />
+                        </span>
+                        <div>
+                            <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500">{title}</div>
+                            {subtitle && <div className="text-xs text-slate-400">{subtitle}</div>}
+                        </div>
                     </div>
+                    <span className={`inline-flex items-center gap-1.5 rounded-full border ${a.border} ${a.bgSoft} px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest ${a.text}`}>
+                        <span className="relative flex h-1.5 w-1.5">
+                            {!reduce && <span className={`absolute inline-flex h-full w-full rounded-full ${a.dot} opacity-75 animate-ping`} />}
+                            <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${a.dot}`} />
+                        </span>
+                        Live
+                    </span>
                 </div>
                 <ModeToggle mode={mode} onChange={onModeChange} accent={accent} />
             </div>
 
             {/* הודעות */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto custom-scrollbar p-5 flex flex-col gap-3">
+            <div ref={scrollRef} className="relative z-10 flex-1 overflow-y-auto custom-scrollbar p-5 flex flex-col gap-3">
                 <AnimatePresence initial={false} mode="popLayout">
                     {visible.map((m) => (
                         <motion.div
@@ -105,10 +144,10 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={reduce ? undefined : { opacity: 0, scale: 0.96 }}
                             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                            className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed
+                            className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-lg
                                 ${m.role === 'user'
-                                    ? `self-start ${a.solid} ${a.solidText} ${a.glow}`
-                                    : 'self-end bg-slate-800 text-slate-100 border border-white/10'
+                                    ? `self-start rounded-br-md ${a.solid} ${a.solidText} ${a.glow}`
+                                    : 'self-end rounded-bl-md bg-gradient-to-bl from-slate-800 to-slate-800/60 text-slate-100 border border-white/10'
                                 }`}
                         >
                             {m.role === 'ai' && (
@@ -116,7 +155,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                                     <Bot size={11} /> AI
                                 </div>
                             )}
-                            {m.text}
+                            {m.role === 'user' ? renderUserText(m.text) : m.text}
                         </motion.div>
                     ))}
 
@@ -141,7 +180,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
 
             {/* דוגמאות מהירות */}
             {suggestions.length > 0 && (
-                <div className="px-4 pt-3 shrink-0">
+                <div className="relative z-10 px-4 pt-3 shrink-0">
                     <div className="flex items-center gap-1.5 text-[10px] text-slate-500 mb-2">
                         <Sparkles size={11} /> נסו דוגמה
                     </div>
@@ -160,8 +199,8 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
             )}
 
             {/* קלט */}
-            <div className="p-4 shrink-0">
-                <div className={`flex items-center gap-2 rounded-2xl bg-slate-900 border border-white/10 p-1.5 focus-within:border-white/30 transition-colors`}>
+            <div className="relative z-10 p-4 shrink-0">
+                <div className={`flex items-center gap-2 rounded-2xl bg-slate-900 border border-white/10 p-1.5 transition-all focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10`}>
                     <input
                         value={inputValue}
                         onChange={(e) => onInputChange(e.target.value)}

@@ -40,20 +40,24 @@ export function tokenize(text: string): string[] {
     return text.trim().split(/\s+/).filter(Boolean);
 }
 
-const includesAny = (text: string, words: string[]) => words.some((w) => text.includes(w));
-const countHits = (text: string, words: string[]) => words.filter((w) => text.includes(w)).length;
-const hasBarcode = (text: string) => /\d{6,}/.test(text);
+// עוזרים אלה מיוצאים (additive בלבד) כדי שטבלת ה-trace תוכל לחשוף את אותם
+// בדיקות-מפתח שהמנוע כבר מבצע - מקור-אמת יחיד, בלי שכפול לוגיקה ובלי מספרים חדשים.
+export const includesAny = (text: string, words: string[]) => words.some((w) => text.includes(w));
+export const countHits = (text: string, words: string[]) => words.filter((w) => text.includes(w)).length;
+export const matchedWords = (text: string, words: string[]) => words.filter((w) => text.includes(w));
+export const hasBarcode = (text: string) => /\d{6,}/.test(text);
+export const NEGATION_TOKEN = 'לא';
 
 // --- Chat Mode: דירוג כוונות ---
 
-interface ChatRule {
+export interface ChatRule {
     key: string;
     label: string;
     meaning: string;
     words: string[];
 }
 
-const CHAT_RULES: ChatRule[] = [
+export const CHAT_RULES: ChatRule[] = [
     {
         key: 'notDelivered',
         label: 'Package not delivered',
@@ -80,10 +84,10 @@ const CHAT_RULES: ChatRule[] = [
     },
 ];
 
-const UNMATCHED_BASE = 0.15;
-const HIT_WEIGHT = 3.0;
-const NEGATION_BOOST = 1.5;
-const OTHER_BASE = 0.4;
+export const UNMATCHED_BASE = 0.15;
+export const HIT_WEIGHT = 3.0;
+export const NEGATION_BOOST = 1.5;
+export const OTHER_BASE = 0.4;
 
 const REPLIES: Record<string, string> = {
     notDelivered: 'נראה שמדובר במקרה של אי מסירה. כדאי לבדוק את סטטוס המשלוח לפי ברקוד.',
@@ -160,10 +164,10 @@ export function runChatEngine(text: string): ChatEngineResult {
 
 // --- Agent Mode: זיהוי משימה, מידע חסר, כלי, סיכון ---
 
-const ACTION_WORDS = ['בדוק', 'תבדוק', 'מצא', 'שלוף', 'עדכן', 'תעדכן', 'שלח', 'תשלח', 'פתח', 'סגור', 'תטפל', 'טפל'];
-const SENSITIVE_WORDS = ['שלח', 'תשלח', 'עדכן', 'תעדכן', 'מחק', 'תמחק'];
-const DELIVERY_WORDS = ['חבילה', 'משלוח', 'הזמנה', 'מסירה'];
-const VAGUE_WORDS = ['תטפל בזה', 'תטפל', 'זה', 'אותו'];
+export const ACTION_WORDS = ['בדוק', 'תבדוק', 'מצא', 'שלוף', 'עדכן', 'תעדכן', 'שלח', 'תשלח', 'פתח', 'סגור', 'תטפל', 'טפל'];
+export const SENSITIVE_WORDS = ['שלח', 'תשלח', 'עדכן', 'תעדכן', 'מחק', 'תמחק'];
+export const DELIVERY_WORDS = ['חבילה', 'משלוח', 'הזמנה', 'מסירה'];
+export const VAGUE_WORDS = ['תטפל בזה', 'תטפל', 'זה', 'אותו'];
 
 export function runAgentEngine(text: string): AgentEngineResult {
     const tokens = tokenize(text);
