@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Terminal, ScanSearch, Sparkles, ArrowDown, ScanLine, SlidersHorizontal, GitCompare, Route, Split, X } from 'lucide-react';
+import { Terminal, ScanSearch, ArrowDown, ScanLine, SlidersHorizontal, GitCompare, Route, Split, X, Layers, ChevronDown, Eye } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine } from '@/components/content/AssessmentEngine';
@@ -45,6 +45,9 @@ export default function BehindTheScenesChapter1() {
     const [isTyping, setIsTyping] = useState(true);
     // הדרכת first-run: רמז עדין מאיפה להתחיל, נסגר בלחיצה כדי לא להפריע לחזרות.
     const [coachOpen, setCoachOpen] = useState(true);
+    // חשיפה הדרגתית: שכבת העומק (קריאה חיה, חוגת ביטחון, סיבתיות, פיצול) סגורה
+    // כברירת מחדל. פרק 1 נפתח נקי - התשובה והדרך שמאחוריה בלבד - והפרטים נפתחים בבחירה.
+    const [deepOpen, setDeepOpen] = useState(false);
     // חישוב חי: המנוע מנתח את מה שמקלידים (debounced), לא רק את מה שנשלח.
     const [liveText, setLiveText] = useState(DEFAULT_INPUT);
     // קישור חי: הטוקן שמרחפים עליו (בצ'אט או במנוע), להדגשה הדדית.
@@ -206,6 +209,15 @@ export default function BehindTheScenesChapter1() {
         setMode(m);
         generateReply(conversationText, m); // החלפת מצב מייצרת תשובה מתאימה מחדש
     };
+    // פתיחה/סגירה של שכבת העומק. סגירה מחזירה את המעבדה ל-Chat נקי (מתג ה-Agent
+    // חי רק בתוך שכבת העומק), כדי שהמסך הראשי יישאר ממוקד.
+    const toggleDeep = () => {
+        if (deepOpen && mode !== 'chat') {
+            setMode('chat');
+            generateReply(conversationText, 'chat');
+        }
+        setDeepOpen((open) => !open);
+    };
 
     return (
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={1}>
@@ -237,21 +249,21 @@ export default function BehindTheScenesChapter1() {
                     </h1>
 
                     <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">
-                        כתבו משפט אחד, ומימין הצ&apos;אט נראה רגיל. משמאל המנוע נפתח וחושב מולכם בזמן אמת:
-                        טוקנים, הסתברויות, ביטחון והחלטה. כאן לא רק רואים את התוצאה, אלא צופים במנוע
-                        <span className="text-white font-semibold"> משנה את דעתו תוך כדי קריאה</span> - ואפשר להתערב:
-                        לגרור את ראש הקריאה, להזיז את סף הביטחון, ולהחליף מילה אחת כדי להפוך החלטה.
+                        כתבו משפט אחד. מימין הצ&apos;אט נראה רגיל, בדיוק כמו בכל אפליקציה. משמאל נפתחת
+                        <span className="text-white font-semibold"> הדרך שמאחורי התשובה</span>: המנוע מראה איך הוא
+                        קורא את המשפט ומגיע להחלטה. לעת עתה רק תסתכלו, אין צורך להבין כל מספר. את העומק
+                        נפתח בהמשך, שלב אחר שלב.
                     </p>
 
                     <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
                         <span className="inline-flex items-center gap-1.5">
-                            <ScanLine size={14} className="text-cyan-400" /> גררו את ראש הקריאה וראו איך הניחוש המוביל מתחלף
+                            <Terminal size={14} className="text-cyan-400" /> מימין: התשובה שאתם רואים
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                            <SlidersHorizontal size={14} className="text-cyan-400" /> הזיזו את סף הביטחון בין ענה לשאל
+                            <ScanSearch size={14} className="text-cyan-400" /> משמאל: הדרך שמאחורי התשובה
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                            <Sparkles size={14} className="text-purple-400" /> החליפו בין Chat ל-Agent וראו איך הכול משתנה
+                            <Layers size={14} className="text-purple-400" /> בהמשך: נפתח כל שלב לעומק
                         </span>
                     </div>
                 </div>
@@ -298,24 +310,25 @@ export default function BehindTheScenesChapter1() {
                 <div className="flex items-center gap-3">
                     <ScanSearch size={24} className="text-cyan-400" />
                     <div>
-                        <h3 className="text-2xl font-bold text-white">הצ'ט השקוף</h3>
+                        <h3 className="text-2xl font-bold text-white">הצ&apos;ט השקוף</h3>
                         <div className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">Transparent Chat Lab</div>
                     </div>
                 </div>
 
+                <p className="flex items-start gap-2.5 text-base leading-relaxed text-slate-200">
+                    <Eye size={18} className="mt-0.5 shrink-0 text-cyan-400" />
+                    כאן רואים שיש דרך מאחורי התשובה: מימין התשובה כרגיל, ומשמאל הדרך שהובילה אליה.
+                </p>
+
                 <div className="relative">
-                {/* aurora אמביינטי מאחורי שני החלונות */}
-                <motion.div
+                {/* aurora אמביינטי מאחורי שני החלונות - סטטי כדי להשאיר את המסך הראשי רגוע */}
+                <div
                     aria-hidden
                     className="pointer-events-none absolute -top-12 right-1/4 -z-10 h-72 w-72 rounded-full bg-cyan-500/10 blur-[110px]"
-                    animate={reduce ? undefined : { x: [0, 40, 0], y: [0, 28, 0] }}
-                    transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
                 />
-                <motion.div
+                <div
                     aria-hidden
                     className="pointer-events-none absolute -bottom-12 left-1/4 -z-10 h-72 w-72 rounded-full bg-purple-500/10 blur-[110px]"
-                    animate={reduce ? undefined : { x: [0, -32, 0], y: [0, -22, 0] }}
-                    transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
                 />
                 <TransparentLabLayout
                     accent={accent}
@@ -331,6 +344,7 @@ export default function BehindTheScenesChapter1() {
                                 inputValue={inputValue}
                                 onInputChange={setInputValue}
                                 onSend={handleSend}
+                                showModeToggle={deepOpen}
                                 isTyping={showTyping}
                                 streaming={streaming}
                                 live={live}
@@ -359,10 +373,9 @@ export default function BehindTheScenesChapter1() {
                 />
                 </div>
 
-                <p className="text-slate-400 text-sm leading-relaxed">
-                    ב-<span className="text-cyan-300 font-semibold">Chat Mode</span> המערכת בוחרת תשובה.
-                    ב-<span className="text-purple-300 font-semibold">Agent Mode</span> היא בודקת מה הצעד הנכון הבא –
-                    לענות, להשתמש בכלי, או לעצור ולבקש מידע.
+                <p className="text-slate-300 text-base leading-relaxed">
+                    הסתכלו קודם על <span className="text-white font-semibold">ההחלטה</span>, לא על כל המספרים.
+                    המנוע משמאל מראה שיש מסלול שלם בין השאלה לתשובה. הפרטים המלאים ייפתחו בהמשך הלומדה.
                 </p>
 
                 <p className="text-xs leading-relaxed text-slate-500">
@@ -375,6 +388,58 @@ export default function BehindTheScenesChapter1() {
                   <Mentor pose="inspect" line="הצ'אט מימין, המנוע משמאל 🔍" width={130} />
                 </div>
             </section>
+
+            {/* ══════════ התובנה המרכזית של הפרק ══════════ */}
+            <section className="mt-12 text-right" dir="rtl">
+                <InsightBox type="intuition" title="הרעיון של הפרק">
+                    תשובה בצ&apos;אט היא רק הקצה הגלוי של תהליך נסתר. מאחורי כל תשובה רץ מסלול,
+                    ואת המסלול הזה אפשר לפתוח שלב אחר שלב. זה בדיוק מה שהלומדה הזו תעשה: תלמד את הדרך
+                    שמאחורי התשובה, בהדרגה. עדיין לא צריך להבין כל מנגנון - מספיק להבין שהדרך קיימת, ושאפשר לפתוח אותה.
+                </InsightBox>
+            </section>
+
+            {/* ══════════ חשיפה הדרגתית: שער אל שכבת העומק ══════════ */}
+            <section className="mt-10 text-center" dir="rtl">
+                <button
+                    type="button"
+                    onClick={toggleDeep}
+                    aria-expanded={deepOpen}
+                    className="group inline-flex items-center gap-3 rounded-2xl border border-cyan-500/40 bg-cyan-900/15 px-6 py-3.5 text-base font-bold text-cyan-200 transition-colors hover:border-cyan-400/60 hover:bg-cyan-900/25"
+                >
+                    <Layers size={18} className="text-cyan-300" />
+                    {deepOpen ? 'סגרו את שכבת העומק' : 'פתחו את המנוע המלא'}
+                    <ChevronDown
+                        size={18}
+                        className={`text-cyan-300 transition-transform ${deepOpen ? 'rotate-180' : ''}`}
+                    />
+                </button>
+                {!deepOpen && (
+                    <p className="mt-3 text-base text-slate-300">
+                        כאן נפתחים הכלים המתקדמים: קריאה חיה, חוגת ביטחון, סיבתיות והשוואת מנועים. אפשר לחקור בקצב שלכם.
+                    </p>
+                )}
+            </section>
+
+            {/* ══════════ שכבת העומק (חשיפה הדרגתית) ══════════ */}
+            <AnimatePresence initial={false}>
+            {deepOpen && (
+            <motion.div
+                key="deep-layer"
+                initial={reduce ? false : { opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden"
+            >
+            <p className="mt-8 flex items-start gap-2.5 text-lg leading-relaxed text-slate-200" dir="rtl">
+                <ScanSearch size={20} className="mt-1 shrink-0 text-cyan-400" />
+                ראו שכבת עומק: מכאן זה נעשה טכני יותר. כל כלי מראה זווית אחרת של אותו מסלול. אין צורך לסיים הכול ברצף.
+            </p>
+            <p className="mt-3 text-base leading-relaxed text-slate-300" dir="rtl">
+                ב-<span className="text-cyan-300 font-semibold">Chat Mode</span> המערכת בוחרת תשובה.
+                ב-<span className="text-purple-300 font-semibold">Agent Mode</span> היא בודקת מה הצעד הנכון הבא -
+                לענות, להשתמש בכלי, או לעצור ולבקש מידע. החליפו ביניהם במתג שבראש הצ&apos;אט.
+            </p>
 
             {/* ══════════ Read Head ══════════ */}
             <section className="mt-12 space-y-5 text-right" dir="rtl">
@@ -453,6 +518,9 @@ export default function BehindTheScenesChapter1() {
                     אלא הצעד האחראי. בדיוק כאן מתחיל החיבור בין הסתברות לאחריות.
                 </InsightBox>
             </section>
+            </motion.div>
+            )}
+            </AnimatePresence>
 
 
             {/* ══════════ מבדק הבנה ══════════ */}

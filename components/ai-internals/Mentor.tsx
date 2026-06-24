@@ -81,6 +81,8 @@ export interface MentorProps {
     pose?: MentorPose;
     /** טקסט בועת-דיבור. ללא טקסט — אין בועה. */
     line?: string;
+    /** אייקון קטן בתוך בועת-הדיבור, לצד הטקסט. נכשל בחן (מוסתר) אם הקובץ חסר. */
+    lineIcon?: string;
     /** רוחב המסגרת בפיקסלים (הגובה אוטומטי). */
     width?: number;
     /** מראה הופכת אופקית (כיוון הצבעה הפוך / התאמת RTL). */
@@ -99,6 +101,7 @@ export interface MentorProps {
 export const Mentor: React.FC<MentorProps> = ({
     pose = 'hero',
     line,
+    lineIcon,
     width = 160,
     flip = false,
     float = true,
@@ -138,7 +141,21 @@ export const Mentor: React.FC<MentorProps> = ({
                         style={{ borderColor: `rgb(${accent.base} / 0.4)` }}
                         dir="rtl"
                     >
-                        <p className="text-[11px] font-bold leading-snug" style={{ color: accent.text }}>{line}</p>
+                        <p className="flex flex-col items-center justify-center gap-1 text-[11px] font-bold leading-snug" style={{ color: accent.text }}>
+                            {lineIcon && (
+                                // אייקון בולט מעל הטקסט (באדג'). next/image מיותר כאן.
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                    src={lineIcon}
+                                    alt=""
+                                    aria-hidden
+                                    className="h-8 w-8 shrink-0 object-contain drop-shadow-[0_0_6px_rgba(34,211,238,0.35)]"
+                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                    draggable={false}
+                                />
+                            )}
+                            <span>{line}</span>
+                        </p>
                         <span
                             className={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 bg-slate-900/95 ${
                                 bubbleSide === 'top' ? '-bottom-1.5 border-b border-r' : '-top-1.5 border-l border-t'

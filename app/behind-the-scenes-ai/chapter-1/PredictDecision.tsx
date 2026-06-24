@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { HelpCircle, CheckCircle2, Wrench, Hand, Sparkles, ArrowDown, RotateCcw, Lightbulb } from 'lucide-react';
 
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
+import { Mentor } from '@/components/ai-internals/Mentor';
 import type { DecisionKind, FlowMode } from '@/components/ai-internals/types';
 
 import { runChatEngine, runAgentEngine } from './mockEngine';
@@ -70,12 +71,24 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
     const guessHe = labelOf(guess);
     const actualHe = labelOf(actualKind);
 
+    // המנטור הפנימי מגיב לתוצאה: לפני ניחוש מזמין, אחרי ניחוש נכון חוגג, ואחרי טעות מרגיע.
+    // ה-key מחליף בין הפוזות עם אנימציית כניסה קצרה, כדי שהתגובה תרגיש חיה.
+    const mentor = !revealed
+        ? { pose: 'think' as const, line: 'נחשו לפני שמגלים', glow: false, icon: '/assets/predict-guess.png' }
+        : correct
+            ? { pose: 'celebrate' as const, line: 'בול! קלעתם', glow: true, icon: '/assets/predict-correct.png' }
+            : { pose: 'reassure' as const, line: 'דווקא טעות מלמדת', glow: false, icon: '/assets/predict-wrong.png' };
+
     return (
         <div
             dir="rtl"
             className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/60 p-6 text-center backdrop-blur-xl md:p-8"
         >
             <div className={`pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full ${accentGlow} blur-[80px]`} />
+            {/* מנטור פנימי מגיב: הפוזה והבועה משתנות לפי תוצאת הניחוש (think/celebrate/reassure). */}
+            <div className="pointer-events-none absolute bottom-0 right-4 z-0 hidden lg:block">
+                <Mentor key={mentor.pose} pose={mentor.pose} line={mentor.line} lineIcon={mentor.icon} width={112} float={false} glow={mentor.glow} />
+            </div>
             <div className="relative">
                 <span className={`mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] ${accentText}`}>
                     <HelpCircle size={14} /> ניחוש מהיר
@@ -85,8 +98,8 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
                 </h3>
                 <p className="mx-auto mb-6 max-w-xl text-sm text-slate-400">
                     {isChat
-                        ? 'לפני שתפעילו את הסורק - נחשו איך המנוע יגיב.'
-                        : 'לפני שתפעילו את הסורק - נחשו מה יהיה הצעד הבא של המנוע.'}
+                        ? 'לפני שתפעילו את ראש הקריאה - נחשו איך המנוע יגיב.'
+                        : 'לפני שתפעילו את ראש הקריאה - נחשו מה יהיה הצעד הבא של המנוע.'}
                 </p>
 
                 <div className="flex flex-wrap items-center justify-center gap-3">
@@ -148,8 +161,8 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
                                 )}
                                 <p className="max-w-md text-sm text-slate-400">
                                     {correct
-                                        ? 'זיהיתם נכון לאן הקלט נוטה. הפעילו עכשיו את הסורק שלמטה וראו למה - מילה-אחר-מילה.'
-                                        : 'וזה בדיוק החלק המעניין: הקלט נוטה לכיוון אחר ממה שציפיתם. הפעילו את הסורק שלמטה וראו איך המנוע הגיע לזה, מילה-אחר-מילה.'}
+                                        ? 'זיהיתם נכון לאן הקלט נוטה. הפעילו עכשיו את ראש הקריאה שלמטה וראו למה - מילה-אחר-מילה.'
+                                        : 'וזה בדיוק החלק המעניין: הקלט נוטה לכיוון אחר ממה שציפיתם. הפעילו את ראש הקריאה שלמטה וראו איך המנוע הגיע לזה, מילה-אחר-מילה.'}
                                 </p>
                                 {guessedImpossible && (
                                     <p className="max-w-md rounded-xl border border-amber-500/30 bg-amber-900/10 px-3 py-2 text-sm leading-relaxed text-amber-100/90">

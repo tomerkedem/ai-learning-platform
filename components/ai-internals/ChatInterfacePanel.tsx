@@ -12,6 +12,8 @@ interface ChatInterfacePanelProps {
     subtitle?: string;
     mode: FlowMode;
     onModeChange: (mode: FlowMode) => void;
+    /** האם להציג את מתג Chat/Agent. ברירת מחדל: true. כיבוי מסתיר את שכבת ה-Agent. */
+    showModeToggle?: boolean;
     messages: ChatMessage[];
     inputValue: string;
     onInputChange: (value: string) => void;
@@ -57,6 +59,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
     subtitle,
     mode,
     onModeChange,
+    showModeToggle = true,
     messages,
     inputValue,
     onInputChange,
@@ -139,7 +142,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                         {live ? 'Live' : 'דמו'}
                     </span>
                 </div>
-                <ModeToggle mode={mode} onChange={onModeChange} accent={accent} />
+                {showModeToggle && <ModeToggle mode={mode} onChange={onModeChange} accent={accent} />}
             </div>
 
             {/* הודעות */}

@@ -139,13 +139,15 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                 <div>
                     <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500">Read Head</div>
                     <div className={`font-black text-base ${a.text}`}>ראש הקריאה</div>
+                    <div className="text-xs text-slate-400">הסמן שעובר על המשפט מילה-אחר-מילה</div>
                 </div>
             </div>
 
             <div className="p-4 space-y-4">
                 <p className="text-sm text-slate-300 leading-relaxed">
-                    הסורק קורא מילה-אחר-מילה. בכל עצירה מורץ <span className={a.text}>אותו מנוע</span> על
-                    המילים שנקראו עד כה - כך אפשר לראות את המודל <span className="text-white font-semibold">משנה את דעתו תוך כדי קריאה</span>.
+                    <span className={`font-semibold ${a.text}`}>ראש הקריאה</span> הוא הסמן שעובר על המשפט
+                    מילה-אחר-מילה, כמו אצבע שעוקבת אחרי הטקסט בזמן קריאה. בכל עצירה מורץ אותו מנוע על
+                    המילים שנקראו עד כה, וכך אפשר לראות את המודל <span className="text-white font-semibold">משנה את דעתו תוך כדי קריאה</span>.
                 </p>
                 <p className="text-xs text-slate-400 leading-relaxed">
                     מה לוקחים מכאן: למודל אין תשובה מוכנה מראש. הוא בונה אותה מההקשר שמצטבר, וכל מילה
