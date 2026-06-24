@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Circle, PlayCircle, Menu, X, Terminal, Sigma, BrainCircuit, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { courses } from "@/lib/courseData"; 
+import { courses } from "@/lib/courseData";
+import { SidebarMastery } from "@/app/behind-the-scenes-ai/MasteryDashboard";
 
 export function CourseSidebar({ isFocusMode = false }: { isFocusMode?: boolean }) {
   const pathname = usePathname();
@@ -122,12 +123,15 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                     <span className={progress === 100 ? 'text-emerald-400' : ''}>{progress}%</span>
                 </div>
                 <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
-                    <div 
+                    <div
                         className={`h-full transition-all duration-700 ease-out ${progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
                         style={{ width: `${Math.max(2, progress)}%` }}
                     />
                 </div>
             </div>
+
+            {/* סיכום שליטה במבדקים - מוצג רק בלומדת "מאחורי הקלעים של AI" ורק כשיש נתונים */}
+            {currentCourseId === 'behind-the-scenes-ai' && <SidebarMastery />}
           </div>
 
           {/* Navigation List */}

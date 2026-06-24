@@ -7,7 +7,8 @@
 // אין שימוש בתו "מקף ארוך" (em dash) בקובץ הזה, בהתאם להנחיות הלומדה.
 // ════════════════════════════════════════════════════════════════════════
 
-import type { ScoreTier } from "@/components/content/AssessmentEngine";
+import type { ScoreTier, ReviewLink, AssessmentResult } from "@/components/content/AssessmentEngine";
+import { recordResult, chapterQuizId, FINAL_EXAM_QUIZ_ID } from "./masteryProgress";
 
 export type Difficulty = "easy" | "medium" | "hard";
 
@@ -27,6 +28,15 @@ export interface ChapterQuizMeta {
     questions: QuizQuestion[];
     /** קישור לפרק הבא, מוצג בסיום המבדק כאשר עוברים את סף ההצלחה */
     nextHref?: string;
+    /** שמירת התוצאה ב-localStorage בסיום ניסיון */
+    onComplete?: (result: AssessmentResult) => void;
+    /** קישורי חזרה ממוקדים לפי מושגים חלשים */
+    getReviewLinks?: (weakConcepts: string[]) => ReviewLink[];
+    startLabel?: string;
+    submitLabel?: string;
+    completedTitle?: string;
+    showTimer?: boolean;
+    soundEnabled?: boolean;
 }
 
 // ===== CHAPTER 1 =====
@@ -1510,29 +1520,110 @@ export const finalExamTiers: ScoreTier[] = [
 // ════════════════════════════════════════════════════════════════════════
 const QUIZ_SUBTITLE = "חמש שאלות שמחדדות את מה שלמדתם בפרק";
 
-export const behindAiChapterQuizzes: Record<number, ChapterQuizMeta> = {
-    1: { title: "מבדק הבנה: הדרך אל התשובה", subtitle: QUIZ_SUBTITLE, questions: chapter1Quiz, nextHref: "/behind-the-scenes-ai/chapter-2" },
-    2: { title: "מבדק הבנה: ההחלטה הראשונה", subtitle: QUIZ_SUBTITLE, questions: chapter2Quiz, nextHref: "/behind-the-scenes-ai/chapter-3" },
-    3: { title: "מבדק הבנה: הלב ההסתברותי", subtitle: QUIZ_SUBTITLE, questions: chapter3Quiz, nextHref: "/behind-the-scenes-ai/chapter-4" },
-    4: { title: "מבדק הבנה: מילה אחר מילה", subtitle: QUIZ_SUBTITLE, questions: chapter4Quiz, nextHref: "/behind-the-scenes-ai/chapter-5" },
-    5: { title: "מבדק הבנה: טוקניזציה", subtitle: QUIZ_SUBTITLE, questions: chapter5Quiz, nextHref: "/behind-the-scenes-ai/chapter-6" },
-    6: { title: "מבדק הבנה: ממילים למספרים", subtitle: QUIZ_SUBTITLE, questions: chapter6Quiz, nextHref: "/behind-the-scenes-ai/chapter-7" },
-    7: { title: "מבדק הבנה: הגיאומטריה של המשמעות", subtitle: QUIZ_SUBTITLE, questions: chapter7Quiz, nextHref: "/behind-the-scenes-ai/chapter-8" },
-    8: { title: "מבדק הבנה: דמיון, ציונים והסתברויות", subtitle: QUIZ_SUBTITLE, questions: chapter8Quiz, nextHref: "/behind-the-scenes-ai/chapter-9" },
-    9: { title: "מבדק הבנה: ביטחון ושער ההחלטה", subtitle: QUIZ_SUBTITLE, questions: chapter9Quiz, nextHref: "/behind-the-scenes-ai/chapter-10" },
-    10: { title: "מבדק הבנה: מ-Prompt למשימה", subtitle: QUIZ_SUBTITLE, questions: chapter10Quiz, nextHref: "/behind-the-scenes-ai/chapter-11" },
-    11: { title: "מבדק הבנה: בחירת כלי", subtitle: QUIZ_SUBTITLE, questions: chapter11Quiz, nextHref: "/behind-the-scenes-ai/chapter-12" },
-    12: { title: "מבדק הבנה: Tool Call ולולאת ההחלטה", subtitle: QUIZ_SUBTITLE, questions: chapter12Quiz, nextHref: "/behind-the-scenes-ai/chapter-13" },
-    13: { title: "מבדק הבנה: עצירה, אישור ואחריות", subtitle: QUIZ_SUBTITLE, questions: chapter13Quiz, nextHref: "/behind-the-scenes-ai/chapter-14" },
-    14: { title: "מבדק הבנה: המעבדה המאוחדת", subtitle: QUIZ_SUBTITLE, questions: chapter14Quiz, nextHref: "/behind-the-scenes-ai/chapter-15" },
-    15: { title: "מבדק הבנה: האם AI לומד מטעויות", subtitle: QUIZ_SUBTITLE, questions: chapter15Quiz, nextHref: "/behind-the-scenes-ai/chapter-16" },
-    16: { title: "מבדק הבנה: לעבוד נכון עם AI", subtitle: QUIZ_SUBTITLE, questions: chapter16Quiz }
+// תווית קצרה לכל פרק, לשימוש בקישורי החזרה הממוקדים ובלוח ההתקדמות.
+export const CHAPTER_LABELS: Record<number, string> = {
+    1: "הדרך אל התשובה",
+    2: "ההחלטה הראשונה",
+    3: "הלב ההסתברותי",
+    4: "מילה אחר מילה",
+    5: "טוקניזציה",
+    6: "ממילים למספרים",
+    7: "הגיאומטריה של המשמעות",
+    8: "דמיון, ציונים והסתברויות",
+    9: "ביטחון ושער ההחלטה",
+    10: "מ-Prompt למשימה",
+    11: "בחירת כלי",
+    12: "Tool Call ולולאת ההחלטה",
+    13: "עצירה, אישור ואחריות",
+    14: "המעבדה המאוחדת",
+    15: "האם AI לומד מטעויות",
+    16: "לעבוד נכון עם AI",
 };
 
+const CHAPTER_QUIZZES: Record<number, QuizQuestion[]> = {
+    1: chapter1Quiz, 2: chapter2Quiz, 3: chapter3Quiz, 4: chapter4Quiz,
+    5: chapter5Quiz, 6: chapter6Quiz, 7: chapter7Quiz, 8: chapter8Quiz,
+    9: chapter9Quiz, 10: chapter10Quiz, 11: chapter11Quiz, 12: chapter12Quiz,
+    13: chapter13Quiz, 14: chapter14Quiz, 15: chapter15Quiz, 16: chapter16Quiz,
+};
+
+// מפה ממושג אל מספר הפרק שמלמד אותו. נבנית אוטומטית ממבדקי הפרקים, ומושלמת
+// ידנית עבור מושגי מבחן הסיום שאינם מופיעים ככותרת מושג במבדקי הפרקים.
+const CONCEPT_TO_CHAPTER: Record<string, number> = {};
+for (let n = 1; n <= 16; n++) {
+    for (const q of CHAPTER_QUIZZES[n]) {
+        if (!(q.concept in CONCEPT_TO_CHAPTER)) CONCEPT_TO_CHAPTER[q.concept] = n;
+    }
+}
+const FINAL_CONCEPT_TO_CHAPTER: Record<string, number> = {
+    "המסלול המלא": 1,
+    "למה טוקניזציה": 5,
+    "מרכזיות המספרים": 6,
+    "הסתברות אינה אמת": 3,
+    "ניסוח משנה ביטחון": 4,
+    "יכולת אינה הרשאה": 13,
+    "סיכון בשימוש בכלי": 11,
+    "למה צריך בקרה": 13,
+    "זיהוי עמימות": 9,
+    "הסבר לא טכני": 3,
+    "UX חושף תהליך": 14,
+    "כל מילה מזיזה": 4,
+    "למידה וזיכרון": 15,
+    "ביטחון פוגש סיכון": 13,
+};
+for (const [concept, n] of Object.entries(FINAL_CONCEPT_TO_CHAPTER)) {
+    if (!(concept in CONCEPT_TO_CHAPTER)) CONCEPT_TO_CHAPTER[concept] = n;
+}
+
+/** ממיר מושגים חלשים לקישורי חזרה ממוקדים, פרק אחד לכל מושג, בלי כפילויות. */
+export function reviewLinksForConcepts(concepts: string[]): ReviewLink[] {
+    const seenChapters = new Set<number>();
+    const links: ReviewLink[] = [];
+    for (const concept of concepts) {
+        const n = CONCEPT_TO_CHAPTER[concept];
+        if (!n || seenChapters.has(n)) continue;
+        seenChapters.add(n);
+        links.push({ href: `/behind-the-scenes-ai/chapter-${n}`, label: `פרק ${n} - ${CHAPTER_LABELS[n]}` });
+    }
+    return links;
+}
+
+// onComplete שמתמיד את תוצאת מבדק הפרק ב-localStorage.
+function chapterOnComplete(chapterId: number) {
+    return (result: AssessmentResult) =>
+        recordResult({ quizId: chapterQuizId(chapterId), chapterId, ...result });
+}
+
+// רישום מרוכז: מפה מ-chapterId אל המבדק של אותו פרק, מועשר בהתמדה, אבחון וקופי.
+// כל עמוד פרק צורך את הערך המתאים לו: <AssessmentEngine {...behindAiChapterQuizzes[N]} />
+export const behindAiChapterQuizzes: Record<number, ChapterQuizMeta> = {};
+for (let n = 1; n <= 16; n++) {
+    behindAiChapterQuizzes[n] = {
+        title: `מבדק הבנה: ${CHAPTER_LABELS[n]}`,
+        subtitle: QUIZ_SUBTITLE,
+        questions: CHAPTER_QUIZZES[n],
+        nextHref: n < 16 ? `/behind-the-scenes-ai/chapter-${n + 1}` : undefined,
+        onComplete: chapterOnComplete(n),
+        getReviewLinks: reviewLinksForConcepts,
+        startLabel: "התחילו את המבדק",
+        submitLabel: "סיום המבדק",
+        completedTitle: "סיימתם את המבדק",
+        showTimer: false,
+        soundEnabled: false,
+    };
+}
+
 export const behindAiFinalExam = {
-    title: "מבחן סיום: מאחורי הקלעים של AI",
+    title: "מבחן סיום הלומדה: מאחורי הקלעים של AI",
     subtitle: "שמונה עשרה שאלות שמסכמות את כל הלומדה, מהקלט ועד ההחלטה האחראית",
     questions: finalExamQuestions,
     passScore: 75,
-    scoreTiers: finalExamTiers
+    scoreTiers: finalExamTiers,
+    onComplete: (result: AssessmentResult) =>
+        recordResult({ quizId: FINAL_EXAM_QUIZ_ID, chapterId: null, ...result }),
+    getReviewLinks: reviewLinksForConcepts,
+    startLabel: "התחילו את מבחן הסיום",
+    submitLabel: "סיום מבחן הסיום",
+    completedTitle: "מבחן הסיום הושלם",
+    soundEnabled: false,
 };

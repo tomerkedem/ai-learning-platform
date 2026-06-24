@@ -16,6 +16,8 @@ interface Question {
     options: string[];
     correctAnswer: number;
     explanation: string;
+    /** תגית מושג אופציונלית, משמשת לאבחון מושגים חזקים וחלשים. */
+    concept?: string;
 }
 
 export interface ScoreTier {
@@ -24,6 +26,22 @@ export interface ScoreTier {
     label: string;
     color: string;
     sub: string;
+}
+
+/** קישור חזרה ממוקד שמוצג בסיום עבור מושג חלש. */
+export interface ReviewLink {
+    href: string;
+    label: string;
+}
+
+/** התוצאה שמועברת ל-onComplete בסיום ניסיון. */
+export interface AssessmentResult {
+    scorePercent: number;
+    correctCount: number;
+    totalQuestions: number;
+    passed: boolean;
+    weakConcepts: string[];
+    strongConcepts: string[];
 }
 
 interface AssessmentProps {
@@ -40,6 +58,20 @@ interface AssessmentProps {
     /** קישור לחזרה על החומר, מוצג בסיום כאשר לא עוברים את סף ההצלחה. */
     reviewHref?: string;
     reviewLabel?: string;
+    /** נקרא פעם אחת בכל סיום ניסיון, עם פירוק התוצאה לפי מושגים (לצורך התמדה). */
+    onComplete?: (result: AssessmentResult) => void;
+    /** ממיר רשימת מושגים חלשים לקישורי חזרה ממוקדים שמוצגים בסיום. */
+    getReviewLinks?: (weakConcepts: string[]) => ReviewLink[];
+    /** טקסט כפתור ההתחלה. ברירת מחדל: "התחל בחינה". */
+    startLabel?: string;
+    /** טקסט כפתור הסיום בשאלה האחרונה. ברירת מחדל: "סיום בחינה". */
+    submitLabel?: string;
+    /** כותרת מסך התוצאות. ברירת מחדל: "הבחינה הושלמה!". */
+    completedTitle?: string;
+    /** האם להציג טיימר וזמן מומלץ. ברירת מחדל: true (תאימות לאחור). */
+    showTimer?: boolean;
+    /** האם להפעיל אפקטי סאונד חיצוניים. ברירת מחדל: true (תאימות לאחור). */
+    soundEnabled?: boolean;
 }
 
 const DEFAULT_TIERS: ScoreTier[] = [
@@ -59,6 +91,13 @@ export const AssessmentEngine = ({
     nextLabel = "המשך לפרק הבא",
     reviewHref,
     reviewLabel = "חזרה לחזרה קצרה",
+    onComplete,
+    getReviewLinks,
+    startLabel = "התחל בחינה",
+    submitLabel = "סיום בחינה",
+    completedTitle = "הבחינה הושלמה!",
+    showTimer = true,
+    soundEnabled = true,
 }: AssessmentProps) => {
     // States
     const [isStarted, setIsStarted] = useState(false);
@@ -76,7 +115,7 @@ export const AssessmentEngine = ({
 
     // פונקציית סאונד מעודכנת
     const playSound = useCallback((type: 'correct' | 'wrong' | 'click' | 'complete') => {
-        if (isMuted) return;
+        if (isMuted || !soundEnabled) return;
         const sounds = {
             correct: 'https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3',
             wrong: 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3',
@@ -86,7 +125,40 @@ export const AssessmentEngine = ({
         const audio = new Audio(sounds[type]);
         audio.volume = 0.2;
         audio.play().catch(() => {});
-    }, [isMuted]);
+    }, [isMuted, soundEnabled]);
+
+    // אבחון מבוסס מושגים: בונה את תוצאת הניסיון, כולל מושגים חזקים (כל השאלות של
+    // המושג נענו נכון) ומושגים חלשים (לפחות שאלה אחת של המושג נענתה שגוי).
+    const buildResult = useCallback((): AssessmentResult => {
+        const correctCount = questions.reduce((acc, q) => answers[q.id] === q.correctAnswer ? acc + 1 : acc, 0);
+        const totalQuestions = questions.length;
+        const scorePercent = totalQuestions ? Math.round((correctCount / totalQuestions) * 100) : 0;
+
+        const byConcept = new Map<string, { correct: number; total: number }>();
+        for (const q of questions) {
+            if (!q.concept) continue;
+            const entry = byConcept.get(q.concept) ?? { correct: 0, total: 0 };
+            entry.total += 1;
+            if (answers[q.id] === q.correctAnswer) entry.correct += 1;
+            byConcept.set(q.concept, entry);
+        }
+
+        const weakConcepts: string[] = [];
+        const strongConcepts: string[] = [];
+        byConcept.forEach((stat, concept) => {
+            if (stat.correct === stat.total) strongConcepts.push(concept);
+            else weakConcepts.push(concept);
+        });
+
+        return {
+            scorePercent,
+            correctCount,
+            totalQuestions,
+            passed: scorePercent >= passScore,
+            weakConcepts,
+            strongConcepts,
+        };
+    }, [questions, answers, passScore]);
 
     // פונקציית עזר להערכת ציון (במקום אחוזים יבשים)
     const getScoreFeedback = (score: number): ScoreTier => {
@@ -140,13 +212,15 @@ export const AssessmentEngine = ({
         } else if (!isReviewMode) {
             setIsSubmitted(true);
             setIsActive(false);
-            const score = (questions.reduce((acc, q) => answers[q.id] === q.correctAnswer ? acc + 1 : acc, 0) / questions.length) * 100;
-            if (score >= passScore) {
+            const result = buildResult();
+            if (result.passed) {
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 playSound('complete');
             }
+            // התמדה: כל סיום נספר כניסיון. onComplete אחראי לשמירה ב-localStorage.
+            onComplete?.(result);
         }
-    }, [currentIndex, questions, isReviewMode, answers, playSound, passScore]);
+    }, [currentIndex, questions, isReviewMode, buildResult, playSound, onComplete]);
 
     const handleBack = useCallback(() => {
         if (currentIndex > 0) {
@@ -170,22 +244,24 @@ export const AssessmentEngine = ({
                 <h2 className="text-2xl font-black text-white mb-2">{title}</h2>
                 <p className="text-slate-400 text-sm mb-8 leading-relaxed">{subtitle}</p>
                 
-                <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className={`grid ${showTimer ? 'grid-cols-2' : 'grid-cols-1'} gap-4 mb-8`}>
                     <div className="bg-white/5 p-3 rounded-xl border border-white/5">
                         <div className="text-slate-500 text-[10px] font-bold uppercase mb-1">שאלות</div>
                         <div className="text-white font-black">{questions.length}</div>
                     </div>
-                    <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-                        <div className="text-slate-500 text-[10px] font-bold uppercase mb-1">זמן מומלץ</div>
-                        <div className="text-white font-black">{Math.ceil(questions.length * 0.5)} דק&apos;</div>
-                    </div>
+                    {showTimer && (
+                        <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                            <div className="text-slate-500 text-[10px] font-bold uppercase mb-1">זמן מומלץ</div>
+                            <div className="text-white font-black">{Math.ceil(questions.length * 0.5)} דק&apos;</div>
+                        </div>
+                    )}
                 </div>
 
-                <button 
+                <button
                     onClick={handleStart}
                     className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black transition-all shadow-lg shadow-blue-900/40 flex items-center justify-center gap-2 group"
                 >
-                    התחל בחינה
+                    {startLabel}
                     <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
                 </button>
             </motion.div>
@@ -194,25 +270,28 @@ export const AssessmentEngine = ({
 
     // 2. מסך תוצאות - Results Screen (מעודכן לציון אמיתי)
     if (isSubmitted && !isReviewMode) {
-        const correctCount = questions.reduce((acc, q) => answers[q.id] === q.correctAnswer ? acc + 1 : acc, 0);
-        const scoreValue = Math.round((correctCount / questions.length) * 100);
+        const result = buildResult();
+        const { correctCount, scorePercent: scoreValue, weakConcepts, strongConcepts } = result;
         const feedback = getScoreFeedback(scoreValue);
         const passed = scoreValue >= passScore;
+        const reviewLinks = getReviewLinks ? getReviewLinks(weakConcepts).slice(0, 3) : [];
 
         return (
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 className="max-w-md mx-auto p-8 rounded-3xl bg-slate-950 border border-white/10 text-center shadow-2xl"
                 dir="rtl"
+                role="status"
+                aria-live="polite"
             >
                 <div className="mb-8">
                     <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-blue-500/5">
                         <Trophy size={40} className="text-blue-400" />
                     </div>
-                    <h2 className="text-2xl font-black text-white">הבחינה הושלמה!</h2>
+                    <h2 className="text-2xl font-black text-white">{completedTitle}</h2>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 mb-8">
+                <div className="grid grid-cols-1 gap-4 mb-6">
                     <div className="bg-white/5 p-6 rounded-2xl border border-white/10 relative overflow-hidden group">
                         <div className="text-slate-500 text-xs font-bold uppercase mb-2">הציון הסופי</div>
                         <div className={`text-6xl font-black mb-1 tabular-nums ${feedback.color}`}>{scoreValue}%</div>
@@ -223,13 +302,60 @@ export const AssessmentEngine = ({
                                 <div className="text-[10px] text-slate-500 font-bold uppercase">נכונות</div>
                                 <div className="text-white font-bold">{correctCount} / {questions.length}</div>
                             </div>
-                            <div>
-                                <div className="text-[10px] text-slate-500 font-bold uppercase">זמן</div>
-                                <div className="text-white font-bold">{formatTime(seconds)}</div>
-                            </div>
+                            {showTimer && (
+                                <div>
+                                    <div className="text-[10px] text-slate-500 font-bold uppercase">זמן</div>
+                                    <div className="text-white font-bold">{formatTime(seconds)}</div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
+
+                {/* אבחון מושגים: מה חזק ומה כדאי לחזק */}
+                {(strongConcepts.length > 0 || weakConcepts.length > 0) && (
+                    <div className="grid grid-cols-1 gap-3 mb-6 text-right">
+                        {strongConcepts.length > 0 && (
+                            <div className="bg-emerald-500/5 p-4 rounded-2xl border border-emerald-500/15">
+                                <div className="text-emerald-400 text-xs font-black mb-2">חזק אצלך</div>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {strongConcepts.map(c => (
+                                        <span key={c} className="text-[11px] font-bold text-emerald-200 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">{c}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {weakConcepts.length > 0 && (
+                            <div className="bg-amber-500/5 p-4 rounded-2xl border border-amber-500/15">
+                                <div className="text-amber-400 text-xs font-black mb-2">כדאי לחזק</div>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {weakConcepts.map(c => (
+                                        <span key={c} className="text-[11px] font-bold text-amber-200 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">{c}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* חזרה מומלצת: עד שלושה קישורים ממוקדים לפי המושגים החלשים */}
+                {reviewLinks.length > 0 && (
+                    <div className="bg-white/5 p-4 rounded-2xl border border-white/10 mb-6 text-right">
+                        <div className="text-slate-300 text-xs font-black mb-3">חזרה מומלצת</div>
+                        <div className="space-y-2">
+                            {reviewLinks.map(link => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className="flex items-center justify-between gap-2 bg-white/5 hover:bg-white/10 px-3 py-2.5 rounded-xl border border-white/10 transition-all no-underline group"
+                                >
+                                    <span className="text-sm font-bold text-slate-200">{link.label}</span>
+                                    <ArrowLeft size={16} className="text-slate-500 group-hover:text-white group-hover:-translate-x-0.5 transition-all" />
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className="space-y-3">
                     {passed && nextHref && (
@@ -274,21 +400,26 @@ export const AssessmentEngine = ({
                     <h1 className="text-lg font-black text-white leading-tight">{title}</h1>
                     <p className="text-slate-500 text-[11px] font-medium">{subtitle}</p>
                 </div>
-                <button 
-                    onClick={() => setIsMuted(!isMuted)}
-                    className="p-2 rounded-xl bg-white/5 text-slate-500 hover:text-white border border-white/10 transition-colors"
-                >
-                    {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-                </button>
+                {soundEnabled && (
+                    <button
+                        onClick={() => setIsMuted(!isMuted)}
+                        aria-label={isMuted ? "הפעלת צלילים" : "השתקת צלילים"}
+                        className="p-2 rounded-xl bg-white/5 text-slate-500 hover:text-white border border-white/10 transition-colors"
+                    >
+                        {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                    </button>
+                )}
             </div>
 
             {/* Stats Bar */}
             <div className="mb-6 flex items-center gap-2">
-                <div className="flex items-center gap-2 text-amber-400 bg-amber-400/10 px-3 py-1.5 rounded-xl border border-amber-400/20">
-                    <Timer size={14} />
-                    <span className="font-mono text-xs font-bold">{formatTime(seconds)}</span>
-                </div>
-                
+                {showTimer && (
+                    <div className="flex items-center gap-2 text-amber-400 bg-amber-400/10 px-3 py-1.5 rounded-xl border border-amber-400/20">
+                        <Timer size={14} />
+                        <span className="font-mono text-xs font-bold">{formatTime(seconds)}</span>
+                    </div>
+                )}
+
                 {streak > 1 && (
                     <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="flex items-center gap-2 text-orange-500 bg-orange-500/10 px-3 py-1.5 rounded-xl border border-orange-500/20">
                         <Flame size={14} fill="currentColor" />
@@ -354,7 +485,7 @@ export const AssessmentEngine = ({
 
                             <AnimatePresence>
                                 {(isAnswered || isReviewMode) && showExplanation && (
-                                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} className="mt-6 pt-6 border-t border-white/5">
+                                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} className="mt-6 pt-6 border-t border-white/5" role="status" aria-live="polite">
                                         <div className="flex items-start gap-3 bg-blue-500/10 p-4 rounded-2xl border border-blue-500/10">
                                             <Lightbulb size={18} className="text-blue-400 shrink-0 mt-0.5" />
                                             <p className="text-xs sm:text-sm text-blue-100/80 leading-relaxed font-medium">
@@ -393,7 +524,7 @@ export const AssessmentEngine = ({
                         disabled={!isAnswered && !isReviewMode} 
                         className={`px-8 py-3 rounded-2xl text-sm font-black flex items-center gap-2 transition-all shadow-xl ${(!isAnswered && !isReviewMode) ? 'bg-white/5 text-slate-600 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-500 hover:-translate-y-0.5'}`}
                     >
-                        <span>{currentIndex === questions.length - 1 ? "סיום בחינה" : "המשך"}</span>
+                        <span>{currentIndex === questions.length - 1 ? submitLabel : "המשך"}</span>
                         <ChevronLeft size={18} />
                     </button>
                 </div>

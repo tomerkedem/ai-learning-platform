@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
-import Image from 'next/image';
+import { Mentor, EMERALD_ACCENT, type MentorPose } from "@/components/ai-internals/Mentor";
 
 export const SmartMentor = ({ activeSection }: { activeSection: string }) => {
   const [mounted, setMounted] = useState(false);
@@ -12,18 +12,19 @@ export const SmartMentor = ({ activeSection }: { activeSection: string }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  const mentorData: Record<string, { text: string; img: string }> = {
-    hero: { 
-      text: "ברוך הבא! אני כאן כדי להראות לך איך פייתון הופכת אותך למתכנת AI.", 
-      img: "/assets/mentor-hero.png" 
+  // כל סקשן ממופה לתנוחה של המנטור (מתוך הסט השקוף החדש) ולטקסט מלווה.
+  const mentorData: Record<string, { text: string; pose: MentorPose }> = {
+    hero: {
+      text: "ברוך הבא! אני כאן כדי להראות לך איך פייתון הופכת אותך למתכנת AI.",
+      pose: "hello"
     },
     code: {
       text: "שים לב - רק 3 שורות קוד כדי להפעיל בינה מלאכותית עוצמתית!",
-      img: "/assets/mentor-code.png"
+      pose: "code"
     },
-    roadmap: { 
-      text: "זה המסלול שלנו. כל שלב כאן הוא קריטי לבניית מערכות Production.", 
-      img: "/assets/mentor-roadmap.png" 
+    roadmap: {
+      text: "זה המסלול שלנו. כל שלב כאן הוא קריטי לבניית מערכות Production.",
+      pose: "roadmap"
     }
   };
 
@@ -45,8 +46,8 @@ export const SmartMentor = ({ activeSection }: { activeSection: string }) => {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-100">
-      <motion.div 
-        animate={{ 
+      <motion.div
+        animate={{
           top: activeSection === 'hero' ? '20vh' : activeSection === 'code' ? '45vh' : '70vh',
           right: '350px',
         }}
@@ -54,7 +55,7 @@ export const SmartMentor = ({ activeSection }: { activeSection: string }) => {
         className="absolute pointer-events-auto flex flex-col items-center"
       >
         <AnimatePresence mode="wait">
-          <motion.div 
+          <motion.div
             key={activeSection}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -67,29 +68,22 @@ export const SmartMentor = ({ activeSection }: { activeSection: string }) => {
           </motion.div>
         </AnimatePresence>
 
-        {/* המסגרת העגולה שכולאת את התמונה המרובעת */}
-        <motion.div 
+        {/* הדמות השקופה: ריחוף עדין + לחיצה להשמעת השמע. בלי חיתוך עיגול. */}
+        <motion.div
           animate={{ y: [0, -10, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           onClick={() => audioRef.current?.play()}
-          className="relative w-32 h-32 rounded-full border-2 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.3)] bg-slate-950 overflow-hidden cursor-pointer"
+          className="relative cursor-pointer"
         >
           <AnimatePresence mode="wait">
             <motion.div
-              key={currentData.img}
+              key={currentData.pose}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="relative w-full h-full"
             >
-              <Image 
-                src={currentData.img} 
-                alt="AI Mentor" 
-                fill 
-                className="object-cover" // זה מבטיח שהתמונה תמלא את העיגול בלי להתעוות
-                priority
-              />
+              <Mentor pose={currentData.pose} width={180} accent={EMERALD_ACCENT} float={false} />
             </motion.div>
           </AnimatePresence>
         </motion.div>

@@ -1,12 +1,13 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
-import { PenLine, MousePointerClick, GitFork, FlaskConical, Compass } from 'lucide-react';
+import { PenLine, MousePointerClick, GitFork, FlaskConical, Compass, GraduationCap, ArrowLeft } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine } from '@/components/content/AssessmentEngine';
-import { behindAiChapterQuizzes, behindAiFinalExam } from '../quizData';
+import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { PromptCoachLab } from '@/components/ai-internals/PromptCoachLab';
@@ -137,13 +138,24 @@ export default function BehindTheScenesChapter15() {
                 <AssessmentEngine {...behindAiChapterQuizzes[16]} />
             </section>
 
-            {/* ══════════ מבחן סיום הלומדה ══════════ */}
+            {/* ══════════ מעבר למבחן סיום הלומדה ══════════ */}
             <section className="mt-16 mb-4" dir="rtl">
-                <AssessmentEngine
-                    {...behindAiFinalExam}
-                    reviewHref="/behind-the-scenes-ai/introduction"
-                    reviewLabel="חזרה לתחילת הלומדה"
-                />
+                <Link
+                    href="/behind-the-scenes-ai/final-exam"
+                    className="group block max-w-md mx-auto rounded-3xl border border-blue-500/30 bg-gradient-to-br from-blue-900/20 to-slate-900/40 p-8 text-center transition-all hover:border-blue-400/50 hover:from-blue-900/30 no-underline"
+                >
+                    <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-blue-500/20">
+                        <GraduationCap size={32} className="text-blue-400" />
+                    </div>
+                    <h3 className="text-2xl font-black text-white mb-2">מוכנים למבחן סיום הלומדה?</h3>
+                    <p className="text-sm text-slate-400 leading-relaxed mb-6">
+                        שמונה עשרה שאלות שמסכמות את כל המסלול, מהקלט ועד ההחלטה האחראית. אפשר לחזור אליו בכל עת, וההתקדמות נשמרת.
+                    </p>
+                    <span className="inline-flex items-center gap-2 bg-blue-600 group-hover:bg-blue-500 text-white font-black py-3 px-8 rounded-2xl transition-colors">
+                        מעבר למבחן סיום הלומדה
+                        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                    </span>
+                </Link>
             </section>
         </ChapterLayout>
     );
