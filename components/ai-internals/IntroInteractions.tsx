@@ -5,8 +5,8 @@
 //
 // ── למה הם קיימים ────────────────────────────────────────────────────────────
 // המבוא היה פוסטר יפה אך פסיבי: הכול autoplay, הלומד רק צופה. שני הרכיבים כאן
-// הופכים אותו ל"מכשיר": (1) רגע ניחוש שמייצר הפתעה רגשית לפני חשיפת 15 השלבים,
-// (2) טעימת טוקניזציה חיה על המשפט של הלומד עצמו.
+// הופכים אותו ל"מכשיר": (1) ניחוש מהיר שמכוון את האינטואיציה הנכונה לפני שפותחים
+// את מפת הלמידה, (2) טעימת טוקניזציה חיה על המשפט של הלומד עצמו.
 //
 // ── כלל היושרה ───────────────────────────────────────────────────────────────
 // ערך הליבה של הלומדה הוא ש"כל המספרים מחושבים חי". לכן הרכיבים כאן לא מזייפים
@@ -19,23 +19,23 @@ import { HelpCircle, Sparkles, Check, ArrowDown, RotateCcw, Scissors, Keyboard, 
 
 import { Mentor } from './Mentor';
 
-/* ════════════════════════ רגע "נחש לפני שתחשוף" ══════════════════════════ */
+/* ════════════════════════ ניחוש מהיר: מה באמת קורה ══════════════════════════ */
 
-// האמת (actual=15) נמצאת בין האפשרויות כדי שאפשר יהיה לנחש אותה ולצדוק. מצורף
-// מסיח גבוה ממנה (25) כך שבחירת המספר הגבוה ביותר אינה ניצחון מובטח - צריך לכוון.
-const GUESS_OPTIONS = [2, 8, 15, 25];
+// לא מבחן ולא חלק מהמאסטרי: רגע אינטואיציה קצר שמכוון את המודל המנטלי הנכון לפני
+// שפותחים את מפת הלמידה. אין שמירת ניקוד. התשובה הנכונה מתארת את התהליך האמיתי
+// (טוקנים, הקשר, טוקן אחרי טוקן) במקום מספר קבוע של שלבים.
+const QUICK_GUESS_OPTIONS = [
+    'המודל קורא את המשפט אות-אות ומרכיב תשובה.',
+    'המודל עובר תמיד בדיוק 15 שלבים קבועים.',
+    'המודל מפרק את הטקסט לטוקנים, מחשב הקשר, ומייצר תשובה טוקן אחרי טוקן.',
+    'המודל שולף תשובה מוכנה ממאגר.',
+];
+const QUICK_GUESS_CORRECT = 2;
 
-export const GuessRevealGate: React.FC<{ reduce: boolean; actual?: number }> = ({ reduce, actual = 15 }) => {
-    const [guess, setGuess] = useState<number | null>(null);
-    const revealed = guess !== null;
-    const correct = guess === actual;
-
-    // פידבק מדורג: צדקתם / ניחשתם נמוך מדי / ניחשתם גבוה מדי.
-    const subFeedback = correct
-        ? 'רוב האנשים מנחשים שניים-שלושה. אתם כבר חושבים כמו מהנדסי מנוע.'
-        : guess !== null && guess > actual
-          ? `ניחשתם גבוה - מרשים שזיהיתם כמה זה מורכב. המספר המדויק הוא ${actual}.`
-          : `רוב האנשים מנחשים נמוך, וזו בדיוק ההפתעה. כל ${actual} השלבים מחכים לכם בהמשך.`;
+export const GuessRevealGate: React.FC<{ reduce: boolean }> = ({ reduce }) => {
+    const [choice, setChoice] = useState<number | null>(null);
+    const revealed = choice !== null;
+    const correct = choice === QUICK_GUESS_CORRECT;
 
     return (
         <div
@@ -54,48 +54,43 @@ export const GuessRevealGate: React.FC<{ reduce: boolean; actual?: number }> = (
                     <HelpCircle size={14} /> ניחוש מהיר
                 </span>
                 <h3 className="mb-2 text-xl font-black text-white md:text-3xl">
-                    כמה שלבים מתרחשים בין הקלט לתשובה?
+                    מה קורה באמת כשכותבים משפט לצ׳אט?
                 </h3>
                 <p className="mx-auto mb-6 max-w-xl text-sm text-slate-400 md:text-base">
-                    מבחוץ ראינו שני שלבים: (כתבנו, קיבלנו). כמה באמת קורים מאחורי הקלעים? נחשו לפני שנפתח את המכסה.
+                    בלי לחץ, זה לא מבחן. בחרו מה שנשמע לכם הכי קרוב, ואז נפתח את מפת הלמידה ביחד.
                 </p>
 
-                <div className="flex flex-wrap items-end justify-center gap-3">
-                    {GUESS_OPTIONS.map((opt) => {
-                        const isGuess = guess === opt;
-                        const isAnswer = opt === actual;
-                        const state = !revealed ? 'idle' : isAnswer ? 'answer' : isGuess ? 'wrong' : 'dim';
+                <div className="mx-auto flex max-w-2xl flex-col gap-3 text-right">
+                    {QUICK_GUESS_OPTIONS.map((opt, i) => {
+                        const isChoice = choice === i;
+                        const isAnswer = i === QUICK_GUESS_CORRECT;
+                        const state = !revealed ? 'idle' : isAnswer ? 'answer' : isChoice ? 'wrong' : 'dim';
                         return (
                             <button
-                                key={opt}
+                                key={i}
                                 type="button"
-                                onClick={() => !revealed && setGuess(opt)}
+                                onClick={() => !revealed && setChoice(i)}
                                 disabled={revealed}
-                                aria-label={`ניחוש: ${opt} שלבים`}
+                                aria-label={opt}
                                 className={[
-                                    'relative min-w-[5rem] rounded-2xl border px-6 py-4 text-2xl font-black transition-all',
-                                    state === 'idle' && 'cursor-pointer border-slate-700/60 bg-slate-800/40 text-slate-200 hover:scale-105 hover:border-cyan-500/50 hover:bg-cyan-900/15',
-                                    state === 'answer' && 'scale-110 border-cyan-400/70 bg-cyan-900/30 text-cyan-200 shadow-[0_0_30px_-6px_rgba(34,211,238,0.6)]',
-                                    state === 'wrong' && 'border-rose-500/50 bg-rose-900/20 text-rose-300/80',
-                                    state === 'dim' && 'border-slate-700/40 bg-slate-800/20 text-slate-600',
+                                    'relative flex items-center gap-3 rounded-2xl border px-5 py-4 text-sm font-semibold leading-relaxed transition-all md:text-base',
+                                    state === 'idle' && 'cursor-pointer border-slate-700/60 bg-slate-800/40 text-slate-200 hover:border-cyan-500/50 hover:bg-cyan-900/15',
+                                    state === 'answer' && 'border-cyan-400/70 bg-cyan-900/30 text-cyan-100 shadow-[0_0_30px_-8px_rgba(34,211,238,0.6)]',
+                                    state === 'wrong' && 'border-rose-500/50 bg-rose-900/20 text-rose-200/80',
+                                    state === 'dim' && 'border-slate-700/40 bg-slate-800/20 text-slate-500',
                                 ].filter(Boolean).join(' ')}
                             >
-                                {opt}
                                 {revealed && isAnswer && (
                                     <motion.span
                                         initial={reduce ? false : { scale: 0 }}
                                         animate={{ scale: 1 }}
                                         transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 15 }}
-                                        className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-cyan-400 text-slate-950"
+                                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-cyan-400 text-slate-950"
                                     >
                                         <Check size={14} strokeWidth={3} />
                                     </motion.span>
                                 )}
-                                {revealed && isGuess && !isAnswer && (
-                                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-rose-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
-                                        {guess !== null && guess > actual ? 'גבוה מדי' : 'נמוך מדי'}
-                                    </span>
-                                )}
+                                <span>{opt}</span>
                             </button>
                         );
                     })}
@@ -109,17 +104,19 @@ export const GuessRevealGate: React.FC<{ reduce: boolean; actual?: number }> = (
                             transition={reduce ? { duration: 0 } : { duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                             className="overflow-hidden"
                         >
-                            <div className="mt-8 flex flex-col items-center gap-1.5" role="status" aria-live="polite">
+                            <div className="mt-8 flex flex-col items-center gap-2" role="status" aria-live="polite">
                                 <p className="inline-flex items-center gap-2 text-base font-bold text-cyan-300 md:text-lg">
                                     <Sparkles size={16} />
-                                    {correct ? `בול! ${actual} שלבים בדיוק.` : `התשובה: ${actual} שלבים.`}
+                                    {correct ? 'בדיוק. זו התמונה המדויקת יותר.' : 'הנה התמונה המדויקת יותר.'}
                                 </p>
-                                <p className="max-w-md text-sm text-slate-400">{subFeedback}</p>
+                                <p className="max-w-xl text-sm leading-relaxed text-slate-400">
+                                    המודל לא עובד לפי מספר קבוע של שלבים, ולא קורא בהכרח אות-אות. הוא עובד על טוקנים, מפעיל הרבה חישובים בכל סיבוב, בוחר את הטוקן הבא, ואז חוזר על התהליך עד שהתשובה מסתיימת.
+                                </p>
 
                                 <button
                                     type="button"
-                                    onClick={() => setGuess(null)}
-                                    className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-slate-700/60 bg-slate-800/40 px-4 py-1.5 text-xs font-bold text-slate-300 transition-colors hover:border-cyan-500/50 hover:bg-cyan-900/15 hover:text-cyan-200"
+                                    onClick={() => setChoice(null)}
+                                    className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-slate-700/60 bg-slate-800/40 px-4 py-1.5 text-xs font-bold text-slate-300 transition-colors hover:border-cyan-500/50 hover:bg-cyan-900/15 hover:text-cyan-200"
                                 >
                                     <RotateCcw size={13} /> נסו שוב
                                 </button>
@@ -241,7 +238,7 @@ export const LiveTokenizeTaste: React.FC<{ reduce: boolean }> = ({ reduce }) => 
                 <span>
                     זה פיצול ראשוני להמחשה. מודל אמיתי חותך לפעמים גם <span className="font-bold text-slate-300">בתוך</span> מילה
                     (למשל <code dir="ltr" className="text-cyan-300">&quot;תל-אביב&quot; → [&quot;תל&quot;,&quot;-&quot;,&quot;אביב&quot;]</code>), ולכל טוקן נותן מספר מזהה.
-                    זה רק <span className="font-bold text-cyan-300">שלב 2 מתוך 15</span> - כל השאר מחכה בהמשך.
+                    זו רק <span className="font-bold text-cyan-300">התחנה השנייה במפה</span> - כל השאר מחכה בהמשך.
                 </span>
             </div>
         </div>

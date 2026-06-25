@@ -1,11 +1,11 @@
 "use client";
-import React from 'react';
-import { motion, useReducedMotion } from "framer-motion";
+import React, { useState } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
-  ChevronLeft, Eye, Cpu, Keyboard, Scissors, Hash, Network,
-  BarChart3, Percent, Gauge, GitBranch, Send, MessageCircle,
+  ChevronLeft, ChevronDown, Eye, Cpu, Keyboard, Scissors, Hash, Network,
+  BarChart3, Percent, GitBranch, Send, MessageCircle,
   Workflow, AlertCircle, Wrench, ShieldCheck, CornerDownRight, ArrowLeftRight,
-  ListOrdered, Focus, Layers, Thermometer, Repeat, Type,
+  ListOrdered, Focus, Layers, Thermometer, Repeat, Type, Info,
 } from "lucide-react";
 import Link from 'next/link';
 import { ChapterLayout } from "@/components/ChapterLayout";
@@ -13,84 +13,116 @@ import { EngineTrail, type TrailStep } from "@/components/ai-internals/EngineTra
 import { GuessRevealGate, LiveTokenizeTaste } from "@/components/ai-internals/IntroInteractions";
 import { Mentor } from "@/components/ai-internals/Mentor";
 
-// ─── המסלול הפנימי המלא: מקלט ועד תשובה ───
-// המסלול האמיתי, בלי דילוג על שלבים: מתווים גולמיים, דרך הקשב ושכבות ה-Transformer,
-// ועד תשובה שנבנית מילה-אחר-מילה. כל שלב לחיץ ופותח הסבר + דוגמה.
-const FULL_FLOW: TrailStep[] = [
+// ─── מפת הלמידה: שש תחנות מרכזיות מהקלט ועד תשובה ───
+// זו מפת למידה, לא צילום מלא של כל פעולה פנימית. בחרנו את התחנות המרכזיות שעוזרות להבין
+// איך טקסט הופך לתשובה. כל תחנה לחיצה ופותחת הסבר אנושי קצר + דוגמה. הפירוט הטכני חי
+// בשכבת העומק (DEEP_FLOW) ובפרקים עצמם.
+const HERO_FLOW: TrailStep[] = [
   {
-    id: 'input', label: 'Input', sub: 'מה שכתבת בצ׳אט', icon: <Keyboard size={18} />, accent: 'cyan', act: 'הבנה',
-    detail: 'הטקסט הגולמי שהקלדת. בשלב הזה למודל אין שום "הבנה" עדיין - מבחינתו זה רק רצף של תווים, רווחים וסימנים.',
+    id: 'input', label: 'הטקסט נכנס', sub: 'מה שכתבתם בצ׳אט', icon: <Keyboard size={18} />, accent: 'cyan',
+    detail: 'המשתמש כותב בקשה בשפה טבעית. בנקודה הזו למודל אין עדיין שום "הבנה" - מבחינתו זה רק רצף של תווים, רווחים וסימנים.',
     example: 'מה מזג האוויר בתל אביב?',
   },
   {
-    id: 'tokens', label: 'Tokenization', sub: 'הטקסט נחתך ליחידות', icon: <Scissors size={18} />, accent: 'cyan', act: 'הבנה',
-    detail: 'הטקסט נחתך ליחידות קטנות (Tokens) - לפעמים מילה שלמה, לפעמים רק חלק ממילה או אפילו תו בודד. זו השפה שהמודל באמת עובד איתה.',
+    id: 'tokens', label: 'פירוק לטוקנים', sub: 'הטקסט נחתך ליחידות', icon: <Scissors size={18} />, accent: 'cyan',
+    detail: 'המודל לא קורא משפט כמו אדם. הוא מפרק אותו לטוקנים - לפעמים מילה שלמה, לפעמים חלק ממילה או סימן. זו השפה שהוא באמת עובד איתה.',
     example: '"תל-אביב" → ["תל", "-", "אביב"]',
   },
   {
-    id: 'ids', label: 'Token IDs', sub: 'כל טוקן → מספר מזהה', icon: <Hash size={18} />, accent: 'blue', act: 'הבנה',
-    detail: 'לכל טוקן יש מספר קבוע מתוך אוצר מילים (Vocabulary) של עשרות אלפי ערכים. אותו טוקן תמיד מקבל את אותו מזהה.',
-    example: '"אביב" → 8423',
-  },
-  {
-    id: 'embeddings', label: 'Embeddings', sub: 'כל מזהה → וקטור משמעות', icon: <Network size={18} />, accent: 'blue', act: 'הבנה',
-    detail: 'כל מזהה הופך לרשימה ארוכה של מספרים (וקטור) שמייצגת משמעות. מילים בעלות משמעות קרובה מקבלות וקטורים קרובים במרחב.',
+    id: 'meaning', label: 'מספרים ומשמעות', sub: 'כל טוקן הופך לווקטור', icon: <Network size={18} />, accent: 'blue',
+    detail: 'כל טוקן מקבל ייצוג מספרי שאפשר לחשב עליו: וקטור שמייצג משמעות. טוקנים בעלי משמעות קרובה מקבלים מספרים קרובים זה לזה.',
     example: '"מלך" ו"מלכה" יושבים קרוב זה לזה במרחב',
   },
   {
-    id: 'position', label: 'Positional Encoding', sub: 'לאן כל טוקן שייך ברצף', icon: <ListOrdered size={18} />, accent: 'indigo', act: 'חשיבה',
-    detail: 'וקטור לבדו לא יודע אם המילה ראשונה או אחרונה. כאן מוסיפים לכל טוקן מידע על מיקומו - כי הסדר משנה את המשמעות לחלוטין.',
-    example: '"כלב נשך אדם" ≠ "אדם נשך כלב"',
-  },
-  {
-    id: 'attention', label: 'Attention', sub: 'כל טוקן מסתכל על האחרים', icon: <Focus size={18} />, accent: 'indigo', act: 'חשיבה',
-    detail: 'הלב של המודל. כל טוקן "מסתכל" על שאר הטוקנים ומחליט אילו מהם רלוונטיים לו. ככה נבנה ההקשר, וככה מילה כמו "הוא" יודעת למי היא מתייחסת.',
+    id: 'context', label: 'חישוב ההקשר', sub: 'כל טוקן מסתכל על מה שלפניו', icon: <Focus size={18} />, accent: 'indigo',
+    detail: 'המודל בודק אילו חלקים בהקשר חשובים להבנת הטוקן הנוכחי. כך נבנית הבנה: מילה כמו "הוא" יודעת למי היא מתייחסת. זה חוזר שוב ושוב, בהרבה שכבות.',
     example: 'ב"הכלב רץ כי הוא שמח" - "הוא" מתחבר ל"כלב"',
   },
   {
-    id: 'layers', label: 'Transformer Layers', sub: 'עיבוד שחוזר עשרות פעמים', icon: <Layers size={18} />, accent: 'purple', act: 'חשיבה',
-    detail: 'הקשב והעיבוד חוזרים שוב ושוב, בעשרות שכבות. בכל שכבה הייצוג הופך מעודן ומופשט יותר - ממילים בודדות אל משמעות המשפט כולו.',
-    example: '32, 80 ולפעמים יותר שכבות במודלים גדולים',
-  },
-  {
-    id: 'logits', label: 'Logits / Scores', sub: 'ציון לכל אפשרות', icon: <BarChart3 size={18} />, accent: 'purple', act: 'הכרעה',
-    detail: 'בסוף השכבות, המודל מייצר ציון (Logit) לכל טוקן אפשרי באוצר המילים - עד כמה הוא מתאים להיות הטוקן הבא. אלה מספרים גולמיים, עדיין לא אחוזים.',
-    example: '"שמש": 8.2 · "גשם": 6.1 · "פיל": -3.4',
-  },
-  {
-    id: 'probs', label: 'Softmax → Probabilities', sub: 'ציונים הופכים לאחוזים', icon: <Percent size={18} />, accent: 'purple', act: 'הכרעה',
-    detail: 'פונקציית Softmax הופכת את הציונים הגולמיים להתפלגות הסתברות שמסתכמת ל-100%. עכשיו לכל אפשרות יש אחוז ברור.',
+    id: 'rank', label: 'דירוג הטוקן הבא', sub: 'ציון והסתברות לכל אפשרות', icon: <BarChart3 size={18} />, accent: 'purple',
+    detail: 'בסוף כל סיבוב המודל מדרג אפשרויות לטוקן הבא: נותן ציון לכל אפשרות, הופך אותו להסתברות, ובוחר אחת.',
     example: '"שמש" 72% · "גשם" 19% · "ענן" 6%',
   },
   {
-    id: 'sampling', label: 'Sampling / Temperature', sub: 'איך בוחרים מתוך ההתפלגות', icon: <Thermometer size={18} />, accent: 'amber', act: 'הכרעה',
-    detail: 'המודל לא תמיד בוחר את הכי סביר. פרמטרים כמו Temperature ו-top-p קובעים כמה "להעז": טמפרטורה נמוכה = צפוי ויציב, גבוהה = יצירתי ומגוון.',
-    example: 'טמפרטורה נמוכה → תמיד "שמש"; גבוהה → לפעמים "ענן"',
+    id: 'loop', label: 'לולאה עד תשובה', sub: 'מילה אחר מילה', icon: <Repeat size={18} />, accent: 'rose',
+    detail: 'הטוקן שנבחר מצטרף לתשובה, ואז התהליך חוזר מההתחלה כדי לבחור את הבא - עד שהמודל מגיע לסימן עצירה. כך נבנית תשובה שלמה.',
+    example: '"היום" → "היום צפוי" → "היום צפוי שמש"',
+  },
+];
+
+// ─── שכבת העומק האופציונלית ───
+// פירוט עשיר יותר של מה שמתרחש בתוך התחנות. זו עדיין מפת למידה: מאחורי כל תחנה כאן
+// רצים חישובים רבים, והמספר המדויק של הפעולות אינו קבוע ותלוי במודל ובהקשר.
+const DEEP_FLOW: TrailStep[] = [
+  {
+    id: 'd-input', label: 'קלט משתמש', sub: 'הטקסט הגולמי', icon: <Keyboard size={16} />, accent: 'cyan',
+    detail: 'מה שהוקלד, עדיין רק רצף תווים בלי משמעות.',
+    example: 'מה מזג האוויר בתל אביב?',
   },
   {
-    id: 'confidence', label: 'Confidence', sub: 'כמה המערכת בטוחה', icon: <Gauge size={18} />, accent: 'amber', act: 'הכרעה',
-    detail: 'המודל בוחן את הפער בין האפשרות המובילה לבאות אחריה. פער גדול = ביטחון גבוה. פער קטן = חוסר ודאות, ולפעמים עדיף לסייג או לשאול.',
-    example: '72% מול 19% → פער גדול, ביטחון גבוה',
+    id: 'd-tok', label: 'Tokenization', sub: 'חיתוך ליחידות עבודה', icon: <Scissors size={16} />, accent: 'cyan',
+    detail: 'הטקסט נחתך לטוקנים: מילה, חלק ממילה או סימן. לא אותיות בודדות ולא בהכרח מילים שלמות.',
+    example: '"אביב" הוא טוקן אחד',
   },
   {
-    id: 'decision', label: 'Decision', sub: 'טוקן אחד נבחר', icon: <GitBranch size={18} />, accent: 'rose', act: 'הכרעה',
-    detail: 'מתוך כל החישוב נבחר טוקן אחד בלבד - המילה (או חלק המילה) הבאה בתשובה.',
+    id: 'd-ids', label: 'Token IDs', sub: 'כתובת במילון', icon: <Hash size={16} />, accent: 'blue',
+    detail: 'כל טוקן ממופה למזהה קבוע מתוך אוצר מילים. זו כתובת, עדיין לא משמעות.',
+    example: '"אביב" → 8423',
+  },
+  {
+    id: 'd-emb', label: 'Embeddings', sub: 'מזהה הופך לווקטור', icon: <Network size={16} />, accent: 'blue',
+    detail: 'המזהה הופך לרשימת מספרים שמקודדת משמעות. מילים קרובות במשמעות מקבלות מספרים קרובים.',
+    example: '"מלך" ו"מלכה" קרובים במרחב',
+  },
+  {
+    id: 'd-pos', label: 'מידע על מיקום', sub: 'הסדר נשמר', icon: <ListOrdered size={16} />, accent: 'indigo',
+    detail: 'הסדר ברצף משפיע על המשמעות, ולכן נשמר מידע על המיקום של כל טוקן.',
+    example: '"כלב נשך אדם" ≠ "אדם נשך כלב"',
+  },
+  {
+    id: 'd-attn', label: 'Attention', sub: 'על מי כל טוקן נשען', icon: <Focus size={16} />, accent: 'indigo',
+    detail: 'כל טוקן מחשב כמה כל טוקן קודם רלוונטי לו, ובונה הקשר. כמה מנגנוני קשב רצים במקביל, כל אחד תופס יחס אחר.',
+    example: '"הוא" נשען על "כלב"',
+  },
+  {
+    id: 'd-mlp', label: 'ערבוב מידע (MLP / Feed Forward)', sub: 'עיבוד פנימי נוסף', icon: <Cpu size={16} />, accent: 'purple',
+    detail: 'אחרי הקשב כל טוקן עובר עיבוד פנימי נוסף שמזקק את מה שנאסף.',
+    example: 'שלב "עיכול" של המידע',
+  },
+  {
+    id: 'd-layers', label: 'שכבות Transformer', sub: 'אותו עיבוד חוזר ומעמיק', icon: <Layers size={16} />, accent: 'purple',
+    detail: 'הקשב והעיבוד חוזרים בהרבה שכבות, עם ייצוב ביניהן. בכל שכבה הייצוג נעשה מופשט יותר.',
+    example: 'עשרות שכבות במודלים גדולים',
+  },
+  {
+    id: 'd-logits', label: 'ציונים גולמיים (Logits)', sub: 'ציון לכל אפשרות', icon: <BarChart3 size={16} />, accent: 'purple',
+    detail: 'המודל מייצר ציון גולמי לכל טוקן אפשרי באוצר המילים. עדיין לא אחוז.',
+    example: '"שמש": 8.2 · "גשם": 6.1',
+  },
+  {
+    id: 'd-softmax', label: 'הסתברויות (Softmax)', sub: 'ציונים הופכים לאחוזים', icon: <Percent size={16} />, accent: 'amber',
+    detail: 'הציונים הופכים להתפלגות שמסתכמת ל-100%.',
+    example: '"שמש" 72% · "גשם" 19%',
+  },
+  {
+    id: 'd-decode', label: 'בקרת פענוח', sub: 'כמה "להעז" בבחירה', icon: <Thermometer size={16} />, accent: 'amber',
+    detail: 'פרמטרים כמו temperature ו-top-p קובעים כמה לדבוק בצפוי וכמה לאפשר גיוון.',
+    example: 'נמוך → צפוי; גבוה → יצירתי',
+  },
+  {
+    id: 'd-pick', label: 'בחירת הטוקן הבא', sub: 'טוקן אחד נבחר', icon: <GitBranch size={16} />, accent: 'rose',
+    detail: 'מתוך כל החישוב נבחר טוקן אחד: המילה או חלק המילה הבא בתשובה.',
     example: 'נבחר: "שמש"',
   },
   {
-    id: 'loop', label: 'Autoregressive Loop', sub: 'מילה אחר מילה', icon: <Repeat size={18} />, accent: 'rose', act: 'בנייה',
-    detail: 'הטוקן שנבחר מצורף לקלט, והכל רץ מחדש כדי לייצר את הטוקן הבא. כך התשובה נבנית מילה-אחר-מילה, עד שהמודל מייצר סימן עצירה.',
-    example: '"היום" → "היום צפוי" → "היום צפוי מזג..."',
+    id: 'd-loop', label: 'חזרה בלולאה', sub: 'שוב, לטוקן הבא', icon: <Repeat size={16} />, accent: 'rose',
+    detail: 'הטוקן הנבחר חוזר לקלט והכול רץ מחדש, עד סימן עצירה.',
+    example: 'מילה אחר מילה',
   },
   {
-    id: 'detok', label: 'Detokenization', sub: 'טוקנים → טקסט קריא', icon: <Type size={18} />, accent: 'cyan', act: 'בנייה',
-    detail: 'רצף הטוקנים שנוצר מורכב בחזרה לטקסט רגיל, עם רווחים וסימני פיסוק - בדיוק כמו שאתה רואה אותו על המסך.',
+    id: 'd-detok', label: 'פענוח לטקסט', sub: 'טוקנים → טקסט קריא', icon: <Type size={16} />, accent: 'cyan',
+    detail: 'רצף הטוקנים מורכב בחזרה לטקסט עם רווחים ופיסוק, כפי שמוצג על המסך.',
     example: '["היום","צפוי","שמש"] → "היום צפוי שמש"',
-  },
-  {
-    id: 'response', label: 'Response', sub: 'מה שחזר אליך', icon: <Send size={18} />, accent: 'cyan', act: 'בנייה',
-    detail: 'הטקסט הסופי מוצג לך בצ׳אט. מבחוץ זה הרגע היחיד שראית - אבל עכשיו אתה יודע כמה שלבים עמדו מאחוריו.',
-    example: 'היום צפוי מזג אוויר שמשי בתל אביב 🌞',
   },
 ];
 
@@ -110,7 +142,7 @@ const CHAT_FLOW: TrailStep[] = [
   },
   {
     id: 'c2', label: 'Tokens', icon: <Scissors size={15} />,
-    detail: 'אותו פירוק לטוקנים מהמסלול המלא. זה הקלט האמיתי של המנוע - גם ב-Chat וגם ב-Agent.',
+    detail: 'אותו פירוק לטוקנים מהמפה. זה הקלט האמיתי של המנוע - גם ב-Chat וגם ב-Agent.',
     example: '"סיכום" → ["סי", "כום"]',
   },
   {
@@ -160,6 +192,37 @@ const AGENT_FLOW: TrailStep[] = [
   },
 ];
 
+// ─── מה נפתח בפרקים הבאים ───
+// יוצר תיאבון להמשך: כל כרטיס מצמיד תחנה במפה לשאלה שנפתח לעומק בפרק. הצבעים
+// מהדהדים את צבעי התחנות במפה (cyan → blue → indigo → purple → rose) לעקביות.
+const NEXT_PEEKS: { icon: React.ReactNode; chip: string; title: string; text: string }[] = [
+  {
+    icon: <Scissors size={18} />, chip: 'border-cyan-500/30 bg-cyan-500/15 text-cyan-300',
+    title: 'פירוק לטוקנים',
+    text: 'איך משפט נחתך ליחידות עבודה - לא לאותיות, וגם לא תמיד למילים שלמות.',
+  },
+  {
+    icon: <Network size={18} />, chip: 'border-blue-500/30 bg-blue-500/15 text-blue-300',
+    title: 'ממילים למספרים',
+    text: 'איך טוקן הופך לווקטור (רשימת מספרים שמייצגת משמעות), ולמה מילים קרובות יושבות קרוב.',
+  },
+  {
+    icon: <Focus size={18} />, chip: 'border-indigo-500/30 bg-indigo-500/15 text-indigo-300',
+    title: 'ההקשר משנה החלטה',
+    text: 'איך Attention גורם לכל טוקן להישען על מה שלפניו, כך שאותה מילה מקבלת משמעות אחרת לפי ההקשר.',
+  },
+  {
+    icon: <Percent size={18} />, chip: 'border-purple-500/30 bg-purple-500/15 text-purple-300',
+    title: 'מציונים להסתברויות',
+    text: 'איך ציונים גולמיים (Logits) הופכים לאחוזים (Softmax), ואיך נבחר מתוכם הטוקן הבא.',
+  },
+  {
+    icon: <Workflow size={18} />, chip: 'border-rose-500/30 bg-rose-500/15 text-rose-300',
+    title: 'צ׳אט מול Agent',
+    text: 'במה סוֹכֵן (Agent) שבוחר כלי, בודק סיכון ומבקש אישור שונה מצ׳אט שרק מייצר טקסט.',
+  },
+];
+
 // כותרת-מקטע אחידה
 function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
   return (
@@ -175,6 +238,7 @@ function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: 
 
 export default function BehindTheScenesIntroPage() {
   const reduce = useReducedMotion();
+  const [deepOpen, setDeepOpen] = useState(false);
 
   return (
     <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={0} lang="he">
@@ -221,7 +285,7 @@ export default function BehindTheScenesIntroPage() {
                 </h1>
 
                 <p className="text-base md:text-lg text-slate-300 leading-relaxed mb-1.5">
-                  מבחוץ זה נראה כמו רגע אחד: כתבנו משפט וקיבלנו תשובה. מבפנים זה מסלול שלם: פירוק, מספרים, הקשר, חישוב, הסתברות והחלטה - שלב אחר שלב.
+                  מבחוץ זה נראה כמו רגע אחד: כתבנו משפט וקיבלנו תשובה. מבפנים יש מסלול שלם: פירוק, מספרים, הקשר, דירוג ובחירה - תחנה אחר תחנה.
                 </p>
                 <p className="text-sm md:text-base text-cyan-300/90 font-semibold">
                   בלומדה הזו לא נסתפק במה שהמודל עונה. ננסה להבין איך הוא הגיע לשם.
@@ -241,7 +305,7 @@ export default function BehindTheScenesIntroPage() {
           </div>
 
           {/* ══════════ GUESS GATE ══════════ */}
-          {/* רגע "נחש לפני שתחשוף": מייצר הפתעה רגשית לפני חשיפת 15 השלבים. */}
+          {/* ניחוש מהיר שמכוון את האינטואיציה הנכונה לפני שפותחים את מפת הלמידה. */}
           <motion.section
             initial={reduce ? false : { opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -255,7 +319,7 @@ export default function BehindTheScenesIntroPage() {
           {/* ══════════ OUTSIDE vs BEHIND ══════════ */}
           <section className="mt-20">
             <SectionHeading eyebrow="פותחים את המנוע" title="מה שהמשתמש רואה מול מה שהמנוע עושה">
-              אותו קלט. אותה תשובה. אבל מתחת לפני השטח מתרחש מסלול שלם – וזה בדיוק מה שנחשוף.
+              אותו קלט. אותה תשובה. אבל מתחת לפני השטח מתרחש מסלול שלם, וזה בדיוק מה שנחשוף.
             </SectionHeading>
 
             <div className="relative">
@@ -310,10 +374,10 @@ export default function BehindTheScenesIntroPage() {
                   </div>
                 </div>
                 <div className="relative">
-                  <EngineTrail steps={FULL_FLOW} accent="cyan" autoplay interval={650} interactive controls />
+                  <EngineTrail steps={HERO_FLOW} accent="cyan" autoplay interval={1000} interactive controls />
                 </div>
                 <p className="text-cyan-300/70 text-xs mt-5 text-center leading-relaxed">
-                  המסלול המלא – בלי דילוג על שלבים. לחצו על כל שלב כדי להציץ פנימה: מה קורה שם, עם דוגמה.
+                  מפת למידה של התחנות המרכזיות, לא צילום מלא של כל חישוב. לחצו על כל תחנה כדי להציץ פנימה: מה קורה שם, עם דוגמה.
                 </p>
               </motion.div>
             </div>
@@ -324,11 +388,62 @@ export default function BehindTheScenesIntroPage() {
             </div>
           </section>
 
+          {/* ══════════ DEEP LAYER (optional) ══════════ */}
+          {/* רובד עומק נפתח: מציג תחנות-משנה רבות יותר, בלי לטעון שיש מספר קבוע של פעולות. */}
+          <section className="mt-12">
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setDeepOpen((o) => !o)}
+                aria-expanded={deepOpen}
+                className="inline-flex items-center gap-2 rounded-2xl border border-cyan-500/40 bg-cyan-900/15 px-6 py-3 text-sm font-bold text-cyan-200 transition-colors hover:bg-cyan-900/30"
+              >
+                {deepOpen ? 'סגרו את שכבת העומק' : 'פתחו את שכבת העומק'}
+                <motion.span
+                  aria-hidden
+                  animate={{ rotate: deepOpen ? 180 : 0 }}
+                  transition={reduce ? { duration: 0 } : { duration: 0.25 }}
+                  className="inline-flex"
+                >
+                  <ChevronDown size={18} />
+                </motion.span>
+              </button>
+              <p className="mx-auto mt-3 max-w-xl text-xs text-slate-500 leading-relaxed">
+                רוצים לראות מה מסתתר בתוך התחנות? פתחו את המנוע המלא ותציצו בתחנות-המשנה.
+              </p>
+            </div>
+
+            <AnimatePresence initial={false}>
+              {deepOpen && (
+                <motion.div
+                  initial={reduce ? false : { opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                  transition={reduce ? { duration: 0 } : { duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-6 rounded-[2rem] border border-slate-700/50 bg-slate-900/60 p-6 backdrop-blur-xl md:p-8">
+                    <div className="mb-5 flex items-start gap-2.5 rounded-xl border border-cyan-500/20 bg-cyan-900/10 p-3.5">
+                      <Info size={15} className="mt-0.5 shrink-0 text-cyan-400/80" />
+                      <p className="text-[13px] leading-relaxed text-slate-300">
+                        זו מפת למידה, לא צילום מלא של כל פעולה פנימית. מאחורי כל תחנה פשוטה מסתתרים חישובים רבים. המספר המדויק של הפעולות אינו קבוע ותלוי במודל, באורך ההקשר ובאופן ההפעלה שלו.
+                      </p>
+                    </div>
+                    <EngineTrail steps={DEEP_FLOW} accent="cyan" interactive compact />
+                    <p className="mt-5 text-center text-xs leading-relaxed text-slate-500">
+                      אלה רעיונות הליבה שמתרחשים בתוך התחנות. אין כאן רשימה מלאה של כל החישובים, אלא דרך לזכור מה קורה במנוע.
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </section>
+
           {/* ══════════ LIVE TOKENIZE TASTE ══════════ */}
           {/* טעימה אינטראקטיבית: המשפט של הלומד עצמו עובר את השלב הראשון, חי וביושר. */}
           <section className="mt-20">
-            <SectionHeading eyebrow="נסו בעצמכם" title="ראיתם את 15 השלבים. עכשיו תורכם.">
-              לא צריך לחכות לסוף הלומדה כדי לראות את המנוע עובד. כתבו משפט משלכם, וצפו בשלב הראשון קורה בזמן אמת - על המילים שלכם.
+            <SectionHeading eyebrow="נסו בעצמכם" title="ראיתם את המפה. עכשיו תורכם.">
+              לא צריך לחכות לסוף הלומדה כדי לראות את המנוע עובד. כתבו משפט משלכם, וצפו בתחנה הראשונה קורית בזמן אמת, על המילים שלכם.
             </SectionHeading>
             <div className="relative">
               <LiveTokenizeTaste reduce={!!reduce} />
@@ -361,7 +476,7 @@ export default function BehindTheScenesIntroPage() {
               ל<span className="text-cyan-300 font-bold">תשובה</span>.
             </p>
             <p className="relative text-cyan-200/90 text-base md:text-lg mt-5 font-semibold max-w-3xl mx-auto leading-relaxed">
-              ובלב כל השלבים האלה עומד דבר אחד: ה<span className="text-cyan-300 font-bold">וקטור</span> - רשימת מספרים שמייצגת משמעות. זו שפת האם של המודל: כל מה שקורה כאן - ההקשר, הדירוג וההסתברות - קורה על וקטורים.
+              ובלב כל התחנות האלה עומד דבר אחד: ה<span className="text-cyan-300 font-bold">וקטור</span> - רשימת מספרים שמייצגת משמעות. זו שפת האם של המודל: כל מה שקורה כאן - ההקשר, הדירוג וההסתברות - קורה על וקטורים.
             </p>
             <p className="relative text-slate-400 text-base md:text-lg mt-4">
               הלומדה הזו נועדה להפוך את המסלול הזה לגלוי.
@@ -370,7 +485,7 @@ export default function BehindTheScenesIntroPage() {
 
           {/* ══════════ CHAT vs AGENT PREVIEW ══════════ */}
           <section className="mt-20">
-            <SectionHeading eyebrow="שני מצבים · הצצה מקדימה" title="Chat מול Agent – שני חלונות לאותו רעיון">
+            <SectionHeading eyebrow="שני מצבים · הצצה מקדימה" title="Chat מול Agent - שני חלונות לאותו רעיון">
               Chat עונה על שאלה, Agent (סוֹכֵן) מבצע משימה. בהמשך נראה את שניהם לעומק; כאן הצצה מהירה - לחצו על כל שלב כדי לראות מה מייחד כל מצב.
             </SectionHeading>
 
@@ -421,6 +536,43 @@ export default function BehindTheScenesIntroPage() {
               <Mentor pose="chart" line="ככה נראות ההסתברויות 📊" width={160} flip />
             </div>
             </div>
+
+            {/* הבהרה: ה-Agent הוא שכבת מערכת סביב המודל, לא פעולה פנימית שלו */}
+            <div className="mt-6 flex items-start gap-3 rounded-2xl border border-purple-500/25 bg-slate-900/50 p-5 backdrop-blur-xl">
+              <div className="shrink-0 rounded-xl border border-purple-500/30 bg-purple-500/15 p-2">
+                <Workflow className="text-purple-300" size={18} />
+              </div>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                המפה למעלה מסבירה איך מודל מייצר טקסט. בהמשך הלומדה נפתח גם את שכבת ה-Agent: מערכת סביב המודל שיכולה לבחור כלי, לבדוק סיכון, לבקש אישור או לעצור. ה-Agent אינו אותה פעולה פנימית של המודל, אלא שכבה נוספת מסביבו, ולכן נציג אותו כמסלול נפרד.
+              </p>
+            </div>
+          </section>
+
+          {/* ══════════ COURSE APPETITE ══════════ */}
+          {/* תיאבון להמשך: מצמיד תחנות מהמפה לשאלות שנפתח לעומק בפרקים. */}
+          <section className="mt-20">
+            <SectionHeading eyebrow="המשך המסע" title="מה נפתח בפרקים הבאים">
+              כל תחנה במפה נפתחת לפרק עם מנגנון חי שאפשר לשחק איתו, לא רק לקרוא עליו.
+            </SectionHeading>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {NEXT_PEEKS.map((peek, i) => (
+                <motion.div
+                  key={peek.title}
+                  initial={reduce ? false : { opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-50px' }}
+                  transition={{ duration: 0.45, delay: reduce ? 0 : i * 0.06 }}
+                  className="group rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 backdrop-blur-xl transition-colors hover:border-cyan-500/40"
+                >
+                  <div className={`mb-3 inline-flex rounded-xl border p-2.5 ${peek.chip}`}>
+                    {peek.icon}
+                  </div>
+                  <h3 className="mb-1.5 text-base font-bold text-white">{peek.title}</h3>
+                  <p className="text-sm leading-relaxed text-slate-400">{peek.text}</p>
+                </motion.div>
+              ))}
+            </div>
           </section>
 
           {/* ══════════ CTA ══════════ */}
@@ -440,7 +592,7 @@ export default function BehindTheScenesIntroPage() {
               מוכן לפתוח את המנוע?
             </h2>
             <p className="relative text-slate-400 text-base md:text-lg max-w-xl mx-auto mb-8 leading-relaxed">
-              בפרק הראשון נתחיל מההתחלה של המסלול - נראה איך טקסט הופך לתשובה, שלב אחר שלב.
+              בפרק הראשון נתחיל מההתחלה של המסלול - נראה איך טקסט הופך לתשובה, תחנה אחר תחנה.
             </p>
             <Link
               href="/behind-the-scenes-ai/chapter-1"
