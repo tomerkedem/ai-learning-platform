@@ -427,6 +427,7 @@ export const ROADMAP_STEPS_7: { he: string; en: string; active: boolean }[] = [
     { he: 'טוקנים', en: 'Tokens', active: true },
     { he: 'מזהי טוקן', en: 'Token IDs', active: true },
     { he: 'וקטורים', en: 'Vectors', active: true },
+    { he: 'הקשר', en: 'Attention', active: true },
     { he: 'דמיון', en: 'Similarity', active: true },
     { he: 'ציונים', en: 'Scores', active: true },
     { he: 'הסתברויות', en: 'Probabilities', active: true },

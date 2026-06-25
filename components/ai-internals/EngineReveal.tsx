@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { User, Sparkles } from 'lucide-react';
+import { User, Sparkles, Send } from 'lucide-react';
 
 interface EngineRevealProps {
     reduce: boolean;
@@ -22,10 +22,13 @@ interface EngineRevealProps {
     answer: string;
     outsideLine: string;
     curiosityLine: string;
+    /** טקסט דהוי בשורת ההקלדה התחתונה. */
+    inputPlaceholder?: string;
 }
 
 export const EngineReveal: React.FC<EngineRevealProps> = ({
     reduce, promptRole, prompt, answerRole, answer, outsideLine, curiosityLine,
+    inputPlaceholder = 'הקלידו הודעה...',
 }) => {
     return (
         <div
@@ -74,6 +77,15 @@ export const EngineReveal: React.FC<EngineRevealProps> = ({
                         <div className="mb-1 text-[11px] font-bold text-indigo-300/80">{answerRole}</div>
                         <p className="text-sm leading-relaxed text-slate-100 md:text-base">{answer}</p>
                     </div>
+                </div>
+
+                {/* ── שורת ההקלדה (תחתית): כמו בצ׳אט אמיתי, הקלט למטה וההודעות מעליו.
+                    דהויה ולא-פעילה בכוונה - היא רק ממחישה איפה מקלידים. ── */}
+                <div className="mt-4 flex items-center gap-2 rounded-2xl border border-slate-600/50 bg-slate-950/60 py-2 pr-4 pl-2">
+                    <span className="flex-1 text-sm text-slate-500">{inputPlaceholder}</span>
+                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500 text-slate-950" aria-hidden>
+                        <Send size={16} />
+                    </span>
                 </div>
             </div>
         </div>

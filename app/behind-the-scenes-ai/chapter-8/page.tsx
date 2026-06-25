@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { GitBranch, MousePointerClick, Waves, FlaskConical, Map, ArrowLeft, BookOpen, ListChecks } from 'lucide-react';
+import { GitBranch, MousePointerClick, Waves, FlaskConical, Map, ArrowLeft, BookOpen, ListChecks, Link2 } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine } from '@/components/content/AssessmentEngine';
@@ -10,6 +10,7 @@ import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { PipelineCascadeLab } from '@/components/ai-internals/PipelineCascadeLab';
+import { AttentionContextDemo } from '@/components/ai-internals/AttentionContextDemo';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { ROADMAP_STEPS_7 } from './pipelineData';
 
@@ -126,6 +127,10 @@ const Roadmap: React.FC = () => {
 /** שלוש נקודות שמכינות בדיוק למושגים שהמבדק בודק, ממש לפני המבדק. */
 const BEFORE_QUIZ_POINTS = [
     {
+        he: 'ההקשר משנה משמעות',
+        desc: 'לפני שמודדים דמיון, כל מילה בודקת אילו מילים אחרות חשובות לה (Attention). כך אותה מילה, כמו "הוא", מקבלת משמעות אחרת לפי ההקשר, והמנוע יודע למי היא מתייחסת.',
+    },
+    {
         he: 'דמיון אינו הסתברות',
         desc: 'הדמיון (Cosine Similarity) מודד קרבת כיוון בין שני וקטורים, כמו שני חצים: אותו כיוון נותן דמיון גבוה. הוא רק השלב הראשון בשרשרת, ולא אומר באיזו הסתברות המנוע יבחר.',
     },
@@ -219,6 +224,29 @@ export default function BehindTheScenesChapter7() {
               <Mentor pose="chart" line="האחוזים אינם קסם 📊" width={165} />
             </div>
             </div>
+
+            {/* ══════════ קשב להקשר (Attention) ══════════ */}
+            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
+                <div className="flex items-center gap-3">
+                    <Link2 size={24} className="text-violet-400" />
+                    <div>
+                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">Attention</div>
+                        <h3 className="text-2xl font-bold text-white">לפני שמדרגים: ההקשר מעדכן את המשמעות</h3>
+                    </div>
+                </div>
+
+                <p className="text-base leading-relaxed text-slate-300">
+                    עד עכשיו ראינו איך כל מילה הופכת לווקטור משמעות. אבל מילה לא חיה לבדה. לפני שהמנוע מודד דמיון ונותן ציונים,
+                    כל מילה בודקת אילו מילים אחרות בהקשר חשובות לה. השלב הזה נקרא Attention, והוא הסיבה שהמנוע יודע, למשל, למי
+                    המילה &quot;הוא&quot; מתייחסת.
+                </p>
+
+                <AttentionContextDemo />
+
+                <p className="text-base leading-relaxed text-slate-300">
+                    זה מה שמעדכן את המשמעות של כל מילה לפי ההקשר. רק אחרי השלב הזה המנוע ממשיך הלאה: מודד דמיון, נותן ציונים, ובוחר.
+                </p>
+            </section>
 
             {/* ══════════ מסלול קריאה ══════════ */}
             <section className="mt-12 text-right" dir="rtl">

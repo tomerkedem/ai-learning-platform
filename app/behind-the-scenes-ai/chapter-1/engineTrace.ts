@@ -1,6 +1,6 @@
 // app/behind-the-scenes-ai/chapter-1/engineTrace.ts
 //
-// פירוק "המנוע השקוף" ל-15 תהליכים מוצגים, מקובצים ל-4 מערכות (acts).
+// פירוק "המנוע השקוף" לתחנות מרכזיות מוצגות, מקובצות למערכות (acts).
 // כל שלב הוא חשיפה כנה של מה שהמנוע כבר עושה: הערכים הסופיים (הסתברויות, ביטחון,
 // החלטה) מגיעים ישירות מ-runChatEngine/runAgentEngine, והשלבים הביניים (טוקנים,
 // התאמות מילות-מפתח, ספירות, דגלים) מחושבים עם אותם קבועים/עוזרים בדיוק שמייצא
@@ -58,7 +58,7 @@ const ACT = {
     act: { he: 'הכרעה ופלט', en: 'Decision & output' },
 };
 
-/* ════════════════════════ Chat: 15 שלבים ═════════════════════════════════ */
+/* ════════════════════════ Chat: התחנות המרכזיות ═════════════════════════ */
 
 export function traceChatEngine(text: string): EngineTraceStep[] {
     const r = runChatEngine(text);
@@ -100,7 +100,7 @@ export function traceChatEngine(text: string): EngineTraceStep[] {
     ];
 }
 
-/* ════════════════════════ Agent: 15 שלבים ════════════════════════════════ */
+/* ════════════════════════ Agent: התחנות המרכזיות ════════════════════════ */
 
 export function traceAgentEngine(text: string): EngineTraceStep[] {
     const r = runAgentEngine(text);

@@ -33,6 +33,9 @@ function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: 
 
 export default function BehindTheScenesIntroPage() {
   const reduce = useReducedMotion();
+  // מצב המתג Chat/Agent מורם לכאן כדי שכל הקופי של הכרטיס יתחלף יחד עם התצוגה החיה.
+  const [agentMode, setAgentMode] = React.useState<'chat' | 'agent'>('chat');
+  const agentCard = AGENT_CARD[agentMode];
 
   return (
     <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={0} lang="he">
@@ -73,6 +76,7 @@ export default function BehindTheScenesIntroPage() {
                 answer={HERO_CHAT.answer}
                 outsideLine={HERO_CHAT.outsideLine}
                 curiosityLine={HERO_CHAT.curiosityLine}
+                inputPlaceholder={HERO_CHAT.inputPlaceholder}
               />
             </motion.div>
 
@@ -161,18 +165,18 @@ export default function BehindTheScenesIntroPage() {
               </div>
               <div className="min-w-0">
                 <span className="text-purple-300/80 text-[11px] font-bold uppercase tracking-[0.25em] block mb-2">
-                  {AGENT_CARD.eyebrow}
+                  {agentCard.eyebrow}
                 </span>
-                <h2 className="text-xl md:text-2xl font-black text-white mb-2">{AGENT_CARD.title}</h2>
-                <p className="text-sm md:text-base text-slate-300 leading-relaxed">{AGENT_CARD.body}</p>
+                <h2 className="text-xl md:text-2xl font-black text-white mb-2">{agentCard.title}</h2>
+                <p className="text-sm md:text-base text-slate-300 leading-relaxed">{agentCard.body}</p>
 
                 {/* לולאת הבקרה החיה: Agent כשכבה סביב המודל, לא תחנה פנימית */}
                 <div className="mt-6">
-                  <AgentLoop reduce={!!reduce} demo={AGENT_DEMO} />
+                  <AgentLoop reduce={!!reduce} demo={AGENT_DEMO} mode={agentMode} onModeChange={setAgentMode} />
                 </div>
 
-                <p className="mt-6 text-base font-bold leading-relaxed text-purple-100">{AGENT_CARD.closing}</p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-400">{AGENT_CARD.note}</p>
+                <p className="mt-6 text-base font-bold leading-relaxed text-purple-100">{agentCard.closing}</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-400">{agentCard.note}</p>
               </div>
             </div>
           </motion.section>
@@ -204,26 +208,28 @@ export default function BehindTheScenesIntroPage() {
             className="mt-20 relative overflow-hidden rounded-[2.5rem] border border-cyan-500/30 bg-gradient-to-br from-slate-900 to-slate-900/60 p-10 md:p-14 text-center shadow-2xl"
           >
             <div className="absolute -top-20 right-1/2 translate-x-1/2 w-80 h-40 bg-cyan-500/15 blur-[80px] rounded-full pointer-events-none" />
-            {/* המנטור מצביע אל כפתור ההתחלה (מושתל בכרטיס, lg+ בלבד) */}
-            <div className="pointer-events-none absolute bottom-0 left-6 z-0 hidden lg:block">
-              <Mentor pose="pointdown" line={MENTOR_LINES.cta} width={140} glow={false} float={false} />
-            </div>
             <span className="relative text-cyan-400 text-[11px] font-bold uppercase tracking-[0.25em] block mb-3">
               {CTA.eyebrow}
             </span>
             <h2 className="relative text-2xl md:text-4xl font-black text-white mb-4 tracking-tight">
               {CTA.title}
             </h2>
-            <p className="relative text-slate-400 text-base md:text-lg max-w-xl mx-auto mb-8 leading-relaxed">
+            <p className="relative text-slate-400 text-base md:text-lg max-w-xl mx-auto mb-8 lg:mb-40 leading-relaxed">
               {CTA.body}
             </p>
-            <Link
-              href={CTA.href}
-              className="relative inline-flex items-center gap-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-4 px-10 rounded-2xl transition-all shadow-[0_8px_30px_-6px_rgba(34,211,238,0.6)] hover:shadow-[0_8px_40px_-4px_rgba(34,211,238,0.8)] active:scale-95 no-underline text-lg"
-            >
-              {CTA.button}
-              <ChevronLeft size={22} />
-            </Link>
+            {/* עוטף את הכפתור כדי שהמנטור יעמוד בדיוק מעליו והאצבע תנחת עליו (lg+ בלבד) */}
+            <div className="relative inline-block">
+              <div className="pointer-events-none absolute bottom-full left-1/2 z-10 -translate-x-1/2 translate-y-[2%] hidden lg:block">
+                <Mentor pose="pointdown" width={132} glow={false} float={false} />
+              </div>
+              <Link
+                href={CTA.href}
+                className="relative inline-flex items-center gap-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-4 px-10 rounded-2xl transition-all shadow-[0_8px_30px_-6px_rgba(34,211,238,0.6)] hover:shadow-[0_8px_40px_-4px_rgba(34,211,238,0.8)] active:scale-95 no-underline text-lg"
+              >
+                {CTA.button}
+                <ChevronLeft size={22} />
+              </Link>
+            </div>
           </motion.section>
 
         </div>

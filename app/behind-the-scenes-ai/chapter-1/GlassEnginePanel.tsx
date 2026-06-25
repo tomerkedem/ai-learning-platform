@@ -361,7 +361,7 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                     </div>
                 </div>
                 <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border ${a.border} ${a.bgSoft} px-2.5 py-1 font-mono text-[11px] font-bold ${a.text}`}>
-                    <Sparkles size={11} /> {steps.length} שלבים
+                    <Sparkles size={11} /> תחנות מרכזיות
                 </span>
             </div>
 
@@ -393,8 +393,8 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                                 <motion.div variants={reduce ? undefined : itemVar} className="flex gap-3">
                                     {/* רכבת מספור + connector */}
                                     <div className="flex shrink-0 flex-col items-center">
-                                        <div className={`relative flex h-7 w-7 items-center justify-center rounded-full text-xs font-black ${a.solid} ${a.solidText}`}>
-                                            {i + 1}
+                                        <div className={`relative flex h-7 w-7 items-center justify-center rounded-full ${a.solid} ${a.solidText}`}>
+                                            <span className="h-2 w-2 rounded-full bg-current" aria-hidden />
                                             {!reduce && (
                                                 <motion.span
                                                     className={`absolute inset-0 rounded-full ${a.solid}`}

@@ -35,8 +35,15 @@ const ORBIT_R = 38; // אחוז רדיוס
 
 type Mode = 'agent' | 'chat';
 
-export const AgentLoop: React.FC<{ reduce: boolean; demo: AgentDemo }> = ({ reduce, demo }) => {
-    const [mode, setMode] = useState<Mode>('agent');
+export const AgentLoop: React.FC<{
+    reduce: boolean;
+    demo: AgentDemo;
+    mode?: Mode;
+    onModeChange?: (m: Mode) => void;
+}> = ({ reduce, demo, mode: modeProp, onModeChange }) => {
+    // המתג יכול להיות נשלט מבחוץ (כדי שהקופי שמסביב יתחלף יחד איתו) או פנימי.
+    const [modeInternal, setModeInternal] = useState<Mode>('chat');
+    const mode = modeProp ?? modeInternal;
     const [step, setStep] = useState(-1);
     const [running, setRunning] = useState(false);
     const [hoverId, setHoverId] = useState<string | null>(null);
@@ -51,11 +58,14 @@ export const AgentLoop: React.FC<{ reduce: boolean; demo: AgentDemo }> = ({ redu
             const t = setTimeout(() => setRunning(false), 800);
             return () => clearTimeout(t);
         }
-        const t = setTimeout(() => setStep((s) => s + 1), reduce ? 650 : 1100);
+        const t = setTimeout(() => setStep((s) => s + 1), reduce ? 1000 : 1900);
         return () => clearTimeout(t);
     }, [running, step, stages.length, reduce]);
 
-    const switchMode = (m: Mode) => { setMode(m); setStep(-1); setRunning(false); setHoverId(null); };
+    const switchMode = (m: Mode) => {
+        if (onModeChange) onModeChange(m); else setModeInternal(m);
+        setStep(-1); setRunning(false); setHoverId(null);
+    };
     const run = () => { setStep(0); setRunning(true); };
 
     const activeId = hoverId ?? (step >= 0 ? stages[step].id : null);
@@ -158,7 +168,7 @@ export const AgentLoop: React.FC<{ reduce: boolean; demo: AgentDemo }> = ({ redu
                             mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
                         }}
                         animate={{ rotate: 360 }}
-                        transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
+                        transition={{ duration: 34, repeat: Infinity, ease: 'linear' }}
                     />
                 )}
 
@@ -198,7 +208,7 @@ export const AgentLoop: React.FC<{ reduce: boolean; demo: AgentDemo }> = ({ redu
                         style={{ x: -6 + tilt.x * 0.4, y: -6 + tilt.y * 0.4 }}
                         initial={{ left: '50%', top: '50%' }}
                         animate={{ left: `${activePos.x}%`, top: `${activePos.y}%` }}
-                        transition={{ type: 'spring', stiffness: 120, damping: 18 }}
+                        transition={{ type: 'spring', stiffness: 60, damping: 20 }}
                     />
                 )}
 
@@ -231,7 +241,7 @@ export const AgentLoop: React.FC<{ reduce: boolean; demo: AgentDemo }> = ({ redu
                                         aria-hidden
                                         className="absolute inset-0 rounded-2xl ring-2 ring-purple-300/70"
                                         animate={{ opacity: [0.4, 0.9, 0.4] }}
-                                        transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+                                        transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
                                     />
                                 )}
                                 <span className="relative">{STAGE_ICON[n.id]}</span>

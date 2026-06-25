@@ -152,7 +152,7 @@ export default function BehindTheScenesChapter1() {
         return () => { cancelled = true; ac.abort(); clearTimeout(id); };
     }, [live, liveText]);
 
-    // 15 שלבי המנוע השקוף - שיקוף כן של אותה ריצה (חיה), מקובץ ל-4 מערכות.
+    // התחנות המרכזיות של המנוע השקוף - שיקוף כן של אותה ריצה (חיה), מקובץ למערכות.
     const engineSteps = useMemo(
         () => (isChat ? traceChatEngine(liveText) : traceAgentEngine(liveText)),
         [isChat, liveText],
@@ -359,7 +359,7 @@ export default function BehindTheScenesChapter1() {
                         <HoloFrame accent={accent}>
                             <GlassEnginePanel
                                 title={isChat ? 'Answer Engine' : 'Action Decision Engine'}
-                                subtitle={isChat ? 'בחירת תשובה · 15 שלבים' : 'החלטת פעולה · 15 שלבים'}
+                                subtitle={isChat ? 'בחירת תשובה · תחנות מרכזיות' : 'החלטת פעולה · תחנות מרכזיות'}
                                 accent={accent}
                                 replayKey={replayKey}
                                 steps={engineSteps}
