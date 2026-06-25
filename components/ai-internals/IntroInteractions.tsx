@@ -1,135 +1,18 @@
 "use client";
 
 // components/ai-internals/IntroInteractions.tsx
-// שני רגעים אינטראקטיביים ייעודיים למבוא של "מאחורי הקלעים של AI".
-//
-// ── למה הם קיימים ────────────────────────────────────────────────────────────
-// המבוא היה פוסטר יפה אך פסיבי: הכול autoplay, הלומד רק צופה. שני הרכיבים כאן
-// הופכים אותו ל"מכשיר": (1) ניחוש מהיר שמכוון את האינטואיציה הנכונה לפני שפותחים
-// את מפת הלמידה, (2) טעימת טוקניזציה חיה על המשפט של הלומד עצמו.
+// טעימת טוקניזציה חיה למבוא של "מאחורי הקלעים של AI".
 //
 // ── כלל היושרה ───────────────────────────────────────────────────────────────
-// ערך הליבה של הלומדה הוא ש"כל המספרים מחושבים חי". לכן הרכיבים כאן לא מזייפים
-// שום חישוב מודל: הטוקניזציה היא פיצול-טקסט אמיתי בצד-לקוח (ומסויג בכך מפורשות),
-// ואין כאן הסתברויות מומצאות. החישוב האמיתי במורד הצינור חי בלאב של פרק 8.
+// ערך הליבה של הלומדה הוא ש"כל המספרים מחושבים חי". לכן הרכיב כאן לא מזייף שום
+// חישוב מודל: הטוקניזציה היא פיצול-טקסט אמיתי בצד-לקוח (ומסויג בכך מפורשות).
+// החישוב האמיתי במורד הצינור חי בלאב של פרק 8.
+//
+// הערה: הניחוש המהיר עבר לרכיב ייעודי HypothesisGuess (כרטיסי השערה פרימיום).
 
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HelpCircle, Sparkles, Check, ArrowDown, RotateCcw, Scissors, Keyboard, Info } from 'lucide-react';
-
-import { Mentor } from './Mentor';
-
-/* ════════════════════════ ניחוש מהיר: מה באמת קורה ══════════════════════════ */
-
-// לא מבחן ולא חלק מהמאסטרי: רגע אינטואיציה קצר שמכוון את המודל המנטלי הנכון לפני
-// שפותחים את מפת הלמידה. אין שמירת ניקוד. התשובה הנכונה מתארת את התהליך האמיתי
-// (טוקנים, הקשר, טוקן אחרי טוקן) במקום מספר קבוע של שלבים.
-const QUICK_GUESS_OPTIONS = [
-    'המודל קורא את המשפט אות-אות ומרכיב תשובה.',
-    'המודל עובר תמיד בדיוק 15 שלבים קבועים.',
-    'המודל מפרק את הטקסט לטוקנים, מחשב הקשר, ומייצר תשובה טוקן אחרי טוקן.',
-    'המודל שולף תשובה מוכנה ממאגר.',
-];
-const QUICK_GUESS_CORRECT = 2;
-
-export const GuessRevealGate: React.FC<{ reduce: boolean }> = ({ reduce }) => {
-    const [choice, setChoice] = useState<number | null>(null);
-    const revealed = choice !== null;
-    const correct = choice === QUICK_GUESS_CORRECT;
-
-    return (
-        <div
-            dir="rtl"
-            className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/60 p-6 text-center backdrop-blur-xl md:p-8"
-        >
-            <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[80px]" />
-
-            {/* מנטור מגיב מושתל בכרטיס: think לפני ניחוש → celebrate אם צדק, headsup אם טעה */}
-            <div className="pointer-events-none absolute bottom-0 left-4 z-0 hidden lg:block">
-                <Mentor pose={!revealed ? 'think' : correct ? 'celebrate' : 'headsup'} width={130} glow={false} />
-            </div>
-
-            <div className="relative">
-                <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] text-cyan-400">
-                    <HelpCircle size={14} /> ניחוש מהיר
-                </span>
-                <h3 className="mb-2 text-xl font-black text-white md:text-3xl">
-                    מה קורה באמת כשכותבים משפט לצ׳אט?
-                </h3>
-                <p className="mx-auto mb-6 max-w-xl text-sm text-slate-400 md:text-base">
-                    בלי לחץ, זה לא מבחן. בחרו מה שנשמע לכם הכי קרוב, ואז נפתח את מפת הלמידה ביחד.
-                </p>
-
-                <div className="mx-auto flex max-w-2xl flex-col gap-3 text-right">
-                    {QUICK_GUESS_OPTIONS.map((opt, i) => {
-                        const isChoice = choice === i;
-                        const isAnswer = i === QUICK_GUESS_CORRECT;
-                        const state = !revealed ? 'idle' : isAnswer ? 'answer' : isChoice ? 'wrong' : 'dim';
-                        return (
-                            <button
-                                key={i}
-                                type="button"
-                                onClick={() => !revealed && setChoice(i)}
-                                disabled={revealed}
-                                aria-label={opt}
-                                className={[
-                                    'relative flex items-center gap-3 rounded-2xl border px-5 py-4 text-sm font-semibold leading-relaxed transition-all md:text-base',
-                                    state === 'idle' && 'cursor-pointer border-slate-700/60 bg-slate-800/40 text-slate-200 hover:border-cyan-500/50 hover:bg-cyan-900/15',
-                                    state === 'answer' && 'border-cyan-400/70 bg-cyan-900/30 text-cyan-100 shadow-[0_0_30px_-8px_rgba(34,211,238,0.6)]',
-                                    state === 'wrong' && 'border-rose-500/50 bg-rose-900/20 text-rose-200/80',
-                                    state === 'dim' && 'border-slate-700/40 bg-slate-800/20 text-slate-500',
-                                ].filter(Boolean).join(' ')}
-                            >
-                                {revealed && isAnswer && (
-                                    <motion.span
-                                        initial={reduce ? false : { scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 15 }}
-                                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-cyan-400 text-slate-950"
-                                    >
-                                        <Check size={14} strokeWidth={3} />
-                                    </motion.span>
-                                )}
-                                <span>{opt}</span>
-                            </button>
-                        );
-                    })}
-                </div>
-
-                <AnimatePresence>
-                    {revealed && (
-                        <motion.div
-                            initial={reduce ? false : { opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            transition={reduce ? { duration: 0 } : { duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                            className="overflow-hidden"
-                        >
-                            <div className="mt-8 flex flex-col items-center gap-2" role="status" aria-live="polite">
-                                <p className="inline-flex items-center gap-2 text-base font-bold text-cyan-300 md:text-lg">
-                                    <Sparkles size={16} />
-                                    {correct ? 'בדיוק. זו התמונה המדויקת יותר.' : 'הנה התמונה המדויקת יותר.'}
-                                </p>
-                                <p className="max-w-xl text-sm leading-relaxed text-slate-400">
-                                    המודל לא עובד לפי מספר קבוע של שלבים, ולא קורא בהכרח אות-אות. הוא עובד על טוקנים, מפעיל הרבה חישובים בכל סיבוב, בוחר את הטוקן הבא, ואז חוזר על התהליך עד שהתשובה מסתיימת.
-                                </p>
-
-                                <button
-                                    type="button"
-                                    onClick={() => setChoice(null)}
-                                    className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-slate-700/60 bg-slate-800/40 px-4 py-1.5 text-xs font-bold text-slate-300 transition-colors hover:border-cyan-500/50 hover:bg-cyan-900/15 hover:text-cyan-200"
-                                >
-                                    <RotateCcw size={13} /> נסו שוב
-                                </button>
-
-                                {!reduce && <ArrowDown size={18} className="mt-3 animate-bounce text-cyan-400/60" />}
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-        </div>
-    );
-};
+import { Scissors, Keyboard, Info } from 'lucide-react';
 
 /* ════════════════════════ טעימת טוקניזציה חיה ════════════════════════════ */
 
