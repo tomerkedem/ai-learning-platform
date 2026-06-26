@@ -174,7 +174,6 @@ export const Mentor: React.FC<MentorProps> = ({
                     <div
                         className="relative rounded-2xl border bg-slate-900/95 px-3 py-2 text-center shadow-lg backdrop-blur-sm"
                         style={{ borderColor: `rgb(${accent.base} / 0.4)` }}
-                        dir="rtl"
                     >
                         <p className="flex flex-col items-center justify-center gap-1 text-[11px] font-bold leading-snug" style={{ color: accent.text }}>
                             {lineIcon && (

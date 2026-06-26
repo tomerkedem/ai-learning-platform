@@ -41,7 +41,7 @@ export const InsightBox: React.FC<InsightBoxProps> = ({ type = 'info', title, ch
     const style = styles[type];
 
     return (
-        <div className={`my-8 rounded-xl border ${style.border} ${style.bg} p-6 relative overflow-hidden text-right`} dir="rtl">
+        <div className={`my-8 rounded-xl border ${style.border} ${style.bg} p-6 relative overflow-hidden text-start`}>
             <div className="absolute top-0 left-0 w-24 h-24 bg-linear-to-br from-white/5 to-transparent rounded-br-full pointer-events-none"></div>
 
             <div className="flex items-start gap-4 relative z-10">

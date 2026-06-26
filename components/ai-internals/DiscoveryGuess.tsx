@@ -114,7 +114,6 @@ export const DiscoveryGuess: React.FC<{ content: DiscoveryGuessContent; cards: D
 
     return (
         <div
-            dir="rtl"
             className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/60 p-6 backdrop-blur-xl md:p-8"
         >
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-violet-500/10 blur-[80px]" />
@@ -157,7 +156,7 @@ export const DiscoveryGuess: React.FC<{ content: DiscoveryGuessContent; cards: D
                                 aria-label={`${card.title}. ${card.desc}`}
                                 whileHover={reduce ? undefined : { scale: 1.015 }}
                                 whileTap={reduce ? undefined : { scale: 0.985 }}
-                                className={`relative flex flex-col gap-2.5 rounded-2xl border p-4 text-right transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${cardClasses(card)}`}
+                                className={`relative flex flex-col gap-2.5 rounded-2xl border p-4 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${cardClasses(card)}`}
                             >
                                 <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-slate-950/50">
                                     {Icon ? (
@@ -208,7 +207,7 @@ export const DiscoveryGuess: React.FC<{ content: DiscoveryGuessContent; cards: D
                                                 <span className={`font-bold ${chosen.statusTone === 'precise' ? 'text-sky-300' : 'text-amber-300'}`}>{chosen.missesLabel}: </span>
                                                 {chosen.misses}
                                             </p>
-                                            <p className="border-r-2 border-violet-400/50 pr-3 font-medium text-slate-100">
+                                            <p className="border-s-2 border-violet-400/50 ps-3 font-medium text-slate-100">
                                                 {chosen.bridge}
                                             </p>
                                         </div>
