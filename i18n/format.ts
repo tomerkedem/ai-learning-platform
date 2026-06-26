@@ -104,10 +104,21 @@ interface AnswerPunctuation {
     betweenRest: string;
     /** סימן הסיום. */
     terminal: string;
+    /**
+     * מפריד לפני החלק האחרון. ברירת מחדל: betweenRest. בשפות שבהן החלק האחרון נפתח
+     * בוו החיבור (y/и), נגדיר רווח בלבד כדי להימנע מפסיק לפני וו החיבור.
+     */
+    beforeLast?: string;
 }
 const ANSWER_PUNCTUATION: Partial<Record<Locale, AnswerPunctuation>> = {
     he: { afterFirst: '. ', betweenRest: ', ', terminal: '.' },
     ja: { afterFirst: '。', betweenRest: '、', terminal: '。' },
+    // ערבית: פסיק ערבי (،) בין החלקים, נקודה רגילה לסיום.
+    ar: { afterFirst: '. ', betweenRest: '، ', terminal: '.' },
+    // ספרדית/רוסית: בלי פסיק לפני וו החיבור הסופי (y/и), רק רווח. en נשאר עם פסיק
+    // אוקספורד דרך ברירת המחדל.
+    es: { afterFirst: '. ', betweenRest: ', ', terminal: '.', beforeLast: ' ' },
+    ru: { afterFirst: '. ', betweenRest: ', ', terminal: '.', beforeLast: ' ' },
 };
 const DEFAULT_ANSWER_PUNCTUATION: AnswerPunctuation = ANSWER_PUNCTUATION.he!;
 
@@ -116,5 +127,10 @@ export function assembleLocalizedAnswer(locale: Locale, fragments: string[]): st
     const p = ANSWER_PUNCTUATION[locale] ?? DEFAULT_ANSWER_PUNCTUATION;
     const [first, ...rest] = fragments;
     if (rest.length === 0) return `${first}${p.terminal}`;
-    return `${first}${p.afterFirst}${rest.join(p.betweenRest)}${p.terminal}`;
+    if (rest.length === 1) return `${first}${p.afterFirst}${rest[0]}${p.terminal}`;
+    // ההפרדה לפני החלק האחרון נפרדת, כדי לאפשר השמטת פסיק לפני וו החיבור (es/ru).
+    const beforeLast = p.beforeLast ?? p.betweenRest;
+    const head = rest.slice(0, -1).join(p.betweenRest);
+    const last = rest[rest.length - 1];
+    return `${first}${p.afterFirst}${head}${beforeLast}${last}${p.terminal}`;
 }
