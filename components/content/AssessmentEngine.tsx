@@ -393,10 +393,9 @@ export const AssessmentEngine = ({
                     {/* סטטיסטיקות: נכונות וזמן */}
                     <div className={`grid ${showTimer ? 'grid-cols-2' : 'grid-cols-1'} gap-3 mb-6`}>
                         <div className="flex items-center justify-center gap-2.5 bg-white/5 p-3.5 rounded-2xl border border-white/10">
-                            <Check size={16} className="text-emerald-400 stroke-[3px]" />
-                            <div className="text-right">
-                                <div className="text-[10px] text-slate-500 font-bold uppercase">נכונות</div>
-                                <div className="text-white font-black leading-tight">{correctCount} / {questions.length}</div>
+                            <Check size={16} className="text-emerald-400 stroke-[3px] shrink-0" />
+                            <div className="text-white font-bold leading-tight text-sm text-right">
+                                {correctCount} מתוך {questions.length} תשובות נכונות
                             </div>
                         </div>
                         {showTimer && (
@@ -527,7 +526,7 @@ export const AssessmentEngine = ({
                 )}
 
                 <div className="mr-auto flex items-center gap-3 bg-white/5 p-1.5 px-3 rounded-xl border border-white/10">
-                    <span className="text-[10px] font-bold text-slate-500">{currentIndex + 1} / {questions.length}</span>
+                    <span className="text-[10px] font-bold text-slate-500">שאלה {currentIndex + 1} מתוך {questions.length}</span>
                     <div className="w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
                         <motion.div animate={{ width: `${progress}%` }} className="h-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]" />
                     </div>

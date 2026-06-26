@@ -630,7 +630,7 @@ export const chapter8Quiz: QuizQuestion[] = [
     },
     {
         id: 5,
-        question: "המודל שם משקל חזק על 'נמסרה'. משתמש מסיק: 'אז המודל בדק במציאות והחבילה באמת נמסרה'. מה הטעות?",
+        question: "המודל שם משקל חזק על 'נמסרה'. משתמש מסיק: 'אז המודל בדק במציאות והחבילה באמת נמסרה'. מה לא מדויק בהסקה הזו?",
         options: [
             "אין טעות, משקל קשב גבוה מוכיח שהמידע נכון",
             "Attention משקלל קשרים בתוך הטקסט, הוא לא בודק עובדות בעולם. משקל גבוה על 'נמסרה' רק אומר שהמילה הזו חשובה לעיבוד ההקשר",
@@ -1588,7 +1588,7 @@ export function reviewLinksForConcepts(concepts: string[]): ReviewLink[] {
         const n = CONCEPT_TO_CHAPTER[concept];
         if (!n || seenChapters.has(n)) continue;
         seenChapters.add(n);
-        links.push({ href: `/behind-the-scenes-ai/chapter-${n}`, label: `פרק ${n} - ${CHAPTER_LABELS[n]}` });
+        links.push({ href: `/behind-the-scenes-ai/chapter-${n}`, label: `חזרה לפרק ${n}: ${CHAPTER_LABELS[n]}` });
     }
     return links;
 }

@@ -91,13 +91,12 @@ const CARDS: GuessCard[] = [
     },
     {
         id: 'dynamic',
-        title: 'הקשר משתנה בכל רגע',
+        title: 'המשקל משתנה לפי הרגע',
         desc: 'בכל שלב בתשובה, חלק אחר במשפט יכול להשפיע יותר על מה שהמודל עושה עכשיו.',
         cue: 'nodes',
         statusLabel: 'בחרת נכון',
         statusTone: 'close',
-        // TODO: כשייכנס הנכס mentor-correct-thumbs-up-alpha.png יוחלף ל-pose "correct".
-        mentorPose: 'explain-opposite',
+        mentorPose: 'correct',
         getsRight: 'תפסתם את העיקר. המשקל זז לפי הרגע, ולא נשאר על מילה אחת.',
         missesLabel: 'מה נשאר לראות',
         misses: 'נראה את זה קורה ממש על המשפט שלנו, רגע אחרי רגע.',

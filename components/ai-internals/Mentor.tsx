@@ -28,7 +28,8 @@ export type MentorPose =
     | 'chart'
     | 'code'
     | 'type'
-    | 'guessThinking';
+    | 'guessThinking'
+    | 'correct';
 
 const POSE_SRC: Record<MentorPose, string> = {
     hero: '/assets/mentor-hero.png',
@@ -51,6 +52,8 @@ const POSE_SRC: Record<MentorPose, string> = {
     type: '/assets/mentor-type.png',
     // פוזה גלובלית לשימוש חוזר: מנטור מהורהר שמזמין לעצור ולחשוב לפני שבוחרים.
     guessThinking: '/assets/mentor-thinking-refine-alpha.png',
+    // פוזת הצלחה לשימוש חוזר (תשובה נכונה). כרגע ממופה לנכס החגיגה הקיים.
+    correct: '/assets/mentor-celebrate.png',
 };
 
 // נרמול גודל: פוזות "גוף מלא" (600px) מצולמות רחוק יותר מהבוסטים (~315px), ולכן הפנים
