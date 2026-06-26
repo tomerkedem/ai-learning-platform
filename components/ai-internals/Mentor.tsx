@@ -33,7 +33,9 @@ export type MentorPose =
     | 'guessThinking'
     | 'correct'
     | 'plausiblePaths'
-    | 'answerBuilder';
+    | 'answerBuilder'
+    | 'holographic'
+    | 'mapNavigator';
 
 const POSE_SRC: Record<MentorPose, string> = {
     hero: '/assets/mentor-hero.png',
@@ -68,6 +70,12 @@ const POSE_SRC: Record<MentorPose, string> = {
     // פוזת הירו של פרק 5 (איך AI בונה תשובה): המנטור בונה תשובה צעד אחר צעד מחלקים
     // והקשר. בשימוש בהירו של פרק 5 בלבד.
     answerBuilder: '/assets/mentor-answer-builder-alpha.png',
+    // פוזת פרק 1 (המעבדה השקופה): המנטור חושף מנוע AI הולוגרפי בין השאלה לתשובה.
+    // נכס landscape רחב, שונה מהפוזות הפורטרט. בשימוש בפרק 1 בלבד.
+    holographic: '/assets/mentor_holographic.png',
+    // פוזת מבוא (מפת המנוע): המנטור מלווה את מפת התחנות מהטקסט עד התשובה ופותח אותה
+    // ללומד. נכס שקוף (ללא מסכה לבנה). בשימוש במבוא בלבד.
+    mapNavigator: '/assets/mentor_map_navigator.png',
 };
 
 // נרמול גודל: פוזות "גוף מלא" (600px) מצולמות רחוק יותר מהבוסטים (~315px), ולכן הפנים
@@ -109,6 +117,8 @@ export interface MentorProps {
     lineIcon?: string;
     /** רוחב המסגרת בפיקסלים (הגובה אוטומטי). */
     width?: number;
+    /** נכס גיבוי אם תמונת הפוזה חסרה/נכשלת בטעינה. נופל אליו בחן, פעם אחת. */
+    fallbackSrc?: string;
     /** מראה הופכת אופקית (כיוון הצבעה הפוך / התאמת RTL). */
     flip?: boolean;
     /** ריחוף עדין. ברירת מחדל true (מכובה אוטומטית ב-reduced-motion). */
@@ -127,6 +137,7 @@ export const Mentor: React.FC<MentorProps> = ({
     line,
     lineIcon,
     width = 160,
+    fallbackSrc,
     flip = false,
     float = true,
     bubbleSide = 'top',
@@ -199,6 +210,11 @@ export const Mentor: React.FC<MentorProps> = ({
                     transition={doFloat ? { repeat: Infinity, duration: 4, ease: 'easeInOut' } : undefined}
                     className="relative mx-auto block h-auto w-full object-contain"
                     style={{ scale, filter: `drop-shadow(0 15px 35px rgb(${accent.shadow} / 0.35))` }}
+                    onError={fallbackSrc ? (e) => {
+                        // נפילה חד-פעמית לנכס הגיבוי; הבדיקה ב-endsWith מונעת לולאת onError.
+                        const img = e.currentTarget;
+                        if (!img.src.endsWith(fallbackSrc)) img.src = fallbackSrc;
+                    } : undefined}
                     draggable={false}
                 />
             </div>

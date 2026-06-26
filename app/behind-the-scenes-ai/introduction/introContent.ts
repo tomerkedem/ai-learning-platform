@@ -572,6 +572,6 @@ export const CTA = {
 
 export const MENTOR_LINES = {
     hero: 'בואו נפתח את המכסה ביחד 👀',
-    roadmap: 'תחנה אחר תחנה, עד התשובה 🗺️',
+    roadmap: 'מפת המנוע נפתחת',
     cta: 'מכאן מתחילים 🚀',
 } as const;

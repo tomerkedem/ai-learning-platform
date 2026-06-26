@@ -15,6 +15,7 @@ import { DecisionCard } from '@/components/ai-internals/DecisionCard';
 import type { Accent, DecisionKind } from '@/components/ai-internals/types';
 
 import type { EngineTraceStep } from './engineTrace';
+import { ProcessCheckpointNode } from './ProcessCheckpointNode';
 
 interface GlassEnginePanelProps {
     title: string;
@@ -303,6 +304,14 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
         return d && d.kind === 'decision' ? CLIMAX_RGB[d.decision.kind] : null;
     }, [steps]);
 
+    // הצומת ה"נוכחי" בצינור: שלב ההחלטה (השיא). אם אין שלב decision, ברירת המחדל
+    // היא הצומת האחרון. שאר הצמתים נחשבים completed (חושבו). אין מצב pending בריצה
+    // הזו - כל התחנות נגזרות יחד - אך הרכיב תומך בו לשימוש חוזר.
+    const currentIdx = useMemo(() => {
+        const d = steps.findIndex((s) => s.kind === 'decision');
+        return d >= 0 ? d : steps.length - 1;
+    }, [steps]);
+
     return (
         <div className="relative flex h-[640px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/80" dir="rtl">
             {/* רקע גריד */}
@@ -391,28 +400,42 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                                 )}
 
                                 <motion.div variants={reduce ? undefined : itemVar} className="flex gap-3">
-                                    {/* רכבת מספור + connector */}
-                                    <div className="flex shrink-0 flex-col items-center">
-                                        <div className={`relative flex h-7 w-7 items-center justify-center rounded-full ${a.solid} ${a.solidText}`}>
-                                            <span className="h-2 w-2 rounded-full bg-current" aria-hidden />
-                                            {!reduce && (
-                                                <motion.span
-                                                    className={`absolute inset-0 rounded-full ${a.solid}`}
-                                                    initial={{ opacity: 0.4, scale: 1 }}
-                                                    animate={{ opacity: 0, scale: 1.8 }}
-                                                    transition={{ duration: 1.6, repeat: Infinity, ease: 'easeOut', delay: i * 0.08 }}
-                                                />
-                                            )}
-                                        </div>
+                                    {/* צינור נקודות-ביקורת עצביות: צומת לכל שלב + spine כמוליך אנרגיה */}
+                                    <div className="relative flex shrink-0 flex-col items-center">
+                                        {/* מחבר אופקי זעיר: קו עדין מקצה הכרטיס אל הצומת */}
+                                        <span
+                                            aria-hidden
+                                            className={`absolute top-3.5 right-full h-px w-2.5 -translate-y-1/2 ${a.text}`}
+                                            style={{ background: 'linear-gradient(to right, transparent, currentColor)', opacity: 0.45 }}
+                                        />
+                                        <ProcessCheckpointNode
+                                            state={i === currentIdx ? 'current' : 'completed'}
+                                            accent={accent}
+                                            reduce={!!reduce}
+                                            index={i}
+                                            label={step.title}
+                                        />
                                         {!isLast && (
-                                            <div className="relative mt-1 w-0.5 flex-1 overflow-hidden rounded-full bg-white/10">
-                                                {/* פולס אנרגיה שזורם במורד הצינור */}
+                                            // spine: מוליך נתונים דק עם גרדיאנט; הקטע שמוביל אל הצומת הנוכחי זוהר מעט
+                                            <div
+                                                aria-hidden
+                                                className={`relative mt-1 w-0.5 flex-1 overflow-hidden rounded-full ${i + 1 === currentIdx ? a.text : ''}`}
+                                                style={{
+                                                    background: i + 1 === currentIdx
+                                                        ? 'linear-gradient(to bottom, transparent, currentColor)'
+                                                        : 'linear-gradient(to bottom, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.04))',
+                                                    opacity: i + 1 === currentIdx ? 0.5 : 1,
+                                                }}
+                                            >
+                                                {/* חבילת-נתונים זוהרת שזורמת במורד הצינור בין הצמתים. ה-delay לפי
+                                                    האינדקס יוצר מפל זרימה דרך הצינור - תחושת חישוב AI חי. */}
                                                 {!reduce && (
-                                                    <motion.div
-                                                        className={`absolute inset-x-0 h-6 rounded-full ${a.barGradient}`}
-                                                        initial={{ y: '-140%' }}
-                                                        animate={{ y: '700%' }}
-                                                        transition={{ duration: 2.2, repeat: Infinity, ease: 'easeIn', delay: i * 0.16 }}
+                                                    <motion.span
+                                                        className={`absolute inset-x-0 h-4 rounded-full ${a.barGradient}`}
+                                                        style={{ filter: 'blur(0.4px)' }}
+                                                        initial={{ top: '-25%', opacity: 0 }}
+                                                        animate={{ top: '110%', opacity: [0, 0.9, 0.9, 0] }}
+                                                        transition={{ duration: 1.9, repeat: Infinity, ease: 'linear', delay: i * 0.2 }}
                                                     />
                                                 )}
                                             </div>

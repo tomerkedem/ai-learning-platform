@@ -382,9 +382,10 @@ export default function BehindTheScenesChapter1() {
                         ? 'התשובה בצ׳אט נכתבת על ידי מודל אמיתי (Claude) בזמן אמת, מילה אחר מילה - בדיוק הלולאה האוטו-רגרסיבית. הלוח מימין נשאר המחשה לימודית: ה-API לא חושף את ההסתברויות הפנימיות של המודל.'
                         : 'מצב דמו: התשובות בצ׳אט מתוסרטות וקבועות. הגדרת ANTHROPIC_API_KEY בשרת מפעילה מודל אמיתי שכותב את התשובה חי, מילה אחר מילה.'}
                 </p>
-                {/* מנטור קטן צמוד לכרטיס הצ'אט השקוף (xl+, מימין) */}
-                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                  <Mentor pose="inspect" line="הצ'אט מימין, המנוע משמאל 🔍" width={130} />
+                {/* מנטור פרק 1 צמוד לכרטיס הצ'אט השקוף (2xl בלבד - רק שם יש מרווח בין הלוח
+                    לסרגל הניווט מימין; ב-xl הסרגל מכסה את הדמות): חושף את המנוע מבפנים */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-4 z-20 hidden 2xl:block pointer-events-none">
+                  <Mentor pose="holographic" line="כאן נפתח המנוע מבפנים" width={200} fallbackSrc="/assets/mentor-inspect.png" />
                 </div>
             </section>
 

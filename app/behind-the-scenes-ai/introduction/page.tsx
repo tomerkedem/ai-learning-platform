@@ -136,9 +136,9 @@ export default function BehindTheScenesIntroPage() {
 
             <div className="relative">
               <IntroRoadmap zones={ROADMAP_ZONES} stations={ROADMAP_STATIONS} reduce={!!reduce} defaultOpenId="tokenize" />
-              {/* המנטור מלווה את המפה (xl+, מצד שמאל) */}
-              <div className="absolute top-6 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-                <Mentor pose="roadmap" line={MENTOR_LINES.roadmap} width={170} />
+              {/* המנטור מלווה את המפה (xl+, מצד ימין - צד הקריאה הטבעי ב-RTL) */}
+              <div className="absolute top-6 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+                <Mentor pose="mapNavigator" line={MENTOR_LINES.roadmap} width={170} />
               </div>
             </div>
 
