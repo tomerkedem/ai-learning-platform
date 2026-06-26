@@ -100,7 +100,7 @@ const f2 = (n: number) => Number(n.toFixed(2));
 
 const CHAT_META = [
     { id: 'input', he: 'קלט', en: 'Input', explainHe: 'מה שהמשתמש כתב. בחיים האמיתיים זו פשוט בקשה, לא הוראה טכנית.' },
-    { id: 'tokens', he: 'טוקנים', en: 'Tokens', explainHe: 'הטקסט נשבר ליחידות עבודה. כל מילה הופכת לטוקן (פרק 5).' },
+    { id: 'tokens', he: 'טוקנים', en: 'Tokens', explainHe: 'הטקסט נשבר ליחידות עבודה. כל מילה הופכת לטוקן (פרק 3).' },
     { id: 'ids', he: 'מזהים', en: 'Token IDs', explainHe: 'כל טוקן מקבל מזהה מספרי מהמילון. ה-ID הוא כתובת, לא משמעות (פרק 6).' },
     { id: 'vector', he: 'וקטור', en: 'Vector', explainHe: 'מרצף המזהים נבנה וקטור משמעות: לאן המשפט מצביע (פרק 6).' },
     { id: 'similarity', he: 'דמיון', en: 'Similarity', explainHe: 'Cosine Similarity בין הווקטור לכל כוונה. זה ציון קרבה, לא הסתברות (פרק 8).' },

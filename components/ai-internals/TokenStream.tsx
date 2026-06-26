@@ -7,7 +7,7 @@ import { TokenChip } from './TokenChip';
 import { TokenRoleCard } from './TokenRoleCard';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
-import type { Token } from '@/app/behind-the-scenes-ai/chapter-5/tokenizer';
+import type { Token } from '@/app/behind-the-scenes-ai/chapter-3/tokenizer';
 
 interface TokenStreamProps {
     tokens: Token[];

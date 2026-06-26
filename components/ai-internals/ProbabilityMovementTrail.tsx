@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { TrendingUp } from 'lucide-react';
 import { ACCENTS } from './accents';
-import { candidateById, type WordScenario, type CandidateId } from '@/app/behind-the-scenes-ai/chapter-4/wordEngine';
+import { candidateById, type WordScenario, type CandidateId } from '@/app/behind-the-scenes-ai/chapter-5/wordEngine';
 
 interface ProbabilityMovementTrailProps {
     scenario: WordScenario;

@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Compass } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
-import { VECTOR_LABELS, type TypingStep, type VectorKey } from '@/app/behind-the-scenes-ai/chapter-4/wordEngine';
+import { VECTOR_LABELS, type TypingStep, type VectorKey } from '@/app/behind-the-scenes-ai/chapter-5/wordEngine';
 
 interface MeaningVectorPanelProps {
     step: TypingStep | null;

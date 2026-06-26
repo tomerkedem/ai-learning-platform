@@ -26,7 +26,7 @@ import {
     type AgentReasoning,
     type TypingStep,
     type WordFinal,
-} from '@/app/behind-the-scenes-ai/chapter-4/wordEngine';
+} from '@/app/behind-the-scenes-ai/chapter-5/wordEngine';
 
 /** האם יש תוכן ממשי בהיגיון ה-Agent (כדי לא להציג פאנל ריק). */
 const agentHasContent = (r: AgentReasoning) =>

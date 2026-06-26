@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, Lock, Map } from 'lucide-react';
-import { ROADMAP_STEPS } from '@/app/behind-the-scenes-ai/chapter-5/tokenizer';
+import { ROADMAP_STEPS } from '@/app/behind-the-scenes-ai/chapter-3/tokenizer';
 
 /**
  * מפת הדרכים: Text -> Tokens -> Token IDs -> Vectors -> Similarity -> Scores -> Probabilities.

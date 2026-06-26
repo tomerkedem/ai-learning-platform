@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Hash } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
-import { NEGATION_WORDS, type TypingStep } from '@/app/behind-the-scenes-ai/chapter-4/wordEngine';
+import { NEGATION_WORDS, type TypingStep } from '@/app/behind-the-scenes-ai/chapter-5/wordEngine';
 
 interface TokenStreamPanelProps {
     step: TypingStep | null;

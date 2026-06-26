@@ -4,8 +4,8 @@ import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { FlaskConical, Info, Layers, Scissors, Combine } from 'lucide-react';
 import { TokenChip } from './TokenChip';
-import { HEBREW_SPLITS } from '@/app/behind-the-scenes-ai/chapter-5/hebrewSplitRules';
-import { roleForWord } from '@/app/behind-the-scenes-ai/chapter-5/tokenRoles';
+import { HEBREW_SPLITS } from '@/app/behind-the-scenes-ai/chapter-3/hebrewSplitRules';
+import { roleForWord } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
 
 /**
  * Hebrew Token Lab: מעבדה אקטיבית לפירוק אותיות שימוש. הלומד לוחץ על כל מילה

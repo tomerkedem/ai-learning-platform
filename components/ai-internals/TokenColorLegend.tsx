@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Palette } from 'lucide-react';
-import { ROLE_ORDER, ROLE_STYLE, ROLE_INFO } from '@/app/behind-the-scenes-ai/chapter-5/tokenRoles';
+import { ROLE_ORDER, ROLE_STYLE, ROLE_INFO } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
 
 /**
  * Token Color Map: מקרא קבוע של כל התפקידים והצבעים. אותו צבע משמש בכל

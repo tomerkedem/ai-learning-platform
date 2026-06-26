@@ -2,16 +2,37 @@
 
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Scissors, MousePointerClick, Layers, SplitSquareHorizontal } from 'lucide-react';
+import { Type, MousePointerClick, Zap, FlaskConical } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine } from '@/components/content/AssessmentEngine';
 import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 
-import { TokenizationLab } from '@/components/ai-internals/TokenizationLab';
-import { TokenizationRoadmap } from '@/components/ai-internals/TokenizationRoadmap';
+import { WordEngineLab } from '@/components/ai-internals/WordEngineLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
+
+// "נוסחה" מנטלית - איך כל מילה מעדכנת את הציון.
+const FORMULA_ROWS = [
+    {
+        condition: 'מילה ניטרלית נכנסת (למשל "החבילה")',
+        routeHe: 'זיהוי תחום, ביטחון נמוך',
+        routeEn: 'Domain only, low confidence',
+        color: 'text-slate-300',
+    },
+    {
+        condition: 'מילת שלילה נכנסת (למשל "לא")',
+        routeHe: 'היפוך כיוון, ההסתברות זזה חזק',
+        routeEn: 'Direction flips, big impact',
+        color: 'text-rose-300',
+    },
+    {
+        condition: 'הצירוף מתחדד (למשל "לא הגיעה")',
+        routeHe: 'מוביל ברור, ביטחון גבוה',
+        routeEn: 'Clear leader, high confidence',
+        color: 'text-emerald-300',
+    },
+];
 
 export default function BehindTheScenesChapter5() {
     const reduce = useReducedMotion();
@@ -30,98 +51,107 @@ export default function BehindTheScenesChapter5() {
                 dir="rtl"
             >
                 <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
-                <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
+                <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-rose-500/10 blur-[90px] rounded-full pointer-events-none" />
 
                 <div className="relative z-10">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
-                        <Scissors size={14} className="text-violet-400" />
+                        <Type size={14} className="text-violet-400" />
                         <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">Behind the Scenes · 05</span>
                     </div>
 
                     <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
-                        AI לא מתחיל בלהבין.{' '}
-                        <span className="bg-gradient-to-l from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
-                            הוא מתחיל בלפרק
+                        כל מילה{' '}
+                        <span className="bg-gradient-to-l from-violet-400 via-fuchsia-400 to-rose-400 bg-clip-text text-transparent">
+                            מזיזה את המנוע
                         </span>
                     </h1>
 
                     <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">
-                        לפני שהמנוע מחשב משמעות, הוא הופך את הטקסט ליחידות עבודה שנקראות Tokens. מה שנראה לנו כמו משפט,
-                        נראה למנוע כמו רצף יחידות. הקלידו משפט, וראו אותו נשבר לכרטיסים חיים שנכנסים למנוע בזה אחר זה.
+                        משפט לא נכנס למנוע בבת אחת. הוא נבנה מילה אחר מילה, וכל מילה יכולה להזיז את ההסתברות, את הביטחון ואת ההחלטה.
+                        הקלידו לאט, וראו בעיניים איך המילה &quot;לא&quot; הופכת את הכיוון בזמן אמת. שימו לב: עד השליחה המנוע מציג כיוון זמני בלבד, לא החלטה.
                     </p>
 
                     <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
                         <span className="inline-flex items-center gap-1.5">
-                            <MousePointerClick size={14} className="text-violet-400" /> הקלידו או בחרו ניסוי מהיר
+                            <MousePointerClick size={14} className="text-violet-400" /> הקלידו או לחצו &quot;הקלידו עבורי&quot;
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                            <SplitSquareHorizontal size={14} className="text-cyan-400" /> לחצו על טוקן כדי לראות את תפקידו
+                            <Zap size={14} className="text-rose-400" /> צפו במילה &quot;לא&quot; מזיזה את העמודות
                         </span>
                     </div>
                 </div>
             </motion.section>
-            {/* המנטור מחזיק טוקן - קודם מפרקים (xl+, מימין) */}
+            {/* המנטור מקליד - כל מילה מזיזה את המנוע (xl+, מימין) */}
             <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="token" line="קודם מפרקים, אז מבינים 🧊" width={165} />
+              <Mentor pose="type" line="כל מילה מזיזה את המנוע ⌨️" width={165} />
             </div>
             </div>
 
-            {/* ══════════ Tokenization Lab ══════════ */}
+            {/* ══════════ Word Engine Lab ══════════ */}
             <section className="relative mt-12 space-y-5 text-right" dir="rtl">
                 <div className="flex items-center gap-3">
-                    <Layers size={24} className="text-violet-400" />
+                    <FlaskConical size={24} className="text-violet-400" />
                     <div>
-                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">Tokenization Lab</div>
-                        <h3 className="text-2xl font-bold text-white">מעבדת הפירוק לטוקנים</h3>
+                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">Word Engine Lab</div>
+                        <h3 className="text-2xl font-bold text-white">מעבדת המילים</h3>
                     </div>
                 </div>
 
                 {/* פתיחה לימודית לפני המעבדה */}
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    כאן נראה את השלב שקורה עוד לפני כל חישוב: פירוק הטקסט ליחידות. כל מילה הופכת ל-token, מקבלת תפקיד וצבע,
-                    וסימני פיסוק נחשבים גם הם יחידות נפרדות. זהו טוקנייזר לימודי שמדגים את הרעיון, לא הפירוק המדויק של מודל מסחרי.
+                    כאן נראה את מה שקורה בין הקשה להקשה. כל מילה שמתווספת נכנסת כ-token, מזיזה את וקטור המשמעות,
+                    ומשנה את ההתפלגות בין האפשרויות. כל עוד לא נשלח המשפט, מה שאתם רואים הוא כיוון זמני (Temporary) ולא החלטה.
+                    רק לחיצת Send נועלת החלטה סופית (Final).
                 </div>
 
-                <TokenizationLab />
-                {/* המנטור בוחן כל טוקן (xl+, משמאל) */}
+                <WordEngineLab />
+                {/* המנטור מצביע על העמודות הזזות (xl+, משמאל) */}
                 <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-                  <Mentor pose="inspect" line="כל טוקן - יחידת עבודה" width={160} />
+                  <Mentor pose="chart" line="צפו בעמודות זזות עם כל מילה" width={160} flip />
                 </div>
             </section>
 
-            {/* ══════════ נוסחה + מפת דרכים ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            {/* ══════════ נוסחה מנטלית ══════════ */}
+            <section className="mt-12 text-right" dir="rtl">
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-6">
                     <div className="mb-4 leading-tight">
-                        <div className="text-sm font-bold text-slate-200">הנוסחה</div>
-                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">The formula</div>
+                        <div className="text-sm font-bold text-slate-200">מודל מנטלי</div>
+                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">Mental model</div>
+                    </div>
+                    <div className="mb-4 leading-tight">
+                        <div className="text-base font-bold text-slate-200">כל מילה מוסיפה או מורידה משקל ← הציון מתעדכן</div>
+                        <div className="font-mono text-xs text-slate-500" dir="ltr">new_score = previous_score + word_impact</div>
                     </div>
                     <div className="space-y-2">
-                        <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 font-mono text-sm text-slate-300" dir="ltr">
-                            tokenize(text) = [token1, token2, token3, ...]
-                        </div>
-                        <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 font-mono text-sm text-slate-300" dir="ltr">
-                            tokenize(&quot;החבילה לא הגיעה&quot;) = [&quot;החבילה&quot;, &quot;לא&quot;, &quot;הגיעה&quot;]
-                        </div>
+                        {FORMULA_ROWS.map((row) => (
+                            <div
+                                key={row.routeEn}
+                                className="flex flex-col gap-1 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 md:flex-row md:items-center md:justify-between"
+                            >
+                                <span className="text-sm text-slate-300">{row.condition}</span>
+                                <span className={`leading-tight ${row.color}`}>
+                                    <span className="block text-sm font-bold">{row.routeHe}</span>
+                                    <span className="block font-mono text-[10px] opacity-70" dir="ltr">{row.routeEn}</span>
+                                </span>
+                            </div>
+                        ))}
                     </div>
                 </div>
-
-                <TokenizationRoadmap />
             </section>
 
-            {/* ══════════ סיכום + גשר לפרקים הבאים ══════════ */}
+            {/* ══════════ סיכום ══════════ */}
             <section className="relative mt-12 text-right" dir="rtl">
-                {/* המנטור מסכם בעידוד (xl+, מימין) */}
+                {/* המנטור מזכיר שהכול זמני עד השליחה (xl+, מימין) */}
                 <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                  <Mentor pose="happy" line="זאת נקודת הכניסה למסלול" width={160} />
+                  <Mentor pose="headsup" line="עד השליחה - הכול זמני" width={160} />
                 </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
-                    <span className="block font-bold text-violet-200">AI לא מתחיל בלהבין. הוא מתחיל בלפרק.</span>
-                    מה שנראה לנו כמו משפט שלם, נראה למנוע כמו רצף של יחידות עבודה. הפירוק הזה הוא נקודת הכניסה: בלעדיו אין בכלל
-                    התחלה למסלול. ראינו שגם הצורה והפיסוק משפיעים, שאותו פירוק ראשוני מזין שני מסלולים שונים (בניית תשובה מול הבנת
-                    משימה), ושמילה אחת בעברית יכולה להתפרק לכמה יחידות.
+                    <span className="block font-bold text-violet-200">משפט אינו נכנס כגוש אחד. הוא נבנה מילה אחר מילה.</span>
+                    כל מילה מזיזה את ההסתברות, את הביטחון ואת ההחלטה. ראינו שגם אותו תחום בדיוק יכול לנוע לכיוונים שונים לפי המילים
+                    שנבחרו, ושהמילה הראשונה (&quot;בדוק&quot;) יכולה לשנות את סוג התהליך כולו. וחשוב מכל: עד השליחה הכול זמני בלבד. המנוע לא
+                    &quot;יודע&quot; באמצע המשפט, הוא מעריך כיוון שמתעדכן עם כל מילה.
                     <span className="mt-3 block text-sm text-slate-400">
-                        גשר לפרקים הבאים: אחרי שהטקסט הפך לטוקנים, השלב הבא הוא להפוך כל טוקן למספר (Token ID) ואז לווקטור. שם מתחיל החישוב הסטטיסטי האמיתי. הצביעה לפי תפקידים כאן היא עזר לימודי בלבד.
+                        ההתפלגות האמיתית שמודל מחשב היא על המילה הבאה, לא על כוונות שלמות. הדירוג לפי כוונות כאן הוא ייצוג נוח של אותו עיקרון.
                     </span>
                 </InsightBox>
             </section>

@@ -196,7 +196,7 @@ export default function BehindTheScenesChapter2() {
                 </motion.section>
 
                 <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="inspect" line="נתחיל ממה שבאמת נכתב" width={165} />
+                    <Mentor pose="inputClarity" line="נתחיל ממה שבאמת נכתב" width={165} />
                 </div>
             </div>
 

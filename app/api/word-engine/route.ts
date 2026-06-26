@@ -12,7 +12,7 @@ import {
     VECTOR_LABELS,
     NEGATION_WORDS,
     type WordMode,
-} from '@/app/behind-the-scenes-ai/chapter-4/wordEngine';
+} from '@/app/behind-the-scenes-ai/chapter-5/wordEngine';
 
 export const runtime = 'nodejs';
 

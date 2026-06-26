@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ROLE_STYLE, type TokenRole } from '@/app/behind-the-scenes-ai/chapter-5/tokenRoles';
+import { ROLE_STYLE, type TokenRole } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
 
 interface TokenChipProps {
     text: string;

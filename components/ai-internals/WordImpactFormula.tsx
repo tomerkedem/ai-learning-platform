@@ -8,7 +8,7 @@ import {
     candidateById,
     wordImpact,
     type TypingStep,
-} from '@/app/behind-the-scenes-ai/chapter-4/wordEngine';
+} from '@/app/behind-the-scenes-ai/chapter-5/wordEngine';
 
 interface WordImpactFormulaProps {
     step: TypingStep;

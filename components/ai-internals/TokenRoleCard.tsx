@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { ROLE_STYLE, ROLE_INFO, type TokenRole } from '@/app/behind-the-scenes-ai/chapter-5/tokenRoles';
+import { ROLE_STYLE, ROLE_INFO, type TokenRole } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
 
 interface TokenRoleCardProps {
     text: string;

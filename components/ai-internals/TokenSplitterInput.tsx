@@ -4,7 +4,7 @@ import React from 'react';
 import { Keyboard, RotateCcw } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
-import type { TokenExample } from '@/app/behind-the-scenes-ai/chapter-5/tokenizer';
+import type { TokenExample } from '@/app/behind-the-scenes-ai/chapter-3/tokenizer';
 
 interface TokenSplitterInputProps {
     text: string;

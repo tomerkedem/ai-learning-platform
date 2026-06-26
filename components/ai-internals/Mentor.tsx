@@ -19,7 +19,9 @@ export type MentorPose =
     | 'reassure'
     | 'explain'
     | 'explain-opposite'
+    | 'inputClarity'
     | 'token'
+    | 'tokenRibbon'
     | 'happy'
     | 'roadmap'
     | 'inspect'
@@ -41,7 +43,11 @@ const POSE_SRC: Record<MentorPose, string> = {
     reassure: '/assets/mentor-reassure.png',
     explain: '/assets/mentor-explain.png',
     'explain-opposite': '/assets/mentor-explain-opposite.png',
+    // פוזת פרק 2 (הירו): המנטור מציג שדה קלט זוהר, בהירות ותשומת לב לניסוח.
+    inputClarity: '/assets/mentor-input-clarity-alpha.png',
     token: '/assets/mentor-token.png',
+    // פוזת מעבדת הטוקנים של פרק 3: המנטור מסדר רצועת אריחי טוקנים צפים.
+    tokenRibbon: '/assets/mentor-token-ribbon-alpha.png',
     happy: '/assets/mentor-happy.png',
     roadmap: '/assets/mentor-roadmap.png',
     inspect: '/assets/mentor-inspect.png',
@@ -64,6 +70,7 @@ const POSE_SCALE: Partial<Record<MentorPose, number>> = {
     ready: 1.12,
     explain: 1.12,
     'explain-opposite': 1.12,
+    inputClarity: 1.12,
     token: 1.08,
     roadmap: 1.15,
     inspect: 1.12,

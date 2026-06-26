@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Workflow, Radar, Target, Database, HelpCircle, ArrowLeftCircle } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
-import type { AgentReasoning } from '@/app/behind-the-scenes-ai/chapter-4/wordEngine';
+import type { AgentReasoning } from '@/app/behind-the-scenes-ai/chapter-5/wordEngine';
 
 interface AgentReasoningPanelProps {
     reasoning: AgentReasoning;

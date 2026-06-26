@@ -1,4 +1,4 @@
-// הטוקנייזר הלימודי הדטרמיניסטי - פרק 5.
+// הטוקנייזר הלימודי הדטרמיניסטי - פרק 3.
 // אין כאן LLM, tokenizer מסחרי, קריאת API או רשת. הפלט זהה בכל הרצה.
 //
 // המנוע מבצע: (1) פיצול לפי רווחים, (2) קילוף פיסוק לטוקנים נפרדים,
@@ -19,10 +19,16 @@ export interface Token {
 }
 
 const PUNCT = new Set(['?', '.', '!', ',']);
+const DIGITS = /^\d+$/;
 
 function punctRole(p: string): TokenRole {
     if (p === '?') return 'question-signal';
     return 'statement-signal';
+}
+
+/** תפקיד לליבת הטוקן: רצף ספרות נחשב מספר, אחרת לפי טבלת התפקידים. */
+function coreRole(core: string): TokenRole {
+    return DIGITS.test(core) ? 'number' : roleForWord(core);
 }
 
 /**
@@ -42,7 +48,7 @@ export function tokenize(text: string): Token[] {
             core = core.slice(0, -1);
         }
         if (core.length > 0) {
-            out.push({ text: core, role: roleForWord(core), isPunct: false });
+            out.push({ text: core, role: coreRole(core), isPunct: false });
         }
         trailing.forEach((p) => {
             out.push({ text: p, role: punctRole(p), isPunct: true });
@@ -69,6 +75,21 @@ export function hasDeliveryFailure(tokens: Token[]): boolean {
 /** האם יש אות פעולה (Action signal) בקלט. */
 export function hasActionSignal(tokens: Token[]): boolean {
     return tokens.some((t) => t.role === 'action-signal');
+}
+
+/** האם יש טוקן מספר (Number) בקלט, למשל מספר מעקב. */
+export function hasNumber(tokens: Token[]): boolean {
+    return tokens.some((t) => t.role === 'number');
+}
+
+/**
+ * האם הקלט נראה כמו רצף בלי רווחים: יחידה אחת ארוכה.
+ * הטוקנייזר הלימודי מפצל לפי רווחים, ולכן טקסט בלי רווחים נראה לו כיחידה אחת.
+ * טוקנייזר אמיתי עדיין יפרק אותו לתת-מילים. משמש להמחשה לימודית בלבד.
+ */
+export function looksLikeNoSpaceClump(tokens: Token[]): boolean {
+    const words = tokens.filter((t) => !t.isPunct);
+    return words.length === 1 && words[0].text.length >= 8;
 }
 
 export interface TokenExample {
@@ -102,10 +123,12 @@ export const TOKEN_SCENARIOS: TokenScenario[] = [
         routeEn: 'Build answer',
         examples: [
             { labelHe: 'בסיס', labelEn: 'Base', text: 'החבילה לא הגיעה' },
-            { labelHe: 'עם הקשר', labelEn: 'With context', text: 'החבילה לא הגיעה למרכז המיון' },
             { labelHe: 'עם שאלה', labelEn: 'With question', text: 'החבילה לא הגיעה?' },
-            { labelHe: 'עם נקודה', labelEn: 'With period', text: 'החבילה לא הגיעה.' },
-            { labelHe: 'עם מקף', labelEn: 'With hyphen', text: 'החבילה לא-הגיעה' },
+            { labelHe: 'עם דגש', labelEn: 'With emphasis', text: 'החבילה שלי לא הגיעה!!!' },
+            { labelHe: 'מספר מעקב', labelEn: 'Tracking number', text: 'מספר המעקב הוא 12345' },
+            { labelHe: 'בלי רווחים', labelEn: 'No spaces', text: 'החבילהשלילאהגיעה' },
+            { labelHe: 'באנגלית', labelEn: 'In English', text: 'Package not arrived. What should I do?' },
+            { labelHe: 'תיקון בשיחה', labelEn: 'Correction', text: 'לא נעליים, הזמנתי ספר' },
         ],
     },
     {

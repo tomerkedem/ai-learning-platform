@@ -1,4 +1,4 @@
-// מפת התפקידים הקבועה של הטוקנייזר הלימודי (Token Color Map) - פרק 5.
+// מפת התפקידים הקבועה של הטוקנייזר הלימודי (Token Color Map) - פרק 3.
 // זוהי טבלה דטרמיניסטית: כל מילה ידועה מקבלת תפקיד קבוע, וכל תפקיד מקבל צבע
 // קבוע שנשמר בכל התצוגות (Stream, Color Map, Hebrew Lab, Count).
 //
@@ -21,6 +21,7 @@ export type TokenRole =
     | 'recipient'
     | 'question-signal'
     | 'statement-signal'
+    | 'number'
     | 'noise'
     | 'other';
 
@@ -42,6 +43,7 @@ export const ROLE_STYLE: Record<TokenRole, RoleStyle> = {
     recipient: { border: 'border-amber-500/45', text: 'text-amber-300', bg: 'bg-amber-900/20', dot: 'bg-amber-400' },
     'question-signal': { border: 'border-fuchsia-500/45', text: 'text-fuchsia-300', bg: 'bg-fuchsia-900/20', dot: 'bg-fuchsia-400' },
     'statement-signal': { border: 'border-teal-500/45', text: 'text-teal-300', bg: 'bg-teal-900/20', dot: 'bg-teal-400' },
+    number: { border: 'border-lime-500/45', text: 'text-lime-300', bg: 'bg-lime-900/20', dot: 'bg-lime-400' },
     noise: { border: 'border-slate-500/45', text: 'text-slate-300', bg: 'bg-slate-700/30', dot: 'bg-slate-400' },
     other: { border: 'border-slate-600/50', text: 'text-slate-300', bg: 'bg-slate-800/40', dot: 'bg-slate-500' },
 };
@@ -63,6 +65,7 @@ export const ROLE_INFO: Record<TokenRole, RoleInfo> = {
     recipient: { he: 'נמען', en: 'Recipient', whyHe: 'מי מקבל את הפעולה. רלוונטי במיוחד כשמדובר בפעולה כלפי אדם אמיתי.' },
     'question-signal': { he: 'סימן שאלה', en: 'Question signal', whyHe: 'סימן השאלה הוא token בפני עצמו. הוא משנה את הצורה של המשפט משאלה לקביעה.' },
     'statement-signal': { he: 'סימן קביעה', en: 'Statement signal', whyHe: 'הנקודה היא token נפרד שמסמן סוף קביעה. גם הפיסוק נחשב יחידת עבודה.' },
+    number: { he: 'מספר', en: 'Number', whyHe: 'רצף ספרות הוא יחידה בפני עצמה. מספר מעקב, למשל, יכול להפוך בקשה כללית למשהו שאפשר לבדוק.' },
     noise: { he: 'רעש', en: 'Noise', whyHe: 'מילה כללית שמוסיפה מעט מאוד מידע. עדיין הופכת ל-token, גם אם משקלה נמוך.' },
     other: { he: 'כללי', en: 'Token', whyHe: 'מילה שלא מופתה לתפקיד מיוחד בטוקנייזר הלימודי הזה. עדיין נספרת כיחידת עבודה.' },
 };
@@ -95,5 +98,5 @@ export function roleForWord(word: string): TokenRole {
 /** רשימת התפקידים להצגה במקרא (Color Map), בסדר לימודי. */
 export const ROLE_ORDER: TokenRole[] = [
     'object', 'negation', 'action', 'action-signal', 'context',
-    'system', 'recipient', 'question-signal', 'statement-signal', 'noise',
+    'system', 'recipient', 'question-signal', 'statement-signal', 'number', 'noise',
 ];

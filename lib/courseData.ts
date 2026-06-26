@@ -605,6 +605,18 @@ export const courses: Record<string, CourseData> = {
                 id: 3,
                 href: "/behind-the-scenes-ai/chapter-3",
                 num: "03",
+                label: { he: "טוקניזציה", en: "Tokenization" },
+                title: { he: "טוקניזציה - הטקסט מתפרק ליחידות", en: "Tokenization - Text Splits Into Units" },
+                description: { he: "המשפט לא נכנס למודל כמקשה אחת. לפני חישוב משמעות, הטקסט מתפרק ליחידות עבודה שנקראות טוקנים, וגם פיסוק, מספרים ורווחים משנים את הפירוק.", en: "The sentence does not enter the model as one block. Before meaning is computed, text breaks into work units called tokens, and punctuation, numbers and spaces all change the split." },
+                readTime: "11 דקות",
+                labelColor: "text-fuchsia-400",
+                colorFrom: "from-fuchsia-400",
+                colorTo: "to-violet-500"
+            },
+            {
+                id: 4,
+                href: "/behind-the-scenes-ai/chapter-4",
+                num: "04",
                 label: { he: "הלב ההסתברותי", en: "The Probabilistic Heart" },
                 title: { he: "AI כמנוע הסתברותי", en: "AI as a Probabilistic Engine" },
                 description: { he: "המודל לא מחזיר אמת מוחלטת. הוא מדרג אפשרויות ובוחר את מה שנראה הכי סביר.", en: "The model does not return absolute truth. It ranks possible options and chooses what looks most likely." },
@@ -614,9 +626,9 @@ export const courses: Record<string, CourseData> = {
                 colorTo: "to-emerald-500"
             },
             {
-                id: 4,
-                href: "/behind-the-scenes-ai/chapter-4",
-                num: "04",
+                id: 5,
+                href: "/behind-the-scenes-ai/chapter-5",
+                num: "05",
                 label: { he: "מילה אחר מילה", en: "Word by Word" },
                 title: { he: "כל מילה מזיזה את המנוע", en: "Every Word Moves the Engine" },
                 description: { he: "משפט לא נכנס כגוש אחד. הוא נבנה מילה אחר מילה, וכל מילה מזיזה את ההסתברות, את הביטחון ואת ההחלטה.", en: "A sentence does not enter as one block. It is built word by word, and each word moves the probability, the confidence, and the decision." },
@@ -624,18 +636,6 @@ export const courses: Record<string, CourseData> = {
                 labelColor: "text-violet-400",
                 colorFrom: "from-violet-400",
                 colorTo: "to-fuchsia-500"
-            },
-            {
-                id: 5,
-                href: "/behind-the-scenes-ai/chapter-5",
-                num: "05",
-                label: { he: "טקסט מתפרק", en: "Text Splits" },
-                title: { he: "Tokenization - הטקסט מתפרק לחלקים", en: "Tokenization - Text Splits Into Parts" },
-                description: { he: "AI לא מתחיל בלהבין, הוא מתחיל בלפרק. לפני חישוב המשמעות, הטקסט הופך ליחידות עבודה שנקראות Tokens.", en: "AI does not start by understanding, it starts by splitting. Before meaning, text becomes work units called Tokens." },
-                readTime: "11 דקות",
-                labelColor: "text-fuchsia-400",
-                colorFrom: "from-fuchsia-400",
-                colorTo: "to-violet-500"
             },
             {
                 id: 6,

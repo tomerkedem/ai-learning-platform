@@ -7,7 +7,7 @@ import {
     biggestMovers,
     candidateById,
     type TypingStep,
-} from '@/app/behind-the-scenes-ai/chapter-4/wordEngine';
+} from '@/app/behind-the-scenes-ai/chapter-5/wordEngine';
 
 interface NegationAlertProps {
     step: TypingStep;

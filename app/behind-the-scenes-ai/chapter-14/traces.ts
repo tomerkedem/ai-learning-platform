@@ -112,7 +112,7 @@ export function traceChat(text: string): Trace {
         },
         {
             id: 'tokens', he: 'טוקנים', en: 'Tokens', state: st(1),
-            explainHe: 'הטקסט נשבר ליחידות עבודה. כל מילה הופכת לטוקן (פרק 5).',
+            explainHe: 'הטקסט נשבר ליחידות עבודה. כל מילה הופכת לטוקן (פרק 3).',
             payload: { kind: 'tokens', tokens: r.tokens },
         },
         {

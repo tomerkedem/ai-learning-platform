@@ -10,7 +10,7 @@ import {
     type CandidateId,
     type TypingStep,
     type WordConfidence,
-} from '@/app/behind-the-scenes-ai/chapter-4/wordEngine';
+} from '@/app/behind-the-scenes-ai/chapter-5/wordEngine';
 
 interface CandidateProbabilityPanelProps {
     step: TypingStep | null;

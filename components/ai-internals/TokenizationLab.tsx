@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Route, Zap, MapPin } from 'lucide-react';
+import { Route, Zap, MapPin, Hash, Combine } from 'lucide-react';
 
 import { ModeToggle } from './ModeToggle';
 import { TokenSplitterInput } from './TokenSplitterInput';
@@ -20,9 +20,11 @@ import {
     hasSortingCenter,
     hasDeliveryFailure,
     hasActionSignal,
+    hasNumber,
+    looksLikeNoSpaceClump,
     TOKEN_SCENARIOS,
     type TokenizationMode,
-} from '@/app/behind-the-scenes-ai/chapter-5/tokenizer';
+} from '@/app/behind-the-scenes-ai/chapter-3/tokenizer';
 
 /**
  * TokenizationLab - מיכל מעבדת ה-Tokenization. מחזיק את מצב ההקלדה
@@ -46,6 +48,8 @@ export const TokenizationLab: React.FC = () => {
     const sortingCenter = hasSortingCenter(tokens);
     const deliveryFailure = hasDeliveryFailure(tokens);
     const actionSignal = hasActionSignal(tokens);
+    const numberSignal = hasNumber(tokens);
+    const noSpaceClump = looksLikeNoSpaceClump(tokens);
 
     const handleMode = (m: TokenizationMode) => {
         if (m === mode) return;
@@ -95,7 +99,7 @@ export const TokenizationLab: React.FC = () => {
 
             {/* אותות שזוהו בקלט */}
             <AnimatePresence>
-                {(sortingCenter || deliveryFailure || actionSignal) && (
+                {(sortingCenter || deliveryFailure || actionSignal || numberSignal) && (
                     <motion.div
                         initial={reduce ? false : { opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -103,6 +107,12 @@ export const TokenizationLab: React.FC = () => {
                         className="flex flex-wrap gap-2"
                         dir="rtl"
                     >
+                        {numberSignal && (
+                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-lime-500/45 bg-lime-900/20 px-2.5 py-1 text-[11px] font-bold text-lime-300">
+                                <Hash size={12} /> טוקן מספר
+                                <span className="opacity-70" dir="ltr">Number token</span>
+                            </span>
+                        )}
                         {actionSignal && (
                             <span className="inline-flex items-center gap-1.5 rounded-lg border border-violet-500/45 bg-violet-900/20 px-2.5 py-1 text-[11px] font-bold text-violet-300">
                                 <Zap size={12} /> אות פעולה
@@ -121,6 +131,24 @@ export const TokenizationLab: React.FC = () => {
                                 <span className="opacity-70" dir="ltr">Sorting center</span>
                             </span>
                         )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* הערה למקרה של טקסט בלי רווחים: הטוקנייזר הלימודי רואה יחידה אחת */}
+            <AnimatePresence>
+                {noSpaceClump && (
+                    <motion.div
+                        initial={reduce ? false : { opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={reduce ? undefined : { opacity: 0, y: -6 }}
+                        className="flex items-start gap-2 rounded-xl border border-amber-500/40 bg-amber-900/15 p-3 text-[11px] leading-relaxed text-amber-200/90"
+                        dir="rtl"
+                    >
+                        <Combine size={14} className="mt-0.5 shrink-0 text-amber-300" />
+                        <span>
+                            בלי רווחים, הטוקנייזר הלימודי הזה רואה יחידה אחת ארוכה. טוקנייזר אמיתי היה מפרק אותה בכל זאת לתת-מילים, כי הוא לא נשען רק על רווחים. זו בדיוק הסיבה שטוקן אינו בהכרח מילה.
+                        </span>
                     </motion.div>
                 )}
             </AnimatePresence>

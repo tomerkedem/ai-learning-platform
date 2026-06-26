@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { CheckCircle2, MessageCircleQuestion, HelpCircle, Wrench, Hand, Lock, Unlock } from 'lucide-react';
-import type { WordDecisionKind, WordFinal } from '@/app/behind-the-scenes-ai/chapter-4/wordEngine';
+import type { WordDecisionKind, WordFinal } from '@/app/behind-the-scenes-ai/chapter-5/wordEngine';
 
 interface SendOutcomeCardProps {
     final: WordFinal;

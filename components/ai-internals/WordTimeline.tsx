@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { History, ChevronLeft } from 'lucide-react';
 import { ACCENTS } from './accents';
-import type { WordScenario } from '@/app/behind-the-scenes-ai/chapter-4/wordEngine';
+import type { WordScenario } from '@/app/behind-the-scenes-ai/chapter-5/wordEngine';
 
 interface WordTimelineProps {
     scenario: WordScenario;
