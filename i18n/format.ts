@@ -81,3 +81,40 @@ export function formatChapterLabel(locale: Locale, n: number): string {
 export function formatNextChapterLabel(locale: Locale, n: number): string {
     return NEXT_CHAPTER_LABEL[locale](fmtNum(locale, n));
 }
+
+// ───────────── מונה צעדים (מעבדת פרק 5) ─────────────
+// פר-locale, עברית מאוכלסת. שאר השפות יתווספו ב-Phase 3, וכרגע נופלות לעברית יחד עם
+// תוכן הפרק שעדיין לא תורגם. המספרים בספרות מערביות (latn) בכל שפה, עקבי עם שאר ה-UI.
+const STEP_COUNTER: Partial<Record<Locale, (step: string, total: string) => string>> = {
+    he: (s, t) => `צעד ${s} מתוך ${t}`,
+};
+export function formatStepCounter(locale: Locale, step: number, total: number): string {
+    const fn = STEP_COUNTER[locale] ?? STEP_COUNTER.he!;
+    return fn(fmtNum(locale, step), fmtNum(locale, total));
+}
+
+// ───────────── הרכבת התשובה שנבנתה (מעבדת פרק 5) ─────────────
+// מצרף את חלקי התשובה למשפט אחד עם פיסוק תלוי-locale, בלי שרשור קשיח-לתרגום בתוך
+// הרכיב. עברית זהה לפלט הקודם ("first. a, b."). יפנית מוכנה עם פיסוק יפני (。、). שאר
+// השפות נופלות לברירת המחדל (זהה לעברית, מתאים ל-en/es/ru); ערבית תכוונן ב-Phase 3.
+interface AnswerPunctuation {
+    /** מפריד בין הפתיחה לשאר החלקים. */
+    afterFirst: string;
+    /** מפריד בין החלקים שאחרי הפתיחה. */
+    betweenRest: string;
+    /** סימן הסיום. */
+    terminal: string;
+}
+const ANSWER_PUNCTUATION: Partial<Record<Locale, AnswerPunctuation>> = {
+    he: { afterFirst: '. ', betweenRest: ', ', terminal: '.' },
+    ja: { afterFirst: '。', betweenRest: '、', terminal: '。' },
+};
+const DEFAULT_ANSWER_PUNCTUATION: AnswerPunctuation = ANSWER_PUNCTUATION.he!;
+
+export function assembleLocalizedAnswer(locale: Locale, fragments: string[]): string {
+    if (fragments.length === 0) return '';
+    const p = ANSWER_PUNCTUATION[locale] ?? DEFAULT_ANSWER_PUNCTUATION;
+    const [first, ...rest] = fragments;
+    if (rest.length === 0) return `${first}${p.terminal}`;
+    return `${first}${p.afterFirst}${rest.join(p.betweenRest)}${p.terminal}`;
+}

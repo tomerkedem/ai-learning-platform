@@ -1,177 +1,179 @@
-// נתוני "מעבדת בניית התשובה" של פרק 5: "איך AI בונה תשובה".
-// מודל לימודי דטרמיניסטי בלבד. אין כאן LLM אמיתי, קריאת API או רשת.
+// שלד "מעבדת בניית התשובה" של פרק 5 ("איך AI בונה תשובה"): מבנה לוגי בלבד, בלי טקסט
+// תצוגה. מודל לימודי דטרמיניסטי, אין כאן LLM אמיתי, קריאת API או רשת.
 //
-// הרעיון: אותו פרומפט, אותה לולאת ייצור. בכל צעד המודל מעריך כמה חלקי המשך
-// אפשריים, בוחר אחד, והחלק הנבחר מצטרף להקשר. ההקשר המעודכן הוא שמשנה אילו
-// המשכים יקבלו משקל גבוה בצעד הבא. מכאן שתי הפתיחות שבמעבדה מובילות לשתי
-// תשובות שונות לגמרי, למרות שהן יוצאות מאותו פרומפט בדיוק.
+// הרעיון: אותו פרומפט, אותה לולאת ייצור. בכל צעד המודל שוקל כמה חלקי המשך, בוחר אחד
+// (chosenIndex), והחלק הנבחר מצטרף להקשר. ההקשר המעודכן משנה אילו המשכים יקבלו משקל
+// גבוה בצעד הבא. שתי הפתיחות מובילות לשתי תשובות שונות, אף שהן יוצאות מאותו פרומפט.
+//
+// ── הפרדת מבנה מטקסט (Phase 2) ──
+// כאן נשאר רק המבנה: מזהי מסלולים, גוון (accent), מידות התאמה (fit) ואינדקס החלק הנבחר
+// בכל צעד. כל טקסט התצוגה (פרומפט, פתיחות, מה השתנה, חלקי המשך, תוויות, סיכומים) עבר
+// למילון השפה (i18n/locales/<locale>/behind-ai/chapter5Lab.ts, תת-המרחב scenario).
+// composeScenario ממזג שלד + טקסט מתורגם לכדי תרחיש מוכן לרינדור. הבחירה מזוהה לפי
+// chosenIndex (אינדקס), לא לפי השוואת מחרוזות עברית.
 //
 // המספרים (fit) הם המחשה לימודית של מידת התאמה, לא חישוב אמיתי של מודל.
 
 import type { Accent } from '@/components/ai-internals/types';
 
-/** חלק המשך אפשרי שהמודל שוקל בצעד מסוים. */
-export interface FragmentCandidate {
-    /** טקסט החלק. */
-    text: string;
+/* ════════════════════════ שלד מבני (לא תלוי שפה) ════════════════════════ */
+
+/** מזהי המסלולים. מקשרים בין השלד לטקסט המתורגם. */
+export type BranchId = 'self-service' | 'support';
+
+/** חלק המשך אפשרי, ברמת המבנה: רק מידת ההתאמה (הטקסט מגיע מהמילון). */
+export interface CandidateSkeleton {
     /** מידת התאמה להקשר הנוכחי, 0-100. המחשה לימודית בלבד. */
     fit: number;
-    /** האם זה החלק שהמודל בוחר בצעד הזה. */
-    leading?: boolean;
 }
 
-/** צעד אחד בלולאת הייצור: אחרי שההקשר כבר כולל את כל מה שנבחר עד כה. */
-export interface BuildStep {
-    /** האפשרויות שנשקלות בצעד הזה. אחת מהן leading. */
-    candidates: FragmentCandidate[];
-    /** החלק שנבחר ומצטרף להקשר (זהה לטקסט של ה-leading). */
-    chosen: string;
-    /** מה השתנה בגלל ההקשר המעודכן, מנוסח סביב הלולאה. */
-    changedHe: string;
+/** צעד אחד בלולאת הייצור, ברמת המבנה. */
+export interface StepSkeleton {
+    /** אינדקס החלק הנבחר מתוך candidates (במקום השוואת מחרוזות). */
+    chosenIndex: number;
+    candidates: CandidateSkeleton[];
 }
 
-/** מסלול בנייה שלם, מוגדר על ידי הפתיחה שנבחרה בצעד הראשון. */
-export interface BuildBranch {
-    id: string;
-    /** שם קצר למסלול (לכרטיס ההשוואה ולבורר). */
-    labelHe: string;
-    /** חלק הפתיחה שמגדיר את המסלול, נבחר בצעד הראשון. */
-    opener: string;
-    /** מידת ההתאמה של הפתיחה הזו בצעד הראשון. */
-    openerFit: number;
+/** מסלול בנייה שלם, ברמת המבנה. */
+export interface BranchSkeleton {
+    id: BranchId;
     /** גוון המסלול, כדי שההבדל בין שני המסלולים יהיה ויזואלי. */
     accent: Accent;
-    /** מה שינתה בחירת הפתיחה הזו על ההקשר. */
-    openerChangedHe: string;
-    /** לאן המסלול מוביל בסך הכול, לכרטיס ההשוואה. */
-    summaryHe: string;
+    /** מידת ההתאמה של הפתיחה בצעד הראשון. */
+    openerFit: number;
     /** הצעדים שאחרי הפתיחה (צעד 2 והלאה). */
-    steps: BuildStep[];
+    steps: StepSkeleton[];
 }
 
-/** תרחיש המעבדה: פרומפט אחד ושני מסלולי בנייה שמתפצלים מהבחירה הראשונה. */
-export interface AnswerBuildScenario {
-    prompt: string;
-    /** הסבר קצר לפני הבחירה הראשונה. */
-    firstStepIntroHe: string;
-    branches: BuildBranch[];
-}
-
-export const ANSWER_BUILD: AnswerBuildScenario = {
-    prompt: 'החבילה שלי לא הגיעה. מה לעשות?',
-    firstStepIntroHe:
-        'אותו פרומפט בדיוק, אבל יש כמה דרכים סבירות לפתוח את התשובה. בחרו את החלק הראשון, וראו איך הוא קובע את כל מה שייבנה אחריו.',
+/** התרחיש ברמת המבנה: שני מסלולים שמתפצלים מהבחירה הראשונה. */
+export const ANSWER_BUILD_SKELETON: { branches: BranchSkeleton[] } = {
     branches: [
         {
             id: 'self-service',
-            labelHe: 'בדיקה עצמית',
-            opener: 'בדקו את מספר המעקב',
-            openerFit: 58,
             accent: 'cyan',
-            openerChangedHe:
-                'הפתיחה שנבחרה מכניסה להקשר כיוון של בדיקה עצמית. מעכשיו ההמשכים שמקבלים משקל גבוה עוסקים במה לעשות עם תוצאת הבדיקה.',
-            summaryHe: 'התשובה נבנית סביב בדיקה עצמית של הסטטוס, ורק אם אין עדכון היא פונה לשירות.',
+            openerFit: 58,
             steps: [
-                {
-                    chosen: 'אם אין עדכון ברור',
-                    changedHe:
-                        'ההקשר כבר כולל בדיקה של מספר המעקב. לכן ההמשך הטבעי מתנה את הצעד הבא בתוצאת הבדיקה, במקום לקפוץ ישר לפעולה.',
-                    candidates: [
-                        { text: 'אם אין עדכון ברור', fit: 64, leading: true },
-                        { text: 'אם הסטטוס מראה מסירה', fit: 41 },
-                        { text: 'אם החבילה עדיין בדרך', fit: 33 },
-                    ],
-                },
-                {
-                    chosen: 'פנו לשירות הלקוחות',
-                    changedHe:
-                        'אחרי "אם אין עדכון ברור" ההקשר מצביע על מבוי סתום בבדיקה העצמית. עכשיו פנייה לשירות הופכת לחלק הסביר ביותר.',
-                    candidates: [
-                        { text: 'פנו לשירות הלקוחות', fit: 67, leading: true },
-                        { text: 'המתינו עוד יום ובדקו שוב', fit: 38 },
-                        { text: 'בדקו בתיבת הדואר ובסניף', fit: 29 },
-                    ],
-                },
-                {
-                    chosen: 'צרפו את מספר ההזמנה',
-                    changedHe:
-                        'ברגע שההקשר מדבר על פנייה לשירות, ההמשך הסביר הוא לצייד את הפנייה במה שיזהה אותה. מספר ההזמנה עולה לראש.',
-                    candidates: [
-                        { text: 'צרפו את מספר ההזמנה', fit: 62, leading: true },
-                        { text: 'ציינו את תאריך ההזמנה', fit: 44 },
-                        { text: 'צרפו צילום מסך של ההזמנה', fit: 31 },
-                    ],
-                },
-                {
-                    chosen: 'ובקשו בדיקת סטטוס',
-                    changedHe:
-                        'ההקשר כולו עוסק בבירור איפה החבילה. לכן הסיום הסביר הוא בקשה לבדיקת סטטוס, ולא בקשת פיצוי או משלוח חדש.',
-                    candidates: [
-                        { text: 'ובקשו בדיקת סטטוס', fit: 60, leading: true },
-                        { text: 'ובקשו זיכוי כספי', fit: 36 },
-                        { text: 'ובקשו לשלוח חבילה חדשה', fit: 28 },
-                    ],
-                },
+                { chosenIndex: 0, candidates: [{ fit: 64 }, { fit: 41 }, { fit: 33 }] },
+                { chosenIndex: 0, candidates: [{ fit: 67 }, { fit: 38 }, { fit: 29 }] },
+                { chosenIndex: 0, candidates: [{ fit: 62 }, { fit: 44 }, { fit: 31 }] },
+                { chosenIndex: 0, candidates: [{ fit: 60 }, { fit: 36 }, { fit: 28 }] },
             ],
         },
         {
             id: 'support',
-            labelHe: 'פנייה לשירות',
-            opener: 'פנו לשירות הלקוחות',
-            openerFit: 54,
             accent: 'indigo',
-            openerChangedHe:
-                'הפתיחה שנבחרה מכניסה להקשר כיוון של פנייה אנושית לשירות. מעכשיו ההמשכים הסבירים עוסקים בניהול הפנייה, לא בבדיקה עצמית.',
-            summaryHe: 'התשובה נבנית סביב ניהול פנייה לשירות הלקוחות, עד פתיחת בירור ושמירת מספר פנייה.',
+            openerFit: 54,
             steps: [
-                {
-                    chosen: 'מסרו את פרטי ההזמנה',
-                    changedHe:
-                        'ההקשר כבר כולל פנייה לשירות. הצעד הסביר הוא לתת לנציג את מה שיאפשר לטפל, כלומר את פרטי ההזמנה.',
-                    candidates: [
-                        { text: 'מסרו את פרטי ההזמנה', fit: 65, leading: true },
-                        { text: 'התקשרו למוקד הטלפוני', fit: 43 },
-                        { text: 'כתבו הודעת מייל מפורטת', fit: 34 },
-                    ],
-                },
-                {
-                    chosen: 'ציינו שהחבילה לא הגיעה',
-                    changedHe:
-                        'אחרי שנמסרו פרטי ההזמנה, ההקשר מוכן לתיאור הבעיה עצמה. לכן ההמשך הסביר הוא לציין במפורש שהחבילה לא הגיעה.',
-                    candidates: [
-                        { text: 'ציינו שהחבילה לא הגיעה', fit: 63, leading: true },
-                        { text: 'בקשו לזרז את הטיפול', fit: 40 },
-                        { text: 'שאלו על מדיניות ההחזרים', fit: 30 },
-                    ],
-                },
-                {
-                    chosen: 'בקשו לפתוח בירור מול חברת המשלוחים',
-                    changedHe:
-                        'ההקשר מתאר בעיה שדווחה לשירות. הצעד הסביר הבא הוא הסלמה מסודרת, כלומר בקשה לפתוח בירור מול חברת המשלוחים.',
-                    candidates: [
-                        { text: 'בקשו לפתוח בירור מול חברת המשלוחים', fit: 61, leading: true },
-                        { text: 'בקשו לדבר עם מנהל', fit: 39 },
-                        { text: 'בקשו פיצוי מיידי', fit: 27 },
-                    ],
-                },
-                {
-                    chosen: 'ושמרו את מספר הפנייה למעקב',
-                    changedHe:
-                        'משנפתח בירור, ההקשר מצביע על תהליך שצריך לעקוב אחריו. לכן הסיום הסביר הוא לשמור את מספר הפנייה, ולא לסיים בלי תיעוד.',
-                    candidates: [
-                        { text: 'ושמרו את מספר הפנייה למעקב', fit: 59, leading: true },
-                        { text: 'וסיימו את הפנייה', fit: 35 },
-                        { text: 'ובקשו אישור בכתב', fit: 33 },
-                    ],
-                },
+                { chosenIndex: 0, candidates: [{ fit: 65 }, { fit: 43 }, { fit: 34 }] },
+                { chosenIndex: 0, candidates: [{ fit: 63 }, { fit: 40 }, { fit: 30 }] },
+                { chosenIndex: 0, candidates: [{ fit: 61 }, { fit: 39 }, { fit: 27 }] },
+                { chosenIndex: 0, candidates: [{ fit: 59 }, { fit: 35 }, { fit: 33 }] },
             ],
         },
     ],
 };
 
+/* ════════════════════════ צורת הטקסט המתורגם ════════════════════════ */
+// הטקסט עצמו חי במילון השפה. כאן רק החוזה המבני שהמילון חייב לספק, כדי שהמיזוג יהיה
+// בטוח בזמן קומפילציה (אם חסר מסלול/צעד/חלק, הקריאה ל-composeScenario לא תעבור טייפ).
+
+/** טקסט מתורגם למסלול אחד. */
+export interface BranchText {
+    /** שם קצר למסלול (לכרטיס ההשוואה). */
+    label: string;
+    /** חלק הפתיחה שמגדיר את המסלול. */
+    opener: string;
+    /** מה שינתה בחירת הפתיחה על ההקשר. */
+    openerChanged: string;
+    /** לאן המסלול מוביל בסך הכול, לכרטיס ההשוואה. */
+    summary: string;
+    /** טקסט הצעדים שאחרי הפתיחה, לפי סדר. */
+    steps: { changed: string; candidates: string[] }[];
+}
+
+/** טקסט מתורגם לכל התרחיש. */
+export interface ScenarioText {
+    prompt: string;
+    firstStepIntro: string;
+    branches: Record<BranchId, BranchText>;
+}
+
+/* ════════════════════════ תרחיש מוכן לרינדור (שלד + טקסט) ════════════════════════ */
+
+/** חלק המשך אפשרי, אחרי מיזוג: טקסט + מידת התאמה + האם נבחר. */
+export interface FragmentCandidate {
+    text: string;
+    fit: number;
+    leading?: boolean;
+}
+
+/** צעד אחד אחרי מיזוג. */
+export interface BuildStep {
+    chosenIndex: number;
+    /** טקסט החלק שנבחר (נגזר מ-candidates[chosenIndex]). */
+    chosen: string;
+    /** מה השתנה בגלל ההקשר המעודכן. */
+    changed: string;
+    candidates: FragmentCandidate[];
+}
+
+/** מסלול בנייה שלם אחרי מיזוג. */
+export interface BuildBranch {
+    id: BranchId;
+    label: string;
+    opener: string;
+    openerFit: number;
+    accent: Accent;
+    openerChanged: string;
+    summary: string;
+    steps: BuildStep[];
+}
+
+/** תרחיש המעבדה אחרי מיזוג: פרומפט אחד ושני מסלולי בנייה. */
+export interface AnswerBuildScenario {
+    prompt: string;
+    firstStepIntro: string;
+    branches: BuildBranch[];
+}
+
+/** ממזג שלד מבני + טקסט מתורגם לכדי תרחיש מוכן לרינדור. מזהה את הבחירה לפי אינדקס. */
+export function composeScenario(text: ScenarioText): AnswerBuildScenario {
+    return {
+        prompt: text.prompt,
+        firstStepIntro: text.firstStepIntro,
+        branches: ANSWER_BUILD_SKELETON.branches.map((bs) => {
+            const bt = text.branches[bs.id];
+            return {
+                id: bs.id,
+                accent: bs.accent,
+                openerFit: bs.openerFit,
+                label: bt.label,
+                opener: bt.opener,
+                openerChanged: bt.openerChanged,
+                summary: bt.summary,
+                steps: bs.steps.map((ss, i) => {
+                    const st = bt.steps[i];
+                    return {
+                        chosenIndex: ss.chosenIndex,
+                        chosen: st.candidates[ss.chosenIndex],
+                        changed: st.changed,
+                        candidates: ss.candidates.map((cs, ci) => ({
+                            text: st.candidates[ci],
+                            fit: cs.fit,
+                            leading: ci === ss.chosenIndex,
+                        })),
+                    };
+                }),
+            };
+        }),
+    };
+}
+
+/* ════════════════════════ עזרי תרחיש ════════════════════════ */
+
 /** מחזיר מסלול לפי מזהה, או הראשון כברירת מחדל. */
-export function getBranch(id: string | null): BuildBranch {
-    return ANSWER_BUILD.branches.find((b) => b.id === id) ?? ANSWER_BUILD.branches[0];
+export function getBranch(scenario: AnswerBuildScenario, id: string | null): BuildBranch {
+    return scenario.branches.find((b) => b.id === id) ?? scenario.branches[0];
 }
 
 /**
@@ -191,12 +193,4 @@ export function chosenFragmentsUpTo(branch: BuildBranch, stepCount: number): str
 /** מספר הצעדים הכולל במסלול, כולל הפתיחה. */
 export function totalSteps(branch: BuildBranch): number {
     return branch.steps.length + 1;
-}
-
-/** מרכיב את חלקי התשובה למשפט קריא אחד. */
-export function assembleAnswer(fragments: string[]): string {
-    if (fragments.length === 0) return '';
-    const [first, ...rest] = fragments;
-    if (rest.length === 0) return `${first}.`;
-    return `${first}. ${rest.join(', ')}.`;
 }
