@@ -83,8 +83,8 @@ interface AssessmentProps {
 const DEFAULT_TIERS: ScoreTier[] = [
     { min: 90, label: "מצוין!", color: "text-emerald-400", sub: "שליטה מלאה בחומר" },
     { min: 70, label: "טוב מאוד", color: "text-blue-400", sub: "הבנה טובה מאוד" },
-    { min: 50, label: "עבר", color: "text-amber-400", sub: "יש מקום לשיפור" },
-    { min: 0, label: "נכשל", color: "text-red-400", sub: "מומלץ ללמוד שוב" },
+    { min: 50, label: "כמעט עברת", color: "text-amber-400", sub: "קרוב לסף ההצלחה" },
+    { min: 0, label: "לא עברת עדיין", color: "text-rose-400", sub: "מתחת לסף ההצלחה" },
 ];
 
 export const AssessmentEngine = ({
@@ -350,7 +350,7 @@ export const AssessmentEngine = ({
                                 <Mentor
                                     pose={passed ? 'celebrate' : 'reassure'}
                                     width={160}
-                                    line={passed ? (scoreValue >= 90 ? 'מצוין, שליטה מלאה!' : 'יפה, עברת!') : 'לא נורא, נחזור על זה יחד'}
+                                    line={passed ? (scoreValue >= 90 ? 'מצוין, שליטה מלאה!' : 'יפה, עברת!') : 'עוד לא עברתם. חזרו על הנקודות החלשות ונסו שוב.'}
                                     accent={mentorAccent}
                                 />
                             </div>
@@ -389,6 +389,12 @@ export const AssessmentEngine = ({
                             <div className="text-slate-500 text-[11px] font-medium">{feedback.sub}</div>
                         </div>
                     </div>
+
+                    {!passed && (
+                        <p className="mb-6 text-sm leading-relaxed text-slate-400">
+                            ההבנה עדיין לא מספיקה כדי להתקדם בביטחון. חזרו על הנקודות החלשות ונסו שוב.
+                        </p>
+                    )}
 
                     {/* סטטיסטיקות: נכונות וזמן */}
                     <div className={`grid ${showTimer ? 'grid-cols-2' : 'grid-cols-1'} gap-3 mb-6`}>
@@ -557,7 +563,7 @@ export const AssessmentEngine = ({
                                     let btnStyle = "border-white/5 bg-white/5 text-slate-400 hover:bg-white/10 hover:border-white/10";
                                     if (showResult) {
                                         if (isCorrect) btnStyle = "border-emerald-500/30 bg-emerald-500/10 text-emerald-100";
-                                        else if (isSelected) btnStyle = "border-red-500/30 bg-red-500/10 text-red-100";
+                                        else if (isSelected) btnStyle = "border-rose-500/30 bg-rose-500/10 text-rose-100";
                                         else btnStyle = "opacity-30 border-transparent";
                                     }
 
@@ -575,7 +581,7 @@ export const AssessmentEngine = ({
                                                 <span className="text-sm font-bold">{opt}</span>
                                             </div>
                                             {showResult && isCorrect && <Check size={18} className="text-emerald-400 stroke-[3px]" />}
-                                            {showResult && isSelected && !isCorrect && <X size={18} className="text-red-400 stroke-[3px]" />}
+                                            {showResult && isSelected && !isCorrect && <X size={18} className="text-rose-400 stroke-[3px]" />}
                                         </button>
                                     );
                                 })}

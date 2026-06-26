@@ -59,9 +59,6 @@ export type RouteKind = 'answer' | 'ask' | 'tool' | 'stop';
 /** שלב כוונה ב-Intent Shift: שאלה -> בדיקה -> פעולה. */
 export type IntentStage = 'question' | 'investigation' | 'action';
 
-/** סוג הבקשה כפי שהמנוע מזהה אותו - נפרד לחלוטין מהחלטת הניתוב. */
-export type RequestType = 'General question' | 'Specific investigation' | 'Action request';
-
 /** עוצמת ההשפעה של רמז על ההחלטה (להמחשה לימודית בלבד). */
 export type SignalStrength = 'low' | 'medium' | 'high';
 
@@ -77,37 +74,6 @@ export interface DecisionSignal {
     /** איך הרמז משפיע על ההחלטה בהמחשה שלנו. */
     effect: string;
     strength?: SignalStrength;
-}
-
-/** דוגמת ניסוח אחת ל-Request Routing Lab. נתון דקלרטיבי טהור, ללא לוגיקת מנוע. */
-export interface RoutingExample {
-    id: string;
-    label: string;
-    /** סוג הבקשה (Request Type Detector) - לא החלטת ניתוב. */
-    requestType: RequestType;
-    requestText: string;
-    /** הסתברויות סוג הבקשה ל-ProbabilityBars. */
-    typeScores: IntentProbability[];
-    /** המסלול הפעיל ב-switchboard (Route Decision). */
-    selectedRoute: RouteKind;
-    /** מסלול אפשרי הבא (למשל הכנה לכלי אחרי קבלת מידע). תצוגה בלבד. */
-    nextRoute?: RouteKind;
-    intentStage: IntentStage;
-    riskLevel: RiskLevel;
-    missingInfo?: string;
-    /** כותרת עברית למידע החסר (למשל "חסר ברקוד"). */
-    missingInfoLabel?: string;
-    /** הסבר עברי קצר למה המידע חסר. */
-    missingInfoNote?: string;
-    toolNeed?: { needed: boolean; tool?: string };
-    approvalRequired: boolean;
-    decision: DecisionState;
-    explanation: string;
-    /** הסבר דינמי שמחבר את מילות הפרומט להחלטת הניתוב, נשען על הרמזים. */
-    promptExplanation: string;
-    /** רמזי החלטה: הסימנים בפרומט שהובילו לזיהוי הכוונה ולמסלול. */
-    decisionSignals: DecisionSignal[];
-    accent: Accent;
 }
 
 /* ────────────────────────────────────────────────────────────────────────
