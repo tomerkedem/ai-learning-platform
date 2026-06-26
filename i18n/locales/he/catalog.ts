@@ -11,8 +11,6 @@ export const catalog = {
     builtBy: 'נבנה על ידי',
     authorName: 'תומר קדם',
     startLearning: 'התחל ללמוד',
-    /** מספר פרקים. למניעת שרשור (מספר + "פרקים"). */
-    chaptersCount: (n: number) => `${n} פרקים`,
 
     /** כותרת ותיאור לכל כרטיס לומדה, לפי מזהה הלומדה. */
     cards: {

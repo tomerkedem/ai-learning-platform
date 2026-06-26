@@ -12,8 +12,6 @@ export const chrome = {
     authorName: 'תומר קדם',
     authorRole: 'מחבר הלומדה',
     intro: 'מבוא',
-    /** תווית פרק לפי מספר. למניעת שרשור (פרק + מספר). */
-    chapterLabel: (n: number) => `פרק ${n}`,
 
     // כותרת עליונה
     header: {
@@ -25,8 +23,6 @@ export const chrome = {
     nav: {
         next: 'הבא',
         prev: 'הקודם',
-        /** "הבא: פרק N" כיחידה אחת, בלי לשרשר חלקים. */
-        nextChapterLabel: (n: number) => `הבא: פרק ${n}`,
         finishedTitle: 'סיימת את כל הפרקים!',
         finishedSub: 'כל הכבוד - הגעת עד הסוף.',
     },

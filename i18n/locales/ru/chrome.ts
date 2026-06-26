@@ -9,7 +9,6 @@ export const chrome: typeof heChrome = {
     authorName: 'Томер Кедем',
     authorRole: 'Автор курса',
     intro: 'Введение',
-    chapterLabel: (n: number) => `Глава ${n}`,
 
     header: {
         readTime: 'Время чтения',
@@ -19,7 +18,6 @@ export const chrome: typeof heChrome = {
     nav: {
         next: 'Далее',
         prev: 'Назад',
-        nextChapterLabel: (n: number) => `Далее: глава ${n}`,
         finishedTitle: 'Вы прошли все главы!',
         finishedSub: 'Отлично - вы дошли до конца.',
     },

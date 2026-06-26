@@ -9,7 +9,6 @@ export const catalog: typeof heCatalog = {
     builtBy: 'Built by',
     authorName: 'Tomer Kedem',
     startLearning: 'Start learning',
-    chaptersCount: (n: number) => `${n} chapters`,
 
     cards: {
         python: {

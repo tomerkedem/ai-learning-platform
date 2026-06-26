@@ -9,6 +9,7 @@ import { courses } from "@/lib/courseData";
 import { SidebarMastery } from "@/app/behind-the-scenes-ai/MasteryDashboard";
 import { useT } from "@/i18n/useT";
 import { tField } from "@/lib/localize";
+import { formatChapterLabel } from "@/i18n/format";
 
 export function CourseSidebar({ isFocusMode = false }: { isFocusMode?: boolean }) {
   const pathname = usePathname();
@@ -178,7 +179,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                             
                             <div className="flex flex-col min-w-0">
                                 <span className={`text-[10px] font-mono leading-none mb-0.5 opacity-80 ${isActive ? activeTextColor : ''}`}>
-                                    {chapter.id === 0 ? t.chrome.intro : t.chrome.chapterLabel(chapter.id)}
+                                    {chapter.id === 0 ? t.chrome.intro : formatChapterLabel(locale, chapter.id)}
                                 </span>
                                 <span className={`line-clamp-2 leading-tight font-medium ${isActive ? 'text-white' : ''}`}>
                                     {tField(chapter.title, locale)}

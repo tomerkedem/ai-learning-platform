@@ -9,10 +9,11 @@ import { loadSlim } from "tsparticles-slim";
 import type { Engine, ISourceOptions } from "tsparticles-engine";
 import { Tilt } from '@/components/ui/Tilt';
 import { useT } from "@/i18n/useT";
+import { formatChapterCount } from "@/i18n/format";
 
 export default function HomePage() {
 
-  const { dir, t } = useT();
+  const { dir, t, locale } = useT();
 
   const particlesInit = useCallback(async (engine: Engine) => {
     await loadSlim(engine);
@@ -189,7 +190,7 @@ x = x - lr * slope(x)
                                     <div className="w-full pt-6 border-t border-slate-800 flex items-center justify-between">
                                         <span className="text-xs font-mono text-slate-500 flex items-center gap-2">
                                             <BookOpen size={14} />
-                                            {t.catalog.chaptersCount(originalCourseData.chapters.length - 1)}
+                                            {formatChapterCount(locale, originalCourseData.chapters.length - 1)}
                                         </span>
                                         <span className={`flex items-center gap-2 text-sm font-bold text-white transition-transform ${dir === 'rtl' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`}>
                                             {t.catalog.startLearning}

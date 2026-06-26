@@ -10,6 +10,7 @@ import { useT } from "@/i18n/useT";
 import { getDictionary } from "@/i18n/dictionary";
 import { dirOf } from "@/i18n/config";
 import { tField } from "@/lib/localize";
+import { formatChapterLabel, formatNextChapterLabel, formatReadTime, parseReadTimeMinutes } from "@/i18n/format";
 import { ChevronRight, ChevronLeft, BookOpen, Trophy, Maximize2, Minimize2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -189,7 +190,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
 
     const isRTL = dir === 'rtl';
 
-    const chapterNumDisplay = activeChapter.id === 0 ? t.chrome.intro : t.chrome.chapterLabel(activeChapter.id);
+    const chapterNumDisplay = activeChapter.id === 0 ? t.chrome.intro : formatChapterLabel(locale, activeChapter.id);
     const chapterTitle = tField(activeChapter.title, locale);
     const chapterDesc = tField(activeChapter.description, locale);
     const chapterLabel = tField(activeChapter.label, locale);
@@ -304,7 +305,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                             chapterNum={chapterNumDisplay}
                             title={chapterTitle}
                             description={chapterDesc}
-                            readTime={activeChapter.readTime}
+                            readTime={formatReadTime(locale, parseReadTimeMinutes(activeChapter.readTime))}
                             isScrolled={isScrolled}
                             scrollProgress={scrollProgress}
                             colorFrom={activeChapter.colorFrom} 
@@ -357,7 +358,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                             <div className={`flex flex-col ${isRTL ? 'items-start' : 'items-end'} gap-2 relative z-10`}>
                                                 <span className={`text-xs font-mono font-bold text-${nextColor}-400 group-hover:text-${nextColor}-300 transition-colors flex items-center gap-2`}>
                                                     {!isRTL ? <ChevronLeft size={14} /> : null}
-                                                    {t.chrome.nav.nextChapterLabel(nextChapter.id)}
+                                                    {formatNextChapterLabel(locale, nextChapter.id)}
                                                     {isRTL ? <ChevronLeft size={14} /> : null}
                                                     <kbd className={`rounded border border-${nextColor}-500/40 bg-${nextColor}-900/20 px-1.5 py-0.5 text-[10px] leading-none text-${nextColor}-300`}>{isRTL ? '←' : '→'}</kbd>
                                                 </span>
@@ -366,7 +367,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                                 </div>
                                                 <div className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
                                                     <BookOpen size={12} />
-                                                    {nextChapter.readTime}
+                                                    {formatReadTime(locale, parseReadTimeMinutes(nextChapter.readTime))}
                                                 </div>
                                             </div>
                                         </Link>

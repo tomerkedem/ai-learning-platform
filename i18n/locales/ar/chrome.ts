@@ -9,7 +9,6 @@ export const chrome: typeof heChrome = {
     authorName: 'تومر كيدم',
     authorRole: 'مؤلّف الدورة',
     intro: 'مقدّمة',
-    chapterLabel: (n: number) => `الفصل ${n}`,
 
     header: {
         readTime: 'وقت القراءة',
@@ -19,7 +18,6 @@ export const chrome: typeof heChrome = {
     nav: {
         next: 'التالي',
         prev: 'السابق',
-        nextChapterLabel: (n: number) => `التالي: الفصل ${n}`,
         finishedTitle: 'أكملت جميع الفصول!',
         finishedSub: 'أحسنت - وصلت إلى النهاية.',
     },

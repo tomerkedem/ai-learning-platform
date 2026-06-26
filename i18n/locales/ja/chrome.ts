@@ -9,7 +9,6 @@ export const chrome: typeof heChrome = {
     authorName: 'トメル・ケデム',
     authorRole: 'コース作成者',
     intro: 'はじめに',
-    chapterLabel: (n: number) => `第${n}章`,
 
     header: {
         readTime: '読了時間',
@@ -19,7 +18,6 @@ export const chrome: typeof heChrome = {
     nav: {
         next: '次へ',
         prev: '前へ',
-        nextChapterLabel: (n: number) => `次へ：第${n}章`,
         finishedTitle: 'すべての章を修了しました！',
         finishedSub: 'お見事です。最後までたどり着きました。',
     },
