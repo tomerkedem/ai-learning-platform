@@ -6,6 +6,10 @@ import { useRouter } from 'next/navigation';
 import { CourseHeader } from "@/components/CourseHeader";
 import { CourseSidebar } from "@/components/CourseSidebar";
 import { courses, type Language } from "@/lib/courseData";
+import { useT } from "@/i18n/useT";
+import { getDictionary } from "@/i18n/dictionary";
+import { dirOf } from "@/i18n/config";
+import { tField } from "@/lib/localize";
 import { ChevronRight, ChevronLeft, BookOpen, Trophy, Maximize2, Minimize2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -20,8 +24,15 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     children,
     courseId,
     currentChapterId,
-    lang = 'he'
+    lang
 }) => {
+    // השפה הפעילה מגיעה מה-LocaleProvider. ה-prop lang נשאר כ-override אופציונלי
+    // (לא בשימוש כיום). הכיוון תמיד נגזר מהרישום (dirOf), לא מ-lang === 'he'.
+    const { locale: ctxLocale } = useT();
+    const locale = lang ?? ctxLocale;
+    const dir = dirOf(locale);
+    const t = getDictionary(locale);
+
     // --- 1. Hooks & Refs ---
     const [isScrolled, setIsScrolled] = useState(false);
     const [scrollProgress, setScrollProgress] = useState(0);
@@ -120,7 +131,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
             const idx = course.chapters.findIndex(c => c.id === currentChapterId);
             if (idx === -1) return;
 
-            const isRtl = lang === 'he';
+            const isRtl = dir === 'rtl';
             const goNext = isRtl ? e.key === 'ArrowLeft' : e.key === 'ArrowRight';
             const destination = goNext ? course.chapters[idx + 1] : course.chapters[idx - 1];
             if (destination?.href) {
@@ -131,7 +142,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
 
         window.addEventListener('keydown', handleKeyNav);
         return () => window.removeEventListener('keydown', handleKeyNav);
-    }, [courseId, currentChapterId, lang, router]);
+    }, [courseId, currentChapterId, dir, router]);
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
@@ -176,19 +187,12 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     const nextChapter = chapters[chapterIndex + 1];
     const isIntro = currentChapterId === 0;
 
-    const isRTL = lang === 'he';
-    const uiText = {
-        next: isRTL ? "הבא" : "Next",
-        prev: isRTL ? "הקודם" : "Prev",
-        chapter: isRTL ? "פרק" : "Chapter",
-        finishedTitle: isRTL ? "סיימת את כל הפרקים!" : "You finished every chapter!",
-        finishedSub: isRTL ? "כל הכבוד - הגעת עד הסוף." : "Well done - you made it all the way through."
-    };
+    const isRTL = dir === 'rtl';
 
-    const chapterNumDisplay = activeChapter.id === 0 ? activeChapter.num : `${uiText.chapter} ${activeChapter.id}`;
-    const chapterTitle = activeChapter.title[lang];
-    const chapterDesc = activeChapter.description[lang];
-    const chapterLabel = activeChapter.label[lang];
+    const chapterNumDisplay = activeChapter.id === 0 ? t.chrome.intro : t.chrome.chapterLabel(activeChapter.id);
+    const chapterTitle = tField(activeChapter.title, locale);
+    const chapterDesc = tField(activeChapter.description, locale);
+    const chapterLabel = tField(activeChapter.label, locale);
 
     const extractColorName = (fullClass: string) => {
         return fullClass.replace('from-', '').split('-')[0];
@@ -199,7 +203,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     return (
         <div
             className="flex min-h-screen bg-[#050B14] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-hidden relative"
-            dir={isRTL ? "rtl" : "ltr"}
+            dir={dir}
             // נקודת העגינה לפסים הדביקים: גובה הכותרת בפועל + מרווח קטן. עד שנמדד
             // (SSR / לפני mount) נופלים חזרה ל-88px דרך ה-fallback שב-StickyContextBar.
             style={headerHeight != null ? ({ ['--bts-sticky-top']: `${headerHeight + 8}px` } as React.CSSProperties) : undefined}
@@ -235,7 +239,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
             {/* מצב מיקוד: כפתור זכוכית צף (דסקטופ בלבד) - לא מתנגש עם ה-Header או הסרגל */}
             <motion.button
                 onClick={() => setIsFocusMode((prev) => !prev)}
-                title={isRTL ? "הסתר ניווט והרחב את אזור הלמידה" : "Hide navigation and widen the learning area"}
+                title={t.chrome.focus.toggleTitle}
                 aria-pressed={isFocusMode}
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.96 }}
@@ -260,7 +264,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                     </motion.span>
                 </AnimatePresence>
 
-                <span>{isFocusMode ? (isRTL ? "יציאה ממצב מיקוד" : "Exit focus mode") : (isRTL ? "מצב מיקוד" : "Focus mode")}</span>
+                <span>{isFocusMode ? t.chrome.focus.exit : t.chrome.focus.enter}</span>
 
                 <kbd className="ms-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] leading-none text-slate-400 transition-colors group-hover:text-slate-200">F</kbd>
             </motion.button>
@@ -277,12 +281,12 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                             className="flex items-center gap-2.5 rounded-full border border-white/10 bg-slate-900/80 px-4 py-2 text-xs font-medium text-slate-200 shadow-[0_8px_30px_rgba(2,6,23,0.6)] backdrop-blur-xl"
                         >
                             <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
-                            <span>{isRTL ? "מצב מיקוד פעיל" : "Focus mode on"}</span>
+                            <span>{t.chrome.focus.activeBadge}</span>
                             <span className="text-slate-600">·</span>
                             <span className="flex items-center gap-1.5 text-slate-400">
-                                {isRTL ? "הקש" : "Press"}
+                                {t.chrome.focus.press}
                                 <kbd className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] leading-none">Esc</kbd>
-                                {isRTL ? "ליציאה" : "to exit"}
+                                {t.chrome.focus.toExit}
                             </span>
                         </motion.div>
                     )}
@@ -332,11 +336,11 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                 <Link href={prevChapter.href || "#"} className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:bg-slate-800 hover:border-slate-700">
                                     <div className={`flex flex-col ${isRTL ? 'items-start' : 'items-end'} gap-2 relative z-10`}>
                                         <span className="text-xs font-mono text-slate-500 group-hover:text-slate-400 transition-colors flex items-center gap-2">
-                                            {isRTL ? <ChevronRight size={14} /> : null} {uiText.prev} {!isRTL ? <ChevronRight size={14} /> : null}
+                                            {isRTL ? <ChevronRight size={14} /> : null} {t.chrome.nav.prev} {!isRTL ? <ChevronRight size={14} /> : null}
                                             <kbd className="rounded border border-slate-700 bg-slate-800/80 px-1.5 py-0.5 text-[10px] leading-none text-slate-400">{isRTL ? '→' : '←'}</kbd>
                                         </span>
                                         <div className="font-bold text-lg text-slate-300 group-hover:text-white transition-colors">
-                                            {prevChapter.title[lang]}
+                                            {tField(prevChapter.title, locale)}
                                         </div>
                                     </div>
                                 </Link>
@@ -347,18 +351,18 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                 (() => {
                                     const nextColor = extractColorName(nextChapter.colorFrom);
                                     return (
-                                        <Link href={nextChapter.href || "#"} className={`group relative overflow-hidden rounded-2xl border border-${nextColor}-500/30 bg-${nextColor}-900/10 p-6 transition-all hover:bg-${nextColor}-900/20 hover:border-${nextColor}-500/50 ${isRTL ? 'text-right' : 'text-left'}`}>
+                                        <Link href={nextChapter.href || "#"} className={`group relative overflow-hidden rounded-2xl border border-${nextColor}-500/30 bg-${nextColor}-900/10 p-6 transition-all hover:bg-${nextColor}-900/20 hover:border-${nextColor}-500/50 text-start`}>
                                             <div className={`absolute inset-0 bg-linear-to-r from-transparent via-${nextColor}-500/5 to-${nextColor}-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
                                             
                                             <div className={`flex flex-col ${isRTL ? 'items-start' : 'items-end'} gap-2 relative z-10`}>
                                                 <span className={`text-xs font-mono font-bold text-${nextColor}-400 group-hover:text-${nextColor}-300 transition-colors flex items-center gap-2`}>
                                                     {!isRTL ? <ChevronLeft size={14} /> : null}
-                                                    {uiText.next}: {uiText.chapter} {nextChapter.id}
+                                                    {t.chrome.nav.nextChapterLabel(nextChapter.id)}
                                                     {isRTL ? <ChevronLeft size={14} /> : null}
                                                     <kbd className={`rounded border border-${nextColor}-500/40 bg-${nextColor}-900/20 px-1.5 py-0.5 text-[10px] leading-none text-${nextColor}-300`}>{isRTL ? '←' : '→'}</kbd>
                                                 </span>
-                                                <div className="font-bold text-xl text-white group-hover:scale-[1.02] transition-transform origin-right">
-                                                    {nextChapter.title[lang]}
+                                                <div className={`font-bold text-xl text-white group-hover:scale-[1.02] transition-transform ${isRTL ? 'origin-right' : 'origin-left'}`}>
+                                                    {tField(nextChapter.title, locale)}
                                                 </div>
                                                 <div className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
                                                     <BookOpen size={12} />
@@ -371,8 +375,8 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                             ) : (
                                 <div className="p-6 rounded-2xl border border-amber-500/30 bg-amber-900/10 flex flex-col items-center justify-center text-center gap-2">
                                     <Trophy size={28} className="text-amber-400" />
-                                    <span className="font-bold text-lg text-white">{uiText.finishedTitle}</span>
-                                    <span className="text-sm text-slate-400">{uiText.finishedSub}</span>
+                                    <span className="font-bold text-lg text-white">{t.chrome.nav.finishedTitle}</span>
+                                    <span className="text-sm text-slate-400">{t.chrome.nav.finishedSub}</span>
                                 </div>
                             )}
 

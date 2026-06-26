@@ -5,32 +5,33 @@ import Image from 'next/image';
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { courses } from '@/lib/courseData';
+import { useT } from '@/i18n/useT';
+import { tField } from '@/lib/localize';
+import type { Locale } from '@/i18n/config';
 
 // הנתיב לתמונה השניה שנמצאת בתיקיית public (השתמשתי בסיומת .png כפי שציינת)
 const IMAGE_TWO_PATH = "/01dbd09c-b44a-4b1a-b364-bd4881435ef2.png";
 
-// טקסט ברירת מחדל כשאין לומדה פעילה (למשל בדף הבית).
-const DEFAULT_LABEL = "לומדות אינטראקטיביות למפתחי AI";
-
 /**
- * מזהה את הלומדה הפעילה לפי ה-URL ומחזיר את שמה, באופן דינמי מתוך courseData.
- * הבסיס של כל לומדה נגזר מה-href של המבוא שלה (ללא הסגמנט האחרון), כך שאין כתיב קשיח.
+ * מזהה את הלומדה הפעילה לפי ה-URL ומחזיר את שמה (בשפה הפעילה, עם fallback לעברית),
+ * או null אם אין לומדה פעילה. הבסיס נגזר מה-href של המבוא, כך שאין כתיב קשיח.
  */
-function getActiveCourseTitle(pathname: string): string {
+function getActiveCourseTitle(pathname: string, locale: Locale): string | null {
     for (const course of Object.values(courses)) {
         const firstHref = course.chapters[0]?.href;
         if (!firstHref) continue;
         const base = firstHref.slice(0, firstHref.lastIndexOf('/'));
         if (base && pathname.startsWith(base)) {
-            return course.title.he;
+            return tField(course.title, locale);
         }
     }
-    return DEFAULT_LABEL;
+    return null;
 }
 
 export function CourseFooter() {
     const pathname = usePathname();
-    const courseTitle = getActiveCourseTitle(pathname ?? '');
+    const { locale, t } = useT();
+    const courseTitle = getActiveCourseTitle(pathname ?? '', locale) ?? t.chrome.footer.defaultLabel;
 
     return (
         // הוספנו 'group' והגדלנו את הריפוד העליון ל-pt-64 כדי למנוע חפיפה עם התמונה
@@ -60,7 +61,7 @@ export function CourseFooter() {
                 {/* הוספת שורה כדי שהטקסט לא יעלה על התמונה */}
                 <p className="text-sm text-slate-400 mb-1">{courseTitle}</p>
                 <p className="text-xs mb-4">
-                   © 2026 תומר קדם. כל הזכויות שמורות.
+                   {t.chrome.footer.copyright}
                 </p>
                
             </div>

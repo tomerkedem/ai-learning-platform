@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CourseFooter } from "@/components/CourseFooter";
+import { LocaleProvider } from "@/i18n/LocaleProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,12 +25,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // ברירת המחדל ב-SSR היא עברית/RTL (התנהגות נשמרת). ה-LocaleProvider מסנכרן
+    // את lang/dir/data-locale על <html> אחרי mount כשנבחרת שפה אחרת (?lang=).
     <html lang="he" dir="rtl">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <LocaleProvider>
                 {children}
          <CourseFooter />
+        </LocaleProvider>
       </body>
     </html>
   );

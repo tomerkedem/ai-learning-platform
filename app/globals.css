@@ -120,6 +120,28 @@
   body { @apply bg-background text-foreground; }
 }
 
+/* ───────────── i18n: כללים תלויי-שפה (locale-gated) ─────────────
+   הכיוון עצמו מיושם דרך מאפיין dir (מתוך רישום ה-locale), לא כאן.
+   הכללים האלה מוסיפים רק גלישת טקסט וגופנים בטוחים פר-שפה. אין word-break
+   גלובלי, ועיצוב/צורת האותיות של עברית וערבית לא מושפעים. */
+
+/* יפנית: אין רווחים בין מילים. מאפשרים גלישה נכונה בלי לשבור אותיות לטיניות. */
+html[data-locale="ja"] {
+  word-break: normal;
+  line-break: strict;
+  overflow-wrap: anywhere;
+}
+html[data-locale="ja"] body {
+  font-family: var(--font-geist-sans), "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+    "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+}
+
+/* ערבית: נופלים לגופן שמכסה כתב ערבי. עברית (ברירת המחדל) לא נוגעים בה. */
+html[data-locale="ar"] body {
+  font-family: var(--font-geist-sans), "Segoe UI", Tahoma, "Geeza Pro",
+    "Noto Naskh Arabic", sans-serif;
+}
+
 @import 'katex/dist/katex.min.css';
 
 /* --- תוספת: אפקט האש הריאליסטי (נפרד לחלוטין) --- */

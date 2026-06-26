@@ -1,14 +1,20 @@
 // src/lib/courseData.ts
 
-export type Language = 'he' | 'en';
+import type { Locale } from '@/i18n/config';
+import type { LocalizedText } from '@/lib/localize';
+
+// טיפוס השפה הורחב למערך ה-locale המלא (he, ar, ru, en, es, ja + עתידיות).
+// שדות הטקסט הם LocalizedText: עברית חובה, שאר השפות אופציונליות ונופלות לעברית
+// דרך tField. הנתונים הקיימים (he+en) נשארים תקפים ללא שינוי.
+export type Language = Locale;
 
 export interface ChapterData {
     id: number;
     num: string;
-    // טקסטים בשתי שפות
-    label: { he: string; en: string };
-    title: { he: string; en: string };
-    description: { he: string; en: string };
+    // טקסטים מרובי-שפות (he = מקור / fallback)
+    label: LocalizedText;
+    title: LocalizedText;
+    description: LocalizedText;
     readTime: string;
     
     // עיצוב מלא
@@ -21,8 +27,8 @@ export interface ChapterData {
 
 export interface CourseData {
     id: string;
-    title: { he: string; en: string };
-    description: { he: string; en: string };
+    title: LocalizedText;
+    description: LocalizedText;
     chapters: ChapterData[];
 }
 

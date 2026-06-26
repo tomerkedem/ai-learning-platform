@@ -3,13 +3,16 @@
 import React, { useState, useLayoutEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Circle, PlayCircle, Menu, X, Terminal, Sigma, BrainCircuit, ArrowRight } from 'lucide-react';
+import { Circle, PlayCircle, Menu, X, Terminal, Sigma, BrainCircuit, ArrowRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { courses } from "@/lib/courseData";
 import { SidebarMastery } from "@/app/behind-the-scenes-ai/MasteryDashboard";
+import { useT } from "@/i18n/useT";
+import { tField } from "@/lib/localize";
 
 export function CourseSidebar({ isFocusMode = false }: { isFocusMode?: boolean }) {
   const pathname = usePathname();
+  const { locale, dir, t } = useT();
   const [isOpen, setIsOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -72,8 +75,10 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                 href="/" 
                 className="flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-indigo-400 transition-colors mb-6 group"
             >
-                <ArrowRight size={14} className="group-hover:-translate-x-1 transition-transform" />
-                <span>חזרה לקטלוג הלומדות</span>
+                {dir === 'rtl'
+                    ? <ArrowRight size={14} className="group-hover:-translate-x-1 transition-transform" />
+                    : <ArrowLeft size={14} className="group-hover:translate-x-1 transition-transform" />}
+                <span>{t.chrome.backToCatalog}</span>
             </Link>
 
             <div className="flex items-center gap-3 mb-6">
@@ -82,17 +87,17 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                 </div>
                 <div className="flex flex-col min-w-0">
                     <h1 className="font-bold text-white text-base truncate leading-tight">
-                        {course.title.he}
+                        {tField(course.title, locale)}
                     </h1>
                     <span className="text-gray-500 text-[10px] mt-0.5 truncate">
-                        {course.description.he}
+                        {tField(course.description, locale)}
                     </span>
                 </div>
                 
                 {isOpen && (
                     <button 
                         onClick={() => setIsOpen(false)}
-                        className="p-1 rounded-full text-slate-400 hover:text-white mr-auto md:hidden"
+                        className="p-1 rounded-full text-slate-400 hover:text-white ms-auto md:hidden"
                     >
                         <X size={24} />
                     </button>
@@ -109,9 +114,9 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                     <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#1E293B] rounded-full"></div>
                 </div>
 
-                <div className="flex flex-col text-right min-w-0 relative z-10">
-                    <span className="text-white font-bold text-md leading-tight">תומר קדם</span>
-                    <span className="text-slate-400 text-[12px]">מחבר הלומדה</span>
+                <div className="flex flex-col text-start min-w-0 relative z-10">
+                    <span className="text-white font-bold text-md leading-tight">{t.chrome.authorName}</span>
+                    <span className="text-slate-400 text-[12px]">{t.chrome.authorRole}</span>
                     <span className="text-indigo-400 text-[14px] mt-0.5 font-medium">AI Developer Series</span>
                 </div>
             </div>
@@ -119,7 +124,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
             {/* Progress Bar */}
             <div className="mt-5">
                 <div className="flex justify-between text-[10px] text-slate-400 mb-1.5 font-mono">
-                    <span>התקדמות בלומדה</span>
+                    <span>{t.chrome.courseProgress}</span>
                     <span className={progress === 100 ? 'text-emerald-400' : ''}>{progress}%</span>
                 </div>
                 <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
@@ -141,7 +146,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
             className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-0.5"
           >
               <div className="text-[10px] font-bold text-slate-500 mb-2 px-2 uppercase tracking-widest opacity-70 mt-2">
-                  תוכן העניינים
+                  {t.chrome.tableOfContents}
               </div>
               
               {course.chapters.map((chapter) => {
@@ -163,7 +168,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                             }
                         `}>
                             {isActive && (
-                                <div className={`absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-l-full bg-current ${activeTextColor} opacity-80`}></div>
+                                <div className={`absolute start-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-e-full bg-current ${activeTextColor} opacity-80`}></div>
                             )}
 
                             <Icon 
@@ -173,10 +178,10 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                             
                             <div className="flex flex-col min-w-0">
                                 <span className={`text-[10px] font-mono leading-none mb-0.5 opacity-80 ${isActive ? activeTextColor : ''}`}>
-                                    {chapter.id === 0 ? "מבוא" : `פרק ${chapter.id}`}
+                                    {chapter.id === 0 ? t.chrome.intro : t.chrome.chapterLabel(chapter.id)}
                                 </span>
                                 <span className={`line-clamp-2 leading-tight font-medium ${isActive ? 'text-white' : ''}`}>
-                                    {chapter.title.he}
+                                    {tField(chapter.title, locale)}
                                 </span>
                             </div>
                         </div>
@@ -210,8 +215,8 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
               initial={false}
               animate={{ width: isFocusMode ? 0 : 320 }}
               transition={{ type: 'spring', stiffness: 300, damping: 34, mass: 0.9 }}
-              className="hidden md:flex bg-[#0f172a] border-l border-slate-800/60 flex-col h-screen shrink-0 sticky top-0 shadow-2xl z-30 overflow-hidden"
-              dir="rtl"
+              className="hidden md:flex bg-[#0f172a] border-e border-slate-800/60 flex-col h-screen shrink-0 sticky top-0 shadow-2xl z-30 overflow-hidden"
+              dir={dir}
           >
               <motion.div
                   animate={{ opacity: isFocusMode ? 0 : 1, x: isFocusMode ? 28 : 0 }}
@@ -240,7 +245,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                           exit={{ x: '100%' }}
                           transition={{ type: "spring", damping: 25, stiffness: 200 }}
                           className="fixed top-0 right-0 h-full w-[85%] max-w-xs z-100 border-l border-slate-700 shadow-2xl md:hidden bg-[#0f172a]"
-                          dir="rtl"
+                          dir={dir}
                       >
                           {sidebarContent}
                       </motion.div>

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Terminal, Clock, Activity, Zap, Percent } from "lucide-react";
+import { useT } from "@/i18n/useT";
 
 interface CourseHeaderProps {
     chapterLable?: string;
@@ -29,8 +30,9 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
     colorTo = "to-purple-600",     // ברירת מחדל
     labelColor
 }) => {
-    
-    const safeProgress = (typeof scrollProgress === 'number' && Number.isFinite(scrollProgress)) 
+    const { t } = useT();
+
+    const safeProgress = (typeof scrollProgress === 'number' && Number.isFinite(scrollProgress))
         ? Math.round(Math.max(0, Math.min(100, scrollProgress))) 
         : 0;
 
@@ -127,7 +129,7 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
                     `}>
                         <div className="flex flex-col items-end relative z-10">
                             <span className={`text-[10px] font-mono uppercase tracking-wider mb-0.5 whitespace-nowrap ${isScrolled ? 'text-emerald-400' : 'text-slate-400'}`}>
-                                {isScrolled ? "התקדמות" : "זמן קריאה"}
+                                {isScrolled ? t.chrome.header.progress : t.chrome.header.readTime}
                             </span>
                             
                             <div className="flex items-center gap-2">

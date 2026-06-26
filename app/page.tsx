@@ -3,13 +3,16 @@
 import React, { useCallback } from 'react';
 import Link from 'next/link';
 import { courses } from "@/lib/courseData";
-import { ArrowLeft, CodeXml, Sigma, BrainCog, BookOpen, Eye } from "lucide-react";
+import { ArrowLeft, ArrowRight, CodeXml, Sigma, BrainCog, BookOpen, Eye } from "lucide-react";
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import type { Engine, ISourceOptions } from "tsparticles-engine";
 import { Tilt } from '@/components/ui/Tilt';
+import { useT } from "@/i18n/useT";
 
 export default function HomePage() {
+
+  const { dir, t } = useT();
 
   const particlesInit = useCallback(async (engine: Engine) => {
     await loadSlim(engine);
@@ -69,11 +72,11 @@ export default function HomePage() {
     }
   };
 
+  // טקסט הכרטיסים (כותרת/תיאור) מגיע מהמילון (t.catalog.cards) לפי מזהה הלומדה.
+  // כאן נשאר רק המבנה הבלתי-תלוי-שפה: מזהה, קטע הקוד וצבעו (קוד אינו ניתן לתרגום).
   const heroCards = [
     {
         id: 'python',
-        title: "פייתון פרקטי למתכנתים",
-        description: "מעבר מכתיבת סקריפטים להנדסת מערכות AI יציבות (Production-Ready).",
         snippet: `def process(data: dict) -> list[float]:
     # Modern AI Engineering
     return [0.1, 0.5, 0.9]`,
@@ -81,8 +84,6 @@ export default function HomePage() {
     },
     {
         id: 'mathIntuitive',
-        title: "מתמטיקה אינטואיטיבית",
-        description: 'בניית האינטואיציה הנדרשת כדי להבין את ה"קופסה השחורה" של ה-Embeddings.',
         snippet: `# Cosine Similarity
 similarity = dot(a, b) / (norm(a)*norm(b))
 # Spatial Geometry`,
@@ -90,8 +91,6 @@ similarity = dot(a, b) / (norm(a)*norm(b))
     },
     {
         id: 'mathProbabilistic',
-        title: "היגיון הסתברותי ל-AI",
-        description: "שליטה בלוגיקה שמניעה את האופטימיזציה וה-Gradient Descent.",
         snippet: `# Gradient Descent
 x = x - lr * slope(x)
 # P(Spam | Words)`,
@@ -99,8 +98,6 @@ x = x - lr * slope(x)
     },
     {
         id: 'behind-the-scenes-ai',
-        title: "מאחורי הקלעים של AI",
-        description: "מה קורה כשכותבים לצ'ט או ל-Agent: מטקסט להסתברות, החלטה ופעולה.",
         snippet: `Input -> Tokens -> Numbers
 -> Probabilities -> Decision
 # Chat & Agent, exposed`,
@@ -109,9 +106,9 @@ x = x - lr * slope(x)
   ];
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-200 font-sans selection:bg-indigo-500/30 relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen bg-[#020617] text-slate-200 font-sans selection:bg-indigo-500/30 relative overflow-hidden" dir={dir}>
         {/* Credit Card */}
-        <div className="fixed top-6 right-6 z-50 hidden md:flex animate-fade-in-down">
+        <div className="fixed top-6 start-6 z-50 hidden md:flex animate-fade-in-down">
             <div className="group flex items-center gap-3 pl-6 pr-2 py-2 rounded-full bg-[#0B1121]/60 backdrop-blur-xl border border-slate-700/50 shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:border-indigo-500/50 transition-all duration-500 hover:scale-105 cursor-default">
                 <div className="relative">
                      <div className="w-10 h-10 rounded-full bg-linear-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold text-sm shadow-lg border border-white/10">
@@ -120,8 +117,8 @@ x = x - lr * slope(x)
                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0B1121] rounded-full animate-pulse"></div>
                 </div>
                 <div className="flex flex-col items-start gap-0.5">
-                    <span className="text-[10px] text-slate-400 font-medium group-hover:text-indigo-300 transition-colors uppercase tracking-wider">נבנה על ידי</span>
-                    <span className="text-sm font-black text-white tracking-wide leading-none">תומר קדם</span>
+                    <span className="text-[10px] text-slate-400 font-medium group-hover:text-indigo-300 transition-colors uppercase tracking-wider">{t.catalog.builtBy}</span>
+                    <span className="text-sm font-black text-white tracking-wide leading-none">{t.catalog.authorName}</span>
                 </div>
             </div>
         </div>
@@ -137,13 +134,13 @@ x = x - lr * slope(x)
             <div className="text-center max-w-3xl mx-auto mb-16 space-y-6">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-xs font-mono text-slate-400 mb-4 backdrop-blur-sm">
                     <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_10px_#6366f1]"></span>
-                    Core Foundations v1.0
+                    {t.catalog.badge}
                 </div>
                <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-linear-to-b from-white via-indigo-100 to-slate-500 tracking-tight leading-tight">
-                    הליבה ההנדסית של AI
+                    {t.catalog.heroTitle}
                 </h1>
                 <p className="text-xl text-slate-400 leading-relaxed max-w-2xl mx-auto italic">
-                    &quot;אינטואיציה קודם, נוסחאות אחר כך.&quot;
+                    &quot;{t.catalog.tagline}&quot;
                 </p>
             </div>
 
@@ -154,6 +151,7 @@ x = x - lr * slope(x)
                     if (!originalCourseData) return null;
 
                     const firstChapterHref = originalCourseData.chapters[0]?.href || '#';
+                    const cardText = t.catalog.cards[card.id] ?? { title: '', description: '' };
 
                     return (
                         <Tilt key={card.id} options={tiltOptions} className="h-full">
@@ -166,7 +164,7 @@ x = x - lr * slope(x)
                                     </div>
 
                                     <h2 className="text-2xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors">
-                                        {card.title}
+                                        {cardText.title}
                                     </h2>
 
                                     {/* Code Snippet Section */}
@@ -185,17 +183,17 @@ x = x - lr * slope(x)
                                     </div>
 
                                     <p className="text-slate-400 text-sm leading-relaxed mb-8 flex-1">
-                                        {card.description}
+                                        {cardText.description}
                                     </p>
 
                                     <div className="w-full pt-6 border-t border-slate-800 flex items-center justify-between">
                                         <span className="text-xs font-mono text-slate-500 flex items-center gap-2">
                                             <BookOpen size={14} />
-                                            {originalCourseData.chapters.length - 1} פרקים
+                                            {t.catalog.chaptersCount(originalCourseData.chapters.length - 1)}
                                         </span>
-                                        <span className="flex items-center gap-2 text-sm font-bold text-white group-hover:-translate-x-1 transition-transform">
-                                            התחל ללמוד
-                                            <ArrowLeft size={16} />
+                                        <span className={`flex items-center gap-2 text-sm font-bold text-white transition-transform ${dir === 'rtl' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`}>
+                                            {t.catalog.startLearning}
+                                            {dir === 'rtl' ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
                                         </span>
                                     </div>
                                 </div>
