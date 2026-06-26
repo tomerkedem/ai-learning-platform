@@ -42,4 +42,46 @@ export const chrome = {
         defaultLabel: 'לומדות אינטראקטיביות למפתחי AI',
         copyright: '© 2026 תומר קדם. כל הזכויות שמורות.',
     },
+
+    // מנוע המבדק (AssessmentEngine): כרום פנימי של מסכי הפתיחה, השאלה והתוצאות.
+    // ערכי ברירת המחדל כאן זהים לטקסט שהיה מקודד קשיח ברכיב, כך שהעברית לא משתנה.
+    // ערכים דינמיים הם פונקציות (בלי שרשור). props שמועברים מבחוץ גוברים על אלה.
+    assessment: {
+        // מסך פתיחה
+        start: 'התחל בחינה',
+        mentorStart: 'מוכן? בוא נראה מה קלטת',
+        questionsLabel: 'שאלות',
+        recommendedTimeLabel: 'זמן מומלץ',
+        recommendedTime: (min: number) => `${min} דק'`,
+        // מסך תוצאות
+        submit: 'סיום בחינה',
+        completed: 'הבחינה הושלמה!',
+        next: 'המשך לפרק הבא',
+        review: 'חזרה לחזרה קצרה',
+        mentorPassHigh: 'מצוין, שליטה מלאה!',
+        mentorPass: 'יפה, עברת!',
+        mentorFail: 'עוד לא עברתם. חזרו על הנקודות החלשות ונסו שוב.',
+        failNote: 'ההבנה עדיין לא מספיקה כדי להתקדם בביטחון. חזרו על הנקודות החלשות ונסו שוב.',
+        correctSummary: (correct: number, total: number) => `${correct} מתוך ${total} תשובות נכונות`,
+        timeLabel: 'זמן',
+        strongConcepts: 'חזק אצלך',
+        weakConcepts: 'כדאי לחזק',
+        recommendedReview: 'חזרה מומלצת',
+        reviewAnswers: 'סקירת תשובות',
+        retry: 'ניסיון חוזר',
+        // דרגות ציון ברירת מחדל (התווית והכותרת בלבד; הסף והצבע נשארים מבניים ברכיב)
+        tiers: [
+            { label: 'מצוין!', sub: 'שליטה מלאה בחומר' },
+            { label: 'טוב מאוד', sub: 'הבנה טובה מאוד' },
+            { label: 'כמעט עברת', sub: 'קרוב לסף ההצלחה' },
+            { label: 'לא עברת עדיין', sub: 'מתחת לסף ההצלחה' },
+        ],
+        // מסך השאלה
+        questionCounter: (current: number, total: number) => `שאלה ${current} מתוך ${total}`,
+        streak: (n: number) => `${n} רצף`,
+        mute: 'השתקת צלילים',
+        unmute: 'הפעלת צלילים',
+        prev: 'הקודם',
+        continue: 'המשך',
+    },
 };

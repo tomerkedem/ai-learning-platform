@@ -6,11 +6,12 @@ import Link from "next/link";
 import {
   Check, X, Lightbulb,
   Trophy, ChevronRight, ChevronLeft,
-  Timer, Eye, EyeOff, Flame, Volume2, VolumeX, Play, ArrowLeft, RotateCcw,
+  Timer, Eye, EyeOff, Flame, Volume2, VolumeX, Play, ArrowLeft, ArrowRight, RotateCcw,
   ListChecks
 } from "lucide-react";
 import confetti from 'canvas-confetti';
 import { Mentor, type MentorAccent } from '../ai-internals/Mentor';
+import { useT } from '@/i18n/useT';
 
 interface Question {
     id: number;
@@ -78,13 +79,16 @@ interface AssessmentProps {
     showMentor?: boolean;
     /** צבע ההדגשה של המנטור. ברירת מחדל: ציאן (תואם BTS-AI). */
     mentorAccent?: MentorAccent;
+    /** מיפוי תצוגה למושגים (concept) בצ׳יפים. המפתח נשאר q.concept היציב; רק התצוגה מתורגמת. */
+    conceptDisplayMap?: Record<string, string>;
 }
 
-const DEFAULT_TIERS: ScoreTier[] = [
-    { min: 90, label: "מצוין!", color: "text-emerald-400", sub: "שליטה מלאה בחומר" },
-    { min: 70, label: "טוב מאוד", color: "text-blue-400", sub: "הבנה טובה מאוד" },
-    { min: 50, label: "כמעט עברת", color: "text-amber-400", sub: "קרוב לסף ההצלחה" },
-    { min: 0, label: "לא עברת עדיין", color: "text-rose-400", sub: "מתחת לסף ההצלחה" },
+// סף וצבע לדרגות ברירת המחדל (מבני, לא תלוי שפה). התווית והכותרת מגיעות מהמילון.
+const DEFAULT_TIER_META: { min: number; color: string }[] = [
+    { min: 90, color: "text-emerald-400" },
+    { min: 70, color: "text-blue-400" },
+    { min: 50, color: "text-amber-400" },
+    { min: 0, color: "text-rose-400" },
 ];
 
 export const AssessmentEngine = ({
@@ -94,19 +98,36 @@ export const AssessmentEngine = ({
     passScore = 70,
     scoreTiers,
     nextHref,
-    nextLabel = "המשך לפרק הבא",
+    nextLabel,
     reviewHref,
-    reviewLabel = "חזרה לחזרה קצרה",
+    reviewLabel,
     onComplete,
     getReviewLinks,
-    startLabel = "התחל בחינה",
-    submitLabel = "סיום בחינה",
-    completedTitle = "הבחינה הושלמה!",
+    startLabel,
+    submitLabel,
+    completedTitle,
     showTimer = true,
     soundEnabled = true,
     showMentor = true,
     mentorAccent,
+    conceptDisplayMap,
 }: AssessmentProps) => {
+    // כרום מתורגם וכיוון מהרישום. props שמועברים מבחוץ גוברים על ברירות המחדל מהמילון.
+    const { t, dir } = useT();
+    const a = t.chrome.assessment;
+    const isRTL = dir === 'rtl';
+    const startLabelR = startLabel ?? a.start;
+    const submitLabelR = submitLabel ?? a.submit;
+    const completedTitleR = completedTitle ?? a.completed;
+    const nextLabelR = nextLabel ?? a.next;
+    const reviewLabelR = reviewLabel ?? a.review;
+    // דרגות ברירת מחדל מתורגמות: מיזוג הסף/הצבע המבני עם התווית/הכותרת מהמילון.
+    const localizedDefaultTiers: ScoreTier[] = DEFAULT_TIER_META.map((m, i) => ({
+        ...m,
+        label: a.tiers[i].label,
+        sub: a.tiers[i].sub,
+    }));
+
     // States
     const [isStarted, setIsStarted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -174,8 +195,8 @@ export const AssessmentEngine = ({
 
     // פונקציית עזר להערכת ציון (במקום אחוזים יבשים)
     const getScoreFeedback = (score: number): ScoreTier => {
-        const tiers = scoreTiers ?? DEFAULT_TIERS;
-        return tiers.find(t => score >= t.min) ?? tiers[tiers.length - 1];
+        const tiers = scoreTiers ?? localizedDefaultTiers;
+        return tiers.find(tier => score >= tier.min) ?? tiers[tiers.length - 1];
     };
 
     useEffect(() => {
@@ -249,7 +270,7 @@ export const AssessmentEngine = ({
                 initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 220, damping: 22 }}
                 className="relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 text-center shadow-2xl"
-                dir="rtl"
+                dir={dir}
             >
                 {/* הילת הדגשה רכה בראש הכרטיס */}
                 <div
@@ -260,18 +281,18 @@ export const AssessmentEngine = ({
                 <div className="relative">
                     {showMentor ? (
                         <div className="flex justify-center mb-8">
-                            <Mentor pose="ready" width={140} line="מוכן? בוא נראה מה קלטת" accent={mentorAccent} />
+                            <Mentor pose="ready" width={140} line={a.mentorStart} accent={mentorAccent} />
                         </div>
                     ) : (
                         <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
-                            <Play size={32} className="text-blue-400 fill-current ml-1" />
+                            <Play size={32} className="text-blue-400 fill-current ms-1" />
                         </div>
                     )}
                     <h2 className="text-2xl font-black text-white mb-2">{title}</h2>
                     <p className="text-slate-400 text-sm mb-8 leading-relaxed">{subtitle}</p>
 
                     <div className={`grid ${showTimer ? 'grid-cols-2' : 'grid-cols-1'} gap-3 mb-8`}>
-                        <div className="flex items-center gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10 text-right">
+                        <div className="flex items-center gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10 text-start">
                             <span
                                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
                                 style={{ background: `rgb(${accent.base} / 0.12)`, color: `rgb(${accent.shadow})` }}
@@ -279,12 +300,12 @@ export const AssessmentEngine = ({
                                 <ListChecks size={18} />
                             </span>
                             <div>
-                                <div className="text-slate-500 text-[10px] font-bold uppercase">שאלות</div>
+                                <div className="text-slate-500 text-[10px] font-bold uppercase">{a.questionsLabel}</div>
                                 <div className="text-white font-black text-lg leading-tight">{questions.length}</div>
                             </div>
                         </div>
                         {showTimer && (
-                            <div className="flex items-center gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10 text-right">
+                            <div className="flex items-center gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10 text-start">
                                 <span
                                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
                                     style={{ background: `rgb(${accent.base} / 0.12)`, color: `rgb(${accent.shadow})` }}
@@ -292,8 +313,8 @@ export const AssessmentEngine = ({
                                     <Timer size={18} />
                                 </span>
                                 <div>
-                                    <div className="text-slate-500 text-[10px] font-bold uppercase">זמן מומלץ</div>
-                                    <div className="text-white font-black text-lg leading-tight">{Math.ceil(questions.length * 0.5)} דק&apos;</div>
+                                    <div className="text-slate-500 text-[10px] font-bold uppercase">{a.recommendedTimeLabel}</div>
+                                    <div className="text-white font-black text-lg leading-tight">{a.recommendedTime(Math.ceil(questions.length * 0.5))}</div>
                                 </div>
                             </div>
                         )}
@@ -308,8 +329,10 @@ export const AssessmentEngine = ({
                         }}
                     >
                         <span className="relative z-10 flex items-center justify-center gap-2">
-                            {startLabel}
-                            <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                            {startLabelR}
+                            {isRTL
+                                ? <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                                : <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />}
                         </span>
                         {/* ברק חולף בריחוף */}
                         <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
@@ -333,7 +356,7 @@ export const AssessmentEngine = ({
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 220, damping: 24 }}
                 className="relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 text-center shadow-2xl"
-                dir="rtl"
+                dir={dir}
                 role="status"
                 aria-live="polite"
             >
@@ -350,7 +373,7 @@ export const AssessmentEngine = ({
                                 <Mentor
                                     pose={passed ? 'celebrate' : 'reassure'}
                                     width={160}
-                                    line={passed ? (scoreValue >= 90 ? 'מצוין, שליטה מלאה!' : 'יפה, עברת!') : 'עוד לא עברתם. חזרו על הנקודות החלשות ונסו שוב.'}
+                                    line={passed ? (scoreValue >= 90 ? a.mentorPassHigh : a.mentorPass) : a.mentorFail}
                                     accent={mentorAccent}
                                 />
                             </div>
@@ -359,7 +382,7 @@ export const AssessmentEngine = ({
                                 <Trophy size={40} className="text-blue-400" />
                             </div>
                         )}
-                        <h2 className="text-2xl font-black text-white">{completedTitle}</h2>
+                        <h2 className="text-2xl font-black text-white">{completedTitleR}</h2>
                     </div>
 
                     {/* טבעת ציון מונפשת */}
@@ -392,7 +415,7 @@ export const AssessmentEngine = ({
 
                     {!passed && (
                         <p className="mb-6 text-sm leading-relaxed text-slate-400">
-                            ההבנה עדיין לא מספיקה כדי להתקדם בביטחון. חזרו על הנקודות החלשות ונסו שוב.
+                            {a.failNote}
                         </p>
                     )}
 
@@ -407,15 +430,15 @@ export const AssessmentEngine = ({
                             ) : (
                                 <ListChecks size={16} className={`${feedback.color} shrink-0`} />
                             )}
-                            <div className="text-white font-bold leading-tight text-sm text-right">
-                                {correctCount} מתוך {questions.length} תשובות נכונות
+                            <div className="text-white font-bold leading-tight text-sm text-start">
+                                {a.correctSummary(correctCount, questions.length)}
                             </div>
                         </div>
                         {showTimer && (
                             <div className="flex items-center justify-center gap-2.5 bg-white/5 p-3.5 rounded-2xl border border-white/10">
                                 <Timer size={16} className="text-amber-400" />
-                                <div className="text-right">
-                                    <div className="text-[10px] text-slate-500 font-bold uppercase">זמן</div>
+                                <div className="text-start">
+                                    <div className="text-[10px] text-slate-500 font-bold uppercase">{a.timeLabel}</div>
                                     <div className="text-white font-black leading-tight">{formatTime(seconds)}</div>
                                 </div>
                             </div>
@@ -424,23 +447,23 @@ export const AssessmentEngine = ({
 
                 {/* אבחון מושגים: מה חזק ומה כדאי לחזק */}
                 {(strongConcepts.length > 0 || weakConcepts.length > 0) && (
-                    <div className="grid grid-cols-1 gap-3 mb-6 text-right">
+                    <div className="grid grid-cols-1 gap-3 mb-6 text-start">
                         {strongConcepts.length > 0 && (
                             <div className="bg-emerald-500/5 p-4 rounded-2xl border border-emerald-500/15">
-                                <div className="text-emerald-400 text-xs font-black mb-2">חזק אצלך</div>
+                                <div className="text-emerald-400 text-xs font-black mb-2">{a.strongConcepts}</div>
                                 <div className="flex flex-wrap gap-1.5">
                                     {strongConcepts.map(c => (
-                                        <span key={c} className="text-[11px] font-bold text-emerald-200 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">{c}</span>
+                                        <span key={c} className="text-[11px] font-bold text-emerald-200 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">{conceptDisplayMap?.[c] ?? c}</span>
                                     ))}
                                 </div>
                             </div>
                         )}
                         {weakConcepts.length > 0 && (
                             <div className="bg-amber-500/5 p-4 rounded-2xl border border-amber-500/15">
-                                <div className="text-amber-400 text-xs font-black mb-2">כדאי לחזק</div>
+                                <div className="text-amber-400 text-xs font-black mb-2">{a.weakConcepts}</div>
                                 <div className="flex flex-wrap gap-1.5">
                                     {weakConcepts.map(c => (
-                                        <span key={c} className="text-[11px] font-bold text-amber-200 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">{c}</span>
+                                        <span key={c} className="text-[11px] font-bold text-amber-200 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">{conceptDisplayMap?.[c] ?? c}</span>
                                     ))}
                                 </div>
                             </div>
@@ -450,8 +473,8 @@ export const AssessmentEngine = ({
 
                 {/* חזרה מומלצת: עד שלושה קישורים ממוקדים לפי המושגים החלשים */}
                 {reviewLinks.length > 0 && (
-                    <div className="bg-white/5 p-4 rounded-2xl border border-white/10 mb-6 text-right">
-                        <div className="text-slate-300 text-xs font-black mb-3">חזרה מומלצת</div>
+                    <div className="bg-white/5 p-4 rounded-2xl border border-white/10 mb-6 text-start">
+                        <div className="text-slate-300 text-xs font-black mb-3">{a.recommendedReview}</div>
                         <div className="space-y-2">
                             {reviewLinks.map(link => (
                                 <Link
@@ -460,7 +483,9 @@ export const AssessmentEngine = ({
                                     className="flex items-center justify-between gap-2 bg-white/5 hover:bg-white/10 px-3 py-2.5 rounded-xl border border-white/10 transition-all no-underline group"
                                 >
                                     <span className="text-sm font-bold text-slate-200">{link.label}</span>
-                                    <ArrowLeft size={16} className="text-slate-500 group-hover:text-white group-hover:-translate-x-0.5 transition-all" />
+                                    {isRTL
+                                        ? <ArrowLeft size={16} className="text-slate-500 group-hover:text-white group-hover:-translate-x-0.5 transition-all" />
+                                        : <ArrowRight size={16} className="text-slate-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />}
                                 </Link>
                             ))}
                         </div>
@@ -473,7 +498,7 @@ export const AssessmentEngine = ({
                             href={nextHref}
                             className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2 no-underline"
                         >
-                            {nextLabel} <ArrowLeft size={18} />
+                            {nextLabelR} {isRTL ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
                         </Link>
                     )}
                     {!passed && reviewHref && (
@@ -481,20 +506,20 @@ export const AssessmentEngine = ({
                             href={reviewHref}
                             className="w-full py-3 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 rounded-xl font-bold border border-amber-500/20 transition-all flex items-center justify-center gap-2 no-underline"
                         >
-                            <RotateCcw size={18} /> {reviewLabel}
+                            <RotateCcw size={18} /> {reviewLabelR}
                         </Link>
                     )}
                     <button
                         onClick={() => setIsReviewMode(true)}
                         className="w-full py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold border border-white/10 transition-all flex items-center justify-center gap-2"
                     >
-                        <Eye size={18} /> סקירת תשובות
+                        <Eye size={18} /> {a.reviewAnswers}
                     </button>
                     <button
                         onClick={() => { setAnswers({}); setCurrentIndex(0); setIsSubmitted(false); setIsReviewMode(false); setStreak(0); setSeconds(0); setIsActive(true); setDirection(0); }}
                         className="w-full py-3 bg-white/5 hover:bg-white/10 text-slate-300 rounded-xl font-bold border border-white/10 transition-all"
                     >
-                        ניסיון חוזר
+                        {a.retry}
                     </button>
                 </div>
                 </div>
@@ -504,7 +529,7 @@ export const AssessmentEngine = ({
 
     // 3. מסך השאלות - Question Screen (ממוזער ב-30%)
     return (
-        <div className="w-full max-w-2xl mx-auto px-4 py-4 font-sans" dir="rtl">
+        <div className="w-full max-w-2xl mx-auto px-4 py-4 font-sans" dir={dir}>
             {/* Header קומפקטי */}
             <div className="flex justify-between items-end mb-6">
                 <div>
@@ -514,7 +539,7 @@ export const AssessmentEngine = ({
                 {soundEnabled && (
                     <button
                         onClick={() => setIsMuted(!isMuted)}
-                        aria-label={isMuted ? "הפעלת צלילים" : "השתקת צלילים"}
+                        aria-label={isMuted ? a.unmute : a.mute}
                         className="p-2 rounded-xl bg-white/5 text-slate-500 hover:text-white border border-white/10 transition-colors"
                     >
                         {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
@@ -534,12 +559,12 @@ export const AssessmentEngine = ({
                 {streak > 1 && (
                     <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="flex items-center gap-2 text-orange-500 bg-orange-500/10 px-3 py-1.5 rounded-xl border border-orange-500/20">
                         <Flame size={14} fill="currentColor" />
-                        <span className="font-bold text-[10px]">{streak} רצף</span>
+                        <span className="font-bold text-[10px]">{a.streak(streak)}</span>
                     </motion.div>
                 )}
 
-                <div className="mr-auto flex items-center gap-3 bg-white/5 p-1.5 px-3 rounded-xl border border-white/10">
-                    <span className="text-[10px] font-bold text-slate-500">שאלה {currentIndex + 1} מתוך {questions.length}</span>
+                <div className="ms-auto flex items-center gap-3 bg-white/5 p-1.5 px-3 rounded-xl border border-white/10">
+                    <span className="text-[10px] font-bold text-slate-500">{a.questionCounter(currentIndex + 1, questions.length)}</span>
                     <div className="w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
                         <motion.div animate={{ width: `${progress}%` }} className="h-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]" />
                     </div>
@@ -579,7 +604,7 @@ export const AssessmentEngine = ({
                                             key={oIdx} 
                                             disabled={showResult && !isReviewMode}
                                             onClick={() => handleAnswer(oIdx)} 
-                                            className={`w-full p-4 rounded-2xl text-right transition-all border-2 flex items-center justify-between group ${btnStyle}`}
+                                            className={`w-full p-4 rounded-2xl text-start transition-all border-2 flex items-center justify-between group ${btnStyle}`}
                                         >
                                             <div className="flex items-center gap-4">
                                                 <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black transition-colors ${isSelected ? 'bg-blue-600 text-white' : 'bg-white/10 group-hover:bg-blue-500/20'}`}>
@@ -618,7 +643,7 @@ export const AssessmentEngine = ({
                     disabled={currentIndex === 0} 
                     className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold transition-all rounded-xl ${currentIndex === 0 ? 'opacity-0 pointer-events-none' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
                 >
-                    <ChevronRight size={18} /> הקודם
+                    {isRTL ? <ChevronRight size={18} /> : <ChevronLeft size={18} />} {a.prev}
                 </button>
 
                 <div className="flex gap-3">
@@ -635,8 +660,8 @@ export const AssessmentEngine = ({
                         disabled={!isAnswered && !isReviewMode} 
                         className={`px-8 py-3 rounded-2xl text-sm font-black flex items-center gap-2 transition-all shadow-xl ${(!isAnswered && !isReviewMode) ? 'bg-white/5 text-slate-600 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-500 hover:-translate-y-0.5'}`}
                     >
-                        <span>{currentIndex === questions.length - 1 ? submitLabel : "המשך"}</span>
-                        <ChevronLeft size={18} />
+                        <span>{currentIndex === questions.length - 1 ? submitLabelR : a.continue}</span>
+                        {isRTL ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
                     </button>
                 </div>
             </div>
