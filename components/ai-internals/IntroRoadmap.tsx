@@ -24,10 +24,12 @@ import {
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
 import { StationViz } from './IntroStationViz';
-import {
-    STATION_DETAIL_LABELS,
-    type RoadmapStation, type RoadmapZone, type RoadmapZoneId,
+import type {
+    RoadmapStation, RoadmapZone, RoadmapZoneId,
 } from '@/app/behind-the-scenes-ai/introduction/introContent';
+
+// תוויות שלוש שאלות ההרחבה. מגיעות מהמילון דרך ה-prop, לא מ-introContent.
+type StationDetailLabels = Record<keyof RoadmapStation['detail'], string>;
 
 // גוון לכל אזור: מסע צבעוני מהקלט (cyan) אל ההכרעה (purple).
 const ZONE_ACCENT: Record<RoadmapZoneId, Accent> = {
@@ -56,7 +58,7 @@ const STATION_ICON: Record<string, React.ReactNode> = {
 };
 
 /* ── כרטיס תחנה בודד (disclosure) ── */
-function StationCard({ station, n, accent, reduce, defaultOpen = false }: { station: RoadmapStation; n: number; accent: Accent; reduce: boolean; defaultOpen?: boolean }) {
+function StationCard({ station, n, accent, reduce, detailLabels, defaultOpen = false }: { station: RoadmapStation; n: number; accent: Accent; reduce: boolean; detailLabels: StationDetailLabels; defaultOpen?: boolean }) {
     const [open, setOpen] = useState(defaultOpen);
     const panelId = useId();
     const a = ACCENTS[accent];
@@ -155,7 +157,7 @@ function StationCard({ station, n, accent, reduce, defaultOpen = false }: { stat
                                 ] as const).map(([key, value]) => (
                                     <div key={key}>
                                         <dt className={`text-[11px] font-black uppercase tracking-wide ${a.text}`}>
-                                            {STATION_DETAIL_LABELS[key]}
+                                            {detailLabels[key]}
                                         </dt>
                                         <dd className="mt-0.5 text-sm leading-relaxed text-slate-300">{value}</dd>
                                     </div>
@@ -172,12 +174,14 @@ function StationCard({ station, n, accent, reduce, defaultOpen = false }: { stat
 interface IntroRoadmapProps {
     zones: RoadmapZone[];
     stations: RoadmapStation[];
+    /** תוויות שלוש שאלות ההרחבה, מהמילון. */
+    stationDetailLabels: StationDetailLabels;
     reduce: boolean;
     /** מזהה תחנה שתיפתח כברירת מחדל, כדי שהלומד יראה מיד שהכרטיסים מכילים עומק. */
     defaultOpenId?: string;
 }
 
-export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, reduce, defaultOpenId }) => {
+export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, stationDetailLabels, reduce, defaultOpenId }) => {
     // מספור רץ ורציף 1..N על פני כל האזורים (סדר המערך = סדר המסלול).
     const indexById = new Map(stations.map((s, i) => [s.id, i]));
 
@@ -220,6 +224,7 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                                         n={(indexById.get(station.id) ?? 0) + 1}
                                         accent={acc}
                                         reduce={reduce}
+                                        detailLabels={stationDetailLabels}
                                         defaultOpen={station.id === defaultOpenId}
                                     />
                                 ))}
