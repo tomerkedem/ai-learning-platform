@@ -3,10 +3,10 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ACCENTS } from './accents';
-import type { ProbabilityScenario } from './types';
+import type { ContinuationScenario } from './types';
 
 interface PromptScenarioSelectorProps {
-    scenarios: ProbabilityScenario[];
+    scenarios: ContinuationScenario[];
     selectedId: string;
     onSelect: (id: string) => void;
 }

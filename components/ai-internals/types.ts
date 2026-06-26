@@ -77,64 +77,63 @@ export interface DecisionSignal {
 }
 
 /* ────────────────────────────────────────────────────────────────────────
-   טיפוסי פרק 3: "AI כמנוע הסתברותי" (Probability Engine Lab).
-   המודל לא "יודע" - הוא מדרג פירושים אפשריים ובוחר את מה שנראה הכי סביר.
-   כל הנתונים דקלרטיביים: אין כאן מודל אמיתי או חישוב הסתברות חי.
+   טיפוסי פרק 4: "הלב ההסתברותי" (מעבדת ההמשכים הסבירים).
+   המודל לא שולף תשובה מוכנה. הוא מעריך כמה המשכים אפשריים, נותן לכל אחד משקל
+   סבירות לפי הקלט וההקשר, ובוחר את מה שנראה מתאים. הוספת הקשר מזיזה את המשקלים.
+   כל הנתונים דקלרטיביים: אין כאן מודל אמיתי או חישוב הסתברות חי. הפער כמדד
+   ביטחון ושער ההחלטה שייכים לפרק 9, לא לכאן.
    ──────────────────────────────────────────────────────────────────────── */
 
-/** רמת ביטחון בהחלטה (נגזרת מהפער בין האפשרות הראשונה לשנייה). */
-export type ConfidenceLevel = 'high' | 'medium' | 'low';
-
-/** צורת ההתפלגות: חדה (מוביל ברור), קרובה (שתי מובילות), מפוזרת (כללי). */
-export type DistributionShape = 'sharp' | 'close' | 'flat';
-
-/** סוג ההחלטה ההסתברותית: לענות, לבקש הקשר, או לשאול שאלת הבהרה. */
-export type ProbabilityDecisionKind = 'answer' | 'context' | 'clarify';
-
-/** אפשרות פירוש בודדת מתוך מספר מתחרות, עם ההסתברות שלה (0-100). */
+/** המשך אפשרי בודד מתוך מספר מתחרים, עם משקל הסבירות שלו (0-100). */
 export interface ProbabilityCandidate {
     id: string;
     labelHe: string;
     labelEn: string;
-    /** ההסתברות היחסית (0-100), כפי שהמנוע מעריך אותה בהמחשה. */
+    /** משקל הסבירות הבסיסי (0-100), כפי שהמנוע מעריך אותו בהמחשה. */
     probability: number;
-    /** נימוק עברי קצר: למה האפשרות הזו קיבלה את הציון. */
+    /** נימוק עברי קצר: למה ההמשך הזה קיבל את המשקל. */
     reason: string;
 }
 
-/** רמז הסתברותי: מילה בפרומט והשפעתה על פיזור ההסתברות. */
+/** רמז הסתברותי: מילה בפרומט והשפעתה על פיזור המשקל בין ההמשכים. */
 export interface ProbabilitySignal {
     signal: string;
     effect: string;
     strength?: SignalStrength;
 }
 
-/** תרחיש בודד ב-Probability Engine Lab. נתון דקלרטיבי טהור. */
-export interface ProbabilityScenario {
+/**
+ * פריט הקשר שאפשר להוסיף לפרומט. כשהוא פעיל, המשקלים בין אותם המשכים זזים.
+ * זה מה שממחיש שההקשר משנה מה נעשה סביר, בלי לשנות את קבוצת ההמשכים.
+ */
+export interface ContextToggle {
     id: string;
-    /** הפרומט המקורי שהמשתמש כתב. */
-    prompt: string;
-    /** תווית עברית קצרה לכרטיס הבחירה (למשל "ניסוח ברור"). */
+    /** התוספת לפרומט, למשל "אבל קיבלתי הודעה שהיא נמסרה". */
     labelHe: string;
-    /** תווית אנגלית משנית (למשל "Clear prompt"). */
     labelEn: string;
-    /** האפשרויות המתחרות, מסודרות מהגבוהה לנמוכה. */
-    candidates: ProbabilityCandidate[];
-    distributionShape: DistributionShape;
-    /** ההסתברות של האפשרות המובילה (0-100). */
-    topProbability: number;
-    /** ההסתברות של האפשרות השנייה (0-100). */
-    secondProbability: number;
-    /** הפער: confidence_margin = top_probability - second_probability. */
-    margin: number;
-    confidence: ConfidenceLevel;
-    decisionKind: ProbabilityDecisionKind;
-    /** תווית ההחלטה בעברית (למשל "לענות בזהירות"). */
-    decisionHe: string;
-    /** תווית ההחלטה באנגלית (למשל "Answer with high confidence"). */
-    decisionEn: string;
-    /** הסבר עברי: למה זו ההחלטה הנכונה לאור ההתפלגות והפער. */
-    decisionExplanation: string;
+    /** הסבר קצר: למה התוספת מזיזה את המשקלים. */
+    note: string;
+    /** מיפוי מ-id של המשך אל המשקל החדש שלו (0-100) כשהתוספת פעילה. */
+    weights: Record<string, number>;
+    /** הרמזים שמוצגים כשהתוספת פעילה. */
     signals: ProbabilitySignal[];
+    accent: Accent;
+}
+
+/** תרחיש בודד במעבדת ההמשכים הסבירים. נתון דקלרטיבי טהור. */
+export interface ContinuationScenario {
+    id: string;
+    /** הפרומט שהמשתמש כתב. */
+    prompt: string;
+    /** תווית עברית קצרה לכרטיס הבחירה (למשל "בקשת הכוונה"). */
+    labelHe: string;
+    /** תווית אנגלית משנית (למשל "Action request"). */
+    labelEn: string;
+    /** ההמשכים האפשריים עם המשקל הבסיסי, בלי תוספות הקשר. */
+    continuations: ProbabilityCandidate[];
+    /** הרמזים הבסיסיים שהזיזו את המשקל. */
+    signals: ProbabilitySignal[];
+    /** פריטי הקשר שאפשר להוסיף כדי לראות את ההתפלגות זזה. */
+    contextToggles: ContextToggle[];
     accent: Accent;
 }

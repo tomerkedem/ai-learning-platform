@@ -31,7 +31,8 @@ export type MentorPose =
     | 'code'
     | 'type'
     | 'guessThinking'
-    | 'correct';
+    | 'correct'
+    | 'plausiblePaths';
 
 const POSE_SRC: Record<MentorPose, string> = {
     hero: '/assets/mentor-hero.png',
@@ -60,6 +61,9 @@ const POSE_SRC: Record<MentorPose, string> = {
     guessThinking: '/assets/mentor-thinking-refine-alpha.png',
     // פוזת הצלחה לשימוש חוזר (תשובה נכונה). כרגע ממופה לנכס החגיגה הקיים.
     correct: '/assets/mentor-celebrate.png',
+    // פוזת הירו של פרק 4 (הלב ההסתברותי): המנטור מציג כמה המשכים אפשריים ובוחר את
+    // הסביר ביותר. בשימוש בהירו של פרק 4 בלבד.
+    plausiblePaths: '/assets/mentor-plausible-paths-alpha.png',
 };
 
 // נרמול גודל: פוזות "גוף מלא" (600px) מצולמות רחוק יותר מהבוסטים (~315px), ולכן הפנים

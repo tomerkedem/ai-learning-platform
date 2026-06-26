@@ -399,7 +399,14 @@ export const AssessmentEngine = ({
                     {/* סטטיסטיקות: נכונות וזמן */}
                     <div className={`grid ${showTimer ? 'grid-cols-2' : 'grid-cols-1'} gap-3 mb-6`}>
                         <div className="flex items-center justify-center gap-2.5 bg-white/5 p-3.5 rounded-2xl border border-white/10">
-                            <Check size={16} className="text-emerald-400 stroke-[3px] shrink-0" />
+                            {/* אייקון ספירת הנכונות תלוי במעבר: וי ירוק רק כשעוברים. בלי מעבר
+                                מציגים אייקון רשימה ניטרלי בגוון התוצאה (rose/amber), כדי לא לאותת
+                                הצלחה כשהציון מתחת לסף. */}
+                            {passed ? (
+                                <Check size={16} className="text-emerald-400 stroke-[3px] shrink-0" />
+                            ) : (
+                                <ListChecks size={16} className={`${feedback.color} shrink-0`} />
+                            )}
                             <div className="text-white font-bold leading-tight text-sm text-right">
                                 {correctCount} מתוך {questions.length} תשובות נכונות
                             </div>
