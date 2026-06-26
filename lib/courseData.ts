@@ -631,7 +631,7 @@ export const courses: Record<string, CourseData> = {
                 num: "05",
                 label: { he: "איך AI בונה תשובה", en: "Word by Word" },
                 title: { he: "איך AI בונה תשובה", en: "Every Word Moves the Engine" },
-                description: { he: "משפט לא נכנס כגוש אחד. הוא נבנה מילה אחר מילה, וכל מילה מזיזה את ההסתברות, את הביטחון ואת ההחלטה.", en: "A sentence does not enter as one block. It is built word by word, and each word moves the probability, the confidence, and the decision." },
+                description: { he: "התשובה לא נולדת בבת אחת. המודל בונה אותה בלולאה, וכל חלק שנכתב מצטרף להקשר ומשפיע על החלק הבא.", en: "A sentence does not enter as one block. It is built word by word, and each word moves the probability, the confidence, and the decision." },
                 readTime: "12 דקות",
                 labelColor: "text-violet-400",
                 colorFrom: "from-violet-400",

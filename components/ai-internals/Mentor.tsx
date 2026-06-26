@@ -32,7 +32,8 @@ export type MentorPose =
     | 'type'
     | 'guessThinking'
     | 'correct'
-    | 'plausiblePaths';
+    | 'plausiblePaths'
+    | 'answerBuilder';
 
 const POSE_SRC: Record<MentorPose, string> = {
     hero: '/assets/mentor-hero.png',
@@ -64,6 +65,9 @@ const POSE_SRC: Record<MentorPose, string> = {
     // פוזת הירו של פרק 4 (הלב ההסתברותי): המנטור מציג כמה המשכים אפשריים ובוחר את
     // הסביר ביותר. בשימוש בהירו של פרק 4 בלבד.
     plausiblePaths: '/assets/mentor-plausible-paths-alpha.png',
+    // פוזת הירו של פרק 5 (איך AI בונה תשובה): המנטור בונה תשובה צעד אחר צעד מחלקים
+    // והקשר. בשימוש בהירו של פרק 5 בלבד.
+    answerBuilder: '/assets/mentor-answer-builder-alpha.png',
 };
 
 // נרמול גודל: פוזות "גוף מלא" (600px) מצולמות רחוק יותר מהבוסטים (~315px), ולכן הפנים
