@@ -1,3 +1,40 @@
 // i18n/locales/en/chrome.ts
-// STUB: falls back to Hebrew until English copy is finalized. Replace with: export const chrome: ChromeDict = { ... }
-export { chrome } from '../he/chrome';
+// English chrome strings. Source shape: ../he/chrome.
+import { chrome as heChrome } from '../he/chrome';
+
+export const chrome: typeof heChrome = {
+    backToCatalog: 'Back to course catalog',
+    tableOfContents: 'Contents',
+    courseProgress: 'Course progress',
+    authorName: 'Tomer Kedem',
+    authorRole: 'Course author',
+    intro: 'Intro',
+    chapterLabel: (n: number) => `Chapter ${n}`,
+
+    header: {
+        readTime: 'Read time',
+        progress: 'Progress',
+    },
+
+    nav: {
+        next: 'Next',
+        prev: 'Previous',
+        nextChapterLabel: (n: number) => `Next: Chapter ${n}`,
+        finishedTitle: 'You finished every chapter!',
+        finishedSub: 'Well done - you made it all the way through.',
+    },
+
+    focus: {
+        toggleTitle: 'Hide navigation and widen the learning area',
+        enter: 'Focus mode',
+        exit: 'Exit focus mode',
+        activeBadge: 'Focus mode on',
+        press: 'Press',
+        toExit: 'to exit',
+    },
+
+    footer: {
+        defaultLabel: 'Interactive courses for AI developers',
+        copyright: '© 2026 Tomer Kedem. All rights reserved.',
+    },
+};

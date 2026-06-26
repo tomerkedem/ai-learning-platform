@@ -1,3 +1,40 @@
 // i18n/locales/ru/chrome.ts
-// STUB: נופל בחזרה לעברית עד לתרגום לרוסית. להחלפה ב-export const chrome: ChromeDict = { ... }
-export { chrome } from '../he/chrome';
+// Russian chrome strings. Source shape: ../he/chrome.
+import { chrome as heChrome } from '../he/chrome';
+
+export const chrome: typeof heChrome = {
+    backToCatalog: 'Назад к каталогу курсов',
+    tableOfContents: 'Содержание',
+    courseProgress: 'Прогресс курса',
+    authorName: 'Томер Кедем',
+    authorRole: 'Автор курса',
+    intro: 'Введение',
+    chapterLabel: (n: number) => `Глава ${n}`,
+
+    header: {
+        readTime: 'Время чтения',
+        progress: 'Прогресс',
+    },
+
+    nav: {
+        next: 'Далее',
+        prev: 'Назад',
+        nextChapterLabel: (n: number) => `Далее: глава ${n}`,
+        finishedTitle: 'Вы прошли все главы!',
+        finishedSub: 'Отлично - вы дошли до конца.',
+    },
+
+    focus: {
+        toggleTitle: 'Скрыть навигацию и расширить область обучения',
+        enter: 'Режим фокуса',
+        exit: 'Выйти из режима фокуса',
+        activeBadge: 'Режим фокуса включён',
+        press: 'Нажмите',
+        toExit: 'для выхода',
+    },
+
+    footer: {
+        defaultLabel: 'Интерактивные курсы для разработчиков ИИ',
+        copyright: '© 2026 Томер Кедем. Все права защищены.',
+    },
+};
