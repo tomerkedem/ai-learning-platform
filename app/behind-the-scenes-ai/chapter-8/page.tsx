@@ -258,7 +258,7 @@ export default function BehindTheScenesChapter8() {
             {/* ══════════ נעילת הבנה ══════════ */}
             <section className="relative mt-12 text-right" dir="rtl">
                 <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="celebrate" line="נעלתם את הקשב 🔒" width={160} />
+                    <Mentor pose="celebrate" line="נעלתם את הקשב" width={160} />
                 </div>
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center gap-2">

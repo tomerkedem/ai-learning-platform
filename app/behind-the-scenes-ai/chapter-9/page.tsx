@@ -127,7 +127,7 @@ export default function BehindTheScenesChapter8() {
             </motion.section>
             {/* המנטור: לפעמים לא לענות זה מקצועי (xl+, מימין) */}
             <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="headsup" line="לפעמים לא לענות זה מקצועי ☝️" width={165} />
+              <Mentor pose="headsup" line="לפעמים לא לענות זה מקצועי" width={165} />
             </div>
             </div>
 

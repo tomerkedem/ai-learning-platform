@@ -107,7 +107,7 @@ export default function BehindTheScenesChapter11() {
             </motion.section>
             {/* המנטור: ה-Agent פועל בלולאה (xl+, מימין) */}
             <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="explain-opposite" line="ה-Agent פועל בלולאה 🔁" width={165} />
+              <Mentor pose="explain-opposite" line="ה-Agent פועל בלולאה" width={165} />
             </div>
             </div>
 

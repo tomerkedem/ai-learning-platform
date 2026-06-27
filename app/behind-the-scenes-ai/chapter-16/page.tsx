@@ -67,7 +67,7 @@ export default function BehindTheScenesChapter15() {
             </motion.section>
             {/* המנטור: כתיבה טובה היא הגדרה (xl+, מימין) */}
             <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="type" line="כתיבה טובה היא הגדרה ⌨️" width={165} />
+              <Mentor pose="type" line="כתיבה טובה היא הגדרה" width={165} />
             </div>
             </div>
 
@@ -119,7 +119,7 @@ export default function BehindTheScenesChapter15() {
             <section className="relative mt-12 text-right" dir="rtl">
                 {/* המנטור חוגג את סיום הלומדה (xl+, מימין) */}
                 <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                  <Mentor pose="celebrate" line="סיימתם את הלומדה! 🎉" width={165} />
+                  <Mentor pose="celebrate" line="סיימתם את הלומדה!" width={165} />
                 </div>
                 <InsightBox type="intuition" title="סוף הלומדה: רגע האסימון">
                     <span className="block font-bold text-violet-200">כתיבה טובה ל-AI אינה קסם של מילים, אלא הגדרה.</span>

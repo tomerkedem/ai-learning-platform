@@ -415,7 +415,7 @@ export default function BehindTheScenesChapter7() {
             </motion.section>
             {/* המנטור על כיוון במרחב (xl+, מימין) */}
             <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="explain-opposite" line="למשמעות יש כיוון 🧭" width={165} />
+              <Mentor pose="explain-opposite" line="למשמעות יש כיוון" width={165} />
             </div>
             </div>
 
@@ -475,7 +475,7 @@ export default function BehindTheScenesChapter7() {
             <section className="relative mt-12 text-right" dir="rtl">
                 {/* המנטור מסכם: כיוון לפני מרחק (xl+, מימין) */}
                 <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                  <Mentor pose="happy" line="כיוון, לא מרחק 🧭" width={160} />
+                  <Mentor pose="happy" line="כיוון, לא מרחק" width={160} />
                 </div>
                 <InsightBox type="intuition" title="הנקודה החשובה בפרק">
                     <span className="block font-bold text-violet-200">משמעות אינה מספר בודד, היא כיוון במרחב. קרבה במשמעות היא קרבה בכיוון, לא במרחק.</span>

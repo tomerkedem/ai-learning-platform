@@ -67,7 +67,7 @@ export default function BehindTheScenesChapter14() {
             </motion.section>
             {/* המנטור: המודל לא לומד ממך חי (xl+, מימין) */}
             <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="headsup" line="המודל לא לומד ממך חי ☝️" width={165} />
+              <Mentor pose="headsup" line="המודל לא לומד ממך חי" width={165} />
             </div>
             </div>
 
