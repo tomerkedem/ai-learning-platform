@@ -27,13 +27,13 @@ const GUESS_CARD_META = [
 const DIAG_CORRECT = 1;
 
 const DiagnosisQuestion: React.FC = () => {
-    const { t } = useT();
+    const { t, dir } = useT();
     const d = t.behindAi.chapter2.diagnosis;
     const [choice, setChoice] = useState<number | null>(null);
     const answered = choice !== null;
 
     return (
-        <div dir="rtl" className="text-right">
+        <div dir={dir} className="text-start">
             <p className="mb-3 text-sm font-bold text-slate-200">{d.question}</p>
             <p className="mb-4 rounded-lg border border-slate-700/50 bg-slate-950/40 p-3 text-sm text-slate-300">{d.prompt}</p>
 
@@ -51,7 +51,7 @@ const DiagnosisQuestion: React.FC = () => {
                             onClick={() => setChoice(i)}
                             className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-sm font-bold transition-colors ${cls}`}
                         >
-                            <span dir="rtl">{opt}</span>
+                            <span dir={dir}>{opt}</span>
                             {answered && isCorrect && <CheckCircle2 size={16} className="shrink-0 text-emerald-300" />}
                             {answered && isChosen && !isCorrect && <XCircle size={16} className="shrink-0 text-rose-300" />}
                         </button>
@@ -75,7 +75,8 @@ const DiagnosisQuestion: React.FC = () => {
 
 export default function BehindTheScenesChapter2() {
     const reduce = useReducedMotion();
-    const { t } = useT();
+    const { t, dir } = useT();
+    const isRtl = dir === 'rtl';
     const c2 = t.behindAi.chapter2;
 
     // תוכן ניחוש הפתיחה: טקסט מהמילון, פוזות ויעד מבניים בעמוד.
@@ -121,8 +122,8 @@ export default function BehindTheScenesChapter2() {
                     initial={reduce ? false : { opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={reduce ? { duration: 0 } : { duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                    className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-right"
-                    dir="rtl"
+                    className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-start"
+                    dir={dir}
                 >
                     <div className="absolute -top-16 -right-16 w-56 h-56 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
                     <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
@@ -135,7 +136,7 @@ export default function BehindTheScenesChapter2() {
 
                         <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
                             {c2.hero.titleLead}{' '}
-                            <span className="bg-gradient-to-l from-cyan-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent">
+                            <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-cyan-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent`}>
                                 {c2.hero.titleHighlight}
                             </span>
                         </h1>
@@ -157,18 +158,18 @@ export default function BehindTheScenesChapter2() {
                     </div>
                 </motion.section>
 
-                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="inputClarity" line={c2.mentor.hero} width={165} />
+                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
+                    <Mentor pose="inputClarity" line={c2.mentor.hero} width={165} flip={!isRtl} />
                 </div>
             </div>
 
             {/* ══════════ ניחוש פתיחה ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="mt-12 text-start" dir={dir}>
                 <DiscoveryGuess content={guessContent} cards={guessCards} />
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c2.insight.title}>
                     <span className="block text-lg font-bold text-indigo-200">
                         {c2.insight.lead}
@@ -178,7 +179,7 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ מעבדת השוואת קלט ══════════ */}
-            <section id="input-lab" className="relative mt-12 space-y-5 text-right scroll-mt-24" dir="rtl">
+            <section id="input-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-indigo-400" />
                     <div>
@@ -193,13 +194,13 @@ export default function BehindTheScenesChapter2() {
 
                 <InputComparisonLab />
 
-                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="explain" line={c2.mentor.lab} width={160} />
+                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'} z-20 hidden xl:block pointer-events-none`}>
+                    <Mentor pose="explain" line={c2.mentor.lab} width={160} flip={!isRtl} />
                 </div>
             </section>
 
             {/* ══════════ דוגמה יומיומית ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
                     <div className="mb-3 flex items-center gap-2">
                         <Lightbulb size={18} className="text-amber-300" />
@@ -212,7 +213,7 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ תיקון טעות נפוצה ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl border border-rose-500/30 bg-rose-950/10 p-5">
                         <div className="mb-2 flex items-center gap-2 text-rose-200">
@@ -234,7 +235,7 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ הסבר פשוט ════════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-indigo-500/30 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
                     <div className="mb-3 text-sm font-bold text-slate-100">{c2.takeaway.title}</div>
                     <ul className="space-y-2">
@@ -249,9 +250,9 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ נעילת הבנה ══════════ */}
-            <section className="relative mt-12 text-right" dir="rtl">
-                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="happy" line={c2.mentor.lock} width={160} />
+            <section className="relative mt-12 text-start" dir={dir}>
+                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
+                    <Mentor pose="happy" line={c2.mentor.lock} width={160} flip={!isRtl} />
                 </div>
                 <div className="rounded-2xl border border-indigo-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center gap-2">
@@ -277,7 +278,7 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
-            <section className="mt-12 mb-4" dir="rtl">
+            <section className="mt-12 mb-4" dir={dir}>
                 <ChapterQuiz chapterId={2} />
             </section>
         </ChapterLayout>

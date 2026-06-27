@@ -45,7 +45,7 @@ const Field: React.FC<{ icon: React.ReactNode; title: string; children: React.Re
 
 export const InputComparisonLab: React.FC = () => {
     const reduce = useReducedMotion();
-    const { t } = useT();
+    const { t, dir } = useT();
     const viz = t.behindAi.chapter2.visuals.inputLab;
     const variations = t.behindAi.chapter2.visuals.inputVariations;
     const [id, setId] = useState(BASE_ID);
@@ -57,7 +57,7 @@ export const InputComparisonLab: React.FC = () => {
     const ambLabel = viz.ambiguityLabels[v.ambiguity];
 
     return (
-        <div className="rounded-2xl border border-violet-500/30 bg-slate-900/50 p-5 text-right" dir="rtl">
+        <div className="rounded-2xl border border-violet-500/30 bg-slate-900/50 p-5 text-start" dir={dir}>
             {/* רמיזה קצרה לטוקניזציה, בלי ללמד אותה כאן */}
             <p className="mb-4 rounded-xl border border-slate-700/40 bg-slate-950/30 p-3 text-xs leading-relaxed text-slate-400">
                 {viz.tokenizationHint}
