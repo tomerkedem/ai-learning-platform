@@ -6,6 +6,7 @@ import { Send, Bot, Sparkles } from 'lucide-react';
 import { ModeToggle } from './ModeToggle';
 import { ACCENTS } from './accents';
 import type { Accent, ChatMessage, FlowMode } from './types';
+import { useT } from '@/i18n/useT';
 
 interface ChatInterfacePanelProps {
     title: string;
@@ -75,6 +76,9 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
 }) => {
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
+    const { t, dir } = useT();
+    const isRtl = dir === 'rtl';
+    const ci = t.behindAi.aiInternals.chatInterface;
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // הודעת המשתמש מוצגת כמילים לחיצות (כשיש onTokenHover), כדי לקשר חי למנוע.
@@ -113,7 +117,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
     const visible = isTyping ? messages.filter((m) => m.role !== 'ai') : messages;
 
     return (
-        <div className="relative isolate flex flex-col rounded-[2rem] border border-white/10 bg-slate-950/80 h-[640px] overflow-hidden" dir="rtl">
+        <div className="relative isolate flex flex-col rounded-[2rem] border border-white/10 bg-slate-950/80 h-[640px] overflow-hidden" dir={dir}>
             {/* רקע גריד עדין + הילת פינה (המסגרת והזוהר מגיעים מ-HoloFrame) */}
             <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
             <div className={`pointer-events-none absolute -top-24 -right-16 -z-10 h-52 w-52 rounded-full blur-[80px] ${a.bgSoft}`} />
@@ -132,14 +136,14 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                         </div>
                     </div>
                     <span
-                        title={live ? 'מודל אמיתי (Claude) מחובר' : 'מצב דמו: תשובות מתוסרטות, בלי מודל חי'}
+                        title={live ? ci.liveTooltip : ci.demoTooltip}
                         className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-widest border ${live ? `${a.border} ${a.bgSoft} ${a.text}` : 'border-white/10 bg-slate-800/60 text-slate-400'}`}
                     >
                         <span className="relative flex h-1.5 w-1.5">
                             {!reduce && live && <span className={`absolute inline-flex h-full w-full rounded-full ${a.dot} opacity-75 animate-ping`} />}
                             <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${live ? a.dot : 'bg-slate-500'}`} />
                         </span>
-                        {live ? 'Live' : 'דמו'}
+                        {live ? 'Live' : ci.demoBadge}
                     </span>
                 </div>
                 {showModeToggle && <ModeToggle mode={mode} onChange={onModeChange} accent={accent} />}
@@ -158,8 +162,8 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                             className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-lg
                                 ${m.role === 'user'
-                                    ? `self-start rounded-br-md ${a.solid} ${a.solidText} ${a.glow}`
-                                    : 'self-end rounded-bl-md bg-gradient-to-bl from-slate-800 to-slate-800/60 text-slate-100 border border-white/10'
+                                    ? `self-start ${isRtl ? 'rounded-br-md' : 'rounded-bl-md'} ${a.solid} ${a.solidText} ${a.glow}`
+                                    : `self-end ${isRtl ? 'rounded-bl-md' : 'rounded-br-md'} bg-gradient-to-bl from-slate-800 to-slate-800/60 text-slate-100 border border-white/10`
                                 }`}
                         >
                             {m.role === 'ai' && (
@@ -190,7 +194,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                             className="self-end rounded-2xl px-4 py-3 bg-slate-800 border border-white/10"
                         >
                             <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-1.5">
-                                <Bot size={11} /> AI מקליד
+                                <Bot size={11} /> {ci.aiTyping}
                             </div>
                             <TypingDots accent={accent} />
                         </motion.div>
@@ -202,7 +206,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
             {suggestions.length > 0 && (
                 <div className="relative z-10 px-4 pt-3 shrink-0">
                     <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-2">
-                        <Sparkles size={11} /> נסו דוגמה
+                        <Sparkles size={11} /> {ci.tryExample}
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {suggestions.map((s) => (
@@ -225,7 +229,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                         value={inputValue}
                         onChange={(e) => onInputChange(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="כתוב הודעה..."
+                        placeholder={ci.inputPlaceholder}
                         className="flex-1 bg-transparent px-3 py-2 text-sm text-white outline-none"
                     />
                     <motion.button

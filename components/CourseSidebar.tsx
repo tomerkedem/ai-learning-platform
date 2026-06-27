@@ -52,6 +52,10 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
   const safeIndex = currentChapterIndex === -1 ? 0 : currentChapterIndex;
   const progress = Math.round(((safeIndex + 1) / course.chapters.length) * 100);
 
+  // ראשי-התיבות של מחבר הלומדה, נגזרים מהשם המתורגם (chrome.authorName). כך הם
+  // תלויי-שפה: he 'תומר קדם' => 'תק', en 'Tomer Kedem' => 'TK'. לא נדרש מפתח חדש.
+  const authorInitials = t.chrome.authorName.split(/[\s・]+/).filter(Boolean).map((w) => w[0]).join('').slice(0, 2);
+
   const getCourseIcon = () => {
       switch(currentCourseId) {
           case 'python': return <Terminal size={20} />;
@@ -110,7 +114,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                 <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 <div className="relative shrink-0">
                     <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-md border-2 border-blue-400">
-                        תק
+                        {authorInitials}
                     </div>
                     <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#1E293B] rounded-full"></div>
                 </div>
