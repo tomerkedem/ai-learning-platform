@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
+import { useT } from '@/i18n/useT';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
 
@@ -13,6 +14,9 @@ interface TokenPreviewProps {
 /** מציגה רצף טוקנים כצ'יפים עם הופעה מדורגת. אחריות יחידה: תצוגת טוקנים. */
 export const TokenPreview: React.FC<TokenPreviewProps> = ({ tokens, accent = 'cyan' }) => {
     const reduce = useReducedMotion();
+    // כיוון תלוי-שפה: ב-RTL הטוקנים זורמים מימין לשמאל (ברירת המחדל העברית), וב-LTR
+    // משמאל לימין - כך הטוקן הראשון תמיד ראשון בקריאה (My, package, didn't, arrive).
+    const { dir } = useT();
     const a = ACCENTS[accent];
 
     if (tokens.length === 0) {
@@ -20,7 +24,7 @@ export const TokenPreview: React.FC<TokenPreviewProps> = ({ tokens, accent = 'cy
     }
 
     return (
-        <div className="flex flex-wrap gap-2" dir="rtl">
+        <div className="flex flex-wrap gap-2" dir={dir}>
             {tokens.map((token, i) => (
                 <motion.span
                     key={`${token}-${i}`}

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
+import { useT } from '@/i18n/useT';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
 
@@ -23,12 +24,16 @@ export const EngineMetricCard: React.FC<EngineMetricCardProps> = ({
     icon,
 }) => {
     const reduce = useReducedMotion();
+    // כיוון תלוי-שפה: פס האקסנט והטקסט נצמדים לצד ההתחלה (RTL: ימין, LTR: שמאל),
+    // כך שב-LTR הכרטיס מיושר טבעית במקום להישאר נעוץ בעברית.
+    const { dir } = useT();
+    const isRtl = dir === 'rtl';
     const a = ACCENTS[tone];
 
     return (
-        <div className="group relative overflow-hidden rounded-xl border border-white/10 bg-slate-900/50 p-4 pr-5 text-right transition-colors hover:border-white/20 hover:bg-slate-900/70" dir="rtl">
+        <div className={`group relative overflow-hidden rounded-xl border border-white/10 bg-slate-900/50 p-4 ${isRtl ? 'pr-5' : 'pl-5'} text-start transition-colors hover:border-white/20 hover:bg-slate-900/70`} dir={dir}>
             {/* פס אקסנט */}
-            <div className={`absolute inset-y-0 right-0 w-1 ${a.barGradient} opacity-80`} />
+            <div className={`absolute inset-y-0 ${isRtl ? 'right-0' : 'left-0'} w-1 ${a.barGradient} opacity-80`} />
 
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
                 {icon}

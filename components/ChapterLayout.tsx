@@ -336,9 +336,9 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                             {/* אחורה */}
                             {prevChapter ? (
                                 <Link href={prevChapter.href || "#"} className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:bg-slate-800 hover:border-slate-700">
-                                    <div className={`flex flex-col ${isRTL ? 'items-start' : 'items-end'} gap-2 relative z-10`}>
+                                    <div className="flex flex-col items-start gap-2 relative z-10">
                                         <span className="text-xs font-mono text-slate-500 group-hover:text-slate-400 transition-colors flex items-center gap-2">
-                                            {isRTL ? <ChevronRight size={14} /> : null} {t.chrome.nav.prev} {!isRTL ? <ChevronRight size={14} /> : null}
+                                            {isRTL ? <ChevronRight size={14} /> : <ChevronLeft size={14} />} {t.chrome.nav.prev}
                                             <kbd className="rounded border border-slate-700 bg-slate-800/80 px-1.5 py-0.5 text-[10px] leading-none text-slate-400">{isRTL ? '→' : '←'}</kbd>
                                         </span>
                                         <div className="font-bold text-lg text-slate-300 group-hover:text-white transition-colors">
@@ -358,9 +358,8 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                             
                                             <div className={`flex flex-col ${isRTL ? 'items-start' : 'items-end'} gap-2 relative z-10`}>
                                                 <span className={`text-xs font-mono font-bold text-${nextColor}-400 group-hover:text-${nextColor}-300 transition-colors flex items-center gap-2`}>
-                                                    {!isRTL ? <ChevronLeft size={14} /> : null}
                                                     {formatNextChapterLabel(locale, nextChapter.id)}
-                                                    {isRTL ? <ChevronLeft size={14} /> : null}
+                                                    {isRTL ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
                                                     <kbd className={`rounded border border-${nextColor}-500/40 bg-${nextColor}-900/20 px-1.5 py-0.5 text-[10px] leading-none text-${nextColor}-300`}>{isRTL ? '←' : '→'}</kbd>
                                                 </span>
                                                 <div className={`font-bold text-xl text-white group-hover:scale-[1.02] transition-transform ${isRTL ? 'origin-right' : 'origin-left'}`}>
