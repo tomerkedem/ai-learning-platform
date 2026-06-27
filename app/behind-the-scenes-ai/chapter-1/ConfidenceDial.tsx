@@ -53,7 +53,8 @@ export const ConfidenceDial: React.FC<ConfidenceDialProps> = ({ text, mode }) =>
 /* ── מצב Chat: מעבדת מדיניות על הפער ─────────────────────────────────────────── */
 
 const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text, reduce }) => {
-    const cd = useT().t.behindAi.chapter1.visuals.confidenceDial;
+    const { t, dir } = useT();
+    const cd = t.behindAi.chapter1.visuals.confidenceDial;
     const stakeText = cd.stakes as Record<string, { he: string; sub: string; note: string }>;
     // הלומד יכול לבחון את ההודעה שלו או קלטים לדוגמה עם רמות ביטחון שונות.
     const [sampleText, setSampleText] = useState<string | null>(null);
@@ -99,7 +100,7 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
     const shown = activeText.length > 42 ? activeText.slice(0, 42) + '...' : activeText;
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-right" dir="rtl">
+        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
             {/* כותרת */}
             <div className="mb-4 flex items-center gap-2">
                 <SlidersHorizontal size={16} className="text-cyan-300" />
@@ -254,7 +255,7 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
                             key={s.key}
                             type="button"
                             onClick={() => { setStake(s.key); setThreshold(s.rec); }}
-                            className={`flex-1 rounded-lg border px-3 py-2 text-right transition-colors ${stake === s.key ? 'border-cyan-500/50 bg-cyan-900/20' : 'border-slate-700/60 bg-slate-800/30 hover:border-slate-600'}`}
+                            className={`flex-1 rounded-lg border px-3 py-2 text-start transition-colors ${stake === s.key ? 'border-cyan-500/50 bg-cyan-900/20' : 'border-slate-700/60 bg-slate-800/30 hover:border-slate-600'}`}
                         >
                             <div className="text-sm font-bold text-slate-100">{stakeText[s.key].he}</div>
                             <div className="text-[11px] text-slate-400">{stakeText[s.key].sub}</div>
@@ -300,12 +301,13 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
 /* ── מצב Agent: השער מבוסס-סיכון, לא פער ───────────────────────────────────── */
 
 const AgentGatePanel: React.FC<{ text: string }> = ({ text }) => {
-    const ag = useT().t.behindAi.chapter1.visuals.agentGate;
+    const { t, dir } = useT();
+    const ag = t.behindAi.chapter1.visuals.agentGate;
     const result = runAgentEngine(text);
     const canAct = result.canActNow;
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-right" dir="rtl">
+        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
             <div className="mb-4 flex items-center gap-2">
                 {canAct ? <ShieldCheck size={16} className="text-purple-300" /> : <ShieldAlert size={16} className="text-amber-300" />}
                 <div className="leading-tight">

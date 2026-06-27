@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ACCENTS } from '@/components/ai-internals/accents';
 import type { Accent, IntentProbability } from '@/components/ai-internals/types';
+import type { Direction } from '@/i18n/config';
 
 interface ProbabilityRiverProps {
     /** ההסתברויות בנקודת הסורק הנוכחית (מהרצה אמיתית של אותו mockEngine). */
@@ -12,6 +13,8 @@ interface ProbabilityRiverProps {
     order: string[];
     accent: Accent;
     reduce: boolean;
+    /** כיוון הכתיבה (תווית/אחוז מתיישרים לפיו). */
+    dir: Direction;
 }
 
 /**
@@ -19,14 +22,14 @@ interface ProbabilityRiverProps {
  * מתקדם, הערוצים מתעבים ומידלדלים במקום (סדר קבוע), והמוביל זוהר. הזרימה היא
  * שכבת-הצגה בלבד - העוביים הם המספרים האמיתיים שהמנוע הפיק לאותו prefix.
  */
-export const ProbabilityRiver: React.FC<ProbabilityRiverProps> = ({ items, order, accent, reduce }) => {
+export const ProbabilityRiver: React.FC<ProbabilityRiverProps> = ({ items, order, accent, reduce, dir }) => {
     const a = ACCENTS[accent];
     const map = new Map(items.map((it) => [it.label, it.value]));
     const maxVal = items.reduce((m, it) => Math.max(m, it.value), 0);
     const lanes = order.length ? order : items.map((it) => it.label);
 
     return (
-        <div className="flex h-44 flex-col gap-1" dir="rtl">
+        <div className="flex h-44 flex-col gap-1" dir={dir}>
             {lanes.map((label) => {
                 const value = map.get(label) ?? 0;
                 const isLead = value > 0 && value === maxVal;

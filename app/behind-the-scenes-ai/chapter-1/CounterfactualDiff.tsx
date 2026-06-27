@@ -37,7 +37,8 @@ export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, ac
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
     const isChat = mode === 'chat';
-    const cf = useT().t.behindAi.chapter1.visuals.counterfactual;
+    const { t, dir } = useT();
+    const cf = t.behindAi.chapter1.visuals.counterfactual;
     const experiments = cf.experiments[mode];
 
     const [expKey, setExpKey] = useState(experiments[0].key);
@@ -53,7 +54,7 @@ export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, ac
     const flipped = active.decision.kind !== ghost.decision.kind;
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-right" dir="rtl">
+        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
             <div className="mb-4 flex items-center gap-2">
                 <GitCompare size={16} className={a.text} />
                 <div className="leading-tight">
@@ -175,7 +176,9 @@ export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, ac
 
 const ChatDiff: React.FC<{ active: ChatEngineResult; ghost: ChatEngineResult; accent: Accent; reduce: boolean }> = ({ active, ghost, accent, reduce }) => {
     const a = ACCENTS[accent];
-    const v = useT().t.behindAi.chapter1.visuals;
+    const { t, dir } = useT();
+    const isRtl = dir === 'rtl';
+    const v = t.behindAi.chapter1.visuals;
     const cf = v.counterfactual;
     const activeReply = v.mockEngine.chatReplies[active.replyKey];
     const ghostMap = new Map(ghost.intents.map((i) => [i.label, i.value]));
@@ -199,9 +202,9 @@ const ChatDiff: React.FC<{ active: ChatEngineResult; ghost: ChatEngineResult; ac
                                 </span>
                             </div>
                             <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-slate-800/80">
-                                {/* רוח רפאים: הערך הקודם */}
+                                {/* רוח רפאים: הערך הקודם - מעוגן לקצה ההתחלה לפי כיוון הכתיבה */}
                                 <div
-                                    className="absolute inset-y-0 right-0 rounded-full border border-dashed border-slate-500/50"
+                                    className={`absolute inset-y-0 ${isRtl ? 'right-0' : 'left-0'} rounded-full border border-dashed border-slate-500/50`}
                                     style={{ width: `${Math.max(0, Math.min(100, before))}%` }}
                                     aria-hidden
                                 />

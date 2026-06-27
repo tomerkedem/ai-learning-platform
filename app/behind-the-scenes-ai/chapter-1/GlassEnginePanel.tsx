@@ -111,7 +111,7 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
         case 'tokens':
             if (!step.tokens.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
             return (
-                <div className="flex flex-wrap gap-2" dir="rtl">
+                <div className="flex flex-wrap gap-2" dir="auto">
                     {step.tokens.map((token, i) => {
                         const hl = highlightToken === token;
                         return (
@@ -293,7 +293,9 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
 export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subtitle, accent, replayKey, steps, liveTokenCount, highlightToken, onTokenHover }) => {
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
-    const ep = useT().t.behindAi.chapter1.visuals.enginePanel;
+    const { t, dir } = useT();
+    const isRtl = dir === 'rtl';
+    const ep = t.behindAi.chapter1.visuals.enginePanel;
 
     const actOrder = useMemo(() => {
         const seen: string[] = [];
@@ -316,7 +318,7 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
     }, [steps]);
 
     return (
-        <div className="relative flex h-[640px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/80" dir="rtl">
+        <div className="relative flex h-[640px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/80" dir={dir}>
             {/* רקע גריד */}
             <div
                 className="pointer-events-none absolute inset-0 opacity-[0.06]"
@@ -405,11 +407,11 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                                 <motion.div variants={reduce ? undefined : itemVar} className="flex gap-3">
                                     {/* צינור נקודות-ביקורת עצביות: צומת לכל שלב + spine כמוליך אנרגיה */}
                                     <div className="relative flex shrink-0 flex-col items-center">
-                                        {/* מחבר אופקי זעיר: קו עדין מקצה הכרטיס אל הצומת */}
+                                        {/* מחבר אופקי זעיר: קו עדין מקצה הכרטיס אל הצומת, תלוי-כיוון */}
                                         <span
                                             aria-hidden
-                                            className={`absolute top-3.5 right-full h-px w-2.5 -translate-y-1/2 ${a.text}`}
-                                            style={{ background: 'linear-gradient(to right, transparent, currentColor)', opacity: 0.45 }}
+                                            className={`absolute top-3.5 ${isRtl ? 'right-full' : 'left-full'} h-px w-2.5 -translate-y-1/2 ${a.text}`}
+                                            style={{ background: `linear-gradient(to ${isRtl ? 'right' : 'left'}, transparent, currentColor)`, opacity: 0.45 }}
                                         />
                                         <ProcessCheckpointNode
                                             state={i === currentIdx ? 'current' : 'completed'}

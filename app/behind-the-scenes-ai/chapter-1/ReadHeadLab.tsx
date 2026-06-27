@@ -64,7 +64,8 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
     const isChat = mode === 'chat';
-    const rh = useT().t.behindAi.chapter1.visuals.readHead;
+    const { t, dir } = useT();
+    const rh = t.behindAi.chapter1.visuals.readHead;
 
     const tokens = useMemo(() => tokenize(text), [text]);
     const n = tokens.length;
@@ -123,7 +124,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
 
     if (n === 0 || !current) {
         return (
-            <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-6 text-center text-sm text-slate-500" dir="rtl">
+            <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-6 text-center text-sm text-slate-500" dir={dir}>
                 {rh.emptyState}
             </div>
         );
@@ -132,7 +133,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
     const prefixText = tokens.slice(0, clampedHead + 1).join(' ');
 
     return (
-        <div className={`rounded-2xl border ${a.border} bg-slate-950/70 ${a.glow} overflow-hidden`} dir="rtl">
+        <div className={`rounded-2xl border ${a.border} bg-slate-950/70 ${a.glow} overflow-hidden`} dir={dir}>
             {/* כותרת */}
             <div className="flex items-center gap-3 p-4 border-b border-white/10">
                 <div className={`p-1.5 rounded-lg bg-slate-900 border border-white/10 ${a.text}`}>
@@ -275,7 +276,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                                 <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Probability river</span>
                                 <span className="text-[11px] text-slate-500">{rh.riverHint}</span>
                             </div>
-                            <ProbabilityRiver items={current.intents} order={riverOrder} accent={accent} reduce={!!reduce} />
+                            <ProbabilityRiver items={current.intents} order={riverOrder} accent={accent} reduce={!!reduce} dir={dir} />
                         </div>
                         <div className="grid gap-3 md:grid-cols-2 md:items-start">
                             <ConfidenceMeter level={current.confidence} />

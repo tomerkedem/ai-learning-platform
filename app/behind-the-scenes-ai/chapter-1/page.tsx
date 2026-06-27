@@ -26,7 +26,8 @@ import { ForkView } from './ForkView';
 
 export default function BehindTheScenesChapter1() {
     const reduce = useReducedMotion();
-    const { t } = useT();
+    const { t, dir } = useT();
+    const isRtl = dir === 'rtl';
     const c1 = t.behindAi.chapter1;
     const viz = c1.visuals;
 
@@ -225,11 +226,11 @@ export default function BehindTheScenesChapter1() {
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-right"
-                dir="rtl"
+                className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-start"
+                dir={dir}
             >
-                <div className="absolute -top-16 -right-16 w-56 h-56 bg-cyan-500/10 blur-[80px] rounded-full pointer-events-none" />
-                <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-purple-500/10 blur-[90px] rounded-full pointer-events-none" />
+                <div className={`absolute -top-16 ${isRtl ? '-right-16' : '-left-16'} w-56 h-56 bg-cyan-500/10 blur-[80px] rounded-full pointer-events-none`} />
+                <div className={`absolute -bottom-20 ${isRtl ? '-left-10' : '-right-10'} w-64 h-64 bg-purple-500/10 blur-[90px] rounded-full pointer-events-none`} />
 
                 <div className="relative z-10">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-cyan-500/30 mb-5">
@@ -239,7 +240,7 @@ export default function BehindTheScenesChapter1() {
 
                     <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
                         {c1.hero.titleLead}{' '}
-                        <span className="bg-gradient-to-l from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                        <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent`}>
                             {c1.hero.titleHighlight}
                         </span>
                         ?
@@ -263,9 +264,9 @@ export default function BehindTheScenesChapter1() {
                     </div>
                 </div>
             </motion.section>
-            {/* המנטור מזמין להציץ פנימה - תלוי מימין לכרטיס (xl+) */}
-            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="peek" line={c1.mentor.peek} width={175} />
+            {/* המנטור מזמין להציץ פנימה - צמוד לקצה החיצוני של הכרטיס (xl+), תלוי-כיוון */}
+            <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
+              <Mentor pose="peek" line={c1.mentor.peek} width={175} flip={!isRtl} />
             </div>
             </div>
 
@@ -278,10 +279,10 @@ export default function BehindTheScenesChapter1() {
                         exit={reduce ? undefined : { opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
                         transition={{ duration: 0.3 }}
                         className="mt-6 flex items-center gap-4 overflow-hidden rounded-2xl border border-emerald-500/30 bg-emerald-900/10 p-4"
-                        dir="rtl"
+                        dir={dir}
                     >
                         <div className="-my-2 shrink-0">
-                            <Mentor pose="think" width={92} float={false} glow={false} />
+                            <Mentor pose="think" width={92} float={false} glow={false} flip={!isRtl} />
                         </div>
                         <div className="flex-1 text-sm leading-relaxed text-slate-200">
                             <span className="font-bold text-emerald-300">{c1.coach.start}</span>
@@ -301,7 +302,7 @@ export default function BehindTheScenesChapter1() {
             </AnimatePresence>
 
             {/* ══════════ Transparent Chat Lab ══════════ */}
-            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
+            <section className="relative mt-12 space-y-5 text-start" dir={dir}>
                 <div className="flex items-center gap-3">
                     <ScanSearch size={24} className="text-cyan-400" />
                     <div>
@@ -319,11 +320,11 @@ export default function BehindTheScenesChapter1() {
                 {/* aurora אמביינטי מאחורי שני החלונות - סטטי כדי להשאיר את המסך הראשי רגוע */}
                 <div
                     aria-hidden
-                    className="pointer-events-none absolute -top-12 right-1/4 -z-10 h-72 w-72 rounded-full bg-cyan-500/10 blur-[110px]"
+                    className={`pointer-events-none absolute -top-12 ${isRtl ? 'right-1/4' : 'left-1/4'} -z-10 h-72 w-72 rounded-full bg-cyan-500/10 blur-[110px]`}
                 />
                 <div
                     aria-hidden
-                    className="pointer-events-none absolute -bottom-12 left-1/4 -z-10 h-72 w-72 rounded-full bg-purple-500/10 blur-[110px]"
+                    className={`pointer-events-none absolute -bottom-12 ${isRtl ? 'left-1/4' : 'right-1/4'} -z-10 h-72 w-72 rounded-full bg-purple-500/10 blur-[110px]`}
                 />
                 <TransparentLabLayout
                     accent={accent}
@@ -375,22 +376,22 @@ export default function BehindTheScenesChapter1() {
                 <p className="text-xs leading-relaxed text-slate-500">
                     {live ? c1.lab.liveNote : c1.lab.demoNote}
                 </p>
-                {/* מנטור פרק 1 צמוד לכרטיס הצ'אט השקוף (2xl בלבד - רק שם יש מרווח בין הלוח
-                    לסרגל הניווט מימין; ב-xl הסרגל מכסה את הדמות): חושף את המנוע מבפנים */}
-                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-4 z-20 hidden 2xl:block pointer-events-none">
-                  <Mentor pose="holographic" line={c1.mentor.holographic} width={200} fallbackSrc="/assets/mentor-inspect.png" />
+                {/* מנטור פרק 1 צמוד לקצה החיצוני של כרטיס הצ'אט השקוף (2xl בלבד - רק שם יש
+                    מרווח בין הלוח לסרגל הניווט); תלוי-כיוון: חושף את המנוע מבפנים */}
+                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-4' : 'right-full mr-4'} z-20 hidden 2xl:block pointer-events-none`}>
+                  <Mentor pose="holographic" line={c1.mentor.holographic} width={200} fallbackSrc="/assets/mentor-inspect.png" flip={!isRtl} />
                 </div>
             </section>
 
             {/* ══════════ התובנה המרכזית של הפרק ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c1.insightIdea.title}>
                     {c1.insightIdea.body}
                 </InsightBox>
             </section>
 
             {/* ══════════ חשיפה הדרגתית: שער אל שכבת העומק ══════════ */}
-            <section className="mt-10 text-center" dir="rtl">
+            <section className="mt-10 text-center" dir={dir}>
                 <button
                     type="button"
                     onClick={toggleDeep}
@@ -422,16 +423,16 @@ export default function BehindTheScenesChapter1() {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden"
             >
-            <p className="mt-8 flex items-start gap-2.5 text-lg leading-relaxed text-slate-200" dir="rtl">
+            <p className="mt-8 flex items-start gap-2.5 text-lg leading-relaxed text-slate-200" dir={dir}>
                 <ScanSearch size={20} className="mt-1 shrink-0 text-cyan-400" />
                 {c1.deep.intro1}
             </p>
-            <p className="mt-3 text-base leading-relaxed text-slate-300" dir="rtl">
+            <p className="mt-3 text-base leading-relaxed text-slate-300" dir={dir}>
                 {c1.deep.intro2Lead}<span className="text-cyan-300 font-semibold">Chat Mode</span>{c1.deep.intro2Mid}<span className="text-purple-300 font-semibold">Agent Mode</span>{c1.deep.intro2Tail}
             </p>
 
             {/* ══════════ מעבדה 1 · Read Head ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="mt-12 space-y-5 text-start" dir={dir}>
                 <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">1</span>
                     <ScanLine size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
@@ -447,7 +448,7 @@ export default function BehindTheScenesChapter1() {
             </section>
 
             {/* ══════════ מעבדה 2 · Confidence Dial ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="mt-12 space-y-5 text-start" dir={dir}>
                 <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">2</span>
                     <SlidersHorizontal size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
@@ -461,7 +462,7 @@ export default function BehindTheScenesChapter1() {
             </section>
 
             {/* ══════════ מעבדה 3 · Causality (Counterfactual) ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="mt-12 space-y-5 text-start" dir={dir}>
                 <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">3</span>
                     <GitCompare size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
@@ -475,7 +476,7 @@ export default function BehindTheScenesChapter1() {
             </section>
 
             {/* ══════════ מעבדה 4 · Fork View ══════════ */}
-            <section className="mt-12 space-y-5 text-right" dir="rtl">
+            <section className="mt-12 space-y-5 text-start" dir={dir}>
                 <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">4</span>
                     <Split size={24} className="text-slate-300" />
@@ -489,7 +490,7 @@ export default function BehindTheScenesChapter1() {
             </section>
 
             {/* ══════════ סיכום ══════════ */}
-            <section className="mt-12 space-y-4 text-right" dir="rtl">
+            <section className="mt-12 space-y-4 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c1.summary.understandTitle}>
                     {c1.summary.understandBody}
                 </InsightBox>
@@ -503,7 +504,7 @@ export default function BehindTheScenesChapter1() {
 
             {/* ══════════ לפני המבדק: עיגון מושגי הליבה בזרימה הראשית ══════════ */}
             {/* גם מי שלא פתח את שכבת העומק רואה כאן את שלושת הרעיונות שהמבדק בודק. */}
-            <section className="mt-16 text-right" dir="rtl">
+            <section className="mt-16 text-start" dir={dir}>
                 <div className="rounded-[1.75rem] border border-cyan-500/30 bg-gradient-to-b from-slate-900/70 to-slate-950/60 p-6 md:p-7">
                     <div className="mb-4 flex items-center gap-2.5">
                         <ListChecks size={20} className="text-cyan-300" />
@@ -538,7 +539,7 @@ export default function BehindTheScenesChapter1() {
             </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
-            <section className="mt-10 mb-4" dir="rtl">
+            <section className="mt-10 mb-4" dir={dir}>
                 <ChapterQuiz chapterId={1} />
             </section>
         </ChapterLayout>

@@ -22,7 +22,8 @@ interface ForkViewProps {
  */
 export const ForkView: React.FC<ForkViewProps> = ({ text }) => {
     const reduce = useReducedMotion();
-    const fv = useT().t.behindAi.chapter1.visuals.forkView;
+    const { t, dir } = useT();
+    const fv = t.behindAi.chapter1.visuals.forkView;
 
     const [sampleText, setSampleText] = useState<string | null>(null);
     const activeText = sampleText ?? text;
@@ -35,7 +36,7 @@ export const ForkView: React.FC<ForkViewProps> = ({ text }) => {
     const shown = activeText.length > 42 ? activeText.slice(0, 42) + '...' : activeText;
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-right" dir="rtl">
+        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
             <div className="mb-1 flex items-center gap-2">
                 <Split size={16} className="text-slate-300" />
                 <div className="leading-tight">

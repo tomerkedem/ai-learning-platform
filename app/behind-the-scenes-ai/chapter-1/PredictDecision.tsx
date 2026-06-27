@@ -51,7 +51,9 @@ const AGENT_OPTION_META: OptionMeta[] = [
 export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) => {
     const reduce = useReducedMotion();
     const isChat = mode === 'chat';
-    const pd = useT().t.behindAi.chapter1.visuals.predict;
+    const { t, dir } = useT();
+    const isRtl = dir === 'rtl';
+    const pd = t.behindAi.chapter1.visuals.predict;
 
     const result = isChat ? runChatEngine(text) : runAgentEngine(text);
     const actualKind = result.decision.kind;
@@ -85,13 +87,13 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
 
     return (
         <div
-            dir="rtl"
+            dir={dir}
             className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/60 p-6 text-center backdrop-blur-xl md:p-8"
         >
             <div className={`pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full ${accentGlow} blur-[80px]`} />
-            {/* מנטור פנימי מגיב: הפוזה והבועה משתנות לפי תוצאת הניחוש (think/celebrate/reassure). */}
-            <div className="pointer-events-none absolute bottom-0 right-4 z-0 hidden lg:block">
-                <Mentor key={mentor.pose} pose={mentor.pose} line={mentor.line} lineIcon={mentor.icon} width={112} float={false} glow={mentor.glow} />
+            {/* מנטור פנימי מגיב: הפוזה והבועה משתנות לפי תוצאת הניחוש (think/celebrate/reassure). תלוי-כיוון. */}
+            <div className={`pointer-events-none absolute bottom-0 ${isRtl ? 'right-4' : 'left-4'} z-0 hidden lg:block`}>
+                <Mentor key={mentor.pose} pose={mentor.pose} line={mentor.line} lineIcon={mentor.icon} width={112} float={false} glow={mentor.glow} flip={!isRtl} />
             </div>
             <div className="relative">
                 <span className={`mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] ${accentText}`}>
@@ -169,7 +171,7 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
                                         {isChat ? pd.impossibleChat : pd.impossibleAgent}
                                     </p>
                                 )}
-                                <div className="mt-2 w-full max-w-sm text-right">
+                                <div className="mt-2 w-full max-w-sm text-start">
                                     <DecisionCard decision={result.decision} />
                                 </div>
                                 <button
