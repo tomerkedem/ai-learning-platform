@@ -12,6 +12,12 @@ import type { DecisionState, IntentProbability } from '@/components/ai-internals
 export type Confidence = 'High' | 'Medium' | 'Low';
 export type Risk = 'Low' | 'Medium' | 'High';
 
+// מפתחות התשובה: המנוע נשאר טהור ומחזיר מזהה תשובה בלבד (לא טקסט). שכבת התצוגה
+// פותרת אותו לטקסט הנכון מהמילון (chapter1Visuals.mockEngine), כדי שהפלט יהיה
+// תלוי-שפה בלי להכניס תלות-מילון למודול הלוגי הזה.
+export type ChatReplyKey = 'notDelivered' | 'tracking' | 'system' | 'payment' | 'other';
+export type AgentReplyKey = 'sensitive' | 'tool' | 'askBarcode' | 'vague' | 'general';
+
 export interface ChatEngineResult {
     tokens: string[];
     meaning: string;
@@ -19,7 +25,7 @@ export interface ChatEngineResult {
     confidence: Confidence;
     decision: DecisionState;
     output: string;
-    reply: string;
+    replyKey: ChatReplyKey;
 }
 
 export interface AgentEngineResult {
@@ -31,7 +37,7 @@ export interface AgentEngineResult {
     risk: Risk;
     decision: DecisionState;
     output: string;
-    reply: string;
+    replyKey: AgentReplyKey;
 }
 
 // --- עזרי טקסט ---
@@ -46,6 +52,17 @@ export const includesAny = (text: string, words: string[]) => words.some((w) => 
 export const countHits = (text: string, words: string[]) => words.filter((w) => text.includes(w)).length;
 export const matchedWords = (text: string, words: string[]) => words.filter((w) => text.includes(w));
 export const hasBarcode = (text: string) => /\d{6,}/.test(text);
+
+// ════════════════════ צימוד תרגום - חובה לקרוא לפני C3/C4 ════════════════════
+// אוצר-המילים לזיהוי שלמטה (NEGATION_TOKEN, CHAT_RULES[].words, ACTION_WORDS,
+// SENSITIVE_WORDS, DELIVERY_WORDS, VAGUE_WORDS) הוא לוגיקת זיהוי מבנית, לא טקסט UI
+// מוצג, ולכן הוא נשאר כאן (לא עבר למילון ב-C1).
+// הוא מצומד לקלט-ההדגמה העברי שכבר עבר למילון:
+//   chapter1.seed, chapter1Visuals.confidenceDial.samples,
+//   chapter1Visuals.forkView.samples, chapter1Visuals.counterfactual.experiments[].variants.
+// כשמתרגמים את קלט-ההדגמה הזה ב-C3/C4, חובה להפוך גם את אוצר-המילים הזה לתלוי-שפה
+// (locale-aware), אחרת הטקסט הנראה יתורגם אבל לוגיקת הזיהוי תפסיק להתאים והדמו יישבר.
+// ═══════════════════════════════════════════════════════════════════════════════
 export const NEGATION_TOKEN = 'לא';
 
 // --- Chat Mode: דירוג כוונות ---
@@ -88,14 +105,6 @@ export const UNMATCHED_BASE = 0.15;
 export const HIT_WEIGHT = 3.0;
 export const NEGATION_BOOST = 1.5;
 export const OTHER_BASE = 0.4;
-
-const REPLIES: Record<string, string> = {
-    notDelivered: 'נראה שמדובר במקרה של אי מסירה. כדאי לבדוק את סטטוס המשלוח לפי ברקוד.',
-    tracking: 'אפשר לבדוק את מצב המשלוח לפי מספר המעקב. מה מספר המעקב?',
-    system: 'ייתכן שמדובר בתקלה בהצגת המידע במערכת. כדאי לרענן ולנסות שוב.',
-    payment: 'נראה שהשאלה קשורה לחיוב או לתשלום. כדאי לבדוק את פרטי החשבונית.',
-    other: 'לא בטוח שהבנתי במדויק. תוכל לפרט מה הבעיה?',
-};
 
 /** ממיר ציונים גולמיים לאחוזים שמסתכמים ל-100, ממוין יורד. */
 function normalize(raw: { label: string; score: number }[]): IntentProbability[] {
@@ -140,16 +149,18 @@ export function runChatEngine(text: string): ChatEngineResult {
     const intents = normalize(scored);
     const confidence = confidenceFrom(intents);
 
-    // הכוונה המובילה -> משמעות + תשובה
+    // הכוונה המובילה -> משמעות + מפתח תשובה
     const topLabel = intents[0]?.label ?? 'Other';
     const topRule = raw.find((r) => r.label === topLabel);
     const meaning = topRule?.meaning ?? 'General request';
-    const replyKey = topRule?.key ?? 'other';
 
     const isConfident = confidence !== 'Low';
     const decision: DecisionState = isConfident
         ? { kind: 'answer', label: 'Generate response' }
         : { kind: 'ask', label: 'Ask for more context' };
+
+    // כשהביטחון נמוך התשובה תמיד 'other' (בקשת הבהרה), בדיוק כמו קודם.
+    const replyKey: ChatReplyKey = isConfident ? ((topRule?.key as ChatReplyKey) ?? 'other') : 'other';
 
     return {
         tokens,
@@ -158,7 +169,7 @@ export function runChatEngine(text: string): ChatEngineResult {
         confidence,
         decision,
         output: isConfident ? 'Response generated' : 'Clarifying question',
-        reply: isConfident ? REPLIES[replyKey] ?? REPLIES.other : REPLIES.other,
+        replyKey,
     };
 }
 
@@ -189,7 +200,7 @@ export function runAgentEngine(text: string): AgentEngineResult {
             risk: 'High',
             decision: { kind: 'stop', label: 'Stop for approval' },
             output: 'Stop before action',
-            reply: 'זו פעולה שמשפיעה על לקוח. לא אבצע אותה ללא אימות ואישור - אפשר להכין טיוטה לאישור.',
+            replyKey: 'sensitive',
         };
     }
 
@@ -204,7 +215,7 @@ export function runAgentEngine(text: string): AgentEngineResult {
             risk: 'Low',
             decision: { kind: 'tool', label: 'Use Tracking API' },
             output: 'Call Tracking API',
-            reply: 'יש ברקוד. אני בודק את סטטוס המשלוח במערכת המעקב...',
+            replyKey: 'tool',
         };
     }
 
@@ -219,7 +230,7 @@ export function runAgentEngine(text: string): AgentEngineResult {
             risk: 'Medium',
             decision: { kind: 'ask', label: 'Ask for barcode before action' },
             output: 'Ask user for required information',
-            reply: 'כדי לבדוק את זה בפועל, אני צריך מספר ברקוד של החבילה.',
+            replyKey: 'askBarcode',
         };
     }
 
@@ -234,7 +245,7 @@ export function runAgentEngine(text: string): AgentEngineResult {
             risk: 'Low',
             decision: { kind: 'ask', label: 'Ask what to handle' },
             output: 'Ask for clarification',
-            reply: 'אני צריך להבין למה הכוונה - איזו משימה או חבילה לבדוק?',
+            replyKey: 'vague',
         };
     }
 
@@ -251,9 +262,7 @@ export function runAgentEngine(text: string): AgentEngineResult {
                 ? { kind: 'tool', label: 'Use Tracking API' }
                 : { kind: 'ask', label: 'Ask for barcode before action' },
             output: barcode ? 'Call Tracking API' : 'Ask user for required information',
-            reply: barcode
-                ? 'יש ברקוד. אני בודק את סטטוס המשלוח במערכת המעקב...'
-                : 'כדי לבדוק את זה בפועל, אני צריך מספר ברקוד של החבילה.',
+            replyKey: barcode ? 'tool' : 'askBarcode',
         };
     }
 
@@ -267,6 +276,6 @@ export function runAgentEngine(text: string): AgentEngineResult {
         risk: 'Low',
         decision: { kind: 'answer', label: 'Answer directly' },
         output: 'Generate explanation',
-        reply: 'זו נשמעת כמו בקשה כללית. אפשר לענות עליה ישירות, בלי כלי חיצוני.',
+        replyKey: 'general',
     };
 }

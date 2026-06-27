@@ -7,21 +7,13 @@ import { Split, MessageSquare, Workflow, Zap, Check } from 'lucide-react';
 import { TokenPreview } from '@/components/ai-internals/TokenPreview';
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
 import { EngineMetricCard } from '@/components/ai-internals/EngineMetricCard';
+import { useT } from '@/i18n/useT';
 
 import { tokenize, runChatEngine, runAgentEngine } from './mockEngine';
 
 interface ForkViewProps {
     text: string;
 }
-
-// קלטים לדוגמה שמפצלים את שני המנועים אחרת, כולל מקרה אחד שבו הם מסכימים -
-// כדי שהלומד יראה שהפיצול תלוי בקלט, לא קבוע.
-const SAMPLES = [
-    { he: 'החבילה לא הגיעה', tag: 'תלונה' },
-    { he: 'בדוק את החבילה 123456789', tag: 'משימה עם מזהה' },
-    { he: 'שלח ללקוח שהחבילה אבדה', tag: 'פעולה רגישה' },
-    { he: 'מה שעות הפעילות שלכם', tag: 'שאלה כללית' },
-];
 
 /**
  * Fork View: אותו משפט, שני מנועים בו-זמנית. אותם טוקנים בדיוק נכנסים ל-Chat
@@ -30,6 +22,7 @@ const SAMPLES = [
  */
 export const ForkView: React.FC<ForkViewProps> = ({ text }) => {
     const reduce = useReducedMotion();
+    const fv = useT().t.behindAi.chapter1.visuals.forkView;
 
     const [sampleText, setSampleText] = useState<string | null>(null);
     const activeText = sampleText ?? text;
@@ -46,51 +39,50 @@ export const ForkView: React.FC<ForkViewProps> = ({ text }) => {
             <div className="mb-1 flex items-center gap-2">
                 <Split size={16} className="text-slate-300" />
                 <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">פיצול: אותו קלט, שני מנועים</div>
+                    <div className="text-sm font-bold text-slate-200">{fv.title}</div>
                     <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Fork View</div>
                 </div>
             </div>
 
             {/* הרעיון + איך מפעילים */}
             <p className="mb-3 text-sm leading-relaxed text-slate-300">
-                <span className="font-bold text-white">הרעיון:</span> אותו קלט בדיוק נכנס לשני מנועים. הם לא חולקים על
-                העובדות, אלא <span className="font-bold text-white">שואלים עליו שאלה אחרת</span> - ולכן מגיעים להחלטות שונות.
+                <span className="font-bold text-white">{fv.ideaLabel}</span>{fv.ideaLead}<span className="font-bold text-white">{fv.ideaEmph}</span>{fv.ideaTail}
             </p>
             <div className="mb-4 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500">איך מפעילים</div>
+                <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500">{fv.howTitle}</div>
                 <ol className="space-y-1 text-xs leading-relaxed text-slate-400">
-                    <li><span className="font-bold text-slate-300">1.</span> בחרו קלט (שלכם או דוגמה).</li>
-                    <li><span className="font-bold text-slate-300">2.</span> ראו את אותם טוקנים בדיוק נכנסים לשני המנועים.</li>
-                    <li><span className="font-bold text-slate-300">3.</span> השוו: לפעמים הם מסכימים, לפעמים מתפצלים. הפס מתחת מסביר למה.</li>
+                    <li><span className="font-bold text-slate-300">1.</span>{fv.how1}</li>
+                    <li><span className="font-bold text-slate-300">2.</span>{fv.how2}</li>
+                    <li><span className="font-bold text-slate-300">3.</span>{fv.how3}</li>
                 </ol>
             </div>
 
             {/* בורר קלטים */}
             <div className="mb-2 flex flex-wrap items-center gap-1.5">
-                <span className="inline-flex items-center gap-1 text-[11px] text-slate-500"><MessageSquare size={12} /> נסו קלט:</span>
+                <span className="inline-flex items-center gap-1 text-[11px] text-slate-500"><MessageSquare size={12} /> {fv.tryInput}</span>
                 <button
                     type="button"
                     onClick={() => setSampleText(null)}
                     className={`rounded-full border px-2.5 py-1 text-xs font-bold transition-colors ${sampleText === null ? 'border-slate-400/50 bg-slate-700/40 text-slate-100' : 'border-slate-700/60 bg-slate-800/40 text-slate-400 hover:border-slate-600'}`}
                 >
-                    ההודעה שלכם
+                    {fv.yourMessage}
                 </button>
-                {SAMPLES.map((s) => (
+                {fv.samples.map((s) => (
                     <button
-                        key={s.he}
+                        key={s.input}
                         type="button"
-                        onClick={() => setSampleText(s.he)}
-                        className={`rounded-full border px-2.5 py-1 text-xs font-bold transition-colors ${sampleText === s.he ? 'border-slate-400/50 bg-slate-700/40 text-slate-100' : 'border-slate-700/60 bg-slate-800/40 text-slate-400 hover:border-slate-600'}`}
+                        onClick={() => setSampleText(s.input)}
+                        className={`rounded-full border px-2.5 py-1 text-xs font-bold transition-colors ${sampleText === s.input ? 'border-slate-400/50 bg-slate-700/40 text-slate-100' : 'border-slate-700/60 bg-slate-800/40 text-slate-400 hover:border-slate-600'}`}
                     >
                         {s.tag}
                     </button>
                 ))}
             </div>
-            <div className="mb-4 truncate text-xs text-slate-500">מנתח: &quot;{shown}&quot;</div>
+            <div className="mb-4 truncate text-xs text-slate-500">{fv.analyzingLead}{shown}{fv.analyzingTail}</div>
 
             {/* טוקנים משותפים */}
             <div className="mb-4 rounded-xl border border-white/10 bg-slate-950/50 p-3">
-                <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500">אותם טוקנים נכנסים לשני המנועים</div>
+                <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500">{fv.sameTokens}</div>
                 <TokenPreview tokens={tokens} accent="slate" />
             </div>
 
@@ -106,8 +98,8 @@ export const ForkView: React.FC<ForkViewProps> = ({ text }) => {
                 {diverges ? <Zap size={14} className="mt-0.5 shrink-0" /> : <Check size={14} className="mt-0.5 shrink-0" />}
                 <span>
                     {diverges
-                        ? <>כאן הם מתפצלים: Chat בחר &quot;{chat.decision.label}&quot;, ו-Agent בחר &quot;{agent.decision.label}&quot;.</>
-                        : <>כאן הם מסכימים: שניהם הגיעו ל&quot;{chat.decision.label}&quot;. גם כששאלת המנועים שונה, לפעמים התשובה זהה.</>}
+                        ? <>{fv.divergeLead}{chat.decision.label}{fv.divergeMid}{agent.decision.label}{fv.divergeTail}</>
+                        : <>{fv.agreeLead}{chat.decision.label}{fv.agreeTail}</>}
                 </span>
             </motion.div>
 
@@ -120,7 +112,7 @@ export const ForkView: React.FC<ForkViewProps> = ({ text }) => {
                         <span className="text-sm font-bold">Chat</span>
                     </div>
                     <div className="mb-3 rounded-lg border border-cyan-500/20 bg-cyan-950/30 px-2.5 py-1.5 text-xs text-cyan-100">
-                        השאלה שלו: <span className="font-bold">מה התשובה?</span>
+                        {fv.questionLabel} <span className="font-bold">{fv.chatQuestion}</span>
                     </div>
                     <div className="space-y-3">
                         <EngineMetricCard label="Leading intent" value={`${chat.intents[0]?.label ?? '-'} (${chat.intents[0]?.value ?? 0}%)`} tone="cyan" />
@@ -135,7 +127,7 @@ export const ForkView: React.FC<ForkViewProps> = ({ text }) => {
                         <span className="text-sm font-bold">Agent</span>
                     </div>
                     <div className="mb-3 rounded-lg border border-purple-500/20 bg-purple-950/30 px-2.5 py-1.5 text-xs text-purple-100">
-                        השאלה שלו: <span className="font-bold">מה הצעד הבטוח הבא?</span>
+                        {fv.questionLabel} <span className="font-bold">{fv.agentQuestion}</span>
                     </div>
                     <div className="space-y-3">
                         <EngineMetricCard label="Task detected" value={agent.task} tone="purple" />
@@ -145,8 +137,7 @@ export const ForkView: React.FC<ForkViewProps> = ({ text }) => {
             </div>
 
             <p className="mt-4 text-xs leading-relaxed text-slate-500">
-                אותם טוקנים בדיוק, ולפעמים שתי החלטות. ההבדל אינו בקלט אלא בשאלה שכל מנוע שואל עליו: Chat בוחר את התשובה
-                הסבירה, ו-Agent שוקל את הצעד הבטוח הבא - לענות, להשתמש בכלי, או לעצור ולבקש מידע.
+                {fv.footer}
             </p>
         </div>
     );

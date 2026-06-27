@@ -5,8 +5,13 @@
 // החלטה) מגיעים ישירות מ-runChatEngine/runAgentEngine, והשלבים הביניים (טוקנים,
 // התאמות מילות-מפתח, ספירות, דגלים) מחושבים עם אותם קבועים/עוזרים בדיוק שמייצא
 // המנוע. אין כאן מספר חדש, אין שכפול נוסחה - רק שיקוף של הצינור הקיים.
+//
+// הטקסט המוצג (שמות מערכות, כותרות, כיתובים, תוויות) מגיע מהמילון (viz = chapter1
+// Visuals) המועבר פנימה, כדי שהתצוגה תהיה תלוית-שפה. שמות המערכות באנגלית (actEn)
+// ומזהי השלבים נשארים כאן כמבנה. אין מקף ארוך (U+2014).
 
 import type { DecisionState, IntentProbability } from '@/components/ai-internals/types';
+import type { Chapter1VisualsDict } from '@/i18n/locales/he/behind-ai/chapter1Visuals';
 
 import {
     runChatEngine,
@@ -48,20 +53,23 @@ export type EngineTraceStep =
     | (TraceBase & { kind: 'decision'; decision: DecisionState })
     | (TraceBase & { kind: 'reply'; text: string });
 
-const ACT = {
-    intake: { he: 'קליטה', en: 'Intake' },
-    analyze: { he: 'ניתוח', en: 'Analysis' },
-    decide: { he: 'הכרעה', en: 'Decision' },
-    output: { he: 'פלט', en: 'Output' },
-    task: { he: 'זיהוי משימה', en: 'Task detection' },
-    risk: { he: 'אחריות וסיכון', en: 'Risk & responsibility' },
-    act: { he: 'הכרעה ופלט', en: 'Decision & output' },
+// שמות המערכות באנגלית (מבנה, לא תלוי-שפה). העברית מגיעה מ-viz.trace.acts.
+const ACT_EN = {
+    intake: 'Intake',
+    analyze: 'Analysis',
+    decide: 'Decision',
+    output: 'Output',
+    task: 'Task detection',
+    risk: 'Risk & responsibility',
+    act: 'Decision & output',
 };
 
 /* ════════════════════════ Chat: התחנות המרכזיות ═════════════════════════ */
 
-export function traceChatEngine(text: string): EngineTraceStep[] {
+export function traceChatEngine(text: string, viz: Chapter1VisualsDict): EngineTraceStep[] {
     const r = runChatEngine(text);
+    const t = viz.trace;
+    const c = t.chat;
     const tokens = r.tokens;
     const hasNeg = text.includes(NEGATION_TOKEN);
 
@@ -79,31 +87,33 @@ export function traceChatEngine(text: string): EngineTraceStep[] {
     const margin = Math.max(0, (top?.value ?? 0) - (second?.value ?? 0));
 
     return [
-        { id: 'c1', act: ACT.intake.he, actEn: ACT.intake.en, title: 'קלט גולמי', titleEn: 'Raw input', note: 'הטקסט שכתבתם, בדיוק כפי שהגיע.', kind: 'raw', value: text || '-' },
-        { id: 'c2', act: ACT.intake.he, actEn: ACT.intake.en, title: 'ניקוי וניקוד', titleEn: 'Normalize', note: 'רווחים מיותרים נחתכים, הטקסט מיושר לעיבוד.', kind: 'normalize', original: text, normalized: tokens.join(' '), changed: text !== tokens.join(' ') },
-        { id: 'c3', act: ACT.intake.he, actEn: ACT.intake.en, title: 'טוקניזציה', titleEn: 'Tokenize', note: 'מפצלים את הטקסט ליחידות. הפיצול נעשה לפי מילים שלמות, לשם ההמחשה. מודל אמיתי מפצל לתת-מילים (subword), והפיצול עצמו משתנה ממודל למודל, כך שאותו משפט מתפרק למספר טוקנים שונה בכל מודל.', kind: 'tokens', tokens },
-        { id: 'c4', act: ACT.intake.he, actEn: ACT.intake.en, title: 'אורך הקלט', titleEn: 'Token count', note: 'כמה יחידות יש לעבד. אות ראשון לגודל הבקשה.', kind: 'count', value: tokens.length, unit: 'טוקנים' },
+        { id: 'c1', act: t.acts.intake, actEn: ACT_EN.intake, title: c.c1.title, titleEn: 'Raw input', note: c.c1.note, kind: 'raw', value: text || '-' },
+        { id: 'c2', act: t.acts.intake, actEn: ACT_EN.intake, title: c.c2.title, titleEn: 'Normalize', note: c.c2.note, kind: 'normalize', original: text, normalized: tokens.join(' '), changed: text !== tokens.join(' ') },
+        { id: 'c3', act: t.acts.intake, actEn: ACT_EN.intake, title: c.c3.title, titleEn: 'Tokenize', note: c.c3.note, kind: 'tokens', tokens },
+        { id: 'c4', act: t.acts.intake, actEn: ACT_EN.intake, title: c.c4.title, titleEn: 'Token count', note: c.c4.note, kind: 'count', value: tokens.length, unit: t.unit },
 
-        { id: 'c5', act: ACT.analyze.he, actEn: ACT.analyze.en, title: 'סריקת מילות-מפתח', titleEn: 'Keyword scan', note: 'אילו מילים מהקלט מפעילות איזו כוונה. אלה הרמזים שמזיזים את הדירוג.', kind: 'keywords', groups },
-        { id: 'c6', act: ACT.analyze.he, actEn: ACT.analyze.en, title: 'זיהוי שלילה', titleEn: 'Negation', note: 'המילה "לא" הופכת בעיה לתלונה, ומחזקת את כוונת אי-המסירה.', kind: 'flag', on: hasNeg, onLabel: 'נמצאה שלילה', offLabel: 'אין שלילה', detail: hasNeg ? 'מחזק את "Package not delivered"' : undefined, triggerToken: NEGATION_TOKEN },
-        { id: 'c7', act: ACT.analyze.he, actEn: ACT.analyze.en, title: 'מועמדות מתחרות', titleEn: 'Candidate intents', note: 'כל הכוונות האפשריות עולות לזירה, עם מספר ההתאמות לכל אחת.', kind: 'candidates', items: candidates },
+        { id: 'c5', act: t.acts.analyze, actEn: ACT_EN.analyze, title: c.c5.title, titleEn: 'Keyword scan', note: c.c5.note, kind: 'keywords', groups },
+        { id: 'c6', act: t.acts.analyze, actEn: ACT_EN.analyze, title: c.c6.title, titleEn: 'Negation', note: c.c6.note, kind: 'flag', on: hasNeg, onLabel: t.negationOn, offLabel: t.negationOff, detail: hasNeg ? t.negationDetail : undefined, triggerToken: NEGATION_TOKEN },
+        { id: 'c7', act: t.acts.analyze, actEn: ACT_EN.analyze, title: c.c7.title, titleEn: 'Candidate intents', note: c.c7.note, kind: 'candidates', items: candidates },
 
-        { id: 'c8', act: ACT.decide.he, actEn: ACT.decide.en, title: 'התפלגות הסתברות', titleEn: 'Probabilities', note: 'ההתאמות הופכות להסתברויות שמסתכמות ל-100%. הגבוהה מובילה.', kind: 'probabilities', items: r.intents },
-        { id: 'c9', act: ACT.decide.he, actEn: ACT.decide.en, title: 'בחירת המוביל', titleEn: 'Top selection', note: 'הכוונה עם ההסתברות הגבוהה ביותר נבחרת כמובילה.', kind: 'winner', label: top?.label ?? '-', value: top?.value ?? 0 },
-        { id: 'c10', act: ACT.decide.he, actEn: ACT.decide.en, title: 'הפער', titleEn: 'Margin', note: 'הפער בין הראשונה לשנייה. לא רק מי מוביל, אלא בכמה.', kind: 'gap', top: top?.value ?? 0, second: second?.value ?? 0, margin },
-        { id: 'c11', act: ACT.decide.he, actEn: ACT.decide.en, title: 'רמת ביטחון', titleEn: 'Confidence', note: 'הפער מתורגם לרמת ביטחון: גבוה, בינוני או נמוך.', kind: 'confidence', level: r.confidence },
-        { id: 'c12', act: ACT.decide.he, actEn: ACT.decide.en, title: 'תחום משמעות', titleEn: 'Meaning', note: 'הכוונה המובילה ממופה לתחום המשמעות שינחה את התשובה.', kind: 'raw', value: r.meaning },
+        { id: 'c8', act: t.acts.decide, actEn: ACT_EN.decide, title: c.c8.title, titleEn: 'Probabilities', note: c.c8.note, kind: 'probabilities', items: r.intents },
+        { id: 'c9', act: t.acts.decide, actEn: ACT_EN.decide, title: c.c9.title, titleEn: 'Top selection', note: c.c9.note, kind: 'winner', label: top?.label ?? '-', value: top?.value ?? 0 },
+        { id: 'c10', act: t.acts.decide, actEn: ACT_EN.decide, title: c.c10.title, titleEn: 'Margin', note: c.c10.note, kind: 'gap', top: top?.value ?? 0, second: second?.value ?? 0, margin },
+        { id: 'c11', act: t.acts.decide, actEn: ACT_EN.decide, title: c.c11.title, titleEn: 'Confidence', note: c.c11.note, kind: 'confidence', level: r.confidence },
+        { id: 'c12', act: t.acts.decide, actEn: ACT_EN.decide, title: c.c12.title, titleEn: 'Meaning', note: c.c12.note, kind: 'raw', value: r.meaning },
 
-        { id: 'c13', act: ACT.output.he, actEn: ACT.output.en, title: 'ההחלטה', titleEn: 'Decision', note: 'לענות כשהביטחון מספיק, אחרת לעצור ולבקש הבהרה.', kind: 'decision', decision: r.decision },
-        { id: 'c14', act: ACT.output.he, actEn: ACT.output.en, title: 'מצב הפלט', titleEn: 'Output state', note: 'מה המנוע עומד להחזיר בפועל בעקבות ההחלטה.', kind: 'raw', value: r.output },
-        { id: 'c15', act: ACT.output.he, actEn: ACT.output.en, title: 'התשובה', titleEn: 'Reply', note: 'הניסוח הסופי שיוצג למשתמש.', kind: 'reply', text: r.reply },
+        { id: 'c13', act: t.acts.output, actEn: ACT_EN.output, title: c.c13.title, titleEn: 'Decision', note: c.c13.note, kind: 'decision', decision: r.decision },
+        { id: 'c14', act: t.acts.output, actEn: ACT_EN.output, title: c.c14.title, titleEn: 'Output state', note: c.c14.note, kind: 'raw', value: r.output },
+        { id: 'c15', act: t.acts.output, actEn: ACT_EN.output, title: c.c15.title, titleEn: 'Reply', note: c.c15.note, kind: 'reply', text: viz.mockEngine.chatReplies[r.replyKey] },
     ];
 }
 
 /* ════════════════════════ Agent: התחנות המרכזיות ════════════════════════ */
 
-export function traceAgentEngine(text: string): EngineTraceStep[] {
+export function traceAgentEngine(text: string, viz: Chapter1VisualsDict): EngineTraceStep[] {
     const r = runAgentEngine(text);
+    const t = viz.trace;
+    const ag = t.agent;
     const tokens = r.tokens;
     const actionMatched = matchedWords(text, ACTION_WORDS);
     const deliveryMatched = matchedWords(text, DELIVERY_WORDS);
@@ -112,23 +122,23 @@ export function traceAgentEngine(text: string): EngineTraceStep[] {
     const barcodeToken = text.match(/\d{6,}/)?.[0];
 
     return [
-        { id: 'a1', act: ACT.intake.he, actEn: ACT.intake.en, title: 'קלט גולמי', titleEn: 'Raw input', note: 'הבקשה שכתבתם, נקודת הכניסה למנוע הפעולה.', kind: 'raw', value: text || '-' },
-        { id: 'a2', act: ACT.intake.he, actEn: ACT.intake.en, title: 'ניקוי וניקוד', titleEn: 'Normalize', note: 'רווחים מיותרים נחתכים, הטקסט מיושר לעיבוד.', kind: 'normalize', original: text, normalized: tokens.join(' '), changed: text !== tokens.join(' ') },
-        { id: 'a3', act: ACT.intake.he, actEn: ACT.intake.en, title: 'טוקניזציה', titleEn: 'Tokenize', note: 'מפצלים את הטקסט ליחידות. הפיצול נעשה לפי מילים שלמות, לשם ההמחשה. מודל אמיתי מפצל לתת-מילים (subword), והפיצול עצמו משתנה ממודל למודל, כך שאותו משפט מתפרק למספר טוקנים שונה בכל מודל.', kind: 'tokens', tokens },
-        { id: 'a4', act: ACT.intake.he, actEn: ACT.intake.en, title: 'אורך הקלט', titleEn: 'Token count', note: 'כמה יחידות יש לעבד.', kind: 'count', value: tokens.length, unit: 'טוקנים' },
+        { id: 'a1', act: t.acts.intake, actEn: ACT_EN.intake, title: ag.a1.title, titleEn: 'Raw input', note: ag.a1.note, kind: 'raw', value: text || '-' },
+        { id: 'a2', act: t.acts.intake, actEn: ACT_EN.intake, title: ag.a2.title, titleEn: 'Normalize', note: ag.a2.note, kind: 'normalize', original: text, normalized: tokens.join(' '), changed: text !== tokens.join(' ') },
+        { id: 'a3', act: t.acts.intake, actEn: ACT_EN.intake, title: ag.a3.title, titleEn: 'Tokenize', note: ag.a3.note, kind: 'tokens', tokens },
+        { id: 'a4', act: t.acts.intake, actEn: ACT_EN.intake, title: ag.a4.title, titleEn: 'Token count', note: ag.a4.note, kind: 'count', value: tokens.length, unit: t.unit },
 
-        { id: 'a5', act: ACT.task.he, actEn: ACT.task.en, title: 'סריקת מילות-פעולה', titleEn: 'Action words', note: 'מילים כמו "בדוק" או "שלח" מסמנות שזו משימה, לא שאלה.', kind: 'keywords', groups: [{ label: 'מילות פעולה', matched: actionMatched, total: ACTION_WORDS.length }] },
-        { id: 'a6', act: ACT.task.he, actEn: ACT.task.en, title: 'זיהוי תחום', titleEn: 'Domain scan', note: 'האם הבקשה נוגעת למשלוח/חבילה, התחום שהמנוע יודע לטפל בו.', kind: 'keywords', groups: [{ label: 'תחום משלוח', matched: deliveryMatched, total: DELIVERY_WORDS.length }] },
-        { id: 'a7', act: ACT.task.he, actEn: ACT.task.en, title: 'איתור מזהה', titleEn: 'Identifier', note: 'רצף ספרות ארוך = ברקוד. בלעדיו אי אפשר לפעול בפועל.', kind: 'flag', on: barcode, onLabel: 'נמצא ברקוד', offLabel: 'אין מזהה', detail: barcode ? 'אפשר לקרוא ל-Tracking API' : 'יחסר מידע לביצוע', triggerToken: barcodeToken },
-        { id: 'a8', act: ACT.task.he, actEn: ACT.task.en, title: 'המשימה שזוהתה', titleEn: 'Task detected', note: 'מכל הרמזים, המנוע מסכם מהי המשימה שעל הפרק.', kind: 'raw', value: r.task },
+        { id: 'a5', act: t.acts.task, actEn: ACT_EN.task, title: ag.a5.title, titleEn: 'Action words', note: ag.a5.note, kind: 'keywords', groups: [{ label: t.actionWordsLabel, matched: actionMatched, total: ACTION_WORDS.length }] },
+        { id: 'a6', act: t.acts.task, actEn: ACT_EN.task, title: ag.a6.title, titleEn: 'Domain scan', note: ag.a6.note, kind: 'keywords', groups: [{ label: t.deliveryDomainLabel, matched: deliveryMatched, total: DELIVERY_WORDS.length }] },
+        { id: 'a7', act: t.acts.task, actEn: ACT_EN.task, title: ag.a7.title, titleEn: 'Identifier', note: ag.a7.note, kind: 'flag', on: barcode, onLabel: t.barcodeOn, offLabel: t.barcodeOff, detail: barcode ? t.barcodeOnDetail : t.barcodeOffDetail, triggerToken: barcodeToken },
+        { id: 'a8', act: t.acts.task, actEn: ACT_EN.task, title: ag.a8.title, titleEn: 'Task detected', note: ag.a8.note, kind: 'raw', value: r.task },
 
-        { id: 'a9', act: ACT.risk.he, actEn: ACT.risk.en, title: 'מידע חסר', titleEn: 'Missing info', note: 'מה צריך כדי לבצע, ועדיין לא נמצא בבקשה.', kind: 'raw', value: r.missingInfo },
-        { id: 'a10', act: ACT.risk.he, actEn: ACT.risk.en, title: 'צורך בכלי', titleEn: 'Tool need', note: 'האם נדרש מקור חיצוני (כמו מערכת מעקב) כדי להשלים.', kind: 'flag', on: r.toolNeed.needed, onLabel: `נדרש כלי: ${r.toolNeed.tool}`, offLabel: 'ללא כלי חיצוני' },
-        { id: 'a11', act: ACT.risk.he, actEn: ACT.risk.en, title: 'סריקת רגישות', titleEn: 'Sensitivity', note: 'פעולות כמו "שלח" או "עדכן" משפיעות על לקוח ומחייבות זהירות.', kind: 'keywords', groups: [{ label: 'פעולה רגישה', matched: sensitiveMatched, total: SENSITIVE_WORDS.length }] },
-        { id: 'a12', act: ACT.risk.he, actEn: ACT.risk.en, title: 'כשירות לפעולה', titleEn: 'Action readiness', note: 'בהינתן המידע והסיכון: האם מותר ואפשר לפעול עכשיו.', kind: 'flag', on: r.canActNow, onLabel: 'אפשר לפעול עכשיו', offLabel: 'לא לפעול עדיין', detail: `סיכון: ${r.risk}` },
+        { id: 'a9', act: t.acts.risk, actEn: ACT_EN.risk, title: ag.a9.title, titleEn: 'Missing info', note: ag.a9.note, kind: 'raw', value: r.missingInfo },
+        { id: 'a10', act: t.acts.risk, actEn: ACT_EN.risk, title: ag.a10.title, titleEn: 'Tool need', note: ag.a10.note, kind: 'flag', on: r.toolNeed.needed, onLabel: t.toolNeed(r.toolNeed.tool), offLabel: t.noTool },
+        { id: 'a11', act: t.acts.risk, actEn: ACT_EN.risk, title: ag.a11.title, titleEn: 'Sensitivity', note: ag.a11.note, kind: 'keywords', groups: [{ label: t.sensitiveLabel, matched: sensitiveMatched, total: SENSITIVE_WORDS.length }] },
+        { id: 'a12', act: t.acts.risk, actEn: ACT_EN.risk, title: ag.a12.title, titleEn: 'Action readiness', note: ag.a12.note, kind: 'flag', on: r.canActNow, onLabel: t.canActNow, offLabel: t.cannotActYet, detail: t.riskDetail(r.risk) },
 
-        { id: 'a13', act: ACT.act.he, actEn: ACT.act.en, title: 'ההחלטה', titleEn: 'Decision', note: 'הצעד הנכון הבא: לענות, להשתמש בכלי, לבקש מידע, או לעצור.', kind: 'decision', decision: r.decision },
-        { id: 'a14', act: ACT.act.he, actEn: ACT.act.en, title: 'מצב הפלט', titleEn: 'Output state', note: 'מה יקרה בפועל בעקבות ההחלטה.', kind: 'raw', value: r.output },
-        { id: 'a15', act: ACT.act.he, actEn: ACT.act.en, title: 'התשובה', titleEn: 'Reply', note: 'הניסוח הסופי שיוצג למשתמש.', kind: 'reply', text: r.reply },
+        { id: 'a13', act: t.acts.act, actEn: ACT_EN.act, title: ag.a13.title, titleEn: 'Decision', note: ag.a13.note, kind: 'decision', decision: r.decision },
+        { id: 'a14', act: t.acts.act, actEn: ACT_EN.act, title: ag.a14.title, titleEn: 'Output state', note: ag.a14.note, kind: 'raw', value: r.output },
+        { id: 'a15', act: t.acts.act, actEn: ACT_EN.act, title: ag.a15.title, titleEn: 'Reply', note: ag.a15.note, kind: 'reply', text: viz.mockEngine.agentReplies[r.replyKey] },
     ];
 }

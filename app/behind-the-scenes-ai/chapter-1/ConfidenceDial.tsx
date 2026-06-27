@@ -7,6 +7,7 @@ import { SlidersHorizontal, ShieldCheck, HelpCircle, ShieldAlert, Hand, Sparkles
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
 import { EngineMetricCard } from '@/components/ai-internals/EngineMetricCard';
 import type { DecisionState, FlowMode } from '@/components/ai-internals/types';
+import { useT } from '@/i18n/useT';
 
 import { runChatEngine, runAgentEngine } from './mockEngine';
 
@@ -25,18 +26,12 @@ const RANGE_HEX = '#22d3ee';
 const clampPct = (v: number) => Math.max(0, Math.min(100, v));
 
 // רמות סיכון -> רף מומלץ. מחבר בין גודל הפער (הסתברות) לבין כמה ביטחון נדרוש (אחריות).
-interface Stake { key: string; he: string; sub: string; rec: number; note: string; }
-const STAKES: Stake[] = [
-    { key: 'low', he: 'סיכון נמוך', sub: 'שאלת מידע פשוטה', rec: 15, note: 'טעות כאן זולה. אפשר לדרוש ביטחון נמוך ולתת למנוע לענות לבד.' },
-    { key: 'mid', he: 'סיכון בינוני', sub: 'מידע חלקי', rec: 35, note: 'כדאי רף בינוני. אם הפער שהמנוע חישב קטן ממנו, עדיף לעצור ולשאול.' },
-    { key: 'high', he: 'סיכון גבוה', sub: 'פעולה שמשפיעה על לקוח', rec: 65, note: 'טעות כאן יקרה. דורשים ביטחון גבוה, ואם אין, עוצרים ומבקשים אישור.' },
-];
-
-// קלטים לדוגמה עם רמות ביטחון יורדות, כדי להרגיש איך אותו רף מכריע אחרת לפי הקלט.
-const SAMPLES = [
-    { he: 'החבילה לא הגיעה', tag: 'קלט ברור' },
-    { he: 'איפה ההזמנה, היא לא מופיעה במערכת', tag: 'קלט מעורב' },
-    { he: 'איפה התשלום שלי', tag: 'קלט מעורפל' },
+// התוויות (he/sub/note) מגיעות מהמילון לפי key; כאן נשארים המפתח והרף המומלץ (מבנה).
+interface StakeMeta { key: string; rec: number; }
+const STAKE_META: StakeMeta[] = [
+    { key: 'low', rec: 15 },
+    { key: 'mid', rec: 35 },
+    { key: 'high', rec: 65 },
 ];
 
 /**
@@ -58,6 +53,8 @@ export const ConfidenceDial: React.FC<ConfidenceDialProps> = ({ text, mode }) =>
 /* ── מצב Chat: מעבדת מדיניות על הפער ─────────────────────────────────────────── */
 
 const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text, reduce }) => {
+    const cd = useT().t.behindAi.chapter1.visuals.confidenceDial;
+    const stakeText = cd.stakes as Record<string, { he: string; sub: string; note: string }>;
     // הלומד יכול לבחון את ההודעה שלו או קלטים לדוגמה עם רמות ביטחון שונות.
     const [sampleText, setSampleText] = useState<string | null>(null);
     const activeText = sampleText ?? text;
@@ -107,39 +104,38 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
             <div className="mb-4 flex items-center gap-2">
                 <SlidersHorizontal size={16} className="text-cyan-300" />
                 <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">חוגת הביטחון</div>
+                    <div className="text-sm font-bold text-slate-200">{cd.title}</div>
                     <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Confidence Dial</div>
                 </div>
             </div>
 
             {/* הסיפור: על מה מדובר */}
             <p className="mb-3 text-sm leading-relaxed text-slate-300">
-                <span className="font-bold text-white">הרעיון:</span> לפני שהמנוע עונה, הוא מתלבט בין כמה פירושים לאותו משפט.
-                ה<span className="font-bold text-white">פער</span> בין הפירוש המוביל לשני הוא מידת הביטחון שלו. השאלה שלכם:
-                <span className="font-bold text-cyan-300"> כמה ביטחון לדרוש</span> לפני שנותנים לו לענות לבד, ומתי עדיף שיעצור וישאל.
+                <span className="font-bold text-white">{cd.ideaLabel}</span>{cd.ideaPart1}<span className="font-bold text-white">{cd.ideaGap}</span>{cd.ideaPart2}
+                <span className="font-bold text-cyan-300">{cd.ideaEmph}</span>{cd.ideaPart3}
             </p>
             <div className="mb-4 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500">איך מפעילים</div>
+                <div className="mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500">{cd.howTitle}</div>
                 <ol className="space-y-1 text-xs leading-relaxed text-slate-400">
-                    <li><span className="font-bold text-cyan-300">1.</span> בחרו קלט (שלכם או דוגמה). האורב יזוז למידת הביטחון של המנוע.</li>
-                    <li><span className="font-bold text-cyan-300">2.</span> גררו את הרף לאורך הציר, או בחרו רמת סיכון.</li>
-                    <li><span className="font-bold text-cyan-300">3.</span> כשהרף חוצה את האורב, ההחלטה מתהפכת בין <span className="font-bold text-emerald-300">ענה לבד</span> ל<span className="font-bold text-amber-300">עצור ושאל</span>.</li>
+                    <li><span className="font-bold text-cyan-300">1.</span>{cd.how1}</li>
+                    <li><span className="font-bold text-cyan-300">2.</span>{cd.how2}</li>
+                    <li><span className="font-bold text-cyan-300">3.</span>{cd.how3Lead}<span className="font-bold text-emerald-300">{cd.answerAlone}</span>{cd.how3Mid}<span className="font-bold text-amber-300">{cd.stopAsk}</span>.</li>
                 </ol>
             </div>
 
             {/* שתי האפשרויות המתחרות + הפער ביניהן */}
             <div className="mb-3 grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
                 <div className="rounded-xl border border-cyan-500/40 bg-cyan-900/15 p-3 text-center">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-cyan-300">הפירוש המוביל</div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-cyan-300">{cd.leadingLabel}</div>
                     <div className="mt-1 truncate text-sm font-bold text-slate-100" title={top?.label}>{top?.label}</div>
                     <div className="font-mono text-2xl font-black text-cyan-300">{top?.value ?? 0}%</div>
                 </div>
                 <div className="flex flex-col items-center justify-center px-1">
-                    <div className="text-[10px] text-slate-500">פער</div>
+                    <div className="text-[10px] text-slate-500">{cd.gapLabel}</div>
                     <div className="font-mono text-xl font-black text-white">{margin}%</div>
                 </div>
                 <div className="rounded-xl border border-slate-600/40 bg-slate-800/40 p-3 text-center">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">המתחרה</div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{cd.competitorLabel}</div>
                     <div className="mt-1 truncate text-sm font-bold text-slate-200" title={second?.label}>{second?.label}</div>
                     <div className="font-mono text-2xl font-black text-slate-300">{second?.value ?? 0}%</div>
                 </div>
@@ -147,32 +143,32 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
 
             {/* קלטים לדוגמה */}
             <div className="mb-2 flex flex-wrap items-center gap-1.5">
-                <span className="inline-flex items-center gap-1 text-[11px] text-slate-500"><MessageSquare size={12} /> נסו קלט:</span>
+                <span className="inline-flex items-center gap-1 text-[11px] text-slate-500"><MessageSquare size={12} /> {cd.tryInput}</span>
                 <button
                     type="button"
                     onClick={() => setSampleText(null)}
                     className={`rounded-full border px-2.5 py-1 text-xs font-bold transition-colors ${sampleText === null ? 'border-cyan-500/50 bg-cyan-900/25 text-cyan-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-400 hover:border-slate-600'}`}
                 >
-                    ההודעה שלכם
+                    {cd.yourMessage}
                 </button>
-                {SAMPLES.map((s) => (
+                {cd.samples.map((s) => (
                     <button
-                        key={s.he}
+                        key={s.input}
                         type="button"
-                        onClick={() => setSampleText(s.he)}
-                        className={`rounded-full border px-2.5 py-1 text-xs font-bold transition-colors ${sampleText === s.he ? 'border-cyan-500/50 bg-cyan-900/25 text-cyan-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-400 hover:border-slate-600'}`}
+                        onClick={() => setSampleText(s.input)}
+                        className={`rounded-full border px-2.5 py-1 text-xs font-bold transition-colors ${sampleText === s.input ? 'border-cyan-500/50 bg-cyan-900/25 text-cyan-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-400 hover:border-slate-600'}`}
                     >
                         {s.tag}
                     </button>
                 ))}
             </div>
-            <div className="mb-4 truncate text-xs text-slate-500">מנתח: &quot;{shown}&quot;</div>
+            <div className="mb-4 truncate text-xs text-slate-500">{cd.analyzingLead}{shown}{cd.analyzingTail}</div>
 
             {/* הציר: ביטחון המנוע מול הרף */}
             <div className="mb-1 flex items-center justify-between text-[11px] font-bold">
-                <span className="text-amber-300">עצור ושאל</span>
-                <span className="text-slate-400">גררו את הרף לאורך הציר</span>
-                <span className="text-emerald-300">ענה לבד</span>
+                <span className="text-amber-300">{cd.stopAsk}</span>
+                <span className="text-slate-400">{cd.dragHint}</span>
+                <span className="text-emerald-300">{cd.answerAlone}</span>
             </div>
             <div
                 ref={trackRef}
@@ -201,7 +197,7 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
                     className="absolute top-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
                 >
                     <div className="flex flex-col items-center">
-                        <div className="mb-1 whitespace-nowrap rounded bg-slate-900/90 px-1.5 py-0.5 text-[10px] font-bold text-slate-200">המנוע {margin}%</div>
+                        <div className="mb-1 whitespace-nowrap rounded bg-slate-900/90 px-1.5 py-0.5 text-[10px] font-bold text-slate-200">{cd.engineMarker(margin)}</div>
                         <div className={`relative h-6 w-6 rounded-full border-2 ${passes ? 'border-emerald-100 bg-emerald-400' : 'border-amber-100 bg-amber-400'}`}>
                             {!reduce && <span className={`absolute inset-0 animate-ping rounded-full ${passes ? 'bg-emerald-400' : 'bg-amber-400'} opacity-60`} />}
                         </div>
@@ -215,7 +211,7 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
                     className="absolute inset-y-0 z-30 w-0.5 -translate-x-1/2 bg-cyan-100"
                 >
                     <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-cyan-500/25 px-1.5 py-0.5 font-mono text-[10px] font-bold text-cyan-100">
-                        רף {threshold}%
+                        {cd.thresholdMarker(threshold)}
                     </span>
                 </motion.div>
             </div>
@@ -229,7 +225,7 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
                     step={1}
                     value={threshold}
                     onChange={(e) => { setThreshold(Number(e.target.value)); setStake(null); }}
-                    aria-label="סף הביטחון הנדרש"
+                    aria-label={cd.thresholdAria}
                     className="h-2 flex-1 cursor-pointer appearance-none rounded-full bg-slate-700"
                     style={{ accentColor: RANGE_HEX }}
                 />
@@ -250,25 +246,25 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
             {/* רמת סיכון -> מדיניות מומלצת (חיבור בין הסתברות לאחריות) */}
             <div className="mt-5 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
                 <div className="mb-2 flex items-center gap-1.5 text-xs font-bold text-slate-300">
-                    <Target size={13} className="text-cyan-300" /> מה הסיכון אם המנוע יטעה כאן?
+                    <Target size={13} className="text-cyan-300" /> {cd.stakesTitle}
                 </div>
                 <div className="flex flex-wrap gap-2">
-                    {STAKES.map((s) => (
+                    {STAKE_META.map((s) => (
                         <button
                             key={s.key}
                             type="button"
                             onClick={() => { setStake(s.key); setThreshold(s.rec); }}
                             className={`flex-1 rounded-lg border px-3 py-2 text-right transition-colors ${stake === s.key ? 'border-cyan-500/50 bg-cyan-900/20' : 'border-slate-700/60 bg-slate-800/30 hover:border-slate-600'}`}
                         >
-                            <div className="text-sm font-bold text-slate-100">{s.he}</div>
-                            <div className="text-[11px] text-slate-400">{s.sub}</div>
-                            <div className="mt-1 font-mono text-[11px] text-cyan-300">רף מומלץ {s.rec}%</div>
+                            <div className="text-sm font-bold text-slate-100">{stakeText[s.key].he}</div>
+                            <div className="text-[11px] text-slate-400">{stakeText[s.key].sub}</div>
+                            <div className="mt-1 font-mono text-[11px] text-cyan-300">{cd.recommendedThreshold(s.rec)}</div>
                         </button>
                     ))}
                 </div>
                 {stake && (
                     <p className="mt-2 text-xs leading-relaxed text-slate-400">
-                        {STAKES.find((s) => s.key === stake)?.note}
+                        {stakeText[stake]?.note}
                     </p>
                 )}
             </div>
@@ -285,8 +281,8 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
                     : <Hand size={15} className="mt-0.5 shrink-0 text-amber-300" />}
                 <span>
                     {passes
-                        ? <>הביטחון של המנוע (פער {margin}%) <span className="font-bold">גבוה מהרף</span> שהצבתם ({threshold}%). הוא יענה לבד.</>
-                        : <>הרף שהצבתם ({threshold}%) <span className="font-bold">גבוה מהביטחון</span> של המנוע (פער {margin}%). הצעד האחראי: לעצור ולשאול.</>}
+                        ? <>{cd.passLead(margin)}<span className="font-bold">{cd.passBold}</span>{cd.passTail(threshold)}</>
+                        : <>{cd.failLead(threshold)}<span className="font-bold">{cd.failBold}</span>{cd.failTail(margin)}</>}
                 </span>
             </div>
 
@@ -294,8 +290,7 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
             <div className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-slate-500">
                 <Sparkles size={14} className="mt-0.5 shrink-0 text-cyan-400" />
                 <span>
-                    גררו את הרף עד שהוא חוצה את האורב של המנוע - בדיוק שם ההחלטה מתהפכת. שום מספר שהמנוע הפיק לא השתנה, רק
-                    <span className="font-bold text-slate-300"> המדיניות שאתם בוחרים</span>. כך הסתברות הופכת לאחריות.
+                    {cd.integrityLead}<span className="font-bold text-slate-300">{cd.integrityBold}</span>{cd.integrityTail}
                 </span>
             </div>
         </div>
@@ -305,6 +300,7 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
 /* ── מצב Agent: השער מבוסס-סיכון, לא פער ───────────────────────────────────── */
 
 const AgentGatePanel: React.FC<{ text: string }> = ({ text }) => {
+    const ag = useT().t.behindAi.chapter1.visuals.agentGate;
     const result = runAgentEngine(text);
     const canAct = result.canActNow;
 
@@ -313,14 +309,13 @@ const AgentGatePanel: React.FC<{ text: string }> = ({ text }) => {
             <div className="mb-4 flex items-center gap-2">
                 {canAct ? <ShieldCheck size={16} className="text-purple-300" /> : <ShieldAlert size={16} className="text-amber-300" />}
                 <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">שער ההחלטה ב-Agent</div>
+                    <div className="text-sm font-bold text-slate-200">{ag.title}</div>
                     <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Agent decision gate</div>
                 </div>
             </div>
 
             <p className="mb-4 text-xs leading-relaxed text-slate-400">
-                ב-Agent השער לא נשען על פער בין הסתברויות אלא על <span className="font-bold text-purple-300">סיכון ומידע חסר</span>:
-                האם המשימה ברורה, האם חסר מזהה, והאם הפעולה רגישה. לכן כאן אין חוגת-פער - ההחלטה נקבעת מהגורמים שלמטה.
+                {ag.bodyLead}<span className="font-bold text-purple-300">{ag.bodyEmph}</span>{ag.bodyTail}
             </p>
 
             <div className="grid gap-4 md:grid-cols-2 md:items-start">
@@ -346,8 +341,7 @@ const AgentGatePanel: React.FC<{ text: string }> = ({ text }) => {
             <div className="mt-4 flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-xs leading-relaxed text-slate-500">
                 <HelpCircle size={14} className="mt-0.5 shrink-0" />
                 <span>
-                    החליפו ל-<span className="font-bold text-cyan-300">Chat</span> כדי לגרור את חוגת הביטחון על הפער. ב-Agent
-                    העצירה לאישור אינה כשל - היא בקרה אחראית לפני פעולה שמשפיעה על לקוח.
+                    {ag.footerLead}<span className="font-bold text-cyan-300">Chat</span>{ag.footerTail}
                 </span>
             </div>
         </div>

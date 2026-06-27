@@ -8,6 +8,7 @@ import {
     Cpu, CheckCircle2, XCircle, Hash, Scan, Trophy, Sparkles, Bot,
 } from 'lucide-react';
 
+import { useT } from '@/i18n/useT';
 import { ACCENTS } from '@/components/ai-internals/accents';
 import { ProbabilityBars } from '@/components/ai-internals/ProbabilityBars';
 import { ConfidenceMeter } from '@/components/ai-internals/ConfidenceMeter';
@@ -83,6 +84,7 @@ interface StepVisualProps {
 
 const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlightToken, onTokenHover }) => {
     const a = ACCENTS[accent];
+    const ep = useT().t.behindAi.chapter1.visuals.enginePanel;
 
     switch (step.kind) {
         case 'raw':
@@ -98,16 +100,16 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
                     <div className="rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2">
                         <span className={`font-mono text-sm ${a.text}`} dir="auto">{step.normalized || '-'}</span>
                     </div>
-                    <span className="text-xs text-slate-500">רווחים מיותרים נחתכו לעומת הקלט המקורי.</span>
+                    <span className="text-xs text-slate-500">{ep.normalizeTrimmed}</span>
                 </div>
             ) : (
                 <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-900/10 px-3 py-1.5 text-xs font-bold text-emerald-300">
-                    <CheckCircle2 size={14} /> הקלט כבר נקי - אין מה לתקן
+                    <CheckCircle2 size={14} /> {ep.inputClean}
                 </div>
             );
 
         case 'tokens':
-            if (!step.tokens.length) return <span className="text-xs text-slate-500">אין טוקנים עדיין.</span>;
+            if (!step.tokens.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
             return (
                 <div className="flex flex-wrap gap-2" dir="rtl">
                     {step.tokens.map((token, i) => {
@@ -179,7 +181,7 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
                                         );
                                     })
                                 ) : (
-                                    <span className="text-xs text-slate-600">- אין התאמה</span>
+                                    <span className="text-xs text-slate-600">{ep.noMatch}</span>
                                 )}
                             </div>
                         </div>
@@ -291,6 +293,7 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
 export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subtitle, accent, replayKey, steps, liveTokenCount, highlightToken, onTokenHover }) => {
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
+    const ep = useT().t.behindAi.chapter1.visuals.enginePanel;
 
     const actOrder = useMemo(() => {
         const seen: string[] = [];
@@ -370,7 +373,7 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                     </div>
                 </div>
                 <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border ${a.border} ${a.bgSoft} px-2.5 py-1 font-mono text-[11px] font-bold ${a.text}`}>
-                    <Sparkles size={11} /> תחנות מרכזיות
+                    <Sparkles size={11} /> {ep.stations}
                 </span>
             </div>
 
@@ -390,7 +393,7 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                                 {showActHeader && (
                                     <motion.div variants={reduce ? undefined : itemVar} className={`flex items-center gap-2.5 ${i === 0 ? 'pb-3' : 'pb-3 pt-5'}`}>
                                         <span className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-black ${a.border} ${a.bgSoft} ${a.text}`}>
-                                            <span>מערכה</span>
+                                            <span>{ep.actLabel}</span>
                                             <span dir="ltr">{actOrder.indexOf(step.act) + 1}/{actOrder.length}</span>
                                         </span>
                                         <span className={`text-sm font-black tracking-wide ${a.text}`}>{step.act}</span>
@@ -454,10 +457,10 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                                             {step.kind === 'count' && liveTokenCount != null && (
                                                 <div className="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-emerald-500/30 bg-emerald-900/10 px-2.5 py-1.5">
                                                     <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300">
-                                                        <Sparkles size={12} /> Claude (אמיתי): {liveTokenCount} טוקנים
+                                                        <Sparkles size={12} /> {ep.claudeTokens(liveTokenCount)}
                                                     </span>
                                                     <span className="text-[11px] leading-relaxed text-slate-400">
-                                                        למעלה נספר לפי מילים. המספר האמיתי שונה כי המודל מפצל לתת-מילים - ואת החלוקה עצמה הוא לא חושף, רק את הספירה.
+                                                        {ep.claudeNote}
                                                     </span>
                                                 </div>
                                             )}

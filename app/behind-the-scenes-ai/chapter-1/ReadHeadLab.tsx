@@ -9,6 +9,7 @@ import { ConfidenceMeter } from '@/components/ai-internals/ConfidenceMeter';
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
 import { EngineMetricCard } from '@/components/ai-internals/EngineMetricCard';
 import type { Accent, FlowMode } from '@/components/ai-internals/types';
+import { useT } from '@/i18n/useT';
 
 import { ProbabilityRiver } from './ProbabilityRiver';
 
@@ -63,6 +64,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
     const isChat = mode === 'chat';
+    const rh = useT().t.behindAi.chapter1.visuals.readHead;
 
     const tokens = useMemo(() => tokenize(text), [text]);
     const n = tokens.length;
@@ -122,7 +124,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
     if (n === 0 || !current) {
         return (
             <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-6 text-center text-sm text-slate-500" dir="rtl">
-                כתבו משפט בצ&apos;אט כדי שראש הקריאה יסרוק אותו.
+                {rh.emptyState}
             </div>
         );
     }
@@ -138,21 +140,17 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                 </div>
                 <div>
                     <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500">Read Head</div>
-                    <div className={`font-black text-base ${a.text}`}>ראש הקריאה</div>
-                    <div className="text-xs text-slate-400">הסמן שעובר על המשפט מילה-אחר-מילה</div>
+                    <div className={`font-black text-base ${a.text}`}>{rh.title}</div>
+                    <div className="text-xs text-slate-400">{rh.subtitle}</div>
                 </div>
             </div>
 
             <div className="p-4 space-y-4">
                 <p className="text-sm text-slate-300 leading-relaxed">
-                    <span className={`font-semibold ${a.text}`}>ראש הקריאה</span> הוא הסמן שעובר על המשפט
-                    מילה-אחר-מילה, כמו אצבע שעוקבת אחרי הטקסט בזמן קריאה. בכל עצירה מורץ אותו מנוע על
-                    המילים שנקראו עד כה, וכך אפשר לראות את המודל <span className="text-white font-semibold">משנה את דעתו תוך כדי קריאה</span>.
+                    <span className={`font-semibold ${a.text}`}>{rh.introHeadLabel}</span>{rh.introMid}<span className="text-white font-semibold">{rh.introEmph}</span>{rh.introTail}
                 </p>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                    מה לוקחים מכאן: למודל אין תשובה מוכנה מראש. הוא בונה אותה מההקשר שמצטבר, וכל מילה
-                    חדשה יכולה להסיט את הניחוש המוביל - עד שההחלטה מתייצבת בסוף המשפט. בגלל זה גם סדר המילים
-                    והניסוח משפיעים על התוצאה.
+                    {rh.takeaway}
                 </p>
 
                 {/* פס בקרה */}
@@ -166,7 +164,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                             className={`inline-flex items-center gap-1.5 rounded-lg border ${a.border} ${a.bgSoft} px-2.5 py-1 text-xs font-bold ${a.text} transition-colors hover:brightness-125 disabled:opacity-40`}
                         >
                             {isRunning ? <Pause size={13} /> : <Play size={13} />}
-                            {isRunning ? 'השהה' : atEnd ? 'שוב' : 'הרץ'}
+                            {isRunning ? rh.pause : atEnd ? rh.again : rh.play}
                         </button>
                         <button
                             type="button"
@@ -174,7 +172,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                             disabled={clampedHead <= 0}
                             className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700/60 bg-slate-800/40 px-2.5 py-1 text-xs font-bold text-slate-300 transition-colors hover:border-slate-600 disabled:opacity-40"
                         >
-                            <SkipBack size={13} /> אחורה
+                            <SkipBack size={13} /> {rh.back}
                         </button>
                         <button
                             type="button"
@@ -182,20 +180,20 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                             disabled={atEnd}
                             className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700/60 bg-slate-800/40 px-2.5 py-1 text-xs font-bold text-slate-300 transition-colors hover:border-slate-600 disabled:opacity-40"
                         >
-                            <SkipForward size={13} /> קדימה
+                            <SkipForward size={13} /> {rh.forward}
                         </button>
                         <button
                             type="button"
                             onClick={restart}
                             className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700/60 bg-slate-800/40 px-2.5 py-1 text-xs font-bold text-slate-300 transition-colors hover:border-slate-600"
                         >
-                            <RotateCcw size={13} /> מהתחלה
+                            <RotateCcw size={13} /> {rh.restart}
                         </button>
                     </div>
                     <span
                         role="status"
                         aria-live="polite"
-                        aria-label={`מילה ${clampedHead + 1} מתוך ${n}`}
+                        aria-label={rh.wordCountAria(clampedHead + 1, n)}
                         className="font-mono text-xs font-bold text-slate-500"
                         dir="ltr"
                     >
@@ -240,7 +238,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                         step={1}
                         value={clampedHead}
                         onChange={(e) => seek(Number(e.target.value))}
-                        aria-label="מיקום ראש הקריאה"
+                        aria-label={rh.scrubberAria}
                         disabled={n <= 1}
                         style={{ accentColor: RANGE_COLOR[accent] }}
                         className="w-full cursor-pointer disabled:opacity-40"
@@ -255,15 +253,15 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                 >
                     {isChatRun(current) ? (
                         <span className="text-slate-300">
-                            המוביל כעת:{' '}
+                            {rh.leaderNow}{' '}
                             <strong className={a.text}>{current.intents[0]?.label}</strong>{' '}
                             <span className="font-mono text-slate-500" dir="ltr">({current.intents[0]?.value}%)</span>
                             {' · '}
-                            ביטחון <strong className="text-slate-200">{current.confidence}</strong>
+                            {rh.confidence} <strong className="text-slate-200">{current.confidence}</strong>
                         </span>
                     ) : (
                         <span className="text-slate-300">
-                            ההחלטה כעת: <strong className={a.text}>{current.decision.label}</strong>
+                            {rh.decisionNow} <strong className={a.text}>{current.decision.label}</strong>
                         </span>
                     )}
                 </div>
@@ -275,7 +273,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                         <div className="rounded-xl border border-white/10 bg-slate-900/50 p-3">
                             <div className="mb-3 flex items-center justify-between">
                                 <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Probability river</span>
-                                <span className="text-[11px] text-slate-500">העובי = ההסתברות כרגע</span>
+                                <span className="text-[11px] text-slate-500">{rh.riverHint}</span>
                             </div>
                             <ProbabilityRiver items={current.intents} order={riverOrder} accent={accent} reduce={!!reduce} />
                         </div>
@@ -303,12 +301,11 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                     <span className={`mt-[5px] h-1 w-1 shrink-0 rounded-full ${a.dot}`} />
                     {n === 1 ? (
                         <span>
-                            מילה אחת בלבד: אין מה לסרוק עדיין. הוסיפו עוד מילים בצ&apos;אט וראו את ההסתברויות זזות עם כל מילה.
+                            {rh.integrityOne}
                         </span>
                     ) : (
                         <span>
-                            לפעמים העמודות קופצות בבת אחת כשמילת-מפתח נכנסת (למשל &quot;{prefixText}&quot;). זה לא באג:
-                            ככה אמונה משתנה ברגע שמגיעה הראיה המכריעה.
+                            {rh.integrityManyLead}{prefixText}{rh.integrityManyTail}
                         </span>
                     )}
                 </p>

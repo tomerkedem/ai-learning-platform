@@ -7,6 +7,7 @@ import { HelpCircle, CheckCircle2, Wrench, Hand, Sparkles, ArrowDown, RotateCcw,
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import type { DecisionKind, FlowMode } from '@/components/ai-internals/types';
+import { useT } from '@/i18n/useT';
 
 import { runChatEngine, runAgentEngine } from './mockEngine';
 
@@ -15,18 +16,18 @@ interface PredictDecisionProps {
     mode: FlowMode;
 }
 
-interface Option {
+interface OptionMeta {
     kind: DecisionKind;
-    he: string;
     icon: React.ReactNode;
 }
 
 // ב-Chat המנוע מפיק רק answer/ask. "לעצור לאישור" היא מסיח לגיטימי מעולם ההחלטות
 // של המערכת (קיים ב-Agent), והחשיפה מנצלת אותו כדי ללמד את הגבול בין Chat ל-Agent.
-const CHAT_OPTIONS: Option[] = [
-    { kind: 'answer', he: 'לענות', icon: <CheckCircle2 size={18} /> },
-    { kind: 'ask', he: 'לבקש הבהרה', icon: <HelpCircle size={18} /> },
-    { kind: 'stop', he: 'לעצור לאישור', icon: <Hand size={18} /> },
+// התוויות (he) מגיעות מהמילון לפי kind; כאן נשארים רק סוג ההחלטה והאייקון (מבנה).
+const CHAT_OPTION_META: OptionMeta[] = [
+    { kind: 'answer', icon: <CheckCircle2 size={18} /> },
+    { kind: 'ask', icon: <HelpCircle size={18} /> },
+    { kind: 'stop', icon: <Hand size={18} /> },
 ];
 
 // סוגי ההחלטה שאפשריים בכל מצב (השאר מוצגים כמסיחים מלמדים).
@@ -35,11 +36,11 @@ const POSSIBLE_KINDS: Record<'chat' | 'agent', DecisionKind[]> = {
     agent: ['answer', 'tool', 'ask', 'stop'],
 };
 
-const AGENT_OPTIONS: Option[] = [
-    { kind: 'answer', he: 'לענות', icon: <CheckCircle2 size={18} /> },
-    { kind: 'tool', he: 'להשתמש בכלי', icon: <Wrench size={18} /> },
-    { kind: 'ask', he: 'לבקש מידע', icon: <HelpCircle size={18} /> },
-    { kind: 'stop', he: 'לעצור לאישור', icon: <Hand size={18} /> },
+const AGENT_OPTION_META: OptionMeta[] = [
+    { kind: 'answer', icon: <CheckCircle2 size={18} /> },
+    { kind: 'tool', icon: <Wrench size={18} /> },
+    { kind: 'ask', icon: <HelpCircle size={18} /> },
+    { kind: 'stop', icon: <Hand size={18} /> },
 ];
 
 /**
@@ -50,10 +51,13 @@ const AGENT_OPTIONS: Option[] = [
 export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) => {
     const reduce = useReducedMotion();
     const isChat = mode === 'chat';
+    const pd = useT().t.behindAi.chapter1.visuals.predict;
 
     const result = isChat ? runChatEngine(text) : runAgentEngine(text);
     const actualKind = result.decision.kind;
-    const options = isChat ? CHAT_OPTIONS : AGENT_OPTIONS;
+    // התווית העברית לכל סוג החלטה, מהמילון לפי המצב. הקלד כ-Record כדי לאפשר חיפוש לפי kind.
+    const optionLabels = (isChat ? pd.chatOptions : pd.agentOptions) as Record<string, string>;
+    const options = (isChat ? CHAT_OPTION_META : AGENT_OPTION_META).map((o) => ({ ...o, he: optionLabels[o.kind] ?? '' }));
 
     const [guess, setGuess] = useState<DecisionKind | null>(null);
     const revealed = guess !== null;
@@ -74,10 +78,10 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
     // המנטור הפנימי מגיב לתוצאה: לפני ניחוש מזמין, אחרי ניחוש נכון חוגג, ואחרי טעות מרגיע.
     // ה-key מחליף בין הפוזות עם אנימציית כניסה קצרה, כדי שהתגובה תרגיש חיה.
     const mentor = !revealed
-        ? { pose: 'think' as const, line: 'נחשו לפני שמגלים', glow: false, icon: '/assets/predict-guess.png' }
+        ? { pose: 'think' as const, line: pd.mentor.think, glow: false, icon: '/assets/predict-guess.png' }
         : correct
-            ? { pose: 'celebrate' as const, line: 'בול! קלעתם', glow: true, icon: '/assets/predict-correct.png' }
-            : { pose: 'reassure' as const, line: 'דווקא טעות מלמדת', glow: false, icon: '/assets/predict-wrong.png' };
+            ? { pose: 'celebrate' as const, line: pd.mentor.celebrate, glow: true, icon: '/assets/predict-correct.png' }
+            : { pose: 'reassure' as const, line: pd.mentor.reassure, glow: false, icon: '/assets/predict-wrong.png' };
 
     return (
         <div
@@ -91,15 +95,13 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
             </div>
             <div className="relative">
                 <span className={`mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] ${accentText}`}>
-                    <HelpCircle size={14} /> ניחוש מהיר
+                    <HelpCircle size={14} /> {pd.eyebrow}
                 </span>
                 <h3 className="mb-2 text-xl font-black text-white md:text-2xl">
-                    מה המנוע יחליט על &quot;{text}&quot;?
+                    {pd.questionLead}{text}{pd.questionTail}
                 </h3>
                 <p className="mx-auto mb-6 max-w-xl text-sm text-slate-400">
-                    {isChat
-                        ? 'לפני שתפעילו את ראש הקריאה - נחשו איך המנוע יגיב.'
-                        : 'לפני שתפעילו את ראש הקריאה - נחשו מה יהיה הצעד הבא של המנוע.'}
+                    {isChat ? pd.subtitleChat : pd.subtitleAgent}
                 </p>
 
                 <div className="flex flex-wrap items-center justify-center gap-3">
@@ -113,7 +115,7 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
                                 type="button"
                                 onClick={() => !revealed && setGuess(opt.kind)}
                                 disabled={revealed}
-                                aria-label={`ניחוש: ${opt.he}`}
+                                aria-label={pd.guessAria(opt.he)}
                                 className={[
                                     'relative inline-flex items-center gap-2 rounded-2xl border px-5 py-3 text-base font-black transition-all',
                                     state === 'idle' && `cursor-pointer border-slate-700/60 bg-slate-800/40 text-slate-200 hover:scale-105 hover:${accentBorder} hover:${accentBg}`,
@@ -151,24 +153,20 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
                                 {correct ? (
                                     <p className={`inline-flex items-center gap-2 text-base font-bold ${accentText}`}>
                                         <Sparkles size={16} />
-                                        בול! המנוע באמת בחר &quot;{actualHe}&quot;.
+                                        {pd.correctLead}{actualHe}{pd.correctTail}
                                     </p>
                                 ) : (
                                     <p className="inline-flex items-center gap-2 text-base font-bold text-amber-300">
                                         <Lightbulb size={16} />
-                                        ניחשתם &quot;{guessHe}&quot;, אבל המנוע בחר &quot;{actualHe}&quot;.
+                                        {pd.wrongLead}{guessHe}{pd.wrongMid}{actualHe}{pd.wrongTail}
                                     </p>
                                 )}
                                 <p className="max-w-md text-sm text-slate-400">
-                                    {correct
-                                        ? 'זיהיתם נכון לאן הקלט נוטה. הפעילו עכשיו את ראש הקריאה שלמטה וראו למה - מילה-אחר-מילה.'
-                                        : 'וזה בדיוק החלק המעניין: הקלט נוטה לכיוון אחר ממה שציפיתם. הפעילו את ראש הקריאה שלמטה וראו איך המנוע הגיע לזה, מילה-אחר-מילה.'}
+                                    {correct ? pd.correctHint : pd.wrongHint}
                                 </p>
                                 {guessedImpossible && (
                                     <p className="max-w-md rounded-xl border border-amber-500/30 bg-amber-900/10 px-3 py-2 text-sm leading-relaxed text-amber-100/90">
-                                        {isChat
-                                            ? 'שימו לב: ב-Chat ההכרעה היא תמיד אחת משתיים - לענות או לבקש הבהרה. לעצור או להשתמש בכלי שמורים ל-Agent. בדיוק כאן עובר הגבול בין השניים.'
-                                            : 'הפעולה הזו לא רלוונטית למשימה הנוכחית, אבל היא חלק מארגז ההחלטות של ה-Agent בתרחישים אחרים.'}
+                                        {isChat ? pd.impossibleChat : pd.impossibleAgent}
                                     </p>
                                 )}
                                 <div className="mt-2 w-full max-w-sm text-right">
@@ -179,7 +177,7 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
                                     onClick={() => setGuess(null)}
                                     className="mt-2 inline-flex items-center gap-1.5 rounded-xl border border-slate-700/60 bg-slate-800/40 px-3 py-1.5 text-xs font-bold text-slate-300 transition-colors hover:border-slate-600 hover:bg-slate-800/70 hover:text-white"
                                 >
-                                    <RotateCcw size={14} /> נחשו שוב
+                                    <RotateCcw size={14} /> {pd.guessAgain}
                                 </button>
                                 {!reduce && <ArrowDown size={18} className={`mt-1 animate-bounce ${accentText} opacity-60`} />}
                             </div>

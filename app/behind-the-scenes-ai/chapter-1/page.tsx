@@ -7,6 +7,7 @@ import { Terminal, ScanSearch, ArrowDown, ScanLine, SlidersHorizontal, GitCompar
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { ChapterQuiz } from '../ChapterQuiz';
 import { InsightBox } from '@/components/content/InsightBox';
+import { useT } from '@/i18n/useT';
 
 import { TransparentLabLayout } from '@/components/ai-internals/TransparentLabLayout';
 import { ChatInterfacePanel } from '@/components/ai-internals/ChatInterfacePanel';
@@ -23,18 +24,15 @@ import { ConfidenceDial } from './ConfidenceDial';
 import { CounterfactualDiff } from './CounterfactualDiff';
 import { ForkView } from './ForkView';
 
-const DEFAULT_INPUT = 'החבילה לא הגיעה';
-
-const SUGGESTIONS = [
-    'החבילה לא הגיעה',
-    'איפה החבילה שלי?',
-    'בדוק את החבילה 123456789',
-    'שלח ללקוח שהחבילה אבדה',
-    'תטפל בזה',
-];
-
 export default function BehindTheScenesChapter1() {
     const reduce = useReducedMotion();
+    const { t } = useT();
+    const c1 = t.behindAi.chapter1;
+    const viz = c1.visuals;
+
+    // קלטי-הזרע של הצ'אט מגיעים מהמילון (seed). קלט ברירת המחדל משמש לאתחול ה-state.
+    const DEFAULT_INPUT = c1.seed.defaultInput;
+    const SUGGESTIONS = c1.seed.suggestions;
 
     const [mode, setMode] = useState<FlowMode>('chat');
     const [inputValue, setInputValue] = useState(DEFAULT_INPUT);
@@ -153,8 +151,8 @@ export default function BehindTheScenesChapter1() {
 
     // התחנות המרכזיות של המנוע השקוף - שיקוף כן של אותה ריצה (חיה), מקובץ למערכות.
     const engineSteps = useMemo(
-        () => (isChat ? traceChatEngine(liveText) : traceAgentEngine(liveText)),
-        [isChat, liveText],
+        () => (isChat ? traceChatEngine(liveText, viz) : traceAgentEngine(liveText, viz)),
+        [isChat, liveText, viz],
     );
 
     // מפתח הפעלה: כל שליחה / החלפת מצב מנגנת מחדש את רצף ההידלקות.
@@ -166,8 +164,9 @@ export default function BehindTheScenesChapter1() {
         return () => clearTimeout(t);
     }, [conversationText, mode, sendCount]);
 
-    // תשובת ה-AI: התשובה החיה (אם קיימת) גוברת על תשובת ה-mock.
-    const mockReply = isChat ? chat.reply : agent.reply;
+    // תשובת ה-AI: התשובה החיה (אם קיימת) גוברת על תשובת ה-mock. תשובת ה-mock נפתרת
+    // מהמילון לפי מפתח התשובה שהמנוע הטהור החזיר.
+    const mockReply = isChat ? viz.mockEngine.chatReplies[chat.replyKey] : viz.mockEngine.agentReplies[agent.replyKey];
     const replyText = liveReply !== null ? liveReply : mockReply;
     // אינדיקטור ההקלדה: במצב חי (streaming) מציגים נקודות רק עד שמגיע הטוקן הראשון,
     // בלי תלות בטיימר ה-850ms של ה-mock. במצב mock: לפי הטיימר הרגיל.
@@ -235,40 +234,38 @@ export default function BehindTheScenesChapter1() {
                 <div className="relative z-10">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-cyan-500/30 mb-5">
                         <Terminal size={14} className="text-cyan-400" />
-                        <span className="font-mono text-xs tracking-widest uppercase text-cyan-300">Behind the Scenes · 01</span>
+                        <span className="font-mono text-xs tracking-widest uppercase text-cyan-300">{c1.hero.badge}</span>
                     </div>
 
                     <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
-                        מה באמת קורה בין{' '}
+                        {c1.hero.titleLead}{' '}
                         <span className="bg-gradient-to-l from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                            השאלה לתשובה
+                            {c1.hero.titleHighlight}
                         </span>
                         ?
                     </h1>
 
                     <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">
-                        כתבו משפט אחד. מימין הצ&apos;אט נראה רגיל, בדיוק כמו בכל אפליקציה. משמאל נפתחת
-                        <span className="text-white font-semibold"> הדרך שמאחורי התשובה</span>: המנוע מראה איך הוא
-                        קורא את המשפט ומגיע להחלטה. לעת עתה רק תסתכלו, אין צורך להבין כל מספר. את העומק
-                        נפתח בהמשך, שלב אחר שלב.
+                        {c1.hero.ledeLead}
+                        <span className="text-white font-semibold">{c1.hero.ledeHighlight}</span>{c1.hero.ledeRest}
                     </p>
 
                     <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
                         <span className="inline-flex items-center gap-1.5">
-                            <Terminal size={14} className="text-cyan-400" /> מימין: התשובה שאתם רואים
+                            <Terminal size={14} className="text-cyan-400" /> {c1.hero.chips[0]}
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                            <ScanSearch size={14} className="text-cyan-400" /> משמאל: הדרך שמאחורי התשובה
+                            <ScanSearch size={14} className="text-cyan-400" /> {c1.hero.chips[1]}
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                            <Layers size={14} className="text-purple-400" /> בהמשך: נפתח כל שלב לעומק
+                            <Layers size={14} className="text-purple-400" /> {c1.hero.chips[2]}
                         </span>
                     </div>
                 </div>
             </motion.section>
             {/* המנטור מזמין להציץ פנימה - תלוי מימין לכרטיס (xl+) */}
             <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="peek" line="הצצה ראשונה אל תוך המנוע 👀" width={175} />
+              <Mentor pose="peek" line={c1.mentor.peek} width={175} />
             </div>
             </div>
 
@@ -287,14 +284,14 @@ export default function BehindTheScenesChapter1() {
                             <Mentor pose="think" width={92} float={false} glow={false} />
                         </div>
                         <div className="flex-1 text-sm leading-relaxed text-slate-200">
-                            <span className="font-bold text-emerald-300">התחילו כאן: </span>
-                            כתבו משפט משלכם במעבדה שמתחת, או בחרו דוגמה מהירה.
+                            <span className="font-bold text-emerald-300">{c1.coach.start}</span>
+                            {c1.coach.body}
                         </div>
                         <ArrowDown size={18} className="hidden shrink-0 animate-bounce text-emerald-300 sm:block" aria-hidden />
                         <button
                             type="button"
                             onClick={() => setCoachOpen(false)}
-                            aria-label="סגירת ההדרכה"
+                            aria-label={c1.coach.closeAria}
                             className="shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
                         >
                             <X size={15} />
@@ -308,14 +305,14 @@ export default function BehindTheScenesChapter1() {
                 <div className="flex items-center gap-3">
                     <ScanSearch size={24} className="text-cyan-400" />
                     <div>
-                        <h3 className="text-2xl font-bold text-white">הצ&apos;ט השקוף</h3>
-                        <div className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">Transparent Chat Lab</div>
+                        <h3 className="text-2xl font-bold text-white">{c1.lab.title}</h3>
+                        <div className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">{c1.lab.eyebrow}</div>
                     </div>
                 </div>
 
                 <p className="flex items-start gap-2.5 text-base leading-relaxed text-slate-200">
                     <Eye size={18} className="mt-0.5 shrink-0 text-cyan-400" />
-                    כאן רואים שיש דרך מאחורי התשובה: מימין התשובה כרגיל, ומשמאל הדרך שהובילה אליה.
+                    {c1.lab.intro}
                 </p>
 
                 <div className="relative">
@@ -334,8 +331,8 @@ export default function BehindTheScenesChapter1() {
                     chat={
                         <HoloFrame accent={accent}>
                             <ChatInterfacePanel
-                                title="Transparent Chat Lab"
-                                subtitle={isChat ? 'Chat Mode · שיחה' : 'Agent Mode · משימה'}
+                                title={c1.lab.panelTitle}
+                                subtitle={isChat ? c1.lab.chatSubtitle : c1.lab.agentSubtitle}
                                 mode={mode}
                                 onModeChange={handleModeChange}
                                 messages={messages}
@@ -357,8 +354,8 @@ export default function BehindTheScenesChapter1() {
                     engine={
                         <HoloFrame accent={accent}>
                             <GlassEnginePanel
-                                title={isChat ? 'Answer Engine' : 'Action Decision Engine'}
-                                subtitle={isChat ? 'בחירת תשובה · תחנות מרכזיות' : 'החלטת פעולה · תחנות מרכזיות'}
+                                title={isChat ? c1.panels.answerEngineTitle : c1.panels.actionEngineTitle}
+                                subtitle={isChat ? c1.panels.chatEngineSubtitle : c1.panels.agentEngineSubtitle}
                                 accent={accent}
                                 replayKey={replayKey}
                                 steps={engineSteps}
@@ -372,28 +369,23 @@ export default function BehindTheScenesChapter1() {
                 </div>
 
                 <p className="text-slate-300 text-base leading-relaxed">
-                    הסתכלו קודם על <span className="text-white font-semibold">ההחלטה</span>, לא על כל המספרים.
-                    המנוע משמאל מראה שיש מסלול שלם בין השאלה לתשובה. הפרטים המלאים ייפתחו בהמשך הלומדה.
+                    {c1.lab.focusLead}<span className="text-white font-semibold">{c1.lab.focusHighlight}</span>{c1.lab.focusRest}
                 </p>
 
                 <p className="text-xs leading-relaxed text-slate-500">
-                    {live
-                        ? 'התשובה בצ׳אט נכתבת על ידי מודל אמיתי (Claude) בזמן אמת, מילה אחר מילה - בדיוק הלולאה האוטו-רגרסיבית. הלוח מימין נשאר המחשה לימודית: ה-API לא חושף את ההסתברויות הפנימיות של המודל.'
-                        : 'מצב דמו: התשובות בצ׳אט מתוסרטות וקבועות. הגדרת ANTHROPIC_API_KEY בשרת מפעילה מודל אמיתי שכותב את התשובה חי, מילה אחר מילה.'}
+                    {live ? c1.lab.liveNote : c1.lab.demoNote}
                 </p>
                 {/* מנטור פרק 1 צמוד לכרטיס הצ'אט השקוף (2xl בלבד - רק שם יש מרווח בין הלוח
                     לסרגל הניווט מימין; ב-xl הסרגל מכסה את הדמות): חושף את המנוע מבפנים */}
                 <div className="absolute top-1/2 -translate-y-1/2 left-full ml-4 z-20 hidden 2xl:block pointer-events-none">
-                  <Mentor pose="holographic" line="כאן נפתח המנוע מבפנים" width={200} fallbackSrc="/assets/mentor-inspect.png" />
+                  <Mentor pose="holographic" line={c1.mentor.holographic} width={200} fallbackSrc="/assets/mentor-inspect.png" />
                 </div>
             </section>
 
             {/* ══════════ התובנה המרכזית של הפרק ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
-                <InsightBox type="intuition" title="הרעיון של הפרק">
-                    תשובה בצ&apos;אט היא רק הקצה הגלוי של תהליך נסתר. מאחורי כל תשובה רץ מסלול,
-                    ואת המסלול הזה אפשר לפתוח שלב אחר שלב. זה בדיוק מה שהלומדה הזו תעשה: תלמד את הדרך
-                    שמאחורי התשובה, בהדרגה. עדיין לא צריך להבין כל מנגנון - מספיק להבין שהדרך קיימת, ושאפשר לפתוח אותה.
+                <InsightBox type="intuition" title={c1.insightIdea.title}>
+                    {c1.insightIdea.body}
                 </InsightBox>
             </section>
 
@@ -406,7 +398,7 @@ export default function BehindTheScenesChapter1() {
                     className="group inline-flex items-center gap-3 rounded-2xl border border-cyan-500/40 bg-cyan-900/15 px-6 py-3.5 text-base font-bold text-cyan-200 transition-colors hover:border-cyan-400/60 hover:bg-cyan-900/25"
                 >
                     <Layers size={18} className="text-cyan-300" />
-                    {deepOpen ? 'סגרו את שכבת העומק' : 'פתחו את המנוע המלא'}
+                    {deepOpen ? c1.deep.toggleOpen : c1.deep.toggleClosed}
                     <ChevronDown
                         size={18}
                         className={`text-cyan-300 transition-transform ${deepOpen ? 'rotate-180' : ''}`}
@@ -414,7 +406,7 @@ export default function BehindTheScenesChapter1() {
                 </button>
                 {!deepOpen && (
                     <p className="mt-3 text-base text-slate-300">
-                        כאן נפתחים הכלים המתקדמים: קריאה חיה, חוגת ביטחון, סיבתיות והשוואת מנועים. אפשר לחקור בקצב שלכם.
+                        {c1.deep.hint}
                     </p>
                 )}
             </section>
@@ -432,12 +424,10 @@ export default function BehindTheScenesChapter1() {
             >
             <p className="mt-8 flex items-start gap-2.5 text-lg leading-relaxed text-slate-200" dir="rtl">
                 <ScanSearch size={20} className="mt-1 shrink-0 text-cyan-400" />
-                ראו שכבת עומק: מכאן זה נעשה טכני יותר. לפניכם ארבע מעבדות ממוספרות, כל אחת מראה זווית אחרת של אותו מסלול. אין צורך לסיים הכול ברצף.
+                {c1.deep.intro1}
             </p>
             <p className="mt-3 text-base leading-relaxed text-slate-300" dir="rtl">
-                ב-<span className="text-cyan-300 font-semibold">Chat Mode</span> המערכת בוחרת תשובה.
-                ב-<span className="text-purple-300 font-semibold">Agent Mode</span> היא בודקת מה הצעד הנכון הבא -
-                לענות, להשתמש בכלי, או לעצור ולבקש מידע. החליפו ביניהם במתג שבראש הצ&apos;אט.
+                {c1.deep.intro2Lead}<span className="text-cyan-300 font-semibold">Chat Mode</span>{c1.deep.intro2Mid}<span className="text-purple-300 font-semibold">Agent Mode</span>{c1.deep.intro2Tail}
             </p>
 
             {/* ══════════ מעבדה 1 · Read Head ══════════ */}
@@ -446,8 +436,8 @@ export default function BehindTheScenesChapter1() {
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">1</span>
                     <ScanLine size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
                     <div>
-                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>קריאה חיה</div>
-                        <h3 className="text-2xl font-bold text-white">המנוע משנה את דעתו תוך כדי קריאה</h3>
+                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>{c1.labs.readHead.eyebrow}</div>
+                        <h3 className="text-2xl font-bold text-white">{c1.labs.readHead.title}</h3>
                     </div>
                 </div>
 
@@ -462,8 +452,8 @@ export default function BehindTheScenesChapter1() {
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">2</span>
                     <SlidersHorizontal size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
                     <div>
-                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>מתי לסמוך, מתי לעצור</div>
-                        <h3 className="text-2xl font-bold text-white">חוגת הביטחון</h3>
+                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>{c1.labs.confidence.eyebrow}</div>
+                        <h3 className="text-2xl font-bold text-white">{c1.labs.confidence.title}</h3>
                     </div>
                 </div>
 
@@ -476,8 +466,8 @@ export default function BehindTheScenesChapter1() {
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">3</span>
                     <GitCompare size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
                     <div>
-                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>סיבתיות</div>
-                        <h3 className="text-2xl font-bold text-white">איזו מילה הכריעה את ההחלטה</h3>
+                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>{c1.labs.causality.eyebrow}</div>
+                        <h3 className="text-2xl font-bold text-white">{c1.labs.causality.title}</h3>
                     </div>
                 </div>
 
@@ -490,8 +480,8 @@ export default function BehindTheScenesChapter1() {
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">4</span>
                     <Split size={24} className="text-slate-300" />
                     <div>
-                        <div className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">פיצול</div>
-                        <h3 className="text-2xl font-bold text-white">אותו משפט, שני מנועים</h3>
+                        <div className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">{c1.labs.fork.eyebrow}</div>
+                        <h3 className="text-2xl font-bold text-white">{c1.labs.fork.title}</h3>
                     </div>
                 </div>
 
@@ -500,15 +490,11 @@ export default function BehindTheScenesChapter1() {
 
             {/* ══════════ סיכום ══════════ */}
             <section className="mt-12 space-y-4 text-right" dir="rtl">
-                <InsightBox type="intuition" title="מה אתם מבינים עכשיו">
-                    מנוע ה-AI לא &quot;יודע&quot; את התשובה - הוא מדרג אפשרויות, ומחליט לפי הפער ביניהן.
-                    כשהפער גדול הוא עונה בביטחון; כשהפער קטן, הצעד הנכון הוא לעצור ולשאול, לא לנחש.
-                    ראיתם זאת בעצמכם: ראש הקריאה הראה את המוביל מתחלף תוך כדי קריאה, חוגת הביטחון הפכה את אותו קלט בין ענה לשאל,
-                    ומילה אחת שהוחלפה הפכה החלטה שלמה.
+                <InsightBox type="intuition" title={c1.summary.understandTitle}>
+                    {c1.summary.understandBody}
                 </InsightBox>
-                <InsightBox type="warning" title="הכלל המעשי">
-                    סמכו על המנוע כשהפער גדול והסיכון נמוך. כשהפער קטן או הפעולה רגישה - עצירה ובקשת הבהרה אינן כשל,
-                    אלא הצעד האחראי. בדיוק כאן מתחיל החיבור בין הסתברות לאחריות.
+                <InsightBox type="warning" title={c1.summary.ruleTitle}>
+                    {c1.summary.ruleBody}
                 </InsightBox>
             </section>
             </motion.div>
@@ -521,34 +507,31 @@ export default function BehindTheScenesChapter1() {
                 <div className="rounded-[1.75rem] border border-cyan-500/30 bg-gradient-to-b from-slate-900/70 to-slate-950/60 p-6 md:p-7">
                     <div className="mb-4 flex items-center gap-2.5">
                         <ListChecks size={20} className="text-cyan-300" />
-                        <h3 className="text-xl font-bold text-white">לפני המבדק: שלוש נקודות שכדאי לזכור</h3>
+                        <h3 className="text-xl font-bold text-white">{c1.beforeQuiz.title}</h3>
                     </div>
                     <ul className="space-y-3.5">
                         <li className="flex gap-3">
                             <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 font-bold text-cyan-300">1</span>
                             <p className="text-base leading-relaxed text-slate-200">
-                                <span className="font-bold text-white">מסלול, לא קסם.</span> מאחורי כל תשובה רץ מסלול: המנוע מפרק את המשפט לטוקנים,
-                                מדרג אפשרויות לפי הסתברות, בודק כמה הוא בטוח, ורק אז מחליט. ההערכה נבנית תוך כדי קריאה, וכל מילה נוספת יכולה לשנות את האפשרות המובילה.
+                                <span className="font-bold text-white">{c1.beforeQuiz.point1Lead}</span>{c1.beforeQuiz.point1Body}
                             </p>
                         </li>
                         <li className="flex gap-3">
                             <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 font-bold text-cyan-300">2</span>
                             <p className="text-base leading-relaxed text-slate-200">
-                                <span className="font-bold text-white">שתי שאלות שונות.</span> ב-<span className="font-semibold text-cyan-300">Chat</span> המנוע שואל &quot;מה התשובה?&quot;.
-                                ב-<span className="font-semibold text-purple-300">Agent</span> הוא שואל &quot;מה הצעד הנכון הבא?&quot; - לענות, להשתמש בכלי, או לעצור ולבקש מידע.
+                                <span className="font-bold text-white">{c1.beforeQuiz.point2Lead}</span>{c1.beforeQuiz.point2BeforeChat}<span className="font-semibold text-cyan-300">Chat</span>{c1.beforeQuiz.point2AfterChat}<span className="font-semibold text-purple-300">Agent</span>{c1.beforeQuiz.point2AfterAgent}
                             </p>
                         </li>
                         <li className="flex gap-3">
                             <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 font-bold text-cyan-300">3</span>
                             <p className="text-base leading-relaxed text-slate-200">
-                                <span className="font-bold text-white">ביטחון פוגש אחריות.</span> הביטחון נמדד לפי הפער בין האפשרות המובילה לבאה אחריה.
-                                פער גדול וסיכון נמוך, אפשר לתת למנוע לענות. פער קטן או פעולה רגישה, הצעד האחראי הוא לעצור ולשאול, לא לנחש.
+                                <span className="font-bold text-white">{c1.beforeQuiz.point3Lead}</span>{c1.beforeQuiz.point3Body}
                             </p>
                         </li>
                     </ul>
                     {!deepOpen && (
                         <p className="mt-4 text-sm leading-relaxed text-slate-400">
-                            רוצים לראות את שלושת אלה חיים? פתחו למעלה את <span className="font-semibold text-cyan-300">המנוע המלא</span> ושחקו עם ראש הקריאה, חוגת הביטחון והשוואת המנועים.
+                            {c1.beforeQuiz.footnoteLead}<span className="font-semibold text-cyan-300">{c1.beforeQuiz.footnoteHighlight}</span>{c1.beforeQuiz.footnoteTail}
                         </p>
                     )}
                 </div>
