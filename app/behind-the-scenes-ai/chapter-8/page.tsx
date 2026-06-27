@@ -5,8 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Link2, MousePointerClick, FlaskConical, Lightbulb, ScanSearch, Lock, CheckCircle2, XCircle } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
-import { AssessmentEngine } from '@/components/content/AssessmentEngine';
-import { behindAiChapterQuizzes } from '../quizData';
+import { ChapterQuiz } from '../ChapterQuiz';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { AttentionGuess } from '@/components/ai-internals/AttentionGuess';
@@ -290,7 +289,7 @@ export default function BehindTheScenesChapter8() {
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-12 mb-4" dir="rtl">
-                <AssessmentEngine {...behindAiChapterQuizzes[8]} />
+                <ChapterQuiz chapterId={8} />
             </section>
         </ChapterLayout>
     );

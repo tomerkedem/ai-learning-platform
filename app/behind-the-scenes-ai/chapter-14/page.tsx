@@ -5,8 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ScanLine, MousePointerClick, ArrowLeftRight, FlaskConical, Layers } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
-import { AssessmentEngine } from '@/components/content/AssessmentEngine';
-import { behindAiChapterQuizzes } from '../quizData';
+import { ChapterQuiz } from '../ChapterQuiz';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { BehindScenesLab } from '@/components/ai-internals/BehindScenesLab';
@@ -135,7 +134,7 @@ export default function BehindTheScenesChapter13() {
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-16 mb-4" dir="rtl">
-                <AssessmentEngine {...behindAiChapterQuizzes[14]} />
+                <ChapterQuiz chapterId={14} />
             </section>
         </ChapterLayout>
     );

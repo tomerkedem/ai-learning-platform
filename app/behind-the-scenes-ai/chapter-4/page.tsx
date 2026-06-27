@@ -5,8 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Dices, MousePointerClick, Scale, FlaskConical, Lightbulb, Lock, CheckCircle2, XCircle, Database, Globe, Copy } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
-import { AssessmentEngine } from '@/components/content/AssessmentEngine';
-import { behindAiChapterQuizzes } from '../quizData';
+import { ChapterQuiz } from '../ChapterQuiz';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { DiscoveryGuess, type DiscoveryGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
@@ -331,7 +330,7 @@ export default function BehindTheScenesChapter4() {
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-16 mb-4" dir="rtl">
-                <AssessmentEngine {...behindAiChapterQuizzes[4]} />
+                <ChapterQuiz chapterId={4} />
             </section>
         </ChapterLayout>
     );

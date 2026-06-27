@@ -8,8 +8,7 @@ import {
 } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
-import { AssessmentEngine } from '@/components/content/AssessmentEngine';
-import { behindAiChapterQuizzes } from '../quizData';
+import { ChapterQuiz } from '../ChapterQuiz';
 import { InsightBox } from '@/components/content/InsightBox';
 
 import { DiscoveryGuess, type DiscoveryGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
@@ -337,7 +336,7 @@ export default function BehindTheScenesChapter3() {
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-12 mb-4" dir="rtl">
-                <AssessmentEngine {...behindAiChapterQuizzes[3]} />
+                <ChapterQuiz chapterId={3} />
             </section>
         </ChapterLayout>
     );

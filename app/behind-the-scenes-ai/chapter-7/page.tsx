@@ -8,8 +8,7 @@ import {
 } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
-import { AssessmentEngine } from '@/components/content/AssessmentEngine';
-import { behindAiChapterQuizzes } from '../quizData';
+import { ChapterQuiz } from '../ChapterQuiz';
 import { InsightBox } from '@/components/content/InsightBox';
 import { SemanticSpaceLab } from '@/components/ai-internals/SemanticSpaceLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
@@ -493,7 +492,7 @@ export default function BehindTheScenesChapter7() {
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-16 mb-4" dir="rtl">
-                <AssessmentEngine {...behindAiChapterQuizzes[7]} />
+                <ChapterQuiz chapterId={7} />
             </section>
         </ChapterLayout>
     );
