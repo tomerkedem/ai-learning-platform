@@ -17,11 +17,14 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HelpCircle, Sparkles, RotateCcw, ArrowDown, Eye, Lock, Database, Check } from 'lucide-react';
 import { Mentor } from './Mentor';
+import { useT } from '@/i18n/useT';
 import type { Hypothesis, HypothesisCue, QuickGuessContent } from '@/app/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
 
 /* ── איור-מיקרו לכל השערה ── */
 function CueIllustration({ cue }: { cue: HypothesisCue }) {
+    // שברי הטוקן ("טו"/"קן") מהמילון (introVisuals.guess.tokenCue).
+    const tokenCue = useT().t.behindAi.introVisuals.guess.tokenCue;
     if (cue === 'read') {
         return (
             <div className="flex items-center gap-2">
@@ -48,7 +51,7 @@ function CueIllustration({ cue }: { cue: HypothesisCue }) {
     if (cue === 'tokens') {
         return (
             <div className="flex items-center gap-1" aria-hidden>
-                {['טו', 'קן'].map((t, i) => (
+                {tokenCue.map((t, i) => (
                     <React.Fragment key={i}>
                         <span className="rounded-md border border-cyan-500/40 bg-cyan-950/40 px-1.5 py-0.5 text-[9px] font-bold text-cyan-200">{t}</span>
                         <span className="h-1 w-1 rounded-full bg-cyan-400/70" />

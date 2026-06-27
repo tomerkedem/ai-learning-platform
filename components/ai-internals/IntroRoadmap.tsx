@@ -24,6 +24,7 @@ import {
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
 import { StationViz } from './IntroStationViz';
+import { useT } from '@/i18n/useT';
 import type {
     RoadmapStation, RoadmapZone, RoadmapZoneId,
 } from '@/app/behind-the-scenes-ai/introduction/introContent';
@@ -31,6 +32,9 @@ import type { Direction } from '@/i18n/config';
 
 // תוויות שלוש שאלות ההרחבה. מגיעות מהמילון דרך ה-prop, לא מ-introContent.
 type StationDetailLabels = Record<keyof RoadmapStation['detail'], string>;
+
+// תוויות מסגרת קצרות של המפה, מהמילון (introVisuals.roadmap).
+type RoadmapLabels = { peek: string; zone: string; loopBadge: string };
 
 // גוון לכל אזור: מסע צבעוני מהקלט (cyan) אל ההכרעה (purple).
 const ZONE_ACCENT: Record<RoadmapZoneId, Accent> = {
@@ -59,7 +63,7 @@ const STATION_ICON: Record<string, React.ReactNode> = {
 };
 
 /* ── כרטיס תחנה בודד (disclosure) ── */
-function StationCard({ station, n, accent, reduce, detailLabels, defaultOpen = false }: { station: RoadmapStation; n: number; accent: Accent; reduce: boolean; detailLabels: StationDetailLabels; defaultOpen?: boolean }) {
+function StationCard({ station, n, accent, reduce, detailLabels, roadmapLabels, defaultOpen = false }: { station: RoadmapStation; n: number; accent: Accent; reduce: boolean; detailLabels: StationDetailLabels; roadmapLabels: RoadmapLabels; defaultOpen?: boolean }) {
     const [open, setOpen] = useState(defaultOpen);
     const panelId = useId();
     const a = ACCENTS[accent];
@@ -101,7 +105,7 @@ function StationCard({ station, n, accent, reduce, detailLabels, defaultOpen = f
                         {isLoop && (
                             <span className={`inline-flex items-center gap-1 text-[11px] font-bold ${a.text}`}>
                                 <CornerDownLeft size={12} aria-hidden />
-                                חוזר לתחילת המסלול
+                                {roadmapLabels.loopBadge}
                             </span>
                         )}
                     </span>
@@ -110,7 +114,7 @@ function StationCard({ station, n, accent, reduce, detailLabels, defaultOpen = f
 
                 {/* מחוון פתיחה: רמז ברור שאפשר להציץ פנימה */}
                 <span className="mt-0.5 flex shrink-0 items-center gap-1.5">
-                    {!open && <span className={`hidden text-[10px] font-bold sm:inline ${a.text}`}>הצצה</span>}
+                    {!open && <span className={`hidden text-[10px] font-bold sm:inline ${a.text}`}>{roadmapLabels.peek}</span>}
                     <motion.span
                         aria-hidden
                         animate={{ rotate: open ? 180 : 0 }}
@@ -185,6 +189,8 @@ interface IntroRoadmapProps {
 }
 
 export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, stationDetailLabels, reduce, dir, defaultOpenId }) => {
+    // תוויות מסגרת קצרות (אזור / הצצה / תג הלולאה) מהמילון.
+    const roadmapLabels = useT().t.behindAi.introVisuals.roadmap;
     // מספור רץ ורציף 1..N על פני כל האזורים (סדר המערך = סדר המסלול).
     const indexById = new Map(stations.map((s, i) => [s.id, i]));
 
@@ -209,7 +215,7 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, sta
                             {/* כותרת האזור */}
                             <header className="relative mb-5 flex items-start gap-3">
                                 <span className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-black ${a.border} ${a.bgSoft} ${a.text}`}>
-                                    <span>אזור</span>
+                                    <span>{roadmapLabels.zone}</span>
                                     <span dir="ltr">{zi + 1}/{zones.length}</span>
                                 </span>
                                 <div className="min-w-0">
@@ -228,6 +234,7 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, sta
                                         accent={acc}
                                         reduce={reduce}
                                         detailLabels={stationDetailLabels}
+                                        roadmapLabels={roadmapLabels}
                                         defaultOpen={station.id === defaultOpenId}
                                     />
                                 ))}

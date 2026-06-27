@@ -238,6 +238,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
             <CourseSidebar isFocusMode={isFocusMode} />
 
             {/* מצב מיקוד: כפתור זכוכית צף (דסקטופ בלבד) - לא מתנגש עם ה-Header או הסרגל */}
+            {/* מיקום תלוי-כיוון: ב-RTL בצד שמאל (הרחק מהסרגל מימין), ב-LTR בצד ימין. */}
             <motion.button
                 onClick={() => setIsFocusMode((prev) => !prev)}
                 title={t.chrome.focus.toggleTitle}
@@ -245,7 +246,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 400, damping: 26 }}
-                className="group hidden md:flex fixed bottom-6 left-6 z-50 items-center gap-2.5 rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-sm font-semibold text-slate-100 shadow-[0_8px_32px_rgba(2,6,23,0.6)] backdrop-blur-xl transition-colors hover:border-indigo-400/40 hover:text-white"
+                className={`group hidden md:flex fixed bottom-6 ${dir === 'rtl' ? 'left-6' : 'right-6'} z-50 items-center gap-2.5 rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-sm font-semibold text-slate-100 shadow-[0_8px_32px_rgba(2,6,23,0.6)] backdrop-blur-xl transition-colors hover:border-indigo-400/40 hover:text-white`}
             >
                 {/* הילה רכה בריחוף */}
                 <span className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r from-indigo-500/0 via-indigo-500/20 to-cyan-500/0 opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />

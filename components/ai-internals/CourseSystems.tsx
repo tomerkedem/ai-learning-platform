@@ -23,6 +23,7 @@ import {
 import Link from 'next/link';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
+import { useT } from '@/i18n/useT';
 import type { CourseSystem } from '@/app/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
 
@@ -61,6 +62,8 @@ function SystemGate({ system, index, total, accent, labels, reduce, isFirstSyste
 }) {
     const panelId = useId();
     const a = ACCENTS[accent];
+    // תוויות "מערכה" / "פרק" מהמילון (introVisuals.systems).
+    const sys = useT().t.behindAi.introVisuals.systems;
 
     return (
         <div
@@ -88,7 +91,7 @@ function SystemGate({ system, index, total, accent, labels, reduce, isFirstSyste
 
                 <span className="min-w-0 flex-1">
                     <span className={`block font-mono text-[11px] font-black uppercase tracking-[0.2em] ${a.text}`}>
-                        מערכה <span dir="ltr">{index + 1}/{total}</span>
+                        {sys.act} <span dir="ltr">{index + 1}/{total}</span>
                     </span>
                     <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
                         <span className="text-lg font-black leading-tight text-white md:text-xl">{system.title}</span>
@@ -230,7 +233,7 @@ function SystemGate({ system, index, total, accent, labels, reduce, isFirstSyste
                                                             </motion.span>
                                                         )}
                                                     </span>
-                                                    <span className="mt-0.5 block font-mono text-[10px] text-slate-500">פרק <span dir="ltr">{ch.n}</span></span>
+                                                    <span className="mt-0.5 block font-mono text-[10px] text-slate-500">{sys.chapter} <span dir="ltr">{ch.n}</span></span>
                                                 </Link>
                                             </motion.li>
                                         );
