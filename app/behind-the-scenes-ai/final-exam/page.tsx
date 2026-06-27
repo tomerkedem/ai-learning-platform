@@ -12,7 +12,7 @@
 import Link from "next/link";
 import { ArrowRight, ArrowLeft, GraduationCap } from "lucide-react";
 import { CourseSidebar } from "@/components/CourseSidebar";
-import { AssessmentEngine } from "@/components/content/AssessmentEngine";
+import { AssessmentEngine, type ReviewLink } from "@/components/content/AssessmentEngine";
 import { behindAiFinalExam, finalExamTiers } from "../quizData";
 import { MasteryDashboard } from "../MasteryDashboard";
 import { useT } from "@/i18n/useT";
@@ -20,6 +20,7 @@ import { useT } from "@/i18n/useT";
 export default function FinalExamPage() {
     const { dir, t } = useT();
     const fx = t.behindAi.finalExam;
+    const cq = t.behindAi.chapterQuiz;
 
     // נתונים והתנהגות בלבד מתוך quizData (בלי מחרוזות התצוגה העבריות).
     const { questions, passScore, onComplete, getReviewLinks, soundEnabled } = behindAiFinalExam;
@@ -31,6 +32,20 @@ export default function FinalExamPage() {
         label: fx.tiers[i]?.label ?? tier.label,
         sub: fx.tiers[i]?.sub ?? tier.sub,
     }));
+
+    // קישורי חזרה: שומרים על ה-href והניתוב, ומתרגמים רק את התווית. מספר הפרק נגזר
+    // מתוך ה-href (.../chapter-N). אם הגזירה נכשלת, נשארים בתווית המקורית. אותו דפוס
+    // בטוח כמו ב-ChapterQuiz, ובלי לשנות את reviewLinksForConcepts שב-quizData.
+    const localizedReviewLinks = getReviewLinks
+        ? (weakConcepts: string[]): ReviewLink[] =>
+              getReviewLinks(weakConcepts).map((link) => {
+                  const match = link.href.match(/chapter-(\d+)/);
+                  const n = match ? Number(match[1]) : null;
+                  const name = n != null ? cq.chapterNames[n] : undefined;
+                  if (n == null || !name) return link;
+                  return { ...link, label: cq.reviewLinkLabel(n, name) };
+              })
+        : undefined;
 
     return (
         <div
@@ -84,7 +99,7 @@ export default function FinalExamPage() {
                         passScore={passScore}
                         scoreTiers={localizedTiers}
                         onComplete={onComplete}
-                        getReviewLinks={getReviewLinks}
+                        getReviewLinks={localizedReviewLinks}
                         soundEnabled={soundEnabled}
                         title={fx.examTitle}
                         subtitle={fx.examSubtitle}
