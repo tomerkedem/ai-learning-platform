@@ -4,21 +4,38 @@
 // עמוד ייעודי למבחן סיום הלומדה "מאחורי הקלעים של AI".
 // מפריד את המבחן המסכם מפרק 16, ומציג מעליו את לוח ההתקדמות.
 // משתמש בסרגל הצד המשותף וברקע הכהה של הלומדה, בלי לשנות את ChapterLayout.
+// כל מחרוזת תצוגה מגיעה מהמילון (t.behindAi.finalExam); ההתנהגות והנתונים המבניים
+// של דרגות הציון (min/color) נשארים ב-quizData.ts ואינם משתנים כאן.
 // אין שימוש בתו "מקף ארוך" (em dash).
 // ════════════════════════════════════════════════════════════════════════
 
 import Link from "next/link";
-import { ArrowRight, GraduationCap } from "lucide-react";
+import { ArrowRight, ArrowLeft, GraduationCap } from "lucide-react";
 import { CourseSidebar } from "@/components/CourseSidebar";
 import { AssessmentEngine } from "@/components/content/AssessmentEngine";
-import { behindAiFinalExam } from "../quizData";
+import { behindAiFinalExam, finalExamTiers } from "../quizData";
 import { MasteryDashboard } from "../MasteryDashboard";
+import { useT } from "@/i18n/useT";
 
 export default function FinalExamPage() {
+    const { dir, t } = useT();
+    const fx = t.behindAi.finalExam;
+
+    // נתונים והתנהגות בלבד מתוך quizData (בלי מחרוזות התצוגה העבריות).
+    const { questions, passScore, onComplete, getReviewLinks, soundEnabled } = behindAiFinalExam;
+
+    // דרגות ציון מתורגמות: שומרים את ה-min/color המבניים מ-quizData וממזגים מעליהם
+    // את ה-label/sub מהמילון לפי הסדר, בלי לשנות את quizData.
+    const localizedTiers = finalExamTiers.map((tier, i) => ({
+        ...tier,
+        label: fx.tiers[i]?.label ?? tier.label,
+        sub: fx.tiers[i]?.sub ?? tier.sub,
+    }));
+
     return (
         <div
             className="flex min-h-screen bg-[#050B14] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-hidden relative"
-            dir="rtl"
+            dir={dir}
         >
             {/* רקע גלובלי, באותו שפה עיצובית של פרקי הלומדה */}
             <div className="fixed inset-0 z-0 pointer-events-none">
@@ -44,28 +61,40 @@ export default function FinalExamPage() {
                             href="/behind-the-scenes-ai/chapter-16"
                             className="inline-flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-blue-400 transition-colors no-underline group"
                         >
-                            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                            חזרה לפרק 16
+                            {dir === "rtl"
+                                ? <ArrowRight size={14} className="group-hover:-translate-x-1 transition-transform" />
+                                : <ArrowLeft size={14} className="group-hover:translate-x-1 transition-transform" />}
+                            {fx.backToChapter}
                         </Link>
                         <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto border border-blue-500/20">
                             <GraduationCap size={32} className="text-blue-400" />
                         </div>
-                        <h1 className="text-3xl md:text-4xl font-black text-white">מבחן סיום הלומדה</h1>
+                        <h1 className="text-3xl md:text-4xl font-black text-white">{fx.pageTitle}</h1>
                         <p className="text-slate-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-                            המבחן המסכם של &quot;מאחורי הקלעים של AI&quot;. הוא בוחן את כל המסלול: מהקלט ועד ההחלטה האחראית, ואת הקשרים בין המושגים. אפשר לחזור אליו בכל עת, וההתקדמות נשמרת במכשיר שלכם.
+                            {fx.pageSubtitle}
                         </p>
                     </header>
 
                     {/* לוח התקדמות לפני המבחן */}
                     <MasteryDashboard showFinalExamCta={false} />
 
-                    {/* המבחן עצמו */}
+                    {/* המבחן עצמו: התנהגות מ-quizData, כל מחרוזות התצוגה מהמילון */}
                     <AssessmentEngine
-                        {...behindAiFinalExam}
+                        questions={questions}
+                        passScore={passScore}
+                        scoreTiers={localizedTiers}
+                        onComplete={onComplete}
+                        getReviewLinks={getReviewLinks}
+                        soundEnabled={soundEnabled}
+                        title={fx.examTitle}
+                        subtitle={fx.examSubtitle}
+                        startLabel={fx.startLabel}
+                        submitLabel={fx.submitLabel}
+                        completedTitle={fx.completedTitle}
                         reviewHref="/behind-the-scenes-ai/introduction"
-                        reviewLabel="חזרה לתחילת הלומדה"
+                        reviewLabel={fx.reviewLabel}
                         nextHref="/"
-                        nextLabel="סיום: חזרה לקטלוג הלומדות"
+                        nextLabel={fx.nextLabel}
                     />
                 </main>
             </div>
