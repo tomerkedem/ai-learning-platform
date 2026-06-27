@@ -55,6 +55,15 @@ import { finalExam as enFinalExam } from './locales/en/behind-ai/finalExam';
 import { finalExam as esFinalExam } from './locales/es/behind-ai/finalExam';
 import { finalExam as jaFinalExam } from './locales/ja/behind-ai/finalExam';
 
+// כרום מבדקי הפרקים (כותרת, תת-כותרת, תוויות וכפתורים). העברית היא המקור; שאר
+// השפות הן stubs שמייצאים מחדש את העברית (fallback בטוח) עד שיתורגמו בשלב מאוחר.
+import { chapterQuiz as heChapterQuiz } from './locales/he/behind-ai/chapterQuiz';
+import { chapterQuiz as arChapterQuiz } from './locales/ar/behind-ai/chapterQuiz';
+import { chapterQuiz as ruChapterQuiz } from './locales/ru/behind-ai/chapterQuiz';
+import { chapterQuiz as enChapterQuiz } from './locales/en/behind-ai/chapterQuiz';
+import { chapterQuiz as esChapterQuiz } from './locales/es/behind-ai/chapterQuiz';
+import { chapterQuiz as jaChapterQuiz } from './locales/ja/behind-ai/chapterQuiz';
+
 // העברית מגדירה את הצורה. כל שאר השפות מוטמעות אליה.
 export type CatalogDict = typeof heCatalog;
 export type ChromeDict = typeof heChrome;
@@ -62,6 +71,7 @@ export type Chapter5Dict = typeof heChapter5;
 export type IntroductionDict = typeof heIntroduction;
 export type ConceptLabelsDict = typeof heConceptLabels;
 export type FinalExamDict = typeof heFinalExam;
+export type ChapterQuizDict = typeof heChapterQuiz;
 
 /** מרחב הלומדה "מאחורי הקלעים של AI". מתרחב עם כל פרק שעובר i18n. */
 export interface BehindAiDict {
@@ -69,6 +79,7 @@ export interface BehindAiDict {
     chapter5: Chapter5Dict;
     conceptLabels: ConceptLabelsDict;
     finalExam: FinalExamDict;
+    chapterQuiz: ChapterQuizDict;
 }
 
 export interface Dictionary {
@@ -78,12 +89,12 @@ export interface Dictionary {
 }
 
 const DICTS: Record<Locale, Dictionary> = {
-    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter5: heChapter5, conceptLabels: heConceptLabels, finalExam: heFinalExam } },
-    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter5: arChapter5, conceptLabels: arConceptLabels, finalExam: arFinalExam } },
-    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter5: ruChapter5, conceptLabels: ruConceptLabels, finalExam: ruFinalExam } },
-    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter5: enChapter5, conceptLabels: enConceptLabels, finalExam: enFinalExam } },
-    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter5: esChapter5, conceptLabels: esConceptLabels, finalExam: esFinalExam } },
-    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter5: jaChapter5, conceptLabels: jaConceptLabels, finalExam: jaFinalExam } },
+    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter5: heChapter5, conceptLabels: heConceptLabels, finalExam: heFinalExam, chapterQuiz: heChapterQuiz } },
+    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter5: arChapter5, conceptLabels: arConceptLabels, finalExam: arFinalExam, chapterQuiz: arChapterQuiz } },
+    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter5: ruChapter5, conceptLabels: ruConceptLabels, finalExam: ruFinalExam, chapterQuiz: ruChapterQuiz } },
+    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter5: enChapter5, conceptLabels: enConceptLabels, finalExam: enFinalExam, chapterQuiz: enChapterQuiz } },
+    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter5: esChapter5, conceptLabels: esConceptLabels, finalExam: esFinalExam, chapterQuiz: esChapterQuiz } },
+    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter5: jaChapter5, conceptLabels: jaConceptLabels, finalExam: jaFinalExam, chapterQuiz: jaChapterQuiz } },
 };
 
 /** מחזיר את המילון לשפה, עם נפילה לעברית אם השפה לא נמצאה. */
