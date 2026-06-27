@@ -70,4 +70,24 @@ export const chrome: typeof heChrome = {
         prev: 'Previous',
         continue: 'Continue',
     },
+
+    progress: {
+        title: 'Your progress in the course',
+        sidebarTitle: 'Quiz mastery',
+        emptyTitle: 'Your progress',
+        emptyBody: 'Complete the short understanding check at the end of each chapter, and here you will see which concepts are already strong for you and which are worth reinforcing. Your progress is saved on your device.',
+        completed: 'Completed',
+        passed: 'Passed',
+        average: 'Average',
+        finalExam: 'Final exam',
+        strongHeader: 'Strong for you',
+        weakHeader: 'Concepts worth reinforcing',
+        weakHeaderShort: 'Worth reinforcing',
+        finalExamCta: 'Go to the course final exam',
+        status: {
+            passed: 'Passed',
+            needsReview: 'Needs review',
+            notTaken: 'Not taken',
+        },
+    },
 };

@@ -70,4 +70,24 @@ export const chrome: typeof heChrome = {
         prev: '前へ',
         continue: '次へ',
     },
+
+    progress: {
+        title: 'コースでのあなたの進捗',
+        sidebarTitle: 'テストの習熟度',
+        emptyTitle: 'あなたの進捗',
+        emptyBody: '各章の最後にある短い理解度チェックを終えると、すでに身についている概念と強化したほうがよい概念がここに表示されます。進捗はお使いの端末に保存されます。',
+        completed: '完了',
+        passed: '合格',
+        average: '平均',
+        finalExam: '最終テスト',
+        strongHeader: '得意なところ',
+        weakHeader: '強化したい概念',
+        weakHeaderShort: '強化したい',
+        finalExamCta: 'コースの最終テストへ進む',
+        status: {
+            passed: '合格',
+            needsReview: '復習が必要',
+            notTaken: '未受験',
+        },
+    },
 };

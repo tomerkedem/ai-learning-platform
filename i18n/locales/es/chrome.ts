@@ -70,4 +70,24 @@ export const chrome: typeof heChrome = {
         prev: 'Anterior',
         continue: 'Continuar',
     },
+
+    progress: {
+        title: 'Tu progreso en el curso',
+        sidebarTitle: 'Dominio de los tests',
+        emptyTitle: 'Tu progreso',
+        emptyBody: 'Completa la breve comprobación de comprensión al final de cada capítulo y aquí verás qué conceptos ya dominas y cuáles conviene reforzar. Tu progreso se guarda en tu dispositivo.',
+        completed: 'Completados',
+        passed: 'Aprobados',
+        average: 'Promedio',
+        finalExam: 'Examen final',
+        strongHeader: 'Tus fortalezas',
+        weakHeader: 'Conceptos que conviene reforzar',
+        weakHeaderShort: 'Conviene reforzar',
+        finalExamCta: 'Ir al examen final del curso',
+        status: {
+            passed: 'Aprobado',
+            needsReview: 'Requiere repaso',
+            notTaken: 'Sin realizar',
+        },
+    },
 };

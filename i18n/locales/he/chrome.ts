@@ -84,4 +84,25 @@ export const chrome = {
         prev: 'הקודם',
         continue: 'המשך',
     },
+
+    // לוח ההתקדמות (MasteryDashboard / SidebarMastery): סיכום שליטה במבדקים.
+    progress: {
+        title: 'ההתקדמות שלכם בלומדה',
+        sidebarTitle: 'שליטה במבדקים',
+        emptyTitle: 'ההתקדמות שלכם',
+        emptyBody: 'השלימו מבדק הבנה קצר בסוף כל פרק, וכאן תראו אילו מושגים כבר חזקים אצלכם ואילו כדאי לחזק. ההתקדמות נשמרת במכשיר שלכם.',
+        completed: 'הושלמו',
+        passed: 'עברו',
+        average: 'ממוצע',
+        finalExam: 'מבחן סיום',
+        strongHeader: 'חזק אצלכם',
+        weakHeader: 'מושגים שכדאי לחזק',
+        weakHeaderShort: 'כדאי לחזק',
+        finalExamCta: 'מעבר למבחן סיום הלומדה',
+        status: {
+            passed: 'עבר',
+            needsReview: 'דורש חזרה',
+            notTaken: 'לא בוצע',
+        },
+    },
 };

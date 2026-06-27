@@ -70,4 +70,24 @@ export const chrome: typeof heChrome = {
         prev: 'السابق',
         continue: 'التالي',
     },
+
+    progress: {
+        title: 'تقدّمك في الدورة',
+        sidebarTitle: 'إتقان الاختبارات',
+        emptyTitle: 'تقدّمك',
+        emptyBody: 'أكمل اختبار الفهم القصير في نهاية كل فصل، وستظهر لك هنا المفاهيم التي أتقنتها بالفعل وتلك التي يستحسن تقويتها. يُحفظ تقدّمك على جهازك.',
+        completed: 'مكتملة',
+        passed: 'ناجحة',
+        average: 'المعدّل',
+        finalExam: 'الاختبار النهائي',
+        strongHeader: 'قوي لديك',
+        weakHeader: 'مفاهيم يستحسن تقويتها',
+        weakHeaderShort: 'يستحسن تقويته',
+        finalExamCta: 'الانتقال إلى الاختبار النهائي للدورة',
+        status: {
+            passed: 'ناجح',
+            needsReview: 'يتطلّب مراجعة',
+            notTaken: 'لم يُجرَ',
+        },
+    },
 };
