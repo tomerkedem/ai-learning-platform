@@ -21,6 +21,7 @@ import {
     matchedWords,
     countHits,
     hasBarcode,
+    joinTokens,
     type Confidence,
 } from './mockEngine';
 
@@ -85,10 +86,11 @@ export function traceChatEngine(text: string, viz: Chapter1VisualsDict): EngineT
     const top = r.intents[0];
     const second = r.intents[1];
     const margin = Math.max(0, (top?.value ?? 0) - (second?.value ?? 0));
+    const normalized = joinTokens(tokens, text);
 
     return [
         { id: 'c1', act: t.acts.intake, actEn: ACT_EN.intake, title: c.c1.title, titleEn: 'Raw input', note: c.c1.note, kind: 'raw', value: text || '-' },
-        { id: 'c2', act: t.acts.intake, actEn: ACT_EN.intake, title: c.c2.title, titleEn: 'Normalize', note: c.c2.note, kind: 'normalize', original: text, normalized: tokens.join(' '), changed: text !== tokens.join(' ') },
+        { id: 'c2', act: t.acts.intake, actEn: ACT_EN.intake, title: c.c2.title, titleEn: 'Normalize', note: c.c2.note, kind: 'normalize', original: text, normalized, changed: text !== normalized },
         { id: 'c3', act: t.acts.intake, actEn: ACT_EN.intake, title: c.c3.title, titleEn: 'Tokenize', note: c.c3.note, kind: 'tokens', tokens },
         { id: 'c4', act: t.acts.intake, actEn: ACT_EN.intake, title: c.c4.title, titleEn: 'Token count', note: c.c4.note, kind: 'count', value: tokens.length, unit: t.unit },
 
@@ -121,10 +123,11 @@ export function traceAgentEngine(text: string, viz: Chapter1VisualsDict): Engine
     const sensitiveMatched = matchedWords(text, vocab.sensitiveWords);
     const barcode = hasBarcode(text);
     const barcodeToken = text.match(/\d{6,}/)?.[0];
+    const normalized = joinTokens(tokens, text);
 
     return [
         { id: 'a1', act: t.acts.intake, actEn: ACT_EN.intake, title: ag.a1.title, titleEn: 'Raw input', note: ag.a1.note, kind: 'raw', value: text || '-' },
-        { id: 'a2', act: t.acts.intake, actEn: ACT_EN.intake, title: ag.a2.title, titleEn: 'Normalize', note: ag.a2.note, kind: 'normalize', original: text, normalized: tokens.join(' '), changed: text !== tokens.join(' ') },
+        { id: 'a2', act: t.acts.intake, actEn: ACT_EN.intake, title: ag.a2.title, titleEn: 'Normalize', note: ag.a2.note, kind: 'normalize', original: text, normalized, changed: text !== normalized },
         { id: 'a3', act: t.acts.intake, actEn: ACT_EN.intake, title: ag.a3.title, titleEn: 'Tokenize', note: ag.a3.note, kind: 'tokens', tokens },
         { id: 'a4', act: t.acts.intake, actEn: ACT_EN.intake, title: ag.a4.title, titleEn: 'Token count', note: ag.a4.note, kind: 'count', value: tokens.length, unit: t.unit },
 

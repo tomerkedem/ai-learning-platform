@@ -42,8 +42,90 @@ export interface AgentEngineResult {
 
 // --- עזרי טקסט ---
 
+// יפנית נכתבת בלי רווחים, ולכן פיצול-רווח היה מחזיר טוקן יחיד (ראש הקריאה תקוע על 1/1).
+// זיהוי כתב יפני (קאנה/קאנג'י) - אותו ביטוי בדיוק כמו ב-vocabFor.
+const isJapanese = (text: string) => /[぀-ヿ一-鿿]/.test(text);
+
 export function tokenize(text: string): string[] {
-    return text.trim().split(/\s+/).filter(Boolean);
+    const trimmed = text.trim();
+    if (!trimmed) return [];
+    if (isJapanese(trimmed)) return tokenizeJa(trimmed);
+    return trimmed.split(/\s+/).filter(Boolean);
+}
+
+// מפת-override דטרמיניסטית לקלטי-ההדגמה היפניים של פרק 1. בחלק מהסביבות (למשל ICU
+// מצומצם) Intl.Segmenter מפצל קאנה יתר על המידה (届/き/ま/せん במקום 届き/ません), ולכן
+// לקלטים הידועים אנו קובעים חיתוך לימודי טבעי. זו טבלת-נתונים בלבד (אין מספרים/לוגיקה
+// חדשים), מצומדת לקלט-ההדגמה ב-ja/behind-ai/chapter1*.ts (seed, forkView, counterfactual,
+// confidenceDial). אם טקסט-הדגמה במילון משתנה, הקלט פשוט נופל ל-Segmenter (נפילה חיננית).
+// ההתאמה דטרמיניסטית ולכן SSR וה-hydration זהים, בלי תלות בגרסת ה-ICU של הדפדפן.
+const JA_DEMO_SEGMENTS: Record<string, string[]> = {
+    '荷物が届きません': ['荷物', 'が', '届き', 'ません'],
+    '私の荷物はどこですか': ['私', 'の', '荷物', 'は', 'どこ', 'です', 'か'],
+    '荷物 123456789 を確認して': ['荷物', '123456789', 'を', '確認', 'して'],
+    '荷物が紛失したと顧客に伝えて': ['荷物', 'が', '紛失', 'した', 'と', '顧客', 'に', '伝えて'],
+    'これを対応して': ['これ', 'を', '対応', 'して'],
+    '注文はどこ?システムに表示されません': ['注文', 'は', 'どこ', '?', 'システム', 'に', '表示され', 'ません'],
+    '私の支払いはどこ?': ['私', 'の', '支払い', 'は', 'どこ', '?'],
+    '荷物が届きました': ['荷物', 'が', '届き', 'ました'],
+    '支払いに問題があります': ['支払い', 'に', '問題', 'が', 'あります'],
+    'システムに問題があります': ['システム', 'に', '問題', 'が', 'あります'],
+    '荷物を確認して': ['荷物', 'を', '確認', 'して'],
+    '荷物が紛失したか確認して': ['荷物', 'が', '紛失', 'した', 'か', '確認', 'して'],
+    '営業時間は何時ですか': ['営業', '時間', 'は', '何時', 'です', 'か'],
+};
+
+// פיצול יפני: קודם override דטרמיניסטי לקלטי-ההדגמה הידועים (חיתוך טבעי ולימודי); אחרת
+// Intl.Segmenter ('ja', granularity 'word'); ואם אינו זמין או החזיר מקטע יחיד, נפילה
+// לפיצול לפי מעבר-כתב (קאנג'י/היראגנה/קטקנה). בלי תלות חיצונית.
+function tokenizeJa(text: string): string[] {
+    const override = JA_DEMO_SEGMENTS[text];
+    if (override) return [...override];
+    if (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function') {
+        try {
+            const seg = new Intl.Segmenter('ja', { granularity: 'word' });
+            const out: string[] = [];
+            for (const part of seg.segment(text)) {
+                const w = part.segment.trim();
+                if (w) out.push(w);
+            }
+            if (out.length > 1) return out;
+        } catch {
+            // נפילה חיננית לפיצול לפי מעבר-כתב
+        }
+    }
+    return chunkJaByScript(text);
+}
+
+// פיצול-גיבוי לפי מעבר בין מחלקות-כתב יפניות, כשאין Intl.Segmenter.
+function chunkJaByScript(text: string): string[] {
+    const classOf = (ch: string): string => {
+        if (/\s/.test(ch)) return 'space';
+        if (/[一-鿿]/.test(ch)) return 'kanji';
+        if (/[぀-ゟ]/.test(ch)) return 'hira';
+        if (/[゠-ヿ]/.test(ch)) return 'kata';
+        return 'other';
+    };
+    const out: string[] = [];
+    let cur = '';
+    let curClass = '';
+    for (const ch of text) {
+        const cls = classOf(ch);
+        if (cls === 'space') { if (cur) { out.push(cur); cur = ''; curClass = ''; } continue; }
+        if (cur && cls !== curClass) { out.push(cur); cur = ''; }
+        cur += ch;
+        curClass = cls;
+    }
+    if (cur) out.push(cur);
+    return out.filter(Boolean);
+}
+
+// מחבר טוקנים חזרה למחרוזת (לראש הקריאה, שמריץ את המנוע על תת-מחרוזת, ולתצוגת
+// הנורמליזציה). יפנית מחוברת בלי רווחים כדי שזיהוי תת-המחרוזת של המנוע יישמר
+// (届きません לא יישבר ל-"届き ません"); שאר השפות מחוברות ברווח כרגיל. כך פלט המנוע
+// בראש הקריאה נשאר זהה להרצה הישירה, וההתנהגות ב-he/en/es/ru/ar אינה משתנה.
+export function joinTokens(tokens: string[], text: string): string {
+    return tokens.join(isJapanese(text) ? '' : ' ');
 }
 
 // עוזרים אלה מיוצאים (additive בלבד) כדי שטבלת ה-trace תוכל לחשוף את אותם
@@ -142,9 +224,9 @@ const RU_VOCAB: Vocab = {
     vagueWords: ['разберись с этим', 'разберись', 'займись этим', 'с этим'],
 };
 
-// אוצר יפנית. מצומד לקלט-ההדגמה ב-ja/chapter1*.ts. הערה: ה-tokenizer מפצל לפי רווחים,
-// והיפנית נכתבת בלי רווחים, ולכן זיהוי הכוונה (התאמת תת-מחרוזת) עובד, אך סריקת
-// המילים החזותית (ראש הקריאה, הדגשת מילת-הציר) מוגבלת ליפנית. ראו דוח C4.
+// אוצר יפנית. מצומד לקלט-ההדגמה ב-ja/chapter1*.ts. זיהוי הכוונה הוא התאמת תת-מחרוזת
+// על הטקסט הגולמי, והפיצול החזותי (ראש הקריאה, רצועת הטוקנים) משתמש ב-tokenizeJa
+// (Intl.Segmenter עם נפילה לפיצול לפי מעבר-כתב), כך שהיפנית נחתכת ליחידות מרובות.
 const JA_VOCAB: Vocab = {
     negation: ['ません', 'ない'],
     chatWords: {

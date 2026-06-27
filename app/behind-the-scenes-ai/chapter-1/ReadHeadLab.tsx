@@ -15,6 +15,7 @@ import { ProbabilityRiver } from './ProbabilityRiver';
 
 import {
     tokenize,
+    joinTokens,
     runChatEngine,
     runAgentEngine,
     type ChatEngineResult,
@@ -74,10 +75,10 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
     const runs = useMemo<Run[]>(
         () =>
             tokens.map((_, i) => {
-                const prefix = tokens.slice(0, i + 1).join(' ');
+                const prefix = joinTokens(tokens.slice(0, i + 1), text);
                 return isChat ? cachedChat(prefix) : cachedAgent(prefix);
             }),
-        [tokens, isChat],
+        [tokens, isChat, text],
     );
 
     // סדר ערוצי הנהר נגזר מהריצה על המשפט המלא (דירוג סופי), כדי שהערוצים
@@ -130,7 +131,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
         );
     }
 
-    const prefixText = tokens.slice(0, clampedHead + 1).join(' ');
+    const prefixText = joinTokens(tokens.slice(0, clampedHead + 1), text);
 
     return (
         <div className={`rounded-2xl border ${a.border} bg-slate-950/70 ${a.glow} overflow-hidden`} dir={dir}>
