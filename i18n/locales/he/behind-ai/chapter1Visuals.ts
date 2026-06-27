@@ -12,19 +12,19 @@
 // ערכים דינמיים (אחוזים, מונים, שם כלי, שם משימה) הם פונקציות, בלי שרשור מחרוזות
 // ברכיב. אין מקף ארוך (U+2014) ואין מקף קצר (U+2013) בקובץ הזה.
 //
-// ── אזהרת צימוד (חשוב ל-C3) ──
+// ── צימוד קלט-הדגמה לאוצר-המילים (C3) ──
 // השדות הבאים הם קלט-הדגמה שמוזן ישירות למנוע הלימודי, ולכן מצומדים לאוצר-המילים
-// של הזיהוי שנשאר ב-mockEngine (CHAT_RULES.words, ACTION_WORDS, SENSITIVE_WORDS,
-// DELIVERY_WORDS, NEGATION_TOKEN):
+// לזיהוי שב-mockEngine (Vocab):
 //   confidenceDial.samples[].input, forkView.samples[].input,
-//   counterfactual.experiments.*[].variants[].text + .pivot
-// כשמתרגמים אותם בשלב מאוחר, חובה לתרגם איתם גם את אוצר-המילים ב-mockEngine, אחרת
-// הזיהוי יפסיק להתאים והדמו יישבר. ב-C1 הכול נשאר עברית, ולכן עקבי.
+//   counterfactual.experiments.*[].variants[].text + .pivot, וכן chapter1.seed.
+// כל שפה חייבת שקלט-ההדגמה שלה יתאים לאוצר אותה שפה ב-mockEngine. הבחירה נעשית לפי
+// כתב הקלט (vocabFor): עברית מזוהה לפי אוצר עברי, אנגלית לפי אוצר אנגלי.
+
+import type { Locale } from '@/i18n/config';
 
 export const chapter1Visuals = {
-    // השפה שבה התוכן כתוב בפועל. קבצי השפות האחרות מייצאים מחדש את העברית (fallback),
-    // ולכן הערך 'he' בכולם עד שיתורגמו באמת.
-    contentLocale: 'he' as const,
+    // השפה שבה התוכן כתוב בפועל. קבצי שפה אחרת קובעים contentLocale משלהם.
+    contentLocale: 'he' as Locale,
 
     // ── GlassEnginePanel: כיתובים פנימיים ──
     enginePanel: {

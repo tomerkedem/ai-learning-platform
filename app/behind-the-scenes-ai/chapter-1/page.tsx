@@ -34,6 +34,9 @@ export default function BehindTheScenesChapter1() {
     // קלטי-הזרע של הצ'אט מגיעים מהמילון (seed). קלט ברירת המחדל משמש לאתחול ה-state.
     const DEFAULT_INPUT = c1.seed.defaultInput;
     const SUGGESTIONS = c1.seed.suggestions;
+    // קלט-הזרע הקודם, לזיהוי החלפת שפה. ה-SSR מרנדר עברית, ולכן ה-state ההתחלתי עברי
+    // עד שהלקוח מחליף ל-?lang אחרי mount; אז מאפסים את קלט-ההדגמה לברירת המחדל החדשה.
+    const prevSeedRef = useRef(DEFAULT_INPUT);
 
     const [mode, setMode] = useState<FlowMode>('chat');
     const [inputValue, setInputValue] = useState(DEFAULT_INPUT);
@@ -74,6 +77,22 @@ export default function BehindTheScenesChapter1() {
         const id = setTimeout(() => setLiveText(v || conversationText), 220);
         return () => clearTimeout(id);
     }, [inputValue, conversationText]);
+
+    // איפוס קלט-ההדגמה ההתחלתי כשמילון השפה מתחלף (he בעת SSR -> השפה שנבחרה אחרי mount).
+    // מאפסים רק אם הקלט עדיין שווה לברירת המחדל הקודמת, כדי לא לדרוס הקלדה/שליחה של המשתמש.
+    // רץ רק כשברירת המחדל משתנה (deps), ולכן בלי לולאה ובלי איפוס בכל render. ה-setState
+    // ב-setTimeout (לא סינכרוני ב-effect) לכבוד ה-lint. בעברית בלבד אין שינוי (אין החלפה).
+    useEffect(() => {
+        const prev = prevSeedRef.current;
+        if (prev === DEFAULT_INPUT) return;
+        prevSeedRef.current = DEFAULT_INPUT;
+        const id = setTimeout(() => {
+            setConversationText((cur) => (cur === prev ? DEFAULT_INPUT : cur));
+            setInputValue((cur) => (cur === prev ? DEFAULT_INPUT : cur));
+            setLiveText((cur) => (cur === prev ? DEFAULT_INPUT : cur));
+        }, 0);
+        return () => clearTimeout(id);
+    }, [DEFAULT_INPUT]);
 
     // זיהוי יכולת פעם אחת: האם הצ'אט החי זמין (יש ANTHROPIC_API_KEY בשרת).
     useEffect(() => {

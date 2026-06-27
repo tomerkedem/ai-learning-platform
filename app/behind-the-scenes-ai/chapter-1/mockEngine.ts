@@ -48,57 +48,90 @@ export function tokenize(text: string): string[] {
 
 // עוזרים אלה מיוצאים (additive בלבד) כדי שטבלת ה-trace תוכל לחשוף את אותם
 // בדיקות-מפתח שהמנוע כבר מבצע - מקור-אמת יחיד, בלי שכפול לוגיקה ובלי מספרים חדשים.
-export const includesAny = (text: string, words: string[]) => words.some((w) => text.includes(w));
-export const countHits = (text: string, words: string[]) => words.filter((w) => text.includes(w)).length;
-export const matchedWords = (text: string, words: string[]) => words.filter((w) => text.includes(w));
+// ההשוואה היא חסרת-רגישות לאותיות גדולות/קטנות (אוצר-המילים באותיות קטנות), כדי
+// שקלט אנגלי במשפט רגיל ("Where", "Check") יזוהה. בעברית אין אותיות גדולות, ולכן
+// toLowerCase הוא זהותי וההתנהגות העברית נשארת זהה.
+export const includesAny = (text: string, words: string[]) => { const t = text.toLowerCase(); return words.some((w) => t.includes(w)); };
+export const countHits = (text: string, words: string[]) => { const t = text.toLowerCase(); return words.filter((w) => t.includes(w)).length; };
+export const matchedWords = (text: string, words: string[]) => { const t = text.toLowerCase(); return words.filter((w) => t.includes(w)); };
 export const hasBarcode = (text: string) => /\d{6,}/.test(text);
 
-// ════════════════════ צימוד תרגום - חובה לקרוא לפני C3/C4 ════════════════════
-// אוצר-המילים לזיהוי שלמטה (NEGATION_TOKEN, CHAT_RULES[].words, ACTION_WORDS,
-// SENSITIVE_WORDS, DELIVERY_WORDS, VAGUE_WORDS) הוא לוגיקת זיהוי מבנית, לא טקסט UI
-// מוצג, ולכן הוא נשאר כאן (לא עבר למילון ב-C1).
-// הוא מצומד לקלט-ההדגמה העברי שכבר עבר למילון:
-//   chapter1.seed, chapter1Visuals.confidenceDial.samples,
-//   chapter1Visuals.forkView.samples, chapter1Visuals.counterfactual.experiments[].variants.
-// כשמתרגמים את קלט-ההדגמה הזה ב-C3/C4, חובה להפוך גם את אוצר-המילים הזה לתלוי-שפה
-// (locale-aware), אחרת הטקסט הנראה יתורגם אבל לוגיקת הזיהוי תפסיק להתאים והדמו יישבר.
-// ═══════════════════════════════════════════════════════════════════════════════
-export const NEGATION_TOKEN = 'לא';
+// ════════════════════ אוצר-מילים תלוי-שפה לזיהוי (C3) ════════════════════
+// המנוע מזהה כוונה/פעולה לפי התאמת תת-מחרוזות. אוצר-המילים הזה מצומד לקלט-ההדגמה
+// שבמילון (chapter1.seed, confidenceDial.samples, forkView.samples,
+// counterfactual.experiments[].variants), ולכן הוא חייב להיות תלוי-שפה: קלט עברי
+// מזוהה לפי אוצר עברי, קלט אנגלי לפי אוצר אנגלי.
+//
+// בחירת האוצר נעשית לפי הכתב של הקלט עצמו (vocabFor): טקסט עם אותיות עבריות => עברית,
+// אחרת => אנגלית. כך אין צורך להעביר locale דרך כל הקוראים, וגם קלט חופשי שהמשתמש
+// מקליד מזוהה לפי שפתו בפועל. ההתנהגות העברית נשארת זהה לחלוטין (אוצר HE זהה לקודם).
+//
+// מגבלת C4: זיהוי-לפי-כתב מבחין בין עברית/אנגלית (וגם ערבית/קירילית/CJK), אבל אינו
+// מבחין בין שתי שפות באותו כתב לטיני (en מול es). כשתתווסף es יידרש לאוצר מנגנון
+// תלוי-locale מפורש (העברת contentLocale פנימה), לא רק זיהוי-כתב.
+export interface Vocab {
+    /** מילת/סימן שלילה (מחזק את כוונת אי-המסירה). */
+    negation: string;
+    /** מילות-מפתח לכל כוונת Chat, לפי מפתח הכלל. */
+    chatWords: Record<ChatRuleKey, string[]>;
+    actionWords: string[];
+    sensitiveWords: string[];
+    deliveryWords: string[];
+    vagueWords: string[];
+}
+
+const HE_VOCAB: Vocab = {
+    negation: 'לא',
+    chatWords: {
+        notDelivered: ['לא הגיע', 'לא הגיעה', 'לא קיבלתי', 'לא נמסר', 'אבד', 'אבדה', 'חסר', 'איחור', 'מתעכב', 'עיכוב'],
+        tracking: ['איפה', 'היכן', 'מתי', 'סטטוס', 'מעקב', 'track', 'status'],
+        system: ['מערכת', 'אתר', 'אפליקציה', 'לא מופיע', 'לא מופיעה', 'תקלה', 'שגיאה', 'התחבר'],
+        payment: ['תשלום', 'חיוב', 'חשבונית', 'שילמתי', 'החזר', 'אשראי'],
+    },
+    actionWords: ['בדוק', 'תבדוק', 'מצא', 'שלוף', 'עדכן', 'תעדכן', 'שלח', 'תשלח', 'פתח', 'סגור', 'תטפל', 'טפל'],
+    sensitiveWords: ['שלח', 'תשלח', 'עדכן', 'תעדכן', 'מחק', 'תמחק'],
+    deliveryWords: ['חבילה', 'משלוח', 'הזמנה', 'מסירה'],
+    vagueWords: ['תטפל בזה', 'תטפל', 'זה', 'אותו'],
+};
+
+// אוצר אנגלי, מצומד לקלט-ההדגמה האנגלי שב-en/chapter1.ts ו-en/chapter1Visuals.ts.
+// נבחרו צירופים שמונעים התנגשויות תת-מחרוזת בקלטי הדמו (למשל "open" נמנע כי הוא
+// תת-מחרוזת של "opening"; כינויי-גוף בודדים כמו "it" נמנעים, מעדיפים "handle it").
+const EN_VOCAB: Vocab = {
+    negation: "n't",
+    chatWords: {
+        notDelivered: ["didn't arrive", 'did not arrive', "didn't receive", "hasn't arrived", 'never arrived', 'lost', 'missing', 'delayed', 'delay'],
+        tracking: ['where', 'when', 'status', 'track', 'tracking'],
+        system: ['system', 'not working', 'error', 'glitch', 'down', 'crash'],
+        payment: ['payment', 'charge', 'invoice', 'refund', 'billing', 'paid'],
+    },
+    actionWords: ['check', 'find', 'look up', 'update', 'send', 'tell', 'handle'],
+    sensitiveWords: ['send', 'tell', 'email', 'notify', 'update', 'delete', 'remove'],
+    deliveryWords: ['package', 'delivery', 'order', 'shipment', 'parcel'],
+    vagueWords: ['handle it', 'take care of it', 'sort it out', 'deal with it', 'just handle'],
+};
+
+/** בוחר אוצר-מילים לפי כתב הקלט: אותיות עבריות => עברית, אחרת => אנגלית. */
+export function vocabFor(text: string): Vocab {
+    return /[֐-׿]/.test(text) ? HE_VOCAB : EN_VOCAB;
+}
 
 // --- Chat Mode: דירוג כוונות ---
 
+export type ChatRuleKey = 'notDelivered' | 'tracking' | 'system' | 'payment';
+
 export interface ChatRule {
-    key: string;
+    key: ChatRuleKey;
     label: string;
     meaning: string;
-    words: string[];
 }
 
+// מבנה הכוונות (מפתח, תווית, משמעות) - לא תלוי-שפה. מילות-הזיהוי עברו ל-Vocab.
 export const CHAT_RULES: ChatRule[] = [
-    {
-        key: 'notDelivered',
-        label: 'Package not delivered',
-        meaning: 'Delivery issue',
-        words: ['לא הגיע', 'לא הגיעה', 'לא קיבלתי', 'לא נמסר', 'אבד', 'אבדה', 'חסר', 'איחור', 'מתעכב', 'עיכוב'],
-    },
-    {
-        key: 'tracking',
-        label: 'Tracking question',
-        meaning: 'Tracking request',
-        words: ['איפה', 'היכן', 'מתי', 'סטטוס', 'מעקב', 'track', 'status'],
-    },
-    {
-        key: 'system',
-        label: 'System issue',
-        meaning: 'System issue',
-        words: ['מערכת', 'אתר', 'אפליקציה', 'לא מופיע', 'לא מופיעה', 'תקלה', 'שגיאה', 'התחבר'],
-    },
-    {
-        key: 'payment',
-        label: 'Payment issue',
-        meaning: 'Payment issue',
-        words: ['תשלום', 'חיוב', 'חשבונית', 'שילמתי', 'החזר', 'אשראי'],
-    },
+    { key: 'notDelivered', label: 'Package not delivered', meaning: 'Delivery issue' },
+    { key: 'tracking', label: 'Tracking question', meaning: 'Tracking request' },
+    { key: 'system', label: 'System issue', meaning: 'System issue' },
+    { key: 'payment', label: 'Payment issue', meaning: 'Payment issue' },
 ];
 
 export const UNMATCHED_BASE = 0.15;
@@ -131,11 +164,12 @@ function confidenceFrom(intents: IntentProbability[]): Confidence {
 }
 
 export function runChatEngine(text: string): ChatEngineResult {
+    const vocab = vocabFor(text);
     const tokens = tokenize(text);
-    const hasNegation = text.includes('לא');
+    const hasNegation = text.toLowerCase().includes(vocab.negation);
 
     const raw = CHAT_RULES.map((rule) => {
-        const hits = countHits(text, rule.words);
+        const hits = countHits(text, vocab.chatWords[rule.key]);
         let score = UNMATCHED_BASE + hits * HIT_WEIGHT;
         if (rule.key === 'notDelivered' && hasNegation) score += NEGATION_BOOST;
         return { key: rule.key, label: rule.label, meaning: rule.meaning, score };
@@ -175,19 +209,15 @@ export function runChatEngine(text: string): ChatEngineResult {
 
 // --- Agent Mode: זיהוי משימה, מידע חסר, כלי, סיכון ---
 
-export const ACTION_WORDS = ['בדוק', 'תבדוק', 'מצא', 'שלוף', 'עדכן', 'תעדכן', 'שלח', 'תשלח', 'פתח', 'סגור', 'תטפל', 'טפל'];
-export const SENSITIVE_WORDS = ['שלח', 'תשלח', 'עדכן', 'תעדכן', 'מחק', 'תמחק'];
-export const DELIVERY_WORDS = ['חבילה', 'משלוח', 'הזמנה', 'מסירה'];
-export const VAGUE_WORDS = ['תטפל בזה', 'תטפל', 'זה', 'אותו'];
-
 export function runAgentEngine(text: string): AgentEngineResult {
+    const vocab = vocabFor(text);
     const tokens = tokenize(text);
 
-    const action = includesAny(text, ACTION_WORDS);
-    const sensitive = includesAny(text, SENSITIVE_WORDS);
-    const delivery = includesAny(text, DELIVERY_WORDS);
+    const action = includesAny(text, vocab.actionWords);
+    const sensitive = includesAny(text, vocab.sensitiveWords);
+    const delivery = includesAny(text, vocab.deliveryWords);
     const barcode = hasBarcode(text);
-    const vague = !delivery && !barcode && includesAny(text, VAGUE_WORDS);
+    const vague = !delivery && !barcode && includesAny(text, vocab.vagueWords);
 
     // 1. פעולה רגישה (משפיעה על לקוח/מערכת) -> עצירה לאישור
     if (sensitive) {

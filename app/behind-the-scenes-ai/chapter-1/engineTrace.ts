@@ -17,13 +17,10 @@ import {
     runChatEngine,
     runAgentEngine,
     CHAT_RULES,
-    ACTION_WORDS,
-    SENSITIVE_WORDS,
-    DELIVERY_WORDS,
+    vocabFor,
     matchedWords,
     countHits,
     hasBarcode,
-    NEGATION_TOKEN,
     type Confidence,
 } from './mockEngine';
 
@@ -70,16 +67,17 @@ export function traceChatEngine(text: string, viz: Chapter1VisualsDict): EngineT
     const r = runChatEngine(text);
     const t = viz.trace;
     const c = t.chat;
+    const vocab = vocabFor(text);
     const tokens = r.tokens;
-    const hasNeg = text.includes(NEGATION_TOKEN);
+    const hasNeg = text.toLowerCase().includes(vocab.negation);
 
     const groups = CHAT_RULES.map((rule) => ({
         label: rule.label,
-        matched: matchedWords(text, rule.words),
-        total: rule.words.length,
+        matched: matchedWords(text, vocab.chatWords[rule.key]),
+        total: vocab.chatWords[rule.key].length,
     }));
     const candidates = [
-        ...CHAT_RULES.map((rule) => ({ label: rule.label, hits: countHits(text, rule.words) })),
+        ...CHAT_RULES.map((rule) => ({ label: rule.label, hits: countHits(text, vocab.chatWords[rule.key]) })),
         { label: 'Other', hits: 0 },
     ];
     const top = r.intents[0];
@@ -93,7 +91,7 @@ export function traceChatEngine(text: string, viz: Chapter1VisualsDict): EngineT
         { id: 'c4', act: t.acts.intake, actEn: ACT_EN.intake, title: c.c4.title, titleEn: 'Token count', note: c.c4.note, kind: 'count', value: tokens.length, unit: t.unit },
 
         { id: 'c5', act: t.acts.analyze, actEn: ACT_EN.analyze, title: c.c5.title, titleEn: 'Keyword scan', note: c.c5.note, kind: 'keywords', groups },
-        { id: 'c6', act: t.acts.analyze, actEn: ACT_EN.analyze, title: c.c6.title, titleEn: 'Negation', note: c.c6.note, kind: 'flag', on: hasNeg, onLabel: t.negationOn, offLabel: t.negationOff, detail: hasNeg ? t.negationDetail : undefined, triggerToken: NEGATION_TOKEN },
+        { id: 'c6', act: t.acts.analyze, actEn: ACT_EN.analyze, title: c.c6.title, titleEn: 'Negation', note: c.c6.note, kind: 'flag', on: hasNeg, onLabel: t.negationOn, offLabel: t.negationOff, detail: hasNeg ? t.negationDetail : undefined, triggerToken: vocab.negation },
         { id: 'c7', act: t.acts.analyze, actEn: ACT_EN.analyze, title: c.c7.title, titleEn: 'Candidate intents', note: c.c7.note, kind: 'candidates', items: candidates },
 
         { id: 'c8', act: t.acts.decide, actEn: ACT_EN.decide, title: c.c8.title, titleEn: 'Probabilities', note: c.c8.note, kind: 'probabilities', items: r.intents },
@@ -114,10 +112,11 @@ export function traceAgentEngine(text: string, viz: Chapter1VisualsDict): Engine
     const r = runAgentEngine(text);
     const t = viz.trace;
     const ag = t.agent;
+    const vocab = vocabFor(text);
     const tokens = r.tokens;
-    const actionMatched = matchedWords(text, ACTION_WORDS);
-    const deliveryMatched = matchedWords(text, DELIVERY_WORDS);
-    const sensitiveMatched = matchedWords(text, SENSITIVE_WORDS);
+    const actionMatched = matchedWords(text, vocab.actionWords);
+    const deliveryMatched = matchedWords(text, vocab.deliveryWords);
+    const sensitiveMatched = matchedWords(text, vocab.sensitiveWords);
     const barcode = hasBarcode(text);
     const barcodeToken = text.match(/\d{6,}/)?.[0];
 
@@ -127,14 +126,14 @@ export function traceAgentEngine(text: string, viz: Chapter1VisualsDict): Engine
         { id: 'a3', act: t.acts.intake, actEn: ACT_EN.intake, title: ag.a3.title, titleEn: 'Tokenize', note: ag.a3.note, kind: 'tokens', tokens },
         { id: 'a4', act: t.acts.intake, actEn: ACT_EN.intake, title: ag.a4.title, titleEn: 'Token count', note: ag.a4.note, kind: 'count', value: tokens.length, unit: t.unit },
 
-        { id: 'a5', act: t.acts.task, actEn: ACT_EN.task, title: ag.a5.title, titleEn: 'Action words', note: ag.a5.note, kind: 'keywords', groups: [{ label: t.actionWordsLabel, matched: actionMatched, total: ACTION_WORDS.length }] },
-        { id: 'a6', act: t.acts.task, actEn: ACT_EN.task, title: ag.a6.title, titleEn: 'Domain scan', note: ag.a6.note, kind: 'keywords', groups: [{ label: t.deliveryDomainLabel, matched: deliveryMatched, total: DELIVERY_WORDS.length }] },
+        { id: 'a5', act: t.acts.task, actEn: ACT_EN.task, title: ag.a5.title, titleEn: 'Action words', note: ag.a5.note, kind: 'keywords', groups: [{ label: t.actionWordsLabel, matched: actionMatched, total: vocab.actionWords.length }] },
+        { id: 'a6', act: t.acts.task, actEn: ACT_EN.task, title: ag.a6.title, titleEn: 'Domain scan', note: ag.a6.note, kind: 'keywords', groups: [{ label: t.deliveryDomainLabel, matched: deliveryMatched, total: vocab.deliveryWords.length }] },
         { id: 'a7', act: t.acts.task, actEn: ACT_EN.task, title: ag.a7.title, titleEn: 'Identifier', note: ag.a7.note, kind: 'flag', on: barcode, onLabel: t.barcodeOn, offLabel: t.barcodeOff, detail: barcode ? t.barcodeOnDetail : t.barcodeOffDetail, triggerToken: barcodeToken },
         { id: 'a8', act: t.acts.task, actEn: ACT_EN.task, title: ag.a8.title, titleEn: 'Task detected', note: ag.a8.note, kind: 'raw', value: r.task },
 
         { id: 'a9', act: t.acts.risk, actEn: ACT_EN.risk, title: ag.a9.title, titleEn: 'Missing info', note: ag.a9.note, kind: 'raw', value: r.missingInfo },
         { id: 'a10', act: t.acts.risk, actEn: ACT_EN.risk, title: ag.a10.title, titleEn: 'Tool need', note: ag.a10.note, kind: 'flag', on: r.toolNeed.needed, onLabel: t.toolNeed(r.toolNeed.tool), offLabel: t.noTool },
-        { id: 'a11', act: t.acts.risk, actEn: ACT_EN.risk, title: ag.a11.title, titleEn: 'Sensitivity', note: ag.a11.note, kind: 'keywords', groups: [{ label: t.sensitiveLabel, matched: sensitiveMatched, total: SENSITIVE_WORDS.length }] },
+        { id: 'a11', act: t.acts.risk, actEn: ACT_EN.risk, title: ag.a11.title, titleEn: 'Sensitivity', note: ag.a11.note, kind: 'keywords', groups: [{ label: t.sensitiveLabel, matched: sensitiveMatched, total: vocab.sensitiveWords.length }] },
         { id: 'a12', act: t.acts.risk, actEn: ACT_EN.risk, title: ag.a12.title, titleEn: 'Action readiness', note: ag.a12.note, kind: 'flag', on: r.canActNow, onLabel: t.canActNow, offLabel: t.cannotActYet, detail: t.riskDetail(r.risk) },
 
         { id: 'a13', act: t.acts.act, actEn: ACT_EN.act, title: ag.a13.title, titleEn: 'Decision', note: ag.a13.note, kind: 'decision', decision: r.decision },
