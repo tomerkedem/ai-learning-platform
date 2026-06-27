@@ -349,6 +349,7 @@ export default function BehindTheScenesChapter1() {
                 />
                 <TransparentLabLayout
                     accent={accent}
+                    dir={dir}
                     tokens={isChat ? chat.tokens : agent.tokens}
                     chat={
                         <HoloFrame accent={accent}>

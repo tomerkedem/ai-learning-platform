@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { CheckCircle2, HelpCircle, Wrench, Hand } from 'lucide-react';
+import { useT } from '@/i18n/useT';
 import { DUR, EASE, SPRING, STAGGER } from './motionTokens';
 import type { DecisionKind, DecisionState } from './types';
 
@@ -39,6 +40,8 @@ const KIND_STYLE: Record<DecisionKind, {
 /** מציגה את ההחלטה הסופית: Answer / Ask / Tool / Stop - בחשיפה דרמטית. */
 export const DecisionCard: React.FC<DecisionCardProps> = ({ decision }) => {
     const reduce = useReducedMotion();
+    const { dir } = useT();
+    const isRtl = dir === 'rtl';
     const s = KIND_STYLE[decision.kind];
 
     return (
@@ -47,8 +50,8 @@ export const DecisionCard: React.FC<DecisionCardProps> = ({ decision }) => {
             initial={reduce ? false : { opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: DUR.mid, ease: EASE.out }}
-            className={`relative overflow-hidden rounded-2xl border bg-gradient-to-bl p-5 text-right ${s.border} ${s.grad} ${s.glow}`}
-            dir="rtl"
+            className={`relative overflow-hidden rounded-2xl border ${isRtl ? 'bg-gradient-to-bl' : 'bg-gradient-to-br'} p-5 text-start ${s.border} ${s.grad} ${s.glow}`}
+            dir={dir}
         >
             {/* תווית מצב */}
             <div className="flex items-center gap-2 mb-3">

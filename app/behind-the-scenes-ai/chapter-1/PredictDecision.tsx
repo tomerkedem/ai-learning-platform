@@ -91,11 +91,14 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
             className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/60 p-6 text-center backdrop-blur-xl md:p-8"
         >
             <div className={`pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full ${accentGlow} blur-[80px]`} />
-            {/* מנטור פנימי מגיב: הפוזה והבועה משתנות לפי תוצאת הניחוש (think/celebrate/reassure). תלוי-כיוון. */}
-            <div className={`pointer-events-none absolute bottom-0 ${isRtl ? 'right-4' : 'left-4'} z-0 hidden lg:block`}>
-                <Mentor key={mentor.pose} pose={mentor.pose} line={mentor.line} lineIcon={mentor.icon} width={112} float={false} glow={mentor.glow} flip={!isRtl} />
-            </div>
-            <div className="relative">
+            {/* פריסה יציבה: למנטור שמורה עמודה צדדית משלו (lg+), כך שאינו חופף לכפתורי
+                הבחירה ולא "נדבק" מתחתם. תלוי-כיוון: ב-RTL מימין, ב-LTR משמאל. */}
+            <div className="relative flex flex-col gap-5 lg:flex-row lg:items-stretch lg:gap-6">
+                {/* עמודת מנטור שמורה - מגיב לתוצאת הניחוש (think/celebrate/reassure) */}
+                <div className="pointer-events-none hidden shrink-0 items-end justify-center lg:flex lg:w-40">
+                    <Mentor key={mentor.pose} pose={mentor.pose} line={mentor.line} lineIcon={mentor.icon} width={124} float={false} glow={mentor.glow} flip={!isRtl} />
+                </div>
+                <div className="flex-1 text-center">
                 <span className={`mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] ${accentText}`}>
                     <HelpCircle size={14} /> {pd.eyebrow}
                 </span>
@@ -186,6 +189,7 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
                         </motion.div>
                     )}
                 </AnimatePresence>
+                </div>
             </div>
         </div>
     );

@@ -7,20 +7,25 @@ import { ACCENTS } from './accents';
 import type { Accent } from './types';
 
 interface TransparentLabLayoutProps {
-    /** ממשק הצ'אט (מימין בדסקטופ, ראשון במובייל). */
+    /** ממשק הצ'אט (ב-RTL מימין, ב-LTR משמאל; ראשון במובייל). */
     chat: React.ReactNode;
-    /** המנוע השקוף (משמאל בדסקטופ, שני במובייל). */
+    /** המנוע השקוף (ב-RTL משמאל, ב-LTR מימין; שני במובייל). */
     engine: React.ReactNode;
     accent?: Accent;
     /** הטוקנים שזורמים פיזית מהצ'אט אל המנוע (דסקטופ בלבד). */
     tokens?: string[];
+    /**
+     * כיוון הפריסה. ברירת מחדל 'rtl' (תואם את הבסיס העברי). ב-LTR סדר הלוחות מתהפך
+     * לוגית: הצ'אט עובר לשמאל והמנוע השקוף לימין, לזרימת קריאה טבעית.
+     */
+    dir?: 'rtl' | 'ltr';
 }
 
 const STREAM_SLOTS = 5;
 const STREAM_DUR = 4.4;
 
 /** מחבר ויזואלי: טוקנים אמיתיים זורמים מהצ'אט אל המנוע (דסקטופ בלבד). */
-const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[] }> = ({ accent, tokens }) => {
+const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[]; isRtl: boolean }> = ({ accent, tokens, isRtl }) => {
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
     const hasTokens = tokens.length > 0;
@@ -77,8 +82,12 @@ const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[] }> = ({ acc
                     </span>
                 ))}
 
-                {/* חץ אל המנוע (מימין למחבר) */}
-                <ChevronLeft className={`absolute top-1/2 right-0 ${a.text}`} size={16} style={{ transform: 'translateY(-50%) rotate(180deg)' }} />
+                {/* חץ אל המנוע: מצביע אל הצד שבו יושב המנוע (RTL: מימין, LTR: משמאל) */}
+                <ChevronLeft
+                    className={`absolute top-1/2 ${isRtl ? 'right-0' : 'left-0'} ${a.text}`}
+                    size={16}
+                    style={{ transform: `translateY(-50%) ${isRtl ? 'rotate(180deg)' : ''}` }}
+                />
             </div>
         </div>
     );
@@ -89,13 +98,16 @@ const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[] }> = ({ acc
  * RTL: DOM = [chat, connector, engine] -> בדסקטופ chat מימין, engine משמאל.
  * במובייל (עמודה אחת): chat למעלה, engine אחריו (המחבר מוסתר).
  */
-export const TransparentLabLayout: React.FC<TransparentLabLayoutProps> = ({ chat, engine, accent = 'cyan', tokens = [] }) => {
+export const TransparentLabLayout: React.FC<TransparentLabLayoutProps> = ({ chat, engine, accent = 'cyan', tokens = [], dir = 'rtl' }) => {
     const reduce = useReducedMotion();
+    const isRtl = dir === 'rtl';
+    // הצ'אט נכנס מהצד שאליו הוא נוחת (RTL: מימין, LTR: משמאל), והמנוע מהצד הנגדי.
+    const chatX = isRtl ? 24 : -24;
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_auto] gap-4 lg:gap-3 items-stretch" dir="rtl">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_auto] gap-4 lg:gap-3 items-stretch" dir={dir}>
             <motion.div
-                initial={reduce ? false : { opacity: 0, x: 24 }}
+                initial={reduce ? false : { opacity: 0, x: chatX }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -104,7 +116,7 @@ export const TransparentLabLayout: React.FC<TransparentLabLayoutProps> = ({ chat
             </motion.div>
 
             <motion.div
-                initial={reduce ? false : { opacity: 0, x: -24 }}
+                initial={reduce ? false : { opacity: 0, x: -chatX }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
@@ -114,7 +126,7 @@ export const TransparentLabLayout: React.FC<TransparentLabLayoutProps> = ({ chat
 
             {/* key לפי הטוקנים: המחבר נטען מחדש בכל החלפת משפט/מצב, כך שפרץ הזרימה
                 מתנגן פעם אחת ואז נעצר (במקום לולאה אינסופית). */}
-            <DataFlowConnector key={tokens.join(' ')} accent={accent} tokens={tokens} />
+            <DataFlowConnector key={tokens.join(' ')} accent={accent} tokens={tokens} isRtl={isRtl} />
         </div>
     );
 };
