@@ -11,104 +11,34 @@ import { InsightBox } from '@/components/content/InsightBox';
 import { DiscoveryGuess, type DiscoveryGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
 import { InputComparisonLab } from '@/components/ai-internals/InputComparisonLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
+import { useT } from '@/i18n/useT';
 
-/* ════════════════════════ ניחוש הפתיחה ════════════════════════ */
-
-const GUESS_CONTENT: DiscoveryGuessContent = {
-    eyebrow: 'ניחוש מהיר · מה נכנס למודל',
-    title: 'מה המודל באמת מקבל קודם כול, ברגע ששולחים הודעה?',
-    subtitle: 'בחרו את ההסבר שנראה לכם הכי קרוב. זו לא בחינה, אבל יש כיוון אחד שמקרב אותנו למה שבאמת קורה.',
-    invite: 'לפני שנפתח את זה, נסו לנחש: מה בעצם מגיע למודל ראשון?',
-    invitePose: 'guessThinking',
-    getsRightLabel: 'מה זה תופס נכון',
-    revealButton: 'חשפו את הרעיון המרכזי',
-    revealTitle: 'אז מה באמת נכנס?',
-    revealCopy:
-        'המודל לא מקבל את הכוונה שלכם ולא את התשובה מראש. נקודת הפתיחה היא הטקסט שכתבתם: המילים, הסדר, הפיסוק, ומה שלא נכתב. מכאן הוא מתחיל להסיק. לכן אותו רצון, בשני ניסוחים, יכול להכניס למודל חומר אחר לעבוד איתו.',
-    revealPose: 'pointdown',
-    cta: 'בואו נשווה כמה ניסוחים',
-    ctaTargetId: 'input-lab',
-    resetButton: 'בחרו מחדש',
-    exploreHint: 'אפשר לבחור גם אפשרות אחרת ולראות איך היא נשמעת.',
-};
-
-const GUESS_CARDS: DiscoveryGuessCard[] = [
-    {
-        id: 'intention',
-        title: 'את הכוונה שלי',
-        desc: 'המודל מבין ישירות מה רציתי, עוד לפני המילים.',
-        icon: Brain,
-        statusLabel: 'טעות נפוצה',
-        statusTone: 'common',
-        mentorPose: 'reassure',
-        getsRight: 'זו ההרגשה הטבעית, כי בין בני אדם אנחנו באמת מנחשים כוונה.',
-        missesLabel: 'מה זה מפספס',
-        misses: 'המודל לא מקבל כוונה כקלט. הוא מקבל את הטקסט ומנסה להסיק ממנו.',
-        bridge: 'לכן אותו רצון, מנוסח אחרת, יכול להוביל למשהו אחר.',
-    },
-    {
-        id: 'text',
-        title: 'את הטקסט כפי שנכתב',
-        desc: 'המילים, הסדר והפיסוק שהקלדתי, בדיוק כפי שהם.',
-        icon: FileText,
-        statusLabel: 'בחרת נכון',
-        statusTone: 'precise',
-        mentorPose: 'correct',
-        getsRight: 'בדיוק. נקודת הפתיחה היא הטקסט עצמו, על כל מה שיש בו ומה שאין.',
-        missesLabel: 'מה נשאר לראות',
-        misses: 'נראה איך שינוי קטן בניסוח משנה את החומר שהמודל מקבל.',
-        bridge: 'כל מה שקורה אחר כך מתחיל מהטקסט הזה.',
-    },
-    {
-        id: 'answer',
-        title: 'את התשובה שהוא צריך לתת',
-        desc: 'המודל כבר יודע לאן להגיע, ורק מנסח יפה.',
-        icon: MessageSquare,
-        statusLabel: 'לא השלב הזה',
-        statusTone: 'layer',
-        mentorPose: 'headsup',
-        getsRight: 'נכון שבסוף תהיה תשובה.',
-        missesLabel: 'מה זה מפספס',
-        misses: 'אבל התשובה נבנית בהמשך, היא לא משהו שהמודל מקבל בהתחלה.',
-        bridge: 'בהתחלה יש רק את הקלט, והתשובה נבנית ממנו צעד אחר צעד.',
-    },
-    {
-        id: 'important',
-        title: 'רק את המילים החשובות',
-        desc: 'המודל מסנן מראש ומשאיר את מה שחשוב.',
-        icon: Filter,
-        statusLabel: 'נכון חלקית',
-        statusTone: 'partial',
-        mentorPose: 'think',
-        getsRight: 'באמת לא כל מילה תשפיע באותה מידה בהמשך.',
-        missesLabel: 'מה זה מפספס',
-        misses: 'אבל בשלב הקלט נכנס כל הטקסט, לא רק חלקים נבחרים. שקלול החשיבות קורה אחר כך.',
-        bridge: 'קודם נכנס הכול, ורק בהמשך נקבע למה לשים לב.',
-    },
-];
+/* ════════════════════════ מטא-דאטה מבני של ניחוש הפתיחה ════════════════════════ */
+// id, אייקון, גוון סטטוס ופוזת מנטור הם מבניים (לא טקסט). הטקסט מגיע מהמילון, באותו סדר.
+const GUESS_CARD_META = [
+    { id: 'intention', icon: Brain, statusTone: 'common', mentorPose: 'reassure' },
+    { id: 'text', icon: FileText, statusTone: 'precise', mentorPose: 'correct' },
+    { id: 'answer', icon: MessageSquare, statusTone: 'layer', mentorPose: 'headsup' },
+    { id: 'important', icon: Filter, statusTone: 'partial', mentorPose: 'think' },
+] as const;
 
 /* ════════════════════════ נעילת הבנה: שאלת אבחון ════════════════════════ */
-
-const DIAG_PROMPT = 'החבילה שלי לא הגיעה?';
-const DIAG_OPTIONS = [
-    'את הבעיה המלאה, עם כל הפרטים',
-    'טקסט קצר עם סימן שאלה, בלי בקשה מפורשת',
-    'את הכוונה לפתוח פנייה לתמיכה',
-    'את התשובה שצריך להחזיר',
-];
+// התשובה הנכונה מבנית; הטקסט (שאלה, פרומפט, אפשרויות, הסבר) מגיע מהמילון.
 const DIAG_CORRECT = 1;
 
 const DiagnosisQuestion: React.FC = () => {
+    const { t } = useT();
+    const d = t.behindAi.chapter2.diagnosis;
     const [choice, setChoice] = useState<number | null>(null);
     const answered = choice !== null;
 
     return (
         <div dir="rtl" className="text-right">
-            <p className="mb-3 text-sm font-bold text-slate-200">המשתמש כתב את ההודעה הזו. מה המודל באמת קיבל?</p>
-            <p className="mb-4 rounded-lg border border-slate-700/50 bg-slate-950/40 p-3 text-sm text-slate-300">{DIAG_PROMPT}</p>
+            <p className="mb-3 text-sm font-bold text-slate-200">{d.question}</p>
+            <p className="mb-4 rounded-lg border border-slate-700/50 bg-slate-950/40 p-3 text-sm text-slate-300">{d.prompt}</p>
 
             <div className="grid gap-2 sm:grid-cols-2">
-                {DIAG_OPTIONS.map((opt, i) => {
+                {d.options.map((opt, i) => {
                     const isCorrect = i === DIAG_CORRECT;
                     const isChosen = i === choice;
                     let cls = 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600';
@@ -136,8 +66,7 @@ const DiagnosisQuestion: React.FC = () => {
                     transition={{ duration: 0.25 }}
                     className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-3 text-sm leading-relaxed text-slate-200"
                 >
-                    המודל קיבל בדיוק את הטקסט הקצר הזה: כמה מילים וסימן שאלה. אין בו בקשה מפורשת ואין פרטים. כל היתר הוא מה
-                    שאנחנו מניחים, לא מה שבאמת נכנס. כדאי שהמודל לא יניח שכבר התבקשה פעולה מסוימת.
+                    {d.explanation}
                 </motion.p>
             )}
         </div>
@@ -146,6 +75,42 @@ const DiagnosisQuestion: React.FC = () => {
 
 export default function BehindTheScenesChapter2() {
     const reduce = useReducedMotion();
+    const { t } = useT();
+    const c2 = t.behindAi.chapter2;
+
+    // תוכן ניחוש הפתיחה: טקסט מהמילון, פוזות ויעד מבניים בעמוד.
+    const guessContent: DiscoveryGuessContent = {
+        eyebrow: c2.guess.eyebrow,
+        title: c2.guess.title,
+        subtitle: c2.guess.subtitle,
+        invite: c2.guess.invite,
+        invitePose: 'guessThinking',
+        getsRightLabel: c2.guess.getsRightLabel,
+        revealButton: c2.guess.revealButton,
+        revealTitle: c2.guess.revealTitle,
+        revealCopy: c2.guess.revealCopy,
+        revealPose: 'pointdown',
+        cta: c2.guess.cta,
+        ctaTargetId: 'input-lab',
+        resetButton: c2.guess.resetButton,
+        exploreHint: c2.guess.exploreHint,
+    };
+    const guessCards: DiscoveryGuessCard[] = GUESS_CARD_META.map((m, i) => {
+        const card = c2.guess.cards[i];
+        return {
+            id: m.id,
+            icon: m.icon,
+            statusTone: m.statusTone,
+            mentorPose: m.mentorPose,
+            title: card.title,
+            desc: card.desc,
+            statusLabel: card.statusLabel,
+            getsRight: card.getsRight,
+            missesLabel: card.missesLabel,
+            misses: card.misses,
+            bridge: card.bridge,
+        };
+    });
 
     return (
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={2}>
@@ -165,53 +130,50 @@ export default function BehindTheScenesChapter2() {
                     <div className="relative z-10">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-indigo-500/30 mb-5">
                             <Type size={14} className="text-indigo-400" />
-                            <span className="font-mono text-[11px] tracking-widest uppercase text-indigo-300">Behind the Scenes · 02</span>
+                            <span className="font-mono text-[11px] tracking-widest uppercase text-indigo-300">{c2.hero.badge}</span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
-                            המודל לא מקבל את הכוונה שלכם.{' '}
+                            {c2.hero.titleLead}{' '}
                             <span className="bg-gradient-to-l from-cyan-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent">
-                                הוא מקבל את מה שכתבתם.
+                                {c2.hero.titleHighlight}
                             </span>
                         </h1>
 
                         <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">
-                            כשאנחנו כותבים לצ׳אט, קל להניח שהמודל פשוט מבין למה התכוונו. אבל עוד לפני כל הבנה, מה שנכנס פנימה
-                            הוא הטקסט עצמו: המילים, הסדר, הפיסוק, ומה שלא נכתב. בפרק הזה נגלה איך אותו רצון בדיוק, מנוסח אחרת,
-                            מכניס למודל חומר אחר לעבוד איתו.
+                            {c2.hero.lede}
                         </p>
 
-                        <p className="mt-4 text-base font-bold text-indigo-200">אם הכוונה שלי ברורה לי, למה הניסוח עדיין משנה?</p>
+                        <p className="mt-4 text-base font-bold text-indigo-200">{c2.hero.question}</p>
 
                         <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
                             <span className="inline-flex items-center gap-1.5">
-                                <MousePointerClick size={14} className="text-indigo-400" /> נחשו מה נכנס ראשון
+                                <MousePointerClick size={14} className="text-indigo-400" /> {c2.hero.chipGuess}
                             </span>
                             <span className="inline-flex items-center gap-1.5">
-                                <ArrowLeftRight size={14} className="text-cyan-400" /> השוו ניסוחים וראו מה משתנה
+                                <ArrowLeftRight size={14} className="text-cyan-400" /> {c2.hero.chipCompare}
                             </span>
                         </div>
                     </div>
                 </motion.section>
 
                 <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="inputClarity" line="נתחיל ממה שבאמת נכתב" width={165} />
+                    <Mentor pose="inputClarity" line={c2.mentor.hero} width={165} />
                 </div>
             </div>
 
             {/* ══════════ ניחוש פתיחה ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
-                <DiscoveryGuess content={GUESS_CONTENT} cards={GUESS_CARDS} />
+                <DiscoveryGuess content={guessContent} cards={guessCards} />
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
-                <InsightBox type="intuition" title="הנקודה המפתיעה">
+                <InsightBox type="intuition" title={c2.insight.title}>
                     <span className="block text-lg font-bold text-indigo-200">
-                        שתי בקשות יכולות להגיע מאותה כוונה, אבל להכניס למודל חומר אחר לגמרי.
+                        {c2.insight.lead}
                     </span>
-                    הכוונה נשארת בראש שלנו. מה שהמודל מקבל הוא הניסוח: המילים שבחרנו, הסדר שלהן, הפיסוק, ומה שהשארנו בחוץ.
-                    שינוי קטן בקלט יכול לשנות את מה שיש למודל לעבוד איתו.
+                    {c2.insight.body}
                 </InsightBox>
             </section>
 
@@ -220,20 +182,19 @@ export default function BehindTheScenesChapter2() {
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-indigo-400" />
                     <div>
-                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-indigo-400">Input Comparison Lab</div>
-                        <h3 className="text-2xl font-bold text-white">מעבדת השוואת קלט</h3>
+                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-indigo-400">{c2.inputLab.eyebrow}</div>
+                        <h3 className="text-2xl font-bold text-white">{c2.inputLab.title}</h3>
                     </div>
                 </div>
 
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    אותו צורך, חמישה ניסוחים. בחרו ניסוח וראו מה נכנס למודל בפועל: מה מפורש, מה חסר, מה השתנה, ולאן זה נוטה.
-                    המטרה היא לראות שהקלט עצמו כבר קובע הרבה, עוד לפני שמתחיל עיבוד עמוק יותר.
+                    {c2.inputLab.intro}
                 </div>
 
                 <InputComparisonLab />
 
                 <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="explain" line="אותו צורך, חומר אחר" width={160} />
+                    <Mentor pose="explain" line={c2.mentor.lab} width={160} />
                 </div>
             </section>
 
@@ -242,11 +203,10 @@ export default function BehindTheScenesChapter2() {
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
                     <div className="mb-3 flex items-center gap-2">
                         <Lightbulb size={18} className="text-amber-300" />
-                        <div className="text-sm font-bold text-slate-100">רגע מהחיים</div>
+                        <div className="text-sm font-bold text-slate-100">{c2.everyday.title}</div>
                     </div>
                     <p>
-                        כשכותבים לחבר &quot;לא הגיעה&quot;, הוא כבר יודע על מה מדובר, מהשיחה, מהטון ומההיסטוריה ביניכם. המודל מתחיל ממה
-                        שבאמת כתוב לו ומההקשר שיש לו בשיחה. הוא יכול להסיק לא מעט, אבל הוא לא מקבל את מה שיש לכם בראש.
+                        {c2.everyday.body}
                     </p>
                 </div>
             </section>
@@ -257,17 +217,17 @@ export default function BehindTheScenesChapter2() {
                     <div className="rounded-2xl border border-rose-500/30 bg-rose-950/10 p-5">
                         <div className="mb-2 flex items-center gap-2 text-rose-200">
                             <XCircle size={18} />
-                            <span className="text-sm font-bold">טעות נפוצה</span>
+                            <span className="text-sm font-bold">{c2.mistake.wrongLabel}</span>
                         </div>
-                        <p className="leading-relaxed text-slate-300">&quot;המודל יודע למה התכוונתי.&quot;</p>
+                        <p className="leading-relaxed text-slate-300">{c2.mistake.wrongText}</p>
                     </div>
                     <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/10 p-5">
                         <div className="mb-2 flex items-center gap-2 text-emerald-200">
                             <CheckCircle2 size={18} />
-                            <span className="text-sm font-bold">איך זה באמת עובד</span>
+                            <span className="text-sm font-bold">{c2.mistake.rightLabel}</span>
                         </div>
                         <p className="leading-relaxed text-slate-300">
-                            המודל יכול להסיק כוונה מתוך הטקסט וההקשר, אבל הוא לא מקבל את הכוונה עצמה כקלט ישיר.
+                            {c2.mistake.rightText}
                         </p>
                     </div>
                 </div>
@@ -276,16 +236,9 @@ export default function BehindTheScenesChapter2() {
             {/* ══════════ הסבר פשוט ════════════ */}
             <section className="mt-12 text-right" dir="rtl">
                 <div className="rounded-2xl border border-indigo-500/30 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    <div className="mb-3 text-sm font-bold text-slate-100">מה כדאי לקחת מהפרק</div>
+                    <div className="mb-3 text-sm font-bold text-slate-100">{c2.takeaway.title}</div>
                     <ul className="space-y-2">
-                        {[
-                            'הקלט הוא הטקסט שנכתב בפועל, לא הכוונה.',
-                            'ניסוח, סדר והקשר משנים את מה שיש למודל לעבוד איתו.',
-                            'פרטים חסרים יכולים לאלץ את המודל לנחש, לשאול, או לענות בכלליות.',
-                            'הוספת מספר מעקב הופכת את הבקשה למשהו שאפשר לבדוק.',
-                            'בקשת פעולה מפורשת מעלה את הסיכון ויכולה להזיז את ההתנהגות לכיוון Agent.',
-                            'תיקון באמצע שיחה משנה את ההקשר הנוכחי, לא את מה שהמודל למד באימון.',
-                        ].map((line) => (
+                        {c2.takeaway.points.map((line) => (
                             <li key={line} className="flex items-start gap-2.5">
                                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400" />
                                 <span className="text-sm">{line}</span>
@@ -298,22 +251,22 @@ export default function BehindTheScenesChapter2() {
             {/* ══════════ נעילת הבנה ══════════ */}
             <section className="relative mt-12 text-right" dir="rtl">
                 <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="happy" line="נעלתם את הרעיון" width={160} />
+                    <Mentor pose="happy" line={c2.mentor.lock} width={160} />
                 </div>
                 <div className="rounded-2xl border border-indigo-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center gap-2">
                         <Lock size={20} className="text-indigo-300" />
-                        <h3 className="text-xl font-bold text-white">נעילת הבנה</h3>
+                        <h3 className="text-xl font-bold text-white">{c2.lock.title}</h3>
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">
                         <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/10 p-4">
-                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-emerald-300">אמת</div>
-                            <p className="text-sm leading-relaxed text-slate-200">המודל מתחיל ממה שנכתב בפועל.</p>
+                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-emerald-300">{c2.lock.truthLabel}</div>
+                            <p className="text-sm leading-relaxed text-slate-200">{c2.lock.truthText}</p>
                         </div>
                         <div className="rounded-xl border border-rose-500/30 bg-rose-950/10 p-4">
-                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-rose-300">טעות</div>
-                            <p className="text-sm leading-relaxed text-slate-200">המודל מקבל את הכוונה שלי כמו שהיא.</p>
+                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-rose-300">{c2.lock.mistakeLabel}</div>
+                            <p className="text-sm leading-relaxed text-slate-200">{c2.lock.mistakeText}</p>
                         </div>
                     </div>
 
