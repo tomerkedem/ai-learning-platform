@@ -37,16 +37,27 @@ import { introduction as enIntroduction } from './locales/en/behind-ai/introduct
 import { introduction as esIntroduction } from './locales/es/behind-ai/introduction';
 import { introduction as jaIntroduction } from './locales/ja/behind-ai/introduction';
 
+// תוויות תצוגה למושגים (concept) של הלומדה. העברית היא המקור (מפת זהות); שאר השפות
+// הן stubs שמייצאים מחדש את העברית (fallback בטוח) עד שיתורגמו בשלב B3.
+import { conceptLabels as heConceptLabels } from './locales/he/behind-ai/conceptLabels';
+import { conceptLabels as arConceptLabels } from './locales/ar/behind-ai/conceptLabels';
+import { conceptLabels as ruConceptLabels } from './locales/ru/behind-ai/conceptLabels';
+import { conceptLabels as enConceptLabels } from './locales/en/behind-ai/conceptLabels';
+import { conceptLabels as esConceptLabels } from './locales/es/behind-ai/conceptLabels';
+import { conceptLabels as jaConceptLabels } from './locales/ja/behind-ai/conceptLabels';
+
 // העברית מגדירה את הצורה. כל שאר השפות מוטמעות אליה.
 export type CatalogDict = typeof heCatalog;
 export type ChromeDict = typeof heChrome;
 export type Chapter5Dict = typeof heChapter5;
 export type IntroductionDict = typeof heIntroduction;
+export type ConceptLabelsDict = typeof heConceptLabels;
 
 /** מרחב הלומדה "מאחורי הקלעים של AI". מתרחב עם כל פרק שעובר i18n. */
 export interface BehindAiDict {
     introduction: IntroductionDict;
     chapter5: Chapter5Dict;
+    conceptLabels: ConceptLabelsDict;
 }
 
 export interface Dictionary {
@@ -56,12 +67,12 @@ export interface Dictionary {
 }
 
 const DICTS: Record<Locale, Dictionary> = {
-    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter5: heChapter5 } },
-    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter5: arChapter5 } },
-    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter5: ruChapter5 } },
-    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter5: enChapter5 } },
-    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter5: esChapter5 } },
-    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter5: jaChapter5 } },
+    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter5: heChapter5, conceptLabels: heConceptLabels } },
+    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter5: arChapter5, conceptLabels: arConceptLabels } },
+    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter5: ruChapter5, conceptLabels: ruConceptLabels } },
+    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter5: enChapter5, conceptLabels: enConceptLabels } },
+    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter5: esChapter5, conceptLabels: esConceptLabels } },
+    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter5: jaChapter5, conceptLabels: jaConceptLabels } },
 };
 
 /** מחזיר את המילון לשפה, עם נפילה לעברית אם השפה לא נמצאה. */

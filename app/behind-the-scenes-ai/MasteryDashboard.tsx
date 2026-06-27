@@ -62,6 +62,7 @@ function finalExamText(status: FinalExamStatus, progress: ProgressDict): { label
 export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta?: boolean }) {
     const { dir, t } = useT();
     const progress = t.chrome.progress;
+    const conceptLabels = t.behindAi.conceptLabels;
     const summary = useMasterySummary();
 
     if (!summary || !summary.hasAnyData) {
@@ -113,7 +114,7 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                         {summary.strongConcepts.slice(0, 6).map(c => (
-                            <span key={c} className="text-[11px] font-bold text-emerald-200 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">{c}</span>
+                            <span key={c} className="text-[11px] font-bold text-emerald-200 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">{conceptLabels[c] ?? c}</span>
                         ))}
                     </div>
                 </div>
@@ -126,7 +127,7 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                         {summary.weakConcepts.slice(0, 6).map(c => (
-                            <span key={c} className="text-[11px] font-bold text-amber-200 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">{c}</span>
+                            <span key={c} className="text-[11px] font-bold text-amber-200 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">{conceptLabels[c] ?? c}</span>
                         ))}
                     </div>
                 </div>
@@ -154,6 +155,7 @@ const SIDEBAR_OPEN_KEY = "behindAiMasterySidebarOpen";
 export function SidebarMastery() {
     const { dir, t } = useT();
     const progress = t.chrome.progress;
+    const conceptLabels = t.behindAi.conceptLabels;
     const summary = useMasterySummary();
     const [open, setOpen] = useState(false);
 
@@ -229,7 +231,7 @@ export function SidebarMastery() {
                                     <div className="text-[9px] text-amber-400 font-bold mb-1.5">{progress.weakHeaderShort}</div>
                                     <div className="flex flex-wrap gap-1">
                                         {summary.weakConcepts.slice(0, 3).map(c => (
-                                            <span key={c} className="text-[10px] font-medium text-amber-200/90 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{c}</span>
+                                            <span key={c} className="text-[10px] font-medium text-amber-200/90 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{conceptLabels[c] ?? c}</span>
                                         ))}
                                     </div>
                                 </div>
