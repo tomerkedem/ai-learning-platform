@@ -1,6 +1,36 @@
 // i18n/locales/ja/behind-ai/chapterQuiz.ts
 // Japanese chapter-quiz chrome. Shape source: ../../he/behind-ai/chapterQuiz.
-// Phase 1 stub: re-exports the Hebrew strings as a safe fallback. Display text only;
-// behavior stays in quizData.ts. Real Japanese translation lands in a later phase.
+//
+// Display text only. Quiz behavior stays in quizData.ts. Question content is out of
+// scope here. "AI" and other Latin terms (Attention, Tool Call, Tokenization, prompt)
+// are kept on purpose. No em dash (U+2014) and no en dash (U+2013).
 
-export { chapterQuiz } from '../../he/behind-ai/chapterQuiz';
+export const chapterQuiz = {
+    subtitle: 'この章で学んだことを確かめる5つの問題',
+    startLabel: 'テストを始める',
+    submitLabel: 'テストを終える',
+    completedTitle: 'テスト完了',
+
+    title: (chapterName: string) => `理解度テスト: ${chapterName}`,
+    reviewLinkLabel: (chapterNumber: number, chapterName: string) =>
+        `第${chapterNumber}章に戻る: ${chapterName}`,
+
+    chapterNames: {
+        1: '答えへの道',
+        2: 'モデルに本当に入るもの',
+        3: 'Tokenization、テキストが分かれる',
+        4: '確率エンジンとしての AI',
+        5: 'AI はどう答えを作るか',
+        6: '言葉から数へ',
+        7: '意味の幾何学',
+        8: 'Attention、いま何が重要か',
+        9: '自信と判断のゲート',
+        10: 'prompt から課題へ',
+        11: 'ツールの選択',
+        12: 'Tool Call と判断ループ',
+        13: '停止、承認、責任',
+        14: '統合ラボ',
+        15: 'AI は失敗から学ぶか',
+        16: 'AI と上手に付き合う',
+    } as Record<number, string>,
+};

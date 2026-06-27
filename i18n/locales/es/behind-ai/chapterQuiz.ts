@@ -1,6 +1,37 @@
 // i18n/locales/es/behind-ai/chapterQuiz.ts
-// Spanish chapter-quiz chrome. Shape source: ../../he/behind-ai/chapterQuiz.
-// Phase 1 stub: re-exports the Hebrew strings as a safe fallback. Display text only;
-// behavior stays in quizData.ts. Real Spanish translation lands in a later phase.
+// Spanish (neutral international) chapter-quiz chrome.
+// Shape source: ../../he/behind-ai/chapterQuiz.
+//
+// Display text only. Quiz behavior stays in quizData.ts. Question content is out of
+// scope here. "IA" is used in Spanish prose. No em dash (U+2014) and no en dash
+// (U+2013). Latin terms (Attention, Tool Call, Tokenization, prompt) are kept.
 
-export { chapterQuiz } from '../../he/behind-ai/chapterQuiz';
+export const chapterQuiz = {
+    subtitle: 'Cinco preguntas que afinan lo que aprendiste en este capítulo',
+    startLabel: 'Comenzar el cuestionario',
+    submitLabel: 'Finalizar el cuestionario',
+    completedTitle: 'Cuestionario completado',
+
+    title: (chapterName: string) => `Cuestionario de comprensión: ${chapterName}`,
+    reviewLinkLabel: (chapterNumber: number, chapterName: string) =>
+        `Volver al capítulo ${chapterNumber}: ${chapterName}`,
+
+    chapterNames: {
+        1: 'El camino hacia la respuesta',
+        2: 'Qué entra realmente en el modelo',
+        3: 'Tokenization, el texto se descompone',
+        4: 'La IA como motor probabilístico',
+        5: 'Cómo construye una respuesta la IA',
+        6: 'De palabras a números',
+        7: 'La geometría del significado',
+        8: 'Attention, qué importa ahora',
+        9: 'Confianza y la puerta de decisión',
+        10: 'Del prompt a la tarea',
+        11: 'Elegir una herramienta',
+        12: 'Tool Call y el bucle de decisión',
+        13: 'Detenerse, aprobar y responsabilidad',
+        14: 'El laboratorio unificado',
+        15: '¿Aprende la IA de los errores?',
+        16: 'Trabajar bien con la IA',
+    } as Record<number, string>,
+};
