@@ -189,8 +189,9 @@ export default function BehindTheScenesIntroPage() {
             </motion.div>
 
             {/* המנטור עומד בצד הקריאה הטבעי של הכרטיס המרכזי (xl+ בלבד). */}
+            {/* ב-LTR הוא יושב מימין לכרטיס, ולכן מהופך אופקית כדי לפנות אל התוכן ולא ממנו. */}
             <div className={`absolute top-44 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-              <Mentor pose="hero" line={intro.mentor.hero} width={180} />
+              <Mentor pose="hero" line={intro.mentor.hero} width={180} flip={!isRtl} />
             </div>
           </div>
 
@@ -246,8 +247,9 @@ export default function BehindTheScenesIntroPage() {
             <div className="relative">
               <IntroRoadmap zones={roadmapZones} stations={roadmapStations} stationDetailLabels={intro.stationDetailLabels} reduce={!!reduce} dir={dir} defaultOpenId="tokenize" />
               {/* המנטור מלווה את המפה (xl+), בצד הקריאה הטבעי של הכיוון הפעיל */}
+              {/* ב-LTR הוא יושב מימין למפה, ולכן מהופך אופקית כדי לפנות אל התוכן ולא ממנו. */}
               <div className={`absolute top-6 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                <Mentor pose="mapNavigator" line={intro.mentor.roadmap} width={170} />
+                <Mentor pose="mapNavigator" line={intro.mentor.roadmap} width={170} flip={!isRtl} />
               </div>
             </div>
 
