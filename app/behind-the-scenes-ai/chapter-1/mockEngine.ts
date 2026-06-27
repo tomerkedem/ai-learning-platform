@@ -56,22 +56,22 @@ export const countHits = (text: string, words: string[]) => { const t = text.toL
 export const matchedWords = (text: string, words: string[]) => { const t = text.toLowerCase(); return words.filter((w) => t.includes(w)); };
 export const hasBarcode = (text: string) => /\d{6,}/.test(text);
 
-// ════════════════════ אוצר-מילים תלוי-שפה לזיהוי (C3) ════════════════════
-// המנוע מזהה כוונה/פעולה לפי התאמת תת-מחרוזות. אוצר-המילים הזה מצומד לקלט-ההדגמה
-// שבמילון (chapter1.seed, confidenceDial.samples, forkView.samples,
-// counterfactual.experiments[].variants), ולכן הוא חייב להיות תלוי-שפה: קלט עברי
-// מזוהה לפי אוצר עברי, קלט אנגלי לפי אוצר אנגלי.
+// ════════════════════ אוצר-מילים תלוי-שפה לזיהוי (C3/C4) ════════════════════
+// המנוע מזהה כוונה/פעולה לפי התאמת תת-מחרוזות. אוצר-המילים מצומד לקלט-ההדגמה שבמילון
+// (chapter1.seed, confidenceDial.samples, forkView.samples, counterfactual.variants),
+// ולכן הוא תלוי-שפה: כל שפה מזוהה לפי האוצר שלה.
 //
-// בחירת האוצר נעשית לפי הכתב של הקלט עצמו (vocabFor): טקסט עם אותיות עבריות => עברית,
-// אחרת => אנגלית. כך אין צורך להעביר locale דרך כל הקוראים, וגם קלט חופשי שהמשתמש
-// מקליד מזוהה לפי שפתו בפועל. ההתנהגות העברית נשארת זהה לחלוטין (אוצר HE זהה לקודם).
+// בחירת האוצר נעשית לפי כתב הקלט (vocabFor): עברית / ערבית / קירילית / יפנית מזוהות
+// לפי הכתב; כל השאר (לטיני) נופל לאוצר LATIN. אנגלית וספרדית חולקות כתב לטיני ולכן
+// אינן ניתנות להפרדה לפי כתב - לכן LATIN_VOCAB מאחד את שתיהן (מילות en + es יחד).
+// התאמת תת-מחרוזת מבטיחה שקלט אנגלי פוגע במילים האנגליות וקלט ספרדי במילים הספרדיות,
+// בלי התנגשות (נבדק שאין מילה של שפה אחת שהיא תת-מחרוזת של קלט השפה האחרת).
+// ההתנהגות העברית והאנגלית נשארות זהות לחלוטין.
 //
-// מגבלת C4: זיהוי-לפי-כתב מבחין בין עברית/אנגלית (וגם ערבית/קירילית/CJK), אבל אינו
-// מבחין בין שתי שפות באותו כתב לטיני (en מול es). כשתתווסף es יידרש לאוצר מנגנון
-// תלוי-locale מפורש (העברת contentLocale פנימה), לא רק זיהוי-כתב.
+// negation הוא מערך (כל שפה עשויה להזדקק לכמה סימני שלילה; לטיני מאחד en+es).
 export interface Vocab {
-    /** מילת/סימן שלילה (מחזק את כוונת אי-המסירה). */
-    negation: string;
+    /** סימני שלילה (מחזקים את כוונת אי-המסירה). includesAny => חסר-רגישות לאותיות. */
+    negation: string[];
     /** מילות-מפתח לכל כוונת Chat, לפי מפתח הכלל. */
     chatWords: Record<ChatRuleKey, string[]>;
     actionWords: string[];
@@ -81,7 +81,7 @@ export interface Vocab {
 }
 
 const HE_VOCAB: Vocab = {
-    negation: 'לא',
+    negation: ['לא'],
     chatWords: {
         notDelivered: ['לא הגיע', 'לא הגיעה', 'לא קיבלתי', 'לא נמסר', 'אבד', 'אבדה', 'חסר', 'איחור', 'מתעכב', 'עיכוב'],
         tracking: ['איפה', 'היכן', 'מתי', 'סטטוס', 'מעקב', 'track', 'status'],
@@ -94,26 +94,78 @@ const HE_VOCAB: Vocab = {
     vagueWords: ['תטפל בזה', 'תטפל', 'זה', 'אותו'],
 };
 
-// אוצר אנגלי, מצומד לקלט-ההדגמה האנגלי שב-en/chapter1.ts ו-en/chapter1Visuals.ts.
-// נבחרו צירופים שמונעים התנגשויות תת-מחרוזת בקלטי הדמו (למשל "open" נמנע כי הוא
-// תת-מחרוזת של "opening"; כינויי-גוף בודדים כמו "it" נמנעים, מעדיפים "handle it").
-const EN_VOCAB: Vocab = {
-    negation: "n't",
+// אוצר לטיני: אנגלית + ספרדית יחד (שני הכתבים לטיניים, אי אפשר להפריד לפי כתב).
+// es: "no " עם רווח נבחר כסימן שלילה כדי לא להתנגש ב-"not" האנגלי (n-o-t).
+const LATIN_VOCAB: Vocab = {
+    negation: ["n't", 'no '],
     chatWords: {
-        notDelivered: ["didn't arrive", 'did not arrive', "didn't receive", "hasn't arrived", 'never arrived', 'lost', 'missing', 'delayed', 'delay'],
-        tracking: ['where', 'when', 'status', 'track', 'tracking'],
-        system: ['system', 'not working', 'error', 'glitch', 'down', 'crash'],
-        payment: ['payment', 'charge', 'invoice', 'refund', 'billing', 'paid'],
+        notDelivered: ["didn't arrive", 'did not arrive', "didn't receive", "hasn't arrived", 'never arrived', 'lost', 'missing', 'delayed', 'delay',
+            'no llegó', 'no llego', 'se perdió', 'se perdio', 'perdido', 'perdida', 'no recibí', 'no recibi', 'extraviado', 'retraso'],
+        tracking: ['where', 'when', 'status', 'track', 'tracking', 'dónde', 'donde', 'cuándo', 'cuando', 'estado', 'seguimiento', 'rastreo'],
+        system: ['system', 'not working', 'error', 'glitch', 'down', 'crash', 'sistema', 'aplicación', 'aplicacion', 'no aparece', 'falla', 'no funciona'],
+        payment: ['payment', 'charge', 'invoice', 'refund', 'billing', 'paid', 'pago', 'cobro', 'factura', 'reembolso', 'pagué', 'pague', 'tarjeta'],
     },
-    actionWords: ['check', 'find', 'look up', 'update', 'send', 'tell', 'handle'],
-    sensitiveWords: ['send', 'tell', 'email', 'notify', 'update', 'delete', 'remove'],
-    deliveryWords: ['package', 'delivery', 'order', 'shipment', 'parcel'],
-    vagueWords: ['handle it', 'take care of it', 'sort it out', 'deal with it', 'just handle'],
+    actionWords: ['check', 'find', 'look up', 'update', 'send', 'tell', 'handle',
+        'revisa', 'revisar', 'busca', 'encuentra', 'actualiza', 'envía', 'envia', 'avisa', 'encárgate', 'encargate', 'gestiona'],
+    sensitiveWords: ['send', 'tell', 'email', 'notify', 'update', 'delete', 'remove', 'envía', 'envia', 'avisa', 'notifica', 'actualiza', 'elimina', 'borra'],
+    deliveryWords: ['package', 'delivery', 'order', 'shipment', 'parcel', 'paquete', 'envío', 'envio', 'pedido', 'entrega', 'encomienda'],
+    vagueWords: ['handle it', 'take care of it', 'sort it out', 'deal with it', 'just handle', 'encárgate de esto', 'encárgate', 'ocúpate', 'de esto'],
 };
 
-/** בוחר אוצר-מילים לפי כתב הקלט: אותיות עבריות => עברית, אחרת => אנגלית. */
+// אוצר ערבית (MSA). מצומד לקלט-ההדגמה ב-ar/chapter1*.ts.
+const AR_VOCAB: Vocab = {
+    negation: ['لم '],
+    chatWords: {
+        notDelivered: ['لم يصل', 'لم تصل', 'فُقد', 'فقد', 'ضاع', 'ضائع', 'مفقود', 'لم أستلم', 'تأخر', 'متأخر'],
+        tracking: ['أين', 'متى', 'حالة', 'تتبع', 'تعقب'],
+        system: ['النظام', 'نظام', 'الموقع', 'التطبيق', 'لا يظهر', 'خطأ', 'عطل', 'لا يعمل'],
+        payment: ['دفع', 'الدفع', 'دفعة', 'دفعتي', 'فاتورة', 'استرداد', 'بطاقة'],
+    },
+    actionWords: ['تحقق', 'افحص', 'ابحث', 'حدّث', 'أرسل', 'أبلغ', 'تولَّ', 'تولى', 'عالج'],
+    sensitiveWords: ['أرسل', 'أبلغ', 'حدّث', 'احذف', 'عدّل'],
+    deliveryWords: ['طرد', 'الطرد', 'طردي', 'شحنة', 'طلب', 'توصيل'],
+    vagueWords: ['تولَّ هذا', 'هذا الأمر', 'تولَّ', 'اعتنِ'],
+};
+
+// אוצר רוסית. מצומד לקלט-ההדגמה ב-ru/chapter1*.ts.
+const RU_VOCAB: Vocab = {
+    negation: ['не '],
+    chatWords: {
+        notDelivered: ['не пришла', 'не пришёл', 'не пришел', 'потерял', 'потеряна', 'потерян', 'пропал', 'пропала', 'не получил', 'задержка', 'задерживается'],
+        tracking: ['где', 'когда', 'статус', 'отслеживание', 'трек'],
+        system: ['систем', 'сайт', 'приложение', 'нет в системе', 'ошибка', 'сбой', 'не работает'],
+        payment: ['платёж', 'платеж', 'оплата', 'счёт', 'счет', 'возврат', 'оплатил', 'карта'],
+    },
+    actionWords: ['проверь', 'проверить', 'найди', 'обнови', 'отправь', 'сообщи', 'разберись', 'займись'],
+    sensitiveWords: ['отправь', 'сообщи', 'уведоми', 'обнови', 'удали'],
+    deliveryWords: ['посылка', 'посылку', 'посылки', 'доставка', 'заказ', 'отправление'],
+    vagueWords: ['разберись с этим', 'разберись', 'займись этим', 'с этим'],
+};
+
+// אוצר יפנית. מצומד לקלט-ההדגמה ב-ja/chapter1*.ts. הערה: ה-tokenizer מפצל לפי רווחים,
+// והיפנית נכתבת בלי רווחים, ולכן זיהוי הכוונה (התאמת תת-מחרוזת) עובד, אך סריקת
+// המילים החזותית (ראש הקריאה, הדגשת מילת-הציר) מוגבלת ליפנית. ראו דוח C4.
+const JA_VOCAB: Vocab = {
+    negation: ['ません', 'ない'],
+    chatWords: {
+        notDelivered: ['届きません', '届かない', '紛失', 'なくし', '失われ', '届いていません', '遅延', '遅れ'],
+        tracking: ['どこ', 'いつ', '状況', '追跡', 'ステータス'],
+        system: ['システム', 'サイト', 'アプリ', '表示されません', 'エラー', '不具合', '動かない'],
+        payment: ['支払い', '支払', '請求', '返金', '決済', 'カード'],
+    },
+    actionWords: ['確認', '調べ', '探し', '更新', '送信', '伝え', '対応', '処理'],
+    sensitiveWords: ['送信', '送って', '伝え', '通知', '更新', '削除'],
+    deliveryWords: ['荷物', '小包', '配送', '注文', '発送'],
+    vagueWords: ['これを対応', 'これを', '対応して', 'よろしく'],
+};
+
+/** בוחר אוצר-מילים לפי כתב הקלט. לטיני (en/es) מאוחד. */
 export function vocabFor(text: string): Vocab {
-    return /[֐-׿]/.test(text) ? HE_VOCAB : EN_VOCAB;
+    if (/[֐-׿]/.test(text)) return HE_VOCAB;                 // עברית
+    if (/[؀-ۿ]/.test(text)) return AR_VOCAB;                 // ערבית
+    if (/[Ѐ-ӿ]/.test(text)) return RU_VOCAB;                 // קירילית (רוסית)
+    if (/[぀-ヿ一-鿿]/.test(text)) return JA_VOCAB;    // יפנית (קאנה/קאנג'י)
+    return LATIN_VOCAB;                                                // לטיני (en + es)
 }
 
 // --- Chat Mode: דירוג כוונות ---
@@ -166,7 +218,7 @@ function confidenceFrom(intents: IntentProbability[]): Confidence {
 export function runChatEngine(text: string): ChatEngineResult {
     const vocab = vocabFor(text);
     const tokens = tokenize(text);
-    const hasNegation = text.toLowerCase().includes(vocab.negation);
+    const hasNegation = includesAny(text, vocab.negation);
 
     const raw = CHAT_RULES.map((rule) => {
         const hits = countHits(text, vocab.chatWords[rule.key]);

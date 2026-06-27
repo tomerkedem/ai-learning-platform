@@ -69,7 +69,9 @@ export function traceChatEngine(text: string, viz: Chapter1VisualsDict): EngineT
     const c = t.chat;
     const vocab = vocabFor(text);
     const tokens = r.tokens;
-    const hasNeg = text.toLowerCase().includes(vocab.negation);
+    const lc = text.toLowerCase();
+    const hasNeg = vocab.negation.some((w) => lc.includes(w));
+    const negToken = vocab.negation.find((w) => lc.includes(w))?.trim();
 
     const groups = CHAT_RULES.map((rule) => ({
         label: rule.label,
@@ -91,7 +93,7 @@ export function traceChatEngine(text: string, viz: Chapter1VisualsDict): EngineT
         { id: 'c4', act: t.acts.intake, actEn: ACT_EN.intake, title: c.c4.title, titleEn: 'Token count', note: c.c4.note, kind: 'count', value: tokens.length, unit: t.unit },
 
         { id: 'c5', act: t.acts.analyze, actEn: ACT_EN.analyze, title: c.c5.title, titleEn: 'Keyword scan', note: c.c5.note, kind: 'keywords', groups },
-        { id: 'c6', act: t.acts.analyze, actEn: ACT_EN.analyze, title: c.c6.title, titleEn: 'Negation', note: c.c6.note, kind: 'flag', on: hasNeg, onLabel: t.negationOn, offLabel: t.negationOff, detail: hasNeg ? t.negationDetail : undefined, triggerToken: vocab.negation },
+        { id: 'c6', act: t.acts.analyze, actEn: ACT_EN.analyze, title: c.c6.title, titleEn: 'Negation', note: c.c6.note, kind: 'flag', on: hasNeg, onLabel: t.negationOn, offLabel: t.negationOff, detail: hasNeg ? t.negationDetail : undefined, triggerToken: negToken },
         { id: 'c7', act: t.acts.analyze, actEn: ACT_EN.analyze, title: c.c7.title, titleEn: 'Candidate intents', note: c.c7.note, kind: 'candidates', items: candidates },
 
         { id: 'c8', act: t.acts.decide, actEn: ACT_EN.decide, title: c.c8.title, titleEn: 'Probabilities', note: c.c8.note, kind: 'probabilities', items: r.intents },

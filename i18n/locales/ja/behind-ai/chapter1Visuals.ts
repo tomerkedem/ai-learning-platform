@@ -1,4 +1,339 @@
 // i18n/locales/ja/behind-ai/chapter1Visuals.ts
-// Japanese Chapter 1 visuals - fallback stub. Re-exports Hebrew until translated in a
-// later phase (C3). Shape source: ../../he/behind-ai/chapter1Visuals.
-export { chapter1Visuals } from '../../he/behind-ai/chapter1Visuals';
+// Japanese Chapter 1 visuals. Shape source: ../../he/behind-ai/chapter1Visuals.
+// contentLocale = 'ja' (real translation).
+//
+// No em dash (U+2014) and no en dash (U+2013). Mentor bubble text carries no emoji.
+
+import type { Locale } from '@/i18n/config';
+
+export const chapter1Visuals = {
+    contentLocale: 'ja' as Locale,
+
+    // GlassEnginePanel: inner labels
+    enginePanel: {
+        stations: '主要なステーション',
+        actLabel: '工程',
+        normalizeTrimmed: '元の入力と比べて余分なスペースが削除されました。',
+        inputClean: '入力はすでにきれい - 直すものはありません',
+        noTokens: 'まだトークンはありません。',
+        noMatch: '- 一致なし',
+        claudeTokens: (n: number) => `Claude (実際): ${n} トークン`,
+        claudeNote: '上の数は単語単位の数え方です。実際の数は異なります。モデルはサブワードに分割するためで、分割そのものは公開されず、数だけが分かります。',
+    },
+
+    // engineTrace: station names, titles, captions and labels
+    trace: {
+        acts: {
+            intake: '受け取り',
+            analyze: '分析',
+            decide: '判断',
+            output: '出力',
+            task: 'タスク検出',
+            risk: '責任とリスク',
+            act: '判断と出力',
+        },
+        unit: 'トークン',
+
+        chat: {
+            c1: { title: '生の入力', note: 'あなたが書いたテキスト、届いたそのままの形です。' },
+            c2: { title: '正規化', note: '余分なスペースが削除され、処理に向けてテキストが整えられます。' },
+            c3: { title: 'トークン化', note: 'テキストを単位に分割します。ここでの分割は説明のため単語単位です。実際のモデルはサブワードに分割し、その分割はモデルごとに異なるため、同じ文でもモデルごとにトークン数が変わります。' },
+            c4: { title: 'トークン数', note: '処理する単位がいくつあるか。リクエストの大きさを示す最初の手がかりです。' },
+            c5: { title: 'キーワード走査', note: '入力のどの単語がどの意図を呼び起こすか。ランキングを動かす手がかりです。' },
+            c6: { title: '否定の検出', note: '否定語は問題を苦情に変え、「未配達」の意図を強めます。' },
+            c7: { title: '候補となる意図', note: '考えられるすべての意図が、それぞれの一致数を携えて土俵に上がります。' },
+            c8: { title: '確率分布', note: '一致が合計100%の確率に変わります。最も高いものが先頭に立ちます。' },
+            c9: { title: '先頭の選択', note: '最も確率の高い意図がリーダーとして選ばれます。' },
+            c10: { title: '差', note: '1位と2位の差。誰が先頭かだけでなく、どれだけ差があるかです。' },
+            c11: { title: '確信度', note: '差が確信度に変換されます: 高・中・低です。' },
+            c12: { title: '意味領域', note: '先頭の意図が、回答を導く意味の領域に対応づけられます。' },
+            c13: { title: '判断', note: '確信が十分なら回答し、そうでなければ止まって確認を求めます。' },
+            c14: { title: '出力の状態', note: '判断を受けてエンジンが実際に返そうとしているもの。' },
+            c15: { title: '回答', note: 'ユーザーに表示される最終的な文面。' },
+        },
+        negationOn: '否定あり',
+        negationOff: '否定なし',
+        negationDetail: '「Package not delivered」を強めます',
+
+        agent: {
+            a1: { title: '生の入力', note: 'あなたが書いた依頼、行動エンジンへの入口です。' },
+            a2: { title: '正規化', note: '余分なスペースが削除され、処理に向けてテキストが整えられます。' },
+            a3: { title: 'トークン化', note: 'テキストを単位に分割します。ここでの分割は説明のため単語単位です。実際のモデルはサブワードに分割し、その分割はモデルごとに異なるため、同じ文でもモデルごとにトークン数が変わります。' },
+            a4: { title: 'トークン数', note: '処理する単位がいくつあるか。' },
+            a5: { title: '行動語', note: '「確認」「送信」などの語は、これが質問ではなくタスクであることを示します。' },
+            a6: { title: '領域走査', note: '依頼が配送や荷物に関わるか。エンジンが扱える領域かどうかです。' },
+            a7: { title: '識別子', note: '長い数字の並び = バーコード。これがないと実際の行動はできません。' },
+            a8: { title: 'タスク検出', note: 'すべての手がかりから、エンジンが目の前のタスクを要約します。' },
+            a9: { title: '不足情報', note: '実行に必要だが、まだ依頼に含まれていないもの。' },
+            a10: { title: 'ツールの必要性', note: '完了に外部の情報源(追跡システムなど)が必要かどうか。' },
+            a11: { title: '感度', note: '「送信」「更新」などの行動は顧客に影響し、注意を要します。' },
+            a12: { title: '実行可否', note: '情報とリスクを踏まえ、今行動してよいか、可能かどうか。' },
+            a13: { title: '判断', note: '正しい次の一歩: 回答、ツール使用、情報の確認、または停止。' },
+            a14: { title: '出力の状態', note: '判断を受けて実際に起こること。' },
+            a15: { title: '回答', note: 'ユーザーに表示される最終的な文面。' },
+        },
+        actionWordsLabel: '行動語',
+        deliveryDomainLabel: '配送領域',
+        sensitiveLabel: '機微な行動',
+        barcodeOn: 'バーコードあり',
+        barcodeOff: '識別子なし',
+        barcodeOnDetail: 'Tracking API を呼び出せます',
+        barcodeOffDetail: '実行に必要な情報が不足します',
+        toolNeed: (tool: string) => `必要なツール: ${tool}`,
+        noTool: '外部ツールなし',
+        canActNow: '今すぐ行動できる',
+        cannotActYet: 'まだ行動しない',
+        riskDetail: (risk: string) => `リスク: ${risk}`,
+    },
+
+    // mockEngine: demo replies (resolved by the replyKey the engine returns)
+    mockEngine: {
+        chatReplies: {
+            notDelivered: '未配達のケースのようです。バーコードで配送状況を確認するとよいでしょう。',
+            tracking: '追跡番号で配送状況を確認できます。追跡番号は何番ですか?',
+            system: 'システムの情報表示の不具合かもしれません。更新してもう一度お試しください。',
+            payment: 'この質問は請求や支払いに関係していそうです。請求書の詳細を確認するとよいでしょう。',
+            other: '正確に理解できているか自信がありません。問題を詳しく教えていただけますか?',
+        },
+        agentReplies: {
+            sensitive: 'これは顧客に影響する行動です。確認と承認なしには実行しません - 承認用の下書きを用意できます。',
+            tool: 'バーコードがあります。追跡システムで配送状況を確認しています...',
+            askBarcode: '実際に確認するには、荷物のバーコード番号が必要です。',
+            vague: '何を指しているのか理解する必要があります - どのタスクや荷物を確認しますか?',
+            general: '一般的な依頼のようです。外部ツールなしで直接お答えできます。',
+        },
+    },
+
+    // ReadHeadLab
+    readHead: {
+        emptyState: '読み取りヘッドが走査できるよう、チャットに文を書いてください。',
+        title: '読み取りヘッド',
+        subtitle: '文の上を一語ずつ移動するカーソル',
+        introHeadLabel: '読み取りヘッド',
+        introMid: ' は、読書中に指で文字を追うように、文の上を一語ずつ移動するカーソルです。停止するたびに、それまで読んだ語に同じエンジンが走るので、モデルが',
+        introEmph: '読みながら考えを変える',
+        introTail: '様子を見られます。',
+        takeaway: 'ここでの学び: モデルにあらかじめ用意された答えはありません。蓄積される文脈から答えを組み立て、新しい語ごとに先頭の推測が動きます。そして文の終わりで判断が落ち着きます。だからこそ語順や言い回しも結果に影響します。',
+        play: '再生',
+        pause: '停止',
+        again: 'もう一度',
+        back: '戻る',
+        forward: '進む',
+        restart: '最初から',
+        wordCountAria: (i: number, n: number) => `${n} 語中 ${i} 語目`,
+        scrubberAria: '読み取りヘッドの位置',
+        leaderNow: '現在の先頭:',
+        confidence: '確信度',
+        decisionNow: '現在の判断:',
+        riverHint: '太さ = 今この瞬間の確率',
+        integrityOne: 'まだ一語だけ: 走査するものがありません。チャットに語を足して、語ごとに確率が動く様子を見てください。',
+        integrityManyLead: 'キーワードが入ると、棒が一気に跳ねることがあります(例「',
+        integrityManyTail: '」)。これはバグではありません。決定的な証拠が届いた瞬間に確信が変わるのです。',
+    },
+
+    // ConfidenceDial (Chat mode)
+    confidenceDial: {
+        title: '確信度ダイヤル',
+        ideaLabel: '考え方:',
+        ideaPart1: ' エンジンは回答する前に、同じ文のいくつかの解釈を比べます。先頭の解釈と2位との',
+        ideaGap: '差',
+        ideaPart2: ' が、その確信度です。あなたの問い:',
+        ideaEmph: ' どれだけの確信を求めるか',
+        ideaPart3: ' で自力で回答させ、どんなときは止まって確認させる方がよいか。',
+        howTitle: '使い方',
+        how1: ' 入力を選びます(自分のものか例)。マーカーがエンジンの確信度に動きます。',
+        how2: ' しきい値を軸に沿ってドラッグするか、リスクレベルを選びます。',
+        how3Lead: ' しきい値がマーカーを越えると、判断が ',
+        how3Mid: ' と ',
+        answerAlone: '自力で回答',
+        stopAsk: '止まって確認',
+        leadingLabel: '先頭の解釈',
+        gapLabel: '差',
+        competitorLabel: '次点',
+        tryInput: '入力を試す:',
+        yourMessage: 'あなたのメッセージ',
+        // Demo input: coupled to JA_VOCAB in mockEngine (see header note).
+        samples: [
+            { input: '荷物が届きません', tag: '明確な入力' },
+            { input: '注文はどこ?システムに表示されません', tag: '混在した入力' },
+            { input: '私の支払いはどこ?', tag: '曖昧な入力' },
+        ],
+        analyzingLead: '分析中: 「',
+        analyzingTail: '」',
+        dragHint: 'しきい値を軸に沿ってドラッグ',
+        engineMarker: (margin: number) => `エンジン ${margin}%`,
+        thresholdMarker: (threshold: number) => `しきい値 ${threshold}%`,
+        thresholdAria: '必要な確信度のしきい値',
+        stakesTitle: 'ここでエンジンが間違えたらリスクは?',
+        // he/sub/note are display; the field name 'he' is kept for shape parity.
+        stakes: {
+            low: { he: '低リスク', sub: '単純な情報質問', note: 'ここでの間違いは安く済みます。低い確信を求め、エンジンに自力で答えさせてよいでしょう。' },
+            mid: { he: '中リスク', sub: '部分的な情報', note: '中程度のしきい値が適切です。エンジンが計算した差がそれより小さければ、止まって確認する方がよいでしょう。' },
+            high: { he: '高リスク', sub: '顧客に影響する行動', note: 'ここでの間違いは高くつきます。高い確信を求め、なければ止まって承認を求めます。' },
+        },
+        recommendedThreshold: (rec: number) => `推奨しきい値 ${rec}%`,
+        passLead: (margin: number) => `エンジンの確信度(差 ${margin}%)は`,
+        passBold: 'しきい値より上',
+        passTail: (threshold: number) => `です(設定 ${threshold}%)。自力で回答します。`,
+        failLead: (threshold: number) => `設定したしきい値(${threshold}%)は`,
+        failBold: '確信度より上',
+        failTail: (margin: number) => `です(エンジンの差 ${margin}%)。責任ある一歩: 止まって確認する。`,
+        integrityLead: 'しきい値をエンジンのマーカーを越えるまでドラッグしてください。ちょうどそこで判断が反転します。エンジンが出した数は何も変わらず、変わったのは ',
+        integrityBold: 'あなたが選ぶ方針',
+        integrityTail: ' だけです。こうして確率が責任になります。',
+    },
+
+    // ConfidenceDial (Agent mode)
+    agentGate: {
+        title: 'Agent の判断ゲート',
+        bodyLead: 'Agent ではゲートは確率の差ではなく、',
+        bodyEmph: 'リスクと不足情報',
+        bodyTail: ' に基づきます: タスクが明確か、識別子が欠けていないか、行動が機微かどうか。だからここに差のダイヤルはなく、判断は下の要素で決まります。',
+        footerLead: '',
+        footerTail: ' に切り替えると、確信度ダイヤルを差の上でドラッグできます。Agent では承認のために止まることは失敗ではなく、顧客に影響する行動の前の責任あるコントロールです。',
+    },
+
+    // CounterfactualDiff
+    counterfactual: {
+        title: 'もしも',
+        whyLabel: 'なぜ重要か: ',
+        whyLead: ' エンジンの判断は決して偶然ではなく、いつも決め手となる一語があります。ここでは二つのことをします。まず判断を生んだ語を',
+        whyFind: '見つけ',
+        whyMid: '、次にそれが本当にその語だと',
+        whyProve: '証明',
+        whyTail: 'します。その語だけを変えて、判断が反転するのを見ます。',
+        howTitle: '使い方',
+        how1: ' 因果のレバーを選びます - どの語を試すか。',
+        how2: ' 下で、現在の判断を決めた語を確認します。',
+        how3: ' その語だけが違う二つの言い回しを切り替え、判断が反転するのを見ます。',
+        tryLever: 'レバーを試す:',
+        noPivot: '軸の語なし',
+        attrChose: 'エンジンが選んだ',
+        // 'the ' prefix before the bold "why"; kept in the dictionary so no text is hardcoded.
+        attrWhyPrefix: '',
+        attrWhy: '理由',
+        attrWithPivotMid: ' は語 ',
+        attrWithPivotTail: ' です。本当にこれが決め手か確かめたいですか?下でこれだけを変えてみてください。',
+        attrNoPivotMid1: ' は、実はここで',
+        attrNoPivotMissing: '欠けている',
+        attrNoPivotMid2: ' のが語 ',
+        attrNoPivotTail: ' だからです。語が無いこともまた原因です。下で戻して見てください。',
+        flipped: '判断が反転しました:',
+        ghostHint: '破線の輪郭 = 前回の実行(ゴースト)',
+        replyToCreate: '生成される回答',
+        beforeAfter: '前 / 後',
+        // Experiments: chip/why are display; variants[].text/pivot are coupled demo input.
+        experiments: {
+            chat: [
+                {
+                    key: 'neg',
+                    chip: '否定語',
+                    why: '一つの否定語が「すべて順調」を「問題がある」に変えます。それがなければ解決すべきものがなく、先頭の意図と判断が変わります。',
+                    variants: [
+                        { text: '荷物が届きません', pivot: '届きません' },
+                        { text: '荷物が届きました', pivot: '' },
+                    ],
+                },
+                {
+                    key: 'kw',
+                    chip: 'キーワード',
+                    why: 'まったく同じ文の構造で、キーワードが一つ違うだけ - 先頭の意図がまったく別のカテゴリへ跳びます。',
+                    variants: [
+                        { text: '支払いに問題があります', pivot: '支払い' },
+                        { text: 'システムに問題があります', pivot: 'システム' },
+                    ],
+                },
+            ],
+            agent: [
+                {
+                    key: 'barcode',
+                    chip: '識別子(バーコード)',
+                    why: '識別子がなければエンジンは行動できません。止まって不足情報を求めます。バーコードが入った瞬間、追跡ツールに手を伸ばします。',
+                    variants: [
+                        { text: '荷物 123456789 を確認して', pivot: '123456789' },
+                        { text: '荷物を確認して', pivot: '' },
+                    ],
+                },
+                {
+                    key: 'sensitive',
+                    chip: '機微な行動',
+                    why: '行動語がリスクを決めます。「確認」は安全な呼び出し、「伝える」は顧客に影響します - だからエンジンは行動せず承認のために止まります。',
+                    variants: [
+                        { text: '荷物が紛失したと顧客に伝えて', pivot: '伝えて' },
+                        { text: '荷物が紛失したか確認して', pivot: '確認して' },
+                    ],
+                },
+            ],
+        },
+    },
+
+    // ForkView
+    forkView: {
+        title: '分岐: 同じ入力、二つのエンジン',
+        ideaLabel: '考え方:',
+        ideaLead: ' まったく同じ入力が二つのエンジンに入ります。事実で対立しているのではなく、',
+        ideaEmph: 'それについて別の問いを立てる',
+        ideaTail: ' のです - だから異なる判断に至ります。',
+        howTitle: '使い方',
+        how1: ' 入力を選びます(自分のものか例)。',
+        how2: ' まったく同じトークンが両方のエンジンに入るのを見ます。',
+        how3: ' 比べます: 一致することもあれば、分かれることもあります。下のバーが理由を説明します。',
+        tryInput: '入力を試す:',
+        yourMessage: 'あなたのメッセージ',
+        // Demo input: coupled to JA_VOCAB in mockEngine (see header note).
+        samples: [
+            { input: '荷物が届きません', tag: '苦情' },
+            { input: '荷物 123456789 を確認して', tag: 'ID付きのタスク' },
+            { input: '荷物が紛失したと顧客に伝えて', tag: '機微な行動' },
+            { input: '営業時間は何時ですか', tag: '一般的な質問' },
+        ],
+        analyzingLead: '分析中: 「',
+        analyzingTail: '」',
+        sameTokens: '同じトークンが両方のエンジンに入ります',
+        divergeLead: 'ここで分かれます: Chat は「',
+        divergeMid: '」を選び、Agent は「',
+        divergeTail: '」を選びました。',
+        agreeLead: 'ここで一致します: 両方とも「',
+        agreeTail: '」に至りました。エンジンの問いが違っても、答えが同じになることがあります。',
+        questionLabel: 'その問い:',
+        chatQuestion: '答えは何か?',
+        agentQuestion: '安全な次の一歩は何か?',
+        footer: 'まったく同じトークンで、ときに二つの判断。違いは入力ではなく、各エンジンがそれについて立てる問いにあります。Chat はありそうな答えを選び、Agent は安全な次の一歩を比べます - 回答、ツール使用、または止まって情報を求める。',
+    },
+
+    // PredictDecision
+    predict: {
+        chatOptions: {
+            answer: '回答する',
+            ask: '確認を求める',
+            stop: '承認のため止まる',
+        },
+        agentOptions: {
+            answer: '回答する',
+            tool: 'ツールを使う',
+            ask: '情報を求める',
+            stop: '承認のため止まる',
+        },
+        eyebrow: 'クイック予想',
+        questionLead: 'エンジンは「',
+        questionTail: '」に何を判断する?',
+        subtitleChat: '読み取りヘッドを動かす前に - エンジンがどう応じるか予想してください。',
+        subtitleAgent: '読み取りヘッドを動かす前に - エンジンの次の一歩を予想してください。',
+        guessAria: (label: string) => `予想: ${label}`,
+        correctLead: '的中! エンジンは本当に「',
+        correctTail: '」を選びました。',
+        wrongLead: 'あなたは「',
+        wrongMid: '」と予想しましたが、エンジンは「',
+        wrongTail: '」を選びました。',
+        correctHint: '入力がどちらに傾くか正しく読めました。下の読み取りヘッドを動かして、なぜそうなるか一語ずつ見てください。',
+        wrongHint: 'まさにそこが面白いところです: 入力はあなたの予想とは別の方向へ傾きます。下の読み取りヘッドを動かして、エンジンがどうそこに至ったか一語ずつ見てください。',
+        impossibleChat: '注意: Chat の判断はつねに二択 - 回答するか確認を求めるかです。止まることやツール使用は Agent に限られます。まさにここに二つの境界線があります。',
+        impossibleAgent: 'この行動は現在のタスクには関係ありませんが、他のシナリオでは Agent の判断箱の一部です。',
+        guessAgain: 'もう一度予想',
+        mentor: {
+            think: '明かす前に予想',
+            celebrate: '的中!',
+            reassure: '間違いの方が学べる',
+        },
+    },
+};
