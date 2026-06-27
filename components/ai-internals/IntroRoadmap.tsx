@@ -27,6 +27,7 @@ import { StationViz } from './IntroStationViz';
 import type {
     RoadmapStation, RoadmapZone, RoadmapZoneId,
 } from '@/app/behind-the-scenes-ai/introduction/introContent';
+import type { Direction } from '@/i18n/config';
 
 // תוויות שלוש שאלות ההרחבה. מגיעות מהמילון דרך ה-prop, לא מ-introContent.
 type StationDetailLabels = Record<keyof RoadmapStation['detail'], string>;
@@ -71,7 +72,7 @@ function StationCard({ station, n, accent, reduce, detailLabels, defaultOpen = f
                 onClick={() => setOpen((o) => !o)}
                 aria-expanded={open}
                 aria-controls={panelId}
-                className="flex w-full items-start gap-3.5 p-3.5 text-right transition-colors hover:bg-white/[0.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-900 md:p-4"
+                className="flex w-full items-start gap-3.5 p-3.5 text-start transition-colors hover:bg-white/[0.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-900 md:p-4"
             >
                 {/* תג מספר רץ */}
                 <motion.span
@@ -177,16 +178,18 @@ interface IntroRoadmapProps {
     /** תוויות שלוש שאלות ההרחבה, מהמילון. */
     stationDetailLabels: StationDetailLabels;
     reduce: boolean;
+    /** כיוון הכתיבה הפעיל. נקבע בעמוד מ-useT, לא מקובע ב-rtl. */
+    dir: Direction;
     /** מזהה תחנה שתיפתח כברירת מחדל, כדי שהלומד יראה מיד שהכרטיסים מכילים עומק. */
     defaultOpenId?: string;
 }
 
-export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, stationDetailLabels, reduce, defaultOpenId }) => {
+export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, stationDetailLabels, reduce, dir, defaultOpenId }) => {
     // מספור רץ ורציף 1..N על פני כל האזורים (סדר המערך = סדר המסלול).
     const indexById = new Map(stations.map((s, i) => [s.id, i]));
 
     return (
-        <div dir="rtl" className="flex flex-col gap-4">
+        <div dir={dir} className="flex flex-col gap-4">
             {zones.map((zone, zi) => {
                 const acc = ZONE_ACCENT[zone.id];
                 const a = ACCENTS[acc];

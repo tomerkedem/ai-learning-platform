@@ -13,9 +13,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { User, Sparkles, Send } from 'lucide-react';
+import type { Direction } from '@/i18n/config';
 
 interface EngineRevealProps {
     reduce: boolean;
+    /** כיוון הכתיבה הפעיל. נקבע בעמוד מ-useT, לא מקובע ב-rtl. */
+    dir: Direction;
     promptRole: string;
     prompt: string;
     answerRole: string;
@@ -27,12 +30,12 @@ interface EngineRevealProps {
 }
 
 export const EngineReveal: React.FC<EngineRevealProps> = ({
-    reduce, promptRole, prompt, answerRole, answer, outsideLine, curiosityLine,
+    reduce, dir, promptRole, prompt, answerRole, answer, outsideLine, curiosityLine,
     inputPlaceholder = 'הקלידו הודעה...',
 }) => {
     return (
         <div
-            dir="rtl"
+            dir={dir}
             className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/70 p-5 backdrop-blur-2xl shadow-2xl md:p-7"
         >
             {/* הילות רקע */}

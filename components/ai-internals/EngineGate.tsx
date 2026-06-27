@@ -16,9 +16,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ScanLine, ChevronDown, ArrowDown } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
+import type { Direction } from '@/i18n/config';
 
 interface EngineGateProps {
     reduce: boolean;
+    /** כיוון הכתיבה הפעיל. נקבע בעמוד מ-useT, לא מקובע ב-rtl. */
+    dir: Direction;
     lead: string;
     revealLabel: string;
     closeLabel: string;
@@ -32,14 +35,14 @@ interface EngineGateProps {
 const TEASER_ACCENTS: Accent[] = ['cyan', 'blue', 'indigo', 'purple'];
 
 export const EngineGate: React.FC<EngineGateProps> = ({
-    reduce, lead, revealLabel, closeLabel, revealedLabel, bridge, downCue, teaser,
+    reduce, dir, lead, revealLabel, closeLabel, revealedLabel, bridge, downCue, teaser,
 }) => {
     const [open, setOpen] = useState(false);
     const panelId = useId();
 
     return (
         <div
-            dir="rtl"
+            dir={dir}
             className="relative overflow-hidden rounded-[2rem] border border-cyan-500/30 bg-slate-900/60 p-6 text-center backdrop-blur-xl md:p-8"
         >
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[80px]" />
@@ -83,7 +86,7 @@ export const EngineGate: React.FC<EngineGateProps> = ({
                                 <div className="text-[11px] font-black uppercase tracking-[0.2em] text-cyan-300">{revealedLabel}</div>
 
                                 {/* זרימת תחנות-על מופשטת */}
-                                <div className="flex flex-wrap items-center justify-center gap-1.5" dir="rtl">
+                                <div className="flex flex-wrap items-center justify-center gap-1.5" dir={dir}>
                                     {teaser.map((label, i) => {
                                         const a = ACCENTS[TEASER_ACCENTS[i % TEASER_ACCENTS.length]];
                                         return (

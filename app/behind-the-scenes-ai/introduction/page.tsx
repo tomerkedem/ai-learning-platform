@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from "framer-motion";
 import {
-  ChevronLeft, Info, Workflow, Layers, MousePointerClick,
+  ChevronLeft, ChevronRight, Info, Workflow, Layers, MousePointerClick,
 } from "lucide-react";
 import Link from 'next/link';
 import { ChapterLayout } from "@/components/ChapterLayout";
@@ -81,7 +81,8 @@ function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: 
 
 export default function BehindTheScenesIntroPage() {
   const reduce = useReducedMotion();
-  const { t } = useT();
+  const { t, dir } = useT();
+  const isRtl = dir === 'rtl';
   const intro = t.behindAi.introduction;
 
   // מצב המתג Chat/Agent מורם לכאן כדי שכל הקופי של הכרטיס יתחלף יחד עם התצוגה החיה.
@@ -144,14 +145,14 @@ export default function BehindTheScenesIntroPage() {
   } as AgentDemo;
 
   return (
-    <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={0} lang="he">
-      <div className="px-4 pb-24" style={{ marginTop: '160px' }} dir="rtl">
+    <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={0}>
+      <div className="px-4 pb-24" style={{ marginTop: '160px' }} dir={dir}>
         <div className="max-w-5xl mx-auto">
 
           {/* ══════════ 1 · OUTSIDE VIEW ══════════ */}
           {/* מבחוץ נראה כמו שני שלבים: בקשה ותשובה. השאלה "מה קרה באמצע" נשארת פתוחה. */}
           <div className="relative">
-            <div className="text-center md:text-right mb-6">
+            <div className="text-center md:text-start mb-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-cyan-500/30 mb-3">
                 <span className="relative flex h-2 w-2">
                   {!reduce && <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping" />}
@@ -162,7 +163,7 @@ export default function BehindTheScenesIntroPage() {
 
               <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-3">
                 {intro.hero.titleLead}{' '}
-                <span className="bg-gradient-to-l from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent`}>
                   {intro.hero.titleAccent}
                 </span>
               </h1>
@@ -176,6 +177,7 @@ export default function BehindTheScenesIntroPage() {
             >
               <EngineReveal
                 reduce={!!reduce}
+                dir={dir}
                 promptRole={intro.chat.promptRole}
                 prompt={intro.chat.prompt}
                 answerRole={intro.chat.answerRole}
@@ -186,8 +188,8 @@ export default function BehindTheScenesIntroPage() {
               />
             </motion.div>
 
-            {/* המנטור עומד מימין לכרטיס המרכזי (xl+ בלבד). */}
-            <div className="absolute top-44 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+            {/* המנטור עומד בצד הקריאה הטבעי של הכרטיס המרכזי (xl+ בלבד). */}
+            <div className={`absolute top-44 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
               <Mentor pose="hero" line={intro.mentor.hero} width={180} />
             </div>
           </div>
@@ -201,7 +203,7 @@ export default function BehindTheScenesIntroPage() {
             transition={{ duration: 0.6 }}
             className="mt-20"
           >
-            <HypothesisGuess reduce={!!reduce} content={quickGuess} />
+            <HypothesisGuess reduce={!!reduce} content={quickGuess} dir={dir} />
           </motion.section>
 
           {/* ══════════ 3 · REVEAL GATE ══════════ */}
@@ -215,6 +217,7 @@ export default function BehindTheScenesIntroPage() {
           >
             <EngineGate
               reduce={!!reduce}
+              dir={dir}
               lead={intro.chat.gateLead}
               revealLabel={intro.chat.revealLabel}
               closeLabel={intro.chat.closeLabel}
@@ -241,9 +244,9 @@ export default function BehindTheScenesIntroPage() {
             </div>
 
             <div className="relative">
-              <IntroRoadmap zones={roadmapZones} stations={roadmapStations} stationDetailLabels={intro.stationDetailLabels} reduce={!!reduce} defaultOpenId="tokenize" />
-              {/* המנטור מלווה את המפה (xl+, מצד ימין - צד הקריאה הטבעי ב-RTL) */}
-              <div className="absolute top-6 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
+              <IntroRoadmap zones={roadmapZones} stations={roadmapStations} stationDetailLabels={intro.stationDetailLabels} reduce={!!reduce} dir={dir} defaultOpenId="tokenize" />
+              {/* המנטור מלווה את המפה (xl+), בצד הקריאה הטבעי של הכיוון הפעיל */}
+              <div className={`absolute top-6 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
                 <Mentor pose="mapNavigator" line={intro.mentor.roadmap} width={170} />
               </div>
             </div>
@@ -278,7 +281,7 @@ export default function BehindTheScenesIntroPage() {
 
                 {/* לולאת הבקרה החיה: Agent כשכבה סביב המודל, לא תחנה פנימית */}
                 <div className="mt-6">
-                  <AgentLoop reduce={!!reduce} demo={agentDemo} mode={agentMode} onModeChange={setAgentMode} />
+                  <AgentLoop reduce={!!reduce} demo={agentDemo} mode={agentMode} onModeChange={setAgentMode} dir={dir} />
                 </div>
 
                 <p className="mt-6 text-base font-bold leading-relaxed text-purple-100">{agentCard.closing}</p>
@@ -302,7 +305,7 @@ export default function BehindTheScenesIntroPage() {
               {intro.systems.heading.subtitle}
             </p>
 
-            <CourseSystems systems={courseSystems} labels={intro.systems.labels} reduce={!!reduce} />
+            <CourseSystems systems={courseSystems} labels={intro.systems.labels} reduce={!!reduce} dir={dir} />
           </section>
 
           {/* ══════════ 10 · CTA TO CHAPTER 1 ══════════ */}
@@ -333,7 +336,7 @@ export default function BehindTheScenesIntroPage() {
                 className="relative inline-flex items-center gap-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-4 px-10 rounded-2xl transition-all shadow-[0_8px_30px_-6px_rgba(34,211,238,0.6)] hover:shadow-[0_8px_40px_-4px_rgba(34,211,238,0.8)] active:scale-95 no-underline text-lg"
               >
                 {intro.cta.button}
-                <ChevronLeft size={22} />
+                {isRtl ? <ChevronLeft size={22} /> : <ChevronRight size={22} />}
               </Link>
             </div>
           </motion.section>

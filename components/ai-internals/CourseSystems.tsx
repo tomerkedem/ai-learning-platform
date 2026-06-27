@@ -24,6 +24,7 @@ import Link from 'next/link';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
 import type { CourseSystem } from '@/app/behind-the-scenes-ai/introduction/introContent';
+import type { Direction } from '@/i18n/config';
 
 // גוון-זהות לכל תת-מערכת: מסע צבעוני לאורך המנוע.
 const SYSTEM_ACCENTS: Accent[] = ['cyan', 'blue', 'indigo', 'purple', 'rose'];
@@ -76,7 +77,7 @@ function SystemGate({ system, index, total, accent, labels, reduce, isFirstSyste
                 onClick={onToggle}
                 aria-expanded={open}
                 aria-controls={panelId}
-                className="relative flex w-full items-center gap-4 p-4 text-right transition-colors hover:bg-white/[0.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-900 md:p-5"
+                className="relative flex w-full items-center gap-4 p-4 text-start transition-colors hover:bg-white/[0.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-900 md:p-5"
             >
                 {/* תא-מנוע: אייקון בתוך מעוין זוהר */}
                 <span className="relative flex h-14 w-14 shrink-0 items-center justify-center">
@@ -229,7 +230,7 @@ function SystemGate({ system, index, total, accent, labels, reduce, isFirstSyste
                                                             </motion.span>
                                                         )}
                                                     </span>
-                                                    <span className="mt-0.5 block font-mono text-[10px] text-slate-500" dir="rtl">פרק <span dir="ltr">{ch.n}</span></span>
+                                                    <span className="mt-0.5 block font-mono text-[10px] text-slate-500">פרק <span dir="ltr">{ch.n}</span></span>
                                                 </Link>
                                             </motion.li>
                                         );
@@ -267,16 +268,18 @@ interface CourseSystemsProps {
     systems: CourseSystem[];
     labels: SystemLabels;
     reduce: boolean;
+    /** כיוון הכתיבה הפעיל. נקבע בעמוד מ-useT, לא מקובע ב-rtl. */
+    dir: Direction;
 }
 
-export const CourseSystems: React.FC<CourseSystemsProps> = ({ systems, labels, reduce }) => {
+export const CourseSystems: React.FC<CourseSystemsProps> = ({ systems, labels, reduce, dir }) => {
     // מצב הפתיחה מורם להורה כדי שמחברי-המסלול ידעו מתי שער סמוך פעיל.
     const [openIds, setOpenIds] = useState<string[]>([]);
     const toggle = (id: string) =>
         setOpenIds((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
 
     return (
-        <div dir="rtl" className="relative flex flex-col">
+        <div dir={dir} className="relative flex flex-col">
             {systems.map((system, i) => {
                 const accent = SYSTEM_ACCENTS[i % SYSTEM_ACCENTS.length];
                 const nextAccent = SYSTEM_ACCENTS[(i + 1) % SYSTEM_ACCENTS.length];

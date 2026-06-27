@@ -20,6 +20,7 @@ import {
     Play, Cpu, Keyboard, Sparkles, Target, Wrench, ShieldCheck, Zap, MessageSquare,
 } from 'lucide-react';
 import type { AgentDemo } from '@/app/behind-the-scenes-ai/introduction/introContent';
+import type { Direction } from '@/i18n/config';
 
 const STAGE_ICON: Record<string, React.ReactNode> = {
     task: <Target size={18} />,
@@ -38,9 +39,11 @@ type Mode = 'agent' | 'chat';
 export const AgentLoop: React.FC<{
     reduce: boolean;
     demo: AgentDemo;
+    /** כיוון הכתיבה הפעיל. נקבע בעמוד מ-useT, לא מקובע ב-rtl. */
+    dir: Direction;
     mode?: Mode;
     onModeChange?: (m: Mode) => void;
-}> = ({ reduce, demo, mode: modeProp, onModeChange }) => {
+}> = ({ reduce, demo, dir, mode: modeProp, onModeChange }) => {
     // המתג יכול להיות נשלט מבחוץ (כדי שהקופי שמסביב יתחלף יחד איתו) או פנימי.
     const [modeInternal, setModeInternal] = useState<Mode>('chat');
     const mode = modeProp ?? modeInternal;
@@ -112,7 +115,7 @@ export const AgentLoop: React.FC<{
     };
 
     return (
-        <div dir="rtl">
+        <div dir={dir}>
             {/* מתג מצב + הרצה */}
             <div className="mb-3 flex flex-wrap items-center justify-center gap-3">
                 <div className="inline-flex rounded-full border border-slate-700/60 bg-slate-950/50 p-1">
@@ -284,7 +287,7 @@ export const AgentLoop: React.FC<{
                         {consoleRows.map((r) => (
                             <div
                                 key={r.key}
-                                className={`rounded-xl border px-3 py-2 text-right transition-colors ${r.value ? 'border-purple-500/30 bg-purple-900/15' : 'border-white/5 bg-slate-950/40'}`}
+                                className={`rounded-xl border px-3 py-2 text-start transition-colors ${r.value ? 'border-purple-500/30 bg-purple-900/15' : 'border-white/5 bg-slate-950/40'}`}
                             >
                                 <div className="text-[10px] font-bold text-purple-300/80">{r.label}</div>
                                 <div className={`text-xs leading-snug ${r.value ? 'text-slate-100' : 'text-slate-500'}`}>{r.value || demo.consoleEmpty}</div>

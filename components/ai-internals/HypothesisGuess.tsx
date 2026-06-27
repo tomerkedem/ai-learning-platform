@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HelpCircle, Sparkles, RotateCcw, ArrowDown, Eye, Lock, Database, Check } from 'lucide-react';
 import { Mentor } from './Mentor';
 import type { Hypothesis, HypothesisCue, QuickGuessContent } from '@/app/behind-the-scenes-ai/introduction/introContent';
+import type { Direction } from '@/i18n/config';
 
 /* ── איור-מיקרו לכל השערה ── */
 function CueIllustration({ cue }: { cue: HypothesisCue }) {
@@ -46,7 +47,7 @@ function CueIllustration({ cue }: { cue: HypothesisCue }) {
     }
     if (cue === 'tokens') {
         return (
-            <div className="flex items-center gap-1" dir="rtl" aria-hidden>
+            <div className="flex items-center gap-1" aria-hidden>
                 {['טו', 'קן'].map((t, i) => (
                     <React.Fragment key={i}>
                         <span className="rounded-md border border-cyan-500/40 bg-cyan-950/40 px-1.5 py-0.5 text-[9px] font-bold text-cyan-200">{t}</span>
@@ -86,7 +87,7 @@ function stateClasses(state: CardState, reduce: boolean): string {
     }
 }
 
-export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessContent }> = ({ reduce, content }) => {
+export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessContent; dir: Direction }> = ({ reduce, content, dir }) => {
     const [chosenId, setChosenId] = useState<string | null>(null);
     const [revealed, setRevealed] = useState(false); // נחשף ההסבר המדויק אחרי בחירה שגויה
 
@@ -105,7 +106,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
 
     return (
         <div
-            dir="rtl"
+            dir={dir}
             className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/60 p-6 backdrop-blur-xl md:p-8"
         >
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[80px]" />
@@ -138,7 +139,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                                 aria-label={`${h.title}. ${h.concept}`}
                                 whileHover={reduce ? undefined : { scale: 1.015 }}
                                 whileTap={reduce ? undefined : { scale: 0.985 }}
-                                className={`relative flex flex-col gap-2.5 rounded-2xl border p-4 text-right transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${stateClasses(state, reduce)}`}
+                                className={`relative flex flex-col gap-2.5 rounded-2xl border p-4 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${stateClasses(state, reduce)}`}
                             >
                                 {/* פעימת-אישור חד-פעמית בבחירה נכונה */}
                                 {!reduce && state === 'correct' && (
@@ -215,7 +216,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                                     )}
 
                                     {revealed && correctCard && (
-                                        <div className="mx-auto mt-4 max-w-xl rounded-xl border border-cyan-400/30 bg-cyan-900/15 p-3.5 text-right">
+                                        <div className="mx-auto mt-4 max-w-xl rounded-xl border border-cyan-400/30 bg-cyan-900/15 p-3.5 text-start">
                                             <p className="inline-flex items-center gap-1.5 text-sm font-bold text-cyan-300">
                                                 <Sparkles size={14} /> {correctCard.title}: {content.correctLead}
                                             </p>
