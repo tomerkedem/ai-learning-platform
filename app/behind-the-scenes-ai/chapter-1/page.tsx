@@ -26,7 +26,7 @@ import { ForkView } from './ForkView';
 
 export default function BehindTheScenesChapter1() {
     const reduce = useReducedMotion();
-    const { t, dir } = useT();
+    const { t, dir, locale } = useT();
     const isRtl = dir === 'rtl';
     const c1 = t.behindAi.chapter1;
     const viz = c1.visuals;
@@ -125,7 +125,9 @@ export default function BehindTheScenesChapter1() {
             const res = await fetch('/api/chat-reply', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: t, mode: m }),
+                // ה-locale הפעיל נשלח לשרת כך שהמודל החי עונה בשפת הממשק הנבחרת,
+                // ולא לפי שפת הקלט של המשתמש.
+                body: JSON.stringify({ text: t, mode: m, locale }),
                 signal: ac.signal,
             });
             if (!res.ok || !res.body) throw new Error('chat-reply unavailable');
@@ -145,7 +147,7 @@ export default function BehindTheScenesChapter1() {
             setStreaming(false);
             setLiveReply(null); // נפילה חיננית לתשובת ה-mock
         }
-    }, [live]);
+    }, [live, locale]);
 
     // ספירת טוקנים אמיתית מ-Claude עבור אותו טקסט שהמנוע מציג. רק במצב חי, ו-debounced
     // כדי לא להציף את ה-API בכל הקלדה. הספירה היא מספר אמיתי; את החלוקה עצמה Claude
