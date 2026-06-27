@@ -19,4 +19,7 @@ export const aiInternals = {
             low: '低',
         },
     },
+    stickyContextBar: {
+        currentlyAnalyzed: '分析中',
+    },
 };

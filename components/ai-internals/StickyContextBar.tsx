@@ -19,6 +19,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ScanSearch } from 'lucide-react';
 
+import { useT } from '@/i18n/useT';
 import { ACCENTS } from './accents';
 import { DUR, EASE } from './motionTokens';
 import type { Accent } from './types';
@@ -69,6 +70,7 @@ export const StickyContextBar: React.FC<StickyContextBarProps> = ({
     reduce,
     stickyClassName = 'sticky z-10',
 }) => {
+    const { t } = useT();
     const ia = ACCENTS[inputAccent];
     const da = ACCENTS[TONE_ACCENT[tone]];
 
@@ -83,7 +85,7 @@ export const StickyContextBar: React.FC<StickyContextBarProps> = ({
                 <div className="flex min-w-0 items-center gap-2">
                     <span className="hidden shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 sm:inline-flex">
                         <ScanSearch size={13} className="text-slate-400" />
-                        <span>מנותח כעת</span>
+                        <span>{t.behindAi.aiInternals.stickyContextBar.currentlyAnalyzed}</span>
                     </span>
 
                     <span className={`h-2 w-2 shrink-0 rounded-full ${ia.dot}`} />

@@ -19,4 +19,7 @@ export const aiInternals = {
             low: 'منخفض',
         },
     },
+    stickyContextBar: {
+        currentlyAnalyzed: 'قيد التحليل الآن',
+    },
 };

@@ -25,6 +25,10 @@ export const aiInternals = {
             low: 'נמוך',
         },
     },
+    // StickyContextBar: כיתוב הקבוע "מה מנותח כעת" (פס ההקשר הדביק בפרקים מבוססי-בורר).
+    stickyContextBar: {
+        currentlyAnalyzed: 'מנותח כעת',
+    },
 };
 
 /** צורת מילון ה-ai-internals המשותף, נגזרת מהעברית (מקור הצורה). */

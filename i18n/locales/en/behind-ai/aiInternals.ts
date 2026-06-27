@@ -19,4 +19,7 @@ export const aiInternals = {
             low: 'Low',
         },
     },
+    stickyContextBar: {
+        currentlyAnalyzed: 'Now analyzing',
+    },
 };
