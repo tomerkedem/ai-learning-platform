@@ -103,4 +103,8 @@ export const chapter4Lab: Chapter4LabDict = {
     fallback: {
         missingSentence: 'תוכן חסר',
     },
+
+    ui: {
+        magnetTitle: 'כוחות המשמעות',
+    },
 };

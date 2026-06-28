@@ -90,6 +90,11 @@ export interface Chapter4LabDict {
         /** תווית גיבוי גלויה אם חסר טקסט למשפט. */
         missingSentence: string;
     };
+
+    ui: {
+        /** כותרת פאנל המגנט. */
+        magnetTitle: string;
+    };
 }
 
 /**
@@ -100,7 +105,7 @@ export interface JoinedSentence extends SentenceStruct {
     text: string;
     tokens: string[];
     ttsLine: string;
-    swaps: { chipId: string; toId: string; label: string }[];
+    swaps: { chipId: string; toId: SentenceId; label: string }[];
     point: MapPoint2D;
 }
 
