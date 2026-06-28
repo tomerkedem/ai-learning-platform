@@ -16,6 +16,47 @@ Course type:
 
 Do not call it a book or booklet.
 
+## Premium 2026 quality standard
+
+This is a global standard. It applies to every chapter in the Behind the Scenes of AI course, not only chapter 4.
+
+We are in 2026, in the AI era. This course must not feel like ordinary e-learning. Every chapter must feel like a premium interactive learning experience that uses AI-era product quality:
+
+- live visual explanation
+- real learner interaction
+- phone-first design
+- responsive across mobile, tablet, and desktop
+- multilingual from the start
+- RTL and LTR safe
+- TTS-ready structure
+- reduced-motion support
+- meaningful animation
+- no decorative-only visuals
+- no hover-only learning
+- a memorable "wow" moment for difficult concepts
+- a clear practical insight at the end
+
+This does not mean every chapter needs heavy 3D or complex animation. It means every chapter must have a strong learning interaction where the learner can see or touch the core idea.
+
+### Chapter quality gate
+
+Before implementing any chapter, Claude must ask and answer:
+
+1. What is the hard idea in this chapter?
+2. What will the learner see that makes it obvious?
+3. What will the learner touch or change?
+4. What is the "wow" moment?
+5. How does this work on a phone?
+6. How does this work in all six locales?
+7. What text supports future read-aloud narration?
+8. What is the practical insight?
+
+### Warning
+
+Do not propose ordinary pages made mostly of cards, long text, and decorative animation.
+
+If the chapter concept is difficult, the visualization must do real teaching.
+
 ## Source of truth
 
 For the Behind the Scenes of AI course, do not rely on old prompts or old planning files.
