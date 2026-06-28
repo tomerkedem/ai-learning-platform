@@ -7,6 +7,7 @@ import { ArrowLeft, ArrowRight, CodeXml, Sigma, BrainCog, BookOpen, Eye } from "
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import type { Engine, ISourceOptions } from "tsparticles-engine";
+import { useReducedMotion } from "framer-motion";
 import { Tilt } from '@/components/ui/Tilt';
 import { useT } from "@/i18n/useT";
 import { formatChapterCount } from "@/i18n/format";
@@ -14,6 +15,9 @@ import { formatChapterCount } from "@/i18n/format";
 export default function HomePage() {
 
   const { dir, t, locale } = useT();
+  // כיבוד reduced-motion: כשהמשתמש מבקש פחות תנועה, לא מרנדרים את שכבת החלקיקים
+  // כלל (נשארת רק הילת הגרדיאנט הסטטית). אחרת מריצים גרסה קלה יותר (60 חלקיקים, 60fps).
+  const reduce = useReducedMotion();
 
   const particlesInit = useCallback(async (engine: Engine) => {
     await loadSlim(engine);
@@ -22,7 +26,7 @@ export default function HomePage() {
   const particlesOptions: ISourceOptions = {
     fullScreen: { enable: false },
     background: { color: { value: "transparent" } },
-    fpsLimit: 120,
+    fpsLimit: 60,
     interactivity: {
         events: { onHover: { enable: true, mode: "grab" }, resize: true },
         modes: { grab: { distance: 150, links: { opacity: 0.5, color: "#6366f1" } } },
@@ -31,7 +35,7 @@ export default function HomePage() {
         color: { value: ["#4f46e5", "#60a5fa", "#a78bfa"] },
         links: { color: "#4f46e5", distance: 150, enable: true, opacity: 0.2, width: 1 },
         move: { enable: true, speed: 0.8, direction: "none", random: true, straight: false, outModes: { default: "bounce" } },
-        number: { density: { enable: true, area: 800 }, value: 100 },
+        number: { density: { enable: true, area: 800 }, value: 60 },
         opacity: { value: 0.5, random: true },
         shape: { type: "circle" },
         size: { value: { min: 1, max: 3 } },
@@ -125,9 +129,11 @@ x = x - lr * slope(x)
         </div>
 
         {/* Backgrounds */}
-        <div className="fixed inset-0 z-0 pointer-events-none">
-             <Particles id="tsparticles" init={particlesInit} options={particlesOptions} className="absolute inset-0 h-full w-full" />
-        </div>
+        {!reduce && (
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                 <Particles id="tsparticles" init={particlesInit} options={particlesOptions} className="absolute inset-0 h-full w-full" />
+            </div>
+        )}
         <div className="fixed inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/20 via-[#020617]/80 to-[#020617]"></div>
 
         <main className="relative z-10 max-w-6xl mx-auto px-6 py-20 flex flex-col items-center">

@@ -147,7 +147,7 @@ export default function BehindTheScenesIntroPage() {
 
   return (
     <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={0}>
-      <div className="px-4 pb-24" style={{ marginTop: '160px' }} dir={dir}>
+      <div className="px-4 pb-24 mt-24 sm:mt-32 md:mt-40" dir={dir}>
         <div className="max-w-5xl mx-auto">
 
           {/* ══════════ 1 · OUTSIDE VIEW ══════════ */}

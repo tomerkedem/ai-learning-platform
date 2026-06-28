@@ -103,7 +103,7 @@ function EmbeddingViz({ accent, reduce, viz, dir }: VizProps) {
 
                 <ArrowLeft size={14} className="text-slate-600" aria-hidden />
 
-                <div className="flex items-center gap-1" dir="ltr">
+                <div className="flex flex-wrap items-center gap-1" dir="ltr">
                     {EMB_VECTOR.map((v, i) => (
                         <motion.span
                             key={i}
