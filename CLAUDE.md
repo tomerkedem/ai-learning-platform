@@ -1,14 +1,190 @@
 # Project Instructions
 
-This is a Next.js (App Router) project containing Hebrew-language interactive courses about how AI works.
+This is a Next.js App Router project containing interactive learning modules about how AI works.
 
-## Writing / Content / Style Guidelines
+The main active course is:
 
-### Never use the Em dash
+**מאחורי הקלעים של AI**
 
-**Never use the Em dash character (Unicode U+2014, the long dash) in project text. Use a regular hyphen (-) or rewrite the sentence.**
+English title:
 
-This rule is absolute and applies to ALL user-facing and project text, including:
+**Behind the Scenes of AI**
+
+Course type:
+
+**לומדה אינטראקטיבית ללמידה עצמית**
+
+Do not call it a book or booklet.
+
+## Source of truth
+
+For the Behind the Scenes of AI course, do not rely on old prompts or old planning files.
+
+Use the current documentation anchors under:
+
+```text
+docs/
+```
+
+Read only the docs relevant to the task.
+
+The current source of truth is the `docs/behind-ai-*.md` documentation set.
+
+## Required docs by task type
+
+### Any task in the Behind the Scenes of AI course
+
+Read:
+
+```text
+docs/behind-ai-final-chapter-plan.md
+docs/behind-ai-chapter-template.md
+```
+
+### i18n or localization tasks
+
+Also read:
+
+```text
+docs/behind-ai-i18n-rules.md
+```
+
+### UI, layout, visual polish, or mentor placement tasks
+
+Also read:
+
+```text
+docs/behind-ai-visual-rules.md
+docs/behind-ai-mentor-rules.md
+```
+
+### Animation or interactive experience tasks
+
+Also read:
+
+```text
+docs/behind-ai-animation-rules.md
+docs/behind-ai-visual-rules.md
+```
+
+### Reordering chapters, routing, progress, quizzes, or implementation sequencing
+
+Also read:
+
+```text
+docs/behind-ai-implementation-roadmap.md
+docs/behind-ai-claude-workflow.md
+```
+
+## Work protocol
+
+Before editing files:
+
+1. Run `git status`.
+2. Run `git pull --ff-only`.
+3. Run `git log --oneline -10`.
+4. Read the relevant docs from `docs/`.
+5. Audit the relevant files.
+6. Report findings and an exact file-change plan.
+7. Wait for approval before editing, unless the user explicitly approved implementation.
+
+After editing:
+
+1. Run `npx tsc --noEmit`.
+2. Run eslint on changed files.
+3. Run relevant route checks.
+4. Report changed files, verification results, risks, and final git status.
+5. Do not commit or push unless explicitly instructed.
+
+## Current course planning rule
+
+The current Behind the Scenes of AI plan is based on 19 chapters and 6 systems.
+
+Do not reintroduce the old 16-chapter framing.
+
+Do not reintroduce the old 5-system framing unless explicitly requested.
+
+The central example anchor is packages and deliveries:
+
+- package did not arrive
+- delivery status
+- tracking
+- delivery contradiction
+- customer service response
+- Agent action around a shipment
+
+## i18n rule
+
+The course targets six locales:
+
+```text
+he, en, es, ru, ar, ja
+```
+
+RTL:
+
+```text
+he, ar
+```
+
+LTR:
+
+```text
+en, es, ru, ja
+```
+
+When working on i18n, follow:
+
+```text
+docs/behind-ai-i18n-rules.md
+```
+
+Do not translate stable internal keys.
+
+Do not hardcode Hebrew in non-Hebrew routes.
+
+## Writing and content rules
+
+Hebrew should be natural, not translated from English.
+
+English, Spanish, Russian, Arabic, and Japanese should be natural and localized, not literal translations.
+
+The course is for curious regular learners, not programmers.
+
+Prefer active learning:
+
+```text
+guess -> see -> touch -> understanding lock -> practical insight -> 5-question quiz
+```
+
+Do not over-expand content.
+
+Avoid turning chapters into long articles.
+
+Every chapter should teach one clear central idea.
+
+The package and delivery anchor should be used naturally, not forced into every sentence.
+
+## Never use Em dash or En dash
+
+Never use the Em dash character or En dash character in project text.
+
+Forbidden:
+
+```text
+—
+–
+```
+
+Use a regular hyphen instead:
+
+```text
+-
+```
+
+Or rewrite the sentence naturally without a dash.
+
+This rule applies to all user-facing and project text, including:
 
 - Hebrew text
 - English text
@@ -18,11 +194,58 @@ This rule is absolute and applies to ALL user-facing and project text, including
 - Course content
 - Markdown text
 - Comments that may be displayed
-- Any visible educational explanation
+- Visible educational explanations
 
-When you would reach for an Em dash (U+2014), instead:
+Do not alter a normal Hebrew maqaf or a regular hyphen.
 
-1. Use a regular hyphen: `-` (with surrounding spaces where punctuation calls for it, e.g. `word - word`), or
-2. Rewrite the sentence naturally without any dash, when that reads better.
+## Mentor rules
 
-Do not introduce the Em dash character (U+2014) anywhere, not even in this file. Do not "fix" or alter a normal Hebrew maqaf (U+05BE) or a regular hyphen (-); only the Em dash (U+2014) is forbidden.
+The mentor is not decoration.
+
+Use mentor characters only when they support learning, curiosity, confidence, warning, or action.
+
+For detailed mentor rules, read:
+
+```text
+docs/behind-ai-mentor-rules.md
+```
+
+## Animation rules
+
+Animation is a thinking tool, not decoration.
+
+Use animation to reveal processes, show causality, and create clear learning moments.
+
+For detailed animation rules, read:
+
+```text
+docs/behind-ai-animation-rules.md
+```
+
+## Visual and layout rules
+
+Preserve the existing premium interactive course style.
+
+Respect RTL and LTR behavior.
+
+Do not mirror the full layout blindly.
+
+For mentor placement in translated pages, prefer direction-aware placement over image flipping when possible.
+
+Use visual polish only when it supports the learning goal.
+
+## Safety rule for old files
+
+Ignore deprecated prompts or old planning files if they conflict with the docs under `docs/`.
+
+Do not use removed or deprecated files such as old Master Prompt documents as planning sources.
+
+## Implementation discipline
+
+Keep tasks small.
+
+Do not mix unrelated changes in one implementation.
+
+Do not combine chapter reordering, i18n, visual redesign, quiz changes, assets, and animations in one task unless explicitly requested.
+
+When uncertain, stop and report the risk before editing.
