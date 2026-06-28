@@ -522,10 +522,27 @@ export type ClusterId =
 /** תפקיד המשפט בעוגן החבילות (מבני בלבד). */
 export type AnchorRole = 'complaint' | 'status' | 'lost' | 'tracking' | 'refund';
 
+/**
+ * רשימת מזהי המשפטים היציבים. מקור אמת יחיד לזהויות. הוספת מזהה כאן מרחיבה את
+ * SentenceId, וכך TypeScript יחייב להוסיף גם תוכן מקומי תואם (Record<SentenceId, ...>).
+ */
+export const SENTENCE_IDS = [
+    'pkg-not-arrived',
+    'delivery-not-handed',
+    'pkg-arrived',
+    'system-not-showing',
+    'billing-address-update',
+    'agent-investigate-delay',
+    'agent-notify-lost',
+] as const;
+
+/** מזהה משפט יציב (איחוד ליטרלים), נגזר מ-SENTENCE_IDS. אינו מתורגם. */
+export type SentenceId = typeof SENTENCE_IDS[number];
+
 /** החלפת מילה: chipId ו-toId יציבים, ללא תווית מתורגמת (התווית תגיע מהמילון בעתיד). */
 export interface WordSwap {
     chipId: string;
-    toId: string;
+    toId: SentenceId;
 }
 
 /**
@@ -533,10 +550,10 @@ export interface WordSwap {
  * profile הוא וקטור מספרי בלתי תלוי שפה. אין כאן טקסט או טוקנים מקומיים.
  */
 export interface SentenceStruct {
-    id: string;
+    id: SentenceId;
     profile: Profile;
     category: ClusterId;
-    nearbyIds: string[];
+    nearbyIds: SentenceId[];
     isAnchor: boolean;
     anchorRole?: AnchorRole;
     agent?: { mode: EngineMode; status: AgentNote['status'] };
