@@ -54,11 +54,12 @@ const ROADMAP_STATION_META = [
 ] as const;
 
 const SYSTEM_META = [
-  { id: 'outside', chapters: ['1', '2', '3', '4'] },
-  { id: 'representations', chapters: ['5', '6', '7'] },
-  { id: 'context', chapters: ['8', '9'] },
-  { id: 'agent', chapters: ['10', '11', '12', '13'] },
-  { id: 'synthesis', chapters: ['14', '15', '16'] },
+  { id: 'outside', chapters: ['1', '2'] },
+  { id: 'representations', chapters: ['3', '4', '5', '6', '7'] },
+  { id: 'generation', chapters: ['8', '9', '10'] },
+  { id: 'reliability', chapters: ['11', '12', '13'] },
+  { id: 'learning', chapters: ['14', '15', '16'] },
+  { id: 'agent', chapters: ['17', '18', '19'] },
 ] as const;
 
 const AGENT_STAGE_META = ['task', 'tool', 'risk', 'act', 'answer'] as const;
@@ -292,12 +293,12 @@ export default function BehindTheScenesIntroPage() {
             </div>
           </motion.section>
 
-          {/* ══════════ 9 · COURSE SYSTEMS (16 chapters, 5 systems) ══════════ */}
-          {/* חמש מערכות שנפתחות, לא חמישה פרקים. כל שער מגלה את טווח הפרקים שבתוכו. */}
+          {/* ══════════ 9 · COURSE SYSTEMS (19 chapters, 6 systems) ══════════ */}
+          {/* שש מערכות שנפתחות, לא שישה פרקים. כל שער מגלה את טווח הפרקים שבתוכו. */}
           <section className="mt-20">
             <SectionHeading eyebrow={intro.systems.heading.eyebrow} title={intro.systems.heading.title} />
 
-            {/* באנר שמבהיר: 16 פרקים, 5 מערכות */}
+            {/* באנר שמבהיר: 19 פרקים, 6 מערכות */}
             <div className="mb-3 flex justify-center">
               <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/40 bg-cyan-900/20 px-4 py-2 text-sm font-black text-cyan-100">
                 <Layers size={15} aria-hidden /> {intro.systems.heading.summary}

@@ -2,7 +2,7 @@
 
 // components/ai-internals/CourseSystems.tsx
 //
-// "16 פרקים שפותחים את המנוע, שלב אחרי שלב": חמש תת-מערכות של המנוע על מסלול
+// "19 פרקים שפותחים את המנוע, שלב אחרי שלב": שש תת-מערכות של המנוע על מסלול
 // חישובי אחד. לא אקורדיון: כל שער הוא תא זוהר עם זהות-צבע, קצה מואר, פינות-מעגל,
 // ופורט שמתחבר למסלול. פתיחת שער מרגישה כמו *הפעלת תת-מערכת*: הקצה נדלק, סריקת-אור
 // קצרה עוברת, התוכן נפרש בשכבות, אותות התחנות נדלקים, ומסלול הפרקים נמתח.
@@ -18,7 +18,7 @@
 import React, { useId, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    ChevronDown, Eye, Binary, Focus, Workflow, Layers, Route, Activity, Sparkles,
+    ChevronDown, Eye, Binary, Repeat, ShieldCheck, GraduationCap, Workflow, Route, Activity, Sparkles,
 } from 'lucide-react';
 import Link from 'next/link';
 import { ACCENTS } from './accents';
@@ -28,15 +28,16 @@ import type { CourseSystem } from '@/app/behind-the-scenes-ai/introduction/intro
 import type { Direction } from '@/i18n/config';
 
 // גוון-זהות לכל תת-מערכת: מסע צבעוני לאורך המנוע.
-const SYSTEM_ACCENTS: Accent[] = ['cyan', 'blue', 'indigo', 'purple', 'rose'];
+const SYSTEM_ACCENTS: Accent[] = ['cyan', 'blue', 'indigo', 'purple', 'rose', 'amber'];
 
 // אייקון "תא" לכל תת-מערכת. רמז ויזואלי, לא ניתן לתרגום.
 const SYSTEM_ICON: Record<string, React.ReactNode> = {
     outside: <Eye size={20} />,
     representations: <Binary size={20} />,
-    context: <Focus size={20} />,
+    generation: <Repeat size={20} />,
+    reliability: <ShieldCheck size={20} />,
+    learning: <GraduationCap size={20} />,
     agent: <Workflow size={20} />,
-    synthesis: <Layers size={20} />,
 };
 
 interface SystemLabels {
