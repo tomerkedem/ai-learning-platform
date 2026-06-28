@@ -502,3 +502,279 @@ export function activeStepIndex(scenario: EngineScenario, text: string): number 
 export function dimsForMode(mode: EngineMode): DimKey[] {
     return mode === 'agent' ? AGENT_DIMS : CHAT_DIMS;
 }
+
+/* ═══════════════════ שכבת מבנה לחוויית Embeddings העתידית ═══════════════════ */
+// שכבה מבנית בלבד עבור החוויה ההיברידית העתידית: Live Meaning Map, Meaning Magnet
+// ו-Meaning DNA. אין כאן UI, אין מחרוזות מתורגמות ואין טקסט גלוי. כל הנתונים מספריים
+// ובלתי תלויי שפה, כך שמשפט נוחת באותו מקום בכל שש השפות. הטקסט המקומי יצורף בעתיד
+// בנפרד לפי מזהה יציב. אף ייצוא קיים אינו משתנה, וצרכן פרק 6 (DIM_INFO, DIM_STYLE,
+// DimKey) אינו מושפע.
+
+/** אשכול משמעות יציב למשפט. מזהה מבני, לא טקסט תצוגה. */
+export type ClusterId =
+    | 'delivery-trouble'
+    | 'system'
+    | 'payment'
+    | 'address'
+    | 'agent-risk'
+    | 'unrelated';
+
+/** תפקיד המשפט בעוגן החבילות (מבני בלבד). */
+export type AnchorRole = 'complaint' | 'status' | 'lost' | 'tracking' | 'refund';
+
+/** החלפת מילה: chipId ו-toId יציבים, ללא תווית מתורגמת (התווית תגיע מהמילון בעתיד). */
+export interface WordSwap {
+    chipId: string;
+    toId: string;
+}
+
+/**
+ * רשומת משפט מבנית עבור המפה, המגנט וה-DNA.
+ * profile הוא וקטור מספרי בלתי תלוי שפה. אין כאן טקסט או טוקנים מקומיים.
+ */
+export interface SentenceStruct {
+    id: string;
+    profile: Profile;
+    category: ClusterId;
+    nearbyIds: string[];
+    isAnchor: boolean;
+    anchorRole?: AnchorRole;
+    agent?: { mode: EngineMode; status: AgentNote['status'] };
+    wordSwaps?: WordSwap[];
+}
+
+/**
+ * רישום משפטים מבני קטן לשימוש עתידי. המספרים נגזרים מנתוני המנוע הקיימים
+ * (SCENARIOS ו-SIMILAR_PAIR) כדי לשמור עקביות, פלוס משפט "זר" אחד רחוק להשוואה.
+ * ה-id יציב ואינו מתורגם. הטקסט המקומי יצורף לפי id בקומיט נפרד.
+ */
+export const SENTENCE_STRUCTS: SentenceStruct[] = [
+    {
+        id: 'pkg-not-arrived',
+        profile: { delivery: 0.95, failure: 0.85, system: 0.20, urgency: 0.40, address: 0.10, payment: 0.05 },
+        category: 'delivery-trouble',
+        nearbyIds: ['delivery-not-handed'],
+        isAnchor: true,
+        anchorRole: 'complaint',
+        wordSwaps: [{ chipId: 'to-arrived', toId: 'pkg-arrived' }],
+    },
+    {
+        id: 'delivery-not-handed',
+        profile: { delivery: 0.90, failure: 0.80, system: 0.15, urgency: 0.38, address: 0.10, payment: 0.05 },
+        category: 'delivery-trouble',
+        nearbyIds: ['pkg-not-arrived'],
+        isAnchor: true,
+        anchorRole: 'status',
+    },
+    {
+        id: 'pkg-arrived',
+        profile: { delivery: 0.90, failure: 0.05, system: 0.15, urgency: 0.10, address: 0.10, payment: 0.05 },
+        category: 'delivery-trouble',
+        nearbyIds: [],
+        isAnchor: true,
+        anchorRole: 'status',
+    },
+    {
+        id: 'system-not-showing',
+        profile: { system: 0.80, delivery: 0.45, address: 0.15, payment: 0.05, urgency: 0.30, failure: 0.45 },
+        category: 'system',
+        nearbyIds: [],
+        isAnchor: true,
+        anchorRole: 'tracking',
+    },
+    {
+        id: 'billing-address-update',
+        profile: { address: 0.85, payment: 0.60, system: 0.20, delivery: 0.05, urgency: 0.10, failure: 0.05 },
+        category: 'unrelated',
+        nearbyIds: [],
+        isAnchor: false,
+    },
+    {
+        id: 'agent-investigate-delay',
+        profile: { action: 0.85, delivery: 0.90, failure: 0.85, urgency: 0.45, risk: 0.15, system: 0.15, customer: 0.05, permission: 0.10 },
+        category: 'agent-risk',
+        nearbyIds: ['agent-notify-lost'],
+        isAnchor: true,
+        anchorRole: 'tracking',
+        agent: { mode: 'agent', status: 'safe' },
+    },
+    {
+        id: 'agent-notify-lost',
+        profile: { action: 0.85, delivery: 0.80, customer: 0.90, risk: 0.85, permission: 0.90, failure: 0.70, urgency: 0.40, system: 0.05 },
+        category: 'agent-risk',
+        nearbyIds: ['agent-investigate-delay'],
+        isAnchor: true,
+        anchorRole: 'lost',
+        agent: { mode: 'agent', status: 'approval' },
+    },
+];
+
+/** חיפוש רשומת משפט מבנית לפי id. */
+export function getSentenceStruct(id: string): SentenceStruct | undefined {
+    return SENTENCE_STRUCTS.find((s) => s.id === id);
+}
+
+/* ─── Live Meaning Map: היטל קבוע מהפרופיל לקואורדינטות ──────────────────────── */
+// היטל דטרמיניסטי וקבוע מפרופיל לשני צירים קריאים. תלוי אך ורק בפרופיל, ולכן יציב בין
+// שפות ואינו זז כשאוסף המשפטים משתנה. הגבולות נגזרים ממשקלי הצירים (לא מאוסף המשפטים)
+// כדי שקואורדינטות יישארו יציבות. זהו "צל" דו-ממדי של מרחב גדול הרבה יותר, לא המרחב האמיתי.
+
+/** משקלי ציר X: ימין = עולם המשלוח, שמאל = מערכת ותשלום. */
+export const MAP_AXIS_X: Partial<Record<DimKey, number>> = {
+    delivery: 1, address: 0.6, payment: -0.7, system: -1,
+};
+
+/** משקלי ציר Y: ערך גבוה = יותר כשל וסיכון, ערך נמוך = רגוע. */
+export const MAP_AXIS_Y: Partial<Record<DimKey, number>> = {
+    failure: 1, urgency: 0.7, risk: 1, permission: 0.8, customer: 0.4,
+};
+
+/** ריווח שוליים ברירת מחדל בהיטל, שומר נקודות מעט בתוך הגבול. */
+export const MAP_PADDING = 0.08;
+
+/** נקודה דו-ממדית במרחב מתמטי 0..1 (ה-UI יכול להפוך את ציר Y לפי הצורך). */
+export interface MapPoint2D {
+    x: number;
+    y: number;
+}
+
+/** טווח תיאורטי של סכום משוקלל לפי משקלי ציר (חיוביים מול שליליים). */
+function axisBounds(weights: Partial<Record<DimKey, number>>): { min: number; max: number } {
+    let min = 0;
+    let max = 0;
+    (Object.keys(weights) as DimKey[]).forEach((key) => {
+        const w = weights[key] ?? 0;
+        if (w > 0) max += w;
+        else min += w;
+    });
+    return { min, max };
+}
+
+const MAP_X_BOUNDS = axisBounds(MAP_AXIS_X);
+const MAP_Y_BOUNDS = axisBounds(MAP_AXIS_Y);
+
+/** סכום משוקלל של פרופיל לפי משקלי ציר. */
+function weightedAxis(profile: Profile, weights: Partial<Record<DimKey, number>>): number {
+    return (Object.keys(weights) as DimKey[]).reduce(
+        (sum, key) => sum + dimValue(profile, key) * (weights[key] ?? 0),
+        0,
+    );
+}
+
+/** מנרמל ערך גולמי לטווח [pad, 1-pad] לפי גבולות תיאורטיים קבועים. */
+function normalizeAxis(raw: number, bounds: { min: number; max: number }, pad: number): number {
+    const span = bounds.max - bounds.min;
+    if (span <= 0) return 0.5;
+    const t = Math.max(0, Math.min(1, (raw - bounds.min) / span));
+    return pad + t * (1 - 2 * pad);
+}
+
+/**
+ * היטל הפרופיל לנקודה דו-ממדית יציבה ב-[pad, 1-pad] על שני הצירים.
+ * דטרמיניסטי, בלתי תלוי שפה, ויציב כשאוסף המשפטים משתנה.
+ */
+export function projectProfile(profile: Profile, pad: number = MAP_PADDING): MapPoint2D {
+    return {
+        x: normalizeAxis(weightedAxis(profile, MAP_AXIS_X), MAP_X_BOUNDS, pad),
+        y: normalizeAxis(weightedAxis(profile, MAP_AXIS_Y), MAP_Y_BOUNDS, pad),
+    };
+}
+
+/* ─── Meaning Magnet: משיכות ממדים ווקטור נטו ────────────────────────────────── */
+// כל מגנט הוא ממד משמעות עם זווית קבועה בטבעת. עוצמת המשיכה היא ערך הממד בפרופיל.
+// הזוויות נבחרו כך שכיוון הווקטור הנטו יהדהד בגסות את הרבע שאליו המפה ממקמת את המשפט.
+// אלה מזהים יציבים, לא תוויות תצוגה.
+
+/** מזהה מגנט יציב. */
+export type MagnetId = 'delay' | 'delivery' | 'complaint' | 'tracking' | 'refund' | 'risk';
+
+/** הגדרת מגנט: ממד מניע וזווית קבועה במעלות (0 = ימין, 90 = מעלה). */
+export interface MagnetConfig {
+    id: MagnetId;
+    dim: DimKey;
+    angle: number;
+}
+
+/** טבלת המגנטים הקבועה. id ו-dim יציבים. */
+export const MAGNETS: MagnetConfig[] = [
+    { id: 'delivery', dim: 'delivery', angle: 0 },
+    { id: 'delay', dim: 'urgency', angle: 90 },
+    { id: 'tracking', dim: 'system', angle: 180 },
+    { id: 'risk', dim: 'risk', angle: 270 },
+    { id: 'complaint', dim: 'customer', angle: 315 },
+    { id: 'refund', dim: 'payment', angle: 225 },
+];
+
+/** עוצמת משיכת מגנט = ערך הממד שלו בפרופיל (0..1). */
+export function magnetPull(profile: Profile, magnet: MagnetConfig): number {
+    return dimValue(profile, magnet.dim);
+}
+
+/** וקטור נטו: רכיבי x ו-y, אורך וזווית במעלות. */
+export interface NetVector {
+    x: number;
+    y: number;
+    length: number;
+    angle: number;
+}
+
+const DEG_TO_RAD = Math.PI / 180;
+
+/**
+ * סכום המשיכות כווקטור נטו. כל מגנט תורם pull בכיוון הזווית שלו.
+ * דטרמיניסטי ובלתי תלוי שפה.
+ */
+export function netVector(profile: Profile, magnets: MagnetConfig[] = MAGNETS): NetVector {
+    let x = 0;
+    let y = 0;
+    magnets.forEach((m) => {
+        const pull = magnetPull(profile, m);
+        x += pull * Math.cos(m.angle * DEG_TO_RAD);
+        y += pull * Math.sin(m.angle * DEG_TO_RAD);
+    });
+    const length = Math.sqrt(x * x + y * y);
+    const angle = Math.atan2(y, x) / DEG_TO_RAD;
+    return { x, y, length, angle };
+}
+
+/* ─── Meaning DNA: גנים, סחיפה וגנים משותפים ─────────────────────────────────── */
+// חתימת המשמעות כרצף ממדים. דמיון = גנים משותפים. drift = כמה המשמעות זזה.
+// משתמש ב-visualCloseness הקיים כדי לשמור עקביות עם הטיזר הקיים.
+
+/** הממדים שמוצגים כגנים ב-DNA. */
+export const DNA_DIMS: DimKey[] = ['delivery', 'system', 'address', 'payment', 'urgency', 'failure'];
+
+/** תוצאת השוואת DNA בין שני פרופילים. */
+export interface DnaComparison {
+    /** 0..1, 1 = כיוון זהה על הממדים המוצגים. */
+    closeness: number;
+    /** 0..1, 0 = זהה, משלים ל-closeness. */
+    drift: number;
+    /** מספר הגנים המשותפים (שניהם דולקים וקרובים זה לזה). */
+    sharedGenes: number;
+    /** סך הגנים שנבדקו. */
+    totalGenes: number;
+}
+
+/**
+ * משווה שני פרופילים על ממדי ה-DNA. גן נחשב משותף כששני הצדדים מעל סף הדלקה
+ * וקרובים זה לזה. closeness מחושב מ-visualCloseness הקיים.
+ */
+export function compareDna(
+    a: Profile,
+    b: Profile,
+    dims: DimKey[] = DNA_DIMS,
+    litThreshold = 0.4,
+    closeThreshold = 0.2,
+): DnaComparison {
+    let sharedGenes = 0;
+    dims.forEach((d) => {
+        const av = dimValue(a, d);
+        const bv = dimValue(b, d);
+        if (av >= litThreshold && bv >= litThreshold && Math.abs(av - bv) <= closeThreshold) {
+            sharedGenes += 1;
+        }
+    });
+    const closeness = visualCloseness(a, b, dims);
+    return { closeness, drift: 1 - closeness, sharedGenes, totalGenes: dims.length };
+}
