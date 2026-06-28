@@ -4,28 +4,30 @@ import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { FlaskConical, Info, Layers, Scissors, Combine } from 'lucide-react';
 import { TokenChip } from './TokenChip';
-import { HEBREW_SPLITS } from '@/app/behind-the-scenes-ai/chapter-3/hebrewSplitRules';
 import { roleForWord } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
+import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
 
 /**
- * Hebrew Token Lab: מעבדה אקטיבית לפירוק אותיות שימוש. הלומד לוחץ על כל מילה
- * וצופה באות השימוש נפרדת מהמילה הבסיסית, או מפצל/מאחד את כולן בבת אחת. מונה הטוקנים
- * החי מראה את העיקרון: מילה אחת יכולה להפוך לכמה יחידות עבודה.
+ * Sub-word Lab (מעבדת תת-מילים): מעבדה אקטיבית שמראה שיחידת טקסט אחת יכולה
+ * להתפרק לכמה יחידות עבודה. הלומד לוחץ על כל שורה וצופה בפירוק, או מפצל/מאחד
+ * את כולן בבת אחת. מונה הטוקנים החי מראה את העיקרון. הנתונים והטקסט מגיעים
+ * מתוכן המעבדה (locale-aware), כך שלכל שפה יש דוגמה מתאימה משלה.
  *
- * זהו פירוק לימודי בלבד - טוקנייזר מסחרי מפצל לפי סטטיסטיקת תת-מילים, לא לפי
- * אותיות שימוש.
+ * זהו פירוק לימודי בלבד - טוקנייזר מסחרי מפצל לפי סטטיסטיקת תת-מילים.
  */
 export const HebrewTokenLab: React.FC = () => {
     const reduce = useReducedMotion();
-    // מצב פיצול נפרד לכל שורה: false = מילה שלמה, true = אות שימוש נפרדה.
-    const [split, setSplit] = useState<boolean[]>(() => HEBREW_SPLITS.map(() => false));
+    const { subword, roleWords } = useChapter3Lab();
+    const splits = subword.splits;
+    // מצב פיצול נפרד לכל שורה: false = יחידה שלמה, true = פורקה לתת-יחידות.
+    const [split, setSplit] = useState<boolean[]>(() => splits.map(() => false));
 
     const toggleRow = (i: number) =>
         setSplit((prev) => prev.map((v, idx) => (idx === i ? !v : v)));
-    const splitAll = () => setSplit(HEBREW_SPLITS.map(() => true));
-    const mergeAll = () => setSplit(HEBREW_SPLITS.map(() => false));
+    const splitAll = () => setSplit(splits.map(() => true));
+    const mergeAll = () => setSplit(splits.map(() => false));
 
-    const wordCount = HEBREW_SPLITS.length;
+    const wordCount = splits.length;
     const tokenCount = useMemo(
         () => split.reduce((n, isSplit) => n + (isSplit ? 2 : 1), 0),
         [split],
@@ -40,20 +42,20 @@ export const HebrewTokenLab: React.FC = () => {
                 <div className="flex items-center gap-2">
                     <FlaskConical size={16} className="text-violet-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-200">מעבדת הטוקנים העברית</div>
-                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">Hebrew Token Lab</div>
+                        <div className="text-sm font-bold text-slate-200">{subword.title}</div>
+                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{subword.titleEn}</div>
                     </div>
                 </div>
 
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-900/20 px-2.5 py-1 text-[10px] font-bold text-amber-300">
                     <Info size={11} />
-                    פירוק לימודי
+                    {subword.badge}
                 </span>
             </div>
 
-            {/* הנחיה בעברית פשוטה */}
+            {/* הנחיה */}
             <p className="mb-4 text-xs leading-relaxed text-slate-400">
-                לחצו על מילה כדי לפצל אותה: אות השימוש (ל, מ, ש, ב, ה) נפרדת מהמילה הבסיסית. שימו לב איך מספר הטוקנים עולה עם כל פיצול.
+                {subword.hint}
             </p>
 
             {/* מונה חי + כפתורי "פצל הכול / אחד הכול" */}
@@ -62,11 +64,11 @@ export const HebrewTokenLab: React.FC = () => {
                     <div className="flex items-center gap-2">
                         <Layers size={15} className="text-cyan-300" />
                         <span className="text-xs text-slate-400">
-                            מילים: <span className="font-bold text-slate-200">{wordCount}</span>
+                            {subword.wordsLabel} <span className="font-bold text-slate-200">{wordCount}</span>
                         </span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400">טוקנים:</span>
+                        <span className="text-xs text-slate-400">{subword.tokensLabel}</span>
                         <AnimatePresence mode="popLayout" initial={false}>
                             <motion.span
                                 key={tokenCount}
@@ -92,7 +94,7 @@ export const HebrewTokenLab: React.FC = () => {
                         className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-violet-200 transition-colors hover:bg-violet-500/15 disabled:cursor-default disabled:text-slate-600 disabled:hover:bg-transparent"
                     >
                         <Scissors size={13} />
-                        פצל הכול
+                        {subword.splitAll}
                     </button>
                     <button
                         type="button"
@@ -101,19 +103,19 @@ export const HebrewTokenLab: React.FC = () => {
                         className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-300 transition-colors hover:bg-white/10 disabled:cursor-default disabled:text-slate-600 disabled:hover:bg-transparent"
                     >
                         <Combine size={13} />
-                        אחד הכול
+                        {subword.mergeAll}
                     </button>
                 </div>
             </div>
 
             {/* השורות - לחיצה על כל אחת מפצלת/מאחדת */}
             <div className="space-y-2.5">
-                {HEBREW_SPLITS.map((row, i) => {
-                    const isSplit = split[i];
-                    const prefix = row.educational[0];
-                    const core = row.educational[row.educational.length - 1];
-                    // צובעים את המילה לפי תפקיד המילה הבסיסית, כך שהצבע נשמר כשהאות נפרדת.
-                    const coreRole = roleForWord(core);
+                {splits.map((row, i) => {
+                    const isSplit = split[i] ?? false;
+                    const prefix = row.units[0];
+                    const core = row.units[row.units.length - 1];
+                    // צובעים את המילה לפי תפקיד המילה הבסיסית, כך שהצבע נשמר כשהיחידה נפרדת.
+                    const coreRole = roleForWord(core, roleWords);
 
                     return (
                         <div key={row.word} className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
@@ -122,7 +124,7 @@ export const HebrewTokenLab: React.FC = () => {
                                     type="button"
                                     onClick={() => toggleRow(i)}
                                     aria-pressed={isSplit}
-                                    aria-label={`${row.word} - ${isSplit ? 'מפוצל, לחצו לאיחוד' : 'שלם, לחצו לפיצול'}`}
+                                    aria-label={`${row.word} - ${isSplit ? subword.ariaSplit : subword.ariaWhole}`}
                                     className="group flex flex-wrap items-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60"
                                     dir="rtl"
                                 >
@@ -149,12 +151,12 @@ export const HebrewTokenLab: React.FC = () => {
                                     </motion.div>
 
                                     <span className="text-[10px] font-medium text-slate-500 transition-colors group-hover:text-slate-300">
-                                        {isSplit ? 'לחצו לאיחוד' : 'לחצו לפיצול'}
+                                        {isSplit ? subword.mergeHint : subword.splitHint}
                                     </span>
                                 </button>
 
                                 <span className="leading-tight text-left">
-                                    <span className="block text-xs font-bold text-slate-300">{row.roleHe}</span>
+                                    <span className="block text-xs font-bold text-slate-300">{row.roleLabel}</span>
                                     <span className="block text-[9px] tracking-wider text-slate-500" dir="ltr">{row.roleEn}</span>
                                 </span>
                             </div>
@@ -169,7 +171,7 @@ export const HebrewTokenLab: React.FC = () => {
                                         transition={reduce ? { duration: 0 } : { duration: 0.25 }}
                                         className="overflow-hidden"
                                     >
-                                        <span className="mt-2 block text-[11px] leading-relaxed text-slate-400">{row.noteHe}</span>
+                                        <span className="mt-2 block text-[11px] leading-relaxed text-slate-400">{row.note}</span>
                                     </motion.p>
                                 )}
                             </AnimatePresence>
@@ -182,7 +184,7 @@ export const HebrewTokenLab: React.FC = () => {
             <div className="mt-4 flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-[11px] leading-relaxed text-slate-500">
                 <Info size={13} className="mt-0.5 shrink-0" />
                 <span>
-                    זהו פירוק לימודי בלבד. טוקנייזר מסחרי אמיתי לא מפצל לפי אותיות שימוש אלא לפי סטטיסטיקת תת-מילים שנלמדה מהמון טקסט. כאן אנחנו ממחישים את הרעיון שמילה אחת יכולה להתפרק לכמה יחידות.
+                    {subword.note}
                 </span>
             </div>
         </div>

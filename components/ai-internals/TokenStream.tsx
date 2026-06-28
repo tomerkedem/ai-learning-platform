@@ -8,6 +8,7 @@ import { TokenRoleCard } from './TokenRoleCard';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
 import type { Token } from '@/app/behind-the-scenes-ai/chapter-3/tokenizer';
+import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
 
 interface TokenStreamProps {
     tokens: Token[];
@@ -34,6 +35,7 @@ const RailNode: React.FC<{ he: string; en: string; accent: Accent; highlight?: b
 export const TokenStream: React.FC<TokenStreamProps> = ({ tokens, accent, selectedIndex, onSelect }) => {
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
+    const { stream } = useChapter3Lab();
 
     // מעקב אחרי טוקנים חדשים כדי לפעום אותם (New token detected).
     // החישוב נעשה ב-effect (לא בזמן render) כדי לא לקרוא ref בזמן הרינדור.
@@ -53,23 +55,23 @@ export const TokenStream: React.FC<TokenStreamProps> = ({ tokens, accent, select
             <div className="mb-4 flex items-center gap-2">
                 <ScanLine size={16} className={a.text} />
                 <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">זרם הטוקנים</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">Token Stream</div>
+                    <div className="text-sm font-bold text-slate-200">{stream.title}</div>
+                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{stream.titleEn}</div>
                 </div>
             </div>
 
             {/* המסלול */}
             <div className="mb-4 flex items-center justify-center gap-2" dir="ltr">
-                <RailNode he="טקסט קלט" en="Input Text" accent={accent} />
+                <RailNode he={stream.rail.input.label} en={stream.rail.input.en} accent={accent} />
                 <ArrowLeft size={16} className="rotate-180 text-slate-600" />
-                <RailNode he="טוקנייזר" en="Tokenizer" accent={accent} highlight />
+                <RailNode he={stream.rail.tokenizer.label} en={stream.rail.tokenizer.en} accent={accent} highlight />
                 <ArrowLeft size={16} className="rotate-180 text-slate-600" />
-                <RailNode he="זרם טוקנים" en="Token Stream" accent={accent} />
+                <RailNode he={stream.rail.stream.label} en={stream.rail.stream.en} accent={accent} />
             </div>
 
             {/* הטוקנים */}
             {tokens.length === 0 ? (
-                <p className="py-4 text-center text-sm text-slate-500">הקלידו טקסט, והוא יתפרק כאן לטוקנים.</p>
+                <p className="py-4 text-center text-sm text-slate-500">{stream.empty}</p>
             ) : (
                 <div className="flex flex-wrap gap-2" dir="rtl">
                     <AnimatePresence mode="popLayout">
@@ -96,7 +98,7 @@ export const TokenStream: React.FC<TokenStreamProps> = ({ tokens, accent, select
             )}
 
             <p className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-500">
-                <Sparkles size={12} className={a.text} /> לחצו על טוקן כדי לראות את התפקיד שלו.
+                <Sparkles size={12} className={a.text} /> {stream.hint}
             </p>
 
             {/* כרטיס התפקיד של הטוקן הנבחר */}

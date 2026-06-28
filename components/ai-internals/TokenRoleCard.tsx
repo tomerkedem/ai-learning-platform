@@ -3,7 +3,8 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { ROLE_STYLE, ROLE_INFO, type TokenRole } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
+import { ROLE_STYLE, type TokenRole } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
+import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
 
 interface TokenRoleCardProps {
     text: string;
@@ -17,8 +18,9 @@ interface TokenRoleCardProps {
  */
 export const TokenRoleCard: React.FC<TokenRoleCardProps> = ({ text, role, onClose }) => {
     const reduce = useReducedMotion();
+    const { roleInfo, roleCard } = useChapter3Lab();
     const s = ROLE_STYLE[role];
-    const info = ROLE_INFO[role];
+    const info = roleInfo[role];
 
     return (
         <motion.div
@@ -32,7 +34,7 @@ export const TokenRoleCard: React.FC<TokenRoleCardProps> = ({ text, role, onClos
             <button
                 type="button"
                 onClick={onClose}
-                aria-label="סגירת כרטיס התפקיד"
+                aria-label={roleCard.closeAria}
                 className="absolute left-3 top-3 rounded-lg border border-white/10 bg-slate-950/40 p-1 text-slate-400 transition-colors hover:text-slate-200"
             >
                 <X size={14} />
@@ -44,11 +46,11 @@ export const TokenRoleCard: React.FC<TokenRoleCardProps> = ({ text, role, onClos
             </div>
 
             <div className="mb-2 flex items-baseline gap-2">
-                <span className={`text-sm font-bold ${s.text}`}>{info.he}</span>
+                <span className={`text-sm font-bold ${s.text}`}>{info.label}</span>
                 <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-slate-500" dir="ltr">{info.en}</span>
             </div>
 
-            <p className="text-sm leading-relaxed text-slate-200">{info.whyHe}</p>
+            <p className="text-sm leading-relaxed text-slate-200">{info.why}</p>
         </motion.div>
     );
 };

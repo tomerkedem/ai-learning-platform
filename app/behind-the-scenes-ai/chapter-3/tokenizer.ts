@@ -5,7 +5,7 @@
 // (3) שיוך תפקיד מתוך WORD_ROLES, (4) ספירה. המקף אינו מפצל, ולכן הוא
 // מדגים איך הצורה משנה את הפירוק ("לא-הגיעה" הופך ליחידה אחת).
 
-import { roleForWord, type TokenRole } from './tokenRoles';
+import { roleForWord, type TokenRole, type RoleWordMap } from './tokenRoles';
 
 export type TokenizationMode = 'chat' | 'agent';
 
@@ -26,16 +26,18 @@ function punctRole(p: string): TokenRole {
     return 'statement-signal';
 }
 
-/** תפקיד לליבת הטוקן: רצף ספרות נחשב מספר, אחרת לפי טבלת התפקידים. */
-function coreRole(core: string): TokenRole {
-    return DIGITS.test(core) ? 'number' : roleForWord(core);
+/** תפקיד לליבת הטוקן: רצף ספרות נחשב מספר, אחרת לפי טבלת התפקידים (locale-aware). */
+function coreRole(core: string, roleWords?: RoleWordMap): TokenRole {
+    return DIGITS.test(core) ? 'number' : roleForWord(core, roleWords);
 }
 
 /**
  * tokenize(text) = [token1, token2, token3, ...]
  * פיצול לפי רווחים, קילוף פיסוק נגרר לטוקנים נפרדים, ושיוך תפקיד לכל טוקן.
+ * מפת התפקידים אופציונלית כדי לאפשר זיהוי לפי שפה; ללא ארגומנט נשמרת התנהגות
+ * העברית הקיימת.
  */
-export function tokenize(text: string): Token[] {
+export function tokenize(text: string, roleWords?: RoleWordMap): Token[] {
     const out: { text: string; role: TokenRole; isPunct: boolean }[] = [];
     const raw = text.trim().split(/\s+/).filter(Boolean);
 
@@ -48,7 +50,7 @@ export function tokenize(text: string): Token[] {
             core = core.slice(0, -1);
         }
         if (core.length > 0) {
-            out.push({ text: core, role: coreRole(core), isPunct: false });
+            out.push({ text: core, role: coreRole(core, roleWords), isPunct: false });
         }
         trailing.forEach((p) => {
             out.push({ text: p, role: punctRole(p), isPunct: true });
@@ -58,18 +60,47 @@ export function tokenize(text: string): Token[] {
     return out.map((t, i) => ({ ...t, id: `${i}-${t.text}` }));
 }
 
-/** האם הקלט מכיל את צירוף ההקשר "מרכז המיון" (Sorting center). */
-export function hasSortingCenter(tokens: Token[]): boolean {
-    const texts = tokens.map((t) => t.text);
-    const i = texts.findIndex((t) => t === 'מרכז' || t === 'למרכז' || t === 'במרכז');
-    return i >= 0 && texts.slice(i + 1).includes('המיון');
+/**
+ * הגדרת צירוף "מילה מובילה ואז מילת המשך" (למשל "מרכז" ואז "המיון").
+ * ניתנת להחלפה לפי שפה; ברירת המחדל היא עברית.
+ */
+export interface PhraseAfterSignal {
+    /** מילים מובילות אפשריות (כל אחת תקפה). */
+    leads: string[];
+    /** מילת ההמשך שצריכה להופיע אחרי המילה המובילה. */
+    follow: string;
 }
 
-/** האם יש צירוף "לא" ואז "הגיעה" (Delivery failure signal). */
-export function hasDeliveryFailure(tokens: Token[]): boolean {
+/** הגדרת צירוף של שתי מילים בסדר (למשל "לא" ואז "הגיעה"). */
+export interface PairSignal {
+    first: string;
+    second: string;
+}
+
+/** ברירת המחדל העברית: צירוף ההקשר "מרכז המיון". */
+export const HE_SORTING_CENTER: PhraseAfterSignal = {
+    leads: ['מרכז', 'למרכז', 'במרכז'],
+    follow: 'המיון',
+};
+
+/** ברירת המחדל העברית: צירוף כשל מסירה "לא ... הגיעה". */
+export const HE_DELIVERY_FAILURE: PairSignal = {
+    first: 'לא',
+    second: 'הגיעה',
+};
+
+/** האם הקלט מכיל את צירוף ההקשר (Sorting center). ברירת מחדל עברית. */
+export function hasSortingCenter(tokens: Token[], cfg: PhraseAfterSignal = HE_SORTING_CENTER): boolean {
     const texts = tokens.map((t) => t.text);
-    const i = texts.indexOf('לא');
-    return i >= 0 && texts.slice(i + 1).includes('הגיעה');
+    const i = texts.findIndex((t) => cfg.leads.includes(t));
+    return i >= 0 && texts.slice(i + 1).includes(cfg.follow);
+}
+
+/** האם יש צירוף כשל מסירה (Delivery failure signal). ברירת מחדל עברית. */
+export function hasDeliveryFailure(tokens: Token[], cfg: PairSignal = HE_DELIVERY_FAILURE): boolean {
+    const texts = tokens.map((t) => t.text);
+    const i = texts.indexOf(cfg.first);
+    return i >= 0 && texts.slice(i + 1).includes(cfg.second);
 }
 
 /** האם יש אות פעולה (Action signal) בקלט. */
@@ -147,16 +178,25 @@ export const TOKEN_SCENARIOS: TokenScenario[] = [
     },
 ];
 
-export function getScenario(id: string): TokenScenario | undefined {
-    return TOKEN_SCENARIOS.find((s) => s.id === id);
+/** איתור תרחיש לפי מזהה. מקבל רשימת תרחישים אופציונלית (locale-aware). */
+export function getScenario(id: string, scenarios: TokenScenario[] = TOKEN_SCENARIOS): TokenScenario | undefined {
+    return scenarios.find((s) => s.id === id);
 }
 
-export function defaultScenarioFor(mode: TokenizationMode): TokenScenario {
-    return TOKEN_SCENARIOS.find((s) => s.mode === mode) ?? TOKEN_SCENARIOS[0];
+/** ברירת המחדל של תרחיש לפי מצב. מקבל רשימת תרחישים אופציונלית (locale-aware). */
+export function defaultScenarioFor(mode: TokenizationMode, scenarios: TokenScenario[] = TOKEN_SCENARIOS): TokenScenario {
+    return scenarios.find((s) => s.mode === mode) ?? scenarios[0];
+}
+
+/** שלב במפת הדרכים. he היא התווית הראשית, en התווית המשנית. */
+export interface RoadmapStep {
+    he: string;
+    en: string;
+    active: boolean;
 }
 
 /** שלבי מפת הדרכים: רק הראשון פעיל, השאר נעולים כטיזר לפרקים הבאים. */
-export const ROADMAP_STEPS: { he: string; en: string; active: boolean }[] = [
+export const ROADMAP_STEPS: RoadmapStep[] = [
     { he: 'טקסט', en: 'Text', active: true },
     { he: 'טוקנים', en: 'Tokens', active: true },
     { he: 'מזהי טוקן', en: 'Token IDs', active: false },

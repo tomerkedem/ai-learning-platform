@@ -3,27 +3,29 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, Lock, Map } from 'lucide-react';
-import { ROADMAP_STEPS } from '@/app/behind-the-scenes-ai/chapter-3/tokenizer';
+import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
 
 /**
  * מפת הדרכים: Text -> Tokens -> Token IDs -> Vectors -> Similarity -> Scores -> Probabilities.
  * רק החץ הראשון פעיל; השאר נעולים כטיזר לפרקים הבאים. בלי Tokenization אין התחלה למסלול.
+ * הטקסט והשלבים מגיעים מתוכן המעבדה (locale-aware).
  */
 export const TokenizationRoadmap: React.FC = () => {
     const reduce = useReducedMotion();
+    const { roadmap } = useChapter3Lab();
 
     return (
         <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-right" dir="rtl">
             <div className="mb-4 flex items-center gap-2">
                 <Map size={16} className="text-violet-300" />
                 <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">מפת הדרכים של המנוע</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">From Text to Probabilities</div>
+                    <div className="text-sm font-bold text-slate-200">{roadmap.title}</div>
+                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{roadmap.titleEn}</div>
                 </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2" dir="ltr">
-                {ROADMAP_STEPS.map((step, i) => (
+                {roadmap.steps.map((step, i) => (
                     <React.Fragment key={step.en}>
                         {i > 0 && <ArrowLeft size={15} className="rotate-180 text-slate-600" />}
                         <motion.div
@@ -47,7 +49,7 @@ export const TokenizationRoadmap: React.FC = () => {
             </div>
 
             <p className="mt-4 text-xs leading-relaxed text-slate-400">
-                כרגע אנחנו רק בשלב הראשון: טקסט הופך לטוקנים. השלבים הבאים (מזהי טוקן, וקטורים) הם המקום שבו מודלים אמיתיים עושים את החישוב הסטטיסטי. בלי הפירוק הזה, אין בכלל התחלה למסלול.
+                {roadmap.note}
             </p>
         </div>
     );

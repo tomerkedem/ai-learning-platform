@@ -5,6 +5,7 @@ import { Keyboard, RotateCcw } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
 import type { TokenExample } from '@/app/behind-the-scenes-ai/chapter-3/tokenizer';
+import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
 
 interface TokenSplitterInputProps {
     text: string;
@@ -26,12 +27,13 @@ export const TokenSplitterInput: React.FC<TokenSplitterInputProps> = ({
     onReset,
 }) => {
     const a = ACCENTS[accent];
+    const { splitter } = useChapter3Lab();
 
     return (
         <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-4 text-right" dir="rtl">
             <div className="mb-3 flex items-center gap-2 text-xs text-slate-400">
                 <Keyboard size={14} className={a.text} />
-                הקלידו משפט, והוא יתפרק לטוקנים בזמן אמת.
+                {splitter.hint}
             </div>
 
             <div className={`flex items-center rounded-xl border bg-slate-950/60 transition-colors ${a.border}`}>
@@ -39,16 +41,16 @@ export const TokenSplitterInput: React.FC<TokenSplitterInputProps> = ({
                     type="text"
                     value={text}
                     onChange={(e) => onChange(e.target.value)}
-                    placeholder="לדוגמה: החבילה לא הגיעה"
+                    placeholder={splitter.placeholder}
                     dir="rtl"
-                    aria-label="שדה הקלדה לפירוק טוקנים"
+                    aria-label={splitter.aria}
                     className="w-full bg-transparent px-4 py-3 text-lg font-medium text-white placeholder:text-slate-600 focus:outline-none"
                 />
             </div>
 
             {/* ניסויים מהירים */}
             <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="text-[11px] font-bold text-slate-500">ניסויים מהירים:</span>
+                <span className="text-[11px] font-bold text-slate-500">{splitter.quickLabel}</span>
                 {examples.map((ex) => {
                     const active = ex.text === text;
                     return (
@@ -71,7 +73,7 @@ export const TokenSplitterInput: React.FC<TokenSplitterInputProps> = ({
                     onClick={onReset}
                     className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700/60 bg-slate-800/40 px-2.5 py-1.5 text-[11px] font-bold text-slate-400 transition-colors hover:text-slate-200"
                 >
-                    <RotateCcw size={12} /> איפוס
+                    <RotateCcw size={12} /> {splitter.resetLabel}
                 </button>
             </div>
         </div>

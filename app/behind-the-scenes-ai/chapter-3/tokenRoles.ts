@@ -70,8 +70,11 @@ export const ROLE_INFO: Record<TokenRole, RoleInfo> = {
     other: { he: 'כללי', en: 'Token', whyHe: 'מילה שלא מופתה לתפקיד מיוחד בטוקנייזר הלימודי הזה. עדיין נספרת כיחידת עבודה.' },
 };
 
-/** מילה -> תפקיד. טבלה דטרמיניסטית קבועה. */
-export const WORD_ROLES: Record<string, TokenRole> = {
+/** מפת מילה -> תפקיד. ניתנת להחלפה לפי שפה (locale-aware), עם ברירת מחדל עברית. */
+export type RoleWordMap = Record<string, TokenRole>;
+
+/** מילה -> תפקיד. טבלה דטרמיניסטית קבועה (ברירת המחדל העברית). */
+export const WORD_ROLES: RoleWordMap = {
     // Object
     'החבילה': 'object', 'חבילה': 'object', 'המשלוח': 'object', 'משלוח': 'object',
     // Negation
@@ -90,9 +93,13 @@ export const WORD_ROLES: Record<string, TokenRole> = {
     'אולי': 'noise', 'קצת': 'noise', 'משהו': 'noise',
 };
 
-/** התפקיד של מילה (ברירת מחדל 'other' אם לא בטבלה). */
-export function roleForWord(word: string): TokenRole {
-    return WORD_ROLES[word] ?? 'other';
+/**
+ * התפקיד של מילה (ברירת מחדל 'other' אם לא בטבלה).
+ * מקבל מפת תפקידים אופציונלית כדי לאפשר זיהוי לפי שפה; ללא ארגומנט נשמרת
+ * ההתנהגות העברית הקיימת.
+ */
+export function roleForWord(word: string, map: RoleWordMap = WORD_ROLES): TokenRole {
+    return map[word] ?? 'other';
 }
 
 /** רשימת התפקידים להצגה במקרא (Color Map), בסדר לימודי. */
