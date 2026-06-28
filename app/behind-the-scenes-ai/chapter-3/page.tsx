@@ -16,7 +16,7 @@ import { DiscoveryGuess, type DiscoveryGuessContent, type DiscoveryGuessCard } f
 import { TokenizationLab } from '@/components/ai-internals/TokenizationLab';
 import { TokenizationRoadmap } from '@/components/ai-internals/TokenizationRoadmap';
 import { Mentor } from '@/components/ai-internals/Mentor';
-import { Chapter3LabProvider, HE_LAB_CONTENT } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { Chapter3LabProvider, getLabContent } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
 import { useT } from '@/i18n/useT';
 import type { Chapter3QuizId } from '@/i18n/locales/he/behind-ai/chapter3Quiz';
 
@@ -84,9 +84,10 @@ const LockQuestion: React.FC = () => {
 
 export default function BehindTheScenesChapter3() {
     const reduce = useReducedMotion();
-    const { t, dir } = useT();
+    const { t, dir, locale } = useT();
     const isRtl = dir === 'rtl';
     const c3 = t.behindAi.chapter3;
+    const labContent = getLabContent(locale);
 
     // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא-דאטה.
     const guessContent: DiscoveryGuessContent = {
@@ -192,7 +193,7 @@ export default function BehindTheScenesChapter3() {
             </section>
 
             {/* ══════════ גע: מעבדת הפירוק ══════════ */}
-            <Chapter3LabProvider value={HE_LAB_CONTENT}>
+            <Chapter3LabProvider value={labContent}>
                 <section id="token-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                     <div className="flex items-center gap-3">
                         <FlaskConical size={24} className="text-violet-400" />

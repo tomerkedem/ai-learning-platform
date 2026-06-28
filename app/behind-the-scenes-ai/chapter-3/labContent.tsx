@@ -15,6 +15,7 @@
 
 import React, { createContext, useContext } from 'react';
 
+import type { Locale } from '@/i18n/config';
 import {
     TOKEN_SCENARIOS,
     ROADMAP_STEPS,
@@ -32,6 +33,14 @@ import {
     type RoleWordMap,
 } from './tokenRoles';
 import { HEBREW_SPLITS } from './hebrewSplitRules';
+
+// חבילות תוכן המעבדה לכל שפה. נתוני טקסט ודטקציה בלבד (ללא React), ולכן הם
+// נטענים בגרף הלקוח דרך הקובץ הזה ואינם עוברים דרך מילון ה-i18n שנגיש גם בשרת.
+import { chapter3Lab as EN_LAB_CONTENT } from '@/i18n/locales/en/behind-ai/chapter3Lab';
+import { chapter3Lab as ES_LAB_CONTENT } from '@/i18n/locales/es/behind-ai/chapter3Lab';
+import { chapter3Lab as RU_LAB_CONTENT } from '@/i18n/locales/ru/behind-ai/chapter3Lab';
+import { chapter3Lab as AR_LAB_CONTENT } from '@/i18n/locales/ar/behind-ai/chapter3Lab';
+import { chapter3Lab as JA_LAB_CONTENT } from '@/i18n/locales/ja/behind-ai/chapter3Lab';
 
 /* ════════════════════════ טיפוסים ════════════════════════ */
 
@@ -247,6 +256,24 @@ export const HE_LAB_CONTENT: Chapter3LabContent = {
     sortingCenter: HE_SORTING_CENTER,
     deliveryFailure: HE_DELIVERY_FAILURE,
 };
+
+/* ════════════════════════ מרשם תוכן לפי שפה ════════════════════════ */
+
+// העברית היא ברירת המחדל. שאר השפות מספקות חבילה מלאה ומקומית. כל מי שלא נמצא
+// במפה נופל בבטחה לעברית.
+const LAB_CONTENT_BY_LOCALE: Record<Locale, Chapter3LabContent> = {
+    he: HE_LAB_CONTENT,
+    en: EN_LAB_CONTENT,
+    es: ES_LAB_CONTENT,
+    ru: RU_LAB_CONTENT,
+    ar: AR_LAB_CONTENT,
+    ja: JA_LAB_CONTENT,
+};
+
+/** מחזיר את תוכן המעבדה לשפה, עם נפילה לעברית אם השפה לא נמצאה. */
+export function getLabContent(locale: Locale): Chapter3LabContent {
+    return LAB_CONTENT_BY_LOCALE[locale] ?? HE_LAB_CONTENT;
+}
 
 /* ════════════════════════ Context ════════════════════════ */
 
