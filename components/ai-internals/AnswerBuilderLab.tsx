@@ -14,7 +14,7 @@ import {
     totalSteps,
     type BuildBranch,
     type FragmentCandidate,
-} from '@/app/behind-the-scenes-ai/chapter-5/answerBuildSteps';
+} from '@/app/behind-the-scenes-ai/chapter-10/answerBuildSteps';
 
 /** עמודת "מידת התאמה" להמחשה לימודית בלבד. */
 const FitBar: React.FC<{ value: number; accent: keyof typeof ACCENTS; muted?: boolean }> = ({ value, accent, muted }) => {

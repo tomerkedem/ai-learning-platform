@@ -30,7 +30,7 @@ import {
     type DimKey,
     type Profile,
     type ShiftEntry,
-} from '@/app/behind-the-scenes-ai/chapter-6/embeddingEngine';
+} from '@/app/behind-the-scenes-ai/chapter-4/embeddingEngine';
 
 /**
  * WordToNumberLab - מעבדת פרק 6: "ממילים למספרים ולמשמעות".

@@ -19,7 +19,7 @@ import {
     type SectionNarration, type DecisionTone,
 } from '@/app/behind-the-scenes-ai/chapter-11/toolData';
 import type { ToolEval, ToolSelection } from '@/app/behind-the-scenes-ai/chapter-11/toolEngine';
-import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/chapter-10/taskEngine';
+import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/_parked/chat-to-agent/taskEngine';
 
 /* ════════════════════════ טון צבעוני ═════════════════════════════════════ */
 // Selected ב-emerald, No tool needed נייטרלי-teal (כבוד), Ask/Approval ב-amber,

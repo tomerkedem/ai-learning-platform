@@ -12,10 +12,10 @@ import { StickyContextBar, type ContextTone } from './StickyContextBar';
 import {
     parse, SCENARIOS, NARRATION, SIGNAL_WORDS, PIPELINE_STEPS,
     BARCODE_SAMPLE, DEFAULT_SCENARIO_ID, type SectionNarration,
-} from '@/app/behind-the-scenes-ai/chapter-10/taskData';
+} from '@/app/behind-the-scenes-ai/_parked/chat-to-agent/taskData';
 import {
     DECISION_META, type TaskAnalysis, type TaskDecisionKind, type ClarityLevel,
-} from '@/app/behind-the-scenes-ai/chapter-10/taskEngine';
+} from '@/app/behind-the-scenes-ai/_parked/chat-to-agent/taskEngine';
 
 /* ════════════════════════ טון צבעוני לפי החלטה ═══════════════════════════ */
 // Answer נייטרלי-teal, Ask ב-amber של זהירות, Use tool ברמז violet קדימה,

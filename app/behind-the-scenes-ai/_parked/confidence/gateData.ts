@@ -14,8 +14,8 @@
 //     של פרק 8 על ציוני VAGUE_STEPS.
 
 import type { Accent } from '@/components/ai-internals/types';
-import { analyzeSentence, analyzeAgent, AGENT_TEMPERATURE } from '@/app/behind-the-scenes-ai/chapter-8/pipelineData';
-import { softmax, confidenceFromMargin, type ConfidenceLevel } from '@/app/behind-the-scenes-ai/chapter-8/scoringEngine';
+import { analyzeSentence, analyzeAgent, AGENT_TEMPERATURE } from '@/app/behind-the-scenes-ai/chapter-6/pipelineData';
+import { softmax, confidenceFromMargin, type ConfidenceLevel } from '@/app/behind-the-scenes-ai/chapter-6/scoringEngine';
 import type { RiskLevel } from './gateLogic';
 
 /* ════════════════════════════ ספים ═══════════════════════════════════════ */

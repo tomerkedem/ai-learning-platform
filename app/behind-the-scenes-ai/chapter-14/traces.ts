@@ -10,17 +10,17 @@
 //   * Risk/Control     -> פרק 13 (evaluate)
 // כל מספר שמוצג במעבדה מגיע מהמנועים האלה, בלי קידוד קשיח ובלי חישוב סותר.
 
-import { idForWord } from '@/app/behind-the-scenes-ai/chapter-6/embeddingEngine';
-import { analyzeSentence, DIMS, DIM_INFO } from '@/app/behind-the-scenes-ai/chapter-8/pipelineData';
-import { INTENT_META, metaFor } from '@/app/behind-the-scenes-ai/chapter-9/gateData';
-import { evaluateGate, buildClarifyingQuestion } from '@/app/behind-the-scenes-ai/chapter-9/gateLogic';
-import { DEFAULT_THRESHOLD } from '@/app/behind-the-scenes-ai/chapter-9/gateData';
-import { parse } from '@/app/behind-the-scenes-ai/chapter-10/taskData';
+import { idForWord } from '@/app/behind-the-scenes-ai/chapter-4/embeddingEngine';
+import { analyzeSentence, DIMS, DIM_INFO } from '@/app/behind-the-scenes-ai/chapter-6/pipelineData';
+import { INTENT_META, metaFor } from '@/app/behind-the-scenes-ai/_parked/confidence/gateData';
+import { evaluateGate, buildClarifyingQuestion } from '@/app/behind-the-scenes-ai/_parked/confidence/gateLogic';
+import { DEFAULT_THRESHOLD } from '@/app/behind-the-scenes-ai/_parked/confidence/gateData';
+import { parse } from '@/app/behind-the-scenes-ai/_parked/chat-to-agent/taskData';
 import { selectFor, getTool } from '@/app/behind-the-scenes-ai/chapter-11/toolData';
 import { TOOL_CALL, getObservation } from '@/app/behind-the-scenes-ai/chapter-12/observationData';
 import { evaluate as evaluateControl } from '@/app/behind-the-scenes-ai/chapter-13/controlEngine';
 import { ACTION_META, RISK_META as CONTROL_RISK_META } from '@/app/behind-the-scenes-ai/chapter-13/controlData';
-import type { ConfidenceLevel } from '@/app/behind-the-scenes-ai/chapter-8/scoringEngine';
+import type { ConfidenceLevel } from '@/app/behind-the-scenes-ai/chapter-6/scoringEngine';
 
 /* ════════════════════════ טיפוסי שלב במסלול ══════════════════════════════ */
 

@@ -14,7 +14,7 @@
 // המנוע צורך את מצב המשימה של פרק 10 (TaskAnalysis) ואינו מחשב מחדש את הפירוק.
 // כל הנתונים הניתנים לכוונון (לוח הכלים, חוקי ההתאמה) יושבים ב-toolData.ts.
 
-import type { TaskAnalysis, ActionCategory } from '@/app/behind-the-scenes-ai/chapter-10/taskEngine';
+import type { TaskAnalysis, ActionCategory } from '@/app/behind-the-scenes-ai/_parked/chat-to-agent/taskEngine';
 import type { Accent } from '@/components/ai-internals/types';
 
 /* ─────────────────────────────── טיפוסים ────────────────────────────────── */

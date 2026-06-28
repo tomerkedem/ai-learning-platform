@@ -7,8 +7,8 @@
 //   good_request = clear_goal + relevant_context + required_data
 //                 + output_expectation + safety_boundaries
 
-import { parse } from '@/app/behind-the-scenes-ai/chapter-10/taskData';
-import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/chapter-10/taskEngine';
+import { parse } from '@/app/behind-the-scenes-ai/_parked/chat-to-agent/taskData';
+import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/_parked/chat-to-agent/taskEngine';
 
 export type { TaskAnalysis };
 

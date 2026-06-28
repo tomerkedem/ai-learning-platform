@@ -15,7 +15,7 @@ import {
     TONE_STYLE,
     type ClusterKey,
     type Vec,
-} from '@/app/behind-the-scenes-ai/chapter-7/semanticSpace';
+} from '@/app/behind-the-scenes-ai/chapter-5/semanticSpace';
 
 /**
  * SemanticSpaceLab - מעבדת פרק 7: "הגיאומטריה של המשמעות".

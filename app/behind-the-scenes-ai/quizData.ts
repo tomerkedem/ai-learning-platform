@@ -1529,13 +1529,13 @@ export const CHAPTER_LABELS: Record<number, string> = {
     1: "הצ'אט השקוף",
     2: "Model Input",
     3: "Tokenization",
-    4: "AI כמנוע הסתברותי",
-    5: "איך AI בונה תשובה",
-    6: "ממילים למספרים",
-    7: "הגיאומטריה של המשמעות",
-    8: "Attention, מי חשוב עכשיו",
-    9: "ביטחון ושער ההחלטה",
-    10: "מ-Prompt למשימה",
+    4: "ממילים למספרים",
+    5: "הגיאומטריה של המשמעות",
+    6: "Attention, מי חשוב עכשיו",
+    7: "Context Window",
+    8: "Logits & Softmax",
+    9: "Decoding",
+    10: "איך AI בונה תשובה",
     11: "בחירת כלי",
     12: "Tool Call ולולאת ההחלטה",
     13: "עצירה, אישור ואחריות",
@@ -1544,10 +1544,18 @@ export const CHAPTER_LABELS: Record<number, string> = {
     16: "לעבוד נכון עם AI",
 };
 
+// מיפוי מספר הפרק החדש אל מבדק הפרק, אחרי שינוי סדר Stage 3A. הפרקים החדשים 7
+// (Context Window) ו-9 (Decoding) הם מציני מקום ועדיין בלי מבדק, ולכן אינם כאן.
+// מבדקי הפרקים שנותקו (chapter9Quiz = ביטחון, chapter10Quiz = מ-Prompt למשימה)
+// שמורים תחת _parked ואינם רשומים כעת.
 const CHAPTER_QUIZZES: Record<number, QuizQuestion[]> = {
-    1: chapter1Quiz, 2: chapter2Quiz, 3: chapter3Quiz, 4: chapter4Quiz,
-    5: chapter5Quiz, 6: chapter6Quiz, 7: chapter7Quiz, 8: chapter8Quiz,
-    9: chapter9Quiz, 10: chapter10Quiz, 11: chapter11Quiz, 12: chapter12Quiz,
+    1: chapter1Quiz, 2: chapter2Quiz, 3: chapter3Quiz,
+    4: chapter6Quiz,   // Embeddings: ממילים למספרים
+    5: chapter7Quiz,   // Semantic Space: הגיאומטריה של המשמעות
+    6: chapter8Quiz,   // Attention: מי חשוב עכשיו
+    8: chapter4Quiz,   // Logits & Softmax (תוכן הלב ההסתברותי הקיים)
+    10: chapter5Quiz,  // Generation Loop: איך AI בונה תשובה
+    11: chapter11Quiz, 12: chapter12Quiz,
     13: chapter13Quiz, 14: chapter14Quiz, 15: chapter15Quiz, 16: chapter16Quiz,
 };
 
@@ -1555,29 +1563,32 @@ const CHAPTER_QUIZZES: Record<number, QuizQuestion[]> = {
 // ידנית עבור מושגי מבחן הסיום שאינם מופיעים ככותרת מושג במבדקי הפרקים.
 const CONCEPT_TO_CHAPTER: Record<string, number> = {};
 for (let n = 1; n <= 16; n++) {
-    for (const q of CHAPTER_QUIZZES[n]) {
+    const qs = CHAPTER_QUIZZES[n];
+    if (!qs) continue; // פרקי מציין מקום (7 Context Window, 9 Decoding) עדיין בלי מבדק
+    for (const q of qs) {
         if (!(q.concept in CONCEPT_TO_CHAPTER)) CONCEPT_TO_CHAPTER[q.concept] = n;
     }
 }
+// מיפוי מושגי מבחן הסיום אל הפרק שמלמד אותם, מעודכן למספור Stage 3A. מושגים
+// שנלמדו בפרקים שנותקו ל-_parked (ביטחון, מ-Prompt למשימה) הוסרו זמנית, ולכן
+// לא יוצג עבורם קישור חזרה עד שייבנו מחדש בשלב נפרד.
 const FINAL_CONCEPT_TO_CHAPTER: Record<string, number> = {
     "המסלול המלא": 1,
     "למה טוקניזציה": 3,
-    "מרכזיות המספרים": 6,
-    "הסתברות אינה אמת": 4,
-    "ניסוח משנה ביטחון": 5,
+    "מרכזיות המספרים": 4,    // Embeddings עבר לפרק 4
+    "הסתברות אינה אמת": 8,   // הלב ההסתברותי עבר לפרק 8 (Logits & Softmax)
+    "ניסוח משנה ביטחון": 10, // בניית התשובה (Generation Loop) עברה לפרק 10
     "יכולת אינה הרשאה": 13,
     "סיכון בשימוש בכלי": 11,
     "למה צריך בקרה": 13,
-    "זיהוי עמימות": 9,
-    "הסבר לא טכני": 4,
+    "הסבר לא טכני": 8,        // ניחוש מחושב נלמד בלב ההסתברותי, פרק 8
     "UX חושף תהליך": 14,
-    "כל מילה מזיזה": 5,
+    "כל מילה מזיזה": 10,      // בנייה צעד אחר צעד, פרק 10
     "למידה וזיכרון": 15,
     "ביטחון פוגש סיכון": 13,
-    // פרק 8 הפך לפרק Attention ואינו מלמד עוד דמיון מול הסתברות. שאלת מבחן הסיום
-    // על Cosine Similarity מופנית לפרק 7 (הגיאומטריה של המשמעות) עד שייבנה פרק
-    // ה-Softmax. ראו CH8_MIGRATION_NOTES.md.
-    "דמיון מול הסתברות": 7,
+    // הדמיון (Cosine Similarity) נלמד במרחב המשמעות, שעבר לפרק 5. שכבת ה-Softmax
+    // המלאה תיבנה בפרקים 8/9 בשלב נפרד; עד אז ההפניה היא לפרק 5.
+    "דמיון מול הסתברות": 5,
 };
 for (const [concept, n] of Object.entries(FINAL_CONCEPT_TO_CHAPTER)) {
     if (!(concept in CONCEPT_TO_CHAPTER)) CONCEPT_TO_CHAPTER[concept] = n;
@@ -1606,10 +1617,12 @@ function chapterOnComplete(chapterId: number) {
 // כל עמוד פרק צורך את הערך המתאים לו: <AssessmentEngine {...behindAiChapterQuizzes[N]} />
 export const behindAiChapterQuizzes: Record<number, ChapterQuizMeta> = {};
 for (let n = 1; n <= 16; n++) {
+    const questions = CHAPTER_QUIZZES[n];
+    if (!questions) continue; // פרקי מציין מקום (7, 9) עדיין בלי מבדק
     behindAiChapterQuizzes[n] = {
         title: `מבדק הבנה: ${CHAPTER_LABELS[n]}`,
         subtitle: QUIZ_SUBTITLE,
-        questions: CHAPTER_QUIZZES[n],
+        questions,
         nextHref: n < 16 ? `/behind-the-scenes-ai/chapter-${n + 1}` : undefined,
         onComplete: chapterOnComplete(n),
         getReviewLinks: reviewLinksForConcepts,

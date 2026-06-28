@@ -14,7 +14,7 @@
 //   ערך שמוצג על המסך הוא תמיד החישוב החי של המנוע, לא קבוע מקודד.
 
 import type { Accent } from '@/components/ai-internals/types';
-import { DIM_INFO, DIM_STYLE, type DimKey } from '@/app/behind-the-scenes-ai/chapter-6/embeddingEngine';
+import { DIM_INFO, DIM_STYLE, type DimKey } from '@/app/behind-the-scenes-ai/chapter-4/embeddingEngine';
 import {
     type Vector,
     tokenize,

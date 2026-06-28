@@ -12,8 +12,8 @@
 //     permission: 'missing' או 'approval' חוסמת גם כשהכלי מתאים והקלט קיים.
 //   * תרחישים קנוניים: SCENARIOS. כל אחד הוא טקסט שעובר ב-selectFor.
 
-import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/chapter-10/taskEngine';
-import { parse } from '@/app/behind-the-scenes-ai/chapter-10/taskData';
+import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/_parked/chat-to-agent/taskEngine';
+import { parse } from '@/app/behind-the-scenes-ai/_parked/chat-to-agent/taskData';
 import {
     selectTool,
     type ToolDef,
