@@ -35,7 +35,8 @@ export type MentorPose =
     | 'plausiblePaths'
     | 'answerBuilder'
     | 'holographic'
-    | 'mapNavigator';
+    | 'mapNavigator'
+    | 'meaningSpace';
 
 const POSE_SRC: Record<MentorPose, string> = {
     hero: '/assets/mentor-hero.png',
@@ -76,6 +77,9 @@ const POSE_SRC: Record<MentorPose, string> = {
     // פוזת מבוא (מפת המנוע): המנטור מלווה את מפת התחנות מהטקסט עד התשובה ופותח אותה
     // ללומד. נכס שקוף (ללא מסכה לבנה). בשימוש במבוא בלבד.
     mapNavigator: '/assets/mentor_map_navigator.png',
+    // פוזת הירו של פרק 4 (Embeddings): המנטור מציג מרחב משמעות תלת-ממדי שאליו נכנס
+    // משפט והופך לנקודה זוהרת ליד נקודות קרובות ורחוקות. בשימוש בהירו של פרק 4 בלבד.
+    meaningSpace: '/assets/mentor-embeddings-meaning-space.png',
 };
 
 // נרמול גודל: פוזות "גוף מלא" (600px) מצולמות רחוק יותר מהבוסטים (~315px), ולכן הפנים
