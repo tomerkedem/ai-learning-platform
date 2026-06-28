@@ -1,4 +1,4 @@
-// מנוע ה-Embedding הלימודי של פרק 6: "ממילים למספרים ולמשמעות".
+// מנוע ה-Embedding הלימודי של פרק 4, Embeddings: "ממספר חסר משמעות למשמעות".
 // זהו מודל לימודי דטרמיניסטי לחלוטין - אין כאן LLM אמיתי, קריאת API או רשת.
 // הכל מילון Token IDs קבוע פלוס פרופילים מספריים קבועים לפי שלב הקלדה.
 //
@@ -388,7 +388,7 @@ export function shiftForWord(word: string): ShiftEntry[] {
 }
 
 /* ═══════════════════════ Similar Meaning Preview ═════════════════════════ */
-// טיזר לפרק 7: Token IDs שונים, Meaning Vector מתיישר.
+// טיזר לפרק 5: Token IDs שונים, Meaning Vector מתיישר.
 // אנחנו לא מחשבים כאן דמיון אמיתי - רק מציגים שני פרופילים זה לצד זה.
 
 export interface SimilarItem {
@@ -453,8 +453,8 @@ export const FORMULA_SUM: number[] = FORMULA_DIMS.map((_, col) =>
 );
 
 /* ════════════════════════════ מפת הדרכים ═════════════════════════════════ */
-// פרק 6: ארבעת הצמתים הראשונים פעילים (Text, Tokens, Token IDs, Vectors),
-// השאר נעולים כטיזר לפרק 7 ואילך.
+// פרק 4: ארבעת הצמתים הראשונים פעילים (Text, Tokens, Token IDs, Vectors),
+// השאר נעולים כטיזר לפרק 5 ואילך.
 
 export const ROADMAP_STEPS_6: { he: string; en: string; active: boolean }[] = [
     { he: 'טקסט', en: 'Text', active: true },

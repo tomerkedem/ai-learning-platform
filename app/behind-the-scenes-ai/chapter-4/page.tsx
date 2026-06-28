@@ -19,7 +19,7 @@ import {
     idForWord,
 } from './embeddingEngine';
 
-/** מפת הדרכים של פרק 6: ארבעת הצמתים הראשונים פעילים, השאר נעולים. */
+/** מפת הדרכים של פרק 4: ארבעת הצמתים הראשונים פעילים, השאר נעולים. */
 const Roadmap: React.FC = () => {
     const reduce = useReducedMotion();
     return (
@@ -107,7 +107,7 @@ const FormulaPanel: React.FC = () => (
     </div>
 );
 
-export default function BehindTheScenesChapter6() {
+export default function BehindTheScenesChapter4() {
     const reduce = useReducedMotion();
     const idsA = ['החבילה', 'לא', 'הגיעה'].map(idForWord).join(', ');
     const idsB = ['המשלוח', 'לא', 'נמסר'].map(idForWord).join(', ');

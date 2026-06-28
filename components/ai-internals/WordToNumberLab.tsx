@@ -33,7 +33,7 @@ import {
 } from '@/app/behind-the-scenes-ai/chapter-4/embeddingEngine';
 
 /**
- * WordToNumberLab - מעבדת פרק 6: "ממילים למספרים ולמשמעות".
+ * WordToNumberLab - מעבדת פרק 4, Embeddings: "ממספר חסר משמעות למשמעות".
  * רכיב עצמאי לחלוטין: מחזיק את מצב ההקלדה (mode, scenario, text, selection)
  * ומרכיב את חמשת הרכיבים האינטראקטיביים. כל הנתונים דטרמיניסטיים ומגיעים
  * מ-embeddingEngine. אין כאן backend, קריאת API או LLM אמיתי.

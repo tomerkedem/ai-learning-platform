@@ -30,7 +30,7 @@ export const chapterQuiz = {
         1: "הצ'אט השקוף",
         2: 'Model Input',
         3: 'Tokenization',
-        4: 'ממילים למספרים',
+        4: 'Embeddings',
         5: 'הגיאומטריה של המשמעות',
         6: 'Attention, מי חשוב עכשיו',
         7: 'Context Window',

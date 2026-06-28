@@ -20,7 +20,7 @@ export const chapterQuiz = {
         1: 'المحادثة الشفافة',
         2: 'Model Input',
         3: 'Tokenization',
-        4: 'من الكلمات إلى الأرقام',
+        4: 'Embeddings',
         5: 'هندسة المعنى',
         6: 'Attention، ما المهم الآن',
         7: 'Context Window',

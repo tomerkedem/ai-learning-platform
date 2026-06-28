@@ -1550,7 +1550,7 @@ export const CHAPTER_LABELS: Record<number, string> = {
 // שמורים תחת _parked ואינם רשומים כעת.
 const CHAPTER_QUIZZES: Record<number, QuizQuestion[]> = {
     1: chapter1Quiz, 2: chapter2Quiz, 3: chapter3Quiz,
-    4: chapter6Quiz,   // Embeddings: ממילים למספרים
+    4: chapter6Quiz,   // Embeddings: ממספר חסר משמעות למשמעות
     5: chapter7Quiz,   // Semantic Space: הגיאומטריה של המשמעות
     6: chapter8Quiz,   // Attention: מי חשוב עכשיו
     8: chapter4Quiz,   // Logits & Softmax (תוכן הלב ההסתברותי הקיים)

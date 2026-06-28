@@ -20,7 +20,7 @@ export const chapterQuiz = {
         1: 'El chat transparente',
         2: 'Model Input',
         3: 'Tokenization',
-        4: 'De palabras a números',
+        4: 'Embeddings',
         5: 'La geometría del significado',
         6: 'Attention, qué importa ahora',
         7: 'Context Window',

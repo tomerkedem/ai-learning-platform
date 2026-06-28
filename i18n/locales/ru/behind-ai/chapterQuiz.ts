@@ -19,7 +19,7 @@ export const chapterQuiz = {
         1: 'Прозрачный чат',
         2: 'Model Input',
         3: 'Tokenization',
-        4: 'От слов к числам',
+        4: 'Embeddings',
         5: 'Геометрия смысла',
         6: 'Attention, что важно сейчас',
         7: 'Context Window',

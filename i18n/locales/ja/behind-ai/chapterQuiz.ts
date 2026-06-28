@@ -19,7 +19,7 @@ export const chapterQuiz = {
         1: '透明なチャット',
         2: 'Model Input',
         3: 'Tokenization',
-        4: '言葉から数へ',
+        4: 'Embeddings',
         5: '意味の幾何学',
         6: 'Attention、いま何が重要か',
         7: 'Context Window',
