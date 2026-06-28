@@ -27,9 +27,9 @@ export const chapterQuiz = {
 
     /** שמות הפרקים (1..16), זהים ל-CHAPTER_LABELS שב-quizData.ts. */
     chapterNames: {
-        1: 'הדרך אל התשובה',
-        2: 'מה באמת נכנס למודל',
-        3: 'Tokenization, הטקסט מתפרק',
+        1: "הצ'אט השקוף",
+        2: 'Model Input',
+        3: 'Tokenization',
         4: 'AI כמנוע הסתברותי',
         5: 'איך AI בונה תשובה',
         6: 'ממילים למספרים',

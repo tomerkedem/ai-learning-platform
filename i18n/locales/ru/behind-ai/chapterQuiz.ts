@@ -16,9 +16,9 @@ export const chapterQuiz = {
         `Назад к главе ${chapterNumber}: ${chapterName}`,
 
     chapterNames: {
-        1: 'Путь к ответу',
-        2: 'Что на самом деле попадает в модель',
-        3: 'Tokenization, текст распадается',
+        1: 'Прозрачный чат',
+        2: 'Model Input',
+        3: 'Tokenization',
         4: 'AI как вероятностный движок',
         5: 'Как AI строит ответ',
         6: 'От слов к числам',

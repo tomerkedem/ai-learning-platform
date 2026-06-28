@@ -17,9 +17,9 @@ export const chapterQuiz = {
         `العودة إلى الفصل ${chapterNumber}: ${chapterName}`,
 
     chapterNames: {
-        1: 'الطريق إلى الإجابة',
-        2: 'ما الذي يدخل فعلًا إلى النموذج',
-        3: 'Tokenization، تفكّك النص',
+        1: 'المحادثة الشفافة',
+        2: 'Model Input',
+        3: 'Tokenization',
         4: 'AI كمحرّك احتمالي',
         5: 'كيف يبني AI إجابة',
         6: 'من الكلمات إلى الأرقام',

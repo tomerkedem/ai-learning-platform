@@ -16,9 +16,9 @@ export const chapterQuiz = {
         `第${chapterNumber}章に戻る: ${chapterName}`,
 
     chapterNames: {
-        1: '答えへの道',
-        2: 'モデルに本当に入るもの',
-        3: 'Tokenization、テキストが分かれる',
+        1: '透明なチャット',
+        2: 'Model Input',
+        3: 'Tokenization',
         4: '確率エンジンとしての AI',
         5: 'AI はどう答えを作るか',
         6: '言葉から数へ',

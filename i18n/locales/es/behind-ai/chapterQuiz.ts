@@ -17,9 +17,9 @@ export const chapterQuiz = {
         `Volver al capítulo ${chapterNumber}: ${chapterName}`,
 
     chapterNames: {
-        1: 'El camino hacia la respuesta',
-        2: 'Qué entra realmente en el modelo',
-        3: 'Tokenization, el texto se descompone',
+        1: 'El chat transparente',
+        2: 'Model Input',
+        3: 'Tokenization',
         4: 'La IA como motor probabilístico',
         5: 'Cómo construye una respuesta la IA',
         6: 'De palabras a números',
