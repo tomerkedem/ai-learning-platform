@@ -6,7 +6,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Sparkles, MousePointerClick, ArrowLeftRight, Lock, ArrowLeft, ArrowRight, CheckCircle2, Info, ChevronDown, Wrench, Type, HelpCircle, ArrowDown, RotateCcw } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
-import { AssessmentEngine } from '@/components/content/AssessmentEngine';
+import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
 import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 import { Mentor } from '@/components/ai-internals/Mentor';
@@ -250,7 +250,23 @@ export default function BehindTheScenesChapter4() {
 
     // מבדק הפרק: המנגנון המשותף (onComplete, getReviewLinks, nextHref...) נשמר מ-quizData,
     // וטקסט התצוגה ממוזג מהמילון לפי מזהה השאלה. quizData.ts עצמו לא משתנה.
+    const cq = t.behindAi.chapterQuiz;
     const baseQuiz = behindAiChapterQuizzes[4];
+
+    // עטיפת getReviewLinks: שומרת על ה-href והניתוב, ומתרגמת רק את התווית לפי מספר הפרק
+    // הנגזר מה-href. בעברית התווית זהה למקור (chapterNames זהים ל-CHAPTER_LABELS).
+    const baseGetReviewLinks = baseQuiz.getReviewLinks;
+    const getReviewLinks = baseGetReviewLinks
+        ? (weakConcepts: string[]): ReviewLink[] =>
+              baseGetReviewLinks(weakConcepts).map((link) => {
+                  const match = link.href.match(/chapter-(\d+)/);
+                  const n = match ? Number(match[1]) : null;
+                  const name = n != null ? cq.chapterNames[n] : undefined;
+                  if (n == null || !name) return link;
+                  return { ...link, label: cq.reviewLinkLabel(n, name) };
+              })
+        : undefined;
+
     const localizedQuiz = {
         ...baseQuiz,
         title: c4.quiz.title,
@@ -258,6 +274,7 @@ export default function BehindTheScenesChapter4() {
         startLabel: c4.quiz.startLabel,
         submitLabel: c4.quiz.submitLabel,
         completedTitle: c4.quiz.completedTitle,
+        getReviewLinks,
         questions: baseQuiz.questions.map((q) => ({ ...q, ...c4.quiz.byId[q.id as Chapter4QuizId] })),
     };
 
@@ -316,7 +333,7 @@ export default function BehindTheScenesChapter4() {
             {/* ══════════ שלב 1: דמו אובייקטים (הכותרת חיה בתוך הדמו) ══════════ */}
             <Chapter4LabProvider value={labContent}>
                 <section id="proximity-demo" className="mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
-                    <UniversalMeaningDemo />
+                    <UniversalMeaningDemo dir={dir} />
 
                     {/* ══ שלב 2: גשר מעבר אל המשפטים ══ */}
                     <div className="flex items-center gap-3 rounded-2xl border border-cyan-500/25 bg-cyan-900/10 p-4">
@@ -329,7 +346,7 @@ export default function BehindTheScenesChapter4() {
 
                 {/* ══════════ שלב 3+4: קרבה במשמעות בין משפטים (הכותרת חיה בתוך המעבדה) ══════════ */}
                 <section id="meaning-space" className="mt-12 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
-                    <EmbeddingExperienceLab />
+                    <EmbeddingExperienceLab dir={dir} />
                 </section>
             </Chapter4LabProvider>
 
@@ -374,17 +391,43 @@ export default function BehindTheScenesChapter4() {
             </section>
 
             {/* ══════════ מבט מתחת למכסה המנוע (משני) ══════════ */}
-            <details className="group mt-12 overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-900/40">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 text-start" dir={dir}>
-                    <span className="flex items-center gap-2">
-                        <Wrench size={18} className="text-slate-400" />
-                        <span className="leading-tight">
-                            <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{c4.hood.eyebrow}</span>
-                            <span className="block text-base font-bold text-slate-200">{c4.hood.title}</span>
+            {/* WordToNumberLab הוא locale-aware: עברית מהמנוע, אנגלית משכבת wordLabContent.
+                מוצג בכל השפות. העברית שומרת על המצב המכווץ המקורי בדיוק (ללא שינוי). אנגלית
+                מקבלת מצב מכווץ עם discoverability ברור: eyebrow, כותרת, שורת עזר, מונה מעבדות
+                ו-chevron, כך שברור שיש מעבדות בפנים ואיפה ללחוץ. native details/summary מספק
+                סמנטיקת כפתור ו-aria-expanded. */}
+            <details className={`group mt-12 overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-900/40${isRtl ? '' : ' transition-colors hover:border-slate-600/70 open:bg-slate-900/50'}`}>
+                {isRtl ? (
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 text-start" dir={dir}>
+                        <span className="flex items-center gap-2">
+                            <Wrench size={18} className="text-slate-400" />
+                            <span className="leading-tight">
+                                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{c4.hood.eyebrow}</span>
+                                <span className="block text-base font-bold text-slate-200">{c4.hood.title}</span>
+                            </span>
                         </span>
-                    </span>
-                    <ChevronDown size={18} className="shrink-0 text-slate-500 transition-transform group-open:rotate-180" />
-                </summary>
+                        <ChevronDown size={18} className="shrink-0 text-slate-500 transition-transform group-open:rotate-180" />
+                    </summary>
+                ) : (
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-2xl p-5 text-start transition-colors hover:bg-slate-800/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/50" dir={dir}>
+                        <span className="flex items-center gap-3">
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-950/50 text-slate-300 transition-colors group-hover:border-violet-500/40 group-hover:text-violet-300">
+                                <Wrench size={18} />
+                            </span>
+                            <span className="leading-snug">
+                                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-violet-400/80">{c4.hood.eyebrow}</span>
+                                <span className="block text-base font-bold text-slate-100">{c4.hood.title}</span>
+                                <span className="mt-0.5 block text-xs text-slate-400">{c4.hood.helper}</span>
+                            </span>
+                        </span>
+                        <span className="flex shrink-0 flex-col items-center gap-1.5">
+                            <span className="inline-flex items-center gap-1 rounded-full border border-violet-500/30 bg-violet-900/20 px-2.5 py-1 text-[11px] font-bold text-violet-200">
+                                <Sparkles size={12} /> {c4.hood.labsCount}
+                            </span>
+                            <ChevronDown size={20} className="text-slate-400 transition-transform group-open:rotate-180" />
+                        </span>
+                    </summary>
+                )}
                 <div className="space-y-4 border-t border-slate-700/50 p-5 text-start" dir={dir}>
                     <p className="text-sm leading-relaxed text-slate-400">{c4.hood.intro}</p>
                     <WordToNumberLab />

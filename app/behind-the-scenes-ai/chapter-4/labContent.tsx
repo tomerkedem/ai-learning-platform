@@ -27,6 +27,7 @@ import {
 } from './embeddingEngine';
 
 import { chapter4Lab as HE_LAB } from '@/i18n/locales/he/behind-ai/chapter4Lab';
+import { chapter4Lab as EN_LAB } from '@/i18n/locales/en/behind-ai/chapter4Lab';
 
 /* ════════════════════════ טיפוסים ════════════════════════ */
 
@@ -242,10 +243,11 @@ export function joinSentence(id: string, dict: Chapter4LabDict): JoinedSentence 
 
 /* ════════════════════════ מרשם תוכן לפי שפה ════════════════════════ */
 
-// בקומיט הזה קיימת רק עברית. כל שפה שאינה במפה נופלת בבטחה לעברית. שאר השפות יתווספו
-// כאן בקומיט ה-i18n, בלי לשנות את חתימת הפונקציה.
+// שפות מתווספות כאן אחת לכל commit. כל שפה שאינה במפה נופלת בבטחה לעברית, בלי לשנות
+// את חתימת הפונקציה.
 const LAB_CONTENT_BY_LOCALE: Partial<Record<Locale, Chapter4LabDict>> = {
     he: HE_LAB,
+    en: EN_LAB,
 };
 
 /** מחזיר את תוכן המעבדה לשפה, עם נפילה לעברית. */
