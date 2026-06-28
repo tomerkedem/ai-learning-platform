@@ -91,7 +91,6 @@ function stateClasses(state: CardState, reduce: boolean): string {
 }
 
 export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessContent; dir: Direction }> = ({ reduce, content, dir }) => {
-    const isRtl = dir === 'rtl';
     const [chosenId, setChosenId] = useState<string | null>(null);
     const [revealed, setRevealed] = useState(false); // נחשף ההסבר המדויק אחרי בחירה שגויה
 
@@ -109,7 +108,6 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
     const reset = () => { setChosenId(null); setRevealed(false); };
 
     return (
-        <div className="relative">
         <div
             dir={dir}
             className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/60 p-6 backdrop-blur-xl md:p-8"
@@ -117,6 +115,12 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[80px]" />
 
             <div className="relative">
+                {/* מנטור הזמנה: דמות חושבת ממורכזת מעל הכרטיסים, נעלמת אחרי הבחירה - כמו בכל הפרקים. */}
+                {!chosen && (
+                    <div className="mb-5 hidden flex-col items-center sm:flex">
+                        <Mentor pose="think" width={108} glow={false} />
+                    </div>
+                )}
                 <div className="text-center">
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-400">
                         <HelpCircle size={14} /> {content.eyebrow}
@@ -247,15 +251,6 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
-        </div>
-
-            {/* מנטור מגיב כקריאת-צד צמודה לפינה החיצונית-התחתונה של הכרטיס (xl+ בלבד, כמו
-                שאר מנטורי המבוא), בצד-הסיום: LTR מימין, RTL משמאל. יושב מחוץ לכרטיס וגולש
-                מעט פנימה אל הפינה - בלי לחפוף טקסט/כפתורים ובלי רצועה ריקה בתוך הכרטיס.
-                flip={!isRtl} פונה פנימה אל הכרטיס; אין בועת-דיבור (line), ולכן כלום לא מתהפך. */}
-            <div className={`pointer-events-none absolute bottom-3 z-20 hidden xl:block ${isRtl ? 'right-full -mr-4' : 'left-full -ml-4'}`}>
-                <Mentor pose={!chosen ? 'think' : chosenCorrect ? 'celebrate' : 'headsup'} width={132} glow={false} flip={!isRtl} />
             </div>
         </div>
     );

@@ -20,7 +20,7 @@ const GUESS_CONTENT: DiscoveryGuessContent = {
     title: 'מה המודל עושה ברגע שהוא צריך להמשיך תשובה?',
     subtitle: 'בחרו את ההסבר שנראה לכם הקרוב ביותר. אין כאן ציון, יש כיוון אחד שמתאר מה באמת קורה.',
     invite: 'לפני שנפתח את זה, נסו לנחש מה קורה רגע לפני שהמודל כותב את ההמשך.',
-    invitePose: 'guessThinking',
+    invitePose: 'think',
     getsRightLabel: 'מה זה תופס נכון',
     revealButton: 'חשפו את הרעיון המרכזי',
     revealTitle: 'אז מה באמת קורה?',

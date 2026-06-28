@@ -80,7 +80,7 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ text, mode }) 
     // המנטור הפנימי מגיב לתוצאה: לפני ניחוש מזמין, אחרי ניחוש נכון חוגג, ואחרי טעות מרגיע.
     // ה-key מחליף בין הפוזות עם אנימציית כניסה קצרה, כדי שהתגובה תרגיש חיה.
     const mentor = !revealed
-        ? { pose: 'think' as const, line: pd.mentor.think, glow: false, icon: '/assets/predict-guess.png' }
+        ? { pose: 'think' as const, line: pd.mentor.think, glow: false, icon: undefined }
         : correct
             ? { pose: 'celebrate' as const, line: pd.mentor.celebrate, glow: true, icon: '/assets/predict-correct.png' }
             : { pose: 'reassure' as const, line: pd.mentor.reassure, glow: false, icon: '/assets/predict-wrong.png' };

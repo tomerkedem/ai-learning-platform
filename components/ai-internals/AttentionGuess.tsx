@@ -202,7 +202,7 @@ export const AttentionGuess: React.FC = () => {
                     ונעלמת ברגע שנבחרת השערה. */}
                 {!choiceMade && (
                     <div className="mb-5 hidden flex-col items-center sm:flex">
-                        <Mentor pose="guessThinking" width={108} glow={false} />
+                        <Mentor pose="think" width={108} glow={false} />
                         <p className="mt-1 max-w-xs text-center text-[12px] font-medium leading-snug text-slate-400">
                             {CONTENT.invite}
                         </p>

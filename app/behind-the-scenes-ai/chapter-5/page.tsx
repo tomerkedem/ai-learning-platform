@@ -86,7 +86,7 @@ export default function BehindTheScenesChapter5() {
         title: c5.guess.title,
         subtitle: c5.guess.subtitle,
         invite: c5.guess.invite,
-        invitePose: 'guessThinking',
+        invitePose: 'think',
         getsRightLabel: c5.guess.getsRightLabel,
         revealButton: c5.guess.revealButton,
         revealTitle: c5.guess.revealTitle,

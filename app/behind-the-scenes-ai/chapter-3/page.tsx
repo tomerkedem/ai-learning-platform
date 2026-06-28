@@ -23,7 +23,7 @@ const GUESS_CONTENT: DiscoveryGuessContent = {
     title: 'מה קורה לטקסט מיד אחרי שהוא נשלח, עוד לפני שמחושבת משמעות?',
     subtitle: 'בחרו את ההסבר שנראה לכם הכי קרוב. זו לא בחינה, אבל יש כיוון אחד שמקרב אותנו למה שבאמת קורה.',
     invite: 'לפני שנפתח את זה, נסו לנחש: מה הדבר הראשון שקורה לטקסט?',
-    invitePose: 'guessThinking',
+    invitePose: 'think',
     getsRightLabel: 'מה זה תופס נכון',
     revealButton: 'חשפו את הרעיון המרכזי',
     revealTitle: 'אז מה באמת קורה?',

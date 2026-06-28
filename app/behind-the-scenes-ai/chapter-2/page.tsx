@@ -85,7 +85,7 @@ export default function BehindTheScenesChapter2() {
         title: c2.guess.title,
         subtitle: c2.guess.subtitle,
         invite: c2.guess.invite,
-        invitePose: 'guessThinking',
+        invitePose: 'think',
         getsRightLabel: c2.guess.getsRightLabel,
         revealButton: c2.guess.revealButton,
         revealTitle: c2.guess.revealTitle,
