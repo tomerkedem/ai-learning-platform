@@ -57,6 +57,12 @@ export const WordToNumberLab: React.FC = () => {
     const step = stepIndex >= 0 ? scenario.steps[stepIndex] : null;
     const prevStep = stepIndex >= 1 ? scenario.steps[stepIndex - 1] : null;
 
+    // טקסט חופשי שהמנוע לא מזהה: לא שלב מזוהה וגם לא תחילית של המשפט המוצע. המעבדה
+    // מדגימה משפטים נבחרים מראש (אין כאן טוקנייזר חי), ולכן נציג רמז עדין במקום שתיקה.
+    const typedNorm = text.replace(/\s+/g, ' ').trim();
+    const onTrack = typedNorm.length > 0 && scenario.prompt.startsWith(typedNorm);
+    const showUnrecognizedHint = !autoTyping && stepIndex < 0 && typedNorm.length > 0 && !onTrack;
+
     const dims = dimsForMode(mode);
 
     const stopAuto = () => {
@@ -166,6 +172,26 @@ export const WordToNumberLab: React.FC = () => {
                 onReset={handleReset}
             />
 
+            {/* רמז עדין לטקסט חופשי שאינו מוכר למנוע, במקום שתיקה */}
+            <AnimatePresence>
+                {showUnrecognizedHint && (
+                    <motion.div
+                        initial={reduce ? false : { opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={reduce ? undefined : { opacity: 0, y: -6 }}
+                        transition={reduce ? { duration: 0 } : { duration: 0.25 }}
+                        className="flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-right"
+                        dir="rtl"
+                        role="status"
+                    >
+                        <Info size={14} className="mt-0.5 shrink-0 text-slate-400" />
+                        <span className="text-xs leading-relaxed text-slate-400">
+                            המעבדה מדגימה משפטים נבחרים מראש, היא לא מנתחת כל טקסט חופשי. כדי לראות את הפירוק למספרים, הקלידו את המשפט המוצע למעלה או לחצו &quot;הקלידו עבורי&quot;.
+                        </span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* ── שורת "מה השתנה" ────────────────────────────────────────── */}
             <AnimatePresence mode="wait">
                 {step && (
@@ -265,7 +291,7 @@ const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyp
                     type="text"
                     value={text}
                     onChange={(e) => onChange(e.target.value)}
-                    placeholder="התחילו להקליד כאן..."
+                    placeholder={'הקלידו את המשפט המוצע, או לחצו "הקלידו עבורי"'}
                     dir="rtl"
                     aria-label="שדה הקלדה למעבדת המילים למספרים"
                     className="w-full bg-transparent px-4 py-3 text-lg font-medium text-white placeholder:text-slate-600 focus:outline-none"

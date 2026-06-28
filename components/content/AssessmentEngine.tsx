@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Check, X, Lightbulb,
   Trophy, ChevronRight, ChevronLeft,
@@ -128,6 +129,9 @@ export const AssessmentEngine = ({
         sub: a.tiers[i].sub,
     }));
 
+    // הנתיב הנוכחי, כדי לזהות קישור חזרה שמצביע על הפרק שכבר נמצאים בו.
+    const pathname = usePathname();
+
     // States
     const [isStarted, setIsStarted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -242,16 +246,25 @@ export const AssessmentEngine = ({
         if (currentIndex < questions.length - 1) {
             setDirection(1);
             setCurrentIndex(prev => prev + 1);
-        } else if (!isReviewMode) {
+        } else if (isReviewMode) {
+            // בסקירה, השאלה האחרונה מסיימת את הסקירה ומחזירה למסך התוצאות.
+            setIsReviewMode(false);
+        } else {
+            // קודם כל עוברים למסך התוצאות. תופעות הלוואי (קונפטי, צליל, שמירה) עטופות
+            // ב-try/catch כדי ששגיאה באחת מהן לא תחסום את המעבר ותשאיר את הכפתור "מת".
             setIsSubmitted(true);
             setIsActive(false);
             const result = buildResult();
-            if (result.passed) {
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                playSound('complete');
+            try {
+                if (result.passed) {
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                    playSound('complete');
+                }
+                // התמדה: כל סיום נספר כניסיון. onComplete אחראי לשמירה ב-localStorage.
+                onComplete?.(result);
+            } catch (err) {
+                console.error('[AssessmentEngine] finish side-effects failed', err);
             }
-            // התמדה: כל סיום נספר כניסיון. onComplete אחראי לשמירה ב-localStorage.
-            onComplete?.(result);
         }
     }, [currentIndex, questions, isReviewMode, buildResult, playSound, onComplete]);
 
@@ -476,18 +489,55 @@ export const AssessmentEngine = ({
                     <div className="bg-white/5 p-4 rounded-2xl border border-white/10 mb-6 text-start">
                         <div className="text-slate-300 text-xs font-black mb-3">{a.recommendedReview}</div>
                         <div className="space-y-2">
-                            {reviewLinks.map(link => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className="flex items-center justify-between gap-2 bg-white/5 hover:bg-white/10 px-3 py-2.5 rounded-xl border border-white/10 transition-all no-underline group"
-                                >
-                                    <span className="text-sm font-bold text-slate-200">{link.label}</span>
-                                    {isRTL
-                                        ? <ArrowLeft size={16} className="text-slate-500 group-hover:text-white group-hover:-translate-x-0.5 transition-all" />
-                                        : <ArrowRight size={16} className="text-slate-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />}
-                                </Link>
-                            ))}
+                            {reviewLinks.map(link => {
+                                // קישור שמצביע על הפרק הנוכחי (המבדק יושב בתוכו): ניווט Link לא יזיז
+                                // כלום, ולכן נגלול חזרה לראש העמוד כדי לחזור לתוכן הפרק.
+                                const isCurrentPage = pathname === link.href || (pathname?.endsWith(link.href) ?? false);
+                                const linkCls = "flex items-center justify-between gap-2 bg-white/5 hover:bg-white/10 px-3 py-2.5 rounded-xl border border-white/10 transition-all no-underline group";
+                                const arrow = isRTL
+                                    ? <ArrowLeft size={16} className="text-slate-500 group-hover:text-white group-hover:-translate-x-0.5 transition-all" />
+                                    : <ArrowRight size={16} className="text-slate-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />;
+
+                                if (isCurrentPage) {
+                                    return (
+                                        <button
+                                            key={link.href}
+                                            type="button"
+                                            onClick={(e) => {
+                                                playSound('click');
+                                                if (typeof window === 'undefined') return;
+                                                const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+                                                const behavior: ScrollBehavior = reduced ? 'auto' : 'smooth';
+                                                // ChapterLayout גולל בתוך מיכל פנימי (overflow-y-auto), לא ב-window.
+                                                // מאתרים את מיכל הגלילה האמיתי בטיפוס במעלה ה-DOM ונגללים אותו לראש.
+                                                let node: HTMLElement | null = e.currentTarget.parentElement;
+                                                let scroller: HTMLElement | null = null;
+                                                while (node) {
+                                                    const oy = getComputedStyle(node).overflowY;
+                                                    if ((oy === 'auto' || oy === 'scroll') && node.scrollHeight > node.clientHeight) {
+                                                        scroller = node;
+                                                        break;
+                                                    }
+                                                    node = node.parentElement;
+                                                }
+                                                if (scroller) scroller.scrollTo({ top: 0, behavior });
+                                                else window.scrollTo({ top: 0, behavior });
+                                            }}
+                                            className={`w-full text-start ${linkCls}`}
+                                        >
+                                            <span className="text-sm font-bold text-slate-200">{link.label}</span>
+                                            {arrow}
+                                        </button>
+                                    );
+                                }
+
+                                return (
+                                    <Link key={link.href} href={link.href} className={linkCls}>
+                                        <span className="text-sm font-bold text-slate-200">{link.label}</span>
+                                        {arrow}
+                                    </Link>
+                                );
+                            })}
                         </div>
                     </div>
                 )}
@@ -636,11 +686,12 @@ export const AssessmentEngine = ({
                 </AnimatePresence>
             </div>
 
-            {/* Navigation Bar */}
-            <div className="mt-8 flex items-center justify-between">
-                <button 
-                    onClick={handleBack} 
-                    disabled={currentIndex === 0} 
+            {/* Navigation Bar - סרגל דביק בתחתית, כך שכפתור ההמשך תמיד נראה וזמין
+                גם כשהשאלה או ההסבר ארוכים ודוחפים את התוכן מתחת לקפל. */}
+            <div className="sticky bottom-0 z-20 -mx-4 mt-6 flex items-center justify-between border-t border-white/10 bg-slate-950/85 px-4 py-3 backdrop-blur-md">
+                <button
+                    onClick={handleBack}
+                    disabled={currentIndex === 0}
                     className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold transition-all rounded-xl ${currentIndex === 0 ? 'opacity-0 pointer-events-none' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
                 >
                     {isRTL ? <ChevronRight size={18} /> : <ChevronLeft size={18} />} {a.prev}

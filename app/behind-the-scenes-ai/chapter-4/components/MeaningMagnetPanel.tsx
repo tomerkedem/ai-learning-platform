@@ -21,7 +21,8 @@ interface MeaningMagnetPanelProps {
 }
 
 const CENTER = 50;
-const RING = 36;
+// רדיוס הטבעת נמשך פנימה כדי שצ'יפי הזכוכית של התוויות לא ייחתכו בקצוות.
+const RING = 30;
 
 /** זווית במעלות לנקודה ב-viewBox, עם היפוך ציר Y למסך (מעלה = למעלה). */
 const onRing = (angleDeg: number, radius: number) => {
@@ -56,7 +57,7 @@ export const MeaningMagnetPanel: React.FC<MeaningMagnetPanelProps> = ({ profile,
     return (
         <div dir={dir} className="text-start">
             <div className="mb-2 flex items-center gap-2">
-                <span className="text-sm font-bold text-slate-200">{title}</span>
+                <span className="text-base font-bold text-slate-100">{title}</span>
             </div>
 
             <div className="relative aspect-square w-full overflow-hidden rounded-3xl border border-slate-700/50 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
@@ -95,19 +96,6 @@ export const MeaningMagnetPanel: React.FC<MeaningMagnetPanelProps> = ({ profile,
                         markerEnd="url(#mmp-arrow)"
                     />
 
-                    {/* צמתי המגנטים */}
-                    {pulls.map(({ magnet, pull, pos }) => {
-                        const isTop = strongest.has(magnet.id);
-                        return (
-                            <g key={`node-${magnet.id}`} className={DIM_STYLE[magnet.dim].text}>
-                                {isTop && (
-                                    <circle cx={pos.x} cy={pos.y} r={4.6} className="fill-none stroke-current" strokeWidth={0.5} opacity={0.7} />
-                                )}
-                                <circle cx={pos.x} cy={pos.y} r={2 + pull * 2.6} className="fill-current" opacity={0.45 + pull * 0.5} />
-                            </g>
-                        );
-                    })}
-
                     {/* האורב המרכזי: המשפט */}
                     {!reduce && (
                         <motion.circle
@@ -124,23 +112,33 @@ export const MeaningMagnetPanel: React.FC<MeaningMagnetPanelProps> = ({ profile,
                     <circle cx={CENTER} cy={CENTER} r={2.2} className="fill-violet-400" />
                 </svg>
 
-                {/* תוויות מגנט עם אחוז משיכה, ממוקמות פיזית, הטקסט עוקב אחרי dir */}
+                {/* תוויות מגנט כצ'יפ זכוכית קריא: מילה קצרה ואחוז משיכה. צבע הממד מסמן
+                    את החזקים, הרקע הכהה נותן ניגודיות, וזוהר עדין מדגיש את המובילים.
+                    ממוקמות פיזית כדי לא להתהפך, הטקסט עוקב אחרי dir. */}
                 {pulls.map(({ magnet, pull, pos }) => {
                     const isTop = strongest.has(magnet.id);
+                    const s = DIM_STYLE[magnet.dim];
                     return (
                         <div
                             key={`label-${magnet.id}`}
-                            className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 text-center leading-none"
+                            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-1/2"
                             style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
                         >
-                            <span
-                                className={`block whitespace-nowrap text-[10px] font-bold ${isTop ? DIM_STYLE[magnet.dim].text : 'text-slate-400'}`}
+                            <div
+                                className={`flex flex-col items-center rounded-xl border px-2 py-1 leading-tight backdrop-blur-sm ${
+                                    isTop
+                                        ? `${s.border} ${s.text} bg-slate-950/90 shadow-[0_0_16px_-4px_currentColor]`
+                                        : 'border-white/15 bg-slate-950/80 text-slate-100'
+                                }`}
                             >
-                                {labels[magnet.id]}
-                            </span>
-                            <span className="block font-mono text-[9px] text-slate-500" dir="ltr">
-                                {Math.round(pull * 100)}%
-                            </span>
+                                <span className="flex items-center gap-1 whitespace-nowrap text-[11px] font-bold">
+                                    <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${s.dot}`} />
+                                    {labels[magnet.id]}
+                                </span>
+                                <span className="font-mono text-[9px] opacity-70" dir="ltr">
+                                    {Math.round(pull * 100)}%
+                                </span>
+                            </div>
                         </div>
                     );
                 })}

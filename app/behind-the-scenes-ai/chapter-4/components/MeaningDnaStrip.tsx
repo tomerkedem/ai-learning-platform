@@ -1,10 +1,10 @@
 "use client";
 
-// MeaningDnaStrip - חתימת המשמעות כראיה קומפקטית.
+// MeaningDnaStrip - חתימת המשמעות כראיה קומפקטית ורגועה.
 // ──────────────────────────────────────────────────────────────────────────
 // כל משפט הופך לרצף "גנים" זוהרים (ממדי משמעות). שני משפטים זה מעל זה חושפים את
-// הגנים המשותפים. compareDna נותן את הספירה ואת הקרבה. יש סיכום טקסטואלי קצר וגם
-// סיכום מוסתר להקראה (TTS / קורא מסך). יפה בטלפון כי הרצועות נערמות לרוחב מלא.
+// הגנים המשותפים. compareDna נותן את הספירה ואת הקרבה. שכבת תמיכה: מעט גבולות, מספר
+// מפתח גדול אחד (כמה גנים משותפים), בלי תוויות זעירות. ה-aria שומר נגישות והקראה.
 
 import React, { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
@@ -29,31 +29,23 @@ const GeneRow: React.FC<{
     geneLabels: Chapter4LabDict['genes'];
     shared: Set<string>;
     reduce: boolean;
-    showLabels: boolean;
-}> = ({ sentence, geneLabels, shared, reduce, showLabels }) => (
+}> = ({ sentence, geneLabels, shared, reduce }) => (
     <div className="grid grid-cols-6 gap-1.5">
         {DNA_DIMS.map((d) => {
             const value = dimValue(sentence.profile, d);
             const isShared = shared.has(d);
             return (
-                <div key={d} className="flex flex-col items-center gap-1">
-                    <div
-                        className={`relative h-16 w-full overflow-hidden rounded-lg border bg-slate-900/70 ${
-                            isShared ? 'border-white/40' : 'border-slate-700/40'
-                        }`}
-                        aria-label={`${geneLabels[d]} ${Math.round(value * 100)}%`}
-                    >
-                        <motion.div
-                            initial={false}
-                            animate={{ height: `${Math.round(value * 100)}%` }}
-                            transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 140, damping: 20 }}
-                            className={`absolute inset-x-0 bottom-0 ${DIM_STYLE[d].bar}`}
-                        />
-                        {isShared && <span className="absolute inset-0 rounded-lg ring-1 ring-inset ring-white/30" />}
-                    </div>
-                    {showLabels && (
-                        <span className="w-full truncate text-center text-[9px] font-medium text-slate-400">{geneLabels[d]}</span>
-                    )}
+                <div
+                    key={d}
+                    className={`relative h-14 overflow-hidden rounded-lg bg-slate-900/70 ${isShared ? 'ring-1 ring-inset ring-white/35' : ''}`}
+                    aria-label={`${geneLabels[d]} ${Math.round(value * 100)}%`}
+                >
+                    <motion.div
+                        initial={false}
+                        animate={{ height: `${Math.round(value * 100)}%` }}
+                        transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 140, damping: 20 }}
+                        className={`absolute inset-x-0 bottom-0 ${DIM_STYLE[d].bar}`}
+                    />
                 </div>
             );
         })}
@@ -82,55 +74,47 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
 
     return (
         <div dir={dir} className="text-start">
-            <div className="mb-3 flex items-center gap-2">
-                <span className="text-sm font-bold text-slate-200">{dna.title}</span>
-            </div>
+            <div className="mb-3 text-base font-bold text-slate-100">{dna.title}</div>
 
-            {/* רצועת המשפט הפעיל */}
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-3">
-                <div className="mb-2 text-xs font-bold text-cyan-200">{active.text}</div>
-                <GeneRow sentence={active} geneLabels={geneLabels} shared={sharedGenes} reduce={!!reduce} showLabels={!compare} />
-            </div>
+            {/* רצועות הגנים בכרטיס שקט אחד */}
+            <div className="space-y-3 rounded-2xl border border-slate-700/40 bg-slate-900/30 p-4">
+                <div>
+                    <div className="mb-1.5 text-[13px] font-bold text-cyan-200">{active.text}</div>
+                    <GeneRow sentence={active} geneLabels={geneLabels} shared={sharedGenes} reduce={!!reduce} />
+                </div>
 
-            {compare && (
-                <>
-                    {/* רצועת ההשוואה */}
-                    <div className="mt-2 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-3">
-                        <div className="mb-2 text-xs font-bold text-fuchsia-200">{compare.text}</div>
-                        <GeneRow sentence={compare} geneLabels={geneLabels} shared={sharedGenes} reduce={!!reduce} showLabels />
+                {compare && (
+                    <div>
+                        <div className="mb-1.5 text-[13px] font-bold text-fuchsia-200">{compare.text}</div>
+                        <GeneRow sentence={compare} geneLabels={geneLabels} shared={sharedGenes} reduce={!!reduce} />
                     </div>
+                )}
+            </div>
 
-                    {/* סיכום הראיה: גנים משותפים, סחיפה, פסיקה */}
-                    {result && (
-                        <div className="mt-3 rounded-2xl border border-violet-500/30 bg-violet-900/10 p-3">
-                            <div className="flex flex-wrap items-center justify-between gap-2">
-                                <span className="text-sm font-bold text-violet-100">{dna.sharedGenes(result.sharedGenes, result.totalGenes)}</span>
-                                <span
-                                    className={`rounded-md border px-2 py-0.5 text-[11px] font-bold ${
-                                        stayedClose
-                                            ? 'border-emerald-500/40 bg-emerald-900/20 text-emerald-200'
-                                            : 'border-amber-500/40 bg-amber-900/20 text-amber-200'
-                                    }`}
-                                >
-                                    {verdict}
-                                </span>
-                            </div>
-                            <div className="mt-2 flex items-center gap-2">
-                                <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-800/80">
-                                    <motion.div
-                                        initial={false}
-                                        animate={{ width: `${Math.round(result.closeness * 100)}%` }}
-                                        transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 120, damping: 20 }}
-                                        className="h-full rounded-full bg-gradient-to-l from-violet-400 to-fuchsia-400"
-                                    />
-                                </div>
-                                <span className="shrink-0 font-mono text-[11px] text-violet-200" dir="ltr">
-                                    {dna.drift(driftPct)}
-                                </span>
-                            </div>
-                        </div>
-                    )}
-                </>
+            {/* סיכום הראיה: מספר מפתח גדול, פסיקה, סחיפה */}
+            {compare && result && (
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-violet-500/20 bg-violet-900/10 px-4 py-3">
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-3xl font-black leading-none text-violet-100" dir="ltr">
+                            {result.sharedGenes}/{result.totalGenes}
+                        </span>
+                        <span className="text-xs text-slate-400">{dna.sharedLabel}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <span
+                            className={`rounded-md border px-2.5 py-1 text-xs font-bold ${
+                                stayedClose
+                                    ? 'border-emerald-500/30 bg-emerald-900/15 text-emerald-200'
+                                    : 'border-amber-500/30 bg-amber-900/15 text-amber-200'
+                            }`}
+                        >
+                            {verdict}
+                        </span>
+                        <span className="font-mono text-sm text-violet-200" dir="ltr">
+                            {dna.drift(driftPct)}
+                        </span>
+                    </div>
+                </div>
             )}
 
             {/* סיכום מוסתר להקראה */}

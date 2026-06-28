@@ -38,8 +38,8 @@ export interface LabSentenceText {
     tokens: string[];
     /** שורת הסבר קצרה וקריאה להקראה (TTS). */
     ttsLine: string;
-    /** תוויות החלפת מילה, לפי chipId יציב. */
-    swaps?: Record<string, { label: string }>;
+    /** תוויות החלפת מילה, לפי chipId יציב. from = הניסוח המקורי, label = הניסוח החדש. */
+    swaps?: Record<string, { label: string; from: string }>;
 }
 
 /** חבילת התוכן המקומי של מעבדת ה-Embeddings. */
@@ -48,19 +48,76 @@ export interface Chapter4LabDict {
      *  כל מזהה. הוספת SentenceStruct חדש תיצור שגיאת קומפילציה כאן עד שיתווסף תוכן. */
     sentences: Record<SentenceId, LabSentenceText>;
 
+    /** קרבה במשמעות: דברים דומים במשמעות נמצאים קרוב יותר. שני שלבים מקבילים. */
     map: {
-        /** קצה ימני של ציר X (עולם המשלוח). */
-        axisXStart: string;
-        /** קצה שמאלי של ציר X (מערכת ותשלום). */
-        axisXEnd: string;
-        /** קצה נמוך של ציר Y (רגוע). */
-        axisYStart: string;
-        /** קצה גבוה של ציר Y (כשל וסיכון). */
-        axisYEnd: string;
-        /** הבהרה שהמפה היא צל דו-ממדי של מרחב גדול בהרבה. */
-        shadowNote: string;
-        legendTitle: string;
-        emptyState: string;
+        /** תווית "הכי קרוב" שמודגשת על הקרוב ביותר בשדה. */
+        closestTag: string;
+        honest: string;
+
+        /** שלב 1, דמו אובייקטים. כותרת ותת-כותרת מעל השדה. */
+        visualTitle: string;
+        visualSubtitle: string;
+        ruleLine: string;
+        objects: {
+            dog: string;
+            cat: string;
+            apple: string;
+            cucumber: string;
+            computer: string;
+        };
+        objectExplain: {
+            dog: string;
+            cat: string;
+            apple: string;
+            cucumber: string;
+            computer: string;
+        };
+        objectSelected: string;
+        objectClosest: string;
+        objectNoClose: string;
+
+        /** שלב 2, דמו משפטים. */
+        packageTitle: string;
+        packageSubtitle: string;
+        centerLabel: string;
+        closestLabel: string;
+        packageRule: string;
+        /** כרטיס סמנטי קצר לכל משפט: תווית קצרה ושבבי משמעות. אייקון נקבע בקוד. */
+        cards: Record<SentenceId, { shortLabel: string; chips: string[] }>;
+
+        /** שלב 4: אזור "הוכחה והסבר" מתחת לדמו המשפטים (DNA וכוחות המשמעות). */
+        proofTitle: string;
+        proofLead: string;
+
+        /** פאנל "מה קרוב למה" לשני השלבים. */
+        relationTitle: string;
+        coreRule: string;
+        relClosest: string;
+        relRelated: string;
+        relFar: string;
+        /** שורות יחס סטטיות לדמו האובייקטים. */
+        objectRows: { pair: string; reason: string }[];
+        /** מטא-דאטה של יחסי משפטים, לפי מזהה יציב. הטקסט המלא נשלף לפי id. */
+        relations: Record<
+            SentenceId,
+            {
+                closestId: SentenceId;
+                relatedId: SentenceId;
+                farId: SentenceId;
+                reasonClosest: string;
+                reasonRelated: string;
+                reasonFar: string;
+            }
+        >;
+
+        howto: {
+            title: string;
+            rowPoint: string;
+            rowClose: string;
+            rowFar: string;
+            rowSwap: string;
+            legendWhy: string;
+        };
     };
 
     /** תוויות מגנט לפי מזהה מגנט יציב. */
@@ -73,6 +130,8 @@ export interface Chapter4LabDict {
         title: string;
         /** תבנית גנים משותפים, למשל 5 מתוך 6. */
         sharedGenes: (shared: number, total: number) => string;
+        /** תווית קצרה למספר הגדול של הגנים המשותפים. */
+        sharedLabel: string;
         /** תבנית סחיפה באחוזים. */
         drift: (pct: number) => string;
         stayedClose: string;
@@ -81,9 +140,12 @@ export interface Chapter4LabDict {
 
     controls: {
         pickSentence: string;
-        swapWord: string;
-        reset: string;
-        compareWith: string;
+        /** כותרת אזור החלפת המילה (שאלה מנחה). */
+        swapTitle: string;
+        /** משפט הסבר קצר ליד כפתורי ההחלפה. */
+        swapHint: string;
+        /** טקסט כפתור החזרה למשפט המקורי, מוצג רק כשהחלפה פעילה. */
+        resetSwap: string;
     };
 
     fallback: {
@@ -95,6 +157,25 @@ export interface Chapter4LabDict {
         /** כותרת פאנל המגנט. */
         magnetTitle: string;
     };
+
+    explain: {
+        /** כותרת מקטע ההסברים המודרכים. */
+        title: string;
+        /** המפה היא צל שטוח של מרחב גדול יותר. */
+        mapShadow: string;
+        /** נקודות קרובות = משמעות דומה. */
+        close: string;
+        /** נקודה רחוקה = פחות דומה, לא שגויה. */
+        far: string;
+        /** ההילות הצבעוניות הן שכונות משמעות. */
+        regions: string;
+        /** כוחות המשמעות שמשכו את המשפט. */
+        forces: string;
+        /** מה ה-DNA מוכיח. */
+        dna: string;
+        /** Embedding משווה משמעות, לא אמת. */
+        notTruth: string;
+    };
 }
 
 /**
@@ -105,7 +186,7 @@ export interface JoinedSentence extends SentenceStruct {
     text: string;
     tokens: string[];
     ttsLine: string;
-    swaps: { chipId: string; toId: SentenceId; label: string }[];
+    swaps: { chipId: string; toId: SentenceId; label: string; from: string }[];
     point: MapPoint2D;
 }
 
@@ -135,6 +216,7 @@ function joinOne(struct: SentenceStruct, dict: Chapter4LabDict): JoinedSentence 
         chipId: w.chipId,
         toId: w.toId,
         label: text.swaps?.[w.chipId]?.label ?? w.chipId,
+        from: text.swaps?.[w.chipId]?.from ?? '',
     }));
 
     return {
