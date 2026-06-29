@@ -12,21 +12,24 @@ interface ModeToggleProps {
     onChange: (mode: FlowMode) => void;
     /** גוון לכפתור הפעיל. מאפשר להבדיל חזותית בין Chat ל-Agent. */
     accent?: Accent;
+    /** תוויות מתורגמות אופציונליות. ברירת המחדל היא האנגלית, כך שכל הצרכנים הקיימים
+     *  אינם מושפעים. */
+    labels?: { chat: string; agent: string };
 }
 
-const OPTIONS: { value: FlowMode; label: string; icon: React.ReactNode }[] = [
-    { value: 'chat', label: 'Chat Mode', icon: <MessageCircle size={16} /> },
-    { value: 'agent', label: 'Agent Mode', icon: <Workflow size={16} /> },
-];
-
 /** מעבר בין Chat Mode ל-Agent Mode עם גלולה נעה. אחריות יחידה: בחירת FlowMode. */
-export const ModeToggle: React.FC<ModeToggleProps> = ({ mode, onChange, accent = 'cyan' }) => {
+export const ModeToggle: React.FC<ModeToggleProps> = ({ mode, onChange, accent = 'cyan', labels }) => {
     const a = ACCENTS[accent];
     const reduce = useReducedMotion();
 
+    const options: { value: FlowMode; label: string; icon: React.ReactNode }[] = [
+        { value: 'chat', label: labels?.chat ?? 'Chat Mode', icon: <MessageCircle size={16} /> },
+        { value: 'agent', label: labels?.agent ?? 'Agent Mode', icon: <Workflow size={16} /> },
+    ];
+
     return (
         <div className="relative inline-flex items-center gap-1 p-1 rounded-2xl bg-slate-900/80 border border-white/10" dir="ltr">
-            {OPTIONS.map((opt) => {
+            {options.map((opt) => {
                 const active = mode === opt.value;
                 return (
                     <button

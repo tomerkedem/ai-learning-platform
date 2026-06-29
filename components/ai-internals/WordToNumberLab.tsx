@@ -44,8 +44,8 @@ import {
 export const WordToNumberLab: React.FC = () => {
     const { locale, dir } = useT();
     const isHe = locale === 'he';
-    const data = getWordDataset(isHe);
-    const tx = getWordText(isHe);
+    const data = getWordDataset(locale);
+    const tx = getWordText(locale);
 
     const reduce = useReducedMotion();
 
@@ -149,7 +149,7 @@ export const WordToNumberLab: React.FC = () => {
             <div className="flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between" dir={dir}>
                 <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-slate-400">{tx.modeLabel}</span>
-                    <ModeToggle mode={mode} onChange={(m) => handleMode(m as EngineMode)} accent={scenario.accent} />
+                    <ModeToggle mode={mode} onChange={(m) => handleMode(m as EngineMode)} accent={scenario.accent} labels={tx.modeLabels} />
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-bold text-slate-400">{tx.scenarioLabel}</span>
@@ -591,7 +591,7 @@ const MeaningVectorLive: React.FC<MeaningVectorLiveProps> = ({ step, prevStep, d
                             <span className="flex w-20 shrink-0 items-center gap-1.5 leading-tight">
                                 <span className={`h-2 w-2 shrink-0 rounded-full ${s.dot}`} />
                                 <span>
-                                    <span className={`block text-xs font-bold ${isLead ? s.text : 'text-slate-300'}`}>{isHe ? info.he : info.en}</span>
+                                    <span className={`block text-xs font-bold ${isLead ? s.text : 'text-slate-300'}`}>{isHe ? info.he : (tx.dimLabel?.[key] ?? info.en)}</span>
                                     {isHe && <span className="block text-[8px] uppercase tracking-[0.12em] text-slate-500" dir="ltr">{info.en}</span>}
                                 </span>
                             </span>
@@ -726,7 +726,7 @@ interface SimilarItemData {
     profile: Profile;
 }
 
-const SimilarColumn: React.FC<{ item: SimilarItemData; dims: DimKey[]; reduce: boolean; dir: 'rtl' | 'ltr'; tokenId: (w: string) => number | null }> = ({ item, dims, reduce, dir, tokenId }) => (
+const SimilarColumn: React.FC<{ item: SimilarItemData; dims: DimKey[]; reduce: boolean; dir: 'rtl' | 'ltr'; tokenId: (w: string) => number | null; dimLabel?: WordLabText['dimLabel'] }> = ({ item, dims, reduce, dir, tokenId, dimLabel }) => (
     <div className="flex-1 rounded-xl border border-slate-700/50 bg-slate-950/40 p-4">
         <div className="mb-3 text-sm font-bold text-slate-100">&quot;{item.prompt}&quot;</div>
         <div className="mb-3 flex flex-wrap gap-1.5" dir={dir}>
@@ -743,7 +743,7 @@ const SimilarColumn: React.FC<{ item: SimilarItemData; dims: DimKey[]; reduce: b
                 const s = DIM_STYLE[key];
                 return (
                     <div key={key} className="flex items-center gap-2">
-                        <span className={`w-14 shrink-0 text-[10px] font-bold ${s.text}`} dir="ltr">{DIM_INFO[key].en}</span>
+                        <span className={`w-14 shrink-0 text-[10px] font-bold ${s.text}`} dir="ltr">{dimLabel?.[key] ?? DIM_INFO[key].en}</span>
                         <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-800/80">
                             <motion.div
                                 initial={reduce ? false : { width: 0 }}
@@ -782,8 +782,8 @@ const SimilarMeaningPreview: React.FC<{
             </div>
 
             <div className="flex flex-col gap-3 md:flex-row">
-                <SimilarColumn item={left} dims={sharedDims} reduce={reduce} dir={dir} tokenId={tokenId} />
-                <SimilarColumn item={right} dims={sharedDims} reduce={reduce} dir={dir} tokenId={tokenId} />
+                <SimilarColumn item={left} dims={sharedDims} reduce={reduce} dir={dir} tokenId={tokenId} dimLabel={tx.dimLabel} />
+                <SimilarColumn item={right} dims={sharedDims} reduce={reduce} dir={dir} tokenId={tokenId} dimLabel={tx.dimLabel} />
             </div>
 
             {/* חיווי התיישרות */}

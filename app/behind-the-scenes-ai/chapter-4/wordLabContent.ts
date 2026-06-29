@@ -9,6 +9,7 @@
 // הנתיב העברי (HE_WORD_DATASET / HE_WORD_TEXT) משקף בדיוק את המנוע ואת המחרוזות
 // הנוכחיות, כך שפלט העברית נשאר זהה. אין מקף ארוך או מקף בינוני בטקסט גלוי.
 
+import type { Locale } from '@/i18n/config';
 import {
     SCENARIOS,
     getScenario,
@@ -19,6 +20,7 @@ import {
     type EngineStep,
     type ShiftEntry,
     type SimilarPair,
+    type DimKey,
 } from './embeddingEngine';
 
 /* ════════════════════════ נתונים: dataset לפי שפה ════════════════════════ */
@@ -207,14 +209,170 @@ export const EN_WORD_DATASET: WordLabDataset = {
     similar: EN_SIMILAR,
 };
 
-export function getWordDataset(isHe: boolean): WordLabDataset {
-    return isHe ? HE_WORD_DATASET : EN_WORD_DATASET;
+/* ── שכבת נתונים ספרדית מקבילה (משתמשת מחדש בפרופילים המספריים של המנוע) ── */
+
+const ES_TOKEN_DICTIONARY: Record<string, number> = {
+    El: 204, el: 9, paquete: 1042, no: 17, llegó: 883,
+    sistema: 2310, muestra: 441,
+    Revisa: 51, por: 90, qué: 88,
+    Envía: 73, un: 12, mensaje: 612, al: 15, cliente: 1190, de: 20, que: 145, se: 30, perdió: 770,
+    envío: 1057, fue: 61, entregado: 904,
+};
+
+function esTokenId(word: string): number | null {
+    return word in ES_TOKEN_DICTIONARY ? ES_TOKEN_DICTIONARY[word] : null;
+}
+
+const ES_VECTOR_SHIFTS: Record<string, ShiftEntry[]> = {
+    paquete: [en('Entrega', 'up-strong', 'delivery')],
+    no: [en('Fallo', 'up', 'failure'), en('Negación', 'up'), en('Entrega', 'up-slight', 'delivery')],
+    llegó: [en('Entrega', 'up', 'delivery'), en('Llegada', 'up')],
+    envío: [en('Entrega', 'up-strong', 'delivery')],
+    entregado: [en('Entrega', 'up', 'delivery'), en('Estado de entrega', 'up')],
+    sistema: [en('Sistema', 'up-strong', 'system')],
+    muestra: [en('Sistema', 'up', 'system'), en('Visualización', 'up')],
+    Revisa: [en('Acción', 'up-strong', 'action'), en('Investigación', 'up')],
+    qué: [en('Búsqueda de causa', 'up')],
+    Envía: [en('Acción', 'up-strong', 'action'), en('Riesgo', 'up', 'risk'), en('Aprobación', 'up', 'permission')],
+    mensaje: [en('Mensaje', 'up'), en('Cliente', 'up-slight', 'customer')],
+    cliente: [en('Cliente', 'up-strong', 'customer'), en('Riesgo', 'up', 'risk'), en('Aprobación', 'up', 'permission')],
+    perdió: [en('Fallo', 'up', 'failure'), en('Riesgo', 'up', 'risk')],
+};
+
+function esShift(word: string): ShiftEntry[] {
+    return ES_VECTOR_SHIFTS[word] ?? [];
+}
+
+const esScenario = (id: string, prompt: string, steps: EngineStep[]): EngineScenario => ({
+    ...scOf(id),
+    labelEn: ES_SCENARIO_LABEL[id] ?? scOf(id).labelEn,
+    prompt,
+    steps,
+});
+
+const ES_SCENARIO_LABEL: Record<string, string> = {
+    'chat-delivery': 'Sin entrega',
+    'chat-system': 'Fallo del sistema',
+    'agent-investigate': 'Investigación',
+    'agent-notify': 'Acción con cliente',
+};
+
+const ES_SCENARIOS: EngineScenario[] = [
+    esScenario('chat-delivery', 'El paquete no llegó', [
+        enStep(scOf('chat-delivery').steps[0], {
+            text: 'El paquete',
+            tokens: ['El', 'paquete'],
+            main: 'La palabra "paquete" empuja con fuerza la dimensión de Entrega.',
+        }),
+        enStep(scOf('chat-delivery').steps[1], {
+            text: 'El paquete no',
+            tokens: ['El', 'paquete', 'no'],
+            main: 'La palabra "no" dispara Fallo y Urgencia.',
+        }),
+        enStep(scOf('chat-delivery').steps[2], {
+            text: 'El paquete no llegó',
+            tokens: ['El', 'paquete', 'no', 'llegó'],
+            main: '"no llegó" fija un perfil de fallo de entrega.',
+        }),
+    ]),
+    esScenario('chat-system', 'El sistema no muestra el paquete', [
+        enStep(scOf('chat-system').steps[0], {
+            text: 'El sistema',
+            tokens: ['El', 'sistema'],
+            main: 'La palabra "sistema" desplaza el peso a la dimensión de Sistema.',
+        }),
+        enStep(scOf('chat-system').steps[1], {
+            text: 'El sistema no',
+            tokens: ['El', 'sistema', 'no'],
+            main: 'La palabra "no" añade Fallo, pero "sistema" sigue liderando.',
+        }),
+        enStep(scOf('chat-system').steps[2], {
+            text: 'El sistema no muestra el paquete',
+            tokens: ['El', 'sistema', 'no', 'muestra', 'el', 'paquete'],
+            main: 'Mismo dominio, dirección distinta: el peso se mueve a un fallo de visualización en el sistema.',
+        }),
+    ]),
+    esScenario('agent-investigate', 'Revisa por qué el paquete no llegó', [
+        enStep(scOf('agent-investigate').steps[0], {
+            text: 'Revisa',
+            tokens: ['Revisa'],
+            main: 'La palabra "revisa" enciende la dimensión de Acción, riesgo bajo.',
+            head: 'Solicitud de acción detectada',
+            det: 'Una señal de acción ("revisa") con riesgo bajo. Parece una investigación, no una acción hacia el cliente.',
+        }),
+        enStep(scOf('agent-investigate').steps[1], {
+            text: 'Revisa por qué el paquete',
+            tokens: ['Revisa', 'por', 'qué', 'el', 'paquete'],
+            main: 'Se añade un dominio: entrega. El riesgo se mantiene bajo.',
+            head: 'Objetivo: investigar el dominio de entrega',
+            det: 'El perfil apunta a una investigación interna. Sin contacto con el cliente, sin riesgo.',
+        }),
+        enStep(scOf('agent-investigate').steps[2], {
+            text: 'Revisa por qué el paquete no llegó',
+            tokens: ['Revisa', 'por', 'qué', 'el', 'paquete', 'no', 'llegó'],
+            main: 'Perfil final: investigar un fallo de entrega, riesgo bajo.',
+            head: 'Seguro para investigar, necesita un número de seguimiento',
+            det: 'Riesgo bajo y sin acción hacia el cliente. Siguiente paso: usar la herramienta de revisión de estado y pedir un número de seguimiento.',
+        }),
+    ]),
+    esScenario('agent-notify', 'Envía un mensaje al cliente de que el paquete se perdió', [
+        enStep(scOf('agent-notify').steps[0], {
+            text: 'Envía',
+            tokens: ['Envía'],
+            main: 'La palabra "envía" enciende Acción, y Riesgo y Aprobación empiezan a subir.',
+            head: 'Acción saliente detectada',
+            det: 'Una señal de acción ("envía"). Aún no está claro a quién, pero el riesgo empieza a subir.',
+        }),
+        enStep(scOf('agent-notify').steps[1], {
+            text: 'Envía un mensaje al cliente',
+            tokens: ['Envía', 'un', 'mensaje', 'al', 'cliente'],
+            main: 'La palabra "cliente" dispara Cliente, Riesgo y Aprobación.',
+            head: 'Acción hacia un cliente real',
+            det: 'El perfil apunta a un contacto directo con el cliente. Riesgo y aprobación altos.',
+        }),
+        enStep(scOf('agent-notify').steps[2], {
+            text: 'Envía un mensaje al cliente de que el paquete se perdió',
+            tokens: ['Envía', 'un', 'mensaje', 'al', 'cliente', 'de', 'que', 'el', 'paquete', 'se', 'perdió'],
+            main: 'Perfil final: Riesgo y Aprobación altos. Hay que detenerse y pedir aprobación.',
+            head: 'Detente, se requiere aprobación',
+            det: 'El mismo perfil numérico separa una investigación segura de una acción arriesgada hacia el cliente. Siguiente paso: detenerse y pedir aprobación humana.',
+        }),
+    ]),
+];
+
+const ES_SIMILAR: SimilarPair = {
+    left: {
+        prompt: 'El paquete no llegó',
+        tokens: ['El', 'paquete', 'no', 'llegó'],
+        profile: SIMILAR_PAIR.left.profile,
+    },
+    right: {
+        prompt: 'El envío no fue entregado',
+        tokens: ['El', 'envío', 'no', 'fue', 'entregado'],
+        profile: SIMILAR_PAIR.right.profile,
+    },
+    sharedDims: SIMILAR_PAIR.sharedDims,
+};
+
+export const ES_WORD_DATASET: WordLabDataset = {
+    scenarios: ES_SCENARIOS,
+    tokenId: esTokenId,
+    shift: esShift,
+    similar: ES_SIMILAR,
+};
+
+export function getWordDataset(locale: Locale): WordLabDataset {
+    if (locale === 'he') return HE_WORD_DATASET;
+    if (locale === 'es') return ES_WORD_DATASET;
+    return EN_WORD_DATASET;
 }
 
 /* ════════════════════════ מחרוזות chrome לפי שפה ════════════════════════ */
 
 export interface WordLabText {
     modeLabel: string;
+    /** תוויות בורר המצב (Chat/Agent). מועברות ל-ModeToggle. */
+    modeLabels: { chat: string; agent: string };
     scenarioLabel: string;
     typing: {
         suggested: string;
@@ -252,10 +410,14 @@ export interface WordLabText {
     similar: { title: string; sub: string; aligns: string; overlap: (pct: number) => string; note: string };
     agent: { needsApproval: string; note: string };
     disclaimer: { lead: string; idIsAddress: string; idTail: string; dimsReadable: string; dimsTail: string };
+    /** תוויות ממד מקומיות. אם חסר, נופלים ל-DIM_INFO (he/en) של המנוע. שפות שאינן he/en
+     *  מספקות כאן את תוויות הממד שלהן (DIM_INFO מוגן ואינו משתנה). */
+    dimLabel?: Partial<Record<DimKey, string>>;
 }
 
 export const HE_WORD_TEXT: WordLabText = {
     modeLabel: 'מצב:',
+    modeLabels: { chat: 'Chat Mode', agent: 'Agent Mode' },
     scenarioLabel: 'תרחיש:',
     typing: {
         suggested: 'תרחיש מוצע:',
@@ -326,6 +488,7 @@ export const HE_WORD_TEXT: WordLabText = {
 
 export const EN_WORD_TEXT: WordLabText = {
     modeLabel: 'Mode:',
+    modeLabels: { chat: 'Chat Mode', agent: 'Agent Mode' },
     scenarioLabel: 'Scenario:',
     typing: {
         suggested: 'Suggested scenario:',
@@ -394,6 +557,91 @@ export const EN_WORD_TEXT: WordLabText = {
     },
 };
 
-export function getWordText(isHe: boolean): WordLabText {
-    return isHe ? HE_WORD_TEXT : EN_WORD_TEXT;
+export const ES_WORD_TEXT: WordLabText = {
+    modeLabel: 'Modo:',
+    modeLabels: { chat: 'Modo chat', agent: 'Modo Agent' },
+    scenarioLabel: 'Escenario:',
+    typing: {
+        suggested: 'Escenario sugerido:',
+        typeSlow: 'Escríbelo despacio',
+        placeholder: 'Escribe la frase sugerida, o pulsa "Escríbelo por mí"',
+        aria: 'Campo de entrada para el laboratorio de palabras a números',
+        autoType: 'Escríbelo por mí',
+        autoTypeLatin: 'Automático',
+        reset: 'Reiniciar',
+        resetLatin: 'Reiniciar',
+    },
+    unrecognizedHint:
+        'Este laboratorio demuestra frases predefinidas, no analiza texto libre. Para ver el desglose en números, escribe la frase sugerida arriba o pulsa "Escríbelo por mí".',
+    mainChangeLabel: 'Cambio principal: ',
+    idSeq: {
+        title: 'La secuencia de IDs',
+        sub: 'Visor de secuencia de IDs',
+        words: 'Palabras',
+        ids: 'IDs',
+        empty: 'Empieza a escribir (o pulsa "Escríbelo por mí") y la frase se convierte en una secuencia de números.',
+        pointsTo: 'apunta a',
+        addressNote: '(una dirección en el vocabulario, no significado)',
+        selectHint:
+            'Pulsa una palabra para ver a qué Token ID apunta. El ID es una dirección en el vocabulario, como un código de barras que no es el sabor del producto.',
+    },
+    table: {
+        title: 'Tabla de traducción',
+        sub: 'Texto humano a IDs del modelo',
+        colWord: 'Palabra / Token',
+        colId: 'Token ID',
+        note: 'Cada palabra apunta a una dirección fija en el vocabulario. El ID es un identificador, no significado.',
+        fallbackTokens: ['El', 'paquete', 'no', 'llegó'],
+    },
+    vector: {
+        title: 'El vector de significado en vivo',
+        sub: 'Vector de significado en vivo',
+        note: 'Valores normalizados entre 0 y 1. Fíjate cómo la palabra "no" dispara Fallo y Urgencia. Este es el perfil de significado, separado de la fórmula de suma didáctica.',
+    },
+    shift: {
+        title: 'Impacto de la palabra',
+        sub: 'Cambio del vector por palabra',
+        idleHint: 'Pulsa una palabra para ver hacia dónde empuja el perfil.',
+        pushesUp: 'empuja hacia arriba estas dimensiones:',
+        tiny: 'Aporta muy poco al perfil. Aun así se convierte en un Token ID y entra en el cálculo.',
+        note: 'Dirección de influencia, no aritmética exacta. Cada palabra aporta algo al perfil numérico.',
+    },
+    dirLabels: { 'up-strong': 'Subida fuerte', up: 'Subida', 'up-slight': 'Subida leve' },
+    similar: {
+        title: 'Dirección similar',
+        sub: 'Vista previa de significado similar',
+        aligns: 'Token IDs distintos, el vector de significado se alinea',
+        overlap: (pct) => `~${pct}% de solapamiento de dirección`,
+        note: 'Las dos frases casi no comparten Token IDs (204,1042,17,883 vs 204,1057,17,61,904), pero apuntan a la misma dirección de significado. Esto es solo una muestra visual. Abrimos la geometría de esta dirección en el próximo capítulo, y el cálculo completo de similitud en el capítulo 8.',
+    },
+    agent: {
+        needsApproval: 'Requiere aprobación',
+        note: 'El mismo perfil numérico separa una investigación segura de una acción arriesgada hacia el cliente. La representación de significado no solo responde, también moldea decisiones de acción.',
+    },
+    disclaimer: {
+        lead: 'Dos aclaraciones:',
+        idIsAddress: 'Un Token ID es una dirección en el vocabulario, no significado',
+        idTail: '- el número 1042 apunta a la palabra "paquete", no "dice" paquete.',
+        dimsReadable: 'Las dimensiones de significado (Entrega, Fallo, etc.) son ejes legibles que elegimos para aprender',
+        dimsTail:
+            '- en representaciones reales las dimensiones no son etiquetas humanas sino cientos o miles de dimensiones aprendidas que no son legibles para una persona. Aún no calculamos similitud ni probabilidad aquí, solo construimos un perfil que podremos comparar en capítulos posteriores.',
+    },
+    dimLabel: {
+        delivery: 'Entrega',
+        system: 'Sistema',
+        address: 'Dirección',
+        payment: 'Pago',
+        urgency: 'Urgencia',
+        failure: 'Fallo',
+        action: 'Acción',
+        risk: 'Riesgo',
+        customer: 'Cliente',
+        permission: 'Aprobación',
+    },
+};
+
+export function getWordText(locale: Locale): WordLabText {
+    if (locale === 'he') return HE_WORD_TEXT;
+    if (locale === 'es') return ES_WORD_TEXT;
+    return EN_WORD_TEXT;
 }
