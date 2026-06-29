@@ -207,7 +207,7 @@ export default function BehindTheScenesChapter3() {
                         {c3.lab.intro}
                     </div>
 
-                    <TokenizationLab />
+                    <TokenizationLab key={locale} />
                     <TokenizationRoadmap />
 
                     <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'} z-20 hidden xl:block pointer-events-none`}>
