@@ -17,6 +17,9 @@ import type { DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGues
 import { TokenizationLab } from '@/components/ai-internals/TokenizationLab';
 import { TokenizationRoadmap } from '@/components/ai-internals/TokenizationRoadmap';
 import { Mentor } from '@/components/ai-internals/Mentor';
+import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
+import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
+import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import { Chapter3LabProvider, getLabContent } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
 import { useT } from '@/i18n/useT';
 import type { Chapter3QuizId } from '@/i18n/locales/he/behind-ai/chapter3Quiz';
@@ -90,6 +93,27 @@ export default function BehindTheScenesChapter3() {
     const c3 = t.behindAi.chapter3;
     const labContent = getLabContent(locale);
 
+    // ── דוק האזנה מודרכת: מקטעי הקראה לפי מצב היקף, מאותם מפתחות מילון (ללא שכפול
+    // קופי). לא נכללים: חידון, כפתורים/ניווט, צ׳יפים/באדג׳ים, משפטי מנטור, ופלט חי של
+    // מעבדת הפירוק (טוקנים, צבעים, ספירות). הקראה רק מטקסט יציב של chapter3.
+    const ra = t.behindAi.aiInternals.readAloud;
+    const c3CardIds = ['as-is', 'tokens', 'meaning', 'important'] as const;
+    const sTitle: ReadAloudSegment = { id: 'title', label: c3.hero.titleLead, text: `${c3.hero.titleLead} ${c3.hero.titleHighlight}. ${c3.hero.lede}` };
+    const sGuessQ: ReadAloudSegment = { id: 'guess-q', label: c3.guess.title, text: `${c3.guess.title} ${c3.guess.subtitle}` };
+    const sCards: ReadAloudSegment[] = c3CardIds.map((id) => ({ id: `card-${id}`, label: c3.guess.cards[id].title, text: `${c3.guess.cards[id].title}. ${c3.guess.cards[id].desc}` }));
+    const sGuessReveal: ReadAloudSegment = { id: 'guess-reveal', label: c3.guess.revealTitle, text: `${c3.guess.revealTitle} ${c3.guess.revealCopy}` };
+    const sInsight: ReadAloudSegment = { id: 'insight', label: c3.insight.title, text: `${c3.insight.lead} ${c3.insight.body}` };
+    const sLab: ReadAloudSegment = { id: 'lab', label: c3.lab.title, text: `${c3.lab.title}. ${c3.lab.intro}` };
+    const sLock: ReadAloudSegment = { id: 'lock', label: c3.lock.title, text: `${c3.lock.title}. ${c3.lock.truthLabel}: ${c3.lock.truthText} ${c3.lock.mistakeLabel}: ${c3.lock.mistakeText}` };
+    const sPracticalShort: ReadAloudSegment = { id: 'practical', label: c3.practical.title, text: `${c3.practical.title}. ${c3.practical.intro}` };
+    const sPracticalFull: ReadAloudSegment = { id: 'practical', label: c3.practical.title, text: `${c3.practical.title}. ${c3.practical.intro} ${c3.practical.points.join(' ')}` };
+
+    const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
+        short: [sTitle, sGuessReveal, sInsight, sPracticalShort],
+        regular: [sTitle, sGuessQ, sGuessReveal, sInsight, sLab, sLock, sPracticalFull],
+        full: [sTitle, sGuessQ, ...sCards, sGuessReveal, sInsight, sLab, sLock, sPracticalFull],
+    };
+
     // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא-דאטה.
     const guessContent: OpeningGuessContent = {
         eyebrow: c3.guess.eyebrow,
@@ -145,7 +169,8 @@ export default function BehindTheScenesChapter3() {
                     <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
                     <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
 
-                    <div className="relative z-10">
+                    {/* ב-lg+ שומרים מקום בצד הסיום כדי שהכותרת לא תזרום מתחת לדוק שבפינה */}
+                    <div className="relative z-10 lg:pe-64">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
                             <Scissors size={14} className="text-violet-400" />
                             <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">{c3.hero.badge}</span>
@@ -171,6 +196,18 @@ export default function BehindTheScenesChapter3() {
                             <span className="inline-flex items-center gap-1.5">
                                 <SplitSquareHorizontal size={14} className="text-cyan-400" /> {c3.hero.chipTouch}
                             </span>
+                        </div>
+
+                        {/* דוק האזנה מודרכת: שורה אינליין מתחת לטקסט במובייל, בפינת ההירו ב-lg+ */}
+                        <div className={`mt-6 flex justify-center md:justify-start lg:absolute lg:top-0 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
+                            <ReadAloudControls
+                                segmentsByMode={readAloudByMode}
+                                lang={LOCALE_SPEECH_LANG[locale]}
+                                locale={locale}
+                                dir={dir}
+                                labels={ra}
+                                reduce={!!reduce}
+                            />
                         </div>
                     </div>
                 </motion.section>

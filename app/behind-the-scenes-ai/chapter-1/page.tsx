@@ -14,6 +14,9 @@ import type { Chapter1QuizId } from '@/i18n/locales/he/behind-ai/chapter1Quiz';
 import { TransparentLabLayout } from '@/components/ai-internals/TransparentLabLayout';
 import { ChatInterfacePanel } from '@/components/ai-internals/ChatInterfacePanel';
 import { Mentor } from '@/components/ai-internals/Mentor';
+import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
+import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
+import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import type { Accent, ChatMessage, FlowMode } from '@/components/ai-internals/types';
 
 import { runChatEngine, runAgentEngine } from './mockEngine';
@@ -32,6 +35,31 @@ export default function BehindTheScenesChapter1() {
     const isRtl = dir === 'rtl';
     const c1 = t.behindAi.chapter1;
     const viz = c1.visuals;
+
+    // ── דוק האזנה מודרכת: מקטעי הקראה לפי מצב היקף, מאותם מפתחות מילון (ללא שכפול
+    // קופי). לא נכללים: חידון, כפתורים/ניווט, צ׳יפים/באדג׳ים, משפטי מנטור, קופי coach,
+    // הערות live/demo, ופלט חי של ארבע המעבדות. תוויות הדוק מ-aiInternals.readAloud.
+    const ra = t.behindAi.aiInternals.readAloud;
+    const c1Lede = `${c1.hero.ledeLead}${c1.hero.ledeHighlight}${c1.hero.ledeRest}`;
+    const c1Deep2 = `${c1.deep.intro2Lead}Chat${c1.deep.intro2Mid}Agent${c1.deep.intro2Tail}`;
+    const sTitle: ReadAloudSegment = { id: 'title', label: c1.hero.titleLead, text: `${c1.hero.titleLead} ${c1.hero.titleHighlight}. ${c1Lede}` };
+    const sLabIntro: ReadAloudSegment = { id: 'lab-intro', label: c1.lab.title, text: `${c1.lab.title}. ${c1.lab.intro}` };
+    const sFocus: ReadAloudSegment = { id: 'focus', label: c1.lab.focusHighlight, text: `${c1.lab.focusLead}${c1.lab.focusHighlight}${c1.lab.focusRest}` };
+    const sInsight: ReadAloudSegment = { id: 'insight', label: c1.insightIdea.title, text: c1.insightIdea.body };
+    const sDeep1: ReadAloudSegment = { id: 'deep-1', label: c1.deep.intro1, text: c1.deep.intro1 };
+    const sDeep2: ReadAloudSegment = { id: 'deep-2', label: c1Deep2, text: c1Deep2 };
+    const sLabs: ReadAloudSegment[] = [c1.labs.readHead, c1.labs.confidence, c1.labs.causality, c1.labs.fork].map((lab, i) => ({ id: `lab-${i}`, label: lab.title, text: lab.title }));
+    const sUnderstand: ReadAloudSegment = { id: 'understand', label: c1.summary.understandTitle, text: c1.summary.understandBody };
+    const sRule: ReadAloudSegment = { id: 'rule', label: c1.summary.ruleTitle, text: c1.summary.ruleBody };
+    const sBq1: ReadAloudSegment = { id: 'bq-1', label: c1.beforeQuiz.point1Lead, text: `${c1.beforeQuiz.point1Lead}${c1.beforeQuiz.point1Body}` };
+    const sBq2: ReadAloudSegment = { id: 'bq-2', label: c1.beforeQuiz.point2Lead, text: `${c1.beforeQuiz.point2Lead}${c1.beforeQuiz.point2BeforeChat}Chat${c1.beforeQuiz.point2AfterChat}Agent${c1.beforeQuiz.point2AfterAgent}` };
+    const sBq3: ReadAloudSegment = { id: 'bq-3', label: c1.beforeQuiz.point3Lead, text: `${c1.beforeQuiz.point3Lead}${c1.beforeQuiz.point3Body}` };
+
+    const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
+        short: [sTitle, sLabIntro, sInsight, sRule],
+        regular: [sTitle, sLabIntro, sFocus, sInsight, sDeep1, ...sLabs, sUnderstand, sRule],
+        full: [sTitle, sLabIntro, sFocus, sInsight, sDeep1, sDeep2, ...sLabs, sUnderstand, sRule, sBq1, sBq2, sBq3],
+    };
 
     // מבדק הפרק: המנגנון המשותף (correctAnswer, onComplete, getReviewLinks, nextHref...)
     // נשמר מ-quizData, וטקסט התצוגה ממוזג מהמילון לפי מזהה השאלה. quizData.ts לא משתנה.
@@ -283,7 +311,8 @@ export default function BehindTheScenesChapter1() {
                 <div className={`absolute -top-16 ${isRtl ? '-right-16' : '-left-16'} w-56 h-56 bg-cyan-500/10 blur-[80px] rounded-full pointer-events-none`} />
                 <div className={`absolute -bottom-20 ${isRtl ? '-left-10' : '-right-10'} w-64 h-64 bg-purple-500/10 blur-[90px] rounded-full pointer-events-none`} />
 
-                <div className="relative z-10">
+                {/* ב-lg+ שומרים מקום בצד הסיום כדי שהכותרת לא תזרום מתחת לדוק שבפינה */}
+                <div className="relative z-10 lg:pe-64">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-cyan-500/30 mb-5">
                         <Terminal size={14} className="text-cyan-400" />
                         <span className="font-mono text-xs tracking-widest uppercase text-cyan-300">{c1.hero.badge}</span>
@@ -312,6 +341,18 @@ export default function BehindTheScenesChapter1() {
                         <span className="inline-flex items-center gap-1.5">
                             <Layers size={14} className="text-purple-400" /> {c1.hero.chips[2]}
                         </span>
+                    </div>
+
+                    {/* דוק האזנה מודרכת: שורה אינליין מתחת לטקסט במובייל, בפינת ההירו ב-lg+ */}
+                    <div className={`mt-6 flex justify-center md:justify-start lg:absolute lg:top-0 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
+                        <ReadAloudControls
+                            segmentsByMode={readAloudByMode}
+                            lang={LOCALE_SPEECH_LANG[locale]}
+                            locale={locale}
+                            dir={dir}
+                            labels={ra}
+                            reduce={!!reduce}
+                        />
                     </div>
                 </div>
             </motion.section>

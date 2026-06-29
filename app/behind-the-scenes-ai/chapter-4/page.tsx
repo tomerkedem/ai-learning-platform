@@ -11,6 +11,9 @@ import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { WordToNumberLab } from '@/components/ai-internals/WordToNumberLab';
+import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
+import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
+import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import { UniversalMeaningDemo } from './components/UniversalMeaningDemo';
 import { EmbeddingExperienceLab } from './components/EmbeddingExperienceLab';
 import { Chapter4LabProvider, getLabContent } from './labContent';
@@ -249,6 +252,36 @@ export default function BehindTheScenesChapter4() {
     const c4 = t.behindAi.chapter4;
     const labContent = getLabContent(locale);
 
+    // ── דוק האזנה מודרכת: מקטעי הקראה לפי מצב היקף, מ-chapter4 ומ-chapter4Lab (כולל
+    // שדות ttsLine הקיימים). לא נכללים: חידון, כפתורים/ניווט, צ׳יפים/באדג׳ים, משפטי
+    // מנטור, ומצב חי של המעבדה (בחירת אובייקט, ערכי DNA, אחוזי סחיפה, החלפת מילה,
+    // ערכי קרבה מספריים). הקראה רק מטקסט יציב. תוויות הדוק מ-aiInternals.readAloud.
+    const ra = t.behindAi.aiInternals.readAloud;
+    const lab4 = labContent;
+    const c4SentenceIds = ['pkg-not-arrived', 'delivery-not-handed', 'pkg-arrived', 'system-not-showing', 'billing-address-update', 'agent-investigate-delay', 'agent-notify-lost'] as const;
+    const c4ExplainKeys = ['mapShadow', 'close', 'far', 'regions', 'forces', 'dna', 'notTruth'] as const;
+    const sTitle: ReadAloudSegment = { id: 'title', label: c4.hero.titleLead, text: `${c4.hero.titleLead} ${c4.hero.titleHighlight}. ${c4.hero.lede}` };
+    const sGuessIntro: ReadAloudSegment = { id: 'guess', label: c4.guess.title, text: `${c4.guess.title} ${c4.guess.subtitle}` };
+    const sSuccessInsight: ReadAloudSegment = { id: 'success-insight', label: c4.guess.successInsight, text: c4.guess.successInsight };
+    const sBridge: ReadAloudSegment = { id: 'bridge', label: c4.bridge, text: c4.bridge };
+    const sVisual: ReadAloudSegment = { id: 'visual', label: lab4.map.visualTitle, text: `${lab4.map.visualTitle}. ${lab4.map.visualSubtitle}` };
+    const sRuleLine: ReadAloudSegment = { id: 'rule-line', label: lab4.map.ruleLine, text: lab4.map.ruleLine };
+    const sPackage: ReadAloudSegment = { id: 'package', label: lab4.map.packageTitle, text: `${lab4.map.packageTitle}. ${lab4.map.packageSubtitle}` };
+    const sPackageRule: ReadAloudSegment = { id: 'package-rule', label: lab4.map.packageRule, text: lab4.map.packageRule };
+    const sProof: ReadAloudSegment = { id: 'proof', label: lab4.map.proofTitle, text: `${lab4.map.proofTitle}. ${lab4.map.proofLead}` };
+    const sTts: ReadAloudSegment[] = c4SentenceIds.map((id) => ({ id: `tts-${id}`, label: lab4.sentences[id].text, text: lab4.sentences[id].ttsLine }));
+    const sExplain: ReadAloudSegment[] = c4ExplainKeys.map((k) => ({ id: `explain-${k}`, label: lab4.explain[k], text: lab4.explain[k] }));
+    const sPracticalShort: ReadAloudSegment = { id: 'practical', label: c4.practical.title, text: `${c4.practical.title}. ${c4.practical.lead}` };
+    const sPracticalFull: ReadAloudSegment = { id: 'practical', label: c4.practical.title, text: `${c4.practical.title}. ${c4.practical.lead} ${c4.practical.uses.join('. ')}` };
+    const sCaveat: ReadAloudSegment = { id: 'caveat', label: c4.practical.title, text: c4.practical.caveat };
+    const sHood: ReadAloudSegment = { id: 'hood', label: c4.hood.title, text: `${c4.hood.title}. ${c4.hood.intro}` };
+
+    const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
+        short: [sTitle, sBridge, sPackageRule, sPracticalShort, sCaveat],
+        regular: [sTitle, sGuessIntro, sBridge, sVisual, sRuleLine, sPackage, sPackageRule, sProof, sPracticalFull, sCaveat, sHood],
+        full: [sTitle, sGuessIntro, sSuccessInsight, sBridge, sVisual, sRuleLine, sPackage, ...sTts, sPackageRule, sProof, ...sExplain, sPracticalFull, sCaveat, sHood],
+    };
+
     // מבדק הפרק: המנגנון המשותף (onComplete, getReviewLinks, nextHref...) נשמר מ-quizData,
     // וטקסט התצוגה ממוזג מהמילון לפי מזהה השאלה. quizData.ts עצמו לא משתנה.
     const cq = t.behindAi.chapterQuiz;
@@ -295,7 +328,8 @@ export default function BehindTheScenesChapter4() {
                     <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
                     <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
 
-                    <div className="relative z-10">
+                    {/* ב-lg+ שומרים מקום בצד הסיום כדי שהכותרת לא תזרום מתחת לדוק שבפינה */}
+                    <div className="relative z-10 lg:pe-64">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
                             <Sparkles size={14} className="text-violet-400" />
                             <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">{c4.hero.badge}</span>
@@ -317,6 +351,18 @@ export default function BehindTheScenesChapter4() {
                             <span className="inline-flex items-center gap-1.5">
                                 <ArrowLeftRight size={14} className="text-cyan-400" /> {c4.hero.chipMeaning}
                             </span>
+                        </div>
+
+                        {/* דוק האזנה מודרכת: שורה אינליין מתחת לטקסט במובייל, בפינת ההירו ב-lg+ */}
+                        <div className={`mt-6 flex justify-center md:justify-start lg:absolute lg:top-0 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
+                            <ReadAloudControls
+                                segmentsByMode={readAloudByMode}
+                                lang={LOCALE_SPEECH_LANG[locale]}
+                                locale={locale}
+                                dir={dir}
+                                labels={ra}
+                                reduce={!!reduce}
+                            />
                         </div>
                     </div>
                 </motion.section>
