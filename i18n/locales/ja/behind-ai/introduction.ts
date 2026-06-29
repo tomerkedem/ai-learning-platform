@@ -228,6 +228,27 @@ export const introduction = {
         button: '透明なチャットを始める',
     },
 
+    // ── 読み上げコントロール (Web Speech API)。ラベルのみ、ユーザー操作で開始。 ──
+    readAloud: {
+        dock: '音声ガイド',
+        play: '読み上げ',
+        pause: '一時停止',
+        resume: '再開',
+        stop: '停止',
+        prev: '前のセグメント',
+        next: '次のセグメント',
+        voice: '音声',
+        browserDefault: 'ブラウザーの既定の音声',
+        settings: '読み上げオプション',
+        nowReading: '読み上げ中',
+        unsupported: 'このブラウザーでは読み上げを利用できません。',
+        scope: '範囲',
+        scopeShort: '短め',
+        scopeRegular: '標準',
+        scopeFull: '詳細',
+        speed: '速度',
+    },
+
     // ── メンターのセリフ (装飾的なマイクロコピー; ポーズは表示層にある) ──
     mentor: {
         hero: 'いっしょにフタを開けてみましょう',

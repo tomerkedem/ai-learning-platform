@@ -227,6 +227,27 @@ export const introduction = {
         button: 'Empieza el chat transparente',
     },
 
+    // ── Control de lectura en voz alta (Web Speech API). Solo etiquetas, iniciado por el usuario. ──
+    readAloud: {
+        dock: 'Escucha guiada',
+        play: 'Leer en voz alta',
+        pause: 'Pausar',
+        resume: 'Reanudar',
+        stop: 'Detener',
+        prev: 'Segmento anterior',
+        next: 'Segmento siguiente',
+        voice: 'Voz',
+        browserDefault: 'Voz predeterminada del navegador',
+        settings: 'Opciones de lectura',
+        nowReading: 'Leyendo ahora',
+        unsupported: 'La lectura en voz alta no está disponible en este navegador.',
+        scope: 'Alcance',
+        scopeShort: 'Breve',
+        scopeRegular: 'Normal',
+        scopeFull: 'Completo',
+        speed: 'Velocidad',
+    },
+
     // ── Líneas del mentor (microtexto decorativo; la pose vive en la capa de vista) ──
     mentor: {
         hero: 'Levantemos la tapa juntos',

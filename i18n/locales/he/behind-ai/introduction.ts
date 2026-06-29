@@ -239,6 +239,27 @@ export const introduction = {
         button: 'התחילו את הצ׳אט השקוף',
     },
 
+    // ── פקד ההקראה (Web Speech API). תוויות בלבד, ביוזמת המשתמש. ──
+    readAloud: {
+        dock: 'האזנה מודרכת',
+        play: 'הקראה',
+        pause: 'השהיה',
+        resume: 'המשך',
+        stop: 'עצירה',
+        prev: 'המקטע הקודם',
+        next: 'המקטע הבא',
+        voice: 'קול',
+        browserDefault: 'קול ברירת המחדל של הדפדפן',
+        settings: 'אפשרויות הקראה',
+        nowReading: 'קורא כעת',
+        unsupported: 'ההקראה אינה זמינה בדפדפן הזה.',
+        scope: 'היקף',
+        scopeShort: 'קצר',
+        scopeRegular: 'רגיל',
+        scopeFull: 'מלא',
+        speed: 'מהירות',
+    },
+
     // ── משפטי המנטור (מיקרו-קופי דקורטיבי; הפוזה מבנית ברובד התצוגה) ──
     mentor: {
         hero: 'בואו נפתח את המכסה ביחד',

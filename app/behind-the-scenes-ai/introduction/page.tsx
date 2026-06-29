@@ -13,7 +13,10 @@ import { HypothesisGuess } from "@/components/ai-internals/HypothesisGuess";
 import { CourseSystems } from "@/components/ai-internals/CourseSystems";
 import { AgentLoop } from "@/components/ai-internals/AgentLoop";
 import { Mentor } from "@/components/ai-internals/Mentor";
+import { ReadAloudControls, type ReadAloudMode } from "@/components/ai-internals/ReadAloudControls";
+import type { ReadAloudSegment } from "@/components/ai-internals/useReadAloud";
 import { useT } from "@/i18n/useT";
+import type { Locale } from "@/i18n/config";
 import type {
   QuickGuessContent, RoadmapZone, RoadmapStation, CourseSystem, AgentDemo, AgentStage,
 } from "./introContent";
@@ -67,6 +70,20 @@ const CHAT_STAGE_META = ['in', 'model', 'out'] as const;
 
 const CTA_HREF = '/behind-the-scenes-ai/chapter-1';
 
+// מיפוי locale -> תג שפה BCP-47 להקראה (Web Speech API). מבני, לא ניתן לתרגום.
+// ערבית נשארת בסיסית (ar) כי זמינות קולות אזוריים לא עקבית בין דפדפנים.
+const LOCALE_SPEECH_LANG: Record<Locale, string> = {
+  he: 'he-IL',
+  en: 'en-US',
+  es: 'es-ES',
+  ru: 'ru-RU',
+  ar: 'ar',
+  ja: 'ja-JP',
+};
+
+// סדר 14 התחנות בפס ההקראה, זהה לסדר המפה (ROADMAP_STATION_META).
+const READALOUD_STATION_IDS = ROADMAP_STATION_META.map((m) => m.id);
+
 // כותרת-מקטע אחידה
 function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
   return (
@@ -82,9 +99,68 @@ function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: 
 
 export default function BehindTheScenesIntroPage() {
   const reduce = useReducedMotion();
-  const { t, dir } = useT();
+  const { t, dir, locale } = useT();
   const isRtl = dir === 'rtl';
   const intro = t.behindAi.introduction;
+
+  // ── פסי ההקראה לפי מצב היקף (scope). רק טקסט למידה משמעותי, מאותם מפתחות מילון
+  // שכבר מרונדרים, בלי לשכפל קופי. לא נכללים כפתורים, ניווט, מונים, תוויות, באדג׳ים,
+  // צ׳יפים, פרטי-תחנה נסתרים, משפטי מנטור דקורטיביים, או מכונת הדמו של ה-Agent.
+  const sTitle: ReadAloudSegment = {
+    id: 'title', label: intro.hero.titleLead,
+    text: `${intro.hero.titleLead} ${intro.hero.titleAccent}. ${intro.hero.intro}`,
+  };
+  const sOutside: ReadAloudSegment = {
+    id: 'outside', label: intro.chat.outsideLine,
+    text: `${intro.chat.outsideLine} ${intro.chat.curiosityLine}`,
+  };
+  const sRoadmapHeading: ReadAloudSegment = {
+    id: 'roadmap-heading', label: intro.roadmapHeading.title,
+    text: `${intro.roadmapHeading.title}. ${intro.roadmapHeading.subtitle}`,
+  };
+  const sRoadmapSubtitle: ReadAloudSegment = {
+    id: 'roadmap-subtitle', label: intro.roadmapHeading.title,
+    text: intro.roadmapHeading.subtitle,
+  };
+  const sStations: ReadAloudSegment[] = READALOUD_STATION_IDS.map((id) => {
+    const s = intro.roadmap.stations[id];
+    return { id: `station-${id}`, label: s.title, text: `${s.title}. ${s.explanation}` };
+  });
+  const sTruth: ReadAloudSegment = { id: 'truth', label: intro.truthNote, text: intro.truthNote };
+  const sCta: ReadAloudSegment = {
+    id: 'cta', label: intro.cta.title,
+    text: `${intro.cta.title}. ${intro.cta.body}`,
+  };
+
+  // תוספות למצב Full בלבד (טקסט למידה משמעותי, ללא רכיבי UI).
+  const sQuickGuessQ: ReadAloudSegment = {
+    id: 'qg-question', label: intro.quickGuess.question, text: intro.quickGuess.question,
+  };
+  const sHypotheses: ReadAloudSegment[] = HYPOTHESIS_META.map((m) => {
+    const h = intro.quickGuess.hypotheses[m.id];
+    return { id: `hyp-${m.id}`, label: h.title, text: h.concept };
+  });
+  const sGate: ReadAloudSegment = {
+    id: 'gate', label: intro.chat.gateLead,
+    text: `${intro.chat.gateLead} ${intro.chat.bridge}`,
+  };
+  const sAgent: ReadAloudSegment = {
+    id: 'agent', label: intro.agent.card.agent.title,
+    text: `${intro.agent.card.agent.title}. ${intro.agent.card.agent.body} ${intro.agent.card.agent.closing}`,
+  };
+  const sSystems: ReadAloudSegment[] = SYSTEM_META.map((m) => {
+    const sx = intro.systems.items[m.id];
+    return { id: `system-${m.id}`, label: sx.title, text: sx.purpose };
+  });
+
+  const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
+    short: [sTitle, sOutside, sRoadmapSubtitle, sCta],
+    regular: [sTitle, sOutside, sRoadmapHeading, ...sStations, sTruth, sCta],
+    full: [
+      sTitle, sOutside, sQuickGuessQ, ...sHypotheses, sGate,
+      sRoadmapHeading, ...sStations, sTruth, sAgent, ...sSystems, sCta,
+    ],
+  };
 
   // מצב המתג Chat/Agent מורם לכאן כדי שכל הקופי של הכרטיס יתחלף יחד עם התצוגה החיה.
   const [agentMode, setAgentMode] = React.useState<'chat' | 'agent'>('chat');
@@ -153,7 +229,9 @@ export default function BehindTheScenesIntroPage() {
           {/* ══════════ 1 · OUTSIDE VIEW ══════════ */}
           {/* מבחוץ נראה כמו שני שלבים: בקשה ותשובה. השאלה "מה קרה באמצע" נשארת פתוחה. */}
           <div className="relative">
-            <div className="text-center md:text-start mb-6">
+            {/* ב-lg+ שומרים מקום בצד הסיום (inline-end) כדי שכותרת ההירו לא תזרום מתחת
+                לדוק ההאזנה שמעוגן בפינה. pe לוגי, מתאים אוטומטית ל-RTL ו-LTR. */}
+            <div className="text-center md:text-start mb-6 lg:pe-64">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-cyan-500/30 mb-3">
                 <span className="relative flex h-2 w-2">
                   {!reduce && <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping" />}
@@ -169,6 +247,21 @@ export default function BehindTheScenesIntroPage() {
                 </span>
               </h1>
               <p className="text-base md:text-lg text-slate-300 leading-relaxed">{intro.hero.intro}</p>
+
+              {/* דוק האזנה מודרכת (Web Speech API, ביוזמת המשתמש, לא widget צף).
+                  מובייל/טאבלט: שורה אינליין קומפקטית מתחת לטקסט ההירו.
+                  דסקטופ (lg+): מעוגן בפינה העליונה של ההירו, בצד הריק שמול תחילת הכותרת
+                  (he/ar משמאל, en/es/ru/ja מימין), מחוץ לזרימה כדי לא לדחוף את ההירו. */}
+              <div className={`mt-5 flex justify-center md:justify-start lg:absolute lg:top-0 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
+                <ReadAloudControls
+                  segmentsByMode={readAloudByMode}
+                  lang={LOCALE_SPEECH_LANG[locale]}
+                  locale={locale}
+                  dir={dir}
+                  labels={intro.readAloud}
+                  reduce={!!reduce}
+                />
+              </div>
             </div>
 
             <motion.div

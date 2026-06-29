@@ -227,6 +227,27 @@ export const introduction = {
         button: 'Start the transparent chat',
     },
 
+    // ── Read-aloud control (Web Speech API). Labels only, user-triggered. ──
+    readAloud: {
+        dock: 'Guided listening',
+        play: 'Read aloud',
+        pause: 'Pause',
+        resume: 'Resume',
+        stop: 'Stop',
+        prev: 'Previous segment',
+        next: 'Next segment',
+        voice: 'Voice',
+        browserDefault: 'Browser default voice',
+        settings: 'Read-aloud options',
+        nowReading: 'Now reading',
+        unsupported: 'Read-aloud is not available in this browser.',
+        scope: 'Scope',
+        scopeShort: 'Short',
+        scopeRegular: 'Regular',
+        scopeFull: 'Full',
+        speed: 'Speed',
+    },
+
     // ── Mentor lines (decorative microcopy; the pose lives in the view layer) ──
     mentor: {
         hero: "Let's lift the lid together",
