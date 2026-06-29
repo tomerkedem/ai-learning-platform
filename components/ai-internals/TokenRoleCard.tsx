@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { ROLE_STYLE, type TokenRole } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
 import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { useT } from '@/i18n/useT';
 
 interface TokenRoleCardProps {
     text: string;
@@ -19,6 +20,7 @@ interface TokenRoleCardProps {
 export const TokenRoleCard: React.FC<TokenRoleCardProps> = ({ text, role, onClose }) => {
     const reduce = useReducedMotion();
     const { roleInfo, roleCard } = useChapter3Lab();
+    const { dir } = useT();
     const s = ROLE_STYLE[role];
     const info = roleInfo[role];
 
@@ -28,14 +30,14 @@ export const TokenRoleCard: React.FC<TokenRoleCardProps> = ({ text, role, onClos
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduce ? undefined : { opacity: 0, y: -6, scale: 0.98 }}
             transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 24 }}
-            className={`relative rounded-2xl border ${s.border} ${s.bg} p-4 text-right`}
-            dir="rtl"
+            className={`relative rounded-2xl border ${s.border} ${s.bg} p-4 text-start`}
+            dir={dir}
         >
             <button
                 type="button"
                 onClick={onClose}
                 aria-label={roleCard.closeAria}
-                className="absolute left-3 top-3 rounded-lg border border-white/10 bg-slate-950/40 p-1 text-slate-400 transition-colors hover:text-slate-200"
+                className="absolute end-3 top-3 rounded-lg border border-white/10 bg-slate-950/40 p-1 text-slate-400 transition-colors hover:text-slate-200"
             >
                 <X size={14} />
             </button>

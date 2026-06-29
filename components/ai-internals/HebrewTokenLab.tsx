@@ -6,6 +6,7 @@ import { FlaskConical, Info, Layers, Scissors, Combine } from 'lucide-react';
 import { TokenChip } from './TokenChip';
 import { roleForWord } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
 import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { useT } from '@/i18n/useT';
 
 /**
  * Sub-word Lab (מעבדת תת-מילים): מעבדה אקטיבית שמראה שיחידת טקסט אחת יכולה
@@ -18,6 +19,7 @@ import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent'
 export const HebrewTokenLab: React.FC = () => {
     const reduce = useReducedMotion();
     const { subword, roleWords } = useChapter3Lab();
+    const { dir } = useT();
     const splits = subword.splits;
     // מצב פיצול נפרד לכל שורה: false = יחידה שלמה, true = פורקה לתת-יחידות.
     const [split, setSplit] = useState<boolean[]>(() => splits.map(() => false));
@@ -36,7 +38,7 @@ export const HebrewTokenLab: React.FC = () => {
     const allWhole = split.every((v) => !v);
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-right" dir="rtl">
+        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
             {/* כותרת + תווית לימודית */}
             <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
@@ -126,7 +128,7 @@ export const HebrewTokenLab: React.FC = () => {
                                     aria-pressed={isSplit}
                                     aria-label={`${row.word} - ${isSplit ? subword.ariaSplit : subword.ariaWhole}`}
                                     className="group flex flex-wrap items-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60"
-                                    dir="rtl"
+                                    dir={dir}
                                 >
                                     <motion.div layout className="flex flex-wrap items-center gap-2">
                                         <AnimatePresence mode="popLayout" initial={false}>
@@ -155,7 +157,7 @@ export const HebrewTokenLab: React.FC = () => {
                                     </span>
                                 </button>
 
-                                <span className="leading-tight text-left">
+                                <span className="leading-tight text-end">
                                     <span className="block text-xs font-bold text-slate-300">{row.roleLabel}</span>
                                     <span className="block text-[9px] tracking-wider text-slate-500" dir="ltr">{row.roleEn}</span>
                                 </span>

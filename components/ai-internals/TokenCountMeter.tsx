@@ -6,6 +6,7 @@ import { Hash, Info } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
 import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { useT } from '@/i18n/useT';
 
 interface TokenCountMeterProps {
     count: number;
@@ -31,8 +32,9 @@ const AnimatedNumber: React.FC<{ value: number }> = ({ value }) => {
 export const TokenCountMeter: React.FC<TokenCountMeterProps> = ({ count, accent }) => {
     const a = ACCENTS[accent];
     const { count: copy } = useChapter3Lab();
+    const { dir } = useT();
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-right" dir="rtl">
+        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
             <div className="mb-3 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <Hash size={16} className={a.text} />

@@ -6,6 +6,7 @@ import { ACCENTS } from './accents';
 import type { Accent } from './types';
 import type { TokenExample } from '@/app/behind-the-scenes-ai/chapter-3/tokenizer';
 import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { useT } from '@/i18n/useT';
 
 interface TokenSplitterInputProps {
     text: string;
@@ -28,9 +29,10 @@ export const TokenSplitterInput: React.FC<TokenSplitterInputProps> = ({
 }) => {
     const a = ACCENTS[accent];
     const { splitter } = useChapter3Lab();
+    const { dir } = useT();
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-4 text-right" dir="rtl">
+        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-4 text-start" dir={dir}>
             <div className="mb-3 flex items-center gap-2 text-xs text-slate-400">
                 <Keyboard size={14} className={a.text} />
                 {splitter.hint}
@@ -42,7 +44,7 @@ export const TokenSplitterInput: React.FC<TokenSplitterInputProps> = ({
                     value={text}
                     onChange={(e) => onChange(e.target.value)}
                     placeholder={splitter.placeholder}
-                    dir="rtl"
+                    dir={dir}
                     aria-label={splitter.aria}
                     className="w-full bg-transparent px-4 py-3 text-lg font-medium text-white placeholder:text-slate-600 focus:outline-none"
                 />
@@ -59,7 +61,7 @@ export const TokenSplitterInput: React.FC<TokenSplitterInputProps> = ({
                             type="button"
                             onClick={() => onChange(ex.text)}
                             aria-pressed={active}
-                            className={`rounded-lg border px-2.5 py-1 text-right leading-tight transition-colors ${
+                            className={`rounded-lg border px-2.5 py-1 text-start leading-tight transition-colors ${
                                 active ? `${a.border} ${a.bgSoft}` : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-600'
                             }`}
                         >

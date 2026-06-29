@@ -25,6 +25,7 @@ import {
     type TokenizationMode,
 } from '@/app/behind-the-scenes-ai/chapter-3/tokenizer';
 import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { useT } from '@/i18n/useT';
 
 /**
  * TokenizationLab - מיכל מעבדת ה-Tokenization. מחזיק את מצב ההקלדה
@@ -34,6 +35,7 @@ import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent'
 export const TokenizationLab: React.FC = () => {
     const reduce = useReducedMotion();
     const content = useChapter3Lab();
+    const { dir } = useT();
     const scenarios = content.scenarios;
 
     const [mode, setMode] = useState<TokenizationMode>('chat');
@@ -75,7 +77,7 @@ export const TokenizationLab: React.FC = () => {
     return (
         <div className="space-y-4">
             {/* בקרת מצב */}
-            <div className="flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between" dir="rtl">
+            <div className="flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between" dir={dir}>
                 <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-slate-400">{content.modeLabel}</span>
                     <ModeToggle mode={mode} onChange={(m) => handleMode(m as TokenizationMode)} accent={accent} />
@@ -83,7 +85,7 @@ export const TokenizationLab: React.FC = () => {
                 {/* תווית המסלול: לאן הפירוק מזין */}
                 <div className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 ${a.border} ${a.bgSoft}`}>
                     <Route size={15} className={a.text} />
-                    <span className="leading-tight text-right">
+                    <span className="leading-tight text-start">
                         <span className={`block text-xs font-bold ${a.text}`}>{scenario.routeHe}</span>
                         <span className="block text-[9px] uppercase tracking-wider text-slate-500" dir="ltr">{scenario.routeEn}</span>
                     </span>
@@ -107,7 +109,7 @@ export const TokenizationLab: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={reduce ? undefined : { opacity: 0, y: -6 }}
                         className="flex flex-wrap gap-2"
-                        dir="rtl"
+                        dir={dir}
                     >
                         {numberSignal && (
                             <span className="inline-flex items-center gap-1.5 rounded-lg border border-lime-500/45 bg-lime-900/20 px-2.5 py-1 text-[11px] font-bold text-lime-300">
@@ -145,7 +147,7 @@ export const TokenizationLab: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={reduce ? undefined : { opacity: 0, y: -6 }}
                         className="flex items-start gap-2 rounded-xl border border-amber-500/40 bg-amber-900/15 p-3 text-[11px] leading-relaxed text-amber-200/90"
-                        dir="rtl"
+                        dir={dir}
                     >
                         <Combine size={14} className="mt-0.5 shrink-0 text-amber-300" />
                         <span>
@@ -172,7 +174,7 @@ export const TokenizationLab: React.FC = () => {
             <HebrewTokenLab />
 
             {/* הערת שקיפות */}
-            <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500" dir="rtl">
+            <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500" dir={dir}>
                 <span className="mt-0.5 shrink-0 rounded-md border border-amber-500/40 bg-amber-900/20 px-1.5 py-0.5 text-[9px] font-bold text-amber-300" dir="ltr">{content.educational.badge}</span>
                 <span>
                     {content.educational.note}

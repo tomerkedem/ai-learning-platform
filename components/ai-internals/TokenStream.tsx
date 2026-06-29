@@ -9,6 +9,7 @@ import { ACCENTS } from './accents';
 import type { Accent } from './types';
 import type { Token } from '@/app/behind-the-scenes-ai/chapter-3/tokenizer';
 import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { useT } from '@/i18n/useT';
 
 interface TokenStreamProps {
     tokens: Token[];
@@ -36,6 +37,7 @@ export const TokenStream: React.FC<TokenStreamProps> = ({ tokens, accent, select
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
     const { stream } = useChapter3Lab();
+    const { dir } = useT();
 
     // מעקב אחרי טוקנים חדשים כדי לפעום אותם (New token detected).
     // החישוב נעשה ב-effect (לא בזמן render) כדי לא לקרוא ref בזמן הרינדור.
@@ -51,7 +53,7 @@ export const TokenStream: React.FC<TokenStreamProps> = ({ tokens, accent, select
     const selected = selectedIndex != null ? tokens[selectedIndex] : null;
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-right" dir="rtl">
+        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
             <div className="mb-4 flex items-center gap-2">
                 <ScanLine size={16} className={a.text} />
                 <div className="leading-tight">
@@ -73,7 +75,7 @@ export const TokenStream: React.FC<TokenStreamProps> = ({ tokens, accent, select
             {tokens.length === 0 ? (
                 <p className="py-4 text-center text-sm text-slate-500">{stream.empty}</p>
             ) : (
-                <div className="flex flex-wrap gap-2" dir="rtl">
+                <div className="flex flex-wrap gap-2" dir={dir}>
                     <AnimatePresence mode="popLayout">
                         {tokens.map((tok, i) => (
                             <motion.div

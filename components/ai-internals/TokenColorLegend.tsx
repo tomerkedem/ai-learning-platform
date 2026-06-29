@@ -4,6 +4,7 @@ import React from 'react';
 import { Palette } from 'lucide-react';
 import { ROLE_ORDER, ROLE_STYLE } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
 import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { useT } from '@/i18n/useT';
 
 /**
  * Token Color Map: מקרא קבוע של כל התפקידים והצבעים. אותו צבע משמש בכל
@@ -11,8 +12,9 @@ import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent'
  */
 export const TokenColorLegend: React.FC = () => {
     const { legend, roleInfo } = useChapter3Lab();
+    const { dir } = useT();
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-right" dir="rtl">
+        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
             <div className="mb-3 flex items-center gap-2">
                 <Palette size={16} className="text-violet-300" />
                 <div className="leading-tight">
