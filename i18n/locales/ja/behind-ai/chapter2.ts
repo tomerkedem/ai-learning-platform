@@ -7,6 +7,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { chapter2Visuals } from './chapter2Visuals';
+import { chapter2Quiz } from './chapter2Quiz';
 
 export const chapter2 = {
     contentLocale: 'ja' as Locale,
@@ -144,6 +145,8 @@ export const chapter2 = {
         ],
         explanation: 'モデルが受け取ったのは、まさにこの短い文章です。数語と疑問符だけ。そこには明示的な依頼も詳細もありません。それ以外はすべて私たちが想定しているもので、実際に入ったものではありません。特定の行動がすでに依頼されたと、モデルは決めつけないほうがよいのです。',
     },
+
+    quiz: chapter2Quiz,
 
     // Visuals and lab sub-namespace
     visuals: chapter2Visuals,

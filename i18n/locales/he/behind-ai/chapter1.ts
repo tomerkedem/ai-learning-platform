@@ -14,6 +14,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { chapter1Visuals } from './chapter1Visuals';
+import { chapter1Quiz } from './chapter1Quiz';
 
 export const chapter1 = {
     // השפה שבה התוכן כתוב בפועל. קבצי השפות האחרות מייצאים מחדש את העברית (fallback),
@@ -135,6 +136,9 @@ export const chapter1 = {
     },
 
     // ── תת-מרחב ההמחשות והמעבדות ──
+    // מבדק הפרק (טקסט תצוגה בלבד; המנגנון ב-quizData.ts)
+    quiz: chapter1Quiz,
+
     visuals: chapter1Visuals,
 };
 

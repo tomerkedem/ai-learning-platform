@@ -7,6 +7,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { chapter2Visuals } from './chapter2Visuals';
+import { chapter2Quiz } from './chapter2Quiz';
 
 export const chapter2 = {
     contentLocale: 'es' as Locale,
@@ -144,6 +145,8 @@ export const chapter2 = {
         ],
         explanation: 'El modelo recibió exactamente este texto corto: unas pocas palabras y un signo de interrogación. No contiene ninguna solicitud explícita ni detalles. Todo lo demás es lo que nosotros suponemos, no lo que de verdad entró. Conviene que el modelo no asuma que ya se solicitó una acción específica.',
     },
+
+    quiz: chapter2Quiz,
 
     // Visuals and lab sub-namespace
     visuals: chapter2Visuals,

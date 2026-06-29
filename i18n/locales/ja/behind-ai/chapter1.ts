@@ -8,6 +8,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { chapter1Visuals } from './chapter1Visuals';
+import { chapter1Quiz } from './chapter1Quiz';
 
 export const chapter1 = {
     contentLocale: 'ja' as Locale,
@@ -125,6 +126,8 @@ export const chapter1 = {
             "これを対応して",
         ],
     },
+
+    quiz: chapter1Quiz,
 
     // Visuals and labs sub-namespace
     visuals: chapter1Visuals,

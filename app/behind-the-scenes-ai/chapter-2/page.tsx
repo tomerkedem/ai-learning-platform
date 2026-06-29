@@ -5,8 +5,10 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Type, MousePointerClick, ArrowLeftRight, FlaskConical, Lightbulb, Lock, CheckCircle2, XCircle, Brain, FileText, MessageSquare, Filter } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
-import { ChapterQuiz } from '../ChapterQuiz';
+import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
+import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
+import type { Chapter2QuizId } from '@/i18n/locales/he/behind-ai/chapter2Quiz';
 
 import { DiscoveryGuess, type DiscoveryGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
 import { InputComparisonLab } from '@/components/ai-internals/InputComparisonLab';
@@ -78,6 +80,34 @@ export default function BehindTheScenesChapter2() {
     const { t, dir } = useT();
     const isRtl = dir === 'rtl';
     const c2 = t.behindAi.chapter2;
+
+    // מבדק הפרק: המנגנון המשותף (correctAnswer, onComplete, getReviewLinks, nextHref...)
+    // נשמר מ-quizData, וטקסט התצוגה ממוזג מהמילון לפי מזהה השאלה. quizData.ts לא משתנה.
+    // קישורי החזרה שומרים על ה-href, ורק התווית מתורגמת מתוך t.behindAi.chapterQuiz.
+    const cq = t.behindAi.chapterQuiz;
+    const quizText = c2.quiz;
+    const baseQuiz = behindAiChapterQuizzes[2];
+    const baseGetReviewLinks = baseQuiz.getReviewLinks;
+    const getReviewLinks = baseGetReviewLinks
+        ? (weakConcepts: string[]): ReviewLink[] =>
+              baseGetReviewLinks(weakConcepts).map((link) => {
+                  const match = link.href.match(/chapter-(\d+)/);
+                  const n = match ? Number(match[1]) : null;
+                  const name = n != null ? cq.chapterNames[n] : undefined;
+                  if (n == null || !name) return link;
+                  return { ...link, label: cq.reviewLinkLabel(n, name) };
+              })
+        : undefined;
+    const localizedQuiz = {
+        ...baseQuiz,
+        title: quizText.title,
+        subtitle: quizText.subtitle,
+        startLabel: quizText.startLabel,
+        submitLabel: quizText.submitLabel,
+        completedTitle: quizText.completedTitle,
+        questions: baseQuiz.questions.map((q) => ({ ...q, ...quizText.byId[q.id as Chapter2QuizId] })),
+        getReviewLinks,
+    };
 
     // תוכן ניחוש הפתיחה: טקסט מהמילון, פוזות ויעד מבניים בעמוד.
     const guessContent: DiscoveryGuessContent = {
@@ -279,7 +309,7 @@ export default function BehindTheScenesChapter2() {
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-12 mb-4" dir={dir}>
-                <ChapterQuiz chapterId={2} />
+                <AssessmentEngine {...localizedQuiz} conceptDisplayMap={quizText.conceptLabels} />
             </section>
         </ChapterLayout>
     );

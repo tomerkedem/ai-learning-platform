@@ -7,6 +7,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { chapter2Visuals } from './chapter2Visuals';
+import { chapter2Quiz } from './chapter2Quiz';
 
 export const chapter2 = {
     contentLocale: 'ar' as Locale,
@@ -144,6 +145,8 @@ export const chapter2 = {
         ],
         explanation: 'تلقى النموذج هذا النص القصير بالضبط: بضع كلمات وعلامة استفهام. لا يحمل طلبًا صريحًا ولا تفاصيل. كل ما عدا ذلك هو ما نفترضه، لا ما دخل فعلًا. من الأفضل ألا يفترض النموذج أن إجراءً محددًا قد طُلب بالفعل.',
     },
+
+    quiz: chapter2Quiz,
 
     // مساحة فرعية للمحاكاة والمختبر
     visuals: chapter2Visuals,

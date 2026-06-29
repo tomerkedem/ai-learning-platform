@@ -7,6 +7,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { chapter2Visuals } from './chapter2Visuals';
+import { chapter2Quiz } from './chapter2Quiz';
 
 export const chapter2 = {
     contentLocale: 'en' as Locale,
@@ -144,6 +145,8 @@ export const chapter2 = {
         ],
         explanation: 'The model received exactly this short text: a few words and a question mark. It holds no explicit request and no details. Everything else is what we assume, not what actually went in. The model is better off not assuming that a specific action was already requested.',
     },
+
+    quiz: chapter2Quiz,
 
     // Visuals and lab sub-namespace
     visuals: chapter2Visuals,

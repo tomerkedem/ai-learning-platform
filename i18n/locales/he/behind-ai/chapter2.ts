@@ -7,6 +7,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { chapter2Visuals } from './chapter2Visuals';
+import { chapter2Quiz } from './chapter2Quiz';
 
 export const chapter2 = {
     contentLocale: 'he' as Locale,
@@ -146,5 +147,8 @@ export const chapter2 = {
     },
 
     // מרחב-משנה של ההמחשות והמעבדה
+    // מבדק הפרק (טקסט תצוגה בלבד; המנגנון ב-quizData.ts)
+    quiz: chapter2Quiz,
+
     visuals: chapter2Visuals,
 };

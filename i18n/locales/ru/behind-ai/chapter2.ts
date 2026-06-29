@@ -7,6 +7,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { chapter2Visuals } from './chapter2Visuals';
+import { chapter2Quiz } from './chapter2Quiz';
 
 export const chapter2 = {
     contentLocale: 'ru' as Locale,
@@ -144,6 +145,8 @@ export const chapter2 = {
         ],
         explanation: 'Модель получила ровно этот короткий текст: несколько слов и знак вопроса. В нём нет ни явной просьбы, ни деталей. Всё остальное - это то, что мы предполагаем, а не то, что действительно попало внутрь. Модели лучше не предполагать, что какое-то конкретное действие уже было запрошено.',
     },
+
+    quiz: chapter2Quiz,
 
     // Visuals and lab sub-namespace
     visuals: chapter2Visuals,
