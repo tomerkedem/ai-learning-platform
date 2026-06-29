@@ -29,6 +29,26 @@ export const aiInternals = {
     stickyContextBar: {
         currentlyAnalyzed: 'מנותח כעת',
     },
+    // ReadAloudControls: כיתובי דוק ההקראה (Web Speech API), משותפים לכל הפרקים.
+    readAloud: {
+        dock: 'האזנה מודרכת',
+        play: 'הקראה',
+        pause: 'השהיה',
+        resume: 'המשך',
+        stop: 'עצירה',
+        prev: 'המקטע הקודם',
+        next: 'המקטע הבא',
+        voice: 'קול',
+        browserDefault: 'קול ברירת המחדל של הדפדפן',
+        settings: 'אפשרויות הקראה',
+        nowReading: 'קורא כעת',
+        unsupported: 'ההקראה אינה זמינה בדפדפן הזה.',
+        scope: 'היקף',
+        scopeShort: 'קצר',
+        scopeRegular: 'רגיל',
+        scopeFull: 'מלא',
+        speed: 'מהירות',
+    },
 };
 
 /** צורת מילון ה-ai-internals המשותף, נגזרת מהעברית (מקור הצורה). */

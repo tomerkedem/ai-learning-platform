@@ -22,4 +22,24 @@ export const aiInternals = {
     stickyContextBar: {
         currentlyAnalyzed: 'Now analyzing',
     },
+    // ReadAloudControls: read-aloud dock chrome (Web Speech API), shared across chapters.
+    readAloud: {
+        dock: 'Guided listening',
+        play: 'Read aloud',
+        pause: 'Pause',
+        resume: 'Resume',
+        stop: 'Stop',
+        prev: 'Previous segment',
+        next: 'Next segment',
+        voice: 'Voice',
+        browserDefault: 'Browser default voice',
+        settings: 'Read-aloud options',
+        nowReading: 'Now reading',
+        unsupported: 'Read-aloud is not available in this browser.',
+        scope: 'Scope',
+        scopeShort: 'Short',
+        scopeRegular: 'Regular',
+        scopeFull: 'Full',
+        speed: 'Speed',
+    },
 };

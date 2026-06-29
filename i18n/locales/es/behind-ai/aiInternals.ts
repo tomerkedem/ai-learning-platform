@@ -22,4 +22,24 @@ export const aiInternals = {
     stickyContextBar: {
         currentlyAnalyzed: 'Analizando ahora',
     },
+    // ReadAloudControls: chrome del lector en voz alta (Web Speech API), compartido entre capítulos.
+    readAloud: {
+        dock: 'Escucha guiada',
+        play: 'Leer en voz alta',
+        pause: 'Pausar',
+        resume: 'Reanudar',
+        stop: 'Detener',
+        prev: 'Segmento anterior',
+        next: 'Segmento siguiente',
+        voice: 'Voz',
+        browserDefault: 'Voz predeterminada del navegador',
+        settings: 'Opciones de lectura',
+        nowReading: 'Leyendo ahora',
+        unsupported: 'La lectura en voz alta no está disponible en este navegador.',
+        scope: 'Alcance',
+        scopeShort: 'Breve',
+        scopeRegular: 'Normal',
+        scopeFull: 'Completo',
+        speed: 'Velocidad',
+    },
 };

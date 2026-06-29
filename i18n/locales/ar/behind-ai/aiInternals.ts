@@ -22,4 +22,24 @@ export const aiInternals = {
     stickyContextBar: {
         currentlyAnalyzed: 'قيد التحليل الآن',
     },
+    // ReadAloudControls: واجهة القراءة الصوتية (Web Speech API)، مشتركة بين الفصول.
+    readAloud: {
+        dock: 'استماع موجّه',
+        play: 'استماع',
+        pause: 'إيقاف مؤقت',
+        resume: 'متابعة',
+        stop: 'إيقاف',
+        prev: 'المقطع السابق',
+        next: 'المقطع التالي',
+        voice: 'الصوت',
+        browserDefault: 'الصوت الافتراضي للمتصفّح',
+        settings: 'خيارات القراءة',
+        nowReading: 'يقرأ الآن',
+        unsupported: 'القراءة الصوتية غير متاحة في هذا المتصفّح.',
+        scope: 'النطاق',
+        scopeShort: 'مختصر',
+        scopeRegular: 'عادي',
+        scopeFull: 'كامل',
+        speed: 'السرعة',
+    },
 };

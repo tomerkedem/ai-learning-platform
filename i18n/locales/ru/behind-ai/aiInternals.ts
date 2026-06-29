@@ -22,4 +22,24 @@ export const aiInternals = {
     stickyContextBar: {
         currentlyAnalyzed: 'Анализируется',
     },
+    // ReadAloudControls: интерфейс озвучивания (Web Speech API), общий для всех глав.
+    readAloud: {
+        dock: 'Аудиосопровождение',
+        play: 'Озвучить',
+        pause: 'Пауза',
+        resume: 'Продолжить',
+        stop: 'Стоп',
+        prev: 'Предыдущий фрагмент',
+        next: 'Следующий фрагмент',
+        voice: 'Голос',
+        browserDefault: 'Голос браузера по умолчанию',
+        settings: 'Параметры озвучивания',
+        nowReading: 'Сейчас читается',
+        unsupported: 'Озвучивание недоступно в этом браузере.',
+        scope: 'Объём',
+        scopeShort: 'Кратко',
+        scopeRegular: 'Обычно',
+        scopeFull: 'Полно',
+        speed: 'Скорость',
+    },
 };
