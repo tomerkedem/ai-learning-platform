@@ -199,9 +199,11 @@ export const chapter4Lab: Chapter4LabDict = {
 
     dna: {
         title: 'ADN del significado',
-        sharedGenes: (shared, total) => `${shared} de ${total} genes compartidos`,
-        sharedLabel: 'Genes compartidos',
-        drift: (pct) => `Deriva ${pct}%`,
+        leadShared: (names) => `Las dos frases son fuertes en los mismos componentes de significado: ${names}. Por eso están cerca.`,
+        leadNone: 'Las dos frases activan componentes distintos, así que están más lejos.',
+        sharedBadge: 'compartido',
+        guideSize: 'Un nodo más grande significa que el componente es más fuerte en esa frase.',
+        guideBond: 'Un enlace verde que late indica un componente compartido, y eso es lo que acerca el significado.',
         stayedClose: 'El significado se mantuvo cerca',
         drifted: 'El significado derivó',
     },

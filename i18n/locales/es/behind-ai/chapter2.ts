@@ -87,9 +87,9 @@ export const chapter2 = {
 
     // The wow moment (InsightBox)
     insight: {
-        title: 'El punto sorprendente',
-        lead: 'Dos solicitudes pueden venir de la misma intención y, aun así, darle al modelo material completamente distinto.',
-        body: 'La intención se queda en nuestra cabeza. Lo que el modelo recibe es la formulación: las palabras que elegimos, su orden, la puntuación y lo que dejamos fuera. Un pequeño cambio en la entrada puede cambiar lo que el modelo tiene para trabajar.',
+        title: '¿Qué recibe realmente el modelo de ti?',
+        lead: 'El modelo no sabe qué quisiste decir. Solo recibe el texto que escribiste.',
+        body: 'Las palabras que elegiste, su orden, la puntuación y lo que dejaste fuera son todo lo que el modelo tiene para trabajar. La misma intención, formulada de otra manera, entra al modelo como materia prima distinta. Por eso tu formulación no es un adorno, es la entrada misma.',
     },
 
     // Input Comparison Lab section header (the component itself lives in chapter2Visuals)

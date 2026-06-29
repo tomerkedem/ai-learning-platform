@@ -13,7 +13,6 @@ import { RotateCcw, ArrowLeft, PackageX, Truck, PackageCheck, Monitor, CreditCar
 import { useChapter4Lab, joinSentences } from '../labContent';
 import type { SentenceId } from '../embeddingEngine';
 import { SemanticCardMap, type SemanticCardData } from './SemanticCardMap';
-import { MeaningMagnetPanel } from './MeaningMagnetPanel';
 import { MeaningDnaStrip } from './MeaningDnaStrip';
 
 const DEFAULT_ACTIVE: SentenceId = 'pkg-not-arrived';
@@ -227,7 +226,7 @@ export const EmbeddingExperienceLab: React.FC<EmbeddingExperienceLabProps> = ({ 
                 <p className="mt-3 border-t border-slate-700/40 pt-3 text-[12px] leading-relaxed text-slate-400">{r.coreRule}</p>
             </div>
 
-            {/* ── שלב 4: הוכחה והסבר. ה-DNA וכוחות המשמעות כשני פאנלים תומכים צמודים ── */}
+            {/* ── שלב 4: הוכחה והסבר. ה-DNA הוא הראיה היחידה: אילו רכיבי משמעות משותפים ── */}
             <div className="rounded-2xl border border-violet-500/30 bg-slate-900/40 p-4 sm:p-5">
                 <div className="mb-1 flex items-center gap-2">
                     <Dna size={18} className="text-violet-300" />
@@ -235,20 +234,10 @@ export const EmbeddingExperienceLab: React.FC<EmbeddingExperienceLabProps> = ({ 
                 </div>
                 <p className="mb-4 text-[13px] leading-relaxed text-slate-400">{r.proofLead}</p>
 
-                <div className="grid gap-4 lg:grid-cols-2">
-                    {/* ה-DNA כראיה: אילו רכיבי משמעות משותפים */}
-                    <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
-                        <MeaningDnaStrip active={active} compare={compare} geneLabels={lab.genes} dna={lab.dna} dir={dir} />
-                        <p className="mt-3 text-[13px] leading-relaxed text-slate-400">{ex.dna}</p>
-                    </div>
-
-                    {/* כוחות המשמעות כהסבר: אילו אותות עיצבו את הייצוג */}
-                    <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
-                        <div className="mx-auto max-w-[280px]">
-                            <MeaningMagnetPanel profile={active.profile} labels={lab.magnets} title={lab.ui.magnetTitle} dir={dir} />
-                        </div>
-                        <p className="mt-3 text-[13px] leading-relaxed text-slate-400">{ex.forces}</p>
-                    </div>
+                {/* ה-DNA כראיה: אילו רכיבי משמעות משותפים */}
+                <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
+                    <MeaningDnaStrip active={active} compare={compare} geneLabels={lab.genes} dna={lab.dna} dir={dir} />
+                    <p className="mt-3 text-[13px] leading-relaxed text-slate-400">{ex.dna}</p>
                 </div>
 
                 {/* שורת היושרה: Embedding משווה משמעות, לא מאמת מה קרה באמת */}

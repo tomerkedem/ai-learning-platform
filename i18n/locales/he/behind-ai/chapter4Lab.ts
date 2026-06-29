@@ -197,9 +197,11 @@ export const chapter4Lab: Chapter4LabDict = {
 
     dna: {
         title: 'DNA המשמעות',
-        sharedGenes: (shared, total) => `${shared} מתוך ${total} גנים משותפים`,
-        sharedLabel: 'גנים משותפים',
-        drift: (pct) => `סחיפה ${pct}%`,
+        leadShared: (names) => `שני המשפטים חזקים באותם רכיבי משמעות: ${names}. לכן הם קרובים.`,
+        leadNone: 'שני המשפטים מדליקים רכיבים שונים, ולכן הם רחוקים יותר.',
+        sharedBadge: 'משותף',
+        guideSize: 'צומת גדול יותר = הרכיב חזק יותר באותו משפט.',
+        guideBond: 'קשר ירוק פועם = רכיב משותף לשני המשפטים, וזה מה שמקרב את המשמעות.',
         stayedClose: 'המשמעות נשארה קרובה',
         drifted: 'המשמעות נסחפה',
     },

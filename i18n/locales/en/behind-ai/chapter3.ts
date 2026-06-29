@@ -93,9 +93,9 @@ export const chapter3 = {
 
     // See: the wow moment (InsightBox)
     insight: {
-        title: 'The surprising point',
-        lead: 'To our eyes it is one sentence. To the model it is a chain of units.',
-        body: 'The same idea can turn into a different number of units. Spaces, punctuation, numbers, and the language we wrote in all change the split. This split is not understanding. It is only the first conversion from text into something that can be processed.',
+        title: 'What does the model actually do with your text?',
+        lead: 'Before anything else, the model cuts the text into small pieces called tokens.',
+        body: 'A token is sometimes a whole word, sometimes just part of a word, and sometimes a mark or a space. The model does not read a sentence the way we do, it works on that sequence of pieces and only on it. This is the first conversion from text into something countable, and it is not understanding yet.',
     },
 
     // Touch: the tokenization lab (the component itself comes from labContent)

@@ -133,12 +133,16 @@ export interface Chapter4LabDict {
 
     dna: {
         title: string;
-        /** תבנית גנים משותפים, למשל 5 מתוך 6. */
-        sharedGenes: (shared: number, total: number) => string;
-        /** תווית קצרה למספר הגדול של הגנים המשותפים. */
-        sharedLabel: string;
-        /** תבנית סחיפה באחוזים. */
-        drift: (pct: number) => string;
+        /** שורת פתיחה: הרכיבים המשותפים החזקים שמסבירים למה שני המשפטים קרובים. */
+        leadShared: (names: string) => string;
+        /** שורת פתיחה כשאין רכיבים משותפים חזקים, ולכן המשפטים רחוקים יותר. */
+        leadNone: string;
+        /** תווית "משותף" לרכיב שנדלק חזק בשני המשפטים. */
+        sharedBadge: string;
+        /** מדריך קריאה: גודל הצומת מסמן עוצמה. */
+        guideSize: string;
+        /** מדריך קריאה: קשר ירוק פועם מסמן רכיב משותף שמקרב. */
+        guideBond: string;
         stayedClose: string;
         drifted: string;
     };

@@ -199,9 +199,11 @@ export const chapter4Lab: Chapter4LabDict = {
 
     dna: {
         title: 'Meaning DNA',
-        sharedGenes: (shared, total) => `${shared} of ${total} shared genes`,
-        sharedLabel: 'Shared genes',
-        drift: (pct) => `Drift ${pct}%`,
+        leadShared: (names) => `Both sentences are strong on the same meaning components: ${names}. That is why they are close.`,
+        leadNone: 'The two sentences light up different components, so they are farther apart.',
+        sharedBadge: 'shared',
+        guideSize: 'A bigger node means the component is stronger in that sentence.',
+        guideBond: 'A pulsing green bond means a shared component, and that is what brings the meaning closer.',
         stayedClose: 'The meaning stayed close',
         drifted: 'The meaning drifted',
     },

@@ -230,9 +230,9 @@ export default function BehindTheScenesIntroPage() {
           {/* ══════════ 1 · OUTSIDE VIEW ══════════ */}
           {/* מבחוץ נראה כמו שני שלבים: בקשה ותשובה. השאלה "מה קרה באמצע" נשארת פתוחה. */}
           <div className="relative">
-            {/* ב-lg+ שומרים מקום בצד הסיום (inline-end) כדי שכותרת ההירו לא תזרום מתחת
-                לדוק ההאזנה שמעוגן בפינה. pe לוגי, מתאים אוטומטית ל-RTL ו-LTR. */}
-            <div className="text-center md:text-start mb-6 lg:pe-64">
+            {/* ב-lg+ דוק ההאזנה מעוגן בפינה העליונה, מעל הכותרת. הכותרת וה-lede מתפזרים
+                לרוחב מלא ויושבים מתחתיו (הבאדג' שמעל הכותרת מפנה אותם מתחת לדוק). */}
+            <div className="text-center md:text-start mb-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-cyan-500/30 mb-3">
                 <span className="relative flex h-2 w-2">
                   {!reduce && <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping" />}
@@ -253,7 +253,7 @@ export default function BehindTheScenesIntroPage() {
                   מובייל/טאבלט: שורה אינליין קומפקטית מתחת לטקסט ההירו.
                   דסקטופ (lg+): מעוגן בפינה העליונה של ההירו, בצד הריק שמול תחילת הכותרת
                   (he/ar משמאל, en/es/ru/ja מימין), מחוץ לזרימה כדי לא לדחוף את ההירו. */}
-              <div className={`mt-5 flex justify-center md:justify-start lg:absolute lg:top-0 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
+              <div className={`mt-5 flex justify-center md:justify-start lg:absolute lg:-top-5 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
                 <ReadAloudControls
                   segmentsByMode={readAloudByMode}
                   lang={LOCALE_SPEECH_LANG[locale]}

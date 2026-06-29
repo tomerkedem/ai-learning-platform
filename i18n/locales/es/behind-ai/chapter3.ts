@@ -89,9 +89,9 @@ export const chapter3 = {
     },
 
     insight: {
-        title: 'El punto sorprendente',
-        lead: 'Para nuestros ojos es una sola frase. Para el modelo es una cadena de unidades.',
-        body: 'La misma idea puede convertirse en un número distinto de unidades. Los espacios, la puntuación, los números y el idioma en que escribimos cambian la división. Esta división no es comprensión. Es solo la primera conversión del texto en algo que se puede procesar.',
+        title: '¿Qué hace realmente el modelo con tu texto?',
+        lead: 'Antes que nada, el modelo corta el texto en piezas pequeñas llamadas tokens.',
+        body: 'Un token es a veces una palabra entera, a veces solo parte de una palabra, y a veces un signo o un espacio. El modelo no lee una frase como nosotros, trabaja sobre esa secuencia de piezas y solo sobre ella. Esta es la primera conversión del texto en algo que se puede contar, y todavía no es comprensión.',
     },
 
     lab: {

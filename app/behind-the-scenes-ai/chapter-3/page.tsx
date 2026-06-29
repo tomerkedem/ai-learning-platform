@@ -10,7 +10,6 @@ import {
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine } from '@/components/content/AssessmentEngine';
 import { behindAiChapterQuizzes } from '../quizData';
-import { InsightBox } from '@/components/content/InsightBox';
 
 import { OpeningGuess, type OpeningGuessContent } from '@/components/ai-internals/OpeningGuess';
 import type { DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
@@ -169,8 +168,8 @@ export default function BehindTheScenesChapter3() {
                     <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
                     <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
 
-                    {/* ב-lg+ שומרים מקום בצד הסיום כדי שהכותרת לא תזרום מתחת לדוק שבפינה */}
-                    <div className="relative z-10 lg:pe-64">
+                    {/* ב-lg+ דוק ההאזנה מעוגן בפינה מעל הכותרת; הכותרת וה-lede מתפזרים לרוחב מלא מתחתיו */}
+                    <div className="relative z-10">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
                             <Scissors size={14} className="text-violet-400" />
                             <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">{c3.hero.badge}</span>
@@ -183,7 +182,7 @@ export default function BehindTheScenesChapter3() {
                             </span>
                         </h1>
 
-                        <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">
+                        <p className="text-lg text-slate-300 leading-relaxed">
                             {c3.hero.lede}
                         </p>
 
@@ -199,7 +198,7 @@ export default function BehindTheScenesChapter3() {
                         </div>
 
                         {/* דוק האזנה מודרכת: שורה אינליין מתחת לטקסט במובייל, בפינת ההירו ב-lg+ */}
-                        <div className={`mt-6 flex justify-center md:justify-start lg:absolute lg:top-0 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
+                        <div className={`mt-6 flex justify-center md:justify-start lg:absolute lg:-top-5 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
                             <ReadAloudControls
                                 segmentsByMode={readAloudByMode}
                                 lang={LOCALE_SPEECH_LANG[locale]}
@@ -222,14 +221,16 @@ export default function BehindTheScenesChapter3() {
                 <OpeningGuess content={guessContent} cards={guessCards} />
             </section>
 
-            {/* ══════════ ראה: רגע ה-wow ══════════ */}
+            {/* ══════════ הסבר פשוט: מה באמת קורה כאן (במקום "הנקודה המפתיעה") ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <InsightBox type="intuition" title={c3.insight.title}>
-                    <span className="block text-lg font-bold text-violet-200">
-                        {c3.insight.lead}
-                    </span>
-                    {c3.insight.body}
-                </InsightBox>
+                <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
+                    <div className="mb-3 flex items-center gap-2">
+                        <Lightbulb size={18} className="text-violet-300" />
+                        <h3 className="text-xl font-black text-white md:text-2xl">{c3.insight.title}</h3>
+                    </div>
+                    <p className="mb-2.5 text-lg font-bold text-violet-200">{c3.insight.lead}</p>
+                    <p className="text-[15px] leading-relaxed text-slate-300">{c3.insight.body}</p>
+                </div>
             </section>
 
             {/* ══════════ גע: מעבדת הפירוק ══════════ */}

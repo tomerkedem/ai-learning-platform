@@ -311,8 +311,8 @@ export default function BehindTheScenesChapter1() {
                 <div className={`absolute -top-16 ${isRtl ? '-right-16' : '-left-16'} w-56 h-56 bg-cyan-500/10 blur-[80px] rounded-full pointer-events-none`} />
                 <div className={`absolute -bottom-20 ${isRtl ? '-left-10' : '-right-10'} w-64 h-64 bg-purple-500/10 blur-[90px] rounded-full pointer-events-none`} />
 
-                {/* ב-lg+ שומרים מקום בצד הסיום כדי שהכותרת לא תזרום מתחת לדוק שבפינה */}
-                <div className="relative z-10 lg:pe-64">
+                {/* ב-lg+ דוק ההאזנה מעוגן בפינה מעל הכותרת; הכותרת וה-lede מתפזרים לרוחב מלא מתחתיו */}
+                <div className="relative z-10">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-cyan-500/30 mb-5">
                         <Terminal size={14} className="text-cyan-400" />
                         <span className="font-mono text-xs tracking-widest uppercase text-cyan-300">{c1.hero.badge}</span>
@@ -326,7 +326,7 @@ export default function BehindTheScenesChapter1() {
                         ?
                     </h1>
 
-                    <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">
+                    <p className="text-lg text-slate-300 leading-relaxed">
                         {c1.hero.ledeLead}
                         <span className="text-white font-semibold">{c1.hero.ledeHighlight}</span>{c1.hero.ledeRest}
                     </p>
@@ -344,7 +344,7 @@ export default function BehindTheScenesChapter1() {
                     </div>
 
                     {/* דוק האזנה מודרכת: שורה אינליין מתחת לטקסט במובייל, בפינת ההירו ב-lg+ */}
-                    <div className={`mt-6 flex justify-center md:justify-start lg:absolute lg:top-0 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
+                    <div className={`mt-6 flex justify-center md:justify-start lg:absolute lg:-top-5 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
                         <ReadAloudControls
                             segmentsByMode={readAloudByMode}
                             lang={LOCALE_SPEECH_LANG[locale]}

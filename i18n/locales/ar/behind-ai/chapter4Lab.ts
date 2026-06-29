@@ -198,9 +198,11 @@ export const chapter4Lab: Chapter4LabDict = {
 
     dna: {
         title: 'الحمض النووي للمعنى',
-        sharedGenes: (shared, total) => `${shared} من ${total} جينات مشتركة`,
-        sharedLabel: 'جينات مشتركة',
-        drift: (pct) => `انزياح ${pct}%`,
+        leadShared: (names) => `الجملتان قويتان في المكوّنات نفسها من المعنى: ${names}. لهذا هما قريبتان.`,
+        leadNone: 'الجملتان تُضيئان مكوّنات مختلفة، لذلك هما أبعد.',
+        sharedBadge: 'مشترك',
+        guideSize: 'العقدة الأكبر تعني أن المكوّن أقوى في تلك الجملة.',
+        guideBond: 'الرابط الأخضر النابض يعني مكوّنًا مشتركًا، وهذا ما يقرّب المعنى.',
         stayedClose: 'بقي المعنى قريبًا',
         drifted: 'انزاح المعنى',
     },

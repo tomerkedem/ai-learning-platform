@@ -199,9 +199,11 @@ export const chapter4Lab: Chapter4LabDict = {
 
     dna: {
         title: '意味の DNA',
-        sharedGenes: (shared, total) => `${total}個中${shared}個が共通の遺伝子`,
-        sharedLabel: '共通の遺伝子',
-        drift: (pct) => `ずれ ${pct}%`,
+        leadShared: (names) => `二つの文は同じ意味の要素で強く反応します：${names}。だから近いのです。`,
+        leadNone: '二つの文は別々の要素を活性化するので、より離れています。',
+        sharedBadge: '共通',
+        guideSize: 'ノードが大きいほど、その文でその要素が強いことを表します。',
+        guideBond: '緑に脈打つ結合は共通の要素で、それが意味を近づけます。',
         stayedClose: '意味は近いまま',
         drifted: '意味がずれた',
     },

@@ -87,9 +87,9 @@ export const chapter2 = {
 
     // The wow moment (InsightBox)
     insight: {
-        title: 'The surprising point',
-        lead: 'Two requests can come from the same intent, yet give the model completely different material.',
-        body: 'The intent stays in our head. What the model receives is the phrasing: the words we chose, their order, the punctuation, and what we left out. A small change in the input can change what the model has to work with.',
+        title: 'What does the model actually get from you?',
+        lead: 'The model does not know what you meant. It only gets the text you wrote.',
+        body: 'The words you chose, their order, the punctuation, and what you left out - that is all the model has to work with. The very same intent, phrased differently, enters the model as different raw material. So your phrasing is not decoration, it is the input itself.',
     },
 
     // Input Comparison Lab section header (the component itself lives in chapter2Visuals)

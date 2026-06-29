@@ -70,6 +70,17 @@ export const chapter4 = {
     },
 
     // Puente de los objetos a las frases
+    // Explicacion en palabras simples: que hace en realidad un Embedding (tras la adivinanza, antes del demo)
+    plain: {
+        eyebrow: 'En palabras simples',
+        title: 'Entonces, ¿qué hace en realidad un Embedding?',
+        lines: [
+            'Un Embedding toma cada palabra o frase y convierte su significado en una posición en un mapa.',
+            'Lo que quiere decir lo mismo cae cerca, aunque esté escrito con palabras completamente distintas.',
+            'Eso es todo lo que hace: mide qué tan cerca están dos significados. No comprueba si algo es verdad, y no entiende como una persona.',
+        ],
+    },
+
     bridge: 'Ahora usamos la misma idea con frases: aunque las palabras cambien, el significado puede seguir cerca.',
 
     // Asegura la idea: la cercanía no es verdad

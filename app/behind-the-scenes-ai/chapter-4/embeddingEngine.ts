@@ -539,6 +539,20 @@ export const SENTENCE_IDS = [
 /** מזהה משפט יציב (איחוד ליטרלים), נגזר מ-SENTENCE_IDS. אינו מתורגם. */
 export type SentenceId = typeof SENTENCE_IDS[number];
 
+/**
+ * צבע חתימה לכל משפט (מבני, לא מתורגם). hex לשרטוט וצמתים, rgb לזוהר (rgba).
+ * נמנעים מגוונים ירוקים כדי שהקשר הירוק של "רכיב משותף" יישאר ייחודי ב-DNA.
+ */
+export const SENTENCE_COLORS: Record<SentenceId, { hex: string; rgb: string }> = {
+    'pkg-not-arrived': { hex: '#22d3ee', rgb: '34,211,238' }, // ציאן
+    'delivery-not-handed': { hex: '#a78bfa', rgb: '167,139,250' }, // סגול
+    'pkg-arrived': { hex: '#38bdf8', rgb: '56,189,248' }, // תכלת
+    'system-not-showing': { hex: '#818cf8', rgb: '129,140,248' }, // אינדיגו
+    'billing-address-update': { hex: '#fbbf24', rgb: '251,191,36' }, // ענבר
+    'agent-investigate-delay': { hex: '#e879f9', rgb: '232,121,249' }, // ורוד-פוקסיה
+    'agent-notify-lost': { hex: '#fb7185', rgb: '251,113,133' }, // ורד
+};
+
 /** החלפת מילה: chipId ו-toId יציבים, ללא תווית מתורגמת (התווית תגיע מהמילון בעתיד). */
 export interface WordSwap {
     chipId: string;

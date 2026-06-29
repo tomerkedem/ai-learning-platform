@@ -68,6 +68,17 @@ export const chapter4 = {
         retryButton: 'Try again',
     },
 
+    // Plain-words explanation: what an Embedding actually does (after the guess, before the demo)
+    plain: {
+        eyebrow: 'In plain words',
+        title: 'So what does an Embedding actually do?',
+        lines: [
+            'An Embedding takes each word or sentence and turns its meaning into a position on a map.',
+            'Things that mean the same land close together, even when they are written in completely different words.',
+            'That is all it does: it measures how close two meanings are. It does not check whether something is true, and it does not understand like a person.',
+        ],
+    },
+
     // Bridge from objects to sentences
     bridge: 'Now we use the same idea on sentences: even when the words differ, the meaning can still be close.',
 

@@ -259,10 +259,11 @@ export default function BehindTheScenesChapter4() {
     const ra = t.behindAi.aiInternals.readAloud;
     const lab4 = labContent;
     const c4SentenceIds = ['pkg-not-arrived', 'delivery-not-handed', 'pkg-arrived', 'system-not-showing', 'billing-address-update', 'agent-investigate-delay', 'agent-notify-lost'] as const;
-    const c4ExplainKeys = ['mapShadow', 'close', 'far', 'regions', 'forces', 'dna', 'notTruth'] as const;
+    const c4ExplainKeys = ['mapShadow', 'close', 'far', 'regions', 'dna', 'notTruth'] as const;
     const sTitle: ReadAloudSegment = { id: 'title', label: c4.hero.titleLead, text: `${c4.hero.titleLead} ${c4.hero.titleHighlight}. ${c4.hero.lede}` };
     const sGuessIntro: ReadAloudSegment = { id: 'guess', label: c4.guess.title, text: `${c4.guess.title} ${c4.guess.subtitle}` };
     const sSuccessInsight: ReadAloudSegment = { id: 'success-insight', label: c4.guess.successInsight, text: c4.guess.successInsight };
+    const sPlain: ReadAloudSegment = { id: 'plain', label: c4.plain.title, text: `${c4.plain.title} ${c4.plain.lines.join(' ')}` };
     const sBridge: ReadAloudSegment = { id: 'bridge', label: c4.bridge, text: c4.bridge };
     const sVisual: ReadAloudSegment = { id: 'visual', label: lab4.map.visualTitle, text: `${lab4.map.visualTitle}. ${lab4.map.visualSubtitle}` };
     const sRuleLine: ReadAloudSegment = { id: 'rule-line', label: lab4.map.ruleLine, text: lab4.map.ruleLine };
@@ -277,9 +278,9 @@ export default function BehindTheScenesChapter4() {
     const sHood: ReadAloudSegment = { id: 'hood', label: c4.hood.title, text: `${c4.hood.title}. ${c4.hood.intro}` };
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
-        short: [sTitle, sBridge, sPackageRule, sPracticalShort, sCaveat],
-        regular: [sTitle, sGuessIntro, sBridge, sVisual, sRuleLine, sPackage, sPackageRule, sProof, sPracticalFull, sCaveat, sHood],
-        full: [sTitle, sGuessIntro, sSuccessInsight, sBridge, sVisual, sRuleLine, sPackage, ...sTts, sPackageRule, sProof, ...sExplain, sPracticalFull, sCaveat, sHood],
+        short: [sTitle, sPlain, sBridge, sPackageRule, sPracticalShort, sCaveat],
+        regular: [sTitle, sGuessIntro, sPlain, sBridge, sVisual, sRuleLine, sPackage, sPackageRule, sProof, sPracticalFull, sCaveat, sHood],
+        full: [sTitle, sGuessIntro, sSuccessInsight, sPlain, sBridge, sVisual, sRuleLine, sPackage, ...sTts, sPackageRule, sProof, ...sExplain, sPracticalFull, sCaveat, sHood],
     };
 
     // מבדק הפרק: המנגנון המשותף (onComplete, getReviewLinks, nextHref...) נשמר מ-quizData,
@@ -328,8 +329,8 @@ export default function BehindTheScenesChapter4() {
                     <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
                     <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
 
-                    {/* ב-lg+ שומרים מקום בצד הסיום כדי שהכותרת לא תזרום מתחת לדוק שבפינה */}
-                    <div className="relative z-10 lg:pe-64">
+                    {/* ב-lg+ דוק ההאזנה מעוגן בפינה מעל הכותרת; הכותרת וה-lede מתפזרים לרוחב מלא מתחתיו */}
+                    <div className="relative z-10">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
                             <Sparkles size={14} className="text-violet-400" />
                             <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">{c4.hero.badge}</span>
@@ -342,7 +343,7 @@ export default function BehindTheScenesChapter4() {
                             </span>
                         </h1>
 
-                        <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">{c4.hero.lede}</p>
+                        <p className="text-lg text-slate-300 leading-relaxed">{c4.hero.lede}</p>
 
                         <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
                             <span className="inline-flex items-center gap-1.5">
@@ -354,7 +355,7 @@ export default function BehindTheScenesChapter4() {
                         </div>
 
                         {/* דוק האזנה מודרכת: שורה אינליין מתחת לטקסט במובייל, בפינת ההירו ב-lg+ */}
-                        <div className={`mt-6 flex justify-center md:justify-start lg:absolute lg:top-0 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
+                        <div className={`mt-6 flex justify-center md:justify-start lg:absolute lg:-top-5 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
                             <ReadAloudControls
                                 segmentsByMode={readAloudByMode}
                                 lang={LOCALE_SPEECH_LANG[locale]}
@@ -375,6 +376,24 @@ export default function BehindTheScenesChapter4() {
             {/* ══════════ ניחוש מהיר ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
                 <MeaningGuess />
+            </section>
+
+            {/* ══════════ במילים פשוטות: מה Embedding באמת עושה (אחרי הניחוש, לפני הדמו) ══════════ */}
+            <section className="mt-12 text-start" dir={dir}>
+                <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
+                    <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
+                        <Sparkles size={14} /> {c4.plain.eyebrow}
+                    </span>
+                    <h3 className="mb-4 text-xl font-black text-white md:text-2xl">{c4.plain.title}</h3>
+                    <ul className="space-y-3">
+                        {c4.plain.lines.map((line) => (
+                            <li key={line} className="flex items-start gap-3">
+                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
+                                <span className="text-[15px] leading-relaxed text-slate-200">{line}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </section>
 
             {/* ══════════ שלב 1: דמו אובייקטים (הכותרת חיה בתוך הדמו) ══════════ */}
