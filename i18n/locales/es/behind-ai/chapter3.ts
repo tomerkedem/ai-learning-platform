@@ -38,6 +38,8 @@ export const chapter3 = {
         title: '¿Qué le pasa al texto justo después de enviarlo, antes de calcular cualquier significado?',
         subtitle: 'Elige la explicación que te parezca más cercana. No es un examen, pero hay una dirección que nos acerca a lo que de verdad pasa.',
         invite: 'Antes de abrir esto, intenta adivinar: ¿qué es lo primero que le pasa al texto?',
+        correctTitle: '¡Exacto!',
+        wrongTitle: '¡Casi!',
         getsRightLabel: 'Qué acierta esto',
         revealButton: 'Revelar la idea principal',
         revealTitle: 'Entonces, ¿qué pasa de verdad?',

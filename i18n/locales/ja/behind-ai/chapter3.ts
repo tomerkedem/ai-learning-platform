@@ -45,6 +45,8 @@ export const chapter3 = {
         title: '送信した直後、意味が計算される前に、文章には何が起きますか？',
         subtitle: '一番近いと思う説明を選んでください。試験ではありませんが、本当に起きていることに近づく方向が一つあります。',
         invite: '開く前に当ててみましょう。文章にまず起きることは何でしょうか？',
+        correctTitle: '正解です！',
+        wrongTitle: 'おしい！',
         getsRightLabel: 'この考えの正しい点',
         revealButton: '中心となる考えを見る',
         revealTitle: 'では、本当は何が起きるのか',

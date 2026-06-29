@@ -36,6 +36,8 @@ export const chapter2 = {
         title: '¿Qué recibe el modelo realmente primero, en el momento en que envías un mensaje?',
         subtitle: 'Elige la explicación que te parezca más cercana. Esto no es un examen, pero hay una dirección que nos acerca a lo que de verdad sucede.',
         invite: 'Antes de abrir esto, intenta adivinar: ¿qué llega al modelo primero en realidad?',
+        correctTitle: '¡Exacto!',
+        wrongTitle: '¡Casi!',
         getsRightLabel: 'Qué acierta esta opción',
         revealButton: 'Revela la idea central',
         revealTitle: 'Entonces, ¿qué entra realmente?',

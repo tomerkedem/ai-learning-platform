@@ -494,7 +494,7 @@ export default function BehindTheScenesChapter1() {
                     </div>
                 </div>
 
-                <PredictDecision key={`predict:${mode}:${conversationText}`} text={conversationText} mode={mode} />
+                <PredictDecision key={`predict:${mode}`} mode={mode} />
 
                 <ReadHeadLab key={`${mode}:${conversationText}`} text={conversationText} mode={mode} accent={accent} />
             </section>

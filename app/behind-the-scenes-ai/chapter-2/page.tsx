@@ -10,9 +10,13 @@ import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 import type { Chapter2QuizId } from '@/i18n/locales/he/behind-ai/chapter2Quiz';
 
-import { DiscoveryGuess, type DiscoveryGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
+import { OpeningGuess, type OpeningGuessContent } from '@/components/ai-internals/OpeningGuess';
+import type { DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
 import { InputComparisonLab } from '@/components/ai-internals/InputComparisonLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
+import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
+import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
+import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import { useT } from '@/i18n/useT';
 
 /* ════════════════════════ מטא-דאטה מבני של ניחוש הפתיחה ════════════════════════ */
@@ -77,9 +81,31 @@ const DiagnosisQuestion: React.FC = () => {
 
 export default function BehindTheScenesChapter2() {
     const reduce = useReducedMotion();
-    const { t, dir } = useT();
+    const { t, dir, locale } = useT();
     const isRtl = dir === 'rtl';
     const c2 = t.behindAi.chapter2;
+
+    // ── דוק האזנה מודרכת: מקטעי הקראה לפי מצב היקף, מאותם מפתחות מילון (ללא שכפול
+    // קופי). לא נכללים: חידון, כפתורים, ניווט, צ׳יפים/באדג׳ים, משפטי מנטור, ופלט חי
+    // של מעבדת השוואת הקלט. תוויות הדוק משותפות מ-aiInternals.readAloud.
+    const ra = t.behindAi.aiInternals.readAloud;
+    const sTitle: ReadAloudSegment = { id: 'title', label: c2.hero.titleLead, text: `${c2.hero.titleLead} ${c2.hero.titleHighlight}. ${c2.hero.lede}` };
+    const sQuestion: ReadAloudSegment = { id: 'question', label: c2.hero.question, text: c2.hero.question };
+    const sGuessQ: ReadAloudSegment = { id: 'guess-q', label: c2.guess.title, text: `${c2.guess.title} ${c2.guess.subtitle}` };
+    const sCards: ReadAloudSegment[] = c2.guess.cards.map((card, i) => ({ id: `guess-card-${i}`, label: card.title, text: `${card.title}. ${card.desc}` }));
+    const sGuessReveal: ReadAloudSegment = { id: 'guess-reveal', label: c2.guess.revealTitle, text: `${c2.guess.revealTitle} ${c2.guess.revealCopy}` };
+    const sInsight: ReadAloudSegment = { id: 'insight', label: c2.insight.title, text: `${c2.insight.lead} ${c2.insight.body}` };
+    const sLab: ReadAloudSegment = { id: 'lab', label: c2.inputLab.title, text: `${c2.inputLab.title}. ${c2.inputLab.intro}` };
+    const sEveryday: ReadAloudSegment = { id: 'everyday', label: c2.everyday.title, text: `${c2.everyday.title}. ${c2.everyday.body}` };
+    const sMistake: ReadAloudSegment = { id: 'mistake', label: c2.mistake.rightLabel, text: `${c2.mistake.wrongLabel}: ${c2.mistake.wrongText} ${c2.mistake.rightLabel}: ${c2.mistake.rightText}` };
+    const sTakeaway: ReadAloudSegment = { id: 'takeaway', label: c2.takeaway.title, text: `${c2.takeaway.title}. ${c2.takeaway.points.join(' ')}` };
+    const sLock: ReadAloudSegment = { id: 'lock', label: c2.lock.title, text: `${c2.lock.title}. ${c2.lock.truthLabel}: ${c2.lock.truthText} ${c2.lock.mistakeLabel}: ${c2.lock.mistakeText}` };
+
+    const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
+        short: [sTitle, sQuestion, sInsight, sTakeaway],
+        regular: [sTitle, sQuestion, sGuessQ, sGuessReveal, sInsight, sLab, sEveryday, sMistake, sTakeaway, sLock],
+        full: [sTitle, sQuestion, sGuessQ, ...sCards, sGuessReveal, sInsight, sLab, sEveryday, sMistake, sTakeaway, sLock],
+    };
 
     // מבדק הפרק: המנגנון המשותף (correctAnswer, onComplete, getReviewLinks, nextHref...)
     // נשמר מ-quizData, וטקסט התצוגה ממוזג מהמילון לפי מזהה השאלה. quizData.ts לא משתנה.
@@ -110,12 +136,14 @@ export default function BehindTheScenesChapter2() {
     };
 
     // תוכן ניחוש הפתיחה: טקסט מהמילון, פוזות ויעד מבניים בעמוד.
-    const guessContent: DiscoveryGuessContent = {
+    const guessContent: OpeningGuessContent = {
         eyebrow: c2.guess.eyebrow,
         title: c2.guess.title,
         subtitle: c2.guess.subtitle,
         invite: c2.guess.invite,
         invitePose: 'think',
+        correctTitle: c2.guess.correctTitle,
+        wrongTitle: c2.guess.wrongTitle,
         getsRightLabel: c2.guess.getsRightLabel,
         revealButton: c2.guess.revealButton,
         revealTitle: c2.guess.revealTitle,
@@ -158,7 +186,8 @@ export default function BehindTheScenesChapter2() {
                     <div className="absolute -top-16 -right-16 w-56 h-56 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
                     <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
 
-                    <div className="relative z-10">
+                    {/* ב-lg+ שומרים מקום בצד הסיום כדי שהכותרת לא תזרום מתחת לדוק שבפינה */}
+                    <div className="relative z-10 lg:pe-64">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-indigo-500/30 mb-5">
                             <Type size={14} className="text-indigo-400" />
                             <span className="font-mono text-[11px] tracking-widest uppercase text-indigo-300">{c2.hero.badge}</span>
@@ -185,6 +214,18 @@ export default function BehindTheScenesChapter2() {
                                 <ArrowLeftRight size={14} className="text-cyan-400" /> {c2.hero.chipCompare}
                             </span>
                         </div>
+
+                        {/* דוק האזנה מודרכת: שורה אינליין מתחת לטקסט במובייל, בפינת ההירו ב-lg+ */}
+                        <div className={`mt-6 flex justify-center md:justify-start lg:absolute lg:top-0 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
+                            <ReadAloudControls
+                                segmentsByMode={readAloudByMode}
+                                lang={LOCALE_SPEECH_LANG[locale]}
+                                locale={locale}
+                                dir={dir}
+                                labels={ra}
+                                reduce={!!reduce}
+                            />
+                        </div>
                     </div>
                 </motion.section>
 
@@ -195,7 +236,7 @@ export default function BehindTheScenesChapter2() {
 
             {/* ══════════ ניחוש פתיחה ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <DiscoveryGuess content={guessContent} cards={guessCards} />
+                <OpeningGuess content={guessContent} cards={guessCards} />
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}

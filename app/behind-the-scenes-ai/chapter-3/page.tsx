@@ -12,7 +12,8 @@ import { AssessmentEngine } from '@/components/content/AssessmentEngine';
 import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 
-import { DiscoveryGuess, type DiscoveryGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
+import { OpeningGuess, type OpeningGuessContent } from '@/components/ai-internals/OpeningGuess';
+import type { DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
 import { TokenizationLab } from '@/components/ai-internals/TokenizationLab';
 import { TokenizationRoadmap } from '@/components/ai-internals/TokenizationRoadmap';
 import { Mentor } from '@/components/ai-internals/Mentor';
@@ -90,12 +91,14 @@ export default function BehindTheScenesChapter3() {
     const labContent = getLabContent(locale);
 
     // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא-דאטה.
-    const guessContent: DiscoveryGuessContent = {
+    const guessContent: OpeningGuessContent = {
         eyebrow: c3.guess.eyebrow,
         title: c3.guess.title,
         subtitle: c3.guess.subtitle,
         invite: c3.guess.invite,
         invitePose: 'think',
+        correctTitle: c3.guess.correctTitle,
+        wrongTitle: c3.guess.wrongTitle,
         getsRightLabel: c3.guess.getsRightLabel,
         revealButton: c3.guess.revealButton,
         revealTitle: c3.guess.revealTitle,
@@ -179,7 +182,7 @@ export default function BehindTheScenesChapter3() {
 
             {/* ══════════ נחש ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <DiscoveryGuess content={guessContent} cards={guessCards} />
+                <OpeningGuess content={guessContent} cards={guessCards} />
             </section>
 
             {/* ══════════ ראה: רגע ה-wow ══════════ */}

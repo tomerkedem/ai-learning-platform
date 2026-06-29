@@ -36,6 +36,8 @@ export const chapter2 = {
         title: 'What does the model really receive first, the moment you send a message?',
         subtitle: 'Choose the explanation that feels closest. This is not a test, but one direction brings us closer to what really happens.',
         invite: 'Before we open this up, try to guess: what actually reaches the model first?',
+        correctTitle: 'Exactly right!',
+        wrongTitle: 'Almost!',
         getsRightLabel: 'What this gets right',
         revealButton: 'Reveal the core idea',
         revealTitle: 'So what really goes in?',

@@ -41,6 +41,8 @@ export const chapter3 = {
         title: 'What happens to the text right after you send it, before any meaning is computed?',
         subtitle: 'Pick the explanation that feels closest. It is not a test, but one direction gets us nearer to what really happens.',
         invite: 'Before we open this up, try to guess: what is the first thing that happens to the text?',
+        correctTitle: 'Exactly right!',
+        wrongTitle: 'Almost!',
         getsRightLabel: 'What this gets right',
         revealButton: 'Reveal the main idea',
         revealTitle: 'So what really happens?',

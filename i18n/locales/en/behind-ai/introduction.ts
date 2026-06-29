@@ -44,6 +44,7 @@ export const introduction = {
         eyebrow: 'Quick guess · Four competing explanations',
         question: 'Which explanation is closest to what happens in between?',
         hint: 'Pick the explanation that feels closest to reality. There is no score here, just a choice of a mental model.',
+        correctTitle: 'Exactly right!',
         correctLead: 'This is the more accurate picture.',
         correctBody: 'The model works on tokens, computes context, chooses the next token, and then repeats the process.',
         correctBridge: "That is exactly what we'll open up now. Open the engine between the question and the answer below.",

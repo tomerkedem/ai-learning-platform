@@ -171,6 +171,7 @@ export default function BehindTheScenesIntroPage() {
     eyebrow: intro.quickGuess.eyebrow,
     question: intro.quickGuess.question,
     hint: intro.quickGuess.hint,
+    correctTitle: intro.quickGuess.correctTitle,
     correctLead: intro.quickGuess.correctLead,
     correctBody: intro.quickGuess.correctBody,
     correctBridge: intro.quickGuess.correctBridge,

@@ -44,6 +44,7 @@ export const introduction = {
         eyebrow: 'Adivinanza rápida · Cuatro explicaciones que compiten',
         question: '¿Qué explicación está más cerca de lo que ocurre en el medio?',
         hint: 'Elige la explicación que te parezca más cercana a la realidad. Aquí no hay puntaje, solo la elección de un modelo mental.',
+        correctTitle: '¡Exacto!',
         correctLead: 'Esta es la imagen más precisa.',
         correctBody: 'El modelo trabaja con tokens, calcula el contexto, elige el siguiente token y luego repite el proceso.',
         correctBridge: 'Eso es exactamente lo que vamos a abrir ahora. Abre el motor entre la pregunta y la respuesta más abajo.',

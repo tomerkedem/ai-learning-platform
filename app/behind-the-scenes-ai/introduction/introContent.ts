@@ -134,6 +134,7 @@ export interface QuickGuessContent {
     hint: string;
     hypotheses: Hypothesis[];
     /** משוב לבחירה נכונה. */
+    correctTitle: string;
     correctLead: string;
     correctBody: string;
     correctBridge: string;
@@ -171,6 +172,7 @@ export const QUICK_GUESS: QuickGuessContent = {
             whyWrong: 'אין מאגר תשובות מוכנות. המודל מייצר את התשובה טוקן אחרי טוקן בזמן אמת.',
         },
     ],
+    correctTitle: 'נכון מאוד!',
     correctLead: 'זו התמונה המדויקת יותר.',
     correctBody: 'המודל עובד על טוקנים, מחשב הקשר, בוחר את הטוקן הבא, ואז חוזר על התהליך.',
     correctBridge: 'בדיוק את זה נפתח עכשיו. פתחו את המנוע שבין השאלה לתשובה בהמשך.',
