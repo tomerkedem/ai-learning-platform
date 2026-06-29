@@ -245,6 +245,7 @@ export default function BehindTheScenesChapter4() {
     const { t, dir, locale } = useT();
     const reduce = useReducedMotion();
     const isRtl = dir === 'rtl';
+    const isHe = locale === 'he';
     const c4 = t.behindAi.chapter4;
     const labContent = getLabContent(locale);
 
@@ -391,13 +392,14 @@ export default function BehindTheScenesChapter4() {
             </section>
 
             {/* ══════════ מבט מתחת למכסה המנוע (משני) ══════════ */}
-            {/* WordToNumberLab הוא locale-aware: עברית מהמנוע, אנגלית משכבת wordLabContent.
-                מוצג בכל השפות. העברית שומרת על המצב המכווץ המקורי בדיוק (ללא שינוי). אנגלית
-                מקבלת מצב מכווץ עם discoverability ברור: eyebrow, כותרת, שורת עזר, מונה מעבדות
-                ו-chevron, כך שברור שיש מעבדות בפנים ואיפה ללחוץ. native details/summary מספק
-                סמנטיקת כפתור ו-aria-expanded. */}
-            <details className={`group mt-12 overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-900/40${isRtl ? '' : ' transition-colors hover:border-slate-600/70 open:bg-slate-900/50'}`}>
-                {isRtl ? (
+            {/* WordToNumberLab הוא locale-aware: עברית מהמנוע, שאר השפות משכבת wordLabContent.
+                מוצג בכל השפות. העברית בלבד שומרת על המצב המכווץ המקורי בדיוק (ללא שינוי). שאר
+                השפות (כולל ערבית RTL) מקבלות מצב מכווץ עם discoverability ברור: eyebrow, כותרת,
+                שורת עזר, מונה מעבדות ו-chevron, כך שברור שיש מעבדות בפנים ואיפה ללחוץ. הסיעוף
+                על isHe (לא isRtl) כדי שערבית תקבל את אותה איכות, והמצב המשופר משתמש ב-dir
+                לוגי כך שהוא תקין גם ב-RTL. native details/summary מספק סמנטיקת כפתור ו-aria-expanded. */}
+            <details className={`group mt-12 overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-900/40${isHe ? '' : ' transition-colors hover:border-slate-600/70 open:bg-slate-900/50'}`}>
+                {isHe ? (
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 text-start" dir={dir}>
                         <span className="flex items-center gap-2">
                             <Wrench size={18} className="text-slate-400" />

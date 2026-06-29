@@ -515,10 +515,163 @@ export const RU_WORD_DATASET: WordLabDataset = {
     similar: RU_SIMILAR,
 };
 
+/* ── طبقة بيانات عربية موازية (تعيد استخدام الملفات الرقمية للمحرّك) ── */
+
+const AR_TOKEN_DICTIONARY: Record<string, number> = {
+    الطرد: 1042, لم: 17, يصل: 883, لا: 18, يعرض: 441,
+    النظام: 2310, تحقّق: 51, لماذا: 88,
+    أرسل: 73, للعميل: 1190, رسالة: 612, بأن: 145, ضاع: 770,
+    الشحنة: 1057, 'تُسلَّم': 904,
+};
+
+function arTokenId(word: string): number | null {
+    return word in AR_TOKEN_DICTIONARY ? AR_TOKEN_DICTIONARY[word] : null;
+}
+
+const AR_VECTOR_SHIFTS: Record<string, ShiftEntry[]> = {
+    الطرد: [en('تسليم', 'up-strong', 'delivery')],
+    لم: [en('فشل', 'up', 'failure'), en('نفي', 'up'), en('تسليم', 'up-slight', 'delivery')],
+    لا: [en('فشل', 'up', 'failure'), en('نفي', 'up')],
+    يصل: [en('تسليم', 'up', 'delivery'), en('وصول', 'up')],
+    الشحنة: [en('تسليم', 'up-strong', 'delivery')],
+    'تُسلَّم': [en('تسليم', 'up', 'delivery'), en('حالة التسليم', 'up')],
+    النظام: [en('نظام', 'up-strong', 'system')],
+    يعرض: [en('نظام', 'up', 'system'), en('عرض', 'up')],
+    تحقّق: [en('إجراء', 'up-strong', 'action'), en('تحقيق', 'up')],
+    لماذا: [en('البحث عن سبب', 'up')],
+    أرسل: [en('إجراء', 'up-strong', 'action'), en('مخاطرة', 'up', 'risk'), en('موافقة', 'up', 'permission')],
+    رسالة: [en('رسالة', 'up'), en('عميل', 'up-slight', 'customer')],
+    للعميل: [en('عميل', 'up-strong', 'customer'), en('مخاطرة', 'up', 'risk'), en('موافقة', 'up', 'permission')],
+    ضاع: [en('فشل', 'up', 'failure'), en('مخاطرة', 'up', 'risk')],
+};
+
+function arShift(word: string): ShiftEntry[] {
+    return AR_VECTOR_SHIFTS[word] ?? [];
+}
+
+const AR_SCENARIO_LABEL: Record<string, string> = {
+    'chat-delivery': 'لم يُسلَّم',
+    'chat-system': 'خلل النظام',
+    'agent-investigate': 'تحقيق',
+    'agent-notify': 'رسالة للعميل',
+};
+
+const arScenario = (id: string, prompt: string, steps: EngineStep[]): EngineScenario => ({
+    ...scOf(id),
+    labelEn: AR_SCENARIO_LABEL[id] ?? scOf(id).labelEn,
+    prompt,
+    steps,
+});
+
+const AR_SCENARIOS: EngineScenario[] = [
+    arScenario('chat-delivery', 'الطرد لم يصل', [
+        enStep(scOf('chat-delivery').steps[0], {
+            text: 'الطرد',
+            tokens: ['الطرد'],
+            main: 'كلمة "الطرد" تدفع بقوة بُعد التسليم.',
+        }),
+        enStep(scOf('chat-delivery').steps[1], {
+            text: 'الطرد لم',
+            tokens: ['الطرد', 'لم'],
+            main: 'كلمة "لم" ترفع الفشل والإلحاح.',
+        }),
+        enStep(scOf('chat-delivery').steps[2], {
+            text: 'الطرد لم يصل',
+            tokens: ['الطرد', 'لم', 'يصل'],
+            main: '"لم يصل" يثبّت ملف فشل التسليم.',
+        }),
+    ]),
+    arScenario('chat-system', 'النظام لا يعرض الطرد', [
+        enStep(scOf('chat-system').steps[0], {
+            text: 'النظام',
+            tokens: ['النظام'],
+            main: 'كلمة "النظام" تنقل الثقل إلى بُعد النظام.',
+        }),
+        enStep(scOf('chat-system').steps[1], {
+            text: 'النظام لا',
+            tokens: ['النظام', 'لا'],
+            main: 'كلمة "لا" تضيف الفشل، لكن "النظام" ما زال يقود.',
+        }),
+        enStep(scOf('chat-system').steps[2], {
+            text: 'النظام لا يعرض الطرد',
+            tokens: ['النظام', 'لا', 'يعرض', 'الطرد'],
+            main: 'المجال نفسه، اتجاه آخر: ينتقل الثقل إلى خلل عرض في النظام.',
+        }),
+    ]),
+    arScenario('agent-investigate', 'تحقّق لماذا لم يصل الطرد', [
+        enStep(scOf('agent-investigate').steps[0], {
+            text: 'تحقّق',
+            tokens: ['تحقّق'],
+            main: 'كلمة "تحقّق" تُضيء بُعد الإجراء، مخاطرة منخفضة.',
+            head: 'تم رصد طلب إجراء',
+            det: 'إشارة إجراء ("تحقّق") بمخاطرة منخفضة. يبدو كتحقيق، لا كإجراء تجاه العميل.',
+        }),
+        enStep(scOf('agent-investigate').steps[1], {
+            text: 'تحقّق لماذا لم يصل',
+            tokens: ['تحقّق', 'لماذا', 'لم', 'يصل'],
+            main: 'يُضاف مجال: التسليم. تبقى المخاطرة منخفضة.',
+            head: 'الهدف: التحقيق في مجال التسليم',
+            det: 'الملف يشير إلى تحقيق داخلي. لا تواصل مع العميل، لا مخاطرة.',
+        }),
+        enStep(scOf('agent-investigate').steps[2], {
+            text: 'تحقّق لماذا لم يصل الطرد',
+            tokens: ['تحقّق', 'لماذا', 'لم', 'يصل', 'الطرد'],
+            main: 'الملف النهائي: التحقيق في فشل تسليم، مخاطرة منخفضة.',
+            head: 'آمن للتحقيق، يلزم رقم تتبّع',
+            det: 'مخاطرة منخفضة ولا إجراء تجاه العميل. الخطوة التالية: استخدام أداة فحص الحالة وطلب رقم تتبّع.',
+        }),
+    ]),
+    arScenario('agent-notify', 'أرسل للعميل رسالة بأن الطرد ضاع', [
+        enStep(scOf('agent-notify').steps[0], {
+            text: 'أرسل',
+            tokens: ['أرسل'],
+            main: 'كلمة "أرسل" تُضيء الإجراء، وتبدأ المخاطرة والموافقة بالارتفاع.',
+            head: 'تم رصد إجراء صادر',
+            det: 'إشارة إجراء ("أرسل"). غير واضح بعد إلى من، لكن المخاطرة تبدأ بالارتفاع.',
+        }),
+        enStep(scOf('agent-notify').steps[1], {
+            text: 'أرسل للعميل رسالة',
+            tokens: ['أرسل', 'للعميل', 'رسالة'],
+            main: 'كلمة "للعميل" ترفع بقوة العميل والمخاطرة والموافقة.',
+            head: 'إجراء تجاه عميل حقيقي',
+            det: 'الملف يشير إلى تواصل مباشر مع العميل. المخاطرة والموافقة مرتفعتان.',
+        }),
+        enStep(scOf('agent-notify').steps[2], {
+            text: 'أرسل للعميل رسالة بأن الطرد ضاع',
+            tokens: ['أرسل', 'للعميل', 'رسالة', 'بأن', 'الطرد', 'ضاع'],
+            main: 'الملف النهائي: مخاطرة وموافقة مرتفعتان. يجب التوقف وطلب الموافقة.',
+            head: 'توقّف، يلزم موافقة',
+            det: 'الملف الرقمي نفسه يميّز بين تحقيق آمن وإجراء محفوف بالمخاطر تجاه العميل. الخطوة التالية: التوقف وطلب موافقة بشرية.',
+        }),
+    ]),
+];
+
+const AR_SIMILAR: SimilarPair = {
+    left: {
+        prompt: 'الطرد لم يصل',
+        tokens: ['الطرد', 'لم', 'يصل'],
+        profile: SIMILAR_PAIR.left.profile,
+    },
+    right: {
+        prompt: 'الشحنة لم تُسلَّم',
+        tokens: ['الشحنة', 'لم', 'تُسلَّم'],
+        profile: SIMILAR_PAIR.right.profile,
+    },
+    sharedDims: SIMILAR_PAIR.sharedDims,
+};
+
+export const AR_WORD_DATASET: WordLabDataset = {
+    scenarios: AR_SCENARIOS,
+    tokenId: arTokenId,
+    shift: arShift,
+    similar: AR_SIMILAR,
+};
+
 export function getWordDataset(locale: Locale): WordLabDataset {
     if (locale === 'he') return HE_WORD_DATASET;
     if (locale === 'es') return ES_WORD_DATASET;
     if (locale === 'ru') return RU_WORD_DATASET;
+    if (locale === 'ar') return AR_WORD_DATASET;
     return EN_WORD_DATASET;
 }
 
@@ -878,9 +1031,93 @@ export const RU_WORD_TEXT: WordLabText = {
     },
 };
 
+export const AR_WORD_TEXT: WordLabText = {
+    modeLabel: 'الوضع:',
+    modeLabels: { chat: 'وضع المحادثة', agent: 'وضع Agent' },
+    scenarioLabel: 'السيناريو:',
+    typing: {
+        suggested: 'السيناريو المقترح:',
+        typeSlow: 'اكتب ببطء',
+        placeholder: 'اكتب الجملة المقترحة، أو اضغط "اكتب نيابةً عني"',
+        aria: 'حقل إدخال لمختبر الكلمات إلى الأرقام',
+        autoType: 'اكتب نيابةً عني',
+        autoTypeLatin: 'تلقائي',
+        reset: 'إعادة',
+        resetLatin: 'إعادة',
+    },
+    unrecognizedHint:
+        'يعرض هذا المختبر جملًا محدّدة مسبقًا، ولا يحلّل نصًا حرًا. لرؤية التقسيم إلى أرقام، اكتب الجملة المقترحة أعلاه أو اضغط "اكتب نيابةً عني".',
+    mainChangeLabel: 'التغيير الرئيسي: ',
+    idSeq: {
+        title: 'تسلسل الـ IDs',
+        sub: 'عارض تسلسل الـ IDs',
+        words: 'كلمات',
+        ids: 'IDs',
+        empty: 'ابدأ الكتابة (أو اضغط "اكتب نيابةً عني")، وتتحوّل الجملة إلى تسلسل أرقام.',
+        pointsTo: 'يشير إلى',
+        addressNote: '(عنوان في القاموس، لا معنى)',
+        selectHint:
+            'اضغط على كلمة لترى إلى أي Token ID تشير. الـ ID عنوان في القاموس، كباركود ليس هو طعم المنتج.',
+    },
+    table: {
+        title: 'جدول الترجمة',
+        sub: 'نص بشري إلى IDs النموذج',
+        colWord: 'كلمة / Token',
+        colId: 'Token ID',
+        note: 'كل كلمة تشير إلى عنوان ثابت في القاموس. الـ ID معرّف، لا معنى.',
+        fallbackTokens: ['الطرد', 'لم', 'يصل'],
+    },
+    vector: {
+        title: 'متجه المعنى الحي',
+        sub: 'متجه المعنى الحي',
+        note: 'قيم مُسوّاة بين 0 و1. لاحظ كيف ترفع كلمة "لم" الفشل والإلحاح. هذا ملف المعنى، منفصل عن صيغة الجمع التعليمية.',
+    },
+    shift: {
+        title: 'تأثير الكلمة',
+        sub: 'انزياح المتجه حسب الكلمة',
+        idleHint: 'اضغط على كلمة لترى إلى أين تدفع الملف.',
+        pushesUp: 'ترفع هذه الأبعاد:',
+        tiny: 'تسهم قليلًا جدًا في الملف. ومع ذلك تتحوّل إلى Token ID وتدخل في الحساب.',
+        note: 'اتجاه التأثير، لا حساب دقيق. كل كلمة تسهم بشيء في الملف الرقمي.',
+    },
+    dirLabels: { 'up-strong': 'ارتفاع قوي', up: 'ارتفاع', 'up-slight': 'ارتفاع خفيف' },
+    similar: {
+        title: 'اتجاه متشابه',
+        sub: 'معاينة المعنى المتشابه',
+        aligns: 'Token IDs مختلفة، متجه المعنى يتراصف',
+        overlap: (pct) => `~${pct}% تطابق في الاتجاه`,
+        note: 'الجملتان لا تتشاركان أي Token IDs تقريبًا (1042,17,883 مقابل 1057,17,904)، لكنهما تشيران إلى اتجاه المعنى نفسه. هذه مجرد لمحة بصرية. سنفتح هندسة هذا الاتجاه في الفصل التالي، والحساب الكامل للتشابه في الفصل 8.',
+    },
+    agent: {
+        needsApproval: 'يلزم موافقة',
+        note: 'الملف الرقمي نفسه يميّز بين تحقيق آمن وإجراء محفوف بالمخاطر تجاه العميل. تمثيل المعنى لا يجيب فقط، بل يؤثّر على قرارات الإجراء.',
+    },
+    disclaimer: {
+        lead: 'توضيحان:',
+        idIsAddress: 'Token ID عنوان في القاموس، لا معنى',
+        idTail: '- الرقم 1042 يشير إلى كلمة "الطرد"، لا "يعني" الطرد.',
+        dimsReadable: 'أبعاد المعنى (تسليم، فشل، إلخ) محاور قابلة للقراءة اخترناها للتعلّم',
+        dimsTail:
+            '- في التمثيلات الحقيقية الأبعاد ليست تسميات بشرية بل مئات أو آلاف الأبعاد المتعلَّمة غير القابلة للقراءة البشرية. هنا لا نحسب بعد التشابه أو الاحتمال، بل نبني ملفًا سنتمكّن من مقارنته في الفصول التالية.',
+    },
+    dimLabel: {
+        delivery: 'تسليم',
+        system: 'نظام',
+        address: 'عنوان',
+        payment: 'دفع',
+        urgency: 'إلحاح',
+        failure: 'فشل',
+        action: 'إجراء',
+        risk: 'مخاطرة',
+        customer: 'عميل',
+        permission: 'موافقة',
+    },
+};
+
 export function getWordText(locale: Locale): WordLabText {
     if (locale === 'he') return HE_WORD_TEXT;
     if (locale === 'es') return ES_WORD_TEXT;
     if (locale === 'ru') return RU_WORD_TEXT;
+    if (locale === 'ar') return AR_WORD_TEXT;
     return EN_WORD_TEXT;
 }
