@@ -667,11 +667,166 @@ export const AR_WORD_DATASET: WordLabDataset = {
     similar: AR_SIMILAR,
 };
 
+/* ── 並行する日本語データ層（エンジンの数値プロファイルを再利用） ── */
+// 日本語には単語間の空白がないため、トークンは手作業の明示的な意味のまとまり。
+// 各 step.text はプロンプトの接頭辞（自動入力中に prefix で一致する）。
+
+const JA_TOKEN_DICTIONARY: Record<string, number> = {
+    荷物: 1042, が: 15, 届か: 883, なかった: 17,
+    システム: 2310, を: 9, 表示し: 441, ない: 18,
+    調べて: 51, '、': 5, なぜ: 88, か: 90,
+    連絡して: 73, 顧客: 1190, に: 12, 紛失し: 770, た: 61, と: 145,
+    配送: 1057, 完了し: 904,
+};
+
+function jaTokenId(word: string): number | null {
+    return word in JA_TOKEN_DICTIONARY ? JA_TOKEN_DICTIONARY[word] : null;
+}
+
+const JA_VECTOR_SHIFTS: Record<string, ShiftEntry[]> = {
+    荷物: [en('配送', 'up-strong', 'delivery')],
+    届か: [en('配送', 'up', 'delivery'), en('到着', 'up')],
+    なかった: [en('失敗', 'up', 'failure'), en('否定', 'up'), en('配送', 'up-slight', 'delivery')],
+    配送: [en('配送', 'up-strong', 'delivery')],
+    完了し: [en('配送', 'up', 'delivery'), en('完了状態', 'up')],
+    システム: [en('システム', 'up-strong', 'system')],
+    表示し: [en('システム', 'up', 'system'), en('表示', 'up')],
+    ない: [en('失敗', 'up', 'failure'), en('否定', 'up')],
+    調べて: [en('行動', 'up-strong', 'action'), en('調査', 'up')],
+    なぜ: [en('理由の探索', 'up')],
+    連絡して: [en('行動', 'up-strong', 'action'), en('リスク', 'up', 'risk'), en('承認', 'up', 'permission')],
+    顧客: [en('顧客', 'up-strong', 'customer'), en('リスク', 'up', 'risk'), en('承認', 'up', 'permission')],
+    紛失し: [en('失敗', 'up', 'failure'), en('リスク', 'up', 'risk')],
+};
+
+function jaShift(word: string): ShiftEntry[] {
+    return JA_VECTOR_SHIFTS[word] ?? [];
+}
+
+const JA_SCENARIO_LABEL: Record<string, string> = {
+    'chat-delivery': '未配達',
+    'chat-system': 'システム不具合',
+    'agent-investigate': '調査',
+    'agent-notify': '顧客への連絡',
+};
+
+const jaScenario = (id: string, prompt: string, steps: EngineStep[]): EngineScenario => ({
+    ...scOf(id),
+    labelEn: JA_SCENARIO_LABEL[id] ?? scOf(id).labelEn,
+    prompt,
+    steps,
+});
+
+const JA_SCENARIOS: EngineScenario[] = [
+    jaScenario('chat-delivery', '荷物が届かなかった', [
+        enStep(scOf('chat-delivery').steps[0], {
+            text: '荷物',
+            tokens: ['荷物'],
+            main: '「荷物」が配送の次元を強く押し上げます。',
+        }),
+        enStep(scOf('chat-delivery').steps[1], {
+            text: '荷物が届か',
+            tokens: ['荷物', 'が', '届か'],
+            main: '語幹「届か」が現れ、否定の気配で失敗と緊急度が上がり始めます。',
+        }),
+        enStep(scOf('chat-delivery').steps[2], {
+            text: '荷物が届かなかった',
+            tokens: ['荷物', 'が', '届か', 'なかった'],
+            main: '「なかった」で否定が確定し、配送失敗のプロファイルが固まります。',
+        }),
+    ]),
+    jaScenario('chat-system', 'システムが荷物を表示しない', [
+        enStep(scOf('chat-system').steps[0], {
+            text: 'システム',
+            tokens: ['システム'],
+            main: '「システム」が重心をシステムの次元へ移します。',
+        }),
+        enStep(scOf('chat-system').steps[1], {
+            text: 'システムが荷物を表示し',
+            tokens: ['システム', 'が', '荷物', 'を', '表示し'],
+            main: '語幹「表示し」が現れ、否定の気配で失敗が少し上がります。ただし「システム」が主導。',
+        }),
+        enStep(scOf('chat-system').steps[2], {
+            text: 'システムが荷物を表示しない',
+            tokens: ['システム', 'が', '荷物', 'を', '表示し', 'ない'],
+            main: '同じ領域でも方向が違い、重心はシステムの表示不具合へ移ります。',
+        }),
+    ]),
+    jaScenario('agent-investigate', '調べて、なぜ荷物が届かなかったか', [
+        enStep(scOf('agent-investigate').steps[0], {
+            text: '調べて',
+            tokens: ['調べて'],
+            main: '「調べて」が行動の次元を点灯。リスクは低い。',
+            head: '行動の要求を検出',
+            det: '行動のシグナル（「調べて」）、リスクは低い。顧客への行動ではなく調査に見えます。',
+        }),
+        enStep(scOf('agent-investigate').steps[1], {
+            text: '調べて、なぜ荷物が届か',
+            tokens: ['調べて', '、', 'なぜ', '荷物', 'が', '届か'],
+            main: '配送の領域が加わる。リスクは低いまま。',
+            head: '目的: 配送の領域を調査',
+            det: 'プロファイルは内部の調査を示します。顧客との接触なし、リスクなし。',
+        }),
+        enStep(scOf('agent-investigate').steps[2], {
+            text: '調べて、なぜ荷物が届かなかったか',
+            tokens: ['調べて', '、', 'なぜ', '荷物', 'が', '届か', 'なかった', 'か'],
+            main: '最終プロファイル: 配送失敗の調査、リスクは低い。',
+            head: '調査は安全、追跡番号が必要',
+            det: 'リスクは低く顧客への行動なし。次の一歩: 状態確認ツールを使い、追跡番号を求める。',
+        }),
+    ]),
+    jaScenario('agent-notify', '連絡して、顧客に、荷物が紛失したと', [
+        enStep(scOf('agent-notify').steps[0], {
+            text: '連絡して',
+            tokens: ['連絡して'],
+            main: '「連絡して」が行動を点灯し、リスクと承認が上がり始めます。',
+            head: '送信アクションを検出',
+            det: '行動のシグナル（「連絡して」）。相手はまだ不明だが、リスクが上がり始めます。',
+        }),
+        enStep(scOf('agent-notify').steps[1], {
+            text: '連絡して、顧客に',
+            tokens: ['連絡して', '、', '顧客', 'に'],
+            main: '「顧客」が顧客・リスク・承認を強く押し上げます。',
+            head: '実在の顧客への行動',
+            det: 'プロファイルは顧客への直接連絡を示します。リスクと承認が高い。',
+        }),
+        enStep(scOf('agent-notify').steps[2], {
+            text: '連絡して、顧客に、荷物が紛失したと',
+            tokens: ['連絡して', '、', '顧客', 'に', '、', '荷物', 'が', '紛失し', 'た', 'と'],
+            main: '最終プロファイル: リスクと承認が高い。停止して承認を求めるべき。',
+            head: '停止、承認が必要',
+            det: '同じ数値プロファイルが、安全な調査と顧客へのリスクの高い行動を区別します。次の一歩: 停止して人間の承認を求める。',
+        }),
+    ]),
+];
+
+const JA_SIMILAR: SimilarPair = {
+    left: {
+        prompt: '荷物が届かなかった',
+        tokens: ['荷物', 'が', '届か', 'なかった'],
+        profile: SIMILAR_PAIR.left.profile,
+    },
+    right: {
+        prompt: '配送が完了しなかった',
+        tokens: ['配送', 'が', '完了し', 'なかった'],
+        profile: SIMILAR_PAIR.right.profile,
+    },
+    sharedDims: SIMILAR_PAIR.sharedDims,
+};
+
+export const JA_WORD_DATASET: WordLabDataset = {
+    scenarios: JA_SCENARIOS,
+    tokenId: jaTokenId,
+    shift: jaShift,
+    similar: JA_SIMILAR,
+};
+
 export function getWordDataset(locale: Locale): WordLabDataset {
     if (locale === 'he') return HE_WORD_DATASET;
     if (locale === 'es') return ES_WORD_DATASET;
     if (locale === 'ru') return RU_WORD_DATASET;
     if (locale === 'ar') return AR_WORD_DATASET;
+    if (locale === 'ja') return JA_WORD_DATASET;
     return EN_WORD_DATASET;
 }
 
@@ -1114,10 +1269,94 @@ export const AR_WORD_TEXT: WordLabText = {
     },
 };
 
+export const JA_WORD_TEXT: WordLabText = {
+    modeLabel: 'モード：',
+    modeLabels: { chat: 'チャットモード', agent: 'Agentモード' },
+    scenarioLabel: 'シナリオ：',
+    typing: {
+        suggested: '推奨シナリオ：',
+        typeSlow: 'ゆっくり入力',
+        placeholder: '推奨の文を入力するか、「自動入力」を押してください',
+        aria: '単語から数値へのラボの入力欄',
+        autoType: '自動入力',
+        autoTypeLatin: '自動',
+        reset: 'リセット',
+        resetLatin: 'リセット',
+    },
+    unrecognizedHint:
+        'このラボはあらかじめ用意した文を示します。自由なテキストは解析しません。数値への分解を見るには、上の推奨の文を入力するか「自動入力」を押してください。',
+    mainChangeLabel: '主な変化：',
+    idSeq: {
+        title: 'IDの並び',
+        sub: 'IDシーケンス表示',
+        words: '単語',
+        ids: 'IDs',
+        empty: '入力を始めると（または「自動入力」を押すと）、文が数値の並びに変わります。',
+        pointsTo: 'が指す語：',
+        addressNote: '（辞書内のアドレス、意味ではない）',
+        selectHint:
+            '単語を押すと、それがどの Token ID を指すか分かります。ID は辞書内のアドレスで、商品の味ではないバーコードのようなものです。',
+    },
+    table: {
+        title: '変換テーブル',
+        sub: '人間のテキストからモデルの IDs へ',
+        colWord: '単語 / Token',
+        colId: 'Token ID',
+        note: 'どの単語も辞書内の固定アドレスを指します。ID は識別子で、意味ではありません。',
+        fallbackTokens: ['荷物', 'が', '届か', 'なかった'],
+    },
+    vector: {
+        title: '意味ベクトル（ライブ）',
+        sub: '意味ベクトル（ライブ）',
+        note: '値は0から1に正規化されています。「なかった」が失敗と緊急度をどう跳ね上げるかに注目。これは意味のプロファイルで、学習用の合計式とは別物です。',
+    },
+    shift: {
+        title: '単語の影響',
+        sub: '単語ごとのベクトル変化',
+        idleHint: '単語を押すと、プロファイルをどちらへ押すかが分かります。',
+        pushesUp: '次の次元を押し上げます：',
+        tiny: 'プロファイルへの寄与はごくわずか。それでも Token ID になり、計算に入ります。',
+        note: '影響の方向で、正確な算術ではありません。どの単語も数値プロファイルに何かを加えます。',
+    },
+    dirLabels: { 'up-strong': '大きく上昇', up: '上昇', 'up-slight': 'わずかに上昇' },
+    similar: {
+        title: '似た方向',
+        sub: '類似した意味のプレビュー',
+        aligns: 'Token IDs は違っても、意味ベクトルが揃う',
+        overlap: (pct) => `方向の一致 ~${pct}%`,
+        note: '二つの文は Token IDs をほとんど共有しません（1042,883,17 と 1057,904,17）が、同じ意味の方向を指します。これは視覚的な味見にすぎません。この方向の幾何は次の章で、完全な類似度の計算は第8章で開きます。',
+    },
+    agent: {
+        needsApproval: '承認が必要',
+        note: '同じ数値プロファイルが、安全な調査と顧客へのリスクの高い行動を区別します。意味の表現は答えるだけでなく、行動の判断にも影響します。',
+    },
+    disclaimer: {
+        lead: '二つの注意：',
+        idIsAddress: 'Token ID は辞書内のアドレスで、意味ではない',
+        idTail: '数値1042は単語「荷物」を指しますが、「荷物」を意味するわけではありません。',
+        dimsReadable: '意味の次元（配送、失敗など）は、学習のために選んだ読みやすい軸です',
+        dimsTail:
+            '実際の表現では、次元は人間のラベルではなく、人間には読めない数百から数千の学習された次元です。ここではまだ類似度や確率を計算せず、後の章で比較できるプロファイルを作っているだけです。',
+    },
+    dimLabel: {
+        delivery: '配送',
+        system: 'システム',
+        address: '住所',
+        payment: '支払い',
+        urgency: '緊急度',
+        failure: '失敗',
+        action: '行動',
+        risk: 'リスク',
+        customer: '顧客',
+        permission: '承認',
+    },
+};
+
 export function getWordText(locale: Locale): WordLabText {
     if (locale === 'he') return HE_WORD_TEXT;
     if (locale === 'es') return ES_WORD_TEXT;
     if (locale === 'ru') return RU_WORD_TEXT;
     if (locale === 'ar') return AR_WORD_TEXT;
+    if (locale === 'ja') return JA_WORD_TEXT;
     return EN_WORD_TEXT;
 }

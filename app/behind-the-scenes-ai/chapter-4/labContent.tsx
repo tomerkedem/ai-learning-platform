@@ -31,6 +31,7 @@ import { chapter4Lab as EN_LAB } from '@/i18n/locales/en/behind-ai/chapter4Lab';
 import { chapter4Lab as ES_LAB } from '@/i18n/locales/es/behind-ai/chapter4Lab';
 import { chapter4Lab as RU_LAB } from '@/i18n/locales/ru/behind-ai/chapter4Lab';
 import { chapter4Lab as AR_LAB } from '@/i18n/locales/ar/behind-ai/chapter4Lab';
+import { chapter4Lab as JA_LAB } from '@/i18n/locales/ja/behind-ai/chapter4Lab';
 
 /* ════════════════════════ טיפוסים ════════════════════════ */
 
@@ -254,6 +255,7 @@ const LAB_CONTENT_BY_LOCALE: Partial<Record<Locale, Chapter4LabDict>> = {
     es: ES_LAB,
     ru: RU_LAB,
     ar: AR_LAB,
+    ja: JA_LAB,
 };
 
 /** מחזיר את תוכן המעבדה לשפה, עם נפילה לעברית. */

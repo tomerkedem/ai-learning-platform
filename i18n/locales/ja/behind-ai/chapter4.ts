@@ -1,10 +1,112 @@
 // i18n/locales/ja/behind-ai/chapter4.ts
+// 第4章 日本語版（「Embeddings: 意味のない数値から意味へ」）。
+// 形のもと: ../../he/behind-ai/chapter4（ヘブライ語が正本）。
 //
-// TEMPORARY i18n skeleton. This is NOT a real translation. It re-exports the Hebrew
-// chapter 4 dictionary only to keep TypeScript and the dictionary shape green while
-// chapter 4 i18n lands one language per commit. The real Japanese translation replaces
-// this file in the Japanese commit (Commit 6).
+// 本物の翻訳、自然な日本語（逐語訳ではない）。Phone-first で読み上げ対応: 短い文、
+// 密な段落なし。荷物と配送のアンカーを保持。固定用語: Embedding, Token ID, RAG,
+// Agent, AI, モデル。長いダッシュ（U+2014）や中ダッシュ（U+2013）は使いません。
+// メンターの吹き出しに絵文字なし。
 //
-// Shape source: ../../he/behind-ai/chapter4 (Hebrew is canonical).
+// ラボの文字列（UniversalMeaningDemo, EmbeddingExperienceLab）は chapter4Lab から
+// ラボコンテンツのレジストリ経由で来るため、ここでは繰り返しません。クイズの数値の
+// 骨組みは quizData.ts に残り、ここは表示テキスト（quiz.byId）のみ。
 
-export { chapter4 } from '@/i18n/locales/he/behind-ai/chapter4';
+import type { Locale } from '@/i18n/config';
+import { chapter4Quiz } from './chapter4Quiz';
+
+export const chapter4 = {
+    contentLocale: 'ja' as Locale,
+
+    // Hero
+    hero: {
+        badge: 'Behind the Scenes · 04',
+        titleLead: 'AI はどうやって',
+        titleHighlight: '異なる二つの文が同じ意味だと分かるのか？',
+        lede: '二つの文はまったく違う単語を使っても、ほぼ同じ意味になり得ます。それを捉えるには、モデルは単語を一致させるだけでなく、意味を比較する方法が必要です。Embedding は、二つの文が意味でどれだけ近いかを測れる数値表現です。',
+        chipObject: 'オブジェクトか文を選び、何が一番近いか見てみましょう',
+        chipMeaning: '違う単語でも意味では近いことがあります',
+    },
+
+    // メンターの吹き出し（テキストのみ。ポーズと位置はページ側で構造的に決まる）
+    mentor: {
+        hero: 'エンジンは単語ではなく数値を見る',
+        lock: '近さは真実ではない',
+        practical: '意味では近いが、必ずしも正しいわけではない',
+    },
+
+    // クイック予想: テキストのみ。アイコン、正解、ポーズは構造的
+    guess: {
+        eyebrow: 'クイック予想',
+        title: '違う単語、同じ意図。意味では近い？',
+        subtitle: '共通の単語が一つもない、二つのサポート連絡。単語ではなく意味で予想してください。',
+        prompt: '「荷物が届かなかった」対「配送が完了しなかった」',
+        invite: '単語ではなく意味を考えてから選んでください。',
+        // 安定した id ごとの選択肢（close が正解、far/letters は説明付きの誤り）
+        options: {
+            close: {
+                title: 'はい、近い',
+                desc: '共通の単語がなくても同じ意図',
+            },
+            far: {
+                title: 'いいえ、遠い',
+                desc: '違う単語だから意味も違う',
+                why: 'そう考えるのは自然です。共通の単語が一つもないからです。でも Embedding は単語ではなく意味を比べます。同じ意図は別の単語でも近いままです。',
+            },
+            letters: {
+                title: '共通の単語しだい',
+                desc: '近くなるには同じ単語が必要',
+                why: 'それは文字どおりの検索の直感です。でも意味の近さは共通の単語ではなく、意味そのもので測ります。',
+            },
+        },
+        successTitle: 'その通り！',
+        successExplain:
+            '二つの連絡は違う単語を使いますが、ほぼ同じ問題を説明しています。荷物が届かない、または配送されない。だから Embedding はそれらを意味で近いと測ります。',
+        successInsight: 'モデルは同じ単語だけを探すのではありません。似た意味を探します。',
+        continueCta: '表示へ進む',
+        retryLink: 'もう一度予想',
+        wrongTitle: 'もう一度試す',
+        retryButton: 'もう一度試す',
+    },
+
+    // オブジェクトから文への橋渡し
+    bridge: '今度は同じ考えを文に当てはめます。単語が変わっても、意味は近いままのことがあります。',
+
+    // 理解を固める: 近さは真実ではない
+    lock: {
+        title: '理解を固める',
+        question: '二つの文が意味でとても近く出ました。これは何を意味しますか？',
+        options: ['意味が近いということ', '両方が現実で正しいということ', '実は同じ文だということ'],
+        explanationCorrect:
+            'その通り。ここでの近さは意味が似ているということで、何かが正しいということではありません。Embedding は意味を比べ、世界で何が起きたかは確かめません。',
+        explanationWrong:
+            '惜しい。近さは意味が似ているとだけ言います。何かが正しいとは保証せず、二つの文を一つにもしません。',
+    },
+
+    // 実践的な学び
+    practical: {
+        title: 'Embeddings が役立つとき、そして役立たないこと',
+        lead: '意味の近さは強力な道具で、あなたがすでに使っている多くを動かしています。',
+        uses: [
+            '意味検索とソースの取得、RAG の土台',
+            'テキスト分類と意図の認識',
+            'サポートセンターでの似た連絡のグループ化',
+            '意味の近さに基づく Agent の判断',
+        ],
+        caveat:
+            'でも近さは真実ではありません。Embedding は意味を比べ、何かが正しいかは確かめず、人間のようには理解しません。だから慎重な行動には、近さだけでなく出典や確認が必要です。',
+        mathLink:
+            'この近さの数学を深く知りたいですか？ 直感的数学コースの「ベクトル、あらゆるモデルの心臓」の章で',
+    },
+
+    // Under the hood（補助的）
+    hood: {
+        eyebrow: 'Under the hood',
+        title: '単語から数値へ',
+        helper: 'ラボを開いて、テキストがどうトークンや数値や意味になるか見てみましょう。',
+        labsCount: '3つのインタラクティブなラボが中に',
+        intro: 'この近さの下にある技術的な一歩を見たいですか？ どの単語も Token ID を受け取り、IDの並びから意味ベクトルが作られます。これが、二つの文が意味でどれだけ近いかを決める数値プロファイルです。',
+    },
+
+    // 理解度チェック（表示テキスト。数値の骨組みは quizData）
+    quiz: chapter4Quiz,
+};
