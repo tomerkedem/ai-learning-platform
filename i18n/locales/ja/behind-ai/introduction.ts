@@ -175,7 +175,7 @@ export const introduction = {
                 teaser: '「リクエストと回答」の裏には、一連の経路が隠れています。ここでそれが見え始めます。',
                 purpose: 'チャットは単なるリクエストと回答だという思い込みを崩し、モデルに実際に何が入るのかを見ます。',
                 stationChips: ['リクエストが入る', 'コンテキストウィンドウ'],
-                chapters: ['透明なチャット', 'モデルに入るもの'],
+                chapters: ['透明なチャット：答えの背後にある道のり', 'Model Input：モデルに実際に入るもの'],
             },
             representations: {
                 title: 'テキストからトークン、そして表現へ',
@@ -183,7 +183,7 @@ export const introduction = {
                 teaser: 'テキストは、どうやって計算できるもの、そして意味に変わるのか? ここでそれが起きます。',
                 purpose: 'テキストが、モデルが扱うトークン、数値表現、意味、文脈へどう変わるかを理解します。',
                 stationChips: ['トークンへの分割', 'Embedding', 'Attention'],
-                chapters: ['テキストがトークンにほどける', '数値から意味へ', '意味の地図', 'いま重要なのは誰か', 'いまモデルが見ているもの'],
+                chapters: ['Tokenization：テキストがトークンに分かれるとき', 'Embeddings：意味のない数字から意味へ', 'Semantic Space：モデルの意味の地図', 'Attention：いま重要なのは何か', 'Context Window：モデルがいま実際に見ているもの'],
             },
             generation: {
                 title: '回答はどう組み立てられるか',
@@ -191,7 +191,7 @@ export const introduction = {
                 teaser: '表現ができたあと、回答の一語一語はどう選ばれるのか? ここでそれが起きます。',
                 purpose: 'スコアがどう確率に変わり、次のトークンがどう選ばれ、完全な回答がループでどう組み立てられるかを理解します。',
                 stationChips: ['Logits', 'Softmax', 'Decoding', '回答までのループ'],
-                chapters: ['スコアから確率へ', '次のトークンを選ぶ', '回答はどう組み立てられるか'],
+                chapters: ['Logits & Softmax：スコアから確率へ', 'Decoding：次のトークンを選ぶ', 'Generation Loop：回答が最後までどう組み立てられるか'],
             },
             reliability: {
                 title: '信頼性、出典、チェック',
@@ -199,7 +199,7 @@ export const introduction = {
                 teaser: 'なぜ回答は自信ありげに聞こえても誤りうるのか、そして何が根拠づけを助けるのか?',
                 purpose: 'なぜ自信は正しさではないのか、いつ外部の出典が必要か、自己チェックがどう回答を改善するかを理解します。',
                 stationChips: ['根拠ある回答', 'RAG', '自己チェック'],
-                chapters: ['自信ありげだが誤った回答', '出典につなぐ', '自己チェック'],
+                chapters: ['Hallucinations：なぜ自信ありげな回答が誤りうるのか', 'RAG & Grounding：AI を出典につなぐ方法', 'Self-Check：回答しながらの自己チェック'],
             },
             learning: {
                 title: 'モデルはどう学び、どう良くなるか',
@@ -207,7 +207,7 @@ export const introduction = {
                 teaser: 'モデルは失敗からどう良くなるのか、そしてあなたについて本当に何を覚えているのか?',
                 purpose: 'モデルが失敗からどう学ぶか、丸暗記と理解の違い、そして訂正したとき本当に何が変わるかを理解します。',
                 stationChips: ['失敗から学ぶ', '丸暗記と汎化'],
-                chapters: ['失敗から学ぶ', '丸暗記か理解か', 'AI は私から学ぶのか'],
+                chapters: ['Learning from Mistakes：モデルは失敗からどう良くなるか', 'Evaluation & Generalization：丸暗記か理解か', 'Does AI Learn From Me：AI は私から学ぶのか'],
             },
             agent: {
                 title: 'Chat から Agent へ',
@@ -215,7 +215,7 @@ export const introduction = {
                 teaser: 'モデルが答えるだけでなく、行動もするようになると何が起きるのか?',
                 purpose: 'モデルを取り巻くシステムが、ツールを選び、リスクを確認し、承認を求め、または止まるとき、何が変わるかを理解します。',
                 stationChips: ['エンジンを取り巻く層', 'Guardrails'],
-                chapters: ['問いがタスクになるとき', 'リスク、承認、停止', '1つのプロンプト、すべてのステーション'],
+                chapters: ['Chat to Agent：問いがタスクになるとき', 'Guardrails：リスク、権限、承認、停止', 'Full Trace：1つのプロンプト、すべてのステーション'],
             },
         },
     },

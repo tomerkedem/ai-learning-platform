@@ -174,7 +174,7 @@ export const introduction = {
                 teaser: 'Behind "request and answer" hides a full route. This is where you start to see it.',
                 purpose: 'To break the illusion that chat is just request and answer, and to see what really goes into the model.',
                 stationChips: ['The request comes in', 'Context window'],
-                chapters: ['The transparent chat', 'What goes into the model'],
+                chapters: ['The Transparent Chat: The Path Behind the Answer', 'Model Input: What Really Enters the Model'],
             },
             representations: {
                 title: 'From text to tokens and representations',
@@ -182,7 +182,7 @@ export const introduction = {
                 teaser: 'How does text become something you can compute on, and turn into meaning? This is where it happens.',
                 purpose: 'To understand how text becomes tokens, numeric representations, meaning, and the context the model works with.',
                 stationChips: ['Breaking into tokens', 'Embedding', 'Attention'],
-                chapters: ['Text breaks into tokens', 'From a number to meaning', 'The map of meaning', 'Who matters now', 'What the model sees now'],
+                chapters: ['Tokenization: When Text Breaks Into Tokens', 'Embeddings: From a Meaningless Number to Meaning', 'Semantic Space: The Model\'s Map of Meaning', 'Attention: Who Matters Now', 'Context Window: What the Model Really Sees Now'],
             },
             generation: {
                 title: 'How an answer is built',
@@ -190,7 +190,7 @@ export const introduction = {
                 teaser: 'Once there is a representation, how is each word of the answer chosen? This is where it happens.',
                 purpose: 'To understand how scores turn into probabilities, how the next token is chosen, and how a full answer is built in a loop.',
                 stationChips: ['Logits', 'Softmax', 'Decoding', 'Looping until an answer'],
-                chapters: ['From scores to probabilities', 'Choosing the next token', 'How an answer is built'],
+                chapters: ['Logits & Softmax: From Scores to Probabilities', 'Decoding: Choosing the Next Token', 'Generation Loop: How an Answer Is Built to the End'],
             },
             reliability: {
                 title: 'Reliability, sources, and checking',
@@ -198,7 +198,7 @@ export const introduction = {
                 teaser: 'Why can an answer sound confident and still be wrong, and what helps ground it?',
                 purpose: 'To understand why confidence is not correctness, when an external source is needed, and how a self-check improves an answer.',
                 stationChips: ['A grounded answer', 'RAG', 'Self-check'],
-                chapters: ['A confident answer that is wrong', 'Connecting to sources', 'Self-check'],
+                chapters: ['Hallucinations: Why a Confident Answer Can Be Wrong', 'RAG & Grounding: How to Connect AI to Sources', 'Self-Check: Checking While Answering'],
             },
             learning: {
                 title: 'How a model learns and improves',
@@ -206,7 +206,7 @@ export const introduction = {
                 teaser: 'How does a model improve from a mistake, and what does it really remember about you?',
                 purpose: 'To understand how a model learns from a mistake, the difference between memorizing and understanding, and what really changes when you correct it.',
                 stationChips: ['Learning from a mistake', 'Memorizing vs generalizing'],
-                chapters: ['Learning from a mistake', 'Memorized or understood', 'Does AI learn from me'],
+                chapters: ['Learning from Mistakes: How a Model Improves from an Error', 'Evaluation & Generalization: Memorized or Understood', 'Does AI Learn From Me: Does It Learn From You?'],
             },
             agent: {
                 title: 'From Chat to Agent',
@@ -214,7 +214,7 @@ export const introduction = {
                 teaser: 'What happens when the model not only answers, but also acts?',
                 purpose: 'To understand what changes when a system around the model chooses a tool, checks risk, asks for approval, or stops.',
                 stationChips: ['A layer around the engine', 'Guardrails'],
-                chapters: ['When a question becomes a task', 'Risk, approval, and stopping', 'One prompt, every station'],
+                chapters: ['Chat to Agent: When a Question Becomes a Task', 'Guardrails: Risk, Permissions, Approval, and Stopping', 'Full Trace: One Prompt, Every Station'],
             },
         },
     },

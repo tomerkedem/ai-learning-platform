@@ -174,7 +174,7 @@ export const introduction = {
                 teaser: 'Detrás de "solicitud y respuesta" se esconde un recorrido completo. Aquí empiezas a verlo.',
                 purpose: 'Romper la ilusión de que el chat es solo solicitud y respuesta, y ver qué entra realmente en el modelo.',
                 stationChips: ['Entra la solicitud', 'Ventana de contexto'],
-                chapters: ['El chat transparente', 'Qué entra en el modelo'],
+                chapters: ['El chat transparente: el camino detrás de la respuesta', 'Model Input: qué entra realmente en el modelo'],
             },
             representations: {
                 title: 'Del texto a tokens y representaciones',
@@ -182,7 +182,7 @@ export const introduction = {
                 teaser: '¿Cómo se convierte el texto en algo sobre lo que se puede calcular, y en significado? Aquí ocurre.',
                 purpose: 'Entender cómo el texto se convierte en tokens, representaciones numéricas, significado y el contexto con el que trabaja el modelo.',
                 stationChips: ['División en tokens', 'Embedding', 'Attention'],
-                chapters: ['El texto se descompone en tokens', 'De un número al significado', 'El mapa del significado', 'Quién importa ahora', 'Qué ve el modelo ahora'],
+                chapters: ['Tokenization: cuando el texto se divide en tokens', 'Embeddings: de un número sin significado al significado', 'Semantic Space: el mapa de significado del modelo', 'Attention: qué importa ahora', 'Context Window: qué ve realmente el modelo ahora'],
             },
             generation: {
                 title: 'Cómo se construye una respuesta',
@@ -190,7 +190,7 @@ export const introduction = {
                 teaser: 'Una vez que hay una representación, ¿cómo se elige cada palabra de la respuesta? Aquí ocurre.',
                 purpose: 'Entender cómo las puntuaciones se convierten en probabilidades, cómo se elige el siguiente token y cómo se construye una respuesta completa en un bucle.',
                 stationChips: ['Logits', 'Softmax', 'Decoding', 'Un bucle hasta la respuesta'],
-                chapters: ['De puntuaciones a probabilidades', 'Elegir el siguiente token', 'Cómo se construye una respuesta'],
+                chapters: ['Logits & Softmax: de puntuaciones a probabilidades', 'Decoding: elegir el siguiente token', 'Generation Loop: cómo se construye una respuesta hasta el final'],
             },
             reliability: {
                 title: 'Fiabilidad, fuentes y verificación',
@@ -198,7 +198,7 @@ export const introduction = {
                 teaser: '¿Por qué una respuesta puede sonar segura y aun así estar equivocada, y qué ayuda a fundamentarla?',
                 purpose: 'Entender por qué la seguridad no es exactitud, cuándo hace falta una fuente externa y cómo una autoverificación mejora una respuesta.',
                 stationChips: ['Una respuesta fundamentada', 'RAG', 'Autoverificación'],
-                chapters: ['Una respuesta segura que se equivoca', 'Conectar con fuentes', 'Autoverificación'],
+                chapters: ['Hallucinations: por qué una respuesta segura puede estar equivocada', 'RAG & Grounding: cómo conectar la AI a fuentes', 'Self-Check: verificación propia mientras responde'],
             },
             learning: {
                 title: 'Cómo aprende y mejora un modelo',
@@ -206,7 +206,7 @@ export const introduction = {
                 teaser: '¿Cómo mejora un modelo a partir de un error, y qué recuerda realmente de ti?',
                 purpose: 'Entender cómo un modelo aprende de un error, la diferencia entre memorizar y comprender, y qué cambia realmente cuando lo corriges.',
                 stationChips: ['Aprender de un error', 'Memorizar frente a generalizar'],
-                chapters: ['Aprender de un error', 'Memorizó o comprendió', '¿Aprende la IA de mí?'],
+                chapters: ['Learning from Mistakes: cómo mejora un modelo a partir de un error', 'Evaluation & Generalization: memorizar o comprender', 'Does AI Learn From Me: ¿aprende la AI de mí?'],
             },
             agent: {
                 title: 'Del Chat al Agent',
@@ -214,7 +214,7 @@ export const introduction = {
                 teaser: '¿Qué ocurre cuando el modelo no solo responde, sino que también actúa?',
                 purpose: 'Entender qué cambia cuando un sistema alrededor del modelo elige una herramienta, revisa el riesgo, pide aprobación o se detiene.',
                 stationChips: ['Una capa alrededor del motor', 'Guardrails'],
-                chapters: ['Cuando una pregunta se vuelve tarea', 'Riesgo, aprobación y detención', 'Un prompt, todas las estaciones'],
+                chapters: ['Chat to Agent: cuando una pregunta se vuelve tarea', 'Guardrails: riesgo, permisos, aprobación y detención', 'Full Trace: un prompt, todas las estaciones'],
             },
         },
     },
