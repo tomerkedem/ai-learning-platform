@@ -112,8 +112,9 @@ export const chapter1Visuals = {
         introHeadLabel: '読み取りヘッド',
         introMid: ' は、読書中に指で文字を追うように、文の上を一語ずつ移動するカーソルです。停止するたびに、それまで読んだ語に同じエンジンが走るので、モデルが',
         introEmph: '読みながら考えを変える',
-        introTail: '様子を見られます。',
-        takeaway: 'ここでの学び: モデルにあらかじめ用意された答えはありません。蓄積される文脈から答えを組み立て、新しい語ごとに先頭の推測が動きます。そして文の終わりで判断が落ち着きます。だからこそ語順や言い回しも結果に影響します。',
+        introTail: '様子を見られます。例を選んでスキャナーを動かしましょう。',
+        examplesLabel: '例を選ぶ',
+        yourSentence: 'あなたの文',
         play: '再生',
         pause: '停止',
         again: 'もう一度',
@@ -122,13 +123,24 @@ export const chapter1Visuals = {
         restart: '最初から',
         wordCountAria: (i: number, n: number) => `${n} 語中 ${i} 語目`,
         scrubberAria: '読み取りヘッドの位置',
+        flipMarkerAria: 'ここで先頭が入れ替わりました',
         leaderNow: '現在の先頭:',
+        leaderTag: '先頭',
         confidence: '確信度',
         decisionNow: '現在の判断:',
-        riverHint: '太さ = 今この瞬間の確率',
-        integrityOne: 'まだ一語だけ: 走査するものがありません。チャットに語を足して、語ごとに確率が動く様子を見てください。',
-        integrityManyLead: 'キーワードが入ると、棒が一気に跳ねることがあります(例「',
-        integrityManyTail: '」)。これはバグではありません。決定的な証拠が届いた瞬間に確信が変わるのです。',
+        streamHint: '幅 = 確率。時間は読む方向に流れます。',
+        readingNow: 'まだ読み取り中... 判断は文の終わりで落ち着きます。',
+        insightTitle: 'ここで起きたこと',
+        insightChanges: (n: number) =>
+            n === 0
+                ? 'モデルは文を通して先頭を一度も入れ替えませんでした。考えを変えず、確信を強めただけです。'
+                : n === 1
+                    ? 'モデルは読みながら一度だけ考えを変えました。'
+                    : `モデルは読みながら ${n} 回考えを変えました。`,
+        insightPivot: (w: string) => `最終判断をひっくり返した語: 「${w}」。`,
+        scriptedNote: 'ガイド付きの例: ここでの確率は、確信が語ごとにどう積み上がるかを示す学習用のイラストであり、実際のモデルの出力ではありません。',
+        liveNote: 'これはあなたの文で、章の学習エンジンに通したものです。確率はキーワードが入ったときだけ動くことに注目してください。',
+        examples: [],
     },
 
     // ConfidenceDial (Chat mode)
@@ -219,6 +231,11 @@ export const chapter1Visuals = {
         attrNoPivotMid2: ' のが語 ',
         attrNoPivotTail: ' だからです。語が無いこともまた原因です。下で戻して見てください。',
         flipped: '判断が反転しました:',
+        sameDecision: '判断は同じままですが、その語が先頭の意図と生成される返答を変えました。',
+        barsTitle: 'エンジンが各解釈をどれだけ信じているか',
+        barsLegend: '各バーの横の緑または赤の数字 = 変えた語によってその解釈がどれだけ上がったか下がったか。',
+        barReadWith: (word: string, before: number, after: number) => `「${word}」という語が、先頭の解釈を ${before}% から ${after}% へ跳ね上げました。`,
+        barReadWithout: (word: string, after: number) => `「${word}」という語がないと、際立つ解釈がなく、先頭でも ${after}% にとどまります。`,
         ghostHint: '破線の輪郭 = 前回の実行(ゴースト)',
         replyToCreate: '生成される回答',
         beforeAfter: '前 / 後',

@@ -10,9 +10,9 @@
 // ומגירת אפשרויות נפתחת עם: מצב היקף (Short/Regular/Full), מהירות קריאה, ובורר קולות
 // (כשיש יותר מקול תואם אחד). אין autoplay - הכל ביוזמת המשתמש בלבד.
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Headphones, Volume2, Pause, Play, Square, ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
+import { Headphones, Volume2, Pause, Play, Square, ChevronLeft, ChevronRight, SlidersHorizontal, ListMusic } from 'lucide-react';
 import type { Direction } from '@/i18n/config';
 import { DUR, EASE, withReduced } from './motionTokens';
 import { useReadAloud, type ReadAloudSegment } from './useReadAloud';
@@ -37,6 +37,8 @@ export interface ReadAloudLabels {
     voice: string;
     browserDefault: string;
     settings: string;
+    /** כותרת מגירת הקטעים / בורר נקודת ההתחלה. */
+    sections: string;
     nowReading: string;
     unsupported: string;
     scope: string;
@@ -56,11 +58,14 @@ interface ReadAloudControlsProps {
     dir: Direction;
     labels: ReadAloudLabels;
     reduce: boolean;
+    /** מצב צף: כשסגור, מתכווץ לאייקון בלבד במובייל (תווית וגלגל ההגדרות מוסתרים מתחת ל-sm). */
+    compact?: boolean;
 }
 
-export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, reduce }: ReadAloudControlsProps) {
+export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, reduce, compact = false }: ReadAloudControlsProps) {
     const [mode, setMode] = useState<ReadAloudMode>('regular');
     const [showSettings, setShowSettings] = useState(false);
+    const [showSections, setShowSections] = useState(false);
     const isRtl = dir === 'rtl';
 
     const segments = segmentsByMode[mode];
@@ -71,6 +76,17 @@ export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, r
     const isActive = ra.status === 'speaking' || ra.status === 'paused';
     const current = ra.currentIndex >= 0 ? segments[ra.currentIndex] : null;
     const progressPct = ra.total > 0 && ra.currentIndex >= 0 ? ((ra.currentIndex + 1) / ra.total) * 100 : 0;
+
+    // הדגשת קריוקי: טווח התווים של המילה הנאמרת כרגע בתוך טקסט המקטע. נופלים לתווית
+    // הקצרה כשאין boundary (מנוע לא תומך / טרם נאמרה מילה).
+    const wr = ra.wordRange;
+    const karaoke = current && wr && wr.start < current.text.length;
+
+    // גלילה אוטומטית למילה הפעילה בתוך פאנל הקריאה (block:'nearest' מזיז רק את הפאנל).
+    const activeWordRef = useRef<HTMLElement | null>(null);
+    useEffect(() => {
+        activeWordRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+    }, [wr?.start, reduce]);
 
     const modeLabel: Record<ReadAloudMode, string> = {
         short: labels.scopeShort,
@@ -83,7 +99,7 @@ export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, r
         return (
             <div dir={dir} className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-slate-900/70 px-3 py-1.5 text-sm font-bold text-slate-300 backdrop-blur-xl">
                 <Headphones size={16} className="text-cyan-300/80" aria-hidden />
-                <span>{labels.dock}</span>
+                <span className={compact ? 'max-sm:hidden' : undefined}>{labels.dock}</span>
             </div>
         );
     }
@@ -115,7 +131,7 @@ export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, r
     return (
         <div
             dir={dir}
-            className="inline-flex max-w-full flex-col gap-3 rounded-2xl border border-white/10 bg-slate-900/70 p-3 text-start shadow-[0_8px_30px_rgba(2,6,23,0.5)] backdrop-blur-xl"
+            className={`inline-flex max-w-full flex-col gap-3 rounded-2xl border border-white/10 bg-slate-900/70 text-start shadow-[0_8px_30px_rgba(2,6,23,0.5)] backdrop-blur-xl ${compact && !isActive ? 'p-2 sm:p-3' : 'p-3'}`}
         >
             {/* שורת הפקדים הראשית */}
             <div className="flex flex-wrap items-center gap-2">
@@ -128,7 +144,7 @@ export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, r
                         className="group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-bold text-slate-200 transition-colors hover:border-cyan-400/40 hover:text-white active:scale-95"
                     >
                         <Headphones size={16} className="text-cyan-300 transition-transform group-hover:scale-110" aria-hidden />
-                        {labels.dock}
+                        <span className={compact ? 'max-sm:hidden' : undefined}>{labels.dock}</span>
                     </button>
                 ) : (
                     <>
@@ -163,13 +179,24 @@ export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, r
                     </>
                 )}
 
+                {/* בורר קטעים: מאיפה תתחיל ההקראה (גם כשעדיין לא מתנגנת) */}
+                <button
+                    type="button"
+                    onClick={() => { setShowSections((s) => !s); setShowSettings(false); }}
+                    aria-label={labels.sections}
+                    aria-expanded={showSections}
+                    className={`${iconBtn} ms-auto ${showSections ? 'border-cyan-400/40 text-white' : ''} ${compact && !isActive ? 'max-sm:hidden' : ''}`}
+                >
+                    <ListMusic size={15} aria-hidden />
+                </button>
+
                 {/* מגירת האפשרויות זמינה תמיד: היקף ומהירות שימושיים גם כשיש קול אחד */}
                 <button
                     type="button"
-                    onClick={() => setShowSettings((s) => !s)}
+                    onClick={() => { setShowSettings((s) => !s); setShowSections(false); }}
                     aria-label={labels.settings}
                     aria-expanded={showSettings}
-                    className={`${iconBtn} ms-auto ${showSettings ? 'border-cyan-400/40 text-white' : ''}`}
+                    className={`${iconBtn} ${showSettings ? 'border-cyan-400/40 text-white' : ''} ${compact && !isActive ? 'max-sm:hidden' : ''}`}
                 >
                     <SlidersHorizontal size={15} aria-hidden />
                 </button>
@@ -197,7 +224,56 @@ export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, r
                             <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-300/70">
                                 {labels.nowReading}
                             </span>
-                            <p className="mt-0.5 text-[13px] leading-snug text-slate-200 line-clamp-2">{current.label}</p>
+                            {karaoke && current ? (
+                                <p dir={dir} className="mt-1 max-h-24 overflow-y-auto overscroll-contain text-[13px] leading-relaxed text-start">
+                                    <span className="text-slate-500">{current.text.slice(0, wr!.start)}</span>
+                                    <motion.span
+                                        key={wr!.start}
+                                        ref={activeWordRef}
+                                        initial={reduce ? false : { opacity: 0.55, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={reduce ? { duration: 0 } : { duration: 0.18, ease: 'easeOut' }}
+                                        className="mx-[1px] inline-block rounded-md bg-cyan-400/25 px-1 font-bold text-cyan-50 shadow-[0_0_14px_rgba(34,211,238,0.5)]"
+                                    >
+                                        {current.text.slice(wr!.start, wr!.end)}
+                                    </motion.span>
+                                    <span className="text-slate-300">{current.text.slice(wr!.end)}</span>
+                                </p>
+                            ) : (
+                                <p className="mt-0.5 text-[13px] leading-snug text-slate-200 line-clamp-2">{current.label}</p>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* מגירת קטעים: בחירת נקודת ההתחלה. לחיצה מתחילה הקראה מאותו קטע. */}
+            <AnimatePresence initial={false}>
+                {showSections && (
+                    <motion.div
+                        initial={reduce ? false : { opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                        transition={withReduced(reduce, { duration: DUR.quick, ease: EASE.out })}
+                        className="overflow-hidden"
+                    >
+                        <span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">{labels.sections}</span>
+                        <div className="flex max-h-48 flex-col gap-1 overflow-y-auto overscroll-contain" role="group" aria-label={labels.sections}>
+                            {segments.map((s, i) => {
+                                const isCur = i === ra.currentIndex;
+                                return (
+                                    <button
+                                        key={s.id}
+                                        type="button"
+                                        onClick={() => { ra.start(i); setShowSections(false); }}
+                                        aria-current={isCur ? 'true' : undefined}
+                                        className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-start text-xs transition-colors ${isCur ? 'bg-cyan-500/15 font-bold text-cyan-100' : 'text-slate-300 hover:bg-white/5'}`}
+                                    >
+                                        <span className="w-5 shrink-0 font-mono text-[10px] tabular-nums text-slate-500">{i + 1}</span>
+                                        <span className="truncate">{s.label}</span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </motion.div>
                 )}

@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { GitCompare, ArrowUp, ArrowDown, Minus, Zap, Lightbulb, Target } from 'lucide-react';
 
 import { ACCENTS } from '@/components/ai-internals/accents';
-import { DecisionCard } from '@/components/ai-internals/DecisionCard';
+import { DecisionPill } from '@/components/ai-internals/DecisionPill';
 import { EngineMetricCard } from '@/components/ai-internals/EngineMetricCard';
 import type { Accent, FlowMode } from '@/components/ai-internals/types';
 import { useT } from '@/i18n/useT';
@@ -140,8 +140,8 @@ export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, ac
                 </span>
             </div>
 
-            {/* ההבזק על החלטה שהתהפכה */}
-            {flipped && (
+            {/* מה השתנה: הבזק כשההחלטה התהפכה; אחרת הבהרה שהמילה שינתה כוונה/תשובה גם בלי להפוך את ההחלטה */}
+            {flipped ? (
                 <motion.div
                     key={`${active.decision.kind}-${expKey}-${selected}`}
                     initial={reduce ? false : { opacity: 0, scale: 0.96 }}
@@ -154,11 +154,27 @@ export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, ac
                     <Zap size={13} />
                     {cf.flipped} {ghost.decision.label} -&gt; {active.decision.label}
                 </motion.div>
+            ) : (
+                <div
+                    className="mb-4 inline-flex items-center gap-2 rounded-lg border border-slate-600/50 bg-slate-800/30 px-3 py-1.5 text-xs text-slate-400"
+                    role="status"
+                    aria-live="polite"
+                >
+                    <Minus size={13} className="shrink-0" />
+                    {cf.sameDecision}
+                </div>
             )}
 
             {/* גוף ההשוואה */}
             {isChat ? (
-                <ChatDiff active={active as ChatEngineResult} ghost={ghost as ChatEngineResult} accent={accent} reduce={!!reduce} />
+                <ChatDiff
+                    active={active as ChatEngineResult}
+                    ghost={ghost as ChatEngineResult}
+                    accent={accent}
+                    reduce={!!reduce}
+                    pivot={activeVariant.pivot || undefined}
+                    otherPivot={ghostVariant.pivot || undefined}
+                />
             ) : (
                 <AgentDiff active={active as AgentEngineResult} ghost={ghost as AgentEngineResult} />
             )}
@@ -174,7 +190,7 @@ export const CounterfactualDiff: React.FC<CounterfactualDiffProps> = ({ mode, ac
 
 /* ── דיף Chat: עמודות הסתברות עם דלתא ──────────────────────────────────────── */
 
-const ChatDiff: React.FC<{ active: ChatEngineResult; ghost: ChatEngineResult; accent: Accent; reduce: boolean }> = ({ active, ghost, accent, reduce }) => {
+const ChatDiff: React.FC<{ active: ChatEngineResult; ghost: ChatEngineResult; accent: Accent; reduce: boolean; pivot?: string; otherPivot?: string }> = ({ active, ghost, accent, reduce, pivot, otherPivot }) => {
     const a = ACCENTS[accent];
     const { t, dir } = useT();
     const isRtl = dir === 'rtl';
@@ -184,10 +200,33 @@ const ChatDiff: React.FC<{ active: ChatEngineResult; ghost: ChatEngineResult; ac
     const ghostMap = new Map(ghost.intents.map((i) => [i.label, i.value]));
     const max = active.intents.reduce((m, it) => Math.max(m, it.value), 0);
 
+    // קריאת הבר העליון בשפה פשוטה: בכמה קפץ הפירוש המוביל בגלל המילה ששונתה.
+    const topLabel = active.intents[0]?.label ?? '';
+    const after = active.intents[0]?.value ?? 0;
+    const before = ghostMap.get(topLabel) ?? 0;
+    const resultText = pivot
+        ? cf.barReadWith(pivot, before, after)
+        : cf.barReadWithout(otherPivot ?? '', after);
+
     return (
         <div className="grid gap-4 md:grid-cols-[1fr_auto]">
             <div className="space-y-2.5">
-                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Intent probabilities</div>
+                <div>
+                    <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Intent probabilities</div>
+                    <div className="text-sm font-bold text-slate-200">{cf.barsTitle}</div>
+                </div>
+                {/* קריאת התוצאה בשפה פשוטה - הבר העליון מתורגם למשפט */}
+                <div className={`rounded-lg border ${a.border} ${a.bgSoft} px-3 py-2 text-xs leading-relaxed text-slate-100`}>
+                    {resultText}
+                </div>
+                {/* מקרא לפני המספרים: מה הירוק/אדום והקו המקווקו אומרים */}
+                <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] leading-relaxed text-slate-500">
+                    <span>{cf.barsLegend}</span>
+                    <span className="inline-flex items-center gap-1.5">
+                        <span className="inline-block h-2 w-3 rounded-sm border border-dashed border-slate-500/60" />
+                        {cf.ghostHint}
+                    </span>
+                </p>
                 {active.intents.map((item) => {
                     const before = ghostMap.get(item.label) ?? 0;
                     const delta = item.value - before;
@@ -218,14 +257,10 @@ const ChatDiff: React.FC<{ active: ChatEngineResult; ghost: ChatEngineResult; ac
                         </div>
                     );
                 })}
-                <p className="flex items-center gap-1.5 pt-1 text-[11px] text-slate-500">
-                    <span className="inline-block h-2 w-3 rounded-sm border border-dashed border-slate-500/60" />
-                    {cf.ghostHint}
-                </p>
             </div>
 
             <div className="space-y-3 md:w-56">
-                <DecisionCard decision={active.decision} />
+                <DecisionPill decision={active.decision} />
                 {/* התשובה שתיווצר משתנה עם המילה - כך "החלטה אחרת" מורגשת גם כשסוג ההחלטה זהה. */}
                 <div className="rounded-xl border border-white/10 bg-slate-950/50 p-3">
                     <div className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">{cf.replyToCreate}</div>
@@ -279,7 +314,7 @@ const AgentDiff: React.FC<{ active: AgentEngineResult; ghost: AgentEngineResult 
             <DiffRow label="Tool" before={ghost.toolNeed.needed ? ghost.toolNeed.tool : '-'} after={active.toolNeed.needed ? active.toolNeed.tool : '-'} />
             <EngineMetricCard label="Task detected" value={active.task} tone="purple" />
         </div>
-        <DecisionCard decision={active.decision} />
+        <DecisionPill decision={active.decision} />
     </div>
     );
 };

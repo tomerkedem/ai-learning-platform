@@ -242,6 +242,7 @@ export const introduction = {
         voice: 'Голос',
         browserDefault: 'Голос браузера по умолчанию',
         settings: 'Параметры озвучивания',
+        sections: 'Разделы',
         nowReading: 'Сейчас читается',
         unsupported: 'Озвучивание недоступно в этом браузере.',
         scope: 'Объём',

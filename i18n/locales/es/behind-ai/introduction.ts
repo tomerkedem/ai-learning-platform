@@ -242,6 +242,7 @@ export const introduction = {
         voice: 'Voz',
         browserDefault: 'Voz predeterminada del navegador',
         settings: 'Opciones de lectura',
+        sections: 'Secciones',
         nowReading: 'Leyendo ahora',
         unsupported: 'La lectura en voz alta no está disponible en este navegador.',
         scope: 'Alcance',

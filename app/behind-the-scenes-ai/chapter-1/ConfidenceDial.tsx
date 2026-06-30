@@ -2,9 +2,10 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { SlidersHorizontal, ShieldCheck, HelpCircle, ShieldAlert, Hand, Sparkles, MessageSquare, Target } from 'lucide-react';
+import { SlidersHorizontal, ShieldCheck, HelpCircle, ShieldAlert, Hand, MessageSquare, Target } from 'lucide-react';
 
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
+import { DecisionPill } from '@/components/ai-internals/DecisionPill';
 import { EngineMetricCard } from '@/components/ai-internals/EngineMetricCard';
 import type { DecisionState, FlowMode } from '@/components/ai-internals/types';
 import { useT } from '@/i18n/useT';
@@ -19,7 +20,6 @@ interface ConfidenceDialProps {
 // סף ברירת המחדל של המנוע הלימודי: confidenceFrom מסווג פער < 15% כביטחון נמוך,
 // ואז ההחלטה היא "לבקש הבהרה". זהו גם הרף ההתחלתי שהלומד מתחיל ממנו.
 const ENGINE_DEFAULT_THRESHOLD = 15;
-const PRESETS = [15, 30, 50, 70];
 
 const RANGE_HEX = '#22d3ee';
 
@@ -124,25 +124,7 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
                 </ol>
             </div>
 
-            {/* שתי האפשרויות המתחרות + הפער ביניהן */}
-            <div className="mb-3 grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
-                <div className="rounded-xl border border-cyan-500/40 bg-cyan-900/15 p-3 text-center">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-cyan-300">{cd.leadingLabel}</div>
-                    <div className="mt-1 truncate text-sm font-bold text-slate-100" title={top?.label}>{top?.label}</div>
-                    <div className="font-mono text-2xl font-black text-cyan-300">{top?.value ?? 0}%</div>
-                </div>
-                <div className="flex flex-col items-center justify-center px-1">
-                    <div className="text-[10px] text-slate-500">{cd.gapLabel}</div>
-                    <div className="font-mono text-xl font-black text-white">{margin}%</div>
-                </div>
-                <div className="rounded-xl border border-slate-600/40 bg-slate-800/40 p-3 text-center">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{cd.competitorLabel}</div>
-                    <div className="mt-1 truncate text-sm font-bold text-slate-200" title={second?.label}>{second?.label}</div>
-                    <div className="font-mono text-2xl font-black text-slate-300">{second?.value ?? 0}%</div>
-                </div>
-            </div>
-
-            {/* קלטים לדוגמה */}
+            {/* שלב 1: בוחרים קלט */}
             <div className="mb-2 flex flex-wrap items-center gap-1.5">
                 <span className="inline-flex items-center gap-1 text-[11px] text-slate-500"><MessageSquare size={12} /> {cd.tryInput}</span>
                 <button
@@ -165,11 +147,29 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
             </div>
             <div className="mb-4 truncate text-xs text-slate-500">{cd.analyzingLead}{shown}{cd.analyzingTail}</div>
 
-            {/* הציר: ביטחון המנוע מול הרף */}
+            {/* שלב 2: רואים את הפער = הביטחון של המנוע */}
+            <div className="mb-3 grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
+                <div className="rounded-xl border border-cyan-500/40 bg-cyan-900/15 p-3 text-center">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-cyan-300">{cd.leadingLabel}</div>
+                    <div className="mt-1 truncate text-sm font-bold text-slate-100" title={top?.label}>{top?.label}</div>
+                    <div className="font-mono text-2xl font-black text-cyan-300">{top?.value ?? 0}%</div>
+                </div>
+                <div className="flex flex-col items-center justify-center px-1">
+                    <div className="text-[10px] text-slate-500">{cd.gapLabel}</div>
+                    <div className="font-mono text-xl font-black text-white">{margin}%</div>
+                </div>
+                <div className="rounded-xl border border-slate-600/40 bg-slate-800/40 p-3 text-center">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{cd.competitorLabel}</div>
+                    <div className="mt-1 truncate text-sm font-bold text-slate-200" title={second?.label}>{second?.label}</div>
+                    <div className="font-mono text-2xl font-black text-slate-300">{second?.value ?? 0}%</div>
+                </div>
+            </div>
+
+            {/* שלב 3: גוררים את הרף. מקרא מבהיר מי הסמן הזוהר ומי הקו; תוויות האזורים מי עושה מה. */}
+            <div className="mb-1.5 text-center text-[11px] text-slate-500">{cd.dragHint}</div>
             <div className="mb-1 flex items-center justify-between text-[11px] font-bold">
-                <span className="text-amber-300">{cd.stopAsk}</span>
-                <span className="text-slate-400">{cd.dragHint}</span>
-                <span className="text-emerald-300">{cd.answerAlone}</span>
+                <span className="inline-flex items-center gap-1 text-amber-300"><Hand size={12} /> {cd.stopAsk}</span>
+                <span className="inline-flex items-center gap-1 text-emerald-300">{cd.answerAlone} <ShieldCheck size={12} /></span>
             </div>
             <div
                 ref={trackRef}
@@ -217,8 +217,8 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
                 </motion.div>
             </div>
 
-            {/* סליידר נגיש + presets */}
-            <div className="mt-3 flex flex-wrap items-center gap-3">
+            {/* סליידר נגיש (מקלדת) - מקביל לגרירה על הציר */}
+            <div className="mt-3">
                 <input
                     type="range"
                     min={0}
@@ -227,21 +227,9 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
                     value={threshold}
                     onChange={(e) => { setThreshold(Number(e.target.value)); setStake(null); }}
                     aria-label={cd.thresholdAria}
-                    className="h-2 flex-1 cursor-pointer appearance-none rounded-full bg-slate-700"
+                    className="h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-700"
                     style={{ accentColor: RANGE_HEX }}
                 />
-                <div className="flex items-center gap-1">
-                    {PRESETS.map((p) => (
-                        <button
-                            key={p}
-                            type="button"
-                            onClick={() => { setThreshold(p); setStake(null); }}
-                            className={`rounded-md border px-2 py-1 font-mono text-xs font-bold transition-colors ${threshold === p && !stake ? 'border-cyan-500/50 bg-cyan-900/25 text-cyan-200' : 'border-slate-700/60 bg-slate-800/40 text-slate-400 hover:border-slate-600'}`}
-                        >
-                            {p}%
-                        </button>
-                    ))}
-                </div>
             </div>
 
             {/* רמת סיכון -> מדיניות מומלצת (חיבור בין הסתברות לאחריות) */}
@@ -270,29 +258,24 @@ const ChatConfidenceDial: React.FC<{ text: string; reduce: boolean }> = ({ text,
                 )}
             </div>
 
-            {/* ההחלטה הנגזרת */}
-            <div className={`mt-5 rounded-2xl transition-shadow ${flash ? 'ring-2 ring-white/50' : ''}`} role="status" aria-live="polite">
-                <DecisionCard decision={decision} />
-            </div>
+            {/* ההחלטה הנגזרת: שורה קומפקטית (במקום כרטיס הירו הענק) */}
+            <DecisionPill decision={decision} className={`mt-5 transition-shadow ${flash ? 'ring-2 ring-white/50' : ''}`} />
 
-            {/* פידבק מגיב */}
-            <div className={`mt-3 flex items-start gap-2 rounded-xl border p-3 text-xs leading-relaxed ${passes ? 'border-emerald-500/40 bg-emerald-900/15 text-emerald-100' : 'border-amber-500/40 bg-amber-900/15 text-amber-100'}`}>
-                {passes
-                    ? <ShieldCheck size={15} className="mt-0.5 shrink-0 text-emerald-300" />
-                    : <Hand size={15} className="mt-0.5 shrink-0 text-amber-300" />}
-                <span>
+            {/* פידבק מיידי + התובנה המעשית, במקום אחד */}
+            <div className={`mt-3 rounded-xl border p-3 text-xs leading-relaxed ${passes ? 'border-emerald-500/40 bg-emerald-900/10' : 'border-amber-500/40 bg-amber-900/10'}`}>
+                <div className={`flex items-start gap-2 ${passes ? 'text-emerald-100' : 'text-amber-100'}`}>
                     {passes
-                        ? <>{cd.passLead(margin)}<span className="font-bold">{cd.passBold}</span>{cd.passTail(threshold)}</>
-                        : <>{cd.failLead(threshold)}<span className="font-bold">{cd.failBold}</span>{cd.failTail(margin)}</>}
-                </span>
-            </div>
-
-            {/* רמז + יושרה */}
-            <div className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-slate-500">
-                <Sparkles size={14} className="mt-0.5 shrink-0 text-cyan-400" />
-                <span>
+                        ? <ShieldCheck size={15} className="mt-0.5 shrink-0 text-emerald-300" />
+                        : <Hand size={15} className="mt-0.5 shrink-0 text-amber-300" />}
+                    <span>
+                        {passes
+                            ? <>{cd.passLead(margin)}<span className="font-bold">{cd.passBold}</span>{cd.passTail(threshold)}</>
+                            : <>{cd.failLead(threshold)}<span className="font-bold">{cd.failBold}</span>{cd.failTail(margin)}</>}
+                    </span>
+                </div>
+                <div className="mt-2 border-t border-white/10 pt-2 text-slate-400">
                     {cd.integrityLead}<span className="font-bold text-slate-300">{cd.integrityBold}</span>{cd.integrityTail}
-                </span>
+                </div>
             </div>
         </div>
     );

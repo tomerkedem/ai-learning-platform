@@ -34,6 +34,7 @@ export const aiInternals = {
         voice: 'الصوت',
         browserDefault: 'الصوت الافتراضي للمتصفّح',
         settings: 'خيارات القراءة',
+        sections: 'الأقسام',
         nowReading: 'يقرأ الآن',
         unsupported: 'القراءة الصوتية غير متاحة في هذا المتصفّح.',
         scope: 'النطاق',

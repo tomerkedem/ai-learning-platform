@@ -74,8 +74,8 @@ export const chapter1 = {
     deep: {
         toggleOpen: 'Cerrar la capa de profundidad',
         toggleClosed: 'Abrir el motor completo',
-        hint: 'Aquí se abren las herramientas avanzadas: lectura en vivo, un dial de confianza, causalidad y una comparación de motores. Puedes explorar a tu propio ritmo.',
-        intro1: 'Mira una capa de profundidad: a partir de aquí se vuelve más técnico. Tienes delante cuatro laboratorios numerados, cada uno muestra un ángulo distinto del mismo camino. No hace falta terminar todo de una vez.',
+        hint: 'Aquí se abren las herramientas avanzadas: un cabezal de lectura en vivo y una prueba que muestra qué palabra decidió. Puedes explorar a tu propio ritmo.',
+        intro1: 'Mira una capa de profundidad: a partir de aquí se vuelve más técnico. Tienes delante dos laboratorios numerados, cada uno muestra un ángulo distinto del mismo camino. No hace falta terminar todo de una vez.',
         intro2Lead: 'En ',
         intro2Mid: ' el sistema elige una respuesta. En ',
         intro2Tail: ' comprueba cuál es el paso correcto siguiente - responder, usar una herramienta, o detenerse y pedir información. Cambia entre ambos con el interruptor en la parte superior del chat.',
@@ -92,7 +92,7 @@ export const chapter1 = {
     // Summary (two insights inside the depth layer)
     summary: {
         understandTitle: 'Lo que entiendes ahora',
-        understandBody: 'El motor de IA no "sabe" la respuesta - clasifica opciones, y decide según la diferencia entre ellas. Cuando la diferencia es grande responde con confianza; cuando la diferencia es pequeña, el paso correcto es detenerse y preguntar, no adivinar. Lo viste tú mismo: el cabezal de lectura mostró cómo el líder cambiaba mientras leía, el dial de confianza convirtió la misma entrada entre responder y preguntar, y una sola palabra que se cambió volteó toda una decisión.',
+        understandBody: 'El motor de IA no "sabe" la respuesta - clasifica opciones, y decide según la diferencia entre ellas. Cuando la diferencia es grande responde con confianza; cuando la diferencia es pequeña, el paso correcto es detenerse y preguntar, no adivinar. Lo viste tú mismo: el cabezal de lectura mostró cómo el líder cambiaba mientras leía, y una sola palabra que se cambió volteó toda una decisión.',
         ruleTitle: 'La regla práctica',
         ruleBody: 'Confía en el motor cuando la diferencia es grande y el riesgo es bajo. Cuando la diferencia es pequeña o la acción es sensible - detenerse y pedir una aclaración no es un fallo, es el paso responsable. Aquí es exactamente donde empieza el vínculo entre probabilidad y responsabilidad.',
     },
@@ -108,9 +108,9 @@ export const chapter1 = {
         point2AfterAgent: ' pregunta "¿Cuál es el paso correcto siguiente?" - responder, usar una herramienta, o detenerse y pedir información.',
         point3Lead: 'La confianza se encuentra con la responsabilidad.',
         point3Body: ' La confianza se mide por la diferencia entre la opción líder y la siguiente. Una diferencia grande y riesgo bajo, puedes dejar que el motor responda. Una diferencia pequeña o una acción sensible, el paso responsable es detenerse y preguntar, no adivinar.',
-        footnoteLead: '¿Quieres ver estos tres en vivo? Abre arriba el ',
+        footnoteLead: '¿Quieres ver este recorrido en vivo? Abre arriba el ',
         footnoteHighlight: 'motor completo',
-        footnoteTail: ' y juega con el cabezal de lectura, el dial de confianza y la comparación de motores.',
+        footnoteTail: ' y juega con el cabezal de lectura y el laboratorio "qué palabra decidió".',
     },
 
     // Chat seed inputs (default input + quick suggestions)

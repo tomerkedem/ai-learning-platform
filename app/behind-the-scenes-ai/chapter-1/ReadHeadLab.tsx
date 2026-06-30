@@ -2,16 +2,24 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Play, Pause, SkipForward, SkipBack, RotateCcw, ScanLine } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, RotateCcw, ScanLine, Repeat, Lock, Scale, MessageSquare } from 'lucide-react';
 
 import { ACCENTS } from '@/components/ai-internals/accents';
-import { ConfidenceMeter } from '@/components/ai-internals/ConfidenceMeter';
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
+import { DecisionPill } from '@/components/ai-internals/DecisionPill';
 import { EngineMetricCard } from '@/components/ai-internals/EngineMetricCard';
-import type { Accent, FlowMode } from '@/components/ai-internals/types';
+import type { Accent, DecisionState, FlowMode } from '@/components/ai-internals/types';
 import { useT } from '@/i18n/useT';
 
-import { ProbabilityRiver } from './ProbabilityRiver';
+import {
+    BeliefStream,
+    summarizeDist,
+    LANE_LABEL,
+    LABEL_TO_LANE,
+    type BeliefStep,
+    type LaneKey,
+    type Confidence,
+} from './BeliefStream';
 
 import {
     tokenize,
@@ -23,19 +31,15 @@ import {
 } from './mockEngine';
 
 interface ReadHeadLabProps {
-    /** הטקסט המלא שנשלח לצ'אט - הסורק רץ עליו מילה-אחר-מילה. */
+    /** הטקסט המלא שנשלח לצ'אט - משמש כמסלול "המשפט שלך" (מנוע אמיתי). */
     text: string;
     mode: FlowMode;
     accent: Accent;
 }
 
-type Run = ChatEngineResult | AgentEngineResult;
-const isChatRun = (r: Run): r is ChatEngineResult => 'intents' in r;
-
 const STEP_MS = 780;
 
-// memoization לפי מחרוזת-prefix: אותו prefix לעולם לא מחושב פעמיים, גם בין ריצות.
-// המנוע טהור (אין Date/Math.random) ולכן cache תקף לכל החיים.
+// memoization לפי מחרוזת-prefix: אותו prefix לעולם לא מחושב פעמיים. המנוע טהור.
 const chatCache = new Map<string, ChatEngineResult>();
 const agentCache = new Map<string, AgentEngineResult>();
 const cachedChat = (s: string): ChatEngineResult => {
@@ -49,17 +53,32 @@ const cachedAgent = (s: string): AgentEngineResult => {
     return v;
 };
 
-// צבע ה-thumb של ה-slider לכל גוון (accent-color דורש ערך, לא מחלקת Tailwind דינמית).
+// צבע ה-thumb של ה-slider לכל גוון.
 const RANGE_COLOR: Record<Accent, string> = {
     cyan: '#22d3ee', blue: '#60a5fa', indigo: '#818cf8', purple: '#c084fc',
     amber: '#fbbf24', emerald: '#34d399', rose: '#fb7185', slate: '#94a3b8',
 };
 
+// אייקון לכל דוגמה מתוסרטת, לפי id (תלוי-מבנה, לא תלוי-שפה).
+const EXAMPLE_ICON: Record<string, React.ComponentType<{ size?: number }>> = {
+    flip: Repeat, lock: Lock, torn: Scale,
+};
+
+// גוון צ'יפ הביטחון.
+const CONF_TONE: Record<Confidence, string> = {
+    High: 'text-emerald-300 border-emerald-500/40 bg-emerald-900/20',
+    Medium: 'text-amber-300 border-amber-500/40 bg-amber-900/20',
+    Low: 'text-rose-300 border-rose-500/40 bg-rose-900/20',
+};
+
+const EMPTY_DIST: Record<LaneKey, number> = { notDelivered: 0, tracking: 0, system: 0, payment: 0, other: 0 };
+
 /**
- * "ראש הקריאה": playhead שסורק את המשפט מילה-אחר-מילה. לכל prefix (המילים עד
- * נקודת הסורק) מורץ אותו מנוע לימודי, וההסתברויות מתעדכנות בזמן אמת - כך שהמוביל
- * יכול להתחלף באמצע המשפט. זו שכבת-הצגה מעל ה-mockEngine: אין כאן מספרים חדשים,
- * רק הרצה כנה של אותו מנוע על תת-מחרוזות.
+ * "ראש הקריאה": playhead שסורק משפט מילה-אחר-מילה, וכל מילה מזיזה את "נהר הזמן" -
+ * גרף השטח שמצייר את מסע האמונה. הדוגמאות המודרכות נושאות התפלגות מתוסרטת פר-מילה
+ * (המחשה לימודית, כמו PredictDecision), כדי שכל מילה תזיז משהו והמוביל יתהפך באמת;
+ * "המשפט שלך" רץ דרך המנוע הלימודי האמיתי. הביטחון, ההחלטה, מונה ההתהפכויות והתובנה
+ * כולם נגזרים מאותה התפלגות - אין כאן שום אלמנט ללא תפקיד.
  */
 export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) => {
     const reduce = useReducedMotion();
@@ -67,53 +86,69 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
     const isChat = mode === 'chat';
     const { t, dir } = useT();
     const rh = t.behindAi.chapter1.visuals.readHead;
+    const examples = rh.examples;
+
+    // --- מסלול Chat: דוגמה מתוסרטת או "המשפט שלך" (מנוע חי) ---
+    const [selectedId, setSelectedId] = useState<string | null>(
+        () => (isChat && examples.length ? examples[0].id : null),
+    );
+    const selectedExample = isChat ? examples.find((e) => e.id === selectedId) ?? null : null;
 
     const tokens = useMemo(() => tokenize(text), [text]);
-    const n = tokens.length;
 
-    // ריצה לכל prefix. כל מילה עד ראש הסורק מריצה מחדש את אותו מנוע על תת-המחרוזת.
-    const runs = useMemo<Run[]>(
-        () =>
-            tokens.map((_, i) => {
-                const prefix = joinTokens(tokens.slice(0, i + 1), text);
-                return isChat ? cachedChat(prefix) : cachedAgent(prefix);
-            }),
-        [tokens, isChat, text],
+    const liveChatSteps = useMemo<BeliefStep[]>(() => {
+        if (!isChat) return [];
+        return tokens.map((_, i) => {
+            const r = cachedChat(joinTokens(tokens.slice(0, i + 1), text));
+            const dist: Record<LaneKey, number> = { ...EMPTY_DIST };
+            r.intents.forEach((it) => { const k = LABEL_TO_LANE[it.label]; if (k) dist[k] = it.value; });
+            return { word: tokens[i], dist };
+        });
+    }, [tokens, isChat, text]);
+
+    const chatSteps: BeliefStep[] = selectedExample ? selectedExample.steps : liveChatSteps;
+    const isScripted = !!selectedExample;
+
+    // --- מסלול Agent: התנהגות קודמת (משימה / מידע חסר / החלטה), בלי נהר ---
+    const agentRuns = useMemo<AgentEngineResult[]>(() => {
+        if (isChat) return [];
+        return tokens.map((_, i) => cachedAgent(joinTokens(tokens.slice(0, i + 1), text)));
+    }, [tokens, isChat, text]);
+
+    const n = isChat ? chatSteps.length : agentRuns.length;
+    const words = isChat ? chatSteps.map((s) => s.word) : tokens;
+
+    // ניתוח Chat: סיכום פר-מילה, התהפכויות, החלטה.
+    const summaries = useMemo(() => chatSteps.map((s) => summarizeDist(s.dist)), [chatSteps]);
+    const flipAt = useMemo(
+        () => chatSteps.map((_, i) => i > 0 && summaries[i].leader !== summaries[i - 1].leader),
+        [chatSteps, summaries],
     );
+    const flipCount = flipAt.filter(Boolean).length;
+    const lastFlipIndex = flipAt.lastIndexOf(true);
 
-    // סדר ערוצי הנהר נגזר מהריצה על המשפט המלא (דירוג סופי), כדי שהערוצים
-    // יתעבו/יידללו במקום ולא יקפצו תוך כדי הסריקה.
-    const riverOrder = useMemo(() => {
-        const last = runs[runs.length - 1];
-        if (!last || !isChatRun(last)) return [];
-        return last.intents.slice().sort((x, y) => y.value - x.value).map((it) => it.label);
-    }, [runs]);
-
-    // אתחול דטרמיניסטי (לא תלוי ב-reduce) כדי שה-SSR וה-hydration יתאימו: המשפט
-    // השלם מוצג סטטית. האיפוס על טקסט/מצב חדש נעשה ב-key מצד ההורה (remount).
     const [head, setHead] = useState(Math.max(0, n - 1));
     const [playing, setPlaying] = useState(false);
 
     const clampedHead = Math.min(Math.max(0, head), Math.max(0, n - 1));
-    const current = runs[clampedHead];
     const atEnd = clampedHead >= n - 1;
     const isRunning = playing && !atEnd;
 
-    // הפעלה אוטומטית מהמילה הראשונה - רק כשאין העדפת תנועה מופחתת. נעשה ב-setTimeout
-    // (לא סינכרוני בגוף ה-effect) כדי להימנע מ-setState ישיר ב-effect וממיסמטץ' hydration.
+    // הפעלה אוטומטית מהמילה הראשונה (אלא אם יש העדפת תנועה מופחתת).
     useEffect(() => {
         if (reduce || n <= 1) return;
         const id = setTimeout(() => { setHead(0); setPlaying(true); }, 0);
         return () => clearTimeout(id);
-    }, [reduce, n]);
+    }, [reduce, n, selectedId]);
 
-    // לולאת הסורק. נעצרת מעצמה בסוף המשפט (atEnd -> cleanup), בלי setState בתוך effect.
+    // לולאת הסורק. נעצרת מעצמה בסוף.
     useEffect(() => {
         if (!playing || atEnd) return;
         const id = setInterval(() => setHead((h) => Math.min(n - 1, h + 1)), STEP_MS);
         return () => clearInterval(id);
     }, [playing, atEnd, n]);
 
+    const pickExample = (id: string | null) => { setSelectedId(id); setHead(0); if (!reduce) setPlaying(true); };
     const stepBack = () => { setPlaying(false); setHead((h) => Math.max(0, h - 1)); };
     const stepForward = () => { setPlaying(false); setHead((h) => Math.min(n - 1, h + 1)); };
     const restart = () => { setHead(0); if (!reduce) setPlaying(true); };
@@ -123,7 +158,7 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
     };
     const seek = (i: number) => { setPlaying(false); setHead(i); };
 
-    if (n === 0 || !current) {
+    if (n === 0) {
         return (
             <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-6 text-center text-sm text-slate-500" dir={dir}>
                 {rh.emptyState}
@@ -131,7 +166,12 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
         );
     }
 
-    const prefixText = joinTokens(tokens.slice(0, clampedHead + 1), text);
+    const curSummary = isChat ? summaries[clampedHead] : undefined;
+    const agentCurrent = !isChat ? agentRuns[clampedHead] : undefined;
+    const chatDecision: DecisionState =
+        curSummary?.confidence === 'Low'
+            ? { kind: 'ask', label: 'Ask for more context' }
+            : { kind: 'answer', label: 'Generate response' };
 
     return (
         <div className={`rounded-2xl border ${a.border} bg-slate-950/70 ${a.glow} overflow-hidden`} dir={dir}>
@@ -151,9 +191,40 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                 <p className="text-sm text-slate-300 leading-relaxed">
                     <span className={`font-semibold ${a.text}`}>{rh.introHeadLabel}</span>{rh.introMid}<span className="text-white font-semibold">{rh.introEmph}</span>{rh.introTail}
                 </p>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                    {rh.takeaway}
-                </p>
+
+                {/* שבבי הדוגמאות (Chat בלבד) */}
+                {isChat && examples.length > 0 && (
+                    <div className="space-y-2">
+                        <div className="text-[11px] font-bold uppercase tracking-widest text-slate-500">{rh.examplesLabel}</div>
+                        <div className="flex flex-wrap gap-2">
+                            {examples.map((ex) => {
+                                const Icon = EXAMPLE_ICON[ex.id] ?? Repeat;
+                                const active = selectedId === ex.id;
+                                return (
+                                    <button
+                                        key={ex.id}
+                                        type="button"
+                                        onClick={() => pickExample(ex.id)}
+                                        aria-pressed={active}
+                                        className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-colors
+                                            ${active ? `${a.border} ${a.bgSoft} ${a.text}` : 'border-slate-700/60 bg-slate-800/40 text-slate-300 hover:border-slate-600'}`}
+                                    >
+                                        <Icon size={13} /> {ex.tag}
+                                    </button>
+                                );
+                            })}
+                            <button
+                                type="button"
+                                onClick={() => pickExample(null)}
+                                aria-pressed={selectedId === null}
+                                className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-colors
+                                    ${selectedId === null ? `${a.border} ${a.bgSoft} ${a.text}` : 'border-slate-700/60 bg-slate-800/40 text-slate-300 hover:border-slate-600'}`}
+                            >
+                                <MessageSquare size={13} /> {rh.yourSentence}
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* פס בקרה */}
                 <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-700/50 bg-slate-950/50 px-3 py-2">
@@ -203,12 +274,13 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                     </span>
                 </div>
 
-                {/* רצועת המילים + סורק */}
+                {/* רצועת המילים + סורק. סימן התהפכות מעל מילה שבה המוביל התחלף. */}
                 <div className="space-y-3">
                     <div className="flex flex-wrap gap-1.5">
-                        {tokens.map((tk, i) => {
+                        {words.map((tk, i) => {
                             const read = i <= clampedHead;
                             const isHead = i === clampedHead;
+                            const flipped = isChat && flipAt[i];
                             return (
                                 <button
                                     key={`${tk}-${i}`}
@@ -219,6 +291,15 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                                         ${read ? `${a.border} ${a.bgSoft} ${a.text}` : 'border-white/5 bg-slate-900/40 text-slate-600'}
                                         ${isHead ? `ring-2 ${a.ringSoft}` : ''}`}
                                 >
+                                    {flipped && (
+                                        <span
+                                            className="pointer-events-none absolute -top-1.5 left-1/2 -translate-x-1/2 text-[10px] font-black text-amber-300"
+                                            aria-label={rh.flipMarkerAria}
+                                            title={rh.flipMarkerAria}
+                                        >
+                                            ⟲
+                                        </span>
+                                    )}
                                     {tk}
                                     {isHead && !reduce && (
                                         <motion.span
@@ -232,7 +313,6 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                         })}
                     </div>
 
-                    {/* סקראבר: גרירה + מקשי חצים */}
                     <input
                         type="range"
                         min={0}
@@ -247,70 +327,86 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                     />
                 </div>
 
-                {/* כותרת מצב חיה */}
-                <div
-                    role="status"
-                    aria-live="polite"
-                    className="rounded-xl border border-white/10 bg-slate-900/40 px-4 py-2.5 text-sm"
-                >
-                    {isChatRun(current) ? (
-                        <span className="text-slate-300">
-                            {rh.leaderNow}{' '}
-                            <strong className={a.text}>{current.intents[0]?.label}</strong>{' '}
-                            <span className="font-mono text-slate-500" dir="ltr">({current.intents[0]?.value}%)</span>
-                            {' · '}
-                            {rh.confidence} <strong className="text-slate-200">{current.confidence}</strong>
-                        </span>
-                    ) : (
-                        <span className="text-slate-300">
-                            {rh.decisionNow} <strong className={a.text}>{current.decision.label}</strong>
-                        </span>
-                    )}
-                </div>
-
-                {/* פאנלים */}
-                {isChatRun(current) ? (
+                {/* ════════ מסלול Chat: נהר הזמן + מצב חי + החלטה ════════ */}
+                {isChat && curSummary ? (
                     <div className="space-y-3">
-                        {/* נהר ההסתברויות - ויזואל החתימה */}
+                        {/* כותרת מצב חיה: מוביל + ביטחון (צ'יפ קומפקטי, בלי כפילות) */}
+                        <div
+                            role="status"
+                            aria-live="polite"
+                            className="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-900/40 px-4 py-2.5 text-sm"
+                        >
+                            <span className="text-slate-300">
+                                {rh.leaderNow}{' '}
+                                <strong className={a.text}>{LANE_LABEL[curSummary.leader]}</strong>{' '}
+                                <span className="font-mono text-slate-500" dir="ltr">({curSummary.top}%)</span>
+                            </span>
+                            <span className={`ms-auto inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-bold ${CONF_TONE[curSummary.confidence]}`}>
+                                {rh.confidence}: {curSummary.confidence}
+                            </span>
+                        </div>
+
+                        {/* נהר הזמן */}
                         <div className="rounded-xl border border-white/10 bg-slate-900/50 p-3">
-                            <div className="mb-3 flex items-center justify-between">
-                                <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Probability river</span>
-                                <span className="text-[11px] text-slate-500">{rh.riverHint}</span>
-                            </div>
-                            <ProbabilityRiver items={current.intents} order={riverOrder} accent={accent} reduce={!!reduce} dir={dir} />
-                        </div>
-                        <div className="grid gap-3 md:grid-cols-2 md:items-start">
-                            <ConfidenceMeter level={current.confidence} />
-                            <DecisionCard decision={current.decision} />
-                        </div>
-                    </div>
-                ) : (
-                    <div className="grid gap-3 md:grid-cols-2 md:items-start">
-                        <div className="space-y-3">
-                            <EngineMetricCard label="Task detected" value={current.task} tone={accent} />
-                            <EngineMetricCard
-                                label="Missing information"
-                                value={current.missingInfo}
-                                tone={current.missingInfo === 'None' ? 'emerald' : 'amber'}
+                            <BeliefStream
+                                steps={chatSteps}
+                                head={clampedHead}
+                                dir={dir}
+                                reduce={!!reduce}
+                                labels={{ streamHint: rh.streamHint, leader: rh.leaderTag }}
                             />
                         </div>
-                        <DecisionCard decision={current.decision} />
-                    </div>
-                )}
 
-                {/* כיתוב יושרה: קפיצות בדידות הן תקינות */}
-                <p className="flex items-start gap-1.5 text-xs leading-relaxed text-slate-500">
-                    <span className={`mt-[5px] h-1 w-1 shrink-0 rounded-full ${a.dot}`} />
-                    {n === 1 ? (
-                        <span>
-                            {rh.integrityOne}
-                        </span>
-                    ) : (
-                        <span>
-                            {rh.integrityManyLead}{prefixText}{rh.integrityManyTail}
-                        </span>
-                    )}
-                </p>
+                        {/* החלטה: שורה קומפקטית, מופיעה רק בסוף (ההחלטה היא תוצר התהליך) */}
+                        {atEnd ? (
+                            <DecisionPill decision={chatDecision} />
+                        ) : (
+                            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-900/30 px-4 py-2.5 text-sm text-slate-500">
+                                <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${a.dot}`} />
+                                {rh.readingNow}
+                            </div>
+                        )}
+
+                        {/* תובנת-סיום: מונה ההתהפכויות + המילה שהפכה. מודגמת, לא מוצהרת. */}
+                        {atEnd && (
+                            <div className={`rounded-xl border ${a.border} ${a.bgSoft} p-4`}>
+                                <div className={`mb-1 text-xs font-bold uppercase tracking-widest ${a.text}`}>{rh.insightTitle}</div>
+                                <p className="text-sm leading-relaxed text-slate-200">
+                                    {rh.insightChanges(flipCount)}
+                                    {lastFlipIndex >= 0 && <>{' '}{rh.insightPivot(words[lastFlipIndex])}</>}
+                                </p>
+                            </div>
+                        )}
+
+                        {/* כיתוב יושרה: מודרך (מתוסרט) מול חי */}
+                        <p className="flex items-start gap-1.5 text-xs leading-relaxed text-slate-500">
+                            <span className={`mt-[5px] h-1 w-1 shrink-0 rounded-full ${a.dot}`} />
+                            <span>{isScripted ? rh.scriptedNote : rh.liveNote}</span>
+                        </p>
+                    </div>
+                ) : null}
+
+                {/* ════════ מסלול Agent: התנהגות קודמת ════════ */}
+                {!isChat && agentCurrent ? (
+                    <div className="space-y-3">
+                        <div role="status" aria-live="polite" className="rounded-xl border border-white/10 bg-slate-900/40 px-4 py-2.5 text-sm">
+                            <span className="text-slate-300">
+                                {rh.decisionNow} <strong className={a.text}>{agentCurrent.decision.label}</strong>
+                            </span>
+                        </div>
+                        <div className="grid gap-3 md:grid-cols-2 md:items-start">
+                            <div className="space-y-3">
+                                <EngineMetricCard label="Task detected" value={agentCurrent.task} tone={accent} />
+                                <EngineMetricCard
+                                    label="Missing information"
+                                    value={agentCurrent.missingInfo}
+                                    tone={agentCurrent.missingInfo === 'None' ? 'emerald' : 'amber'}
+                                />
+                            </div>
+                            <DecisionCard decision={agentCurrent.decision} />
+                        </div>
+                    </div>
+                ) : null}
             </div>
         </div>
     );

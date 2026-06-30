@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Terminal, ScanSearch, ArrowDown, ScanLine, SlidersHorizontal, GitCompare, Split, X, Layers, ChevronDown, Eye, ListChecks } from 'lucide-react';
+import { Terminal, ScanSearch, ArrowDown, ScanLine, GitCompare, X, Layers, ChevronDown, Eye, ListChecks } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -15,6 +15,7 @@ import { TransparentLabLayout } from '@/components/ai-internals/TransparentLabLa
 import { ChatInterfacePanel } from '@/components/ai-internals/ChatInterfacePanel';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
+import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
 import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import type { Accent, ChatMessage, FlowMode } from '@/components/ai-internals/types';
@@ -25,9 +26,7 @@ import { GlassEnginePanel } from './GlassEnginePanel';
 import { HoloFrame } from './HoloFrame';
 import { ReadHeadLab } from './ReadHeadLab';
 import { PredictDecision } from './PredictDecision';
-import { ConfidenceDial } from './ConfidenceDial';
 import { CounterfactualDiff } from './CounterfactualDiff';
-import { ForkView } from './ForkView';
 
 export default function BehindTheScenesChapter1() {
     const reduce = useReducedMotion();
@@ -48,7 +47,7 @@ export default function BehindTheScenesChapter1() {
     const sInsight: ReadAloudSegment = { id: 'insight', label: c1.insightIdea.title, text: c1.insightIdea.body };
     const sDeep1: ReadAloudSegment = { id: 'deep-1', label: c1.deep.intro1, text: c1.deep.intro1 };
     const sDeep2: ReadAloudSegment = { id: 'deep-2', label: c1Deep2, text: c1Deep2 };
-    const sLabs: ReadAloudSegment[] = [c1.labs.readHead, c1.labs.confidence, c1.labs.causality, c1.labs.fork].map((lab, i) => ({ id: `lab-${i}`, label: lab.title, text: lab.title }));
+    const sLabs: ReadAloudSegment[] = [c1.labs.readHead, c1.labs.causality].map((lab, i) => ({ id: `lab-${i}`, label: lab.title, text: lab.title }));
     const sUnderstand: ReadAloudSegment = { id: 'understand', label: c1.summary.understandTitle, text: c1.summary.understandBody };
     const sRule: ReadAloudSegment = { id: 'rule', label: c1.summary.ruleTitle, text: c1.summary.ruleBody };
     const sBq1: ReadAloudSegment = { id: 'bq-1', label: c1.beforeQuiz.point1Lead, text: `${c1.beforeQuiz.point1Lead}${c1.beforeQuiz.point1Body}` };
@@ -343,17 +342,6 @@ export default function BehindTheScenesChapter1() {
                         </span>
                     </div>
 
-                    {/* דוק האזנה מודרכת: שורה אינליין מתחת לטקסט במובייל, בפינת ההירו ב-lg+ */}
-                    <div className={`mt-6 flex justify-center md:justify-start lg:absolute lg:-top-5 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
-                        <ReadAloudControls
-                            segmentsByMode={readAloudByMode}
-                            lang={LOCALE_SPEECH_LANG[locale]}
-                            locale={locale}
-                            dir={dir}
-                            labels={ra}
-                            reduce={!!reduce}
-                        />
-                    </div>
                 </div>
             </motion.section>
             {/* המנטור מזמין להציץ פנימה - צמוד לקצה החיצוני של הכרטיס (xl+), תלוי-כיוון */}
@@ -361,6 +349,19 @@ export default function BehindTheScenesChapter1() {
               <Mentor pose="peek" line={c1.mentor.peek} width={175} flip={!isRtl} />
             </div>
             </div>
+
+            {/* דוק האזנה מודרכת צף: מצמיד לקצה החיצוני (תלוי-כיוון) ונשאר נגיש תוך כדי גלילה */}
+            <FloatingReadAloud dir={dir}>
+                <ReadAloudControls
+                    segmentsByMode={readAloudByMode}
+                    lang={LOCALE_SPEECH_LANG[locale]}
+                    locale={locale}
+                    dir={dir}
+                    labels={ra}
+                    reduce={!!reduce}
+                    compact
+                />
+            </FloatingReadAloud>
 
             {/* ══════════ מנטור מלווה + first-run: הכוונה אופרטיבית אל המעבדה שמתחת ══════════ */}
             <AnimatePresence>
@@ -540,24 +541,10 @@ export default function BehindTheScenesChapter1() {
                 <ReadHeadLab key={`${mode}:${conversationText}`} text={conversationText} mode={mode} accent={accent} />
             </section>
 
-            {/* ══════════ מעבדה 2 · Confidence Dial ══════════ */}
+            {/* ══════════ מעבדה 2 · Causality (Counterfactual) ══════════ */}
             <section className="mt-12 space-y-5 text-start" dir={dir}>
                 <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">2</span>
-                    <SlidersHorizontal size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
-                    <div>
-                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>{c1.labs.confidence.eyebrow}</div>
-                        <h3 className="text-2xl font-bold text-white">{c1.labs.confidence.title}</h3>
-                    </div>
-                </div>
-
-                <ConfidenceDial key={`dial:${mode}:${conversationText}`} text={conversationText} mode={mode} />
-            </section>
-
-            {/* ══════════ מעבדה 3 · Causality (Counterfactual) ══════════ */}
-            <section className="mt-12 space-y-5 text-start" dir={dir}>
-                <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">3</span>
                     <GitCompare size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
                     <div>
                         <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>{c1.labs.causality.eyebrow}</div>
@@ -566,20 +553,6 @@ export default function BehindTheScenesChapter1() {
                 </div>
 
                 <CounterfactualDiff key={`cf:${mode}`} mode={mode} accent={accent} />
-            </section>
-
-            {/* ══════════ מעבדה 4 · Fork View ══════════ */}
-            <section className="mt-12 space-y-5 text-start" dir={dir}>
-                <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">4</span>
-                    <Split size={24} className="text-slate-300" />
-                    <div>
-                        <div className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">{c1.labs.fork.eyebrow}</div>
-                        <h3 className="text-2xl font-bold text-white">{c1.labs.fork.title}</h3>
-                    </div>
-                </div>
-
-                <ForkView key={`fork:${conversationText}`} text={conversationText} />
             </section>
 
             {/* ══════════ סיכום ══════════ */}

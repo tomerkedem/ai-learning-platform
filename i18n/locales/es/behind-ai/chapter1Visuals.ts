@@ -117,8 +117,9 @@ export const chapter1Visuals = {
         introHeadLabel: 'El cabezal de lectura',
         introMid: ' es el cursor que se mueve sobre la frase palabra por palabra, como un dedo que sigue el texto al leer. En cada parada se ejecuta el mismo motor sobre las palabras leídas hasta ahora, así puedes observar al modelo ',
         introEmph: 'cambiar de opinión mientras lee',
-        introTail: '.',
-        takeaway: 'Lo que hay que llevarse de aquí: el modelo no tiene una respuesta preparada. Construye la respuesta a partir del contexto que se acumula, y cada palabra nueva puede desplazar la conjetura líder - hasta que la decisión se asienta al final de la frase. Por eso el orden de las palabras y la redacción también afectan el resultado.',
+        introTail: '. Elige un ejemplo y ejecuta el escáner.',
+        examplesLabel: 'Elige un ejemplo',
+        yourSentence: 'Tu frase',
         play: 'Reproducir',
         pause: 'Pausar',
         again: 'Otra vez',
@@ -127,13 +128,24 @@ export const chapter1Visuals = {
         restart: 'Reiniciar',
         wordCountAria: (i: number, n: number) => `Palabra ${i} de ${n}`,
         scrubberAria: 'Posición del cabezal de lectura',
+        flipMarkerAria: 'Aquí cambió el líder',
         leaderNow: 'Líder ahora:',
+        leaderTag: 'líder',
         confidence: 'confianza',
         decisionNow: 'Decisión ahora:',
-        riverHint: 'El grosor = la probabilidad en este momento',
-        integrityOne: 'Solo una palabra: nada que escanear todavía. Añade más palabras en el chat y observa cómo se mueven las probabilidades con cada palabra.',
-        integrityManyLead: 'A veces las barras saltan todas a la vez cuando entra una palabra clave (por ejemplo "',
-        integrityManyTail: '"). Esto no es un error: así es como cambia la creencia en el momento en que llega la evidencia decisiva.',
+        streamHint: 'El ancho = la probabilidad. El tiempo fluye con la dirección de lectura.',
+        readingNow: 'Aún leyendo... la decisión se asienta al final de la frase.',
+        insightTitle: 'Qué pasó aquí',
+        insightChanges: (n: number) =>
+            n === 0
+                ? 'El modelo no cambió de líder en toda la frase - leyó sin cambiar de opinión, solo ganó más confianza.'
+                : n === 1
+                    ? 'El modelo cambió de opinión una vez mientras leía.'
+                    : `El modelo cambió de opinión ${n} veces mientras leía.`,
+        insightPivot: (w: string) => `La palabra que volteó la decisión final: "${w}".`,
+        scriptedNote: 'Ejemplo guiado: las probabilidades aquí son una ilustración didáctica de cómo se acumula la creencia palabra por palabra, no la salida de un modelo real.',
+        liveNote: 'Esta es tu frase, ejecutada con el motor didáctico del capítulo. Fíjate en que las probabilidades solo se mueven cuando entra una palabra clave.',
+        examples: [],
     },
 
     // ConfidenceDial (Chat mode)
@@ -224,6 +236,11 @@ export const chapter1Visuals = {
         attrNoPivotMid2: ' aquí es la palabra ',
         attrNoPivotTail: '. La ausencia de una palabra también es una causa. Vuelve a ponerla abajo y observa.',
         flipped: 'La decisión cambió:',
+        sameDecision: 'La decisión siguió igual, pero la palabra cambió la intención líder y la respuesta que se genera.',
+        barsTitle: 'Cuánto cree el motor en cada interpretación',
+        barsLegend: 'El número verde o rojo junto a cada barra = cuánto subió o bajó esa interpretación por la palabra que cambiaste.',
+        barReadWith: (word: string, before: number, after: number) => `La palabra "${word}" disparó la interpretación líder del ${before}% al ${after}%.`,
+        barReadWithout: (word: string, after: number) => `Sin la palabra "${word}" ninguna interpretación destaca: la líder llega solo al ${after}%.`,
         ghostHint: 'El contorno punteado = la ejecución anterior (el fantasma)',
         replyToCreate: 'La respuesta que se crearía',
         beforeAfter: 'Antes / después',

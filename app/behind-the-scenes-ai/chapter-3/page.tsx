@@ -17,6 +17,7 @@ import { TokenizationLab } from '@/components/ai-internals/TokenizationLab';
 import { TokenizationRoadmap } from '@/components/ai-internals/TokenizationRoadmap';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
+import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
 import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import { Chapter3LabProvider, getLabContent } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
@@ -197,8 +198,8 @@ export default function BehindTheScenesChapter3() {
                             </span>
                         </div>
 
-                        {/* דוק האזנה מודרכת: שורה אינליין מתחת לטקסט במובייל, בפינת ההירו ב-lg+ */}
-                        <div className={`mt-6 flex justify-center md:justify-start lg:absolute lg:-top-5 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
+                        {/* דוק האזנה מודרכת צף: מצמיד לקצה (תלוי-כיוון), נגיש תוך כדי גלילה, אייקון במובייל */}
+                        <FloatingReadAloud dir={dir}>
                             <ReadAloudControls
                                 segmentsByMode={readAloudByMode}
                                 lang={LOCALE_SPEECH_LANG[locale]}
@@ -206,8 +207,9 @@ export default function BehindTheScenesChapter3() {
                                 dir={dir}
                                 labels={ra}
                                 reduce={!!reduce}
+                                compact
                             />
-                        </div>
+                        </FloatingReadAloud>
                     </div>
                 </motion.section>
 

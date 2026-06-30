@@ -34,6 +34,7 @@ export const aiInternals = {
         voice: '音声',
         browserDefault: 'ブラウザーの既定の音声',
         settings: '読み上げオプション',
+        sections: 'セクション',
         nowReading: '読み上げ中',
         unsupported: 'このブラウザーでは読み上げを利用できません。',
         scope: '範囲',

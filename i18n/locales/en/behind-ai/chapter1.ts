@@ -74,8 +74,8 @@ export const chapter1 = {
     deep: {
         toggleOpen: 'Close the depth layer',
         toggleClosed: 'Open the full engine',
-        hint: 'Here the advanced tools open: live reading, a confidence dial, causality, and an engine comparison. You can explore at your own pace.',
-        intro1: 'See a depth layer: from here it gets more technical. Before you are four numbered labs, each showing a different angle of the same path. There is no need to finish everything in one go.',
+        hint: 'Here the advanced tools open: a live read head, and a test that shows which word decided. You can explore at your own pace.',
+        intro1: 'See a depth layer: from here it gets more technical. Before you are two numbered labs, each showing a different angle of the same path. There is no need to finish everything in one go.',
         intro2Lead: 'In ',
         intro2Mid: ' the system picks a reply. In ',
         intro2Tail: ' it checks what the right next step is - answer, use a tool, or stop and ask for information. Switch between them with the toggle at the top of the chat.',
@@ -92,7 +92,7 @@ export const chapter1 = {
     // Summary (two insights inside the depth layer)
     summary: {
         understandTitle: 'What you understand now',
-        understandBody: 'The AI engine does not "know" the answer - it ranks options, and decides by the gap between them. When the gap is large it answers with confidence; when the gap is small, the right step is to stop and ask, not to guess. You saw this yourself: the read head showed the leader changing while reading, the confidence dial turned the same input between answer and ask, and one word that was swapped flipped a whole decision.',
+        understandBody: 'The AI engine does not "know" the answer - it ranks options, and decides by the gap between them. When the gap is large it answers with confidence; when the gap is small, the right step is to stop and ask, not to guess. You saw this yourself: the read head showed the leader changing while reading, and one word that was swapped flipped a whole decision.',
         ruleTitle: 'The practical rule',
         ruleBody: 'Trust the engine when the gap is large and the risk is low. When the gap is small or the action is sensitive - stopping and asking for clarification are not a failure, they are the responsible step. This is exactly where the link between probability and responsibility begins.',
     },
@@ -108,9 +108,9 @@ export const chapter1 = {
         point2AfterAgent: ' it asks "What is the right next step?" - answer, use a tool, or stop and ask for information.',
         point3Lead: 'Confidence meets responsibility.',
         point3Body: ' Confidence is measured by the gap between the leading option and the next one. A large gap and low risk, you can let the engine answer. A small gap or a sensitive action, the responsible step is to stop and ask, not to guess.',
-        footnoteLead: 'Want to see these three live? Open the ',
+        footnoteLead: 'Want to see this path live? Open the ',
         footnoteHighlight: 'full engine',
-        footnoteTail: ' above and play with the read head, the confidence dial, and the engine comparison.',
+        footnoteTail: ' above and play with the read head and the "which word decided" lab.',
     },
 
     // Chat seed inputs (default input + quick suggestions)

@@ -53,6 +53,11 @@ export interface UseReadAloud {
     setRate: (rate: number) => void;
     /** מדד המקטע הנוכחי (0-based); 1- כשאין הקראה פעילה. */
     currentIndex: number;
+    /**
+     * טווח התווים של המילה שנאמרת כרגע בתוך text של המקטע הנוכחי (להדגשת קריוקי).
+     * null כשאין הקראה פעילה, או כשמנוע הדיבור אינו משדר אירועי boundary (נפילה חיננית).
+     */
+    wordRange: { start: number; end: number } | null;
     total: number;
     start: (fromIndex?: number) => void;
     pause: () => void;
@@ -92,6 +97,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
     const [allVoices, setAllVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
     const [currentIndex, setCurrentIndex] = useState(-1);
+    const [wordRange, setWordRange] = useState<{ start: number; end: number } | null>(null);
     const [rate, setRateState] = useState(1);
 
     // המהירות נקראת בזמן בניית כל utterance. ref כדי שה-handler יראה ערך עדכני מיד.
@@ -192,11 +198,23 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
             synth.cancel();
             runRef.current = { stopped: false, index };
 
-            const utt = new SpeechSynthesisUtterance(list[index].text);
+            const text = list[index].text;
+            const utt = new SpeechSynthesisUtterance(text);
             utt.lang = langRef.current;
             utt.rate = rateRef.current;
             const chosen = voices.find((v) => v.voiceURI === selectedVoiceRef.current);
             if (chosen) utt.voice = chosen;
+
+            // הדגשת קריוקי: כל אירוע boundary של מילה מעדכן את טווח התווים הנוכחי.
+            // charLength לא תמיד נתמך - אז נופלים לסריקת המילה מנקודת ההתחלה. setState
+            // בתוך handler (לא ב-effect) - מותר. מנועים שלא משדרים boundary פשוט לא יסמנו.
+            utt.onboundary = (e) => {
+                if (runRef.current.stopped || runRef.current.index !== index) return;
+                if (e.name && e.name !== 'word') return;
+                const start = Math.min(Math.max(0, e.charIndex), text.length);
+                const len = e.charLength || (/\S+/.exec(text.slice(start))?.[0].length ?? 0);
+                if (len > 0) setWordRange({ start, end: start + len });
+            };
 
             utt.onend = () => {
                 if (runRef.current.stopped || runRef.current.index !== index) return;
@@ -206,6 +224,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
                 } else {
                     setStatus('idle');
                     setCurrentIndex(-1);
+                    setWordRange(null);
                     runRef.current.stopped = true;
                 }
             };
@@ -213,9 +232,11 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
                 if (runRef.current.stopped || runRef.current.index !== index) return;
                 setStatus('idle');
                 setCurrentIndex(-1);
+                setWordRange(null);
                 runRef.current.stopped = true;
             };
 
+            setWordRange(null);
             setCurrentIndex(index);
             setStatus('speaking');
             synth.speak(utt);
@@ -260,6 +281,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
         window.speechSynthesis.cancel();
         setStatus('idle');
         setCurrentIndex(-1);
+        setWordRange(null);
     }, [supported]);
 
     // תיקון נכונות: עצירת הקראה כשמשתנים locale / שפת דיבור / מצב היקף (resetSignal).
@@ -308,6 +330,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
         rate,
         setRate,
         currentIndex,
+        wordRange,
         total: segments.length,
         start,
         pause,

@@ -14,6 +14,7 @@ import { CourseSystems } from "@/components/ai-internals/CourseSystems";
 import { AgentLoop } from "@/components/ai-internals/AgentLoop";
 import { Mentor } from "@/components/ai-internals/Mentor";
 import { ReadAloudControls, type ReadAloudMode } from "@/components/ai-internals/ReadAloudControls";
+import { FloatingReadAloud } from "@/components/ai-internals/FloatingReadAloud";
 import type { ReadAloudSegment } from "@/components/ai-internals/useReadAloud";
 import { useT } from "@/i18n/useT";
 import type { Locale } from "@/i18n/config";
@@ -249,11 +250,9 @@ export default function BehindTheScenesIntroPage() {
               </h1>
               <p className="text-base md:text-lg text-slate-300 leading-relaxed">{intro.hero.intro}</p>
 
-              {/* דוק האזנה מודרכת (Web Speech API, ביוזמת המשתמש, לא widget צף).
-                  מובייל/טאבלט: שורה אינליין קומפקטית מתחת לטקסט ההירו.
-                  דסקטופ (lg+): מעוגן בפינה העליונה של ההירו, בצד הריק שמול תחילת הכותרת
-                  (he/ar משמאל, en/es/ru/ja מימין), מחוץ לזרימה כדי לא לדחוף את ההירו. */}
-              <div className={`mt-5 flex justify-center md:justify-start lg:absolute lg:-top-5 lg:z-20 lg:mt-0 ${isRtl ? 'lg:left-0' : 'lg:right-0'}`}>
+              {/* דוק האזנה מודרכת צף: מצמיד לקצה החיצוני (תלוי-כיוון) ונשאר נגיש תוך כדי
+                  גלילה; במובייל מתכווץ לאייקון בלבד. ממומש דרך portal ל-body (FloatingReadAloud). */}
+              <FloatingReadAloud dir={dir}>
                 <ReadAloudControls
                   segmentsByMode={readAloudByMode}
                   lang={LOCALE_SPEECH_LANG[locale]}
@@ -261,8 +260,9 @@ export default function BehindTheScenesIntroPage() {
                   dir={dir}
                   labels={intro.readAloud}
                   reduce={!!reduce}
+                  compact
                 />
-              </div>
+              </FloatingReadAloud>
             </div>
 
             <motion.div

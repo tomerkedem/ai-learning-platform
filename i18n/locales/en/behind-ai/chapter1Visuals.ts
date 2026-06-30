@@ -118,8 +118,9 @@ export const chapter1Visuals = {
         introHeadLabel: 'The read head',
         introMid: ' is the cursor that moves over the sentence word by word, like a finger following the text while reading. At each stop the same engine runs on the words read so far, so you can watch the model ',
         introEmph: 'change its mind while reading',
-        introTail: '.',
-        takeaway: 'What to take from here: the model has no ready-made answer. It builds the answer from the context that accumulates, and each new word can shift the leading guess - until the decision settles at the end of the sentence. That is why word order and phrasing also affect the result.',
+        introTail: '. Pick an example and run the scanner.',
+        examplesLabel: 'Pick an example',
+        yourSentence: 'Your sentence',
         play: 'Play',
         pause: 'Pause',
         again: 'Again',
@@ -128,13 +129,24 @@ export const chapter1Visuals = {
         restart: 'Restart',
         wordCountAria: (i: number, n: number) => `Word ${i} of ${n}`,
         scrubberAria: 'Read head position',
+        flipMarkerAria: 'The leader changed here',
         leaderNow: 'Leading now:',
+        leaderTag: 'leader',
         confidence: 'confidence',
         decisionNow: 'Decision now:',
-        riverHint: 'Thickness = the probability right now',
-        integrityOne: 'Just one word: nothing to scan yet. Add more words in the chat and watch the probabilities move with each word.',
-        integrityManyLead: 'Sometimes the bars jump all at once when a keyword enters (for example "',
-        integrityManyTail: '"). This is not a bug: that is how belief changes the moment the deciding evidence arrives.',
+        streamHint: 'Width = the probability. Time flows with the reading direction.',
+        readingNow: 'Still reading... the decision settles at the end of the sentence.',
+        insightTitle: 'What happened here',
+        insightChanges: (n: number) =>
+            n === 0
+                ? 'The model never switched leader across the whole sentence - it read without changing its mind, only growing more confident.'
+                : n === 1
+                    ? 'The model changed its mind once while reading.'
+                    : `The model changed its mind ${n} times while reading.`,
+        insightPivot: (w: string) => `The word that flipped the final decision: "${w}".`,
+        scriptedNote: 'Guided example: the probabilities here are a learning illustration of how belief accumulates word by word, not the output of a real model.',
+        liveNote: 'This is your sentence, run through the chapter learning engine. Notice that the probabilities move only when a keyword enters.',
+        examples: [],
     },
 
     // ConfidenceDial (Chat mode)
@@ -225,6 +237,11 @@ export const chapter1Visuals = {
         attrNoPivotMid2: ' here is the word ',
         attrNoPivotTail: '. The absence of a word is also a cause. Put it back below and see.',
         flipped: 'The decision flipped:',
+        sameDecision: 'The decision stayed the same, but the word changed the leading intent and the reply that gets generated.',
+        barsTitle: 'How much the engine believes each interpretation',
+        barsLegend: 'The green or red number next to each bar = how much that interpretation rose or fell because of the word you changed.',
+        barReadWith: (word: string, before: number, after: number) => `The word "${word}" jumped the leading interpretation from ${before}% to ${after}%.`,
+        barReadWithout: (word: string, after: number) => `Without the word "${word}" no interpretation stands out - the leader reaches only ${after}%.`,
         ghostHint: 'The dashed outline = the previous run (the ghost)',
         replyToCreate: 'The reply that would be created',
         beforeAfter: 'Before / after',

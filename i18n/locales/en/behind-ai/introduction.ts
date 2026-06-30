@@ -242,6 +242,7 @@ export const introduction = {
         voice: 'Voice',
         browserDefault: 'Browser default voice',
         settings: 'Read-aloud options',
+        sections: 'Sections',
         nowReading: 'Now reading',
         unsupported: 'Read-aloud is not available in this browser.',
         scope: 'Scope',

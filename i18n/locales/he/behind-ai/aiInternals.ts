@@ -41,6 +41,7 @@ export const aiInternals = {
         voice: 'קול',
         browserDefault: 'קול ברירת המחדל של הדפדפן',
         settings: 'אפשרויות הקראה',
+        sections: 'קטעים',
         nowReading: 'קורא כעת',
         unsupported: 'ההקראה אינה זמינה בדפדפן הזה.',
         scope: 'היקף',
