@@ -120,6 +120,7 @@ export const introduction = {
         // The live demo. Mode labels (Chat/Agent/LLM) stay as product terms. Loop stages by id.
         demo: {
             layerLabel: 'طبقة Agent · نظام حول النموذج',
+            layerLabelChat: 'المسار الأساسي · إدخال، نموذج، إجابة',
             modeChat: 'Chat',
             modeAgent: 'Agent',
             coreLabel: 'LLM',
@@ -137,6 +138,7 @@ export const introduction = {
             chatHint: 'مسار قصير: إدخال، نموذج، إجابة.',
             agentHint: 'حلقة كاملة: تفسير، اختيار، خطر، فعل.',
             agentStages: {
+                in: { label: 'إدخال', hint: 'يدخل طلبك إلى النظام، ومن هنا تبدأ الجولة.' },
                 task: { label: 'يفهم المهمة', hint: 'ما الهدف الحقيقي من الطلب؟', intent: 'تلخيص وإرسال ردّ' },
                 tool: { label: 'يختار أداة', hint: 'أيّ أداة يمكن أن تساعد في المهمة؟', tool: 'قارئ بريد' },
                 risk: { label: 'يتحقّق من الخطر', hint: 'هل الفعل حسّاس أو يتطلّب موافقة؟', risk: 'متوسّط: إرسال خارج النظام' },

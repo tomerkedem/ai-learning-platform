@@ -121,6 +121,7 @@ export const introduction = {
         // The live demo. Mode labels (Chat/Agent/LLM) stay as product terms. Loop stages by id.
         demo: {
             layerLabel: 'Agent の層 · モデルを取り巻くシステム',
+            layerLabelChat: '基本ルート · 入力・モデル・応答',
             modeChat: 'Chat',
             modeAgent: 'Agent',
             coreLabel: 'LLM',
@@ -138,6 +139,7 @@ export const introduction = {
             chatHint: '短い経路: 入力、モデル、回答。',
             agentHint: '完全なループ: 解釈、選択、リスク、行動。',
             agentStages: {
+                in: { label: '入力', hint: 'あなたのリクエストがシステムに入り、ここからラウンドが始まります。' },
                 task: { label: 'タスクを理解する', hint: 'このリクエストの本当の目的は?', intent: '要約して返信を送る' },
                 tool: { label: 'ツールを選ぶ', hint: 'どのツールがタスクに役立つ?', tool: 'メール読み取り' },
                 risk: { label: 'リスクを確認する', hint: 'その操作は慎重に扱うべきものですか? 承認が必要ですか?', risk: '中: システムの外への送信' },

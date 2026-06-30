@@ -65,7 +65,7 @@ const SYSTEM_META = [
   { id: 'agent', chapters: ['17', '18', '19'] },
 ] as const;
 
-const AGENT_STAGE_META = ['task', 'tool', 'risk', 'act', 'answer'] as const;
+const AGENT_STAGE_META = ['in', 'task', 'tool', 'risk', 'act', 'answer'] as const;
 const CHAT_STAGE_META = ['in', 'model', 'out'] as const;
 
 const CTA_HREF = '/behind-the-scenes-ai/chapter-1';

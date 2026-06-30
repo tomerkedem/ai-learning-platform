@@ -51,6 +51,9 @@ export const AgentLoop: React.FC<{
     const [running, setRunning] = useState(false);
     const [hoverId, setHoverId] = useState<string | null>(null);
     const [tilt, setTilt] = useState({ x: 0, y: 0 });
+    // מזהה הרצה: עולה בכל הרצה, כדי לאפס את פולס-ההחלטה אל תחנת ההתחלה (קלט)
+    // במקום שימשיך מהמיקום הקודם (התשובה) ויסחף אחורה.
+    const [runId, setRunId] = useState(0);
 
     const stages = mode === 'agent' ? demo.agentStages : demo.chatStages;
 
@@ -69,7 +72,7 @@ export const AgentLoop: React.FC<{
         if (onModeChange) onModeChange(m); else setModeInternal(m);
         setStep(-1); setRunning(false); setHoverId(null);
     };
-    const run = () => { setStep(0); setRunning(true); };
+    const run = () => { setStep(0); setRunning(true); setRunId((n) => n + 1); };
 
     const activeId = hoverId ?? (step >= 0 ? stages[step].id : null);
     const activeStage = stages.find((s) => s.id === activeId) ?? null;
@@ -87,6 +90,10 @@ export const AgentLoop: React.FC<{
     });
     const activeOrbit = positioned.find((n) => n.id === activeId);
     const activePos = activeOrbit ? { x: activeOrbit.x, y: activeOrbit.y } : activeId ? { x: 50, y: 50 } : null;
+
+    // תחנת ההתחלה של הסבב (קלט בשני המצבים). הפולס מתחיל ממנה בכל הרצה.
+    const firstOrbit = positioned.find((n) => n.id === stages[0]?.id);
+    const firstPos = firstOrbit ? { x: firstOrbit.x, y: firstOrbit.y } : { x: 50, y: 50 };
 
     // קונסולת ההחלטה מצטברת לפי השלב שהגענו אליו (Agent בלבד).
     const cs = { intent: '', tool: '', risk: '', next: '' };
@@ -141,10 +148,12 @@ export const AgentLoop: React.FC<{
                 </button>
             </div>
 
-            {/* תווית השכבה */}
+            {/* תווית השכבה: במצב Agent היא שכבת המערכת (סגול), במצב Chat המסלול הבסיסי (תכלת) */}
             <div className="mb-3 flex justify-center">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-purple-900/20 px-3 py-1 text-[11px] font-bold text-purple-200">
-                    {demo.layerLabel}
+                <span
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold ${mode === 'agent' ? 'border-purple-500/40 bg-purple-900/20 text-purple-200' : 'border-cyan-500/40 bg-cyan-900/20 text-cyan-200'}`}
+                >
+                    {mode === 'agent' ? demo.layerLabel : demo.layerLabelChat}
                 </span>
             </div>
 
@@ -204,12 +213,14 @@ export const AgentLoop: React.FC<{
                 {/* פולס ההחלטה: נקודה זוהרת שעוברת אל התחנה הפעילה */}
                 {!reduce && activePos && (
                     <motion.span
+                        // key לפי הרצה: כל הרצה ממקמת מחדש את הפולס בתחנת הקלט (בלי סחיפה אחורה מהתשובה).
+                        key={runId}
                         aria-hidden
                         className="pointer-events-none absolute z-30 h-3 w-3 rounded-full bg-cyan-300 shadow-[0_0_12px_3px_rgba(34,211,238,0.7)]"
                         // הכדור 12px: היסט -6px ממרכז ה-(left,top), בתוספת אותו parallax כמו התחנות,
                         // כך שמרכזו נוחת בדיוק על מרכז האייקון של התחנה הפעילה.
                         style={{ x: -6 + tilt.x * 0.4, y: -6 + tilt.y * 0.4 }}
-                        initial={{ left: '50%', top: '50%' }}
+                        initial={{ left: `${firstPos.x}%`, top: `${firstPos.y}%` }}
                         animate={{ left: `${activePos.x}%`, top: `${activePos.y}%` }}
                         transition={{ type: 'spring', stiffness: 60, damping: 20 }}
                     />

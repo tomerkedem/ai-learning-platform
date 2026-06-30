@@ -413,6 +413,7 @@ export interface AgentStage {
 
 export const AGENT_DEMO = {
     layerLabel: 'שכבת Agent · מערכת סביב המודל',
+    layerLabelChat: 'מסלול בסיסי · קלט, מודל, תשובה',
     modeChat: 'Chat',
     modeAgent: 'Agent',
     coreLabel: 'LLM',
@@ -430,6 +431,7 @@ export const AGENT_DEMO = {
     chatHint: 'מסלול קצר: קלט, מודל, תשובה.',
     agentHint: 'סבב מלא: פירוש, בחירה, סיכון, פעולה.',
     agentStages: [
+        { id: 'in', label: 'קלט', hint: 'הבקשה שלכם נכנסת אל המערכת, ומכאן מתחיל הסבב.' },
         { id: 'task', label: 'מבין משימה', hint: 'מה המטרה האמיתית של הבקשה?', intent: 'סיכום ושליחת תשובה' },
         { id: 'tool', label: 'בוחר כלי', hint: 'איזה כלי יכול לעזור למשימה?', tool: 'קורא מיילים' },
         { id: 'risk', label: 'בודק סיכון', hint: 'האם הפעולה רגישה או דורשת אישור?', risk: 'בינוני: שליחה החוצה' },

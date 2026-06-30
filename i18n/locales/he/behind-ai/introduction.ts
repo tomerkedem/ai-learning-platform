@@ -132,6 +132,7 @@ export const introduction = {
         // הדמו החי. תוויות המצב (Chat/Agent/LLM) נשמרות כמונחי מוצר. שלבי הסבב לפי מזהה.
         demo: {
             layerLabel: 'שכבת Agent · מערכת סביב המודל',
+            layerLabelChat: 'מסלול בסיסי · קלט, מודל, תשובה',
             modeChat: 'Chat',
             modeAgent: 'Agent',
             coreLabel: 'LLM',
@@ -149,6 +150,7 @@ export const introduction = {
             chatHint: 'מסלול קצר: קלט, מודל, תשובה.',
             agentHint: 'סבב מלא: פירוש, בחירה, סיכון, פעולה.',
             agentStages: {
+                in: { label: 'קלט', hint: 'הבקשה שלכם נכנסת אל המערכת, ומכאן מתחיל הסבב.' },
                 task: { label: 'מבין משימה', hint: 'מה המטרה האמיתית של הבקשה?', intent: 'סיכום ושליחת תשובה' },
                 tool: { label: 'בוחר כלי', hint: 'איזה כלי יכול לעזור למשימה?', tool: 'קורא מיילים' },
                 risk: { label: 'בודק סיכון', hint: 'האם הפעולה רגישה או דורשת אישור?', risk: 'בינוני: שליחה החוצה' },
