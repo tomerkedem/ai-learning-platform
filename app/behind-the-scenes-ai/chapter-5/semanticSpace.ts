@@ -1,18 +1,23 @@
-// נתוני פרק 7: "הגיאומטריה של המשמעות".
-// מרחב סמנטי לימודי דטרמיניסטי לחלוטין - אין כאן embeddings אמיתיים, מודל או רשת.
-// כל מילה היא וקטור דו-ממדי קבוע (x, y), כדי שאפשר יהיה לצייר אותה במרחב.
+// נתוני פרק 5: "Semantic Space: מפת המשמעות של המודל".
+// מרחב סמנטי לימודי דטרמיניסטי לחלוטין. אין כאן embeddings אמיתיים, מודל או רשת.
+// כל משפט מעולם החבילות והמשלוחים הוא נקודה קבועה (x, y) במישור, כדי שאפשר יהיה
+// לצייר אותו ולמדוד קרבה בעיניים.
 //
-// שתי הבחנות מנחות שמופיעות בכל התצוגות:
-//   1. כיוון חשוב יותר ממרחק. הקרבה הסמנטית נמדדת בזווית בין הווקטורים
-//      (Cosine Similarity), לא במרחק ביניהם. שתי מילים על אותו קו דרך הראשית
-//      קרובות במשמעות גם אם אחת רחוקה מהראשית והשנייה קרובה.
-//   2. במרחב אמיתי יש מאות או אלפי ממדים, וכאן בחרנו שניים בלבד כדי לצייר.
-//      הצירים אינם "תכונות" אנושיות, הם רק במה לימודית.
+// שתי הבחנות מנחות:
+//   1. קרבה במרחב = קרבה במשמעות. משפטים שהמודל רואה כקשורים יושבים קרוב זה לזה,
+//      גם כשהמילים שונות ("החבילה לא הגיעה" קרוב ל"המשלוח מתעכב"). משפטים לא קשורים
+//      רחוקים (מתכון, מזג אוויר).
+//   2. קרבה אינה אמת. שני משפטים יכולים לחלוק כמעט את אותן מילים ולשבת קרוב, אבל
+//      להיות הפוכים במשמעות בגלל שלילה ("החבילה הגיעה" מול "החבילה לא הגיעה").
+//
+// חלוקת אחריות i18n: כאן חי רק המבנה (מזהים, קואורדינטות, אשכולות, צבעי hex). טקסט
+// המשפטים ושמות האשכולות מגיעים מהמילון לפי מזהה (semanticSpaceLab), כדי שיתורגם.
 //
 // ── איך להרחיב ────────────────────────────────────────────────────────────
-//   להוסיף מילה למפה: ערך ב-SPACE_WORDS עם x, y ו-cluster קיים.
-//   להוסיף אשכול: מפתח ב-ClusterKey ועיצוב תואם ב-CLUSTER_STYLE.
-//   לשנות את האנלוגיה: ערכי ANALOGY (king - man + woman = queen מחושב מהם).
+//   להוסיף משפט: מזהה ב-PhraseId, רשומה ב-PHRASES עם x, y ו-cluster קיים, וטקסט
+//   תואם במילון semanticSpaceLab.phrases[id] בכל השפות.
+//   להוסיף אשכול: מפתח ב-ClusterKey, צבע ב-CLUSTER_HEX ומחלקות ב-CLUSTER_STYLE,
+//   ושם תצוגה במילון semanticSpaceLab.clusters[key].
 
 /* ════════════════════════════ טיפוסי בסיס ════════════════════════════════ */
 
@@ -21,130 +26,125 @@ export interface Vec {
     y: number;
 }
 
-export type ClusterKey = 'animals' | 'vehicles' | 'food';
+/** מזהי המשפטים במרחב. מפתחות פנימיים יציבים, לא מתורגמים. */
+export type PhraseId =
+    | 'not-arrived'
+    | 'customer-waiting'
+    | 'not-received'
+    | 'delayed'
+    | 'status-not-updated'
+    | 'courier-on-way'
+    | 'arrived'
+    | 'center-checking'
+    | 'agent-contacted'
+    | 'draft-update'
+    | 'recipe'
+    | 'weather';
 
-export interface SpaceWord extends Vec {
-    he: string;
-    en: string;
+/** ארבעה אזורי משמעות במרחב. */
+export type ClusterKey = 'complaint' | 'status' | 'action' | 'unrelated';
+
+export interface Phrase extends Vec {
+    id: PhraseId;
     cluster: ClusterKey;
 }
 
+/* ════════════════════════════ מרחב המשפטים ════════════════════════════════ */
+// אזור התלונה (שמאל-מעלה), אזור הסטטוס נוגע בו (כי "מתעכב" קרוב במשמעות ל"לא הגיעה"),
+// אזור הפעולה למטה-ימין, והלא-קשורים מבודדים רחוק למטה-שמאל.
+// "החבילה הגיעה" יושב קרוב ל"החבילה לא הגיעה" בכוונה: אותן מילים כמעט, משמעות הפוכה.
+// זו המלכודת של "קרבה אינה אמת", ומנוסתה בנפרד בניסוי השלילה.
+
+export const PHRASES: Phrase[] = [
+    // תלונה / לקוח מחכה
+    { id: 'not-arrived', x: -4, y: 6, cluster: 'complaint' },
+    { id: 'customer-waiting', x: -5.5, y: 7.5, cluster: 'complaint' },
+    { id: 'not-received', x: -3, y: 7.5, cluster: 'complaint' },
+    // סטטוס משלוח (נוגע באזור התלונה)
+    { id: 'delayed', x: -2, y: 5, cluster: 'status' },
+    { id: 'status-not-updated', x: 0, y: 6, cluster: 'status' },
+    { id: 'courier-on-way', x: 2.5, y: 6.5, cluster: 'status' },
+    { id: 'arrived', x: -4, y: 4, cluster: 'status' },
+    // פעולת שירות
+    { id: 'center-checking', x: 4, y: -3, cluster: 'action' },
+    { id: 'agent-contacted', x: 5.5, y: -1.5, cluster: 'action' },
+    { id: 'draft-update', x: 6, y: -4, cluster: 'action' },
+    // לא קשור
+    { id: 'recipe', x: -8, y: -7, cluster: 'unrelated' },
+    { id: 'weather', x: -9, y: -4.5, cluster: 'unrelated' },
+];
+
+/** המשפט העוגן של הפרק, שממנו יוצא ניחוש הפתיחה והמעבדה. */
+export const ANCHOR_ID: PhraseId = 'not-arrived';
+
+/** זוג השלילה: אותן מילים כמעט, משמעות הפוכה. משמש בניסוי "קרבה אינה אמת". */
+export const NEGATION_PAIR: { base: PhraseId; opposite: PhraseId } = {
+    base: 'not-arrived',
+    opposite: 'arrived',
+};
+
+/* ════════════════════════════ עיצוב אשכולות ══════════════════════════════ */
+// hex ל-SVG (לא תלוי ב-Tailwind JIT בתוך אטריביוטים). מחלקות literal ל-HTML.
+
+export const CLUSTER_HEX: Record<ClusterKey, string> = {
+    complaint: '#fb7185',
+    status: '#22d3ee',
+    action: '#a78bfa',
+    unrelated: '#64748b',
+};
+
 export interface ClusterStyle {
-    he: string;
-    en: string;
-    /** צבע ל-SVG (stroke / fill) - hex כדי לא להיות תלוי ב-Tailwind JIT בתוך אטריביוטים. */
     hex: string;
-    /** מחלקות Tailwind ל-HTML (literal בלבד). */
     text: string;
     chip: string;
     dot: string;
 }
 
-/* ════════════════════════════ מרחב המילים ════════════════════════════════ */
-// שלושה אשכולות, כל אחד בכיוון אחר מהראשית.
-// בעלי חיים מצביעים למעלה, כלי תחבורה ימינה, מאכלים שמאלה-למעלה.
-// "אריה" יושב בדיוק על הכיוון של "חתול" אבל קרוב יותר לראשית - כדי להראות
-// שמרחק קצר מהראשית לא הופך מילה לרחוקה במשמעות. הכיוון הוא מה שקובע.
-
-export const SPACE_WORDS: SpaceWord[] = [
-    { he: 'חתול', en: 'Cat', x: 2, y: 8, cluster: 'animals' },
-    { he: 'כלב', en: 'Dog', x: 3, y: 9, cluster: 'animals' },
-    { he: 'אריה', en: 'Lion', x: 1, y: 4, cluster: 'animals' },
-    { he: 'מכונית', en: 'Car', x: 9, y: -1, cluster: 'vehicles' },
-    { he: 'אוטובוס', en: 'Bus', x: 8, y: 1, cluster: 'vehicles' },
-    { he: 'אופניים', en: 'Bicycle', x: 9, y: -3, cluster: 'vehicles' },
-    { he: 'תפוח', en: 'Apple', x: -7, y: 5, cluster: 'food' },
-    { he: 'בננה', en: 'Banana', x: -8, y: 4, cluster: 'food' },
-];
-
 export const CLUSTER_STYLE: Record<ClusterKey, ClusterStyle> = {
-    animals: { he: 'בעלי חיים', en: 'Animals', hex: '#34d399', text: 'text-emerald-300', chip: 'border-emerald-500/40 bg-emerald-900/15', dot: 'bg-emerald-400' },
-    vehicles: { he: 'כלי תחבורה', en: 'Vehicles', hex: '#22d3ee', text: 'text-cyan-300', chip: 'border-cyan-500/40 bg-cyan-900/15', dot: 'bg-cyan-400' },
-    food: { he: 'מאכלים', en: 'Food', hex: '#fb7185', text: 'text-rose-300', chip: 'border-rose-500/40 bg-rose-900/15', dot: 'bg-rose-400' },
+    complaint: { hex: '#fb7185', text: 'text-rose-300', chip: 'border-rose-500/40 bg-rose-900/15', dot: 'bg-rose-400' },
+    status: { hex: '#22d3ee', text: 'text-cyan-300', chip: 'border-cyan-500/40 bg-cyan-900/15', dot: 'bg-cyan-400' },
+    action: { hex: '#a78bfa', text: 'text-violet-300', chip: 'border-violet-500/40 bg-violet-900/15', dot: 'bg-violet-400' },
+    unrelated: { hex: '#94a3b8', text: 'text-slate-400', chip: 'border-slate-600/50 bg-slate-800/40', dot: 'bg-slate-500' },
 };
 
-/** מאתר מילה לפי הטקסט העברי. */
-export function findWord(he: string): SpaceWord | undefined {
-    return SPACE_WORDS.find((w) => w.he === he);
+/* ═══════════════════════ פונקציות עזר טהורות (מרחק) ═══════════════════════ */
+
+/** מרחק אוקלידי בין שתי נקודות. במרחב הזה, קטן יותר = קרוב יותר במשמעות. */
+export function distance(a: Vec, b: Vec): number {
+    return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
-/* ════════════════════════════ אנלוגיית וקטורים ═══════════════════════════ */
-// מלך − גבר + אישה ≈ מלכה. הקואורדינטות נבחרו כך שהמשוואה מדויקת:
-// ציר אופקי = מעמד (גבר/אישה נמוך, מלך/מלכה גבוה), ציר אנכי = מגדר.
-// (8,2) − (2,2) + (2,6) = (8,6), וזו בדיוק "מלכה".
+/** אורך אלכסון ייחוס לנרמול מרחק לערך קרבה 0..1 (המישור נע בערך ב-[-10,10]). */
+const REF_SPAN = 15;
 
-export interface AnalogyWord extends Vec {
-    he: string;
-    en: string;
+/** ממיר מרחק לערך קרבה 0..1 (1 = חופפים, 0 = רחוקים מאוד). לתצוגת מד/בר בלבד. */
+export function closeness(dist: number): number {
+    return Math.max(0, Math.min(1, 1 - dist / REF_SPAN));
 }
 
-export const ANALOGY: Record<'man' | 'woman' | 'king' | 'queen', AnalogyWord> = {
-    man: { he: 'גבר', en: 'Man', x: 2, y: 2 },
-    woman: { he: 'אישה', en: 'Woman', x: 2, y: 6 },
-    king: { he: 'מלך', en: 'King', x: 8, y: 2 },
-    queen: { he: 'מלכה', en: 'Queen', x: 8, y: 6 },
-};
+export type ClosenessTone = 'near' | 'mid' | 'far';
 
-/** וקטור ההפרש אישה − גבר. זהו "כיוון המגדר" שמוסיפים למלך. */
-export const GENDER_SHIFT: Vec = {
-    x: ANALOGY.woman.x - ANALOGY.man.x,
-    y: ANALOGY.woman.y - ANALOGY.man.y,
-};
-
-/** תוצאת החישוב מלך − גבר + אישה. אמורה לנחות על "מלכה". */
-export const ANALOGY_RESULT: Vec = {
-    x: ANALOGY.king.x - ANALOGY.man.x + ANALOGY.woman.x,
-    y: ANALOGY.king.y - ANALOGY.man.y + ANALOGY.woman.y,
-};
-
-/* ═══════════════════════ פונקציות עזר טהורות (וקטורים) ════════════════════ */
-
-export function dot(a: Vec, b: Vec): number {
-    return a.x * b.x + a.y * b.y;
-}
-
-export function magnitude(a: Vec): number {
-    return Math.hypot(a.x, a.y);
-}
-
-/** Cosine Similarity: קרבת כיוון בין שני וקטורים. 1 = אותו כיוון, 0 = ניצב, -1 = הפוך. */
-export function cosineSim(a: Vec, b: Vec): number {
-    const m = magnitude(a) * magnitude(b);
-    return m === 0 ? 0 : dot(a, b) / m;
-}
-
-/** הזווית בין שני וקטורים במעלות (0 = אותו כיוון, 180 = מנוגד). */
-export function angleBetweenDeg(a: Vec, b: Vec): number {
-    const c = Math.max(-1, Math.min(1, cosineSim(a, b)));
-    return (Math.acos(c) * 180) / Math.PI;
-}
-
-export type ClosenessTone = 'near' | 'mid' | 'far' | 'opposite';
-
-export interface ClosenessLabel {
-    he: string;
-    tone: ClosenessTone;
-}
-
-/** תרגום ערך Cosine לתווית מילולית, לטובת אינטואיציה בלי נוסחאות. */
-export function closenessLabel(cos: number): ClosenessLabel {
-    if (cos >= 0.85) return { he: 'אותו כיוון, קרוב מאוד', tone: 'near' };
-    if (cos >= 0.5) return { he: 'כיוון דומה', tone: 'mid' };
-    if (cos >= 0) return { he: 'כיוון שונה, רחוק', tone: 'far' };
-    return { he: 'כיוונים מנוגדים', tone: 'opposite' };
+/** תרגום מרחק לתווית גוון, לטובת אינטואיציה בלי מספרים. */
+export function closenessTone(dist: number): ClosenessTone {
+    if (dist <= 3) return 'near';
+    if (dist <= 7) return 'mid';
+    return 'far';
 }
 
 export const TONE_STYLE: Record<ClosenessTone, { text: string; bar: string; chip: string }> = {
     near: { text: 'text-emerald-300', bar: 'bg-gradient-to-l from-emerald-400 to-teal-500', chip: 'border-emerald-500/40 bg-emerald-900/15' },
     mid: { text: 'text-amber-300', bar: 'bg-gradient-to-l from-amber-400 to-orange-500', chip: 'border-amber-500/40 bg-amber-900/15' },
     far: { text: 'text-slate-400', bar: 'bg-gradient-to-l from-slate-500 to-slate-600', chip: 'border-slate-600/50 bg-slate-800/40' },
-    opposite: { text: 'text-rose-300', bar: 'bg-gradient-to-l from-rose-400 to-pink-500', chip: 'border-rose-500/40 bg-rose-900/15' },
 };
 
-/** מילים אחרות מדורגות לפי קרבת כיוון למילה נתונה (מהקרוב לרחוק). */
-export function rankByCloseness(word: SpaceWord): { word: SpaceWord; cos: number }[] {
-    return SPACE_WORDS
-        .filter((w) => w.he !== word.he)
-        .map((w) => ({ word: w, cos: cosineSim(word, w) }))
-        .sort((a, b) => b.cos - a.cos);
+/** מאתר משפט לפי מזהה. */
+export function findPhrase(id: PhraseId): Phrase | undefined {
+    return PHRASES.find((p) => p.id === id);
+}
+
+/** שאר המשפטים מדורגים לפי קרבה (מרחק) לנקודה נתונה, מהקרוב לרחוק. */
+export function rankByDistance(from: Vec, excludeId: PhraseId): { phrase: Phrase; dist: number }[] {
+    return PHRASES.filter((p) => p.id !== excludeId)
+        .map((p) => ({ phrase: p, dist: distance(from, p) }))
+        .sort((a, b) => a.dist - b.dist);
 }

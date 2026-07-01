@@ -85,8 +85,9 @@ const TONE_PANEL: Record<GuessTone, string> = {
     layer: 'border-indigo-400/30 bg-indigo-900/[0.12]',
 };
 
-export const DiscoveryGuess: React.FC<{ content: DiscoveryGuessContent; cards: DiscoveryGuessCard[] }> = ({ content, cards }) => {
+export const DiscoveryGuess: React.FC<{ content: DiscoveryGuessContent; cards: DiscoveryGuessCard[]; mentorScale?: number }> = ({ content, cards, mentorScale = 1 }) => {
     const reduce = useReducedMotion();
+    const mw = (base: number) => Math.round(base * mentorScale);
     const [chosenId, setChosenId] = useState<string | null>(null);
     const [revealed, setRevealed] = useState(false);
 
@@ -124,7 +125,7 @@ export const DiscoveryGuess: React.FC<{ content: DiscoveryGuessContent; cards: D
                     כך שלעולם אינה חופפת כרטיס או טקסט. נעלמת ברגע שנבחרת אפשרות. */}
                 {!choiceMade && (
                     <div className="mb-5 hidden flex-col items-center sm:flex">
-                        <Mentor pose={content.invitePose} width={108} glow={false} />
+                        <Mentor pose={content.invitePose} width={mw(108)} glow={false} />
                         <p className="mt-1 max-w-xs text-center text-[12px] font-medium leading-snug text-slate-400">
                             {content.invite}
                         </p>
@@ -191,7 +192,7 @@ export const DiscoveryGuess: React.FC<{ content: DiscoveryGuessContent; cards: D
                             <div className={`rounded-2xl border p-5 ${TONE_PANEL[chosen.statusTone]}`}>
                                 <div className="flex items-start gap-4">
                                     <div className="hidden shrink-0 self-center sm:block">
-                                        <Mentor pose={chosen.mentorPose} width={68} glow={false} float={false} />
+                                        <Mentor pose={chosen.mentorPose} width={mw(68)} glow={false} float={false} />
                                     </div>
 
                                     <div className="flex-1">
@@ -262,7 +263,7 @@ export const DiscoveryGuess: React.FC<{ content: DiscoveryGuessContent; cards: D
 
                                 <div className="mt-4 flex flex-col items-center gap-2">
                                     <div className="hidden sm:block">
-                                        <Mentor pose={content.revealPose} width={72} glow={false} float={false} />
+                                        <Mentor pose={content.revealPose} width={mw(72)} glow={false} float={false} />
                                     </div>
                                     {content.ctaTargetId && (
                                         <GuessButton

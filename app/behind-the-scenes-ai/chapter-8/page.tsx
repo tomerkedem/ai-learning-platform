@@ -8,19 +8,22 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { ChapterQuiz } from '../ChapterQuiz';
 import { InsightBox } from '@/components/content/InsightBox';
 
-import { DiscoveryGuess, type DiscoveryGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
+import { OpeningGuess, type OpeningGuessContent } from '@/components/ai-internals/OpeningGuess';
+import type { DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
 import { ContinuationLab } from '@/components/ai-internals/ContinuationLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { CONTINUATION_SCENARIOS } from './continuationScenarios';
 
 /* ════════════════════════ ניחוש הפתיחה ════════════════════════ */
 
-const GUESS_CONTENT: DiscoveryGuessContent = {
+const GUESS_CONTENT: OpeningGuessContent = {
     eyebrow: 'ניחוש מהיר · הלב ההסתברותי',
     title: 'מה המודל עושה ברגע שהוא צריך להמשיך תשובה?',
     subtitle: 'בחרו את ההסבר שנראה לכם הקרוב ביותר. אין כאן ציון, יש כיוון אחד שמתאר מה באמת קורה.',
     invite: 'לפני שנפתח את זה, נסו לנחש מה קורה רגע לפני שהמודל כותב את ההמשך.',
     invitePose: 'think',
+    correctTitle: 'נכון מאוד!',
+    wrongTitle: 'כמעט!',
     getsRightLabel: 'מה זה תופס נכון',
     revealButton: 'חשפו את הרעיון המרכזי',
     revealTitle: 'אז מה באמת קורה?',
@@ -204,7 +207,7 @@ export default function BehindTheScenesChapter4() {
 
             {/* ══════════ ניחוש פתיחה ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
-                <DiscoveryGuess content={GUESS_CONTENT} cards={GUESS_CARDS} />
+                <OpeningGuess content={GUESS_CONTENT} cards={GUESS_CARDS} />
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}

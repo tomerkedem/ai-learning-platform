@@ -21,7 +21,7 @@ export const chapterQuiz = {
         2: 'Model Input',
         3: 'Tokenization',
         4: 'Embeddings',
-        5: 'La geometría del significado',
+        5: 'Semantic Space: el mapa del significado',
         6: 'Attention, qué importa ahora',
         7: 'Context Window',
         8: 'Logits & Softmax',

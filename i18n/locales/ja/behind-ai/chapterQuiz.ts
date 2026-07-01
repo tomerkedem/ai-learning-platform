@@ -20,7 +20,7 @@ export const chapterQuiz = {
         2: 'Model Input',
         3: 'Tokenization',
         4: 'Embeddings',
-        5: '意味の幾何学',
+        5: 'Semantic Space: 意味のマップ',
         6: 'Attention、いま何が重要か',
         7: 'Context Window',
         8: 'Logits & Softmax',

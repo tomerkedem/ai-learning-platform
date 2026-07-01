@@ -63,6 +63,12 @@ import { chapter5 as ruChapter5 } from './locales/ru/behind-ai/chapter5';
 import { chapter5 as enChapter5 } from './locales/en/behind-ai/chapter5';
 import { chapter5 as esChapter5 } from './locales/es/behind-ai/chapter5';
 import { chapter5 as jaChapter5 } from './locales/ja/behind-ai/chapter5';
+import { semanticSpace as heSemanticSpace } from './locales/he/behind-ai/semanticSpace';
+import { semanticSpace as arSemanticSpace } from './locales/ar/behind-ai/semanticSpace';
+import { semanticSpace as ruSemanticSpace } from './locales/ru/behind-ai/semanticSpace';
+import { semanticSpace as enSemanticSpace } from './locales/en/behind-ai/semanticSpace';
+import { semanticSpace as esSemanticSpace } from './locales/es/behind-ai/semanticSpace';
+import { semanticSpace as jaSemanticSpace } from './locales/ja/behind-ai/semanticSpace';
 
 // המבוא (i18n של המבוא). העברית היא המקור; שאר השפות הן stubs שמייצאים מחדש את
 // העברית (fallback בטוח) עד שיתורגמו בשלב מאוחר יותר.
@@ -126,6 +132,7 @@ export type Chapter2Dict = typeof heChapter2;
 export type Chapter3Dict = typeof heChapter3;
 export type Chapter4Dict = typeof heChapter4;
 export type Chapter5Dict = typeof heChapter5;
+export type SemanticSpaceDict = typeof heSemanticSpace;
 export type IntroductionDict = typeof heIntroduction;
 export type ConceptLabelsDict = typeof heConceptLabels;
 export type FinalExamDict = typeof heFinalExam;
@@ -141,6 +148,7 @@ export interface BehindAiDict {
     chapter3: Chapter3Dict;
     chapter4: Chapter4Dict;
     chapter5: Chapter5Dict;
+    semanticSpace: SemanticSpaceDict;
     conceptLabels: ConceptLabelsDict;
     finalExam: FinalExamDict;
     chapterQuiz: ChapterQuizDict;
@@ -155,12 +163,12 @@ export interface Dictionary {
 }
 
 const DICTS: Record<Locale, Dictionary> = {
-    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter1: heChapter1, chapter2: heChapter2, chapter3: heChapter3, chapter4: heChapter4, chapter5: heChapter5, conceptLabels: heConceptLabels, finalExam: heFinalExam, chapterQuiz: heChapterQuiz, introVisuals: heIntroVisuals, aiInternals: heAiInternals } },
-    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter1: arChapter1, chapter2: arChapter2, chapter3: arChapter3, chapter4: arChapter4, chapter5: arChapter5, conceptLabels: arConceptLabels, finalExam: arFinalExam, chapterQuiz: arChapterQuiz, introVisuals: arIntroVisuals, aiInternals: arAiInternals } },
-    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter1: ruChapter1, chapter2: ruChapter2, chapter3: ruChapter3, chapter4: ruChapter4, chapter5: ruChapter5, conceptLabels: ruConceptLabels, finalExam: ruFinalExam, chapterQuiz: ruChapterQuiz, introVisuals: ruIntroVisuals, aiInternals: ruAiInternals } },
-    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter1: enChapter1, chapter2: enChapter2, chapter3: enChapter3, chapter4: enChapter4, chapter5: enChapter5, conceptLabels: enConceptLabels, finalExam: enFinalExam, chapterQuiz: enChapterQuiz, introVisuals: enIntroVisuals, aiInternals: enAiInternals } },
-    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter1: esChapter1, chapter2: esChapter2, chapter3: esChapter3, chapter4: esChapter4, chapter5: esChapter5, conceptLabels: esConceptLabels, finalExam: esFinalExam, chapterQuiz: esChapterQuiz, introVisuals: esIntroVisuals, aiInternals: esAiInternals } },
-    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter1: jaChapter1, chapter2: jaChapter2, chapter3: jaChapter3, chapter4: jaChapter4, chapter5: jaChapter5, conceptLabels: jaConceptLabels, finalExam: jaFinalExam, chapterQuiz: jaChapterQuiz, introVisuals: jaIntroVisuals, aiInternals: jaAiInternals } },
+    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter1: heChapter1, chapter2: heChapter2, chapter3: heChapter3, chapter4: heChapter4, chapter5: heChapter5, semanticSpace: heSemanticSpace, conceptLabels: heConceptLabels, finalExam: heFinalExam, chapterQuiz: heChapterQuiz, introVisuals: heIntroVisuals, aiInternals: heAiInternals } },
+    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter1: arChapter1, chapter2: arChapter2, chapter3: arChapter3, chapter4: arChapter4, chapter5: arChapter5, semanticSpace: arSemanticSpace, conceptLabels: arConceptLabels, finalExam: arFinalExam, chapterQuiz: arChapterQuiz, introVisuals: arIntroVisuals, aiInternals: arAiInternals } },
+    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter1: ruChapter1, chapter2: ruChapter2, chapter3: ruChapter3, chapter4: ruChapter4, chapter5: ruChapter5, semanticSpace: ruSemanticSpace, conceptLabels: ruConceptLabels, finalExam: ruFinalExam, chapterQuiz: ruChapterQuiz, introVisuals: ruIntroVisuals, aiInternals: ruAiInternals } },
+    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter1: enChapter1, chapter2: enChapter2, chapter3: enChapter3, chapter4: enChapter4, chapter5: enChapter5, semanticSpace: enSemanticSpace, conceptLabels: enConceptLabels, finalExam: enFinalExam, chapterQuiz: enChapterQuiz, introVisuals: enIntroVisuals, aiInternals: enAiInternals } },
+    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter1: esChapter1, chapter2: esChapter2, chapter3: esChapter3, chapter4: esChapter4, chapter5: esChapter5, semanticSpace: esSemanticSpace, conceptLabels: esConceptLabels, finalExam: esFinalExam, chapterQuiz: esChapterQuiz, introVisuals: esIntroVisuals, aiInternals: esAiInternals } },
+    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter1: jaChapter1, chapter2: jaChapter2, chapter3: jaChapter3, chapter4: jaChapter4, chapter5: jaChapter5, semanticSpace: jaSemanticSpace, conceptLabels: jaConceptLabels, finalExam: jaFinalExam, chapterQuiz: jaChapterQuiz, introVisuals: jaIntroVisuals, aiInternals: jaAiInternals } },
 };
 
 /** מחזיר את המילון לשפה, עם נפילה לעברית אם השפה לא נמצאה. */
