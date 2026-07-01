@@ -78,6 +78,9 @@ export const chapter4Lab: Chapter4LabDict = {
         objectSelected: 'Objeto seleccionado',
         objectClosest: 'Lo más cercano',
         objectNoClose: 'Lejos del resto',
+        numericTitle: 'Representación numérica',
+        numericNote: 'Los objetos parecidos en significado reciben números parecidos, por eso están cerca en el mapa. Un vector aleatorio no los agruparía.',
+        numericDisclaimer: 'Los números son solo ilustrativos. Un espacio real tiene cientos de dimensiones no legibles para una persona.',
 
         packageTitle: 'Cercanía de significado entre frases',
         packageSubtitle: 'Frases distintas pueden estar cerca si describen una idea similar.',
@@ -198,8 +201,8 @@ export const chapter4Lab: Chapter4LabDict = {
     },
 
     dna: {
-        title: 'ADN del significado',
-        intro: 'Cada frase tiene una "receta" de componentes de significado, y ese es su ADN. Las dos hebras son las dos frases, y cada peldaño es un componente de significado.',
+        title: 'El significado dentro del vector',
+        intro: 'El vector no es un solo número. Es un perfil de componentes de significado que el modelo aprendió. Cada peldaño es un componente de significado, y la altura del nodo muestra qué tan fuerte es ese componente en la frase.',
         roleActive: 'tu frase',
         roleCompare: 'comparada',
         twistMeaning: 'Cuanto más cercano es el significado de las dos frases, más se enrollan juntas las hebras. Cuando el significado deriva, se separan.',

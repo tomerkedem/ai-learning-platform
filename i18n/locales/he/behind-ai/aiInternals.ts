@@ -29,6 +29,14 @@ export const aiInternals = {
     stickyContextBar: {
         currentlyAnalyzed: 'מנותח כעת',
     },
+    // ExpandableLab: כיתובי כפתור הגדלה/חזרה למעבדות (מסך מלא), משותפים לכל הפרקים.
+    labZoom: {
+        expand: 'מסך מלא',
+        collapse: 'חזרה לפרק',
+        expandAria: 'הגדלת המעבדה למסך מלא',
+        collapseAria: 'חזרה לתצוגה רגילה בתוך הפרק',
+    },
+
     // ReadAloudControls: כיתובי דוק ההקראה (Web Speech API), משותפים לכל הפרקים.
     readAloud: {
         dock: 'האזנה מודרכת',

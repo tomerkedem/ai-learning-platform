@@ -23,6 +23,13 @@ export const aiInternals = {
         currentlyAnalyzed: 'Analizando ahora',
     },
     // ReadAloudControls: chrome del lector en voz alta (Web Speech API), compartido entre capítulos.
+    labZoom: {
+        expand: 'Pantalla completa',
+        collapse: 'Volver al capítulo',
+        expandAria: 'Ampliar el laboratorio a pantalla completa',
+        collapseAria: 'Volver a la vista normal dentro del capítulo',
+    },
+
     readAloud: {
         dock: 'Escucha guiada',
         play: 'Leer en voz alta',

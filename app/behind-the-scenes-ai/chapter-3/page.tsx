@@ -13,6 +13,7 @@ import { behindAiChapterQuizzes } from '../quizData';
 
 import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
 import { TokenizationLab } from '@/components/ai-internals/TokenizationLab';
+import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
 import { TokenizationRoadmap } from '@/components/ai-internals/TokenizationRoadmap';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
@@ -249,7 +250,9 @@ export default function BehindTheScenesChapter3() {
                         {c3.lab.intro}
                     </div>
 
-                    <TokenizationLab key={locale} />
+                    <ExpandableLab>
+                        <TokenizationLab key={locale} />
+                    </ExpandableLab>
                     <TokenizationRoadmap />
 
                     <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'} z-20 hidden xl:block pointer-events-none`}>

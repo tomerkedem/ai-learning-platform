@@ -15,6 +15,19 @@ import { useChapter4Lab } from '../labContent';
 import { MeaningProximity, type ProximityNode } from './MeaningProximity';
 import { ObjectGlyph } from './objectGlyphs';
 
+// ייצוג מספרי להמחשה: אובייקטים מאותה קטגוריה מקבלים מספרים דומים (כלב~חתול, תפוח~מלפפון),
+// ומחשב שונה. מבנה בלבד (לא מתורגם), להראות שקרבה במפה = דמיון במספרים, לא במקרה.
+const OBJ_VEC: Record<string, number[]> = {
+    dog: [0.82, 0.71, -0.12, 0.64, -0.20, 0.55],
+    cat: [0.78, 0.68, -0.08, 0.60, -0.16, 0.51],
+    apple: [-0.24, 0.18, 0.80, 0.66, 0.40, -0.30],
+    cucumber: [-0.19, 0.14, 0.84, 0.61, 0.36, -0.26],
+    computer: [0.10, -0.82, 0.22, -0.58, 0.75, 0.14],
+};
+const fmtN = (n: number) => (n >= 0 ? `+${n.toFixed(2)}` : n.toFixed(2));
+// שפת צבע אחידה למספרים בקורס: ציאן = חיובי, סגול = שלילי.
+const numTone = (n: number) => (n >= 0 ? 'text-cyan-200' : 'text-violet-200');
+
 interface UniversalMeaningDemoProps {
     dir?: 'rtl' | 'ltr';
 }
@@ -27,11 +40,11 @@ export const UniversalMeaningDemo: React.FC<UniversalMeaningDemoProps> = ({ dir 
 
     // שני אשכולות: חיות למעלה-שמאל, אוכל למטה-ימין, ומחשב נפרד למעלה-ימין.
     const nodes: ProximityNode[] = [
-        { id: 'dog', pos: { x: 0.28, y: 0.34 }, nearestId: 'cat', assetSrc: '/assets/semantic-object-dog.png', fallbackGlyph: 'dog', label: o.dog, explanation: ex.dog },
-        { id: 'cat', pos: { x: 0.46, y: 0.3 }, nearestId: 'dog', assetSrc: '/assets/semantic-object-cat.png', fallbackGlyph: 'cat', label: o.cat, explanation: ex.cat },
-        { id: 'apple', pos: { x: 0.56, y: 0.7 }, nearestId: 'cucumber', assetSrc: '/assets/semantic-object-apple.png', fallbackGlyph: 'apple', label: o.apple, explanation: ex.apple },
-        { id: 'cucumber', pos: { x: 0.76, y: 0.66 }, nearestId: 'apple', assetSrc: '/assets/semantic-object-cucumber.png', fallbackGlyph: 'cucumber', label: o.cucumber, explanation: ex.cucumber },
-        { id: 'computer', pos: { x: 0.84, y: 0.32 }, assetSrc: '/assets/semantic-object-computer.png', fallbackGlyph: 'computer', label: o.computer, explanation: ex.computer },
+        { id: 'dog', pos: { x: 0.28, y: 0.34 }, nearestId: 'cat', assetSrc: '/assets/semantic-object-dog.png', fallbackGlyph: 'dog', label: o.dog, explanation: ex.dog, vector: OBJ_VEC.dog },
+        { id: 'cat', pos: { x: 0.46, y: 0.3 }, nearestId: 'dog', assetSrc: '/assets/semantic-object-cat.png', fallbackGlyph: 'cat', label: o.cat, explanation: ex.cat, vector: OBJ_VEC.cat },
+        { id: 'apple', pos: { x: 0.56, y: 0.7 }, nearestId: 'cucumber', assetSrc: '/assets/semantic-object-apple.png', fallbackGlyph: 'apple', label: o.apple, explanation: ex.apple, vector: OBJ_VEC.apple },
+        { id: 'cucumber', pos: { x: 0.76, y: 0.66 }, nearestId: 'apple', assetSrc: '/assets/semantic-object-cucumber.png', fallbackGlyph: 'cucumber', label: o.cucumber, explanation: ex.cucumber, vector: OBJ_VEC.cucumber },
+        { id: 'computer', pos: { x: 0.84, y: 0.32 }, assetSrc: '/assets/semantic-object-computer.png', fallbackGlyph: 'computer', label: o.computer, explanation: ex.computer, vector: OBJ_VEC.computer },
     ];
 
     const byId = new Map(nodes.map((n) => [n.id, n] as const));
@@ -55,7 +68,38 @@ export const UniversalMeaningDemo: React.FC<UniversalMeaningDemoProps> = ({ dir 
                         <p className="mt-1 text-[13px] leading-relaxed text-slate-400">{m.visualSubtitle}</p>
                     </div>
 
-                    <MeaningProximity nodes={nodes} activeId={activeId} onSelect={setActiveId} closestTag={m.closestTag} dir={dir} showAllLinks />
+                    <MeaningProximity nodes={nodes} activeId={activeId} onSelect={setActiveId} closestTag={m.closestTag} dir={dir} showAllLinks showGrid />
+
+                    {/* ייצוג מספרי מתחת למפה (ממלא את הרווח): אותם אובייקטים קרובים => מספרים דומים */}
+                    <div className="mt-4 rounded-2xl border border-violet-500/25 bg-slate-900/40 p-4">
+                        <div className="mb-2.5 text-[13px] font-bold text-slate-100">{m.numericTitle}</div>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            <div>
+                                <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold text-cyan-200">
+                                    <span className="h-2 w-2 shrink-0 rounded-full bg-cyan-300" /> {active.label}
+                                </div>
+                                <div className="flex flex-wrap gap-1 font-mono text-[10px]" dir="ltr">
+                                    {(OBJ_VEC[active.id] ?? []).map((n, i) => (
+                                        <span key={i} className={`rounded bg-slate-800/60 px-1.5 py-0.5 ${numTone(n)}`}>{fmtN(n)}</span>
+                                    ))}
+                                </div>
+                            </div>
+                            {closest && (
+                                <div>
+                                    <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold text-violet-200">
+                                        <span className="h-2 w-2 shrink-0 rounded-full bg-violet-300" /> {closest.label}
+                                    </div>
+                                    <div className="flex flex-wrap gap-1 font-mono text-[10px]" dir="ltr">
+                                        {(OBJ_VEC[closest.id] ?? []).map((n, i) => (
+                                            <span key={i} className={`rounded bg-slate-800/60 px-1.5 py-0.5 ${numTone(n)}`}>{fmtN(n)}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <p className="mt-2.5 text-[11px] leading-relaxed text-slate-400">{m.numericNote}</p>
+                        <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">{m.numericDisclaimer}</p>
+                    </div>
                 </div>
 
                 <div className="mt-5 space-y-4 lg:col-span-5 lg:mt-0">

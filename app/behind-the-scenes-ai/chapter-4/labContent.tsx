@@ -80,6 +80,11 @@ export interface Chapter4LabDict {
         objectSelected: string;
         objectClosest: string;
         objectNoClose: string;
+        /** ייצוג מספרי של האובייקטים: אובייקטים דומים מקבלים מספרים דומים. */
+        numericTitle: string;
+        numericNote: string;
+        /** הבהרה: המספרים להמחשה, מרחב אמיתי הוא מאות ממדים לא קריאים. */
+        numericDisclaimer: string;
 
         /** שלב 2, דמו משפטים. */
         packageTitle: string;

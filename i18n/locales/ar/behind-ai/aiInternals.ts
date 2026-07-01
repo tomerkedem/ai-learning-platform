@@ -23,6 +23,13 @@ export const aiInternals = {
         currentlyAnalyzed: 'قيد التحليل الآن',
     },
     // ReadAloudControls: واجهة القراءة الصوتية (Web Speech API)، مشتركة بين الفصول.
+    labZoom: {
+        expand: 'ملء الشاشة',
+        collapse: 'العودة إلى الفصل',
+        expandAria: 'تكبير المختبر إلى ملء الشاشة',
+        collapseAria: 'العودة إلى العرض العادي داخل الفصل',
+    },
+
     readAloud: {
         dock: 'استماع موجّه',
         play: 'استماع',

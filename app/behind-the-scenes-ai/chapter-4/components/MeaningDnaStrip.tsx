@@ -330,14 +330,19 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
                     </span>
                     {dna.guideSize}
                 </p>
-                <p className="flex items-start gap-2 text-[12px] leading-relaxed text-slate-400">
-                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-300 shadow-[0_0_6px_1px_rgba(52,211,153,0.7)]" />
-                    {dna.guideBond}
-                </p>
-                <p className="flex items-start gap-2 text-[12px] leading-relaxed text-slate-400">
-                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-violet-300" />
-                    {dna.twistMeaning}
-                </p>
+                {/* קווי ההנחיה על קשר/כריכה בין שני משפטים רלוונטיים רק כשיש משפט השוואה */}
+                {compare && (
+                    <>
+                        <p className="flex items-start gap-2 text-[12px] leading-relaxed text-slate-400">
+                            <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-300 shadow-[0_0_6px_1px_rgba(52,211,153,0.7)]" />
+                            {dna.guideBond}
+                        </p>
+                        <p className="flex items-start gap-2 text-[12px] leading-relaxed text-slate-400">
+                            <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-violet-300" />
+                            {dna.twistMeaning}
+                        </p>
+                    </>
+                )}
             </div>
 
             {/* פסיקה אחת ברורה */}

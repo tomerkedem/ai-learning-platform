@@ -23,6 +23,13 @@ export const aiInternals = {
         currentlyAnalyzed: 'Now analyzing',
     },
     // ReadAloudControls: read-aloud dock chrome (Web Speech API), shared across chapters.
+    labZoom: {
+        expand: 'Full screen',
+        collapse: 'Back to chapter',
+        expandAria: 'Expand the lab to full screen',
+        collapseAria: 'Return to the normal in-chapter view',
+    },
+
     readAloud: {
         dock: 'Guided listening',
         play: 'Read aloud',

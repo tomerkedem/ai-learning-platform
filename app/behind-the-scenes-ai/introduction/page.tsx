@@ -7,6 +7,7 @@ import {
 import Link from 'next/link';
 import { ChapterLayout } from "@/components/ChapterLayout";
 import { IntroRoadmap } from "@/components/ai-internals/IntroRoadmap";
+import { ExpandableLab } from "@/components/ai-internals/ExpandableLab";
 import { EngineReveal } from "@/components/ai-internals/EngineReveal";
 import { EngineGate } from "@/components/ai-internals/EngineGate";
 import { HypothesisGuess } from "@/components/ai-internals/HypothesisGuess";
@@ -340,7 +341,9 @@ export default function BehindTheScenesIntroPage() {
             </div>
 
             <div className="relative">
-              <IntroRoadmap zones={roadmapZones} stations={roadmapStations} stationDetailLabels={intro.stationDetailLabels} reduce={!!reduce} dir={dir} defaultOpenId="tokenize" />
+              <ExpandableLab>
+                <IntroRoadmap zones={roadmapZones} stations={roadmapStations} stationDetailLabels={intro.stationDetailLabels} reduce={!!reduce} dir={dir} defaultOpenId="tokenize" />
+              </ExpandableLab>
               {/* המנטור מלווה את המפה (xl+), בצד הקריאה הטבעי של הכיוון הפעיל */}
               {/* ב-LTR הוא יושב מימין למפה, ולכן מהופך אופקית כדי לפנות אל התוכן ולא ממנו. */}
               <div className={`absolute top-6 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>

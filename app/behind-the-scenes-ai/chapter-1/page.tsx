@@ -25,6 +25,7 @@ import { traceChatEngine, traceAgentEngine } from './engineTrace';
 import { GlassEnginePanel } from './GlassEnginePanel';
 import { HoloFrame } from './HoloFrame';
 import { ReadHeadLab } from './ReadHeadLab';
+import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
 import { PredictDecision } from './PredictDecision';
 import { CounterfactualDiff } from './CounterfactualDiff';
 
@@ -419,6 +420,7 @@ export default function BehindTheScenesChapter1() {
                     aria-hidden
                     className={`pointer-events-none absolute -bottom-12 ${isRtl ? 'left-1/4' : 'right-1/4'} -z-10 h-72 w-72 rounded-full bg-purple-500/10 blur-[110px]`}
                 />
+                <ExpandableLab title={c1.lab.panelTitle}>
                 <TransparentLabLayout
                     accent={accent}
                     dir={dir}
@@ -461,6 +463,7 @@ export default function BehindTheScenesChapter1() {
                         </HoloFrame>
                     }
                 />
+                </ExpandableLab>
                 </div>
 
                 <p className="text-slate-300 text-base leading-relaxed">
@@ -538,7 +541,9 @@ export default function BehindTheScenesChapter1() {
 
                 <PredictDecision key={`predict:${mode}`} mode={mode} />
 
-                <ReadHeadLab key={`${mode}:${conversationText}`} text={conversationText} mode={mode} accent={accent} />
+                <ExpandableLab>
+                    <ReadHeadLab key={`${mode}:${conversationText}`} text={conversationText} mode={mode} accent={accent} />
+                </ExpandableLab>
             </section>
 
             {/* ══════════ מעבדה 2 · Causality (Counterfactual) ══════════ */}

@@ -8,7 +8,6 @@ import {
     ShieldCheck, MousePointerClick, Binary,
 } from 'lucide-react';
 
-import { ModeToggle } from './ModeToggle';
 import { ACCENTS } from './accents';
 import { useT } from '@/i18n/useT';
 
@@ -51,7 +50,9 @@ export const WordToNumberLab: React.FC = () => {
 
     const firstScenarioFor = (m: EngineMode) => data.scenarios.find((s) => s.mode === m) ?? data.scenarios[0];
 
-    const [mode, setMode] = useState<EngineMode>('chat');
+    // המעבדה בפרק Embeddings ממוקדת בטקסט -> מספרים בלבד. מצב Agent (סיכון/אישור פעולה)
+    // שייך לפרק מאוחר (Guardrails), ולכן כאן נעולים ל-chat כדי לא לפצל את המיקוד.
+    const [mode] = useState<EngineMode>('chat');
     const [scenarioId, setScenarioId] = useState<string>(() => firstScenarioFor('chat').id);
     const [text, setText] = useState('');
     const [selected, setSelected] = useState<string | null>(null);
@@ -69,12 +70,6 @@ export const WordToNumberLab: React.FC = () => {
     const stepIndex = activeStepIndex(scenario, text);
     const step = stepIndex >= 0 ? scenario.steps[stepIndex] : null;
     const prevStep = stepIndex >= 1 ? scenario.steps[stepIndex - 1] : null;
-
-    // טקסט חופשי שהמנוע לא מזהה: לא שלב מזוהה וגם לא תחילית של המשפט המוצע. המעבדה
-    // מדגימה משפטים נבחרים מראש (אין כאן טוקנייזר חי), ולכן נציג רמז עדין במקום שתיקה.
-    const typedNorm = text.replace(/\s+/g, ' ').trim();
-    const onTrack = typedNorm.length > 0 && scenario.prompt.startsWith(typedNorm);
-    const showUnrecognizedHint = !autoTyping && stepIndex < 0 && typedNorm.length > 0 && !onTrack;
 
     const dims = dimsForMode(mode);
 
@@ -106,18 +101,6 @@ export const WordToNumberLab: React.FC = () => {
         setSelected(null);
     };
 
-    const handleMode = (m: EngineMode) => {
-        if (m === mode) return;
-        setMode(m);
-        resetTo(firstScenarioFor(m).id);
-    };
-
-    const handleChange = (value: string) => {
-        stopAuto();
-        setSelected(null);
-        setText(value);
-    };
-
     const handleAutoType = () => {
         stopAuto();
         setSelected(null);
@@ -145,12 +128,15 @@ export const WordToNumberLab: React.FC = () => {
 
     return (
         <div className="space-y-4">
-            {/* ── בקרת מצב + בחירת תרחיש ──────────────────────────────────── */}
-            <div className="flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between" dir={dir}>
-                <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-400">{tx.modeLabel}</span>
-                    <ModeToggle mode={mode} onChange={(m) => handleMode(m as EngineMode)} accent={scenario.accent} labels={tx.modeLabels} />
-                </div>
+            {/* בקרות המעבדה (בחירת תרחיש + נגן) נשארות דביקות בראש בזמן גלילה, כדי שאפשר
+                יהיה להחליף דוגמה ולראות את התוצאה למטה בלי לגלול חזרה למעלה. */}
+            <div
+                className="sticky z-20 space-y-3 rounded-2xl bg-slate-950/80 p-2 backdrop-blur-md"
+                style={{ top: 'var(--bts-sticky-top, 88px)' }}
+                dir={dir}
+            >
+            {/* ── בחירת תרחיש (משפט לדוגמה) ──────────────────────────────────── */}
+            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4" dir={dir}>
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-bold text-slate-400">{tx.scenarioLabel}</span>
                     {modeScenarios.map((s) => {
@@ -180,30 +166,12 @@ export const WordToNumberLab: React.FC = () => {
                 prompt={scenario.prompt}
                 accent={scenario.accent}
                 autoTyping={autoTyping}
-                onChange={handleChange}
                 onAutoType={handleAutoType}
                 onReset={handleReset}
                 dir={dir}
                 tx={tx}
             />
-
-            {/* רמז עדין לטקסט חופשי שאינו מוכר למנוע, במקום שתיקה */}
-            <AnimatePresence>
-                {showUnrecognizedHint && (
-                    <motion.div
-                        initial={reduce ? false : { opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={reduce ? undefined : { opacity: 0, y: -6 }}
-                        transition={reduce ? { duration: 0 } : { duration: 0.25 }}
-                        className="flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-start"
-                        dir={dir}
-                        role="status"
-                    >
-                        <Info size={14} className="mt-0.5 shrink-0 text-slate-400" />
-                        <span className="text-xs leading-relaxed text-slate-400">{tx.unrecognizedHint}</span>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            </div>
 
             {/* ── שורת "מה השתנה" ────────────────────────────────────────── */}
             <AnimatePresence mode="wait">
@@ -239,6 +207,12 @@ export const WordToNumberLab: React.FC = () => {
                 tx={tx}
                 tokenId={data.tokenId}
             />
+
+            {/* גשר מפורש: ה-ID הוא מספר השורה בטבלה, ותוכן השורה הוא הווקטור */}
+            <div className="flex items-start gap-2 rounded-2xl border border-violet-500/25 bg-violet-900/10 p-3 text-start" dir={dir}>
+                <Table2 size={14} className="mt-0.5 shrink-0 text-violet-300" />
+                <span className="text-[13px] leading-relaxed text-slate-200">{tx.table.rowIsVector}</span>
+            </div>
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 {/* רכיב 3: Meaning Vector Live */}
@@ -281,44 +255,36 @@ interface TypingFieldProps {
     prompt: string;
     accent: keyof typeof ACCENTS;
     autoTyping: boolean;
-    onChange: (v: string) => void;
     onAutoType: () => void;
     onReset: () => void;
     dir: 'rtl' | 'ltr';
     tx: WordLabText;
 }
 
-const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyping, onChange, onAutoType, onReset, dir, tx }) => {
+// זהו נגן, לא שדה קלט: המעבדה מדגימה משפטים מוכנים מראש (אין טוקנייזר חי), ולכן במקום
+// להזמין הקלדה שלא עושה כלום, לוחצים "נגן" והמשפט נבנה טוקן אחר טוקן מול העיניים.
+const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyping, onAutoType, onReset, dir, tx }) => {
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
 
     return (
         <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-4 text-start" dir={dir}>
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-2 text-xs text-slate-400">
-                    <Keyboard size={14} className={a.text} />
-                    {tx.typing.suggested}
-                    <span className="rounded-md bg-slate-800/70 px-2 py-0.5 font-bold text-slate-200">&quot;{prompt}&quot;</span>
-                </span>
-                <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500" dir="ltr">{tx.typing.typeSlow}</span>
+            <div className="mb-3 flex items-center gap-2 text-xs text-slate-400">
+                <Keyboard size={14} className={a.text} />
+                {tx.typing.suggested}
+                <span className="rounded-md bg-slate-800/70 px-2 py-0.5 font-bold text-slate-200">&quot;{prompt}&quot;</span>
             </div>
 
-            <div className="relative flex items-center rounded-xl border border-slate-700/60 bg-slate-950/60 transition-colors focus-within:border-slate-500">
-                <input
-                    type="text"
-                    value={text}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder={tx.typing.placeholder}
-                    dir={dir}
-                    aria-label={tx.typing.aria}
-                    className="w-full bg-transparent px-4 py-3 text-lg font-medium text-white placeholder:text-slate-600 focus:outline-none"
-                />
+            {/* תצוגת המשפט הנבנה (קריאה בלבד). ריק => מציג את המשפט המוצע מעומעם כתצוגה מקדימה */}
+            <div className="relative flex min-h-[3.25rem] items-center rounded-xl border border-slate-700/60 bg-slate-950/60 px-4 py-3">
+                <span className="text-lg font-medium leading-snug text-white">
+                    {text || <span className="text-slate-600">{prompt}</span>}
+                </span>
                 {autoTyping && !reduce && (
                     <motion.span
                         animate={{ opacity: [1, 0.2, 1] }}
                         transition={{ duration: 0.8, repeat: Infinity }}
-                        className={`absolute top-1/2 h-5 w-0.5 -translate-y-1/2 ${a.solid}`}
-                        style={{ insetInlineStart: '1rem' }}
+                        className={`ms-1 inline-block h-5 w-0.5 shrink-0 ${a.solid}`}
                     />
                 )}
             </div>
@@ -627,6 +593,7 @@ const MeaningVectorLive: React.FC<MeaningVectorLiveProps> = ({ step, prevStep, d
             </div>
 
             <p className="mt-4 text-[11px] leading-relaxed text-slate-500">{tx.vector.note}</p>
+            <p className="mt-2 text-[11px] font-semibold leading-relaxed text-violet-200/90">{tx.vector.trainingNote}</p>
         </div>
     );
 };

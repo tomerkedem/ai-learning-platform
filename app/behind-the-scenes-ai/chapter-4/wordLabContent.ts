@@ -865,9 +865,11 @@ export interface WordLabText {
         colWord: string;
         colId: string;
         note: string;
+        /** גשר: ה-ID הוא מספר השורה, ותוכן השורה הוא הווקטור. מקשר בין הטבלה לבין הווקטור החי. */
+        rowIsVector: string;
         fallbackTokens: string[];
     };
-    vector: { title: string; sub: string; note: string };
+    vector: { title: string; sub: string; note: string; trainingNote: string };
     shift: { title: string; sub: string; idleHint: string; pushesUp: string; tiny: string; note: string };
     dirLabels: Record<ShiftEntry['dir'], string>;
     similar: { title: string; sub: string; aligns: string; overlap: (pct: number) => string; note: string };
@@ -887,8 +889,8 @@ export const HE_WORD_TEXT: WordLabText = {
         typeSlow: 'Type it slowly',
         placeholder: 'הקלידו את המשפט המוצע, או לחצו "הקלידו עבורי"',
         aria: 'שדה הקלדה למעבדת המילים למספרים',
-        autoType: 'הקלידו עבורי',
-        autoTypeLatin: 'Auto type',
+        autoType: 'נגן וצפו',
+        autoTypeLatin: 'Play',
         reset: 'איפוס',
         resetLatin: 'Reset',
     },
@@ -912,12 +914,14 @@ export const HE_WORD_TEXT: WordLabText = {
         colWord: 'מילה / Token',
         colId: 'Token ID',
         note: 'כל מילה מצביעה על כתובת קבועה במילון. ה-ID הוא מזהה, לא משמעות.',
+        rowIsVector: 'ה-ID הוא מספר השורה בטבלת ה-embedding. תוכן השורה הוא הווקטור שמשמאל. כך כתובת אחת הופכת לרשימת המספרים שמייצגת משמעות.',
         fallbackTokens: ['החבילה', 'לא', 'הגיעה'],
     },
     vector: {
         title: 'וקטור המשמעות החי',
         sub: 'Meaning Vector Live',
         note: 'ערכים מנורמלים בין 0 ל-1. שימו לב איך המילה "לא" מקפיצה את הכשל ואת הדחיפות. זהו פרופיל המשמעות, נפרד מנוסחת הסכימה הלימודית.',
+        trainingNote: 'הערכים האלה נלמדו באימון. בשיחה המודל שולף אותם ומעבד בהקשר, הוא לא מחשב וקטור חדש מאפס.',
     },
     shift: {
         title: 'השפעת המילה',
@@ -958,8 +962,8 @@ export const EN_WORD_TEXT: WordLabText = {
         typeSlow: 'Type it slowly',
         placeholder: 'Type the suggested sentence, or click "Type it for me"',
         aria: 'Input field for the words to numbers lab',
-        autoType: 'Type it for me',
-        autoTypeLatin: 'Auto type',
+        autoType: 'Play it',
+        autoTypeLatin: 'Play',
         reset: 'Reset',
         resetLatin: 'Reset',
     },
@@ -983,12 +987,14 @@ export const EN_WORD_TEXT: WordLabText = {
         colWord: 'Word / Token',
         colId: 'Token ID',
         note: 'Every word points to a fixed address in the vocabulary. The ID is an identifier, not meaning.',
+        rowIsVector: 'The ID is the row number in the embedding table. The contents of that row are the vector on the left. That is how one address becomes the list of numbers that represents meaning.',
         fallbackTokens: ['The', 'package', 'did', 'not', 'arrive'],
     },
     vector: {
         title: 'The live meaning vector',
         sub: 'Meaning Vector Live',
         note: 'Values normalized between 0 and 1. Notice how the word "not" spikes Failure and Urgency. This is the meaning profile, separate from the teaching sum formula.',
+        trainingNote: 'These values were learned during training. In a chat the model looks them up and processes them in context, it does not compute a new vector from scratch.',
     },
     shift: {
         title: 'Word impact',
@@ -1029,8 +1035,8 @@ export const ES_WORD_TEXT: WordLabText = {
         typeSlow: 'Escríbelo despacio',
         placeholder: 'Escribe la frase sugerida, o pulsa "Escríbelo por mí"',
         aria: 'Campo de entrada para el laboratorio de palabras a números',
-        autoType: 'Escríbelo por mí',
-        autoTypeLatin: 'Automático',
+        autoType: 'Reprodúcelo',
+        autoTypeLatin: 'Play',
         reset: 'Reiniciar',
         resetLatin: 'Reiniciar',
     },
@@ -1054,12 +1060,14 @@ export const ES_WORD_TEXT: WordLabText = {
         colWord: 'Palabra / Token',
         colId: 'Token ID',
         note: 'Cada palabra apunta a una dirección fija en el vocabulario. El ID es un identificador, no significado.',
+        rowIsVector: 'El ID es el número de fila en la tabla de embeddings. El contenido de esa fila es el vector de la izquierda. Así una dirección se convierte en la lista de números que representa significado.',
         fallbackTokens: ['El', 'paquete', 'no', 'llegó'],
     },
     vector: {
         title: 'El vector de significado en vivo',
         sub: 'Vector de significado en vivo',
         note: 'Valores normalizados entre 0 y 1. Fíjate cómo la palabra "no" dispara Fallo y Urgencia. Este es el perfil de significado, separado de la fórmula de suma didáctica.',
+        trainingNote: 'Estos valores se aprendieron durante el entrenamiento. En un chat el modelo los consulta y los procesa en contexto, no calcula un vector nuevo desde cero.',
     },
     shift: {
         title: 'Impacto de la palabra',
@@ -1112,8 +1120,8 @@ export const RU_WORD_TEXT: WordLabText = {
         typeSlow: 'Печатайте медленно',
         placeholder: 'Введите предложенную фразу или нажмите "Напечатать за меня"',
         aria: 'Поле ввода для лаборатории слов в числа',
-        autoType: 'Напечатать за меня',
-        autoTypeLatin: 'Авто',
+        autoType: 'Воспроизвести',
+        autoTypeLatin: 'Play',
         reset: 'Сброс',
         resetLatin: 'Сброс',
     },
@@ -1137,12 +1145,14 @@ export const RU_WORD_TEXT: WordLabText = {
         colWord: 'Слово / Token',
         colId: 'Token ID',
         note: 'Каждое слово указывает на постоянный адрес в словаре. ID - это идентификатор, а не смысл.',
+        rowIsVector: 'ID это номер строки в таблице embedding. Содержимое этой строки и есть вектор слева. Так один адрес превращается в список чисел, представляющий смысл.',
         fallbackTokens: ['Посылка', 'не', 'пришла'],
     },
     vector: {
         title: 'Живой вектор смысла',
         sub: 'Живой вектор смысла',
         note: 'Значения нормализованы от 0 до 1. Обратите внимание, как слово "не" поднимает Сбой и Срочность. Это профиль смысла, отдельный от учебной формулы суммы.',
+        trainingNote: 'Эти значения были выучены во время обучения. В чате модель берёт их и обрабатывает в контексте, она не вычисляет новый вектор с нуля.',
     },
     shift: {
         title: 'Влияние слова',
@@ -1195,8 +1205,8 @@ export const AR_WORD_TEXT: WordLabText = {
         typeSlow: 'اكتب ببطء',
         placeholder: 'اكتب الجملة المقترحة، أو اضغط "اكتب نيابةً عني"',
         aria: 'حقل إدخال لمختبر الكلمات إلى الأرقام',
-        autoType: 'اكتب نيابةً عني',
-        autoTypeLatin: 'تلقائي',
+        autoType: 'شغّله',
+        autoTypeLatin: 'Play',
         reset: 'إعادة',
         resetLatin: 'إعادة',
     },
@@ -1220,12 +1230,14 @@ export const AR_WORD_TEXT: WordLabText = {
         colWord: 'كلمة / Token',
         colId: 'Token ID',
         note: 'كل كلمة تشير إلى عنوان ثابت في القاموس. الـ ID معرّف، لا معنى.',
+        rowIsVector: 'الـ ID هو رقم الصف في جدول الـ embedding. محتوى ذلك الصف هو المتجه على اليسار. هكذا يتحوّل عنوان واحد إلى قائمة الأرقام التي تمثّل المعنى.',
         fallbackTokens: ['الطرد', 'لم', 'يصل'],
     },
     vector: {
         title: 'متجه المعنى الحي',
         sub: 'متجه المعنى الحي',
         note: 'قيم مُسوّاة بين 0 و1. لاحظ كيف ترفع كلمة "لم" الفشل والإلحاح. هذا ملف المعنى، منفصل عن صيغة الجمع التعليمية.',
+        trainingNote: 'هذه القيم تعلّمها النموذج أثناء التدريب. في المحادثة يستدعيها ويعالجها ضمن السياق، ولا يحسب متجهًا جديدًا من الصفر.',
     },
     shift: {
         title: 'تأثير الكلمة',
@@ -1278,8 +1290,8 @@ export const JA_WORD_TEXT: WordLabText = {
         typeSlow: 'ゆっくり入力',
         placeholder: '推奨の文を入力するか、「自動入力」を押してください',
         aria: '単語から数値へのラボの入力欄',
-        autoType: '自動入力',
-        autoTypeLatin: '自動',
+        autoType: '再生',
+        autoTypeLatin: 'Play',
         reset: 'リセット',
         resetLatin: 'リセット',
     },
@@ -1303,12 +1315,14 @@ export const JA_WORD_TEXT: WordLabText = {
         colWord: '単語 / Token',
         colId: 'Token ID',
         note: 'どの単語も辞書内の固定アドレスを指します。ID は識別子で、意味ではありません。',
+        rowIsVector: 'ID は embedding テーブルの行番号です。その行の中身が左のベクトルです。こうして一つのアドレスが、意味を表す数値の並びになります。',
         fallbackTokens: ['荷物', 'が', '届か', 'なかった'],
     },
     vector: {
         title: '意味ベクトル（ライブ）',
         sub: '意味ベクトル（ライブ）',
         note: '値は0から1に正規化されています。「なかった」が失敗と緊急度をどう跳ね上げるかに注目。これは意味のプロファイルで、学習用の合計式とは別物です。',
+        trainingNote: 'これらの値は学習時に学ばれたものです。会話ではモデルはそれを参照し、文脈の中で処理します。新しいベクトルをゼロから計算するわけではありません。',
     },
     shift: {
         title: '単語の影響',

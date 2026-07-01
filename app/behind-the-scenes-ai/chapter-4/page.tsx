@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Sparkles, MousePointerClick, ArrowLeftRight, Lock, ArrowLeft, ArrowRight, CheckCircle2, Info, ChevronDown, Wrench, Type, HelpCircle, ArrowDown } from 'lucide-react';
+import { Sparkles, MousePointerClick, ArrowLeftRight, Lock, ArrowLeft, ArrowRight, CheckCircle2, Info, Hash, TrendingUp, HelpCircle, FlaskConical, Table2, GraduationCap } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -16,19 +16,20 @@ import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
 import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
-import { UniversalMeaningDemo } from './components/UniversalMeaningDemo';
-import { EmbeddingExperienceLab } from './components/EmbeddingExperienceLab';
-import { Chapter4LabProvider, getLabContent } from './labContent';
+import { EmbeddingLookupLab } from './components/EmbeddingLookupLab';
+import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
+import { getWordText } from './wordLabContent';
 import { useT } from '@/i18n/useT';
 import type { Chapter4QuizId } from '@/i18n/locales/he/behind-ai/chapter4Quiz';
 
 /* ════════════════════ מטא-דאטה מבני (לא ניתן לתרגום) ════════════════════ */
 // טקסט הניחוש מגיע מהמילון (t.behindAi.chapter4.guess.options) לפי מזהה; כאן נשאר רק
-// המבנה: אייקון והאם זו התשובה הנכונה, שאינם תלויי שפה.
+// המבנה: אייקון והאם זו התשובה הנכונה, שאינם תלויי שפה. התשובה הנכונה היא "address"
+// (ה-Token ID הוא כתובת, לא משמעות).
 const GUESS_CARD_META = [
-    { id: 'close', icon: Sparkles, correct: true },
-    { id: 'far', icon: ArrowLeftRight, correct: false },
-    { id: 'letters', icon: Type, correct: false },
+    { id: 'address', icon: Hash, correct: true },
+    { id: 'meaning', icon: Sparkles, correct: false },
+    { id: 'importance', icon: TrendingUp, correct: false },
 ] as const;
 
 type GuessId = (typeof GUESS_CARD_META)[number]['id'];
@@ -36,8 +37,8 @@ type GuessId = (typeof GUESS_CARD_META)[number]['id'];
 /* ════════════════════ נעילת הבנה: התשובה הנכונה מבנית ════════════════════ */
 const LOCK_CORRECT = 0;
 
-const scrollToProximity = (smooth: boolean) => {
-    const el = typeof document !== 'undefined' ? document.getElementById('proximity-demo') : null;
+const scrollToSee = (smooth: boolean) => {
+    const el = typeof document !== 'undefined' ? document.getElementById('embedding-see') : null;
     if (el) el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
 };
 
@@ -65,7 +66,7 @@ const MeaningGuess: React.FC = () => {
                     </span>
                     <h3 className="mb-2 text-xl font-black text-white md:text-3xl">{g.title}</h3>
                     <p className="mx-auto mb-4 max-w-xl text-sm text-slate-400 md:text-base">{g.subtitle}</p>
-                    <p className="mx-auto mb-6 max-w-xl rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-sm font-bold text-slate-200">{g.prompt}</p>
+                    <p className="mx-auto mb-6 max-w-xl rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-sm font-bold text-slate-200" dir="ltr">{g.prompt}</p>
                 </div>
 
                 {/* מצב לפני בחירה: מנטור מהורהר מזמין + כרטיסים */}
@@ -110,7 +111,7 @@ const MeaningGuess: React.FC = () => {
                         correctTitle={g.successTitle}
                         correctExplain={g.successExplain}
                         correctInsight={g.successInsight}
-                        continueCta={{ label: g.continueCta, onClick: () => scrollToProximity(!reduce) }}
+                        continueCta={{ label: g.continueCta, onClick: () => scrollToSee(!reduce) }}
                         wrongTitle={g.wrongTitle}
                         wrongExplain={chosenWhy ?? ''}
                         onRetry={() => setChosenId(null)}
@@ -122,7 +123,7 @@ const MeaningGuess: React.FC = () => {
     );
 };
 
-/* ════════════════════ נעילת הבנה: קרבה אינה אמת ════════════════════ */
+/* ════════════════════ נעילת הבנה: מאיפה הגיעו מספרי הווקטור ════════════════════ */
 
 const LockQuestion: React.FC = () => {
     const { t, dir } = useT();
@@ -148,7 +149,7 @@ const LockQuestion: React.FC = () => {
                             key={opt}
                             type="button"
                             onClick={() => setChoice(i)}
-                            className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-sm font-bold transition-colors ${cls}`}
+                            className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-start text-sm font-bold transition-colors ${cls}`}
                         >
                             <span>{opt}</span>
                             {answered && isChosen && isCorrect && <CheckCircle2 size={16} className="shrink-0 text-emerald-300" />}
@@ -180,39 +181,34 @@ export default function BehindTheScenesChapter4() {
     const { t, dir, locale } = useT();
     const reduce = useReducedMotion();
     const isRtl = dir === 'rtl';
-    const isHe = locale === 'he';
     const c4 = t.behindAi.chapter4;
-    const labContent = getLabContent(locale);
+    const wl = getWordText(locale);
 
-    // ── דוק האזנה מודרכת: מקטעי הקראה לפי מצב היקף, מ-chapter4 ומ-chapter4Lab (כולל
-    // שדות ttsLine הקיימים). לא נכללים: חידון, כפתורים/ניווט, צ׳יפים/באדג׳ים, משפטי
-    // מנטור, ומצב חי של המעבדה (בחירת אובייקט, ערכי DNA, אחוזי סחיפה, החלפת מילה,
-    // ערכי קרבה מספריים). הקראה רק מטקסט יציב. תוויות הדוק מ-aiInternals.readAloud.
+    // ── דוק האזנה מודרכת: מקטעי הקראה יציבים סביב שדרת הפרק (טקסט -> טוקנים -> Token IDs
+    // -> שורה בטבלה -> וקטור -> נלמד/נשלף). לא נכללים: חידון, כפתורים, צ׳יפים, מנטורים,
+    // ומצב חי של המעבדה (בחירה, ערכי וקטור, מתגים). הקראה רק מטקסט יציב.
     const ra = t.behindAi.aiInternals.readAloud;
-    const lab4 = labContent;
-    const c4SentenceIds = ['pkg-not-arrived', 'delivery-not-handed', 'pkg-arrived', 'system-not-showing', 'billing-address-update', 'agent-investigate-delay', 'agent-notify-lost'] as const;
-    const c4ExplainKeys = ['mapShadow', 'close', 'far', 'regions', 'dna', 'notTruth'] as const;
+    const el = c4.embeddingLookup;
     const sTitle: ReadAloudSegment = { id: 'title', label: c4.hero.titleLead, text: `${c4.hero.titleLead} ${c4.hero.titleHighlight}. ${c4.hero.lede}` };
-    const sGuessIntro: ReadAloudSegment = { id: 'guess', label: c4.guess.title, text: `${c4.guess.title} ${c4.guess.subtitle}` };
-    const sSuccessInsight: ReadAloudSegment = { id: 'success-insight', label: c4.guess.successInsight, text: c4.guess.successInsight };
+    const sGuessInsight: ReadAloudSegment = { id: 'guess-insight', label: c4.guess.successInsight, text: c4.guess.successInsight };
     const sPlain: ReadAloudSegment = { id: 'plain', label: c4.plain.title, text: `${c4.plain.title} ${c4.plain.lines.join(' ')}` };
-    const sBridge: ReadAloudSegment = { id: 'bridge', label: c4.bridge, text: c4.bridge };
-    const sVisual: ReadAloudSegment = { id: 'visual', label: lab4.map.visualTitle, text: `${lab4.map.visualTitle}. ${lab4.map.visualSubtitle}` };
-    const sRuleLine: ReadAloudSegment = { id: 'rule-line', label: lab4.map.ruleLine, text: lab4.map.ruleLine };
-    const sPackage: ReadAloudSegment = { id: 'package', label: lab4.map.packageTitle, text: `${lab4.map.packageTitle}. ${lab4.map.packageSubtitle}` };
-    const sPackageRule: ReadAloudSegment = { id: 'package-rule', label: lab4.map.packageRule, text: lab4.map.packageRule };
-    const sProof: ReadAloudSegment = { id: 'proof', label: lab4.map.proofTitle, text: `${lab4.map.proofTitle}. ${lab4.map.proofLead}` };
-    const sTts: ReadAloudSegment[] = c4SentenceIds.map((id) => ({ id: `tts-${id}`, label: lab4.sentences[id].text, text: lab4.sentences[id].ttsLine }));
-    const sExplain: ReadAloudSegment[] = c4ExplainKeys.map((k) => ({ id: `explain-${k}`, label: lab4.explain[k], text: lab4.explain[k] }));
-    const sPracticalShort: ReadAloudSegment = { id: 'practical', label: c4.practical.title, text: `${c4.practical.title}. ${c4.practical.lead}` };
+    const sLookup: ReadAloudSegment = { id: 'lookup', label: el.title, text: `${el.title}. ${el.intro}` };
+    const sLookupLearned: ReadAloudSegment = { id: 'lookup-learned', label: el.vectorTitle, text: `${el.vectorNote} ${el.learnedNote}` };
+    const sLookupView: ReadAloudSegment = { id: 'lookup-view', label: el.viewNumbers, text: el.viewNote };
+    const sTable: ReadAloudSegment = { id: 'embedding-table', label: c4.embeddingTable.title, text: `${c4.embeddingTable.title}. ${c4.embeddingTable.body}` };
+    const sRowIsVector: ReadAloudSegment = { id: 'row-is-vector', label: c4.embeddingTable.title, text: wl.table.rowIsVector };
+    const sVector: ReadAloudSegment = { id: 'vector', label: wl.vector.title, text: wl.vector.note };
+    const sVectorTraining: ReadAloudSegment = { id: 'vector-training', label: wl.vector.title, text: wl.vector.trainingNote };
+    const sTraining: ReadAloudSegment = { id: 'training', label: c4.trainingInference.title, text: `${c4.trainingInference.title}. ${c4.trainingInference.body}` };
+    const sSimilar: ReadAloudSegment = { id: 'similar', label: wl.similar.title, text: wl.similar.note };
     const sPracticalFull: ReadAloudSegment = { id: 'practical', label: c4.practical.title, text: `${c4.practical.title}. ${c4.practical.lead} ${c4.practical.uses.join('. ')}` };
     const sCaveat: ReadAloudSegment = { id: 'caveat', label: c4.practical.title, text: c4.practical.caveat };
-    const sHood: ReadAloudSegment = { id: 'hood', label: c4.hood.title, text: `${c4.hood.title}. ${c4.hood.intro}` };
+    const sBridge: ReadAloudSegment = { id: 'bridge', label: c4.bridge, text: c4.bridge };
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
-        short: [sTitle, sPlain, sBridge, sPackageRule, sPracticalShort, sCaveat],
-        regular: [sTitle, sGuessIntro, sPlain, sBridge, sVisual, sRuleLine, sPackage, sPackageRule, sProof, sPracticalFull, sCaveat, sHood],
-        full: [sTitle, sGuessIntro, sSuccessInsight, sPlain, sBridge, sVisual, sRuleLine, sPackage, ...sTts, sPackageRule, sProof, ...sExplain, sPracticalFull, sCaveat, sHood],
+        short: [sTitle, sPlain, sTable, sTraining, sBridge],
+        regular: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sTable, sVector, sTraining, sPracticalFull, sBridge],
+        full: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sLookupView, sTable, sRowIsVector, sVector, sVectorTraining, sTraining, sSimilar, sPracticalFull, sCaveat, sBridge],
     };
 
     // מבדק הפרק: המנגנון המשותף (onComplete, getReviewLinks, nextHref...) נשמר מ-quizData,
@@ -220,8 +216,6 @@ export default function BehindTheScenesChapter4() {
     const cq = t.behindAi.chapterQuiz;
     const baseQuiz = behindAiChapterQuizzes[4];
 
-    // עטיפת getReviewLinks: שומרת על ה-href והניתוב, ומתרגמת רק את התווית לפי מספר הפרק
-    // הנגזר מה-href. בעברית התווית זהה למקור (chapterNames זהים ל-CHAPTER_LABELS).
     const baseGetReviewLinks = baseQuiz.getReviewLinks;
     const getReviewLinks = baseGetReviewLinks
         ? (weakConcepts: string[]): ReviewLink[] =>
@@ -249,7 +243,6 @@ export default function BehindTheScenesChapter4() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={4}>
 
             {/* ══════════ HERO ══════════ */}
-            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
             <div className="relative">
                 <motion.section
                     initial={reduce ? false : { opacity: 0, y: 18 }}
@@ -261,7 +254,6 @@ export default function BehindTheScenesChapter4() {
                     <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
                     <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
 
-                    {/* ב-lg+ דוק ההאזנה מעוגן בפינה מעל הכותרת; הכותרת וה-lede מתפזרים לרוחב מלא מתחתיו */}
                     <div className="relative z-10">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
                             <Sparkles size={14} className="text-violet-400" />
@@ -286,7 +278,6 @@ export default function BehindTheScenesChapter4() {
                             </span>
                         </div>
 
-                        {/* דוק האזנה מודרכת צף: מצמיד לקצה (תלוי-כיוון), נגיש תוך כדי גלילה, אייקון במובייל */}
                         <FloatingReadAloud dir={dir}>
                             <ReadAloudControls
                                 segmentsByMode={readAloudByMode}
@@ -311,7 +302,7 @@ export default function BehindTheScenesChapter4() {
                 <MeaningGuess />
             </section>
 
-            {/* ══════════ במילים פשוטות: מה Embedding באמת עושה (אחרי הניחוש, לפני הדמו) ══════════ */}
+            {/* ══════════ במילים פשוטות: מה Embedding באמת עושה ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
@@ -329,25 +320,45 @@ export default function BehindTheScenesChapter4() {
                 </div>
             </section>
 
-            {/* ══════════ שלב 1: דמו אובייקטים (הכותרת חיה בתוך הדמו) ══════════ */}
-            <Chapter4LabProvider value={labContent}>
-                <section id="proximity-demo" className="mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
-                    <UniversalMeaningDemo dir={dir} />
+            {/* ══════════ See + Touch: המעבדה המרכזית, ממילה למספרים ══════════ */}
+            <section id="embedding-see" className="relative mt-12 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
+                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
+                    <Mentor pose="meaningSpace" line={c4.mentor.hero} width={150} flip={!isRtl} />
+                </div>
+                <ExpandableLab title={c4.embeddingLookup.title}>
+                    <EmbeddingLookupLab dir={dir} />
+                </ExpandableLab>
+            </section>
 
-                    {/* ══ שלב 2: גשר מעבר אל המשפטים ══ */}
-                    <div className="flex items-center gap-3 rounded-2xl border border-cyan-500/25 bg-cyan-900/10 p-4">
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-400/30 bg-cyan-900/20">
-                            <ArrowDown size={16} className="text-cyan-300" />
-                        </span>
-                        <p className="text-[15px] font-semibold leading-relaxed text-slate-100">{c4.bridge}</p>
+            {/* ══════════ Reveal: המסלול המלא של משפט (טוקניזציה -> Token IDs -> וקטור) ══════════ */}
+            <section id="word-lab" className="mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
+                <div className="flex items-center gap-3">
+                    <FlaskConical size={24} className="text-violet-400" />
+                    <div>
+                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">{c4.hood.eyebrow}</div>
+                        <h3 className="text-2xl font-bold text-white">{c4.embeddingTable.title}</h3>
                     </div>
-                </section>
+                </div>
 
-                {/* ══════════ שלב 3+4: קרבה במשמעות בין משפטים (הכותרת חיה בתוך המעבדה) ══════════ */}
-                <section id="meaning-space" className="mt-12 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
-                    <EmbeddingExperienceLab dir={dir} />
-                </section>
-            </Chapter4LabProvider>
+                {/* הסבר טבלת ה-embedding: כתובת -> שורה -> וקטור */}
+                <div className="flex items-start gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5">
+                    <Table2 size={18} className="mt-0.5 shrink-0 text-cyan-300" />
+                    <p className="text-[15px] leading-relaxed text-slate-300">{c4.embeddingTable.body}</p>
+                </div>
+
+                <ExpandableLab title={c4.embeddingTable.title}>
+                    <WordToNumberLab />
+                </ExpandableLab>
+
+                {/* אימון מול הרצה: הערכים נלמדו פעם אחת, נשלפים בכל שיחה */}
+                <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-900/10 p-5">
+                    <GraduationCap size={18} className="mt-0.5 shrink-0 text-emerald-300" />
+                    <div>
+                        <div className="mb-1 text-sm font-bold text-emerald-100">{c4.trainingInference.title}</div>
+                        <p className="text-[15px] leading-relaxed text-slate-200">{c4.trainingInference.body}</p>
+                    </div>
+                </div>
+            </section>
 
             {/* ══════════ נעילת הבנה ══════════ */}
             <section className="relative mt-12 text-start" dir={dir}>
@@ -363,7 +374,7 @@ export default function BehindTheScenesChapter4() {
                 </div>
             </section>
 
-            {/* ══════════ תובנה מעשית ══════════ */}
+            {/* ══════════ תובנה מעשית + גשר לפרק 5 ══════════ */}
             <section className="relative mt-12 text-start" dir={dir}>
                 <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
                     <Mentor pose="pointdown" line={c4.mentor.practical} width={160} flip={!isRtl} />
@@ -388,53 +399,12 @@ export default function BehindTheScenesChapter4() {
                     >
                         {c4.practical.mathLink}
                     </GuessButton>
+                    <span className="mt-4 flex items-start gap-2 border-s-2 border-violet-400/50 ps-3 text-sm font-bold text-violet-100">
+                        {isRtl ? <ArrowLeft size={15} className="mt-0.5 shrink-0" /> : <ArrowRight size={15} className="mt-0.5 shrink-0" />}
+                        {c4.bridge}
+                    </span>
                 </InsightBox>
             </section>
-
-            {/* ══════════ מבט מתחת למכסה המנוע (משני) ══════════ */}
-            {/* WordToNumberLab הוא locale-aware: עברית מהמנוע, שאר השפות משכבת wordLabContent.
-                מוצג בכל השפות. העברית בלבד שומרת על המצב המכווץ המקורי בדיוק (ללא שינוי). שאר
-                השפות (כולל ערבית RTL) מקבלות מצב מכווץ עם discoverability ברור: eyebrow, כותרת,
-                שורת עזר, מונה מעבדות ו-chevron, כך שברור שיש מעבדות בפנים ואיפה ללחוץ. הסיעוף
-                על isHe (לא isRtl) כדי שערבית תקבל את אותה איכות, והמצב המשופר משתמש ב-dir
-                לוגי כך שהוא תקין גם ב-RTL. native details/summary מספק סמנטיקת כפתור ו-aria-expanded. */}
-            <details className={`group mt-12 overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-900/40${isHe ? '' : ' transition-colors hover:border-slate-600/70 open:bg-slate-900/50'}`}>
-                {isHe ? (
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 text-start" dir={dir}>
-                        <span className="flex items-center gap-2">
-                            <Wrench size={18} className="text-slate-400" />
-                            <span className="leading-tight">
-                                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{c4.hood.eyebrow}</span>
-                                <span className="block text-base font-bold text-slate-200">{c4.hood.title}</span>
-                            </span>
-                        </span>
-                        <ChevronDown size={18} className="shrink-0 text-slate-500 transition-transform group-open:rotate-180" />
-                    </summary>
-                ) : (
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-2xl p-5 text-start transition-colors hover:bg-slate-800/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/50" dir={dir}>
-                        <span className="flex items-center gap-3">
-                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-950/50 text-slate-300 transition-colors group-hover:border-violet-500/40 group-hover:text-violet-300">
-                                <Wrench size={18} />
-                            </span>
-                            <span className="leading-snug">
-                                <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-violet-400/80">{c4.hood.eyebrow}</span>
-                                <span className="block text-base font-bold text-slate-100">{c4.hood.title}</span>
-                                <span className="mt-0.5 block text-xs text-slate-400">{c4.hood.helper}</span>
-                            </span>
-                        </span>
-                        <span className="flex shrink-0 flex-col items-center gap-1.5">
-                            <span className="inline-flex items-center gap-1 rounded-full border border-violet-500/30 bg-violet-900/20 px-2.5 py-1 text-[11px] font-bold text-violet-200">
-                                <Sparkles size={12} /> {c4.hood.labsCount}
-                            </span>
-                            <ChevronDown size={20} className="text-slate-400 transition-transform group-open:rotate-180" />
-                        </span>
-                    </summary>
-                )}
-                <div className="space-y-4 border-t border-slate-700/50 p-5 text-start" dir={dir}>
-                    <p className="text-sm leading-relaxed text-slate-400">{c4.hood.intro}</p>
-                    <WordToNumberLab />
-                </div>
-            </details>
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-16 mb-4" dir={dir}>

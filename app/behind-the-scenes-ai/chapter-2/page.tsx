@@ -11,6 +11,7 @@ import type { Chapter2QuizId } from '@/i18n/locales/he/behind-ai/chapter2Quiz';
 
 import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
 import { InputComparisonLab } from '@/components/ai-internals/InputComparisonLab';
+import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
@@ -265,7 +266,9 @@ export default function BehindTheScenesChapter2() {
                     {c2.inputLab.intro}
                 </div>
 
-                <InputComparisonLab />
+                <ExpandableLab>
+                    <InputComparisonLab />
+                </ExpandableLab>
 
                 <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'} z-20 hidden xl:block pointer-events-none`}>
                     <Mentor pose="explain" line={c2.mentor.lab} width={160} flip={!isRtl} />

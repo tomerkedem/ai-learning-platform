@@ -78,6 +78,9 @@ export const chapter4Lab: Chapter4LabDict = {
         objectSelected: '選んだオブジェクト',
         objectClosest: '最も近い',
         objectNoClose: 'ほかから遠い',
+        numericTitle: '数値表現',
+        numericNote: '意味が似た物は似た数値を得るので、地図上で近くに座ります。ランダムなベクトルはそれらをまとめません。',
+        numericDisclaimer: '数値は説明のためのものです。実際の空間には人間には読めない数百の次元があります。',
 
         packageTitle: '文どうしの意味の近さ',
         packageSubtitle: '違う文でも、似た考えを説明していれば近くなり得ます。',
@@ -198,8 +201,8 @@ export const chapter4Lab: Chapter4LabDict = {
     },
 
     dna: {
-        title: '意味の DNA',
-        intro: 'どの文にも意味の要素でできた「レシピ」があり、それがその文の DNA です。二本の鎖が二つの文で、一つひとつの横木が一つの意味の要素です。',
+        title: 'ベクトルの中の意味',
+        intro: 'ベクトルは一つの数ではありません。モデルが学習した意味の要素のプロファイルです。一つひとつの横木が一つの意味の要素で、ノードの高さはその要素が文の中でどれだけ強いかを示します。',
         roleActive: '選んだ文',
         roleCompare: '比較',
         twistMeaning: '二つの文の意味が近いほど、二本の鎖はきつく絡み合います。意味がずれると、鎖は離れていきます。',

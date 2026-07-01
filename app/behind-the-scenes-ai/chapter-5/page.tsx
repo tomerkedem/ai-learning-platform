@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
     Map, Sparkles, ArrowLeftRight, MousePointerClick, Lock, ArrowLeft, ArrowRight,
@@ -14,6 +14,23 @@ import { InsightBox } from '@/components/content/InsightBox';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard, type GuessTone } from '@/components/ai-internals/OpeningGuess';
 import { SemanticSpaceLab } from '@/components/ai-internals/SemanticSpaceLab';
+import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
+// רכיבים מפרק 4 שמקומם האמיתי כאן, במרחב המשמעות: דמו האובייקטים (קרבה פשוטה) וה-DNA
+// (למה שני משפטים קרובים). התוכן מגיע ממילון פרק 4 (chapter4Lab), מתורגם ב-6 השפות.
+import { Chapter4LabProvider, getLabContent, joinSentences } from '../chapter-4/labContent';
+import { UniversalMeaningDemo } from '../chapter-4/components/UniversalMeaningDemo';
+import { MeaningDnaStrip } from '../chapter-4/components/MeaningDnaStrip';
+import type { SentenceId } from '../chapter-4/embeddingEngine';
+
+// משפטים ל-DNA ההשוואתי: משתרעים על טווח הקרבה, מזהים-כמעט (שני כשלי מסירה) ועד רחוקים
+// לגמרי (בעיית מסירה מול עדכון חיוב). כך הלומד בוחר זוג ורואה כמה רכיבי משמעות משותפים.
+const DNA_COMPARE_IDS: SentenceId[] = [
+    'pkg-not-arrived',
+    'delivery-not-handed',
+    'pkg-arrived',
+    'system-not-showing',
+    'billing-address-update',
+];
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
@@ -176,6 +193,14 @@ export default function BehindTheScenesChapter5() {
         questions: baseQuiz.questions.map((q) => ({ ...q, ...c5.quiz.byId[q.id as SemanticSpaceQuizId] })),
     };
 
+    // תוכן מעבדת פרק 4 (locale-aware) עבור דמו האובייקטים וה-DNA שהובאו לכאן.
+    const c4Lab = getLabContent(locale);
+    const c4Sentences = useMemo(() => joinSentences(c4Lab), [c4Lab]);
+    const [dnaAId, setDnaAId] = useState<SentenceId>('pkg-not-arrived');
+    const [dnaBId, setDnaBId] = useState<SentenceId>('delivery-not-handed');
+    const dnaA = c4Sentences.find((s) => s.id === dnaAId) ?? c4Sentences[0];
+    const dnaB = c4Sentences.find((s) => s.id === dnaBId) ?? null;
+
     return (
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={5}>
 
@@ -257,6 +282,19 @@ export default function BehindTheScenesChapter5() {
                 <OpeningGuess content={guessContent} cards={guessCards} />
             </section>
 
+            {/* ══════════ חימום: קרבה פשוטה עם אובייקטים מוכרים (הובא מפרק 4) ══════════ */}
+            {/* דברים דומים במשמעות יושבים קרוב. אובייקטים מוכרים (כלב, חתול, תפוח, מלפפון,
+                מחשב) הם המבוא האינטואיטיבי לפני מפת משפטי המשלוח של המעבדה. */}
+            <section className="mt-12 text-start" dir={dir}>
+                <ExpandableLab title={c4Lab.map.visualTitle}>
+                    <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
+                        <Chapter4LabProvider value={c4Lab}>
+                            <UniversalMeaningDemo dir={dir} />
+                        </Chapter4LabProvider>
+                    </div>
+                </ExpandableLab>
+            </section>
+
             {/* ══════════ Semantic Space Lab ══════════ */}
             <section id="semantic-lab" className="relative mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
                 <div className="flex items-center gap-3">
@@ -271,7 +309,9 @@ export default function BehindTheScenesChapter5() {
                     {c5.sections.labIntro}
                 </div>
 
-                <SemanticSpaceLab content={c5.lab} dir={dir} />
+                <ExpandableLab title={c5.sections.labTitle}>
+                    <SemanticSpaceLab content={c5.lab} dir={dir} />
+                </ExpandableLab>
 
                 {/* מנטור: קרוב במרחב, קרוב במשמעות (xl+, צד פנימי לפי כיוון) */}
                 <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'} z-20 hidden xl:block pointer-events-none`}>
@@ -290,6 +330,73 @@ export default function BehindTheScenesChapter5() {
                     </div>
                 </div>
             </section>
+
+            {/* ══════════ למה הם קרובים: DNA של רכיבי משמעות משותפים (הובא מפרק 4) ══════════ */}
+            {/* שני משפטי משלוח שיושבים קרוב במפה חולקים את אותם רכיבי משמעות. ה-DNA מראה
+                אילו רכיבים משותפים, וזה מה שמקרב אותם במרחב. */}
+            {dnaA && (
+                <section className="mt-12 text-start" dir={dir}>
+                  <ExpandableLab title={c4Lab.dna.title}>
+                    <div className="space-y-4 rounded-2xl border border-violet-500/30 bg-slate-900/40 p-5 sm:p-6">
+                        {/* שני בוררים: בחרו שני משפטים וראו כמה רכיבי משמעות משותפים להם.
+                            זהים כמעט (שני כשלי מסירה) => הרבה קשרים ירוקים. רחוקים (מסירה מול חיוב)
+                            => כמעט בלי קשרים, הגדילים נפרדים. */}
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-cyan-300">{c4Lab.dna.roleActive}</div>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {DNA_COMPARE_IDS.map((id) => {
+                                        const s = c4Sentences.find((x) => x.id === id);
+                                        if (!s) return null;
+                                        const on = id === dnaAId;
+                                        return (
+                                            <button
+                                                key={id}
+                                                type="button"
+                                                onClick={() => setDnaAId(id)}
+                                                aria-pressed={on}
+                                                className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-colors ${
+                                                    on ? 'border-cyan-400/60 bg-cyan-900/25 text-cyan-100' : 'border-slate-700/50 bg-slate-800/30 text-slate-300 hover:border-slate-600'
+                                                }`}
+                                            >
+                                                {s.text}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                            <div>
+                                <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-violet-300">{c4Lab.dna.roleCompare}</div>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {DNA_COMPARE_IDS.map((id) => {
+                                        const s = c4Sentences.find((x) => x.id === id);
+                                        if (!s) return null;
+                                        const on = id === dnaBId;
+                                        return (
+                                            <button
+                                                key={id}
+                                                type="button"
+                                                onClick={() => setDnaBId(id)}
+                                                aria-pressed={on}
+                                                className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-colors ${
+                                                    on ? 'border-violet-400/60 bg-violet-900/25 text-violet-100' : 'border-slate-700/50 bg-slate-800/30 text-slate-300 hover:border-slate-600'
+                                                }`}
+                                            >
+                                                {s.text}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
+                            <MeaningDnaStrip active={dnaA} compare={dnaB} geneLabels={c4Lab.genes} dna={c4Lab.dna} dir={dir} />
+                        </div>
+                    </div>
+                  </ExpandableLab>
+                </section>
+            )}
 
             {/* ══════════ נעילת הבנה ══════════ */}
             <section className="relative mt-12 text-start" dir={dir}>

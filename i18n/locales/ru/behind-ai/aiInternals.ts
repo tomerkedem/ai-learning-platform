@@ -23,6 +23,13 @@ export const aiInternals = {
         currentlyAnalyzed: 'Анализируется',
     },
     // ReadAloudControls: интерфейс озвучивания (Web Speech API), общий для всех глав.
+    labZoom: {
+        expand: 'Во весь экран',
+        collapse: 'Назад к главе',
+        expandAria: 'Развернуть лабораторию на весь экран',
+        collapseAria: 'Вернуться к обычному виду в главе',
+    },
+
     readAloud: {
         dock: 'Аудиосопровождение',
         play: 'Озвучить',

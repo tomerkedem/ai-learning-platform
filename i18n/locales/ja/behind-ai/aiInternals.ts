@@ -23,6 +23,13 @@ export const aiInternals = {
         currentlyAnalyzed: '分析中',
     },
     // ReadAloudControls: 読み上げドックの表示文言 (Web Speech API)、全章で共有。
+    labZoom: {
+        expand: '全画面',
+        collapse: '章に戻る',
+        expandAria: 'ラボを全画面に拡大',
+        collapseAria: '章内の通常表示に戻る',
+    },
+
     readAloud: {
         dock: '音声ガイド',
         play: '読み上げ',

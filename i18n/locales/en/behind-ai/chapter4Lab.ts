@@ -78,6 +78,9 @@ export const chapter4Lab: Chapter4LabDict = {
         objectSelected: 'Selected object',
         objectClosest: 'Closest',
         objectNoClose: 'Far from the rest',
+        numericTitle: 'Numeric representation',
+        numericNote: 'Objects similar in meaning get similar numbers, so they sit close on the map. A random vector would not group them.',
+        numericDisclaimer: 'The numbers are illustrative only. A real space has hundreds of dimensions that are not human-readable.',
 
         packageTitle: 'Closeness in meaning between sentences',
         packageSubtitle: 'Different sentences can be close if they describe a similar idea.',
@@ -198,8 +201,8 @@ export const chapter4Lab: Chapter4LabDict = {
     },
 
     dna: {
-        title: 'Meaning DNA',
-        intro: 'Every sentence has a "recipe" of meaning components, and that is its DNA. The two strands are the two sentences, and each rung is one meaning component.',
+        title: 'The meaning inside the vector',
+        intro: 'The vector is not a single number. It is a profile of meaning components the model learned. Each rung is one meaning component, and the node height shows how strong that component is in the sentence.',
         roleActive: 'your pick',
         roleCompare: 'compared',
         twistMeaning: 'The closer the meaning of the two sentences, the tighter the strands wind together. When the meaning drifts, they pull apart.',

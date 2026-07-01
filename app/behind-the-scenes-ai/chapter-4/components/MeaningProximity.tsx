@@ -30,6 +30,8 @@ export interface ProximityNode {
     fullText?: string;
     /** הסבר אופציונלי לאובייקט. */
     explanation?: string;
+    /** ייצוג מספרי קצר להצגה ליד הצומת (מרחב סמנטי). צבע לפי סימן, בהירות לפי עוצמה. */
+    vector?: number[];
 }
 
 interface MeaningProximityProps {
@@ -40,11 +42,19 @@ interface MeaningProximityProps {
     dir: 'rtl' | 'ltr';
     /** להציג קו לכל זוג קרוב (לדמו האשכולות), ולא רק לזוג הפעיל. */
     showAllLinks?: boolean;
+    /** קווי רשת (אורך ורוחב) ברקע, למראה של מרחב קואורדינטות סמנטי. */
+    showGrid?: boolean;
 }
 
 const vb = (v: number) => v * 100;
 
-export const MeaningProximity: React.FC<MeaningProximityProps> = ({ nodes, activeId, onSelect, closestTag, dir, showAllLinks = false }) => {
+// צבע תא מספרי לפי סימן (ציאן חיובי, סגול שלילי) ובהירות לפי עוצמה.
+const numColor = (v: number) => {
+    const a = 0.4 + Math.min(1, Math.abs(v)) * 0.55;
+    return v >= 0 ? `rgba(34,211,238,${a})` : `rgba(167,139,250,${a})`;
+};
+
+export const MeaningProximity: React.FC<MeaningProximityProps> = ({ nodes, activeId, onSelect, closestTag, dir, showAllLinks = false, showGrid = false }) => {
     const reduce = useReducedMotion();
 
     const byId = useMemo(() => new Map(nodes.map((n) => [n.id, n] as const)), [nodes]);
@@ -77,6 +87,20 @@ export const MeaningProximity: React.FC<MeaningProximityProps> = ({ nodes, activ
         >
             {/* ערפל עומק רך */}
             <div className="pointer-events-none absolute left-1/2 top-1/2 h-3/4 w-3/4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/5 blur-3xl" />
+
+            {/* קווי רשת (אורך ורוחב): מרחב קואורדינטות סמנטי, צירי מרכז מעט בהירים יותר */}
+            {showGrid && (
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 h-full w-full">
+                    {[12.5, 25, 37.5, 62.5, 75, 87.5].map((p) => (
+                        <g key={p}>
+                            <line x1={p} y1="0" x2={p} y2="100" className="stroke-slate-400/[0.06]" strokeWidth="0.25" vectorEffect="non-scaling-stroke" />
+                            <line x1="0" y1={p} x2="100" y2={p} className="stroke-slate-400/[0.06]" strokeWidth="0.25" vectorEffect="non-scaling-stroke" />
+                        </g>
+                    ))}
+                    <line x1="50" y1="0" x2="50" y2="100" className="stroke-slate-300/[0.12]" strokeWidth="0.4" vectorEffect="non-scaling-stroke" />
+                    <line x1="0" y1="50" x2="100" y2="50" className="stroke-slate-300/[0.12]" strokeWidth="0.4" vectorEffect="non-scaling-stroke" />
+                </svg>
+            )}
 
             {/* קווי קרבה: זוהר רך מתחת, חוט בהיר מעל לזוג המודגש */}
             {linkPairs.length > 0 && (
@@ -134,6 +158,13 @@ export const MeaningProximity: React.FC<MeaningProximityProps> = ({ nodes, activ
                                     />
                                 </motion.span>
                                 <span className={`text-[12px] font-bold ${isActive ? 'text-cyan-100' : 'text-slate-300'}`}>{n.label}</span>
+                                {n.vector && (
+                                    <span className={`flex gap-0.5 font-mono text-[8px] leading-none transition-opacity ${isActive ? 'opacity-100' : 'opacity-70'}`} dir="ltr">
+                                        {n.vector.slice(0, 4).map((v, idx) => (
+                                            <span key={idx} style={{ color: numColor(v) }}>{v >= 0 ? '+' : ''}{v.toFixed(1)}</span>
+                                        ))}
+                                    </span>
+                                )}
                                 {isNearest && (
                                     <span className="rounded-full border border-violet-400/40 bg-violet-900/30 px-2 py-0.5 text-[10px] font-bold text-violet-100">{closestTag}</span>
                                 )}

@@ -2,15 +2,13 @@
 // Capítulo 4 en español ("Embeddings: de un número sin sentido al significado").
 // Fuente de forma: ../../he/behind-ai/chapter4 (el hebreo es canónico).
 //
-// Traducción real, español natural (no literal). Phone-first y listo para lectura en
-// voz alta: frases cortas, sin párrafos densos. Se conserva el ancla de paquetes y
-// envíos. Términos fijos: Embedding, Token ID, RAG, Agent, modelo. Sin guion largo
-// (U+2014) ni guion medio (U+2013). Las burbujas del mentor no llevan emoji.
+// Enfoque: cómo el texto se convierte en una representación numérica aprendida. Texto ->
+// tokens -> Token IDs -> una fila en la tabla de embeddings -> un vector -> procesado en
+// contexto. Los valores se aprendieron en el entrenamiento y se consultan en la inferencia.
+// El mapa semántico (cercanía, vecinos) pertenece al capítulo 5, no aquí.
 //
-// Las cadenas del laboratorio (UniversalMeaningDemo, EmbeddingExperienceLab) vienen de
-// chapter4Lab por el registro de contenido del laboratorio, así que no se repiten aquí.
-// El esqueleto numérico de la prueba permanece en quizData.ts; aquí solo el texto
-// visible (quiz.byId).
+// Traducción real, español natural (no literal). Sin guion largo (U+2014) ni guion medio
+// (U+2013). El texto de las burbujas del mentor no lleva emoji.
 
 import type { Locale } from '@/i18n/config';
 import { chapter4Quiz } from './chapter4Quiz';
@@ -21,102 +19,160 @@ export const chapter4 = {
     // Hero
     hero: {
         badge: 'Behind the Scenes · 04',
-        titleLead: '¿Cómo sabe la IA',
-        titleHighlight: 'que dos frases diferentes significan lo mismo?',
-        lede: 'Dos frases pueden usar palabras completamente distintas y aun así significar casi lo mismo. Para detectarlo, el modelo necesita una forma de comparar significado, no solo coincidir palabras. Un Embedding es la representación numérica que le permite medir qué tan cerca están dos frases en significado.',
-        chipObject: 'Elige un objeto o una frase y mira qué es lo más cercano',
-        chipMeaning: 'Palabras distintas pueden seguir estando cerca en significado',
+        titleLead: 'Cómo se convierte el texto',
+        titleHighlight: 'en un número con significado?',
+        lede: 'El motor no ve palabras. Cada palabra se convierte en un token, cada token recibe un número identificador, y el número apunta a una fila en una tabla enorme. Esa fila es un vector, una lista de números que el modelo aprendió para representar el significado. Eso es el embedding.',
+        chipObject: 'Sigue una palabra mientras se convierte en un número',
+        chipMeaning: 'Mira cómo se construye el vector de significado',
     },
 
-    // Burbujas de diálogo del mentor (solo texto; la pose y la ubicación son estructurales)
+    // Burbujas del mentor (solo texto; la pose y la ubicación son estructurales en la página)
     mentor: {
         hero: 'El motor ve números, no palabras',
-        lock: 'La cercanía no es verdad',
-        practical: 'Cerca en significado, no necesariamente verdadero',
+        lock: 'Aprendido en el entrenamiento, consultado en un chat',
+        practical: 'El texto se volvió número, ahora podemos calcular',
     },
 
-    // Adivinanza rápida: solo texto; el icono, la respuesta correcta y las poses son estructurales
+    // Adivinanza rápida: solo texto; el icono, la respuesta correcta y las poses son estructurales.
+    // Los ids de opción (address/meaning/importance) son claves estables de la página, no se traducen.
+    // address = la respuesta correcta, meaning/importance = incorrectas, con un why.
     guess: {
         eyebrow: 'Adivinanza rápida',
-        title: 'Palabras distintas, misma intención. ¿Están cerca en significado?',
-        subtitle: 'Dos mensajes de soporte sin una sola palabra en común. Adivina por el significado, no por las palabras.',
-        prompt: '"El paquete no llegó" vs "El envío no fue entregado"',
-        invite: 'Piensa en el significado, no en las palabras, y luego elige.',
-        // Opciones por id estable (close es la correcta, far/letters son erróneas con un porqué)
+        title: 'La palabra "no" recibe el número 17. ¿Qué es ese número?',
+        subtitle: 'Adivina por lo que ya sabes sobre tokens.',
+        prompt: '"no" → 17',
+        invite: 'Piensa un segundo: ¿ese número ya es el significado, o solo una dirección?',
         options: {
-            close: {
-                title: 'Sí, cerca',
-                desc: 'Misma intención, aunque sin palabras compartidas',
+            address: {
+                title: 'Una dirección en el vocabulario',
+                desc: 'El número solo indica qué token es',
             },
-            far: {
-                title: 'No, lejos',
-                desc: 'Palabras distintas, así que significado distinto',
-                why: 'Tiene sentido pensarlo, porque no comparten ninguna palabra. Pero un Embedding no compara palabras, compara significado, y la misma intención sigue cerca aunque sea con otras palabras.',
+            meaning: {
+                title: 'El significado de "no"',
+                desc: 'El número en sí ya dice negación',
+                why: 'Tienta pensar así, pero el número por sí solo no lleva significado. Es una dirección fija en el vocabulario. El significado viene de la fila a la que apunta la dirección, y ese es el vector que veremos enseguida.',
             },
-            letters: {
-                title: 'Depende de las palabras compartidas',
-                desc: 'Necesitas palabras idénticas para estar cerca',
-                why: 'Esa es la intuición de la búsqueda literal. Pero la cercanía en significado no se mide por palabras compartidas, sino por el significado mismo.',
+            importance: {
+                title: 'Qué tan importante es la palabra',
+                desc: 'Un número pequeño significa una palabra menos importante',
+                why: 'No. El tamaño del número es arbitrario, es solo un identificador. Qué tan importante es una palabra en contexto se decide en una etapa posterior, en el capítulo de Attention.',
             },
         },
-        successTitle: '¡Exacto!',
+        successTitle: 'Exacto',
         successExplain:
-            'Los dos mensajes usan palabras distintas, pero describen casi el mismo problema: un paquete que no llegó o que no fue entregado. Por eso un Embedding los mide como cercanos en significado.',
-        successInsight: 'El modelo no solo busca palabras idénticas. Busca significado similar.',
-        continueCta: 'Continúa a la vista',
+            'El Token ID es una dirección, no significado. El número 17 solo dice qué token es. El significado está en la fila a la que apunta la dirección en la tabla de embeddings, y eso es justo lo que se abre ahora.',
+        successInsight: 'El número del token es una dirección. El significado es el vector al que lleva la dirección.',
+        continueCta: 'Continúa a la demo',
         retryLink: 'Adivina otra vez',
         wrongTitle: 'Inténtalo de nuevo',
         retryButton: 'Inténtalo de nuevo',
     },
 
-    // Puente de los objetos a las frases
-    // Explicacion en palabras simples: que hace en realidad un Embedding (tras la adivinanza, antes del demo)
+    // En palabras simples: qué es de verdad un embedding (tras la adivinanza, antes de la demo)
     plain: {
         eyebrow: 'En palabras simples',
-        title: 'Entonces, ¿qué hace en realidad un Embedding?',
+        title: '¿Entonces qué es de verdad un embedding?',
         lines: [
-            'Un Embedding toma cada palabra o frase y convierte su significado en una posición en un mapa.',
-            'Lo que quiere decir lo mismo cae cerca, aunque esté escrito con palabras completamente distintas.',
-            'Eso es todo lo que hace: mide qué tan cerca están dos significados. No comprueba si algo es verdad, y no entiende como una persona.',
+            'Cada token recibe un número identificador, y el número apunta a una fila fija en una tabla.',
+            'La fila es un vector: una lista de números, no un solo número.',
+            'Estos números se aprendieron en el entrenamiento, para que el vector represente el significado del token. Un vector así se llama embedding.',
+            'Todo embedding es un vector, pero no todo vector es un embedding. Un embedding es un vector que el modelo aprendió para representar significado.',
         ],
     },
 
-    bridge: 'Ahora usamos la misma idea con frases: aunque las palabras cambien, el significado puede seguir cerca.',
+    // Puente al capítulo 5 (Semantic Space): tenemos un vector por frase, qué pasa al juntarlos
+    bridge: 'Ahora tenemos un vector para cada frase. En el próximo capítulo veremos qué pasa cuando ponemos muchos de estos vectores juntos en un mismo espacio.',
 
-    // Asegura la idea: la cercanía no es verdad
-    lock: {
-        title: 'Asegura la idea',
-        question: 'Dos frases salieron muy cerca en significado. ¿Qué significa eso?',
-        options: ['Que su significado es cercano', 'Que ambas son verdaderas en la realidad', 'Que son en realidad la misma frase'],
-        explanationCorrect:
-            'Exacto. Aquí la cercanía significa que el significado es similar, no que algo sea verdadero. Un Embedding compara significado, no verifica qué pasó en el mundo.',
-        explanationWrong:
-            'Casi. La cercanía solo dice que el significado es similar. No verifica que algo sea verdadero, y no convierte dos frases en una.',
+    // Intuición perro/gato: vector aprendido vs aleatorio (See #1). Un ejemplo corto, no un mapa.
+    dogCat: {
+        eyebrow: 'Por qué "aprendido"',
+        title: '¿Qué diferencia hay entre un vector aleatorio y uno aprendido?',
+        body: 'El modelo aprendió que perro y gato aparecen en contextos parecidos, así que sus vectores pueden salir parecidos. Un vector aleatorio no sabría hacer eso, son solo números sin relación. Eso es lo que convierte un vector en un embedding: sus valores se aprendieron, no son aleatorios.',
+        labelDog: 'Perro',
+        labelCat: 'Gato',
+        learnedTag: 'Aprendido de contextos parecidos',
+        randomTag: 'Aleatorio, sin relación',
     },
 
-    // Conclusión práctica
+    // De una tabla a un vector: el puente explícito del Token ID (dirección) al vector (contenido de la fila)
+    embeddingTable: {
+        title: 'De una tabla a un vector',
+        body: 'La tabla de embeddings es una lista enorme de filas, una fila por cada token del vocabulario. El Token ID es el número de fila. El modelo va a esa fila, y su contenido es el vector. Así una dirección se convierte en una lista de números que representa significado.',
+    },
+
+    // Entrenamiento vs inferencia: los valores se aprendieron una vez y se consultan en cada chat
+    trainingInference: {
+        title: 'Aprendido una vez, consultado en cada chat',
+        body: 'Los valores del vector se aprendieron una vez, durante el entrenamiento. En un chat el modelo no entrena un vector nuevo desde cero. Solo consulta el vector que ya aprendió, y luego las capas del modelo lo procesan según el contexto de la frase.',
+    },
+
+    // Laboratorio de búsqueda: de una palabra a números (Token ID -> fila de la tabla -> vector). La estructura vive en el componente.
+    embeddingLookup: {
+        eyebrow: 'Laboratorio: de una palabra a números',
+        title: 'La máquina de Embedding',
+        intro: 'Elige una palabra y síguela mientras se convierte en un número identificador y luego en una fila de números en una tabla. Eso es lo que el motor recibe de verdad.',
+        pickWord: 'Elige una palabra',
+        idNote: 'una dirección, no significado',
+        tableTitle: 'La tabla de embeddings',
+        tableHint: 'Una fila por token. El Token ID es el número de fila.',
+        vectorTitle: 'El vector',
+        vectorNote: 'Una lista de números. Este es el embedding de la palabra, y sobre esto calcula el motor.',
+        learnedLabel: 'Aprendido',
+        randomLabel: 'Aleatorio',
+        learnedNote: 'Estos valores se aprendieron en el entrenamiento. Una fila así es un embedding: un vector con significado aprendido.',
+        randomNote: 'Los números aleatorios son un vector, pero no un embedding. Nada en ellos se aprendió. Por eso todo embedding es un vector, pero no todo vector es un embedding.',
+        viewWords: 'Lo que ves tú',
+        viewNumbers: 'Lo que ve el motor',
+        viewNote: 'El motor nunca ve palabras. Solo estos números.',
+        disclaimer: 'Estos números son solo ilustrativos. Un vector real tiene cientos o miles de dimensiones no legibles para una persona.',
+        words: {
+            pkg: 'el paquete',
+            not: 'no',
+            arrived: 'llegó',
+            shipment: 'el envío',
+            lost: 'perdido',
+            tracking: 'seguimiento',
+        },
+    },
+
+    // Bloqueo de comprensión: de dónde vienen los números del vector (entrenamiento vs inferencia). Correcta es índice 0.
+    lock: {
+        title: 'Bloqueo de comprensión',
+        question: 'La palabra "paquete" recibió un Token ID, y de él se consultó un vector. ¿De dónde vienen los números del vector?',
+        options: [
+            'Se aprendieron en el entrenamiento, y el modelo solo los consulta ahora',
+            'El modelo los calculó ahora desde cero, solo para este chat',
+            'Son la dirección de la palabra en el vocabulario',
+        ],
+        explanationCorrect:
+            'Exacto. Los valores del vector se aprendieron en el entrenamiento. Durante un chat el modelo consulta el vector aprendido y lo procesa en contexto, no entrena un vector nuevo.',
+        explanationWrong:
+            'Casi. Los números no se calculan desde cero en cada chat, y no son la dirección. La dirección es el Token ID. Los valores del vector se aprendieron en el entrenamiento, y el modelo los consulta y los procesa en contexto.',
+    },
+
+    // Idea práctica
     practical: {
-        title: 'Cuándo ayudan los Embeddings, y qué no hacen',
-        lead: 'La cercanía en significado es una herramienta poderosa, y es justo lo que impulsa mucho de lo que ya usas.',
+        title: 'Qué ganamos ahora que el texto es un vector',
+        lead: 'Una vez que cada texto es un vector aprendido, podemos comparar y calcular sobre él. Eso impulsa mucho de lo que ya conoces.',
         uses: [
             'Búsqueda semántica y recuperación de fuentes, la base de RAG',
             'Clasificación de texto y detección de intención',
-            'Agrupar mensajes similares en un centro de soporte',
-            'Decisiones de un Agent según la cercanía de significado',
+            'Agrupar consultas parecidas en un centro de soporte',
+            'Decisiones de Agent según el perfil de significado',
         ],
         caveat:
-            'Pero la cercanía no es verdad. Un Embedding compara significado, no verifica si algo es verdadero y no entiende como una persona. Por eso una acción sensible necesita una fuente o una verificación, no solo cercanía.',
+            'Pero el vector representa significado, no comprueba si algo es verdad en el mundo. Cómo comparamos vectores, y cuándo la cercanía engaña, es justo el próximo capítulo.',
         mathLink:
-            '¿Quieres las matemáticas de esta cercanía en profundidad? El capítulo Vectores, el corazón de todo modelo, en el curso de Matemática Intuitiva',
+            '¿Quieres las matemáticas de esta cercanía a fondo? El capítulo de Vectores, el corazón de todo modelo, en el curso de Matemática Intuitiva',
     },
 
-    // Under the hood (secundario)
+    // Bajo el capó (se mantiene por forma; ya no es el envoltorio del laboratorio principal)
     hood: {
         eyebrow: 'Under the hood',
-        title: 'De las palabras a los números',
+        title: 'Bajo el capó: de las palabras a los números',
         helper: 'Abre los laboratorios para ver cómo el texto se convierte en tokens, números y significado.',
         labsCount: '3 laboratorios interactivos dentro',
-        intro: '¿Quieres ver el paso técnico bajo la cercanía? Cada palabra recibe un Token ID, y de la secuencia de IDs se construye un vector de significado. Ese es el perfil numérico que decide qué tan cerca están dos frases en significado.',
+        intro: '¿Quieres ver el paso técnico bajo el significado? Cada palabra recibe un Token ID, y de la secuencia de IDs se construye un vector de significado. Ese es el perfil numérico que decide qué tan cerca están dos frases en significado.',
     },
 
     // La comprobación de conocimientos (texto visible; el esqueleto numérico está en quizData)
