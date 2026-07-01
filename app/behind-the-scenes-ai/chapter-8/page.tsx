@@ -8,8 +8,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { ChapterQuiz } from '../ChapterQuiz';
 import { InsightBox } from '@/components/content/InsightBox';
 
-import { OpeningGuess, type OpeningGuessContent } from '@/components/ai-internals/OpeningGuess';
-import type { DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
+import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
 import { ContinuationLab } from '@/components/ai-internals/ContinuationLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { CONTINUATION_SCENARIOS } from './continuationScenarios';

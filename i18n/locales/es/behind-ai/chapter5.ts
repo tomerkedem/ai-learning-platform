@@ -39,6 +39,8 @@ export const chapter5 = {
         title: '¿Qué ocurre después de que el modelo elige la primera continuación?',
         subtitle: 'Elige el modelo mental que sientas más cercano. Aquí no hay nota, hay una dirección que describe lo que de verdad ocurre.',
         invite: 'Antes de abrir esto, intenta adivinar qué ocurre entre un paso y el siguiente mientras se construye la respuesta.',
+        correctTitle: '¡Exacto!',
+        wrongTitle: '¡Casi!',
         getsRightLabel: 'Qué acierta esto',
         revealButton: 'Revelar la idea central',
         revealTitle: 'Entonces, ¿qué ocurre de verdad?',

@@ -11,8 +11,7 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine } from '@/components/content/AssessmentEngine';
 import { behindAiChapterQuizzes } from '../quizData';
 
-import { OpeningGuess, type OpeningGuessContent } from '@/components/ai-internals/OpeningGuess';
-import type { DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
+import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
 import { TokenizationLab } from '@/components/ai-internals/TokenizationLab';
 import { TokenizationRoadmap } from '@/components/ai-internals/TokenizationRoadmap';
 import { Mentor } from '@/components/ai-internals/Mentor';

@@ -9,8 +9,7 @@ import { AssessmentEngine, type ReviewLink } from '@/components/content/Assessme
 import { behindAiChapterQuizzes } from '../quizData';
 import type { Chapter2QuizId } from '@/i18n/locales/he/behind-ai/chapter2Quiz';
 
-import { OpeningGuess, type OpeningGuessContent } from '@/components/ai-internals/OpeningGuess';
-import type { DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
+import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
 import { InputComparisonLab } from '@/components/ai-internals/InputComparisonLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';

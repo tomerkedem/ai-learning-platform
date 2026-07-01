@@ -12,7 +12,7 @@ import { AssessmentEngine, type ReviewLink } from '@/components/content/Assessme
 import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 import { Mentor } from '@/components/ai-internals/Mentor';
-import { DiscoveryGuess, type DiscoveryGuessContent, type DiscoveryGuessCard, type GuessTone } from '@/components/ai-internals/DiscoveryGuess';
+import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard, type GuessTone } from '@/components/ai-internals/OpeningGuess';
 import { SemanticSpaceLab } from '@/components/ai-internals/SemanticSpaceLab';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
@@ -95,13 +95,15 @@ export default function BehindTheScenesChapter5() {
 
     // ── ניחוש הפתיחה: תוכן + כרטיסים ממוזגים מהמילון עם המטא-דאטה המבני ──
     const g = c5.guess;
-    const guessContent: DiscoveryGuessContent = {
+    const guessContent: OpeningGuessContent = {
         eyebrow: g.eyebrow,
         title: g.title,
         subtitle: g.subtitle,
         prompt: g.prompt,
         invite: g.invite,
         invitePose: 'think',
+        correctTitle: g.correctTitle,
+        wrongTitle: g.wrongTitle,
         getsRightLabel: g.getsRightLabel,
         revealButton: g.revealButton,
         revealTitle: g.revealTitle,
@@ -252,7 +254,7 @@ export default function BehindTheScenesChapter5() {
 
             {/* ══════════ ניחוש מהיר ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <DiscoveryGuess content={guessContent} cards={guessCards} mentorScale={2} />
+                <OpeningGuess content={guessContent} cards={guessCards} />
             </section>
 
             {/* ══════════ Semantic Space Lab ══════════ */}

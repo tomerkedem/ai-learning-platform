@@ -9,7 +9,7 @@ import { AssessmentEngine } from '@/components/content/AssessmentEngine';
 import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 
-import { DiscoveryGuess, type DiscoveryGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/DiscoveryGuess';
+import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
 import { AnswerBuilderLab } from '@/components/ai-internals/AnswerBuilderLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { useT } from '@/i18n/useT';
@@ -81,12 +81,14 @@ export default function BehindTheScenesChapter5() {
     const c5 = t.behindAi.chapter5;
 
     // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
-    const guessContent: DiscoveryGuessContent = {
+    const guessContent: OpeningGuessContent = {
         eyebrow: c5.guess.eyebrow,
         title: c5.guess.title,
         subtitle: c5.guess.subtitle,
         invite: c5.guess.invite,
         invitePose: 'think',
+        correctTitle: c5.guess.correctTitle,
+        wrongTitle: c5.guess.wrongTitle,
         getsRightLabel: c5.guess.getsRightLabel,
         revealButton: c5.guess.revealButton,
         revealTitle: c5.guess.revealTitle,
@@ -173,7 +175,7 @@ export default function BehindTheScenesChapter5() {
 
             {/* ══════════ ניחוש פתיחה ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <DiscoveryGuess content={guessContent} cards={guessCards} />
+                <OpeningGuess content={guessContent} cards={guessCards} />
             </section>
 
             {/* ══════════ מעבדת בניית התשובה ══════════ */}

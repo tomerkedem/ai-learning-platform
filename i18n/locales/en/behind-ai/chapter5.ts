@@ -41,6 +41,8 @@ export const chapter5 = {
         title: 'What happens after the model picks the first continuation?',
         subtitle: 'Pick the mental model that feels closest to you. There is no score here, there is one direction that describes what really happens.',
         invite: 'Before we open this up, try to guess what happens between one step and the next while the answer is being built.',
+        correctTitle: 'Exactly right!',
+        wrongTitle: 'Almost!',
         getsRightLabel: 'What this gets right',
         revealButton: 'Reveal the core idea',
         revealTitle: 'So what really happens?',

@@ -1,22 +1,66 @@
 "use client";
 
 // ────────────────────────────────────────────────────────────────────────
-// OpeningGuess - מנגנון "ניחוש הפתיחה" מסוג בורר-כרטיסים (רשת 2x2), בשימוש פרקים
-// 2 ו-3. הלומד בוחר השערה אחת; הכרטיס המדויק מזוהה לפי statusTone === 'precise'.
+// OpeningGuess - רכיב ניחוש הפתיחה המשותף בלומדה, מסוג בורר-כרטיסים. הלומד בוחר
+// השערה אחת; הכרטיס המדויק מזוהה לפי statusTone === 'precise'. בשימוש כל הפרקים
+// עם ניחוש פתיחה מסוג כרטיסים (2, 3, 5, 8, 10).
 //
-// זהו ה-body הייחודי של הפרק בלבד. מנטור ההזמנה והתגובה שאחרי הבחירה מגיעים
-// מהרכיבים המשותפים GuessInvite ו-GuessVerdict, כדי שההתנהגות הזו תהיה זהה בכל
-// הלומדה (אחידות חלקית: אותו מנטור, אותן תגובות, מנגנון ניחוש גמיש לכל פרק).
+// זהו ה-body הייחודי של הניחוש בלבד. מנטור ההזמנה והתגובה שאחרי הבחירה מגיעים
+// מהרכיבים המשותפים GuessInvite ו-GuessVerdict, כדי שההתנהגות והמראה יהיו זהים בכל
+// הלומדה (אותו מנטור, אותה תגובת הצלחה/טעות, מנגנון ניחוש גמיש לכל פרק).
 //
-// אינו עורך את DiscoveryGuess המשותף. בלי בועת דיבור למנטור. אין מקף ארוך, מקף
+// גם טיפוסי הכרטיס והתוכן (GuessTone, DiscoveryGuessCard, DiscoveryGuessContent)
+// מוגדרים כאן ומיוצאים, כבית המשותף שלהם. בלי בועת דיבור למנטור. אין מקף ארוך, מקף
 // בינוני או נקודה-פסיק בטקסט עברית.
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { HelpCircle, Check } from 'lucide-react';
+import { HelpCircle, Check, type LucideIcon } from 'lucide-react';
 import { GuessInvite, GuessVerdict } from './GuessVerdict';
-import type { DiscoveryGuessCard, DiscoveryGuessContent } from './DiscoveryGuess';
+import type { MentorPose } from './Mentor';
+
+/** גוון הצ׳יפ של הסטטוס. precise=הצלחה, partial=חלקי, common=טעות נפוצה, layer=שכבה אחרת. */
+export type GuessTone = 'precise' | 'partial' | 'common' | 'layer';
+
+/** כרטיס השערה בודד בבורר הניחוש. הטקסט מגיע מהמילון, המבנה (אייקון/גוון/פוזה) מהפרק. */
+export interface DiscoveryGuessCard {
+    id: string;
+    title: string;
+    desc: string;
+    /** אייקון lucide לתג הכרטיס. אם חסר, מוצג מספר סידורי. */
+    icon?: LucideIcon;
+    statusLabel: string;
+    statusTone: GuessTone;
+    mentorPose: MentorPose;
+    getsRight: string;
+    /** תווית השורה השנייה: לרוב "מה זה מפספס", ולכרטיס הנכון "מה נשאר לראות". */
+    missesLabel: string;
+    misses: string;
+    bridge: string;
+}
+
+/** תוכן בורר הניחוש המשותף (כותרות, מנטור הזמנה, חשיפה מדורגת, CTA). */
+export interface DiscoveryGuessContent {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    /** משפט מנטור ההזמנה שלפני הבחירה. */
+    invite: string;
+    invitePose: MentorPose;
+    /** פרומפט עוגן אופציונלי שמוצג בכותרת. */
+    prompt?: string;
+    getsRightLabel: string;
+    revealButton: string;
+    revealTitle: string;
+    revealCopy: string;
+    revealPose: MentorPose;
+    cta: string;
+    /** id של אלמנט שאליו גוללים בלחיצת ה-CTA (למשל המעבדה). */
+    ctaTargetId?: string;
+    resetButton: string;
+    exploreHint: string;
+}
 
 export interface OpeningGuessContent extends DiscoveryGuessContent {
     /** כותרת הכרעה מפורשת לבחירה הנכונה, למשל "נכון מאוד!". */
