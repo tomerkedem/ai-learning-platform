@@ -199,6 +199,10 @@ export const chapter4Lab: Chapter4LabDict = {
 
     dna: {
         title: 'Meaning DNA',
+        intro: 'Every sentence has a "recipe" of meaning components, and that is its DNA. The two strands are the two sentences, and each rung is one meaning component.',
+        roleActive: 'your pick',
+        roleCompare: 'compared',
+        twistMeaning: 'The closer the meaning of the two sentences, the tighter the strands wind together. When the meaning drifts, they pull apart.',
         leadShared: (names) => `Both sentences are strong on the same meaning components: ${names}. That is why they are close.`,
         leadNone: 'The two sentences light up different components, so they are farther apart.',
         sharedBadge: 'shared',

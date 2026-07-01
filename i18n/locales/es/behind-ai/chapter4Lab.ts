@@ -199,6 +199,10 @@ export const chapter4Lab: Chapter4LabDict = {
 
     dna: {
         title: 'ADN del significado',
+        intro: 'Cada frase tiene una "receta" de componentes de significado, y ese es su ADN. Las dos hebras son las dos frases, y cada peldaño es un componente de significado.',
+        roleActive: 'tu frase',
+        roleCompare: 'comparada',
+        twistMeaning: 'Cuanto más cercano es el significado de las dos frases, más se enrollan juntas las hebras. Cuando el significado deriva, se separan.',
         leadShared: (names) => `Las dos frases son fuertes en los mismos componentes de significado: ${names}. Por eso están cerca.`,
         leadNone: 'Las dos frases activan componentes distintos, así que están más lejos.',
         sharedBadge: 'compartido',

@@ -199,6 +199,10 @@ export const chapter4Lab: Chapter4LabDict = {
 
     dna: {
         title: '意味の DNA',
+        intro: 'どの文にも意味の要素でできた「レシピ」があり、それがその文の DNA です。二本の鎖が二つの文で、一つひとつの横木が一つの意味の要素です。',
+        roleActive: '選んだ文',
+        roleCompare: '比較',
+        twistMeaning: '二つの文の意味が近いほど、二本の鎖はきつく絡み合います。意味がずれると、鎖は離れていきます。',
         leadShared: (names) => `二つの文は同じ意味の要素で強く反応します：${names}。だから近いのです。`,
         leadNone: '二つの文は別々の要素を活性化するので、より離れています。',
         sharedBadge: '共通',

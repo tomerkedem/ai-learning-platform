@@ -1,24 +1,29 @@
 "use client";
 
-// MeaningDnaStrip - חתימת המשמעות כסליל DNA כפול שמסתובב בתלת-ממד, חי וקריא.
+// MeaningDnaStrip - חתימת המשמעות כסולם DNA אנכי, קריא ומלמד.
 // ──────────────────────────────────────────────────────────────────────────
-// שני המשפטים הם שני גדילים (ציאן מול ורוד) שמשתזרים בסליל כפול ומסתובבים סביב הציר
-// האופקי. כל רכיב משמעות שנדלק הוא זוג בסיסים: צומת על כל גדיל, ושלב (rung) שמחבר ביניהם.
-// העומק (קדמי מול אחורי) משנה גודל, בהירות וסדר שכבות, כך שהסיבוב נראה תלת-ממדי אמיתי.
-// כשהרכיב חזק בשני המשפטים הוא "נקשר": במרכז השלב נדלק קשר ירוק זוהר שפועם ובאדג' משותף.
-// כך הסליל עצמו מוכיח למה המשפטים קרובים. שורת פתיחה במילים, מדריך קריאה קצר ופסיקה אחת
-// שומרים על המובנות. הגיאומטריה מאולצת ל-LTR כדי שהכל יתיישר זהה ב-RTL וב-LTR.
-// reduced-motion מקפיא את הסיבוב והפעימה ומשאיר סליל סטטי וקריא. aria שומר נגישות והקראה.
+// כל רכיב משמעות (גן) יושב בשורה משלו, עם התווית שלו לצד הסולם, כך שקל לקרוא אחד-אחד.
+// שני המשפטים הם שני גדילים: צומת ציאן בצד אחד וצומת ורוד בצד השני. גודל הצומת מקודד
+// דבר אחד בלבד: כמה הרכיב חזק באותו משפט. אין קידוד כפול של עומק או סיבוב.
+// כששני המשפטים חזקים באותו רכיב ובערך דומה, נדלק במרכז "קשר" ירוק זוהר - זה בדיוק מה
+// שמקרב את שתי המשמעות, וזו ההוכחה החזותית. רצועות ההליקס משני הצדדים מתפתלות בעדינות
+// כדי לשמור על זהות DNA תלת-ממדית, אבל הן דקורטיביות בלבד ולא נוגעות בגודל הצמתים.
+// כשמחליפים מילה או בוחרים משפט אחר, הרכיבים שבהם הקשר נוצר או נשבר מהבהבים לרגע, כדי
+// שיהיה ברור מה בדיוק השתנה ולמה הפסיקה התהפכה. הגיאומטריה של הסולם נעולה ל-LTR כדי
+// שתתיישר זהה ב-RTL וב-LTR, והתוויות מקבלות את כיוון השפה. reduced-motion מקפיא את
+// הפיתול, הפעימה וההבהוב ומשאיר סולם סטטי וקריא לחלוטין. aria שומר נגישות והקראה.
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
 import type { JoinedSentence, Chapter4LabDict } from '../labContent';
-import { DNA_DIMS, dimValue, SENTENCE_COLORS } from '../embeddingEngine';
+import { DNA_DIMS, dimValue } from '../embeddingEngine';
 
-const DEFAULT_A = { hex: '#22d3ee', rgb: '34,211,238' };
-const DEFAULT_B = { hex: '#e879f9', rgb: '232,121,249' };
+// צבע לפי תפקיד וקבוע: ציאן = המשפט שבחרת, סגול = המשפט להשוואה. הצבע לא תלוי בזהות
+// המשפט (בניגוד למפה), כדי שהעין תקרא "מי מול מי" ולא תחפש משמעות בצבע המתחלף.
+const ROLE_A = { hex: '#22d3ee', rgb: '34,211,238' }; // המשפט שבחרת
+const ROLE_B = { hex: '#a78bfa', rgb: '167,139,250' }; // המשפט להשוואה
 
 interface MeaningDnaStripProps {
     active: JoinedSentence;
@@ -33,10 +38,14 @@ const SHOW = 0.35; // סף הצגה: רכיב מוצג רק אם נדלק לפח
 const CLOSE = 0.2; // קרבה בין הערכים כדי שרכיב ייחשב משותף (נקשר)
 const CLOSE_VERDICT = 0.7; // סף הפסיקה הסופית
 
-const TURNS = 1.5; // מספר הסיבובים של הסליל לרוחב
-const R = 24; // רדיוס הסליל באחוזי גובה סביב המרכז (50)
-const SAMPLES = 64; // צפיפות דגימה לשרטוט גדיל חלק
-const SPIN = 0.9; // מהירות סיבוב ברדיאנים לשנייה
+const TWISTS = 1.6; // מספר הפיתולים של ההליקס לאורך הגובה
+const TIGHT_SEP = 18; // מרחק ממוצע בין הגדילים כשהמשמעות קרובה (הליקס כרוך הדוק)
+const LOOSE_SEP = 50; // מרחק ממוצע בין הגדילים כשהמשמעות נסחפת (הגדילים נפרדים)
+const TWIST_AMP = 10; // עומק הפיתול (זהות ההליקס, קבוע ולא תלוי בנתונים)
+const MIN_HALF = 8; // חצי-מרחק מינימלי כדי שהצמתים לא ייבלעו זה בזה במרכז
+const SPIN = 0.55; // מהירות פיתול רגועה (רדיאנים לשנייה)
+const SAMPLES = 48; // צפיפות דגימה לשרטוט גדיל חלק
+const LANE = 64; // גובה שורת רכיב בפיקסלים
 
 /** קרבה ממוצעת על ממדי ה-DNA (1 = זהה, 0 = רחוק). */
 function avgCloseness(a: JoinedSentence, b: JoinedSentence): number {
@@ -44,16 +53,27 @@ function avgCloseness(a: JoinedSentence, b: JoinedSentence): number {
     return Math.max(0, 1 - dist);
 }
 
-/** שני מסלולי הגדילים בפאזה נתונה (סינוס + הפוך), לרוחב כל הקנבס. */
-function strandPaths(phase: number): { a: string; b: string } {
+/**
+ * חצי המרחק בין הגדיל למרכז בגובה יחסי t (0..1). המרכז נקבע לפי הקרבה: משמעות קרובה ->
+ * גדילים כרוכים הדוק (מרחק קטן), משמעות נסחפת -> גדילים נפרדים (מרחק גדול). על המרכז
+ * רוכב פיתול קבוע בעוצמת TWIST_AMP שנותן את צורת ה-DNA, ואינו תלוי בנתונים.
+ */
+function halfAt(t: number, phase: number, closeness: number): number {
+    const center = LOOSE_SEP - (LOOSE_SEP - TIGHT_SEP) * closeness; // קרוב -> TIGHT, רחוק -> LOOSE
+    const sep = center + TWIST_AMP * Math.cos(t * TWISTS * 2 * Math.PI + phase);
+    return Math.max(MIN_HALF, sep / 2);
+}
+
+/** שני מסלולי הגדילים לכל גובה הסולם בפאזה נתונה (x ב-0..100, y ב-0..100). */
+function railPaths(phase: number, closeness: number): { a: string; b: string } {
     let a = '';
     let b = '';
     for (let k = 0; k <= SAMPLES; k++) {
-        const s = k / SAMPLES;
-        const x = s * 100;
-        const off = R * Math.sin(s * TURNS * 2 * Math.PI + phase);
-        a += `${k === 0 ? 'M' : 'L'}${x.toFixed(2)} ${(50 + off).toFixed(2)} `;
-        b += `${k === 0 ? 'M' : 'L'}${x.toFixed(2)} ${(50 - off).toFixed(2)} `;
+        const t = k / SAMPLES;
+        const y = t * 100;
+        const half = halfAt(t, phase, closeness);
+        a += `${k === 0 ? 'M' : 'L'}${(50 - half).toFixed(2)} ${y.toFixed(2)} `;
+        b += `${k === 0 ? 'M' : 'L'}${(50 + half).toFixed(2)} ${y.toFixed(2)} `;
     }
     return { a: a.trim(), b: b.trim() };
 }
@@ -61,11 +81,10 @@ function strandPaths(phase: number): { a: string; b: string } {
 export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compare, geneLabels, dna, dir }) => {
     const reduce = useReducedMotion();
 
-    // פאזת הסיבוב, מונעת ב-rAF. reduced-motion משאיר 0 (סליל סטטי).
+    // פאזת הפיתול, מונעת ב-rAF. reduced-motion משאיר 0 (סולם סטטי וקריא).
     const [phase, setPhase] = useState(0);
     const rafRef = useRef<number | null>(null);
     useEffect(() => {
-        // reduced-motion: לא מפעילים לולאה, הפאזה נשארת 0 (סליל סטטי וקריא).
         if (reduce) return;
         let start: number | null = null;
         const loop = (t: number) => {
@@ -79,7 +98,7 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
         };
     }, [reduce]);
 
-    // רק רכיבים שנדלקו לפחות במשפט אחד, כדי לא לשרטט זוגות בסיסים ריקים.
+    // רק רכיבים שנדלקו לפחות במשפט אחד, כדי לא לצייר שורות ריקות.
     const litDims = useMemo(
         () => DNA_DIMS.filter((d) => Math.max(dimValue(active.profile, d), compare ? dimValue(compare.profile, d) : 0) >= SHOW),
         [active, compare],
@@ -97,187 +116,227 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
         return set;
     }, [active, compare]);
 
+    // הבהוב "מה השתנה": רכיבים שהקשר שלהם נוצר או נשבר מאז הבחירה הקודמת.
+    // הזיהוי נעשה באפקט מול ref (גישה ל-ref מותרת באפקט), ו-setFlash נקרא רק בתוך timeout
+    // אסינכרוני: ההבהוב נדלק בטיק הבא ונכבה אחרי 1.5 שניות, בלי setState סינכרוני באפקט.
+    const prevRef = useRef<{ sig: string; shared: Set<string> } | null>(null);
+    const [flash, setFlash] = useState<Set<string>>(new Set());
+    useEffect(() => {
+        const sig = `${active.id}|${compare?.id ?? ''}`;
+        const prev = prevRef.current;
+        prevRef.current = { sig, shared: new Set(sharedSet) };
+        if (!prev || prev.sig === sig || reduce) return;
+        const changed = new Set<string>();
+        DNA_DIMS.forEach((d) => {
+            if (prev.shared.has(d) !== sharedSet.has(d)) changed.add(d);
+        });
+        if (changed.size === 0) return;
+        const onId = setTimeout(() => setFlash(changed), 0);
+        const offId = setTimeout(() => setFlash(new Set()), 1500);
+        return () => {
+            clearTimeout(onId);
+            clearTimeout(offId);
+        };
+    }, [active.id, compare?.id, sharedSet, reduce]);
+
     const sharedNames = useMemo(
         () => DNA_DIMS.filter((d) => sharedSet.has(d)).map((d) => geneLabels[d]).join(', '),
         [sharedSet, geneLabels],
     );
 
-    const stayedClose = compare ? avgCloseness(active, compare) >= CLOSE_VERDICT : true;
+    // קרבה כוללת בין שני המשפטים (1 = זהה). מניעה גם את הפסיקה וגם את הידוק ההליקס.
+    const closeness = compare ? avgCloseness(active, compare) : 0.7;
+    const stayedClose = compare ? closeness >= CLOSE_VERDICT : true;
     const verdict = stayedClose ? dna.stayedClose : dna.drifted;
     const lead = !compare ? '' : sharedSet.size > 0 ? dna.leadShared(sharedNames) : dna.leadNone;
 
-    // צבע חתימה לכל משפט: גדיל A מקבל את צבע המשפט הנבחר, גדיל B את צבע ההשוואה.
-    const colorA = SENTENCE_COLORS[active.id] ?? DEFAULT_A;
-    const colorB = (compare && SENTENCE_COLORS[compare.id]) || DEFAULT_B;
+    // צבע לפי תפקיד וקבוע (לא לפי זהות המשפט): ציאן = שבחרת, סגול = להשוואה.
+    const colorA = ROLE_A;
+    const colorB = ROLE_B;
 
-    // גיאומטריה תלוית פאזה: מיקום הצמתים, העומק (קדמי/אחורי) והגדילים.
-    const paths = strandPaths(phase);
     const n = Math.max(1, litDims.length);
-    const pairs = litDims.map((d, i) => {
-        const s = (i + 0.5) / n;
-        const theta = s * TURNS * 2 * Math.PI + phase;
-        const off = R * Math.sin(theta);
-        const depthA = Math.cos(theta); // +1 קדמי, -1 אחורי
+    const rails = railPaths(phase, closeness);
+
+    // נתוני שורה לכל רכיב: גובה יחסי, מיקומי הצמתים בפאזה הנוכחית, עוצמות וקשר.
+    const rows = litDims.map((d, i) => {
+        const t = (i + 0.5) / n;
+        const half = halfAt(t, phase, closeness);
         return {
             d,
-            x: s * 100,
-            yA: 50 + off,
-            yB: 50 - off,
-            depthA,
-            depthB: -depthA,
+            yPct: t * 100,
+            xA: 50 - half,
+            xB: 50 + half,
             va: dimValue(active.profile, d),
             vb: compare ? dimValue(compare.profile, d) : 0,
             shared: sharedSet.has(d),
+            flashed: flash.has(d),
         };
     });
 
-    // עומק -> גורם גודל ובהירות (קדמי גדול ובהיר יותר).
-    const front = (depth: number) => 0.5 + 0.5 * ((depth + 1) / 2);
+    const bondPulse = reduce ? 1 : 0.5 + 0.5 * Math.sin(phase * 1.6);
+    const helixHeight = n * LANE;
 
     return (
         <div dir={dir} className="text-start">
             <div className="mb-2 text-base font-bold text-slate-100">{dna.title}</div>
 
+            {/* מסגור קבוע: למה זה DNA ומה כל חלק אומר */}
+            <p className="mb-2.5 text-[12px] leading-relaxed text-slate-400">{dna.intro}</p>
+
             {/* שורת הפתיחה במילים: למה קרוב או רחוק */}
             {lead && <p className="mb-2.5 text-[13px] font-semibold leading-relaxed text-slate-200">{lead}</p>}
 
-            {/* מקרא: איזה גדיל שייך לאיזה משפט */}
-            <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-[12px] font-bold">
+            {/* מקרא לפי תפקיד: ציאן = המשפט שבחרת, סגול = המשפט להשוואה */}
+            <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] font-bold">
                 <span className="inline-flex items-center gap-1.5" style={{ color: colorA.hex }}>
-                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: colorA.hex, boxShadow: `0 0 6px 1px rgba(${colorA.rgb},0.7)` }} /> {active.text}
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colorA.hex, boxShadow: `0 0 6px 1px rgba(${colorA.rgb},0.7)` }} />
+                    <span className="text-[10px] uppercase tracking-wide opacity-75">{dna.roleActive}</span>
+                    <span>{active.text}</span>
                 </span>
                 {compare && (
                     <span className="inline-flex items-center gap-1.5" style={{ color: colorB.hex }}>
-                        <span className="h-2 w-2 rounded-full" style={{ backgroundColor: colorB.hex, boxShadow: `0 0 6px 1px rgba(${colorB.rgb},0.7)` }} /> {compare.text}
+                        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colorB.hex, boxShadow: `0 0 6px 1px rgba(${colorB.rgb},0.7)` }} />
+                        <span className="text-[10px] uppercase tracking-wide opacity-75">{dna.roleCompare}</span>
+                        <span>{compare.text}</span>
                     </span>
                 )}
             </div>
 
-            {/* ── הסליל הכפול המסתובב. גיאומטריה ב-LTR קבוע כדי שתתיישר זהה בכל כיוון ── */}
-            <div
-                dir="ltr"
-                className="relative h-44 w-full overflow-hidden rounded-2xl border border-violet-500/25 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 sm:h-52"
-            >
-                {/* זוהר רקע עדין */}
-                <div className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/10 blur-[60px]" />
+            {/* ── סולם ה-DNA: עמודת הליקס + עמודת תוויות, מיושרות שורה מול שורה ── */}
+            <div className="flex items-stretch gap-2 rounded-2xl border border-violet-500/25 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-3 sm:gap-3 sm:p-4">
+                {/* עמודת ההליקס. dir=ltr קבוע כדי שצומת A תמיד משמאל וההתיישרות זהה בכל שפה */}
+                <div dir="ltr" className="relative flex-[0_0_56%] sm:flex-[0_0_58%]" style={{ height: helixHeight }}>
+                    {/* זוהר רקע עדין */}
+                    <div className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/10 blur-[60px]" />
 
-                {/* חלקיקי אווירה שנסחפים לאט (נגזרים מהפאזה, לא רנדומליים) */}
-                {!reduce &&
-                    [0.18, 0.5, 0.82].map((px, i) => {
-                        const py = 50 + 34 * Math.sin(phase * 0.6 + i * 2.1);
+                    {/* רצועות ההליקס ושלבי הסולם (מתחת לצמתים) */}
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
+                        {/* שלבי זוגות הבסיסים */}
+                        {rows.map((p) => (
+                            <line
+                                key={`rung-${p.d}`}
+                                x1={p.xA}
+                                y1={p.yPct}
+                                x2={p.xB}
+                                y2={p.yPct}
+                                className={p.shared ? 'stroke-emerald-400' : 'stroke-slate-500'}
+                                strokeWidth={p.shared ? 1.6 : 0.7}
+                                strokeLinecap="round"
+                                opacity={p.shared ? 0.9 : 0.3}
+                                vectorEffect="non-scaling-stroke"
+                            />
+                        ))}
+                        {/* שתי רצועות ההליקס */}
+                        <path d={rails.a} fill="none" stroke={colorA.hex} strokeWidth={1.4} strokeLinecap="round" opacity={0.55} vectorEffect="non-scaling-stroke" />
+                        <path d={rails.b} fill="none" stroke={colorB.hex} strokeWidth={1.4} strokeLinecap="round" opacity={0.55} vectorEffect="non-scaling-stroke" />
+                    </svg>
+
+                    {/* צמתים וקשרים כ-overlay (px קבוע => עיגולים מושלמים, גודל = עוצמה בלבד) */}
+                    {rows.map((p) => {
+                        // גודל = עוצמת הרכיב בלבד. טווח רחב (8..28) כדי שחזק וחלש ייראו שונה לגמרי.
+                        const sizeA = 8 + p.va * 20;
+                        const sizeB = 8 + p.vb * 20;
+                        const bondSize = reduce ? 15 : 13 + bondPulse * 5;
                         return (
-                            <span
-                                key={`spark-${i}`}
-                                className="pointer-events-none absolute h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/50 blur-[1px]"
-                                style={{ left: `${px * 100}%`, top: `${py}%`, opacity: 0.25 + 0.25 * Math.cos(phase + i) }}
-                            />
-                        );
-                    })}
-
-                {/* שלבים וגדילים ב-SVG (מתחת לצמתים) */}
-                <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
-                    {/* שלבי זוגות הבסיסים */}
-                    {pairs.map((p) => (
-                        <line
-                            key={`rung-${p.d}`}
-                            x1={p.x}
-                            y1={p.yA}
-                            x2={p.x}
-                            y2={p.yB}
-                            className={p.shared ? 'stroke-emerald-400' : 'stroke-slate-500'}
-                            strokeWidth={p.shared ? 1.5 : 0.7}
-                            strokeLinecap="round"
-                            opacity={p.shared ? 0.9 : 0.28}
-                        />
-                    ))}
-
-                    {/* שני הגדילים */}
-                    <path d={paths.a} fill="none" stroke={colorA.hex} strokeWidth={1.2} strokeLinecap="round" opacity={0.8} />
-                    <path d={paths.b} fill="none" stroke={colorB.hex} strokeWidth={1.2} strokeLinecap="round" opacity={0.8} />
-                </svg>
-
-                {/* צמתים וקשרים כ-overlay עגול (px קבוע => עיגולים מושלמים, עומק לפי הסיבוב) */}
-                {pairs.map((p) => {
-                    const fA = front(p.depthA);
-                    const fB = front(p.depthB);
-                    const sizeA = (9 + p.va * 12) * (0.7 + 0.3 * fA);
-                    const sizeB = (9 + p.vb * 12) * (0.7 + 0.3 * fB);
-                    const bond = 0.5 + 0.5 * Math.sin(phase * 1.7 + p.x);
-                    return (
-                        <React.Fragment key={`nodes-${p.d}`}>
-                            {/* צומת גדיל A (המשפט הנבחר) */}
-                            <span
-                                className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-                                style={{
-                                    left: `${p.x}%`,
-                                    top: `${p.yA}%`,
-                                    width: sizeA,
-                                    height: sizeA,
-                                    backgroundColor: colorA.hex,
-                                    opacity: 0.45 + 0.55 * fA,
-                                    zIndex: p.depthA >= 0 ? 20 : 10,
-                                    boxShadow: `0 0 ${4 + p.va * 14 * fA}px rgba(${colorA.rgb},${0.35 + p.va * 0.5 * fA})`,
-                                }}
-                            />
-                            {/* צומת גדיל B (משפט ההשוואה) */}
-                            {compare && (
+                            <React.Fragment key={`nodes-${p.d}`}>
+                                {/* צומת גדיל A (המשפט הנבחר) */}
                                 <span
                                     className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
                                     style={{
-                                        left: `${p.x}%`,
-                                        top: `${p.yB}%`,
-                                        width: sizeB,
-                                        height: sizeB,
-                                        backgroundColor: colorB.hex,
-                                        opacity: 0.45 + 0.55 * fB,
-                                        zIndex: p.depthB >= 0 ? 20 : 10,
-                                        boxShadow: `0 0 ${4 + p.vb * 14 * fB}px rgba(${colorB.rgb},${0.35 + p.vb * 0.5 * fB})`,
+                                        left: `${p.xA}%`,
+                                        top: `${p.yPct}%`,
+                                        width: sizeA,
+                                        height: sizeA,
+                                        backgroundColor: colorA.hex,
+                                        opacity: 0.4 + 0.55 * p.va,
+                                        zIndex: 20,
+                                        boxShadow: `0 0 ${4 + p.va * 14}px rgba(${colorA.rgb},${0.3 + p.va * 0.5})`,
                                     }}
                                 />
-                            )}
-                            {/* קשר זוהר באמצע (זוג בסיסים שנקשר) - פועם כשמשותף */}
-                            {p.shared && compare && (
-                                <span
-                                    className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-300"
-                                    style={{
-                                        left: `${p.x}%`,
-                                        top: '50%',
-                                        width: reduce ? 9 : 8 + bond * 4,
-                                        height: reduce ? 9 : 8 + bond * 4,
-                                        zIndex: 25,
-                                        opacity: reduce ? 1 : 0.75 + 0.25 * bond,
-                                        boxShadow: `0 0 ${reduce ? 12 : 9 + bond * 8}px 2px rgba(52,211,153,0.85)`,
-                                    }}
-                                />
-                            )}
-                        </React.Fragment>
-                    );
-                })}
+                                {/* צומת גדיל B (משפט ההשוואה) */}
+                                {compare && (
+                                    <span
+                                        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+                                        style={{
+                                            left: `${p.xB}%`,
+                                            top: `${p.yPct}%`,
+                                            width: sizeB,
+                                            height: sizeB,
+                                            backgroundColor: colorB.hex,
+                                            opacity: 0.4 + 0.55 * p.vb,
+                                            zIndex: 20,
+                                            boxShadow: `0 0 ${4 + p.vb * 14}px rgba(${colorB.rgb},${0.3 + p.vb * 0.5})`,
+                                        }}
+                                    />
+                                )}
+                                {/* קשר זוהר במרכז (זוג בסיסים שנקשר) - פועם כשמשותף */}
+                                {p.shared && compare && (
+                                    <span
+                                        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-300"
+                                        style={{
+                                            left: '50%',
+                                            top: `${p.yPct}%`,
+                                            width: bondSize,
+                                            height: bondSize,
+                                            zIndex: 25,
+                                            opacity: reduce ? 1 : 0.78 + 0.22 * bondPulse,
+                                            boxShadow: `0 0 ${reduce ? 12 : 9 + bondPulse * 8}px 2px rgba(52,211,153,0.85)`,
+                                        }}
+                                    />
+                                )}
+                                {/* הבהוב "מה השתנה": טבעת שמתפשטת על הרכיב שהקשר שלו השתנה */}
+                                {p.flashed && (
+                                    <span
+                                        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 animate-ping rounded-full"
+                                        style={{
+                                            left: '50%',
+                                            top: `${p.yPct}%`,
+                                            width: 26,
+                                            height: 26,
+                                            zIndex: 24,
+                                            border: `2px solid ${p.shared ? 'rgba(52,211,153,0.9)' : 'rgba(148,163,184,0.85)'}`,
+                                        }}
+                                    />
+                                )}
+                            </React.Fragment>
+                        );
+                    })}
+                </div>
+
+                {/* עמודת התוויות: שורה לכל רכיב, מיושרת לגובה השורה בהליקס. כיוון לפי השפה */}
+                <div className="flex flex-1 flex-col">
+                    {rows.map((p) => (
+                        <div key={`label-${p.d}`} className="flex items-center" style={{ height: LANE }}>
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                                <span className="text-[13px] font-bold leading-tight text-slate-100">{geneLabels[p.d]}</span>
+                                {p.shared && (
+                                    <span className="inline-flex items-center gap-0.5 rounded-full border border-emerald-400/40 bg-emerald-900/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-200">
+                                        <Check size={9} /> {dna.sharedBadge}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
-            {/* תוויות זוגות הבסיסים: שורה מתחת לסליל, מיושרת לעמודות (LTR קבוע, הטקסט מקומי) */}
-            <div dir="ltr" className="mt-2 grid gap-1" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
-                {pairs.map((p) => (
-                    <div key={`label-${p.d}`} className="flex flex-col items-center gap-1 text-center">
-                        <span className="text-[11px] font-bold leading-tight text-slate-200">{geneLabels[p.d]}</span>
-                        {p.shared && (
-                            <span className="inline-flex items-center gap-0.5 rounded-full border border-emerald-400/40 bg-emerald-900/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-200">
-                                <Check size={9} /> {dna.sharedBadge}
-                            </span>
-                        )}
-                    </div>
-                ))}
-            </div>
-
-            {/* מדריך קריאה קצר: איך לפענח את הסליל */}
+            {/* מדריך קריאה קצר: איך לפענח את הסולם */}
             <div className="mt-3 space-y-1.5 rounded-xl border border-slate-700/40 bg-slate-950/30 p-3">
-                <p className="flex items-start gap-2 text-[12px] leading-relaxed text-slate-400">
-                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-cyan-300" />
+                <p className="flex items-center gap-2 text-[12px] leading-relaxed text-slate-400">
+                    {/* מפתח גודל ויזואלי: עיגול גדול מול קטן, מראה שגודל = עוצמה */}
+                    <span className="flex shrink-0 items-center gap-1">
+                        <span className="h-3.5 w-3.5 rounded-full bg-slate-200" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
+                    </span>
                     {dna.guideSize}
                 </p>
                 <p className="flex items-start gap-2 text-[12px] leading-relaxed text-slate-400">
                     <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-300 shadow-[0_0_6px_1px_rgba(52,211,153,0.7)]" />
                     {dna.guideBond}
+                </p>
+                <p className="flex items-start gap-2 text-[12px] leading-relaxed text-slate-400">
+                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-violet-300" />
+                    {dna.twistMeaning}
                 </p>
             </div>
 
@@ -285,7 +344,7 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
             {compare && (
                 <div className="mt-3">
                     <span
-                        className={`inline-flex rounded-md border px-2.5 py-1 text-xs font-bold ${
+                        className={`inline-flex rounded-md border px-2.5 py-1 text-xs font-bold transition-colors duration-500 ${
                             stayedClose
                                 ? 'border-emerald-500/30 bg-emerald-900/15 text-emerald-200'
                                 : 'border-amber-500/30 bg-amber-900/15 text-amber-200'
