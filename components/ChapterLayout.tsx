@@ -13,6 +13,7 @@ import { tField } from "@/lib/localize";
 import { formatChapterLabel, formatNextChapterLabel, formatReadTime, parseReadTimeMinutes } from "@/i18n/format";
 import { ChevronRight, ChevronLeft, BookOpen, Trophy, Maximize2, Minimize2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { EdgeRail, EdgePeekItem } from "@/components/ai-internals/EdgePeek";
 
 interface ChapterLayoutProps {
     children: ReactNode;
@@ -237,39 +238,44 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
 
             <CourseSidebar isFocusMode={isFocusMode} />
 
-            {/* מצב מיקוד: כפתור זכוכית צף (דסקטופ בלבד) - לא מתנגש עם ה-Header או הסרגל */}
-            {/* מיקום תלוי-כיוון: ב-RTL בצד שמאל (הרחק מהסרגל מימין), ב-LTR בצד ימין. */}
-            <motion.button
-                onClick={() => setIsFocusMode((prev) => !prev)}
-                title={t.chrome.focus.toggleTitle}
-                aria-pressed={isFocusMode}
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                transition={{ type: "spring", stiffness: 400, damping: 26 }}
-                className={`group hidden md:flex fixed bottom-6 ${dir === 'rtl' ? 'left-6' : 'right-6'} z-50 items-center gap-2.5 rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-sm font-semibold text-slate-100 shadow-[0_8px_32px_rgba(2,6,23,0.6)] backdrop-blur-xl transition-colors hover:border-indigo-400/40 hover:text-white`}
-            >
-                {/* הילה רכה בריחוף */}
-                <span className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r from-indigo-500/0 via-indigo-500/20 to-cyan-500/0 opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
-
-                <AnimatePresence mode="wait" initial={false}>
-                    <motion.span
-                        key={isFocusMode ? "min" : "max"}
-                        initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
-                        animate={{ rotate: 0, opacity: 1, scale: 1 }}
-                        exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
-                        transition={{ duration: 0.2 }}
-                        className="flex"
+            {/* מצב מיקוד: כפתור זכוכית צף (דסקטופ בלבד) בתוך מסילת-הקצה המשותפת, מתחת לדוק
+                ההאזנה (כשקיים). מיקום תלוי-כיוון: RTL שמאל (הרחק מהסרגל מימין), LTR ימין.
+                האייקון בצד הפונה למרכז כדי שרק הוא יבצבץ במצב ההצצה. */}
+            <EdgeRail dir={dir}>
+                <EdgePeekItem dir={dir} peekRem={1.75} className="hidden md:block">
+                    <motion.button
+                        onClick={() => setIsFocusMode((prev) => !prev)}
+                        title={t.chrome.focus.toggleTitle}
+                        aria-pressed={isFocusMode}
+                        whileHover={{ scale: 1.04, y: -2 }}
+                        whileTap={{ scale: 0.96 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 26 }}
+                        className={`group relative flex items-center gap-2.5 rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-sm font-semibold text-slate-100 shadow-[0_8px_32px_rgba(2,6,23,0.6)] backdrop-blur-xl transition-colors hover:border-indigo-400/40 hover:text-white`}
                     >
-                        {isFocusMode
-                            ? <Minimize2 size={16} className="text-cyan-300" />
-                            : <Maximize2 size={16} className="text-indigo-300" />}
-                    </motion.span>
-                </AnimatePresence>
+                        {/* הילה רכה בריחוף */}
+                        <span className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r from-indigo-500/0 via-indigo-500/20 to-cyan-500/0 opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
 
-                <span>{isFocusMode ? t.chrome.focus.exit : t.chrome.focus.enter}</span>
+                        <AnimatePresence mode="wait" initial={false}>
+                            <motion.span
+                                key={isFocusMode ? "min" : "max"}
+                                initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+                                animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                                exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
+                                transition={{ duration: 0.2 }}
+                                className="flex"
+                            >
+                                {isFocusMode
+                                    ? <Minimize2 size={16} className="text-cyan-300" />
+                                    : <Maximize2 size={16} className="text-indigo-300" />}
+                            </motion.span>
+                        </AnimatePresence>
 
-                <kbd className="ms-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] leading-none text-slate-400 transition-colors group-hover:text-slate-200">F</kbd>
-            </motion.button>
+                        <span>{isFocusMode ? t.chrome.focus.exit : t.chrome.focus.enter}</span>
+
+                        <kbd className="ms-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] leading-none text-slate-400 transition-colors group-hover:text-slate-200">F</kbd>
+                    </motion.button>
+                </EdgePeekItem>
+            </EdgeRail>
 
             {/* מצב מיקוד: רמז כניסה חולף ממורכז למעלה */}
             <div className="hidden md:block fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
