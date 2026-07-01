@@ -76,6 +76,13 @@ export const TokenizationLab: React.FC = () => {
 
     return (
         <div className="space-y-4">
+            {/* בקרות המעבדה (מצב + שדה קלט + הצעות) נשארות דביקות בראש בזמן גלילה, כדי
+                לראות את פירוק הטוקנים למטה בלי לגלול חזרה למעלה. */}
+            <div
+                className="sticky z-20 space-y-3 rounded-2xl bg-slate-950/80 p-2 backdrop-blur-md"
+                style={{ top: 'var(--bts-sticky-top, 88px)' }}
+                dir={dir}
+            >
             {/* בקרת מצב */}
             <div className="flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between" dir={dir}>
                 <div className="flex items-center gap-2">
@@ -100,6 +107,7 @@ export const TokenizationLab: React.FC = () => {
                 onChange={handleChange}
                 onReset={handleReset}
             />
+            </div>
 
             {/* אותות שזוהו בקלט */}
             <AnimatePresence>

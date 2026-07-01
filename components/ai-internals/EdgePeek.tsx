@@ -11,9 +11,13 @@
 //             (peekRem), נפתח ב-hover / פוקוס-מקלדת / כשהוא "נעוץ". ההצצה פעילה רק
 //             במכשירי hover עדינים וללא reduced-motion; אחרת הפריט גלוי תמיד כמות שהוא.
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import type { Direction } from '@/i18n/config';
+
+// useLayoutEffect בצד הלקוח (רץ לפני הצביעה), useEffect בשרת. כך הפריט נצמד לקצה עוד
+// לפני ה-paint הראשון, ולא "יוצא ונכנס" בכל מעבר בין פרקים.
+const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 interface EdgeRailProps {
     dir: Direction;
@@ -60,9 +64,12 @@ export function EdgePeekItem({ dir, pinned = false, peekRem = 2.25, className, c
     const [peekEnabled, setPeekEnabled] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [focusWithin, setFocusWithin] = useState(false);
+    // מפעיל מעברים רק אחרי הצביעה הראשונה, כך שההיצמדות הראשונית לקצה מיידית (בלי החלקה).
+    const [animateReady, setAnimateReady] = useState(false);
     const leaveTimer = useRef<number | null>(null);
 
-    useEffect(() => {
+    // זיהוי לפני paint (layout effect), כדי שהפריט יצויר מיד במצב הנכון בלי הבהוב.
+    useIsoLayoutEffect(() => {
         const hoverMq = window.matchMedia('(hover: hover) and (pointer: fine)');
         const motionMq = window.matchMedia('(prefers-reduced-motion: reduce)');
         const update = () => setPeekEnabled(hoverMq.matches && !motionMq.matches);
@@ -73,6 +80,12 @@ export function EdgePeekItem({ dir, pinned = false, peekRem = 2.25, className, c
             hoverMq.removeEventListener('change', update);
             motionMq.removeEventListener('change', update);
         };
+    }, []);
+
+    // אחרי הפריים הראשון מפעילים מעברים, כך שרק אינטראקציית hover אמיתית מחליקה.
+    useEffect(() => {
+        const raf = requestAnimationFrame(() => setAnimateReady(true));
+        return () => cancelAnimationFrame(raf);
     }, []);
 
     // גלילה = "הלומד קורא, זוז הצידה": מכווץ בחזרה (אלא אם נעוץ / פוקוס-מקלדת שומרים פתוח).
@@ -138,7 +151,7 @@ export function EdgePeekItem({ dir, pinned = false, peekRem = 2.25, className, c
             style={{
                 transform,
                 opacity: collapsed ? 0.85 : 1,
-                transition: peekEnabled
+                transition: peekEnabled && animateReady
                     ? 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease'
                     : undefined,
                 willChange: peekEnabled ? 'transform' : undefined,
