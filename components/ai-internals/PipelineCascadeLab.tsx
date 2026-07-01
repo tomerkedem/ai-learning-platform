@@ -9,6 +9,7 @@ import {
     Pause, SkipForward, Zap, Scale, Layers, Waves,
 } from 'lucide-react';
 
+import { GuessButton } from './GuessButton';
 import { ModeToggle } from './ModeToggle';
 import { ProbabilityBars } from './ProbabilityBars';
 import { StickyInputDock, type DockReadout } from './StickyInputDock';
@@ -431,13 +432,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ text, autoTyping, canSwap, onChan
                 <Repeat size={13} /> החלפת מילה
                 <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">Swap word</span>
             </button>
-            <button
-                type="button"
+            <GuessButton
+                variant="ghost"
                 onClick={onReset}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-800/40 px-3 py-2 text-sm font-bold text-slate-400 transition-colors hover:text-slate-200"
+                leadingIcon={<RotateCcw size={13} />}
             >
-                <RotateCcw size={13} /> איפוס
-            </button>
+                איפוס
+            </GuessButton>
         </div>
     </div>
 );

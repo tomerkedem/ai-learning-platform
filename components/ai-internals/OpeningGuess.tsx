@@ -1,23 +1,21 @@
 "use client";
 
 // ────────────────────────────────────────────────────────────────────────
-// OpeningGuess - וריאנט ניחוש-פתיחה עם הכרעה מפורשת (תשובה נכונה / כמעט), באותו
-// סטנדרט של ה"ניחוש מהיר" במבוא ובפרק 1: כשבוחרים את הכרטיס המדויק מופיע "נכון
-// מאוד!" ברור עם מנטור חוגג, זוהר ופעימת ניצוצות; בבחירה אחרת מופיע משוב תומך
-// בכתום עם מנטור מרגיע, מה הבחירה תופסת ומה היא מפספסת, ובחירה מחדש.
+// OpeningGuess - מנגנון "ניחוש הפתיחה" מסוג בורר-כרטיסים (רשת 2x2), בשימוש פרקים
+// 2 ו-3. הלומד בוחר השערה אחת; הכרטיס המדויק מזוהה לפי statusTone === 'precise'.
 //
-// הרכיב צורך את אותו מבנה תוכן של DiscoveryGuess (DiscoveryGuessCard), בתוספת שתי
-// כותרות הכרעה (correctTitle, wrongTitle), כדי שפרקים שכבר השתמשו ב-DiscoveryGuess
-// יוכלו לעבור אליו בלי לשכתב תוכן. הכרטיס המדויק מזוהה לפי statusTone === 'precise'.
+// זהו ה-body הייחודי של הפרק בלבד. מנטור ההזמנה והתגובה שאחרי הבחירה מגיעים
+// מהרכיבים המשותפים GuessInvite ו-GuessVerdict, כדי שההתנהגות הזו תהיה זהה בכל
+// הלומדה (אחידות חלקית: אותו מנטור, אותן תגובות, מנגנון ניחוש גמיש לכל פרק).
 //
-// אינו עורך את DiscoveryGuess המשותף (שעדיין משמש פרקים אחרים). בלי בועת דיבור
-// למנטור. אין מקף ארוך, מקף בינוני או נקודה-פסיק בטקסט עברית.
+// אינו עורך את DiscoveryGuess המשותף. בלי בועת דיבור למנטור. אין מקף ארוך, מקף
+// בינוני או נקודה-פסיק בטקסט עברית.
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { HelpCircle, Sparkles, ArrowDown, RotateCcw, CheckCircle2, Check, Lightbulb } from 'lucide-react';
-import { Mentor } from './Mentor';
+import { motion, useReducedMotion } from 'framer-motion';
+import { HelpCircle, Check } from 'lucide-react';
+import { GuessInvite, GuessVerdict } from './GuessVerdict';
 import type { DiscoveryGuessCard, DiscoveryGuessContent } from './DiscoveryGuess';
 
 export interface OpeningGuessContent extends DiscoveryGuessContent {
@@ -25,33 +23,6 @@ export interface OpeningGuessContent extends DiscoveryGuessContent {
     correctTitle: string;
     /** כותרת תומכת לבחירה שאינה המדויקת, למשל "כמעט!". */
     wrongTitle: string;
-}
-
-/* פעימת ניצוצות חד-פעמית לרגע ההצלחה (מונפש בלבד; ההורה לא מרנדר ב-reduced-motion). */
-function SparkleBurst() {
-    const bits = [
-        { x: -54, y: -8, s: 13, d: 0 },
-        { x: -28, y: -34, s: 10, d: 0.05 },
-        { x: 6, y: -40, s: 15, d: 0.02 },
-        { x: 40, y: -30, s: 10, d: 0.08 },
-        { x: 64, y: -6, s: 12, d: 0.04 },
-        { x: 22, y: 8, s: 9, d: 0.1 },
-    ];
-    return (
-        <div className="pointer-events-none absolute start-10 top-6 z-20 text-emerald-300" aria-hidden>
-            {bits.map((b, i) => (
-                <motion.span
-                    key={i}
-                    className="absolute"
-                    initial={{ opacity: 0, scale: 0.2, x: 0, y: 0 }}
-                    animate={{ opacity: [0, 1, 0], scale: [0.2, 1, 0.6], x: b.x, y: b.y }}
-                    transition={{ duration: 0.9, delay: b.d, ease: 'easeOut' }}
-                >
-                    <Sparkles size={b.s} strokeWidth={2.5} />
-                </motion.span>
-            ))}
-        </div>
-    );
 }
 
 type CardState = 'idle' | 'correct' | 'wrong' | 'dim';
@@ -72,12 +43,13 @@ function cardClasses(state: CardState, reduce: boolean): string {
 export const OpeningGuess: React.FC<{ content: OpeningGuessContent; cards: DiscoveryGuessCard[] }> = ({ content, cards }) => {
     const reduce = useReducedMotion();
     const [chosenId, setChosenId] = useState<string | null>(null);
-    const [revealed, setRevealed] = useState(false); // חשיפת ההסבר המדויק אחרי בחירה שגויה
+    const [revealed, setRevealed] = useState(false);
 
     const chosen = cards.find((c) => c.id === chosenId) ?? null;
     const correct = chosen?.statusTone === 'precise';
     const preciseCard = cards.find((c) => c.statusTone === 'precise') ?? null;
 
+    const choose = (id: string) => { setChosenId(id); setRevealed(false); };
     const reset = () => { setChosenId(null); setRevealed(false); };
 
     const goToTarget = () => {
@@ -97,13 +69,7 @@ export const OpeningGuess: React.FC<{ content: OpeningGuessContent; cards: Disco
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-violet-500/10 blur-[80px]" />
 
             <div className="relative z-10">
-                {/* מנטור הזמנה: דמות תומכת ממורכזת מעל הכרטיסים, נעלמת אחרי הבחירה */}
-                {!chosen && (
-                    <div className="mb-5 hidden flex-col items-center sm:flex">
-                        <Mentor pose={content.invitePose} width={108} glow={false} />
-                        <p className="mt-1 max-w-xs text-center text-[12px] font-medium leading-snug text-slate-400">{content.invite}</p>
-                    </div>
-                )}
+                {!chosen && <GuessInvite pose={content.invitePose} line={content.invite} />}
 
                 <div className="text-center">
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-400">
@@ -125,7 +91,7 @@ export const OpeningGuess: React.FC<{ content: OpeningGuessContent; cards: Disco
                             <motion.button
                                 key={card.id}
                                 type="button"
-                                onClick={() => { setChosenId(card.id); setRevealed(false); }}
+                                onClick={() => choose(card.id)}
                                 aria-pressed={card.id === chosenId}
                                 aria-label={`${card.title}. ${card.desc}`}
                                 whileHover={reduce ? undefined : { scale: 1.015 }}
@@ -169,119 +135,24 @@ export const OpeningGuess: React.FC<{ content: OpeningGuessContent; cards: Disco
                     })}
                 </div>
 
-                {/* משוב מפורש: הצלחה ירוקה ברורה או טעות תומכת בכתום */}
-                <AnimatePresence initial={false}>
-                    {chosen && (
-                        <motion.div
-                            key={correct ? 'correct' : 'wrong'}
-                            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0 }}
-                            transition={reduce ? { duration: 0 } : { duration: 0.35 }}
-                            className="mx-auto mt-7 max-w-2xl"
-                            role="status"
-                            aria-live="polite"
-                        >
-                            {correct ? (
-                                <div className={`relative overflow-hidden rounded-2xl border border-emerald-400/55 bg-gradient-to-b from-emerald-900/30 to-emerald-950/10 p-5 md:p-6 ${reduce ? '' : 'shadow-[0_0_55px_-12px_rgba(16,185,129,0.55)]'}`}>
-                                    {!reduce && <SparkleBurst />}
-                                    <div className="relative flex items-start gap-4">
-                                        <div className="hidden shrink-0 self-center sm:block">
-                                            <Mentor key={chosen.mentorPose} pose={chosen.mentorPose} width={88} glow={false} float={false} />
-                                        </div>
-                                        <div className="flex-1 text-start">
-                                            <div className="flex items-center gap-2">
-                                                <motion.span
-                                                    initial={reduce ? false : { scale: 0, rotate: -25 }}
-                                                    animate={{ scale: 1, rotate: 0 }}
-                                                    transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 14 }}
-                                                    className="inline-flex"
-                                                >
-                                                    <CheckCircle2 size={24} className="text-emerald-300" />
-                                                </motion.span>
-                                                <span className="text-xl font-black text-emerald-100 md:text-2xl">{content.correctTitle}</span>
-                                            </div>
-                                            <p className="mt-2 text-sm leading-relaxed text-slate-200">{chosen.getsRight}</p>
-                                            <p className="mt-3 border-s-2 border-emerald-400/60 ps-3 text-sm font-bold text-emerald-100">{content.revealCopy}</p>
-                                            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2.5">
-                                                {content.ctaTargetId && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={goToTarget}
-                                                        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/50 bg-emerald-900/25 px-5 py-2 text-sm font-bold text-emerald-100 transition-colors hover:bg-emerald-900/40"
-                                                    >
-                                                        {content.cta}
-                                                        {reduce ? (
-                                                            <ArrowDown size={15} aria-hidden />
-                                                        ) : (
-                                                            <motion.span animate={{ y: [0, 3, 0] }} transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }} className="inline-flex" aria-hidden>
-                                                                <ArrowDown size={15} />
-                                                            </motion.span>
-                                                        )}
-                                                    </button>
-                                                )}
-                                                <button type="button" onClick={reset} className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 transition-colors hover:text-emerald-200">
-                                                    <RotateCcw size={13} /> {content.resetButton}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="rounded-2xl border border-amber-400/45 bg-amber-900/[0.12] p-5 md:p-6">
-                                    <div className="flex items-start gap-4">
-                                        <div className="hidden shrink-0 self-center sm:block">
-                                            <Mentor key={chosen.mentorPose} pose={chosen.mentorPose} width={84} glow={false} float={false} />
-                                        </div>
-                                        <div className="flex-1 text-start">
-                                            <div className="flex items-center gap-2">
-                                                <Lightbulb size={20} className="shrink-0 text-amber-300" />
-                                                <span className="text-lg font-black text-amber-200 md:text-xl">{content.wrongTitle}</span>
-                                            </div>
-                                            <p className="mt-2.5 text-sm leading-relaxed text-slate-200">{chosen.getsRight}</p>
-                                            {chosen.misses && (
-                                                <p className="mt-1.5 text-sm leading-relaxed text-slate-400">{chosen.misses}</p>
-                                            )}
-
-                                            {revealed && preciseCard && (
-                                                <motion.div
-                                                    initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    transition={reduce ? { duration: 0 } : { duration: 0.3 }}
-                                                    className="mt-4 rounded-xl border border-emerald-400/35 bg-emerald-900/15 p-3.5"
-                                                >
-                                                    <p className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-200">
-                                                        <CheckCircle2 size={15} className="text-emerald-300" /> {content.revealTitle} {preciseCard.title}
-                                                    </p>
-                                                    <p className="mt-1 text-sm leading-relaxed text-slate-300">{content.revealCopy}</p>
-                                                </motion.div>
-                                            )}
-
-                                            <div className="mt-4 flex flex-wrap items-center gap-2.5">
-                                                <button
-                                                    type="button"
-                                                    onClick={reset}
-                                                    className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-900/25 px-5 py-2 text-sm font-bold text-amber-100 transition-colors hover:bg-amber-900/40"
-                                                >
-                                                    <RotateCcw size={14} /> {content.resetButton}
-                                                </button>
-                                                {!revealed && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setRevealed(true)}
-                                                        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/50 bg-emerald-900/20 px-4 py-2 text-sm font-bold text-emerald-200 transition-colors hover:bg-emerald-900/35"
-                                                    >
-                                                        <Sparkles size={14} /> {content.revealButton}
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {/* התגובה המשותפת: הצלחה מפורשת או טעות תומכת */}
+                {chosen && (
+                    <GuessVerdict
+                        key={chosenId ?? undefined}
+                        correct={correct}
+                        reduce={!!reduce}
+                        correctTitle={content.correctTitle}
+                        correctExplain={chosen.getsRight}
+                        correctInsight={content.revealCopy}
+                        continueCta={content.ctaTargetId ? { label: content.cta, onClick: goToTarget } : undefined}
+                        wrongTitle={content.wrongTitle}
+                        wrongExplain={chosen.getsRight}
+                        wrongExplainMore={chosen.misses}
+                        reveal={preciseCard ? { button: content.revealButton, title: `${content.revealTitle} ${preciseCard.title}`, body: content.revealCopy, revealed, onReveal: () => setRevealed(true) } : undefined}
+                        onRetry={reset}
+                        retryLabel={content.resetButton}
+                    />
+                )}
             </div>
         </div>
     );

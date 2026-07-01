@@ -4,6 +4,8 @@ import React, { useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Compass, MousePointerClick, Sparkles, Move3d, Info, Hand, RotateCcw, Target, Lightbulb, Check } from 'lucide-react';
 
+import { GuessButton } from './GuessButton';
+
 import {
     SPACE_WORDS,
     CLUSTER_STYLE,
@@ -178,13 +180,13 @@ const SpaceExperiment: React.FC = () => {
                             <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">Drag a word</div>
                         </div>
                     </div>
-                    <button
-                        type="button"
+                    <GuessButton
+                        variant="ghost"
                         onClick={reset}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700/60 bg-slate-800/40 px-2.5 py-1 text-xs font-bold text-slate-400 transition-colors hover:text-slate-200"
+                        leadingIcon={<RotateCcw size={13} />}
                     >
-                        <RotateCcw size={13} /> איפוס
-                    </button>
+                        איפוס
+                    </GuessButton>
                 </div>
 
                 {/* מקרא אשכולות */}
@@ -514,21 +516,23 @@ const AnalogyExperiment: React.FC = () => {
                 </p>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <button
-                        type="button"
+                    <GuessButton
                         onClick={() => setChecked(true)}
                         disabled={checked || !moved}
-                        className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-900/15 px-3 py-2 text-sm font-bold text-emerald-300 transition-colors hover:brightness-110 disabled:opacity-40"
+                        reduce={!!reduce}
+                        rgb="16,185,129"
+                        sheen
+                        leadingIcon={<Check size={14} />}
                     >
-                        <Check size={14} /> בדקו את הניחוש
-                    </button>
-                    <button
-                        type="button"
+                        בדקו את הניחוש
+                    </GuessButton>
+                    <GuessButton
+                        variant="ghost"
                         onClick={reset}
-                        className="inline-flex items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-800/40 px-3 py-2 text-sm font-bold text-slate-400 transition-colors hover:text-slate-200"
+                        leadingIcon={<RotateCcw size={14} />}
                     >
-                        <RotateCcw size={14} /> שוב
-                    </button>
+                        שוב
+                    </GuessButton>
                     {!moved && !checked && <span className="text-[11px] text-slate-500">גררו את הסמן הסגול (?) לאן שלדעתכם התוצאה נוחתת.</span>}
                 </div>
             </div>

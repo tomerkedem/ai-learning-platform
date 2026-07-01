@@ -1,15 +1,16 @@
 "use client";
 
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Sparkles, MousePointerClick, ArrowLeftRight, Lock, ArrowLeft, ArrowRight, CheckCircle2, Info, ChevronDown, Wrench, Type, HelpCircle, ArrowDown, RotateCcw } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Sparkles, MousePointerClick, ArrowLeftRight, Lock, ArrowLeft, ArrowRight, CheckCircle2, Info, ChevronDown, Wrench, Type, HelpCircle, ArrowDown } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
 import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 import { Mentor } from '@/components/ai-internals/Mentor';
+import { GuessButton } from '@/components/ai-internals/GuessButton';
+import { GuessInvite, GuessVerdict } from '@/components/ai-internals/GuessVerdict';
 import { WordToNumberLab } from '@/components/ai-internals/WordToNumberLab';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
@@ -70,10 +71,7 @@ const MeaningGuess: React.FC = () => {
                 {/* מצב לפני בחירה: מנטור מהורהר מזמין + כרטיסים */}
                 {!answered && (
                     <>
-                        <div className="mb-5 hidden flex-col items-center sm:flex">
-                            <Mentor pose="think" width={104} glow={false} />
-                            <p className="mt-1 max-w-xs text-center text-[12px] font-medium leading-snug text-slate-400">{g.invite}</p>
-                        </div>
+                        <GuessInvite pose="think" line={g.invite} width={104} />
 
                         <div className="mx-auto grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
                             {GUESS_CARD_META.map((meta) => {
@@ -103,89 +101,22 @@ const MeaningGuess: React.FC = () => {
                     </>
                 )}
 
-                {/* מצב אחרי בחירה: הצלחה ירוקה ברורה או טעות תומכת בכתום */}
-                <AnimatePresence mode="wait">
-                    {answered && correct && (
-                        <motion.div
-                            key="correct"
-                            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 10, scale: 0.98 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={reduce ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                            className="mx-auto max-w-2xl rounded-2xl border border-emerald-400/50 bg-emerald-900/15 p-5 shadow-[0_0_40px_-12px_rgba(16,185,129,0.5)]"
-                            role="status"
-                            aria-live="polite"
-                        >
-                            <div className="flex items-start gap-4">
-                                <div className="hidden shrink-0 self-center sm:block">
-                                    <Mentor pose="celebrate" width={86} glow={false} float={false} />
-                                </div>
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                        <CheckCircle2 size={22} className="text-emerald-300" />
-                                        <span className="text-xl font-black text-emerald-200 md:text-2xl">{g.successTitle}</span>
-                                    </div>
-                                    <p className="mt-3 text-sm leading-relaxed text-slate-200">{g.successExplain}</p>
-                                    <p className="mt-2 border-s-2 border-emerald-400/60 ps-3 text-sm font-bold text-emerald-100">{g.successInsight}</p>
-                                    <div className="mt-4 flex flex-wrap items-center gap-4">
-                                        <button
-                                            type="button"
-                                            onClick={() => scrollToProximity(!reduce)}
-                                            className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/50 bg-emerald-900/25 px-5 py-2 text-sm font-bold text-emerald-100 transition-colors hover:bg-emerald-900/40"
-                                        >
-                                            {g.continueCta}
-                                            {reduce ? (
-                                                <ArrowDown size={15} aria-hidden />
-                                            ) : (
-                                                <motion.span animate={{ y: [0, 3, 0] }} transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }} className="inline-flex" aria-hidden>
-                                                    <ArrowDown size={15} />
-                                                </motion.span>
-                                            )}
-                                        </button>
-                                        <button type="button" onClick={() => setChosenId(null)} className="text-xs font-bold text-slate-400 transition-colors hover:text-slate-200">
-                                            {g.retryLink}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {answered && !correct && (
-                        <motion.div
-                            key="wrong"
-                            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0 }}
-                            transition={reduce ? { duration: 0 } : { duration: 0.3 }}
-                            className="mx-auto max-w-2xl rounded-2xl border border-amber-400/45 bg-amber-900/[0.12] p-5"
-                            role="status"
-                            aria-live="polite"
-                        >
-                            <div className="flex items-start gap-4">
-                                <div className="hidden shrink-0 self-center sm:block">
-                                    <Mentor pose="reassure" width={80} glow={false} float={false} />
-                                </div>
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                        <RotateCcw size={20} className="text-amber-300" />
-                                        <span className="text-lg font-black text-amber-200 md:text-xl">{g.wrongTitle}</span>
-                                    </div>
-                                    <p className="mt-3 text-sm leading-relaxed text-slate-200">{chosenWhy}</p>
-                                    <div className="mt-4">
-                                        <button
-                                            type="button"
-                                            onClick={() => setChosenId(null)}
-                                            className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-900/25 px-5 py-2 text-sm font-bold text-amber-100 transition-colors hover:bg-amber-900/40"
-                                        >
-                                            <RotateCcw size={14} /> {g.retryButton}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {/* מצב אחרי בחירה: התגובה המשותפת (הצלחה מפורשת או טעות תומכת) */}
+                {answered && (
+                    <GuessVerdict
+                        key={chosenId ?? undefined}
+                        correct={correct}
+                        reduce={!!reduce}
+                        correctTitle={g.successTitle}
+                        correctExplain={g.successExplain}
+                        correctInsight={g.successInsight}
+                        continueCta={{ label: g.continueCta, onClick: () => scrollToProximity(!reduce) }}
+                        wrongTitle={g.wrongTitle}
+                        wrongExplain={chosenWhy ?? ''}
+                        onRetry={() => setChosenId(null)}
+                        retryLabel={correct ? g.retryLink : g.retryButton}
+                    />
+                )}
             </div>
         </div>
     );
@@ -448,13 +379,15 @@ export default function BehindTheScenesChapter4() {
                         ))}
                     </ul>
                     <span className="mt-3 block text-sm text-slate-400">{c4.practical.caveat}</span>
-                    <Link
+                    <GuessButton
                         href="/math/mathIntuitive/chapter-5"
-                        className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-cyan-300 transition-colors hover:text-cyan-200"
+                        variant="ghost"
+                        rgb="34,211,238"
+                        className="mt-4"
+                        trailingIcon={isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
                     >
                         {c4.practical.mathLink}
-                        {isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
-                    </Link>
+                    </GuessButton>
                 </InsightBox>
             </section>
 

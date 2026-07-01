@@ -14,9 +14,9 @@
 // מקלדת מובנית וטבעת פוקוס גלויה. reduced-motion: בלי זוהר מונפש, רק מעבר מיידי.
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { HelpCircle, Sparkles, RotateCcw, ArrowDown, Eye, Lock, Database, Check, CheckCircle2, Info } from 'lucide-react';
-import { Mentor } from './Mentor';
+import { motion } from 'framer-motion';
+import { HelpCircle, Eye, Lock, Database, Check } from 'lucide-react';
+import { GuessInvite, GuessVerdict } from './GuessVerdict';
 import { useT } from '@/i18n/useT';
 import type { Hypothesis, HypothesisCue, QuickGuessContent } from '@/app/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
@@ -73,34 +73,6 @@ function CueIllustration({ cue }: { cue: HypothesisCue }) {
     );
 }
 
-/* ── פעימת ניצוצות חד-פעמית לרגע ההצלחה (מונפש בלבד; ההורה לא מרנדר ב-reduced-motion) ── */
-function SparkleBurst() {
-    // ניצוצות מתפרצים החוצה מהפינה העליונה של תיבת ההצלחה, נדעכים פעם אחת.
-    const bits = [
-        { x: -54, y: -8, s: 13, d: 0 },
-        { x: -28, y: -34, s: 10, d: 0.05 },
-        { x: 6, y: -40, s: 15, d: 0.02 },
-        { x: 40, y: -30, s: 10, d: 0.08 },
-        { x: 64, y: -6, s: 12, d: 0.04 },
-        { x: 22, y: 8, s: 9, d: 0.1 },
-    ];
-    return (
-        <div className="pointer-events-none absolute start-10 top-6 z-20" aria-hidden>
-            {bits.map((b, i) => (
-                <motion.span
-                    key={i}
-                    className="absolute text-cyan-300"
-                    initial={{ opacity: 0, scale: 0.2, x: 0, y: 0 }}
-                    animate={{ opacity: [0, 1, 0], scale: [0.2, 1, 0.6], x: b.x, y: b.y }}
-                    transition={{ duration: 0.9, delay: b.d, ease: 'easeOut' }}
-                >
-                    <Sparkles size={b.s} strokeWidth={2.5} />
-                </motion.span>
-            ))}
-        </div>
-    );
-}
-
 type CardState = 'idle' | 'correct' | 'wrong' | 'revealed' | 'dim';
 
 function stateClasses(state: CardState, reduce: boolean): string {
@@ -143,12 +115,8 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[80px]" />
 
             <div className="relative">
-                {/* מנטור הזמנה: דמות חושבת ממורכזת מעל הכרטיסים, נעלמת אחרי הבחירה - כמו בכל הפרקים. */}
-                {!chosen && (
-                    <div className="mb-5 hidden flex-col items-center sm:flex">
-                        <Mentor pose="think" width={108} glow={false} />
-                    </div>
-                )}
+                {/* מנטור הזמנה: משותף לכל הפרקים - דמות חושבת ממורכזת, נעלמת אחרי הבחירה. */}
+                {!chosen && <GuessInvite pose="think" />}
                 <div className="text-center">
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-400">
                         <HelpCircle size={14} /> {content.eyebrow}
@@ -207,119 +175,26 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                     })}
                 </div>
 
-                {/* משוב: גילוי, לא ציון */}
-                <AnimatePresence initial={false}>
-                    {chosen && (
-                        <motion.div
-                            key={chosenCorrect ? 'correct' : 'wrong'}
-                            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0 }}
-                            transition={reduce ? { duration: 0 } : { duration: 0.35 }}
-                            className="mx-auto mt-7 max-w-2xl"
-                            role="status"
-                            aria-live="polite"
-                        >
-                            {chosenCorrect ? (
-                                <div className="relative overflow-hidden rounded-2xl border border-cyan-400/55 bg-gradient-to-b from-cyan-900/30 to-cyan-950/10 p-5 md:p-6 shadow-[0_0_55px_-12px_rgba(34,211,238,0.55)]">
-                                    {!reduce && <SparkleBurst />}
-                                    <div className="relative flex items-start gap-4">
-                                        <div className="hidden shrink-0 self-center sm:block">
-                                            <Mentor pose="correct" width={92} glow={false} float={false} />
-                                        </div>
-                                        <div className="flex-1 text-start">
-                                            <div className="flex items-center gap-2">
-                                                <motion.span
-                                                    initial={reduce ? false : { scale: 0, rotate: -25 }}
-                                                    animate={{ scale: 1, rotate: 0 }}
-                                                    transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 14 }}
-                                                    className="inline-flex"
-                                                >
-                                                    <CheckCircle2 size={24} className="text-cyan-300" />
-                                                </motion.span>
-                                                <span className="text-xl font-black text-cyan-100 md:text-2xl">{content.correctTitle}</span>
-                                            </div>
-                                            <p className="mt-2 text-sm font-bold text-cyan-200 md:text-base">{content.correctLead}</p>
-                                            <p className="mt-2 text-sm leading-relaxed text-slate-200">{content.correctBody}</p>
-                                            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2.5">
-                                                <span className="inline-flex items-center gap-1.5 border-s-2 border-cyan-400/60 ps-3 text-sm font-bold text-cyan-100">
-                                                    {content.correctBridge}
-                                                    {!reduce ? (
-                                                        <motion.span animate={{ y: [0, 3, 0] }} transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }} className="inline-flex" aria-hidden>
-                                                            <ArrowDown size={15} />
-                                                        </motion.span>
-                                                    ) : (
-                                                        <ArrowDown size={15} aria-hidden />
-                                                    )}
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={reset}
-                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 transition-colors hover:text-cyan-200"
-                                                >
-                                                    <RotateCcw size={13} /> {content.retry}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="rounded-2xl border border-amber-400/45 bg-amber-900/[0.12] p-5 md:p-6">
-                                    <div className="flex items-start gap-4">
-                                        <div className="hidden shrink-0 self-center sm:block">
-                                            <Mentor pose="reassure" width={84} glow={false} float={false} />
-                                        </div>
-                                        <div className="flex-1 text-start">
-                                            <div className="flex items-center gap-2">
-                                                <Info size={20} className="shrink-0 text-amber-300" />
-                                                <span className="text-base font-black text-amber-200 md:text-lg">{content.wrongLead}</span>
-                                            </div>
-                                            {chosen.whyTempting && (
-                                                <p className="mt-2.5 text-sm leading-relaxed text-slate-200">{chosen.whyTempting}</p>
-                                            )}
-                                            {chosen.whyWrong && (
-                                                <p className="mt-1.5 text-sm leading-relaxed text-slate-400">{chosen.whyWrong}</p>
-                                            )}
-
-                                            {revealed && correctCard && (
-                                                <motion.div
-                                                    initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    transition={reduce ? { duration: 0 } : { duration: 0.3 }}
-                                                    className="mt-4 rounded-xl border border-cyan-400/35 bg-cyan-900/15 p-3.5"
-                                                >
-                                                    <p className="inline-flex items-center gap-1.5 text-sm font-bold text-cyan-200">
-                                                        <CheckCircle2 size={15} className="text-cyan-300" /> {correctCard.title}: {content.correctLead}
-                                                    </p>
-                                                    <p className="mt-1 text-sm leading-relaxed text-slate-300">{content.correctBody}</p>
-                                                </motion.div>
-                                            )}
-
-                                            <div className="mt-4 flex flex-wrap items-center gap-2.5">
-                                                <button
-                                                    type="button"
-                                                    onClick={reset}
-                                                    className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/50 bg-amber-900/25 px-5 py-2 text-sm font-bold text-amber-100 transition-colors hover:bg-amber-900/40"
-                                                >
-                                                    <RotateCcw size={14} /> {content.retry}
-                                                </button>
-                                                {!revealed && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setRevealed(true)}
-                                                        className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/50 bg-cyan-900/20 px-4 py-2 text-sm font-bold text-cyan-200 transition-colors hover:bg-cyan-900/35"
-                                                    >
-                                                        <Sparkles size={14} /> {content.revealCorrect}
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {/* התגובה המשותפת: הצלחה מפורשת או טעות תומכת (accent ציאן שמגשר למנוע) */}
+                {chosen && (
+                    <GuessVerdict
+                        key={chosenId ?? undefined}
+                        correct={chosenCorrect}
+                        reduce={reduce}
+                        accent="cyan"
+                        correctTitle={content.correctTitle}
+                        correctLead={content.correctLead}
+                        correctExplain={content.correctBody}
+                        correctInsight={content.correctBridge}
+                        correctInsightArrow
+                        wrongTitle={content.wrongLead}
+                        wrongExplain={chosen.whyTempting ?? ''}
+                        wrongExplainMore={chosen.whyWrong}
+                        reveal={correctCard ? { button: content.revealCorrect, title: `${correctCard.title}: ${content.correctLead}`, body: content.correctBody, revealed, onReveal: () => setRevealed(true) } : undefined}
+                        onRetry={reset}
+                        retryLabel={content.retry}
+                    />
+                )}
             </div>
         </div>
     );

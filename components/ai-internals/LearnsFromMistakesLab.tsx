@@ -17,6 +17,7 @@ import {
     Send, User, Trash2, GraduationCap,
 } from 'lucide-react';
 
+import { GuessButton } from './GuessButton';
 import { ACCENTS } from './accents';
 import {
     INCONTEXT_EXAMPLE,
@@ -173,24 +174,25 @@ const FrozenWeights: React.FC<{ reduce: boolean }> = ({ reduce }) => {
                     >
                         <RefreshCw size={14} /> צעד אימון
                     </button>
-                    <button
-                        type="button"
+                    <GuessButton
+                        variant="ghost"
                         onClick={() => setTrainStep(0)}
-                        className="inline-flex items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-800/40 px-3 py-2 text-xs font-bold text-slate-300 transition-colors hover:border-slate-600"
+                        leadingIcon={<RotateCcw size={14} />}
                     >
-                        <RotateCcw size={14} /> איפוס
-                    </button>
+                        איפוס
+                    </GuessButton>
                     <span className="text-[11px] text-indigo-300/90">באימון המשקלים כן משתנים, אבל זה קרה בעבר.</span>
                 </div>
             ) : (
                 <div className="flex flex-wrap items-center gap-2">
-                    <button
-                        type="button"
+                    <GuessButton
                         onClick={() => setCorrections((c) => c + 1)}
-                        className="inline-flex items-center gap-2 rounded-xl border border-violet-500/40 bg-violet-500/15 px-3 py-2 text-xs font-bold text-violet-100 transition-colors hover:bg-violet-500/25"
+                        reduce={reduce}
+                        rgb="168,85,247"
+                        leadingIcon={<Send size={14} />}
                     >
-                        <Send size={14} /> שלח תיקון למודל
-                    </button>
+                        שלח תיקון למודל
+                    </GuessButton>
                     {corrections > 0 && (
                         <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
                             <X size={13} className="text-rose-300" /> המשקלים זהים בדיוק לפני ואחרי. התיקון לא נכנס אליהם.
@@ -323,21 +325,23 @@ const InContextVsPersistent: React.FC<{ reduce: boolean }> = ({ reduce }) => {
 
             {/* פקדים */}
             <div className="flex flex-wrap items-center gap-2">
-                <button
-                    type="button"
+                <GuessButton
                     onClick={() => setCorrected(true)}
                     disabled={corrected}
-                    className="inline-flex items-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/15 px-3 py-2 text-xs font-bold text-amber-100 transition-colors hover:bg-amber-500/25 disabled:opacity-40"
+                    reduce={reduce}
+                    rgb="245,158,11"
+                    leadingIcon={<Send size={14} />}
                 >
-                    <Send size={14} /> תקן את המודל
-                </button>
-                <button
-                    type="button"
+                    תקן את המודל
+                </GuessButton>
+                <GuessButton
                     onClick={() => { setCorrected(false); setSession((s) => s + 1); }}
-                    className="inline-flex items-center gap-2 rounded-xl border border-violet-500/40 bg-violet-500/15 px-3 py-2 text-xs font-bold text-violet-100 transition-colors hover:bg-violet-500/25"
+                    reduce={reduce}
+                    rgb="168,85,247"
+                    leadingIcon={<RotateCcw size={14} />}
                 >
-                    <RotateCcw size={14} /> פתח שיחה חדשה
-                </button>
+                    פתח שיחה חדשה
+                </GuessButton>
             </div>
 
             <Takeaway>התאמה בהקשר היא זמנית. היא חיה כל עוד התיקון בקלט, ונעלמת איתו.</Takeaway>
@@ -574,13 +578,13 @@ const WhyItForgets: React.FC<{ reduce: boolean }> = ({ reduce }) => {
                 >
                     <MessageSquare size={14} /> המשך לדבר (הוסף הודעה)
                 </button>
-                <button
-                    type="button"
+                <GuessButton
+                    variant="ghost"
                     onClick={() => setAdded(0)}
-                    className="inline-flex items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-800/40 px-3 py-2 text-xs font-bold text-slate-300 transition-colors hover:border-slate-600"
+                    leadingIcon={<RotateCcw size={14} />}
                 >
-                    <RotateCcw size={14} /> איפוס
-                </button>
+                    איפוס
+                </GuessButton>
                 <span className="inline-flex items-center gap-1 text-[11px] text-slate-500">
                     <ArrowDown size={12} /> הוסיפו הודעות עד שהתיקון נדחק החוצה.
                 </span>

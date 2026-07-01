@@ -19,6 +19,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { HelpCircle, Sparkles, ArrowDown, RotateCcw, type LucideIcon } from 'lucide-react';
 import { Mentor, type MentorPose } from './Mentor';
+import { GuessButton } from './GuessButton';
 
 /** גוון הצ׳יפ של הסטטוס. precise=הצלחה, partial=חלקי, common=טעות נפוצה, layer=שכבה אחרת. */
 export type GuessTone = 'precise' | 'partial' | 'common' | 'layer';
@@ -214,21 +215,24 @@ export const DiscoveryGuess: React.FC<{ content: DiscoveryGuessContent; cards: D
 
                                         <div className="mt-4 flex flex-wrap items-center gap-3">
                                             {!revealed && (
-                                                <button
-                                                    type="button"
+                                                <GuessButton
                                                     onClick={() => setRevealed(true)}
-                                                    className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/50 bg-emerald-900/20 px-4 py-1.5 text-sm font-bold text-emerald-200 transition-colors hover:bg-emerald-900/35"
+                                                    variant="primary"
+                                                    rgb="16,185,129"
+                                                    reduce={!!reduce}
+                                                    leadingIcon={<Sparkles size={14} />}
                                                 >
-                                                    <Sparkles size={14} /> {content.revealButton}
-                                                </button>
+                                                    {content.revealButton}
+                                                </GuessButton>
                                             )}
-                                            <button
-                                                type="button"
+                                            <GuessButton
                                                 onClick={resetGuess}
-                                                className="inline-flex items-center gap-1.5 rounded-full border border-slate-700/60 bg-slate-800/40 px-4 py-1.5 text-sm font-bold text-slate-300 transition-colors hover:border-violet-500/40 hover:text-violet-200"
+                                                variant="ghost"
+                                                reduce={!!reduce}
+                                                leadingIcon={<RotateCcw size={13} />}
                                             >
-                                                <RotateCcw size={13} /> {content.resetButton}
-                                            </button>
+                                                {content.resetButton}
+                                            </GuessButton>
                                             {!revealed && content.exploreHint && (
                                                 <span className="text-xs text-slate-500">{content.exploreHint}</span>
                                             )}
@@ -261,13 +265,13 @@ export const DiscoveryGuess: React.FC<{ content: DiscoveryGuessContent; cards: D
                                         <Mentor pose={content.revealPose} width={72} glow={false} float={false} />
                                     </div>
                                     {content.ctaTargetId && (
-                                        <button
-                                            type="button"
+                                        <GuessButton
                                             onClick={goToTarget}
-                                            className="inline-flex items-center gap-1.5 rounded-full border border-violet-500/50 bg-violet-900/25 px-5 py-2 text-sm font-bold text-violet-100 transition-colors hover:bg-violet-900/40"
-                                        >
-                                            {content.cta}
-                                            {reduce ? (
+                                            variant="primary"
+                                            rgb="168,85,247"
+                                            reduce={!!reduce}
+                                            sheen
+                                            trailingIcon={reduce ? (
                                                 <ArrowDown size={15} aria-hidden />
                                             ) : (
                                                 <motion.span
@@ -279,7 +283,9 @@ export const DiscoveryGuess: React.FC<{ content: DiscoveryGuessContent; cards: D
                                                     <ArrowDown size={15} />
                                                 </motion.span>
                                             )}
-                                        </button>
+                                        >
+                                            {content.cta}
+                                        </GuessButton>
                                     )}
                                 </div>
                             </div>

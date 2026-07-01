@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import type { AgentDemo } from '@/app/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
+import { GuessButton } from './GuessButton';
 
 const STAGE_ICON: Record<string, React.ReactNode> = {
     task: <Target size={18} />,
@@ -138,14 +139,16 @@ export const AgentLoop: React.FC<{
                         </button>
                     ))}
                 </div>
-                <button
-                    type="button"
+                <GuessButton
                     onClick={run}
                     disabled={running}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/50 bg-purple-500/15 px-4 py-1.5 text-xs font-bold text-purple-100 transition-colors hover:bg-purple-500/25 disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/60"
+                    reduce={reduce}
+                    rgb="168,85,247"
+                    sheen
+                    leadingIcon={<Play size={13} aria-hidden />}
                 >
-                    <Play size={13} aria-hidden /> {running ? demo.running : completed ? demo.replay : demo.run}
-                </button>
+                    {running ? demo.running : completed ? demo.replay : demo.run}
+                </GuessButton>
             </div>
 
             {/* תווית השכבה: במצב Agent היא שכבת המערכת (סגול), במצב Chat המסלול הבסיסי (תכלת) */}

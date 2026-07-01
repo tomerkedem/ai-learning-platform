@@ -12,6 +12,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Target, TrendingUp, GraduationCap, ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
 import { useT } from "@/i18n/useT";
+import { GuessButton } from "@/components/ai-internals/GuessButton";
 import type { Dictionary } from "@/i18n/dictionary";
 import {
     getMasterySummary,
@@ -134,13 +135,15 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
             )}
 
             {showFinalExamCta && (
-                <Link
+                <GuessButton
                     href={FINAL_EXAM_HREF}
-                    className="flex items-center justify-center gap-2 w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black transition-all no-underline"
+                    rgb="59,130,246"
+                    fullWidth
+                    leadingIcon={<GraduationCap size={18} />}
+                    trailingIcon={dir === "rtl" ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
                 >
-                    <GraduationCap size={18} /> {progress.finalExamCta}
-                    {dir === "rtl" ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
-                </Link>
+                    {progress.finalExamCta}
+                </GuessButton>
             )}
         </div>
     );

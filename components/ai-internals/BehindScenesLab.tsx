@@ -18,6 +18,7 @@ import {
     type LibraryScenario,
 } from '@/app/behind-the-scenes-ai/chapter-14/scenarioLibrary';
 import { useLiveCapability, type LiveCapability } from '@/components/ai-internals/useLiveCapability';
+import { GuessButton } from './GuessButton';
 
 /* ════════════════════════ מקור התרחיש ════════════════════════════════════ */
 
@@ -468,15 +469,15 @@ const CustomPanel: React.FC<{
                         className="w-full bg-transparent py-2.5 text-base font-medium text-white placeholder:text-slate-600 focus:outline-none"
                     />
                 </div>
-                <button
+                <GuessButton
                     type="button"
                     onClick={onGenerate}
                     disabled={genState === 'loading' || !text.trim()}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-fuchsia-500/50 bg-fuchsia-900/25 px-4 py-2 text-sm font-bold text-fuchsia-200 hover:brightness-110 disabled:opacity-40"
+                    rgb="168,85,247"
+                    leadingIcon={genState === 'loading' ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
                 >
-                    {genState === 'loading' ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
                     {genState === 'loading' ? 'בונה תרחיש...' : 'בנו תרחיש'}
-                </button>
+                </GuessButton>
             </div>
 
             {genState === 'error' && (

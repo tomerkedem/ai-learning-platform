@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import confetti from 'canvas-confetti';
 import { Mentor, type MentorAccent } from '../ai-internals/Mentor';
+import { GuessButton } from '../ai-internals/GuessButton';
 import { useT } from '@/i18n/useT';
 
 interface Question {
@@ -149,6 +150,8 @@ export const AssessmentEngine = ({
     // גוון ההדגשה לכרום של מסכי הפתיחה/תוצאות (הילות, מסגרות, כפתור ראשי).
     // נגזר מצבע המנטור כדי שהכול ירגיש מתוך עולם אחד; ברירת המחדל ציאן (תואם BTS-AI).
     const accent = mentorAccent ?? { base: '6 182 212', shadow: '34 211 238', text: '#a5f3fc' };
+    // גוון accent בפורמט של GuessButton (פסיקים במקום רווחים), נגזר מגוון המנטור.
+    const accentRgb = accent.shadow.replace(/\s+/g, ',');
 
     // פונקציית סאונד מעודכנת
     const playSound = useCallback((type: 'correct' | 'wrong' | 'click' | 'complete') => {
@@ -333,23 +336,15 @@ export const AssessmentEngine = ({
                         )}
                     </div>
 
-                    <button
+                    <GuessButton
                         onClick={handleStart}
-                        className="group relative w-full overflow-hidden py-4 rounded-2xl font-black text-slate-950 transition-all hover:-translate-y-0.5"
-                        style={{
-                            background: `linear-gradient(135deg, rgb(${accent.shadow}), rgb(${accent.base}))`,
-                            boxShadow: `0 12px 32px rgb(${accent.base} / 0.35)`,
-                        }}
+                        rgb={accentRgb}
+                        fullWidth
+                        sheen
+                        trailingIcon={isRTL ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
                     >
-                        <span className="relative z-10 flex items-center justify-center gap-2">
-                            {startLabelR}
-                            {isRTL
-                                ? <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-                                : <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />}
-                        </span>
-                        {/* ברק חולף בריחוף */}
-                        <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-                    </button>
+                        {startLabelR}
+                    </GuessButton>
                 </div>
             </motion.div>
         );
@@ -542,35 +537,31 @@ export const AssessmentEngine = ({
                     </div>
                 )}
 
-                <div className="space-y-3">
+                <div className="flex flex-col items-stretch gap-3">
                     {passed && nextHref && (
-                        <Link
+                        <GuessButton
                             href={nextHref}
-                            className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2 no-underline"
+                            rgb={accentRgb}
+                            fullWidth
+                            trailingIcon={isRTL ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
                         >
-                            {nextLabelR} {isRTL ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
-                        </Link>
+                            {nextLabelR}
+                        </GuessButton>
                     )}
                     {!passed && reviewHref && (
-                        <Link
-                            href={reviewHref}
-                            className="w-full py-3 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 rounded-xl font-bold border border-amber-500/20 transition-all flex items-center justify-center gap-2 no-underline"
-                        >
-                            <RotateCcw size={18} /> {reviewLabelR}
-                        </Link>
+                        <GuessButton href={reviewHref} rgb="245,158,11" fullWidth leadingIcon={<RotateCcw size={18} />}>
+                            {reviewLabelR}
+                        </GuessButton>
                     )}
-                    <button
-                        onClick={() => setIsReviewMode(true)}
-                        className="w-full py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold border border-white/10 transition-all flex items-center justify-center gap-2"
-                    >
-                        <Eye size={18} /> {a.reviewAnswers}
-                    </button>
-                    <button
+                    <GuessButton onClick={() => setIsReviewMode(true)} rgb="100,116,139" fullWidth leadingIcon={<Eye size={18} />}>
+                        {a.reviewAnswers}
+                    </GuessButton>
+                    <GuessButton
                         onClick={() => { setAnswers({}); setCurrentIndex(0); setIsSubmitted(false); setIsReviewMode(false); setStreak(0); setSeconds(0); setIsActive(true); setDirection(0); }}
-                        className="w-full py-3 bg-white/5 hover:bg-white/10 text-slate-300 rounded-xl font-bold border border-white/10 transition-all"
+                        variant="ghost"
                     >
                         {a.retry}
-                    </button>
+                    </GuessButton>
                 </div>
                 </div>
             </motion.div>
@@ -706,14 +697,14 @@ export const AssessmentEngine = ({
                             {showExplanation ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                     )}
-                    <button 
-                        onClick={handleNext} 
-                        disabled={!isAnswered && !isReviewMode} 
-                        className={`px-8 py-3 rounded-2xl text-sm font-black flex items-center gap-2 transition-all shadow-xl ${(!isAnswered && !isReviewMode) ? 'bg-white/5 text-slate-600 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-500 hover:-translate-y-0.5'}`}
+                    <GuessButton
+                        onClick={handleNext}
+                        disabled={!isAnswered && !isReviewMode}
+                        rgb={accentRgb}
+                        trailingIcon={isRTL ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
                     >
-                        <span>{currentIndex === questions.length - 1 ? submitLabelR : a.continue}</span>
-                        {isRTL ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-                    </button>
+                        {currentIndex === questions.length - 1 ? submitLabelR : a.continue}
+                    </GuessButton>
                 </div>
             </div>
         </div>

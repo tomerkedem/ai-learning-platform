@@ -10,6 +10,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { RotateCcw, ArrowLeft, PackageX, Truck, PackageCheck, Monitor, CreditCard, Search, Send, Sparkles, Dna, type LucideIcon } from 'lucide-react';
 
+import { GuessButton } from '@/components/ai-internals/GuessButton';
+
 import { useChapter4Lab, joinSentences } from '../labContent';
 import type { SentenceId } from '../embeddingEngine';
 import { SemanticCardMap, type SemanticCardData } from './SemanticCardMap';
@@ -184,13 +186,13 @@ export const EmbeddingExperienceLab: React.FC<EmbeddingExperienceLabProps> = ({ 
                 {/* חזרה למשפט המקורי: מופיע רק כשהחלפה פעילה, ומשחזר את כל התצוגה */}
                 {originId !== null && (
                     <div className="mt-4 border-t border-slate-700/40 pt-3">
-                        <button
-                            type="button"
+                        <GuessButton
                             onClick={handleReset}
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-600/60 bg-slate-800/50 px-3 py-1.5 text-xs font-bold text-slate-200 transition-colors hover:border-slate-500 hover:text-white"
+                            variant="ghost"
+                            leadingIcon={<RotateCcw size={13} />}
                         >
-                            <RotateCcw size={13} /> {lab.controls.resetSwap}
-                        </button>
+                            {lab.controls.resetSwap}
+                        </GuessButton>
                     </div>
                 )}
             </div>
