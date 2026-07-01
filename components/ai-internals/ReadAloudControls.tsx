@@ -16,6 +16,7 @@ import { Headphones, Volume2, Pause, Play, Square, ChevronLeft, ChevronRight, Sl
 import type { Direction } from '@/i18n/config';
 import { DUR, EASE, withReduced } from './motionTokens';
 import { useReadAloud, type ReadAloudSegment } from './useReadAloud';
+import { useReadAloudPin } from './FloatingReadAloud';
 
 /** מצב היקף ההקראה: קצר / רגיל / מלא. רגיל = ה-Core spine (ברירת מחדל). */
 export type ReadAloudMode = 'short' | 'regular' | 'full';
@@ -76,6 +77,9 @@ export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, r
     const isActive = ra.status === 'speaking' || ra.status === 'paused';
     const current = ra.currentIndex >= 0 ? segments[ra.currentIndex] : null;
     const progressPct = ra.total > 0 && ra.currentIndex >= 0 ? ((ra.currentIndex + 1) / ra.total) * 100 : 0;
+
+    // מבקש מה-wrapper הצף להישאר פתוח כל עוד יש הקראה פעילה או מגירה פתוחה (no-op מחוץ אליו).
+    useReadAloudPin(isActive || showSettings || showSections);
 
     // הדגשת קריוקי: טווח התווים של המילה הנאמרת כרגע בתוך טקסט המקטע. נופלים לתווית
     // הקצרה כשאין boundary (מנוע לא תומך / טרם נאמרה מילה).
