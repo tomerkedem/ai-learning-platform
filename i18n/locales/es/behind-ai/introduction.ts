@@ -47,7 +47,7 @@ export const introduction = {
         correctTitle: '¡Exacto!',
         correctLead: 'Esta es la imagen más precisa.',
         correctBody: 'El modelo trabaja con tokens, calcula el contexto, elige el siguiente token y luego repite el proceso.',
-        correctBridge: 'Eso es exactamente lo que vamos a abrir ahora. Abre el motor entre la pregunta y la respuesta más abajo.',
+        correctBridge: 'Eso es exactamente lo que vamos a abrir ahora, en el mapa de estaciones que está justo abajo.',
         wrongLead: 'Es un error de razonamiento común, pero no es lo que ocurre en realidad.',
         retry: 'Elegir de nuevo',
         revealCorrect: 'Mostrar la explicación precisa',
@@ -100,19 +100,22 @@ export const introduction = {
 
     // ── Separación del Agent: el texto de la tarjeta y la demo en vivo (AgentLoop) ──
     agent: {
+        // Forward-looking framing (the card now appears before the map) + transition to the map.
+        intro: 'Antes de abrir el modelo en profundidad, veamos un momento la diferencia entre Chat y Agent.',
+        transition: 'Ahora abrimos la caja del medio: qué ocurre en realidad dentro del modelo.',
         // Card copy, switches with the Chat/Agent toggle. "Agent" stays in English.
         card: {
             chat: {
                 eyebrow: 'Recorrido básico',
                 title: 'El Chat es entrada, modelo y una respuesta',
-                body: 'En modo Chat el modelo recibe la solicitud y devuelve un solo texto. No hay herramientas ni acción en el mundo - solo entrada, modelo y respuesta.',
+                body: 'En modo Chat el modelo recibe una solicitud y devuelve una sola respuesta. Sin herramientas, sin acción en el mundo - solo entrada, modelo y respuesta.',
                 closing: 'El Chat se detiene en el momento en que la respuesta está lista. No ejecuta herramientas ni cambia nada fuera de la conversación.',
                 note: 'Esta es exactamente la capa del Transformer: entra texto, sale texto.',
             },
             agent: {
                 eyebrow: 'Una capa adicional',
                 title: 'Un Agent no es una respuesta más inteligente. Es un ciclo de acción completo',
-                body: 'Hasta ahora vimos un modelo que recibe entrada y devuelve una respuesta. Un Agent añade una capa nueva: interpreta la tarea, elige un curso de acción, ejecuta una herramienta si hace falta y revisa qué hacer a continuación.',
+                body: 'En modo Agent el modelo no solo responde. Puede decidir, elegir una herramienta, ejecutar una acción, verificar el resultado y luego devolver una respuesta.',
                 closing: 'Un Agent no solo predice texto. Envuelve al modelo en un sistema que decide si actuar, qué herramienta usar y qué está permitido.',
                 note: 'Esta no es una capa interna del Transformer, sino un sistema alrededor del modelo.',
             },

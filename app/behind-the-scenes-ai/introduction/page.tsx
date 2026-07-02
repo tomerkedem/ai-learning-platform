@@ -9,7 +9,6 @@ import { ChapterLayout } from "@/components/ChapterLayout";
 import { IntroRoadmap } from "@/components/ai-internals/IntroRoadmap";
 import { ExpandableLab } from "@/components/ai-internals/ExpandableLab";
 import { EngineReveal } from "@/components/ai-internals/EngineReveal";
-import { EngineGate } from "@/components/ai-internals/EngineGate";
 import { HypothesisGuess } from "@/components/ai-internals/HypothesisGuess";
 import { CourseSystems } from "@/components/ai-internals/CourseSystems";
 import { AgentLoop } from "@/components/ai-internals/AgentLoop";
@@ -159,8 +158,8 @@ export default function BehindTheScenesIntroPage() {
     short: [sTitle, sOutside, sRoadmapSubtitle, sCta],
     regular: [sTitle, sOutside, sRoadmapHeading, ...sStations, sTruth, sCta],
     full: [
-      sTitle, sOutside, sQuickGuessQ, ...sHypotheses, sGate,
-      sRoadmapHeading, ...sStations, sTruth, sAgent, ...sSystems, sCta,
+      sTitle, sOutside, sQuickGuessQ, ...sHypotheses, sGate, sAgent,
+      sRoadmapHeading, ...sStations, sTruth, ...sSystems, sCta,
     ],
   };
 
@@ -303,31 +302,50 @@ export default function BehindTheScenesIntroPage() {
             <HypothesisGuess reduce={!!reduce} content={quickGuess} dir={dir} />
           </motion.section>
 
-          {/* ══════════ 3 · REVEAL GATE ══════════ */}
-          {/* אחרי הניחוש: פותחים את מה שקרה באמצע, ומובילים ישירות אל המפה שמתחת. */}
+          {/* ══════════ 3 · CHAT vs AGENT (full card, before the map) ══════════ */}
+          {/* מוקדם בכוונה: מיד אחרי הניחוש, ניגוד חזק בין Chat ל-Agent לפני שנכנסים */}
+          {/* לפירוק המודל במפה. הקופי כאן קדימה-מבט (בלי "עד עכשיו ראינו"). */}
           <motion.section
             initial={reduce ? false : { opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6 }}
-            className="mt-16"
+            className="mt-20 relative overflow-hidden rounded-[2rem] border border-purple-500/30 bg-slate-900/60 p-6 backdrop-blur-xl md:p-8"
           >
-            <EngineGate
-              reduce={!!reduce}
-              dir={dir}
-              lead={intro.chat.gateLead}
-              revealLabel={intro.chat.revealLabel}
-              closeLabel={intro.chat.closeLabel}
-              revealedLabel={intro.chat.revealedLabel}
-              bridge={intro.chat.bridge}
-              downCue={intro.chat.downCue}
-              teaser={intro.engineTeaser}
-            />
+            <div className="absolute -top-16 -left-10 w-56 h-56 bg-purple-500/10 blur-[80px] rounded-full pointer-events-none" />
+            <div className="relative flex flex-col gap-5 md:flex-row md:items-start">
+              <div className="shrink-0 rounded-2xl border border-purple-500/30 bg-purple-500/15 p-3">
+                <Workflow className="text-purple-300" size={24} />
+              </div>
+              <div className="min-w-0">
+                {/* משפט מסגור קבוע, קדימה-מבט: לא תלוי במצב המתג */}
+                <p className="mb-3 text-sm md:text-base font-bold leading-relaxed text-purple-100">{intro.agent.intro}</p>
+                <span className="text-purple-300/80 text-[11px] font-bold uppercase tracking-[0.25em] block mb-2">
+                  {agentCard.eyebrow}
+                </span>
+                <h2 className="text-xl md:text-2xl font-black text-white mb-2">{agentCard.title}</h2>
+                <p className="text-sm md:text-base text-slate-300 leading-relaxed">{agentCard.body}</p>
+
+                {/* לולאת הבקרה החיה: Agent כשכבה סביב המודל, לא תחנה פנימית.
+                    ה-closing וה-note מועברים פנימה ונוחתים בתוך ה-slot החי במצב סיום,
+                    במקום שתי פסקאות קבועות שהאריכו את הכרטיס מתחת לבמה. */}
+                <div className="mt-6">
+                  <AgentLoop reduce={!!reduce} demo={agentDemo} mode={agentMode} onModeChange={setAgentMode} dir={dir} closing={agentCard.closing} note={agentCard.note} />
+                </div>
+              </div>
+            </div>
           </motion.section>
 
+          {/* מעבר קצר אל המפה: פותחים את הקופסה האמצעית (המודל) */}
+          <p className="mt-8 text-center text-base font-bold leading-relaxed text-slate-200 md:text-lg">
+            {intro.agent.transition}
+          </p>
+
           {/* ══════════ 4 · MAIN ROADMAP (ALWAYS VISIBLE) ══════════ */}
-          {/* מפת 14 התחנות. גלויה תמיד, עם תחנת "פירוק לטוקנים" פתוחה כברירת מחדל. */}
-          <section className="mt-10">
+          {/* מפת 14 התחנות. גלויה תמיד, עם תחנת "פירוק לטוקנים" פתוחה כברירת מחדל.
+              הניחוש זורם ישירות אל המפה: כותרת המפה ("פותחים את המנוע") נושאת את
+              רגע המעבר, בלי שער-טעימה נפרד שכפל את אזורי המפה שממש למטה. */}
+          <section className="mt-20">
             <SectionHeading eyebrow={intro.roadmapHeading.eyebrow} title={intro.roadmapHeading.title}>
               {intro.roadmapHeading.subtitle}
             </SectionHeading>
@@ -358,39 +376,7 @@ export default function BehindTheScenesIntroPage() {
             </div>
           </section>
 
-          {/* ══════════ 8 · AGENT SEPARATION ══════════ */}
-          {/* ה-Agent הוא שכבת מערכת סביב המודל, לא פעולה פנימית של הטרנספורמר. */}
-          <motion.section
-            initial={reduce ? false : { opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.6 }}
-            className="mt-20 relative overflow-hidden rounded-[2rem] border border-purple-500/30 bg-slate-900/60 p-6 backdrop-blur-xl md:p-8"
-          >
-            <div className="absolute -top-16 -left-10 w-56 h-56 bg-purple-500/10 blur-[80px] rounded-full pointer-events-none" />
-            <div className="relative flex flex-col gap-5 md:flex-row md:items-start">
-              <div className="shrink-0 rounded-2xl border border-purple-500/30 bg-purple-500/15 p-3">
-                <Workflow className="text-purple-300" size={24} />
-              </div>
-              <div className="min-w-0">
-                <span className="text-purple-300/80 text-[11px] font-bold uppercase tracking-[0.25em] block mb-2">
-                  {agentCard.eyebrow}
-                </span>
-                <h2 className="text-xl md:text-2xl font-black text-white mb-2">{agentCard.title}</h2>
-                <p className="text-sm md:text-base text-slate-300 leading-relaxed">{agentCard.body}</p>
-
-                {/* לולאת הבקרה החיה: Agent כשכבה סביב המודל, לא תחנה פנימית */}
-                <div className="mt-6">
-                  <AgentLoop reduce={!!reduce} demo={agentDemo} mode={agentMode} onModeChange={setAgentMode} dir={dir} />
-                </div>
-
-                <p className="mt-6 text-base font-bold leading-relaxed text-purple-100">{agentCard.closing}</p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-400">{agentCard.note}</p>
-              </div>
-            </div>
-          </motion.section>
-
-          {/* ══════════ 9 · COURSE SYSTEMS (19 chapters, 6 systems) ══════════ */}
+          {/* ══════════ 5 · COURSE SYSTEMS (19 chapters, 6 systems) ══════════ */}
           {/* שש מערכות שנפתחות, לא שישה פרקים. כל שער מגלה את טווח הפרקים שבתוכו. */}
           <section className="mt-20">
             <SectionHeading eyebrow={intro.systems.heading.eyebrow} title={intro.systems.heading.title} />
@@ -408,7 +394,7 @@ export default function BehindTheScenesIntroPage() {
             <CourseSystems systems={courseSystems} labels={intro.systems.labels} reduce={!!reduce} dir={dir} />
           </section>
 
-          {/* ══════════ 10 · CTA TO CHAPTER 1 ══════════ */}
+          {/* ══════════ 6 · CTA TO CHAPTER 1 ══════════ */}
           <motion.section
             initial={reduce ? false : { opacity: 0, scale: 0.97 }}
             whileInView={{ opacity: 1, scale: 1 }}

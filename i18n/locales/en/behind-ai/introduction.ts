@@ -47,7 +47,7 @@ export const introduction = {
         correctTitle: 'Exactly right!',
         correctLead: 'This is the more accurate picture.',
         correctBody: 'The model works on tokens, computes context, chooses the next token, and then repeats the process.',
-        correctBridge: "That is exactly what we'll open up now. Open the engine between the question and the answer below.",
+        correctBridge: "That is exactly what we'll open up now, in the station map just below.",
         wrongLead: 'This is a common misconception, but it is not what actually happens.',
         retry: 'Choose again',
         revealCorrect: 'Show the accurate explanation',
@@ -100,19 +100,22 @@ export const introduction = {
 
     // ── Agent separation: the card copy and the live demo (AgentLoop) ──
     agent: {
+        // Forward-looking framing (the card now appears before the map) + transition to the map.
+        intro: 'Before we open the model in depth, let us take a moment to see the difference between Chat and Agent.',
+        transition: 'Now we open the middle box: what really happens inside the model.',
         // Card copy, switches with the Chat/Agent toggle. "Agent" stays in English.
         card: {
             chat: {
                 eyebrow: 'Basic route',
                 title: 'Chat is input, model, and one answer',
-                body: 'In Chat mode the model receives the request and returns one piece of text. There are no tools and no action in the world - just input, model, and answer.',
+                body: 'In Chat mode the model receives a request and returns one answer. No tools, no action in the world - just input, model, and answer.',
                 closing: 'Chat stops the moment the answer is ready. It does not run tools and does not change anything outside the conversation.',
                 note: 'This is exactly the Transformer layer: text in, text out.',
             },
             agent: {
                 eyebrow: 'An extra layer',
                 title: 'An Agent is not a smarter answer. It is a full action loop',
-                body: 'So far we have seen a model that takes input and returns an answer. An Agent adds a new layer: it interprets the task, chooses a course of action, runs a tool if needed, and checks what to do next.',
+                body: 'In Agent mode the model does not just answer. It can decide, choose a tool, take an action, check the result, and then return an answer.',
                 closing: 'An Agent does not just predict text. It wraps the model in a system that decides whether to act, which tool to use, and what is allowed.',
                 note: 'This is not an inner layer of the Transformer, but a system around the model.',
             },

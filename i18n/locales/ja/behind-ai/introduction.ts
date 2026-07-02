@@ -48,7 +48,7 @@ export const introduction = {
         correctTitle: '正解です！',
         correctLead: 'これがより正確なイメージです。',
         correctBody: 'モデルはトークンを扱い、文脈を計算し、次のトークンを選び、そしてこの流れをくり返します。',
-        correctBridge: 'まさにそれを、これから開いていきます。下にある、質問と回答の間のエンジンを開いてください。',
+        correctBridge: 'まさにそれを、これから下にある行程マップで開いていきます。',
         wrongLead: 'これはよくある思い違いですが、実際に起きていることとは違います。',
         retry: 'もう一度選ぶ',
         revealCorrect: '正確な説明を表示する',
@@ -101,19 +101,22 @@ export const introduction = {
 
     // ── Agent の切り分け: カードのコピーとライブデモ (AgentLoop) ──
     agent: {
+        // Forward-looking framing (the card now appears before the map) + transition to the map.
+        intro: 'モデルを深く開く前に、Chat と Agent の違いを少し理解しておきましょう。',
+        transition: 'では真ん中の箱を開きます。モデルの中で実際に何が起きているのか。',
         // Card copy, switches with the Chat/Agent toggle. "Agent" stays in English.
         card: {
             chat: {
                 eyebrow: '基本の経路',
                 title: 'Chat は入力、モデル、そして1つの回答',
-                body: 'Chat モードでは、モデルはリクエストを受け取り、1つのテキストを返します。ツールも、世界への働きかけもありません。あるのは入力、モデル、回答だけです。',
+                body: 'Chat モードでは、モデルはリクエストを受け取り、1つの回答を返します。ツールもなく、世界への働きかけもなく、あるのは入力、モデル、回答だけです。',
                 closing: 'Chat は回答ができた瞬間に止まります。ツールを動かさず、会話の外側のものを変えることもありません。',
                 note: 'これはまさに Transformer の層です。テキストが入り、テキストが出ます。',
             },
             agent: {
                 eyebrow: '追加の層',
                 title: 'Agent はより賢い回答ではありません。完全な行動のループです',
-                body: 'ここまでは、入力を受け取り回答を返すモデルを見てきました。Agent は新しい層を加えます。タスクを解釈し、行動の道筋を選び、必要ならツールを動かし、次に何をするかを確認します。',
+                body: 'Agent モードでは、モデルは答えるだけではありません。判断し、ツールを選び、実行し、結果を確認し、そして回答を返すことができます。',
                 closing: 'Agent はただテキストを予測するだけではありません。モデルを、行動するかどうか、どのツールを使うか、何が許されるかを決めるシステムで包みます。',
                 note: 'これは Transformer の内部の層ではなく、モデルを取り巻くシステムです。',
             },

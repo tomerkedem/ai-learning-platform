@@ -44,7 +44,11 @@ export const AgentLoop: React.FC<{
     dir: Direction;
     mode?: Mode;
     onModeChange?: (m: Mode) => void;
-}> = ({ reduce, demo, dir, mode: modeProp, onModeChange }) => {
+    /** הפאנץ' שנוחת ב-slot החי במצב סיום. מגיע מהכרטיס לפי המצב הפעיל (page). */
+    closing?: string;
+    /** הערת דיוק קטנה שנלווית ל-closing, באותו slot. */
+    note?: string;
+}> = ({ reduce, demo, dir, mode: modeProp, onModeChange, closing, note }) => {
     // המתג יכול להיות נשלט מבחוץ (כדי שהקופי שמסביב יתחלף יחד איתו) או פנימי.
     const [modeInternal, setModeInternal] = useState<Mode>('chat');
     const mode = modeProp ?? modeInternal;
@@ -79,6 +83,8 @@ export const AgentLoop: React.FC<{
     const activeStage = stages.find((s) => s.id === activeId) ?? null;
     const coreText = activeStage ? activeStage.label : demo.idleCore;
     const completed = step >= 0 && step === stages.length - 1;
+    // הפאנץ' נוחת רק כשהסבב הסתיים ואיננו מרחפים מעל תחנה (ריחוף = חזרה לחקירה).
+    const showClosing = completed && hoverId == null && !!closing;
 
     // תחנות שמסביב לליבה (במצב Chat הליבה היא שלב "מודל").
     const orbit = mode === 'agent' ? demo.agentStages : demo.chatStages.filter((s) => s.id !== 'model');
@@ -280,17 +286,34 @@ export const AgentLoop: React.FC<{
                 </span>
             </div>
 
-            {/* כיתוב חי: הסבר התחנה הפעילה */}
+            {/* ── ה-slot החי: תיבת טקסט אחת שנושמת בין שלושה מצבים ─────────────────────
+                idle: רמז שקט · running/hover: הסבר התחנה הפעילה · completed: הפאנץ' (closing+note).
+                כך אין ערימת טקסט קבועה מתחת לבמה; המשמעות נוחתת ברגע הנכון, ואז נסוגה. */}
             <div
                 role="status"
                 aria-live="polite"
-                className="mx-auto mt-3 flex min-h-[2.75rem] max-w-md items-center justify-center rounded-xl border border-purple-500/20 bg-purple-900/10 px-4 py-2.5 text-center text-sm leading-relaxed text-slate-300"
+                className={`mx-auto mt-3 flex min-h-[2.75rem] max-w-md flex-col items-center justify-center rounded-xl border px-4 py-2.5 text-center text-sm leading-relaxed transition-colors ${showClosing ? 'border-indigo-500/30 bg-indigo-900/15 text-slate-200' : 'border-purple-500/20 bg-purple-900/10 text-slate-300'}`}
             >
-                {activeStage ? (
-                    <span><span className="font-bold text-purple-200">{activeStage.label}: </span>{activeStage.hint}</span>
-                ) : (
-                    <span className="text-slate-400">{demo.hintPrompt}</span>
-                )}
+                <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                        key={showClosing ? 'done' : activeStage ? `stage-${activeStage.id}` : 'idle'}
+                        initial={reduce ? false : { opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={reduce ? { opacity: 0 } : { opacity: 0, y: -4 }}
+                        transition={reduce ? { duration: 0 } : { duration: 0.28 }}
+                    >
+                        {showClosing ? (
+                            <>
+                                <p className="font-bold text-indigo-100">{closing}</p>
+                                {note && <p className="mt-1 text-xs leading-snug text-slate-400">{note}</p>}
+                            </>
+                        ) : activeStage ? (
+                            <span><span className="font-bold text-purple-200">{activeStage.label}: </span>{activeStage.hint}</span>
+                        ) : (
+                            <span className="text-slate-400">{demo.hintPrompt}</span>
+                        )}
+                    </motion.div>
+                </AnimatePresence>
             </div>
 
             {/* קונסולת החלטה (Agent בלבד) */}
@@ -310,11 +333,6 @@ export const AgentLoop: React.FC<{
                     </div>
                 </div>
             )}
-
-            {/* רמז ההבדל בין המצבים */}
-            <p className="mx-auto mt-3 max-w-md text-center text-xs text-purple-300/80">
-                {mode === 'agent' ? demo.agentHint : demo.chatHint}
-            </p>
         </div>
     );
 };
