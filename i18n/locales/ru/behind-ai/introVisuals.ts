@@ -1,10 +1,12 @@
 // i18n/locales/ru/behind-ai/introVisuals.ts
 // Russian introduction visual/UI strings. Shape source: ../../he/behind-ai/introVisuals.
 //
-// Display text only. Structural values (numbers, vectors, indices) stay in the
-// components, and the attention token order is fixed (index 0 = noun, index 3 =
-// pronoun, index 4 = state). "AI" is kept in Latin to match the rest of the Russian
-// course chrome. No em dash (U+2014), no en dash (U+2013), no Hebrew characters.
+// Display text only. Structural values (numbers, vectors, indices, map positions)
+// stay in the components. Fixed index contracts: attention tokens (0 = noun,
+// 3 = pronoun, 4 = state), position tokens (indices 1 and 3 swap), embedding
+// mapWords (0+1 close pair, 2+3 close pair), context messages (chronological).
+// "AI" is kept in Latin to match the rest of the Russian course chrome.
+// No em dash (U+2014), no en dash (U+2013), no Hebrew characters.
 
 export const introVisuals = {
     roadmap: {
@@ -24,30 +26,155 @@ export const introVisuals = {
 
     viz: {
         sharedNote: 'Числа только для иллюстрации, это не реальный вывод модели.',
+        replay: 'Повторить',
+        soundOn: 'Включить звук',
+        soundOff: 'Выключить звук',
+
+        request: {
+            youTab: 'Что видите вы',
+            modelTab: 'Что получает модель',
+            userLabel: 'Ваше сообщение',
+            userText: 'Где моя посылка?',
+            systemLabel: 'Системные инструкции',
+            systemText: 'Вы агент поддержки. Проверяйте статус доставки перед ответом.',
+            historyLabel: 'Разговор до этого',
+            historyText: 'Я заказал вчера и получил трек-номер.',
+            stripLabel: 'Всё входит одной последовательностью',
+            caption: 'Модель никогда не получает только последнее сообщение: инструкции, история и ваш запрос склеиваются в одну длинную последовательность.',
+        },
+
         tokenize: {
             sentence: 'Моя посылка не пришла',
             tokens: ['Моя', 'посылка', 'не', 'пришла'] as string[],
             caption: 'Текст разбивается на единицы. В реальной модели разрез иногда попадает внутрь слова.',
+            altSentence: 'Доставки задерживаются',
+            altTokens: ['Достав', 'ки', 'задерж', 'ива', 'ются'] as string[],
+            // Maps each piece to its original word (same-word pieces share a color).
+            altGroups: [0, 0, 1, 1, 1] as number[],
+            altCaption: 'Кусочки одного цвета были одним словом. Модель работает и с кусочками слов.',
+            variantA: 'Простая фраза',
+            variantB: 'Длинные слова',
         },
+
+        ids: {
+            hint: 'Нажмите на карточку, чтобы перевернуть её',
+            caption: 'Дальше внутри нет слов. Только числа.',
+        },
+
         embedding: {
             token: 'посылка',
             caption: (note: string) =>
                 `Токен становится ID в словаре, а затем вектором чисел, который кодирует смысл. ${note}`,
+            // Fixed order across locales (vector numbers are mapped by index): 0 package, 1 delivery, 2 cat, 3 dog.
+            mapWords: ['посылка', 'доставка', 'кот', 'пёс'] as string[],
+            mapHint: 'Нажмите на слово на карте',
+            nearLabel: 'Ближайшая пара',
+            mapCaption: 'Слова с похожим смыслом получают похожие числа и ложатся рядом.',
         },
+
+        position: {
+            tokens: ['Сначала', 'оплата', 'потом', 'доставка'] as string[],
+            swapLabel: 'Поменяйте порядок',
+            meaningA: 'Вы платите до отправки посылки.',
+            meaningB: 'Вы платите только после получения посылки.',
+            caption: 'Те же самые слова, другой порядок, другая сделка. Поэтому каждый токен получает метку позиции.',
+        },
+
+        context: {
+            windowLabel: 'Окно контекста',
+            outLabel: 'За окном',
+            addLabel: 'Приходит новое сообщение',
+            messages: [
+                'Я заказал беспроводной пылесос',
+                'Заказ принят, спасибо!',
+                'Когда придёт доставка?',
+                'Ваша посылка отправляется сегодня',
+                'Посылка всё ещё не пришла',
+                'А что именно вы заказывали?',
+            ] as string[],
+            caption: 'Что выпало из окна, для модели не существует. Поэтому длинный разговор может забыть собственное начало.',
+        },
+
+        // stories order must match the tokens order (index for index).
         attention: {
             tokens: ['Пёс', 'бежал', 'потому что', 'он', 'был рад'] as string[],
             strongLabel: 'Сильная связь',
             weakLabel: 'Слабая',
-            caption: 'Модель связывает «он» с «Пёс» по контексту, а с другими токенами связь слабее.',
+            stories: [
+                '«Пёс» связан прежде всего с «бежал»: кто выполняет действие.',
+                '«бежал» ищет, кто бежал, поэтому связано с «Пёс».',
+                '«потому что» соединяет причину: связано с «был рад».',
+                'Кто «он»? Модель связывает его с «Пёс».',
+                'Кто был рад? «был рад» связано с «он», то есть с псом.',
+            ] as string[],
+            caption: 'Нажмите на слово, чтобы сменить фокус. Каждое слово обращает внимание на другие с разной силой.',
         },
+
+        // Station 8: one ambiguous word, two contexts, the meaning flips.
+        mix: {
+            word: 'ключ',
+            aLabel: 'Курьер передал ключ от квартиры',
+            aSource: 'от квартиры',
+            aMeaning: 'предмет, открывающий дверь',
+            bLabel: 'В лесу из земли бьёт ключ',
+            bSource: 'из земли',
+            bMeaning: 'родник с чистой водой',
+            caption: 'Слово вошло одинаковым в обе фразы. Информация от соседей смешалась с его представлением, и оно вышло с другим смыслом.',
+        },
+
+        layers: {
+            sentence: 'Пёс бежал, потому что он был рад',
+            floors: ['Слова и грамматика', 'Кто к кому относится', 'Намерение и смысл'] as string[],
+            notes: [
+                'Модель видит структуру: кто что делает.',
+                'Модель связывает: «он» это пёс.',
+                'Модель улавливает причину: радость объясняет бег.',
+            ] as string[],
+            floorLabel: 'Этаж',
+            hint: 'Нажмите на этаж, чтобы перейти туда',
+            caption: 'В реальной модели десятки таких этажей, и каждый чуть-чуть шлифует понимание.',
+        },
+
+        state: {
+            orbLabel: 'Одно представление всего контекста',
+            insideBtn: 'Что сжато внутри?',
+            caption: 'Весь контекст сжат в одну точку. Из неё родится следующее слово.',
+        },
+
+        logits: {
+            prompt: 'Завтра будет...',
+            words: ['солнечно', 'дождливо', 'облачно', 'жарко', 'прохладно', 'приятно', 'ветрено', 'ясно'] as string[],
+            note: 'Восемь кандидатов из десятков тысяч, которые проверяются одновременно.',
+            caption: (note: string) =>
+                `Каждый кандидат получает сырую оценку, и список выстраивается по лидеру. ${note}`,
+        },
+
         scores: {
             rowLabels: ['Солнце', 'Дождь', 'Облако'] as string[],
+            rawHeader: 'Сырая оценка',
+            probHeader: 'Шанс',
+            totalLabel: 'Вместе',
             caption: (note: string) =>
                 `Сырые оценки (серый) превращаются в вероятности, которые в сумме дают 100%. ${note}`,
         },
+
+        decoding: {
+            prompt: 'Завтра будет',
+            sure: 'Надёжный режим',
+            surprise: 'Режим сюрпризов',
+            roll: 'Выберите следующее слово',
+            tally: 'Результаты',
+            sureNote: 'В надёжном режиме всегда побеждает слово-лидер. Тот же вопрос, тот же ответ.',
+            surpriseNote: 'В режиме сюрпризов иногда побеждает менее вероятное слово. Поэтому один и тот же вопрос может получать разные ответы.',
+        },
+
         loop: {
-            steps: ['Сегодня', 'Сегодня будет', 'Сегодня будет солнечно'] as string[],
-            caption: 'И так далее, токен за токеном, до сигнала остановки.',
+            words: ['Сегодня', 'будет', 'солнечно', 'и', 'довольно', 'тепло'] as string[],
+            play: 'Продолжить',
+            pause: 'Пауза',
+            tokenLabel: 'Токен',
+            stopLabel: 'Сигнал остановки',
+            caption: 'Каждый оборот добавляет к ответу один токен. Поэтому ответ в чате строится на глазах, слово за словом.',
         },
     },
 };

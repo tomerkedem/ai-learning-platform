@@ -55,8 +55,10 @@ const cachedAgent = (s: string): AgentEngineResult => {
 
 // צבע ה-thumb של ה-slider לכל גוון.
 const RANGE_COLOR: Record<Accent, string> = {
-    cyan: '#22d3ee', blue: '#60a5fa', indigo: '#818cf8', purple: '#c084fc',
-    amber: '#fbbf24', emerald: '#34d399', rose: '#fb7185', slate: '#94a3b8',
+    cyan: '#22d3ee', sky: '#38bdf8', teal: '#2dd4bf', blue: '#60a5fa',
+    indigo: '#818cf8', violet: '#a78bfa', purple: '#c084fc', fuchsia: '#e879f9',
+    pink: '#f472b6', rose: '#fb7185', orange: '#fb923c', amber: '#fbbf24',
+    lime: '#a3e635', emerald: '#34d399', slate: '#94a3b8',
 };
 
 // אייקון לכל דוגמה מתוסרטת, לפי id (תלוי-מבנה, לא תלוי-שפה).

@@ -1,10 +1,12 @@
 // i18n/locales/ja/behind-ai/introVisuals.ts
 // Japanese introduction visual/UI strings. Shape source: ../../he/behind-ai/introVisuals.
 //
-// Display text only. Structural values (numbers, vectors, indices) stay in the
-// components, and the attention token order is fixed (index 0 = noun, index 3 =
-// pronoun, index 4 = state). Labels are kept short to fit the cards. "AI" and other
-// Latin terms are kept on purpose. No em dash (U+2014), no en dash (U+2013), no Hebrew.
+// Display text only. Structural values (numbers, vectors, indices, map positions)
+// stay in the components. Fixed index contracts: attention tokens (0 = noun,
+// 3 = pronoun, 4 = state), position tokens (indices 1 and 3 swap), embedding
+// mapWords (0+1 close pair, 2+3 close pair), context messages (chronological).
+// Labels are kept short to fit the cards. "AI" and other Latin terms are kept on
+// purpose. No em dash (U+2014), no en dash (U+2013), no Hebrew.
 
 export const introVisuals = {
     roadmap: {
@@ -24,30 +26,155 @@ export const introVisuals = {
 
     viz: {
         sharedNote: '数値は説明用で、実際のモデルの出力ではありません。',
+        replay: 'もう一度',
+        soundOn: '音を出す',
+        soundOff: '音を消す',
+
+        request: {
+            youTab: 'あなたに見えるもの',
+            modelTab: 'モデルが受け取るもの',
+            userLabel: 'あなたのメッセージ',
+            userText: '私の荷物はどこ?',
+            systemLabel: 'システム指示',
+            systemText: 'あなたはサポート担当です。回答の前に配送状況を確認してください。',
+            historyLabel: 'これまでの会話',
+            historyText: '昨日注文して、追跡番号を受け取りました。',
+            stripLabel: 'すべてが一つの列として入る',
+            caption: 'モデルは最後のメッセージだけを受け取るのではありません。指示、履歴、依頼が一つの長い列につながります。',
+        },
+
         tokenize: {
             sentence: '私の荷物が届かない',
             tokens: ['私の', '荷物', 'が', '届かない'] as string[],
             caption: 'テキストは単位に分割されます。実際のモデルでは、分割が単語の途中に入ることもあります。',
+            altSentence: '再配達をお願いします',
+            altTokens: ['再', '配達', 'を', 'お願い', 'します'] as string[],
+            // Maps each piece to its original word (same-word pieces share a color).
+            altGroups: [0, 0, 1, 2, 2] as number[],
+            altCaption: '同じ色のかけらは、もとは一つの言葉でした。モデルは言葉のかけらでも動きます。',
+            variantA: 'シンプルな文',
+            variantB: '長い言葉',
         },
+
+        ids: {
+            hint: 'カードをタップすると裏返ります',
+            caption: 'ここから先、中に言葉はありません。数字だけです。',
+        },
+
         embedding: {
             token: '荷物',
             caption: (note: string) =>
                 `トークンは語彙のIDになり、次に意味を表す数値ベクトルになります。${note}`,
+            // Fixed order across locales (vector numbers are mapped by index): 0 package, 1 delivery, 2 cat, 3 dog.
+            mapWords: ['荷物', '配達', '猫', '犬'] as string[],
+            mapHint: '地図の言葉をタップ',
+            nearLabel: '一番近いペア',
+            mapCaption: '意味が近い言葉は近い数値になり、近くに並びます。',
         },
+
+        position: {
+            tokens: ['まず', '支払い', 'それから', '配達'] as string[],
+            swapLabel: '順番を入れ替える',
+            meaningA: '荷物が出る前に支払います。',
+            meaningB: '荷物が届いてから支払います。',
+            caption: 'まったく同じ言葉でも、順番が変われば取引も変わります。だから各トークンに位置タグが付きます。',
+        },
+
+        context: {
+            windowLabel: 'コンテキストウィンドウ',
+            outLabel: 'ウィンドウの外',
+            addLabel: '新しいメッセージが届く',
+            messages: [
+                'コードレス掃除機を注文しました',
+                'ご注文を受け付けました',
+                'いつ届きますか?',
+                '本日発送します',
+                '荷物がまだ届きません',
+                '何をご注文でしたか?',
+            ] as string[],
+            caption: 'ウィンドウから出たものは、モデルにとって存在しません。だから長い会話は最初を忘れることがあります。',
+        },
+
+        // stories order must match the tokens order (index for index).
         attention: {
             tokens: ['犬', '走った', 'なぜなら', 'それ', '嬉しい'] as string[],
             strongLabel: '強い関連',
             weakLabel: '弱い',
-            caption: 'モデルは文脈から「それ」を「犬」に結びつけ、他のトークンとの関連は弱くなります。',
+            stories: [
+                '「犬」は主に「走った」とつながります。動作の主です。',
+                '「走った」は誰が走ったかを探し、「犬」とつながります。',
+                '「なぜなら」は理由をつなぎ、「嬉しい」と結びつきます。',
+                '「それ」とは何?モデルは「犬」と結びつけます。',
+                '誰が嬉しい?「嬉しい」は「それ」、つまり犬とつながります。',
+            ] as string[],
+            caption: '言葉をタップすると焦点が変わります。それぞれの言葉は異なる強さで他の言葉に注意を向けます。',
         },
+
+        // Station 8: one ambiguous word, two contexts, the meaning flips.
+        mix: {
+            word: 'はし',
+            aLabel: 'はしでラーメンを食べる',
+            aSource: '食べる',
+            aMeaning: '食事に使う道具の箸',
+            bLabel: 'はしを渡って駅へ行く',
+            bSource: '渡って',
+            bMeaning: '川にかかる橋',
+            caption: '言葉は二つの文でまったく同じ形で入ってきました。隣の言葉の情報が表現に混ざり、違う意味になって出ていきます。',
+        },
+
+        layers: {
+            sentence: '犬は嬉しかったので走った',
+            floors: ['言葉と文法', '何が何を指すか', '意図と意味'] as string[],
+            notes: [
+                'モデルは構造をつかみます: 誰が何をするか。',
+                'モデルはつなげます:「それ」は犬。',
+                'モデルは理由を捉えます: 嬉しさが走った理由。',
+            ] as string[],
+            floorLabel: '階',
+            hint: '階をタップすると移動します',
+            caption: '実際のモデルには何十もの階があり、それぞれが理解を少しずつ磨きます。',
+        },
+
+        state: {
+            orbLabel: '文脈全体のひとつの表現',
+            insideBtn: '中に何が詰まっている?',
+            caption: '文脈全体がひとつの点に圧縮されました。次の言葉はここから生まれます。',
+        },
+
+        logits: {
+            prompt: '明日は...',
+            words: ['晴れ', '雨', '曇り', '暑い', '涼しい', '快適', '嵐', '快晴'] as string[],
+            note: '一度に検討される数万の候補のうちの8つです。',
+            caption: (note: string) =>
+                `各候補が生スコアを受け取り、リストはトップ順に並びます。${note}`,
+        },
+
         scores: {
             rowLabels: ['晴れ', '雨', '曇り'] as string[],
+            rawHeader: '生スコア',
+            probHeader: '確率',
+            totalLabel: '合計',
             caption: (note: string) =>
                 `生のスコア（灰色）が合計100%の確率になります。${note}`,
         },
+
+        decoding: {
+            prompt: '明日は',
+            sure: '安全モード',
+            surprise: 'サプライズモード',
+            roll: '次の言葉を選ぶ',
+            tally: 'これまでの結果',
+            sureNote: '安全モードでは常にトップの言葉が選ばれます。同じ質問、同じ答え。',
+            surpriseNote: 'サプライズモードでは、可能性の低い言葉が選ばれることもあります。だから同じ質問でも答えが変わるのです。',
+        },
+
         loop: {
-            steps: ['今日', '今日は', '今日は晴れ'] as string[],
-            caption: 'そして次々と、トークンごとに、停止記号まで。',
+            words: ['今日', 'は', '晴れ', 'で', '過ごし', 'やすい'] as string[],
+            play: '再開',
+            pause: '一時停止',
+            tokenLabel: 'トークン',
+            stopLabel: '停止記号',
+            caption: '一周ごとに答えへトークンが1つ加わります。だからチャットの答えは目の前で言葉ずつ組み上がるのです。',
         },
     },
 };

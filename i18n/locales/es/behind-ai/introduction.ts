@@ -91,12 +91,6 @@ export const introduction = {
     truthNote:
         'Este es un mapa de aprendizaje, no una foto completa de cada cálculo. En un modelo real, dentro de cada estación ocurren muchas operaciones en paralelo, y el número exacto varía según el modelo, la longitud del contexto y la forma en que se ejecuta.',
 
-    // ── Las etiquetas fijas de las tres preguntas en la expansión de una estación ──
-    stationDetailLabels: {
-        whatHappens: '¿Qué ocurre aquí?',
-        whyItMatters: '¿Por qué importa?',
-        whatNext: '¿Qué veremos a continuación?',
-    },
 
     // ── Separación del Agent: el texto de la tarjeta y la demo en vivo (AgentLoop) ──
     agent: {
@@ -132,7 +126,7 @@ export const introduction = {
             run: 'Ejecutar un ciclo',
             running: 'Ejecutando...',
             replay: 'Ejecutar de nuevo',
-            hintPrompt: 'Pasa el cursor o elige una estación para ver qué ocurre allí, o ejecuta un ciclo.',
+            hintPrompt: 'Ejecuta un ciclo para ver el motor en acción, paso a paso.',
             input: { label: 'Solicitud', text: 'Resume el correo y envía una respuesta' },
             output: { label: 'Respuesta', agent: 'Resumen listo, esperando aprobación para enviar', chat: 'Aquí está el resumen que pediste' },
             consoleTitle: 'Consola de decisión',

@@ -92,12 +92,6 @@ export const introduction = {
     truthNote:
         'これは学習のためのマップであり、すべての計算をそのまま写したものではありません。実際のモデルでは、各ステーションの中で多くの処理が並行して起こり、正確な数はモデル、文脈の長さ、実行のしかたによって変わります。',
 
-    // ── ステーション展開時の3つの問いの固定ラベル ──
-    stationDetailLabels: {
-        whatHappens: 'ここで何が起きる?',
-        whyItMatters: 'なぜ重要?',
-        whatNext: 'このあと何を見る?',
-    },
 
     // ── Agent の切り分け: カードのコピーとライブデモ (AgentLoop) ──
     agent: {
@@ -133,7 +127,7 @@ export const introduction = {
             run: 'ループを実行',
             running: '実行中...',
             replay: 'もう一度実行',
-            hintPrompt: 'カーソルを合わせるかステーションを選ぶと、そこで何が起きるか見えます。ループの実行もできます。',
+            hintPrompt: 'ループを実行すると、エンジンの動きを一歩ずつ見られます。',
             input: { label: 'リクエスト', text: 'メールを要約して返信を送って' },
             output: { label: '回答', agent: '要約ができました。送信の承認待ちです', chat: 'ご依頼の要約はこちらです' },
             consoleTitle: '判断コンソール',

@@ -24,6 +24,16 @@ export const ACCENTS: Record<Accent, AccentStyle> = {
         solid: 'bg-cyan-500', solidText: 'text-slate-950', barFill: 'bg-cyan-500', barGradient: 'bg-gradient-to-l from-cyan-400 to-blue-500',
         dot: 'bg-cyan-400', ringSoft: 'ring-cyan-500/20', glow: 'shadow-[0_0_45px_-10px_rgba(34,211,238,0.55)]',
     },
+    sky: {
+        border: 'border-sky-500/40', text: 'text-sky-300', softText: 'text-sky-400/70', bgSoft: 'bg-sky-900/15',
+        solid: 'bg-sky-500', solidText: 'text-slate-950', barFill: 'bg-sky-500', barGradient: 'bg-gradient-to-l from-sky-400 to-blue-500',
+        dot: 'bg-sky-400', ringSoft: 'ring-sky-500/20', glow: 'shadow-[0_0_45px_-10px_rgba(56,189,248,0.55)]',
+    },
+    teal: {
+        border: 'border-teal-500/40', text: 'text-teal-300', softText: 'text-teal-400/70', bgSoft: 'bg-teal-900/15',
+        solid: 'bg-teal-500', solidText: 'text-slate-950', barFill: 'bg-teal-500', barGradient: 'bg-gradient-to-l from-teal-400 to-cyan-500',
+        dot: 'bg-teal-400', ringSoft: 'ring-teal-500/20', glow: 'shadow-[0_0_45px_-10px_rgba(45,212,191,0.5)]',
+    },
     blue: {
         border: 'border-blue-500/40', text: 'text-blue-300', softText: 'text-blue-400/70', bgSoft: 'bg-blue-900/15',
         solid: 'bg-blue-500', solidText: 'text-white', barFill: 'bg-blue-500', barGradient: 'bg-gradient-to-l from-blue-400 to-indigo-500',
@@ -34,10 +44,35 @@ export const ACCENTS: Record<Accent, AccentStyle> = {
         solid: 'bg-indigo-500', solidText: 'text-white', barFill: 'bg-indigo-500', barGradient: 'bg-gradient-to-l from-indigo-400 to-violet-500',
         dot: 'bg-indigo-400', ringSoft: 'ring-indigo-500/20', glow: 'shadow-[0_0_45px_-10px_rgba(129,140,248,0.55)]',
     },
+    violet: {
+        border: 'border-violet-500/40', text: 'text-violet-300', softText: 'text-violet-400/70', bgSoft: 'bg-violet-900/15',
+        solid: 'bg-violet-500', solidText: 'text-white', barFill: 'bg-violet-500', barGradient: 'bg-gradient-to-l from-violet-400 to-purple-500',
+        dot: 'bg-violet-400', ringSoft: 'ring-violet-500/20', glow: 'shadow-[0_0_45px_-10px_rgba(167,139,250,0.55)]',
+    },
     purple: {
         border: 'border-purple-500/40', text: 'text-purple-300', softText: 'text-purple-400/70', bgSoft: 'bg-purple-900/15',
         solid: 'bg-purple-500', solidText: 'text-white', barFill: 'bg-purple-500', barGradient: 'bg-gradient-to-l from-purple-400 to-fuchsia-500',
         dot: 'bg-purple-400', ringSoft: 'ring-purple-500/20', glow: 'shadow-[0_0_45px_-10px_rgba(192,132,252,0.55)]',
+    },
+    fuchsia: {
+        border: 'border-fuchsia-500/40', text: 'text-fuchsia-300', softText: 'text-fuchsia-400/70', bgSoft: 'bg-fuchsia-900/15',
+        solid: 'bg-fuchsia-500', solidText: 'text-white', barFill: 'bg-fuchsia-500', barGradient: 'bg-gradient-to-l from-fuchsia-400 to-purple-500',
+        dot: 'bg-fuchsia-400', ringSoft: 'ring-fuchsia-500/20', glow: 'shadow-[0_0_45px_-10px_rgba(232,121,249,0.55)]',
+    },
+    pink: {
+        border: 'border-pink-500/40', text: 'text-pink-300', softText: 'text-pink-400/70', bgSoft: 'bg-pink-900/15',
+        solid: 'bg-pink-500', solidText: 'text-white', barFill: 'bg-pink-500', barGradient: 'bg-gradient-to-l from-pink-400 to-rose-500',
+        dot: 'bg-pink-400', ringSoft: 'ring-pink-500/20', glow: 'shadow-[0_0_45px_-10px_rgba(244,114,182,0.55)]',
+    },
+    orange: {
+        border: 'border-orange-500/40', text: 'text-orange-300', softText: 'text-orange-400/70', bgSoft: 'bg-orange-900/15',
+        solid: 'bg-orange-500', solidText: 'text-slate-950', barFill: 'bg-orange-500', barGradient: 'bg-gradient-to-l from-orange-400 to-amber-500',
+        dot: 'bg-orange-400', ringSoft: 'ring-orange-500/20', glow: 'shadow-[0_0_45px_-10px_rgba(251,146,60,0.5)]',
+    },
+    lime: {
+        border: 'border-lime-500/40', text: 'text-lime-300', softText: 'text-lime-400/70', bgSoft: 'bg-lime-900/15',
+        solid: 'bg-lime-500', solidText: 'text-slate-950', barFill: 'bg-lime-500', barGradient: 'bg-gradient-to-l from-lime-400 to-emerald-500',
+        dot: 'bg-lime-400', ringSoft: 'ring-lime-500/20', glow: 'shadow-[0_0_45px_-10px_rgba(163,230,53,0.5)]',
     },
     amber: {
         border: 'border-amber-500/40', text: 'text-amber-300', softText: 'text-amber-400/70', bgSoft: 'bg-amber-900/15',

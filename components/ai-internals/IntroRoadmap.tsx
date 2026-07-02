@@ -30,18 +30,34 @@ import type {
 } from '@/app/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
 
-// תוויות שלוש שאלות ההרחבה. מגיעות מהמילון דרך ה-prop, לא מ-introContent.
-type StationDetailLabels = Record<keyof RoadmapStation['detail'], string>;
-
 // תוויות מסגרת קצרות של המפה, מהמילון (introVisuals.roadmap).
 type RoadmapLabels = { peek: string; zone: string; loopBadge: string };
 
-// גוון לכל אזור: מסע צבעוני מהקלט (cyan) אל ההכרעה (purple).
+// גוון לכל אזור: מסע צבעוני מהקלט (cyan) אל ההכרעה (purple). משמש למסגרת האזור.
 const ZONE_ACCENT: Record<RoadmapZoneId, Accent> = {
     A: 'cyan',
     B: 'blue',
     C: 'indigo',
     D: 'purple',
+};
+
+// צבע ייחודי לכל תחנה: מסע ספקטרלי מהקלט (כחולים קרים) דרך העיבוד (סגולים)
+// אל הפלט (חמים), ועד הסיום (ירוק). הצבע מזהה את התחנה בכרטיס ובסצנה החיה.
+const STATION_ACCENT: Record<string, Accent> = {
+    request: 'cyan',
+    tokenize: 'sky',
+    ids: 'teal',
+    embedding: 'blue',
+    position: 'indigo',
+    context: 'violet',
+    attention: 'purple',
+    mix: 'fuchsia',
+    layers: 'pink',
+    state: 'rose',
+    logits: 'orange',
+    softmax: 'amber',
+    decoding: 'lime',
+    loop: 'emerald',
 };
 
 // אייקון לכל תחנה לפי id. רמז ויזואלי בלבד, לא ניתן לתרגום ולכן נשמר כאן.
@@ -63,7 +79,7 @@ const STATION_ICON: Record<string, React.ReactNode> = {
 };
 
 /* ── כרטיס תחנה בודד (disclosure) ── */
-function StationCard({ station, n, accent, reduce, detailLabels, roadmapLabels, defaultOpen = false }: { station: RoadmapStation; n: number; accent: Accent; reduce: boolean; detailLabels: StationDetailLabels; roadmapLabels: RoadmapLabels; defaultOpen?: boolean }) {
+function StationCard({ station, n, accent, reduce, roadmapLabels, defaultOpen = false }: { station: RoadmapStation; n: number; accent: Accent; reduce: boolean; roadmapLabels: RoadmapLabels; defaultOpen?: boolean }) {
     const [open, setOpen] = useState(defaultOpen);
     const panelId = useId();
     const a = ACCENTS[accent];
@@ -103,8 +119,8 @@ function StationCard({ station, n, accent, reduce, detailLabels, roadmapLabels, 
                             </code>
                         )}
                         {isLoop && (
-                            <span className={`inline-flex items-center gap-1 text-[11px] font-bold ${a.text}`}>
-                                <CornerDownLeft size={12} aria-hidden />
+                            <span className={`inline-flex items-center gap-1 text-xs font-bold ${a.text}`}>
+                                <CornerDownLeft size={13} aria-hidden />
                                 {roadmapLabels.loopBadge}
                             </span>
                         )}
@@ -114,7 +130,7 @@ function StationCard({ station, n, accent, reduce, detailLabels, roadmapLabels, 
 
                 {/* מחוון פתיחה: רמז ברור שאפשר להציץ פנימה */}
                 <span className="mt-0.5 flex shrink-0 items-center gap-1.5">
-                    {!open && <span className={`hidden text-[10px] font-bold sm:inline ${a.text}`}>{roadmapLabels.peek}</span>}
+                    {!open && <span className={`hidden text-xs font-bold sm:inline ${a.text}`}>{roadmapLabels.peek}</span>}
                     <motion.span
                         aria-hidden
                         animate={{ rotate: open ? 180 : 0 }}
@@ -139,7 +155,7 @@ function StationCard({ station, n, accent, reduce, detailLabels, roadmapLabels, 
                         className="overflow-hidden"
                     >
                         <div className={`border-t ${a.border} px-3.5 pb-4 pt-3 md:px-4`}>
-                            {/* קצב 3 פעימות: הדגשת מספר (בכפתור) -> דיאגרמה -> טקסט */}
+                            {/* הסצנה החיה היא ההעמקה: היא מתנגנת מיד, ושורת התובנה שלה נושאת את הטקסט */}
                             {station.viz && (
                                 <motion.div
                                     initial={reduce ? false : { opacity: 0, y: 8 }}
@@ -149,25 +165,6 @@ function StationCard({ station, n, accent, reduce, detailLabels, roadmapLabels, 
                                     <StationViz kind={station.viz} accent={accent} reduce={reduce} />
                                 </motion.div>
                             )}
-                            <motion.dl
-                                initial={reduce ? false : { opacity: 0, y: 8 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={reduce ? { duration: 0 } : { duration: 0.3, delay: station.viz ? 0.18 : 0.06 }}
-                                className={`flex flex-col gap-2.5 ${station.viz ? 'mt-3' : ''}`}
-                            >
-                                {([
-                                    ['whatHappens', station.detail.whatHappens],
-                                    ['whyItMatters', station.detail.whyItMatters],
-                                    ['whatNext', station.detail.whatNext],
-                                ] as const).map(([key, value]) => (
-                                    <div key={key}>
-                                        <dt className={`text-[11px] font-black uppercase tracking-wide ${a.text}`}>
-                                            {detailLabels[key]}
-                                        </dt>
-                                        <dd className="mt-0.5 text-sm leading-relaxed text-slate-300">{value}</dd>
-                                    </div>
-                                ))}
-                            </motion.dl>
                         </div>
                     </motion.div>
                 )}
@@ -179,8 +176,6 @@ function StationCard({ station, n, accent, reduce, detailLabels, roadmapLabels, 
 interface IntroRoadmapProps {
     zones: RoadmapZone[];
     stations: RoadmapStation[];
-    /** תוויות שלוש שאלות ההרחבה, מהמילון. */
-    stationDetailLabels: StationDetailLabels;
     reduce: boolean;
     /** כיוון הכתיבה הפעיל. נקבע בעמוד מ-useT, לא מקובע ב-rtl. */
     dir: Direction;
@@ -188,7 +183,7 @@ interface IntroRoadmapProps {
     defaultOpenId?: string;
 }
 
-export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, stationDetailLabels, reduce, dir, defaultOpenId }) => {
+export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, reduce, dir, defaultOpenId }) => {
     // תוויות מסגרת קצרות (אזור / הצצה / תג הלולאה) מהמילון.
     const roadmapLabels = useT().t.behindAi.introVisuals.roadmap;
     // מספור רץ ורציף 1..N על פני כל האזורים (סדר המערך = סדר המסלול).
@@ -231,9 +226,8 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, sta
                                         key={station.id}
                                         station={station}
                                         n={(indexById.get(station.id) ?? 0) + 1}
-                                        accent={acc}
+                                        accent={STATION_ACCENT[station.id] ?? acc}
                                         reduce={reduce}
-                                        detailLabels={stationDetailLabels}
                                         roadmapLabels={roadmapLabels}
                                         defaultOpen={station.id === defaultOpenId}
                                     />

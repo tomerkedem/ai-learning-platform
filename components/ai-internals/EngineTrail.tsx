@@ -48,12 +48,19 @@ interface EngineTrailProps {
 // הילת זוהר סטטית לכל גוון (ללא template-strings דינמיים, כדי ש-Tailwind יזהה).
 const GLOW: Record<Accent, string> = {
     cyan: 'shadow-[0_0_28px_-4px_rgba(34,211,238,0.6)]',
+    sky: 'shadow-[0_0_28px_-4px_rgba(56,189,248,0.6)]',
+    teal: 'shadow-[0_0_28px_-4px_rgba(45,212,191,0.6)]',
     blue: 'shadow-[0_0_28px_-4px_rgba(59,130,246,0.6)]',
     indigo: 'shadow-[0_0_28px_-4px_rgba(99,102,241,0.6)]',
+    violet: 'shadow-[0_0_28px_-4px_rgba(139,92,246,0.6)]',
     purple: 'shadow-[0_0_28px_-4px_rgba(168,85,247,0.6)]',
-    amber: 'shadow-[0_0_28px_-4px_rgba(245,158,11,0.6)]',
-    emerald: 'shadow-[0_0_28px_-4px_rgba(16,185,129,0.6)]',
+    fuchsia: 'shadow-[0_0_28px_-4px_rgba(217,70,239,0.6)]',
+    pink: 'shadow-[0_0_28px_-4px_rgba(236,72,153,0.6)]',
     rose: 'shadow-[0_0_28px_-4px_rgba(244,63,94,0.6)]',
+    orange: 'shadow-[0_0_28px_-4px_rgba(249,115,22,0.6)]',
+    amber: 'shadow-[0_0_28px_-4px_rgba(245,158,11,0.6)]',
+    lime: 'shadow-[0_0_28px_-4px_rgba(132,204,22,0.6)]',
+    emerald: 'shadow-[0_0_28px_-4px_rgba(16,185,129,0.6)]',
     slate: 'shadow-[0_0_28px_-4px_rgba(100,116,139,0.5)]',
 };
 

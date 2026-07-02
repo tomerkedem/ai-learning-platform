@@ -15,12 +15,19 @@ export type DecisionKind = 'answer' | 'ask' | 'tool' | 'stop';
 /** גוון ויזואלי מתוך קבוצה סגורה (כדי להישאר בטוח מול Tailwind JIT). */
 export type Accent =
     | 'cyan'
+    | 'sky'
+    | 'teal'
     | 'blue'
     | 'indigo'
+    | 'violet'
     | 'purple'
-    | 'amber'
-    | 'emerald'
+    | 'fuchsia'
+    | 'pink'
     | 'rose'
+    | 'orange'
+    | 'amber'
+    | 'lime'
+    | 'emerald'
     | 'slate';
 
 /** שלב בודד במסלול עיבוד. ניטרלי לחלוטין לתוכן. */

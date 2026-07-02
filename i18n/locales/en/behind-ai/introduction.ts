@@ -91,12 +91,6 @@ export const introduction = {
     truthNote:
         'This is a learning map, not a full snapshot of every computation. In a real model, many operations happen in parallel inside each station, and the exact number varies with the model, the context length, and how it is run.',
 
-    // ── The fixed labels for the three questions in a station expansion ──
-    stationDetailLabels: {
-        whatHappens: 'What happens here?',
-        whyItMatters: 'Why does it matter?',
-        whatNext: 'What will we see next?',
-    },
 
     // ── Agent separation: the card copy and the live demo (AgentLoop) ──
     agent: {
@@ -132,7 +126,7 @@ export const introduction = {
             run: 'Run a loop',
             running: 'Running...',
             replay: 'Run again',
-            hintPrompt: 'Hover or pick a station to see what happens there, or run a loop.',
+            hintPrompt: 'Run a loop to watch the engine work, step by step.',
             input: { label: 'Request', text: 'Summarize the email and send a reply' },
             output: { label: 'Answer', agent: 'Summary ready, waiting for approval to send', chat: 'Here is the summary you asked for' },
             consoleTitle: 'Decision console',

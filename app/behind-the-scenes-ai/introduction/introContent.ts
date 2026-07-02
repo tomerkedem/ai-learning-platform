@@ -26,18 +26,12 @@ export interface RoadmapZone {
     caption: string;
 }
 
-/** מפתח להמחשה אינטראקטיבית שמלמדת את מושג התחנה. ראו IntroStationViz. */
-export type StationVizKind = 'tokenize' | 'embedding' | 'attention' | 'scores' | 'loop';
-
-/** תוכן ההרחבה שנפתח בלחיצה על תחנה. שלוש שאלות קצרות, לא שיעור מלא. */
-export interface StationDetail {
-    /** "מה קורה כאן?" */
-    whatHappens: string;
-    /** "למה זה חשוב?" */
-    whyItMatters: string;
-    /** "מה נראה בהמשך?" */
-    whatNext: string;
-}
+/** מפתח לסצנה חיה שמלמדת את מושג התחנה. לכל 14 התחנות יש אחת. ראו IntroStationViz. */
+export type StationVizKind =
+    | 'request' | 'tokenize' | 'ids'
+    | 'embedding' | 'position' | 'context'
+    | 'attention' | 'mix' | 'layers' | 'state'
+    | 'logits' | 'scores' | 'decoding' | 'loop';
 
 /** תחנה מרכזית אחת במפה. כל תחנה: כותרת, הסבר אנושי קצר, ולעיתים מונח טכני. */
 export interface RoadmapStation {
@@ -52,18 +46,9 @@ export interface RoadmapStation {
      * יתורגם, וכדי שההסבר העברי (explanation) ישב לצידו.
      */
     term?: string;
-    /** תוכן ההרחבה (מתיאבון, לא השיעור המלא). */
-    detail: StationDetail;
-    /** המחשה אינטראקטיבית אופציונלית שנפתחת יחד עם ההרחבה. */
+    /** הסצנה החיה שנפתחת עם הכרטיס. היא (עם שורת התובנה שלה) נושאת את ההעמקה. */
     viz?: StationVizKind;
 }
-
-/** התוויות הקבועות לשלוש השאלות בהרחבת תחנה. */
-export const STATION_DETAIL_LABELS = {
-    whatHappens: 'מה קורה כאן?',
-    whyItMatters: 'למה זה חשוב?',
-    whatNext: 'מה נראה בהמשך?',
-} as const;
 
 /* ════════════════════════ ההירו ════════════════════════ */
 
@@ -220,32 +205,17 @@ export const ROADMAP_STATIONS: RoadmapStation[] = [
         id: 'request', zone: 'A',
         title: 'הבקשה נכנסת',
         explanation: 'המשתמש כותב בקשה, והיא נכנסת יחד עם ההקשר והוראות המערכת.',
-        detail: {
-            whatHappens: 'הבקשה שלכם מצטרפת להוראות המערכת ולכל מה שכבר נאמר בשיחה.',
-            whyItMatters: 'המודל לא רואה רק את המשפט האחרון, אלא את כל ההקשר שסביבו.',
-            whatNext: 'בהמשך נראה איך כל הטקסט הזה הופך ליחידות עבודה.',
-        },
     },
     {
         id: 'tokenize', zone: 'A',
         title: 'פירוק לטוקנים',
         explanation: 'הטקסט מתפרק ליחידות עבודה שהמודל יודע לעבד.',
         viz: 'tokenize',
-        detail: {
-            whatHappens: 'הטקסט נחתך לטוקנים: לפעמים מילה שלמה, לפעמים חלק ממילה או סימן.',
-            whyItMatters: 'זו השפה שהמודל באמת עובד איתה, לא אותיות ולא בהכרח מילים.',
-            whatNext: 'בפרק על טוקניזציה נראה למה מילה וטוקן הם לא תמיד אותו דבר.',
-        },
     },
     {
         id: 'ids', zone: 'A',
         title: 'מזהה לכל טוקן', term: 'Token IDs',
         explanation: 'כל טוקן מקבל מזהה מספרי מתוך אוצר המילים של המודל.',
-        detail: {
-            whatHappens: 'כל טוקן ממופה למזהה מספרי קבוע מתוך אוצר המילים של המודל.',
-            whyItMatters: 'המספר הוא כתובת במילון, עדיין לא משמעות.',
-            whatNext: 'מיד נראה איך המזהה הופך לייצוג שמקודד משמעות.',
-        },
     },
     // אזור B - מטוקנים לייצוגים
     {
@@ -253,31 +223,16 @@ export const ROADMAP_STATIONS: RoadmapStation[] = [
         title: 'ייצוג מספרי', term: 'Embedding',
         explanation: 'המזהה הופך לווקטור מספרי שהמודל יכול לחשב עליו.',
         viz: 'embedding',
-        detail: {
-            whatHappens: 'המזהה הופך לווקטור: רשימת מספרים שהמודל יכול לחשב עליה.',
-            whyItMatters: 'טוקנים בעלי משמעות קרובה מקבלים מספרים קרובים זה לזה.',
-            whatNext: 'בפרק על משמעות נראה איך הכיוון של הווקטור מקודד קשרים בין מילים.',
-        },
     },
     {
         id: 'position', zone: 'B',
         title: 'מיקום וסדר',
         explanation: 'המודל צריך לדעת איפה כל טוקן נמצא ביחס לאחרים.',
-        detail: {
-            whatHappens: 'לכל טוקן נשמר מידע על מיקומו ביחס לשאר הטוקנים.',
-            whyItMatters: '"כלב נשך אדם" שונה מ"אדם נשך כלב", והסדר משנה משמעות.',
-            whatNext: 'הסדר הזה ילווה את המודל לאורך כל החישוב.',
-        },
     },
     {
         id: 'context', zone: 'B',
         title: 'חלון הקשר',
         explanation: 'המודל מתחשב בשיחה, בהוראות ובטוקנים שכבר נוצרו.',
-        detail: {
-            whatHappens: 'המודל מתחשב בשיחה, בהוראות ובטוקנים שכבר נוצרו עד כה.',
-            whyItMatters: 'אותה מילה יכולה לקבל משמעות אחרת לפי מה שסביבה.',
-            whatNext: 'בהמשך נראה איך ההקשר הזה נכנס לחישוב בפועל.',
-        },
     },
     // אזור C - חישוב ההקשר
     {
@@ -285,84 +240,44 @@ export const ROADMAP_STATIONS: RoadmapStation[] = [
         title: 'קשב להקשר', term: 'Attention',
         explanation: 'הטוקנים בודקים אילו חלקים בהקשר חשובים עכשיו.',
         viz: 'attention',
-        detail: {
-            whatHappens: 'כל טוקן בודק אילו טוקנים אחרים חשובים לו עכשיו.',
-            whyItMatters: 'כך נבנית הבנה: מילה כמו "הוא" יודעת למי היא מתייחסת.',
-            whatNext: 'בפרקים הבאים נראה איך ההקשר משנה את ההחלטה של המודל.',
-        },
     },
     {
         id: 'mix', zone: 'C',
         title: 'ערבוב מידע',
         explanation: 'המידע מההקשר מתערבב ומעדכן את הייצוגים.',
-        detail: {
-            whatHappens: 'המידע מההקשר מתערבב ומעדכן את הייצוג של כל טוקן.',
-            whyItMatters: 'הייצוג מפסיק להיות "מילה בודדת" והופך ל"מילה בתוך הקשר".',
-            whatNext: 'העיבוד הזה חוזר שוב ושוב בשכבות.',
-        },
     },
     {
         id: 'layers', zone: 'C',
         title: 'שכבות עומק', term: 'Transformer',
         explanation: 'העיבוד חוזר בשכבות רבות, וכל שכבה מחדדת את הייצוג.',
-        detail: {
-            whatHappens: 'אותו עיבוד חוזר בשכבות רבות, אחת אחרי השנייה.',
-            whyItMatters: 'כל שכבה מחדדת את הייצוג ומוסיפה הבנה.',
-            whatNext: 'בסוף השכבות נוצר ייצוג פנימי מעודכן.',
-        },
     },
     {
         id: 'state', zone: 'C',
         title: 'ייצוג פנימי עדכני',
         explanation: 'נוצר מצב פנימי שמסכם את ההקשר לרגע הנוכחי.',
-        detail: {
-            whatHappens: 'נוצר מצב פנימי שמסכם את כל ההקשר לרגע הנוכחי.',
-            whyItMatters: 'מהמצב הזה ייגזר הטוקן הבא.',
-            whatNext: 'עכשיו המודל מוכן לדרג את האפשרויות.',
-        },
     },
     // אזור D - מהייצוג לתשובה
     {
         id: 'logits', zone: 'D',
         title: 'ציונים גולמיים', term: 'Logits',
         explanation: 'המודל נותן ציונים גולמיים לטוקנים האפשריים הבאים.',
-        detail: {
-            whatHappens: 'המודל נותן ציון גולמי לכל טוקן אפשרי באוצר המילים.',
-            whyItMatters: 'הציון הזה עדיין לא אחוז, רק מדד "כמה מתאים".',
-            whatNext: 'מיד הציונים יהפכו להסתברויות.',
-        },
     },
     {
         id: 'softmax', zone: 'D',
         title: 'מהציון להסתברות', term: 'Softmax',
         explanation: 'הציונים הופכים להתפלגות הסתברותית.',
         viz: 'scores',
-        detail: {
-            whatHappens: 'הציונים הגולמיים הופכים להתפלגות שמסתכמת ל-100%.',
-            whyItMatters: 'עכשיו אפשר לדבר על "כמה סביר" כל טוקן הבא.',
-            whatNext: 'כללי הפענוח יבחרו מתוך ההתפלגות.',
-        },
     },
     {
         id: 'decoding', zone: 'D',
         title: 'בחירת הטוקן הבא', term: 'Decoding',
         explanation: 'כללי הפענוח משפיעים על בחירת הטוקן הבא בפועל.',
-        detail: {
-            whatHappens: 'כללי הפענוח קובעים איך נבחר הטוקן הבא מתוך ההסתברויות.',
-            whyItMatters: 'אותה התפלגות יכולה להוביל לבחירה צפויה יותר או יצירתית יותר.',
-            whatNext: 'הטוקן שנבחר מצטרף לתשובה.',
-        },
     },
     {
         id: 'loop', zone: 'D',
         title: 'לולאה עד תשובה',
         explanation: 'הטוקן שנבחר מצטרף לתשובה, ואז הכול רץ שוב.',
         viz: 'loop',
-        detail: {
-            whatHappens: 'הטוקן שנבחר מצטרף לתשובה, ואז כל המסלול רץ שוב לטוקן הבא.',
-            whyItMatters: 'כך נבנית תשובה שלמה, טוקן אחרי טוקן, עד סימן עצירה.',
-            whatNext: 'בפרק הראשון תראו את הלולאה הזו פועלת על בקשה אמיתית.',
-        },
     },
 ];
 
@@ -422,7 +337,7 @@ export const AGENT_DEMO = {
     run: 'הריצו סבב',
     running: 'רץ...',
     replay: 'הריצו שוב',
-    hintPrompt: 'רחפו או בחרו תחנה כדי לראות מה קורה בה, או הריצו סבב.',
+    hintPrompt: 'הריצו סבב כדי לראות את המנוע פועל, שלב אחר שלב.',
     input: { label: 'בקשה', text: 'סכם את המייל ושלח תשובה' },
     output: { label: 'תשובה', agent: 'סיכום מוכן, ממתין לאישור שליחה', chat: 'הנה הסיכום שביקשת' },
     consoleTitle: 'קונסולת החלטה',

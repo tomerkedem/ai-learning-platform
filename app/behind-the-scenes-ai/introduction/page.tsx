@@ -2,11 +2,12 @@
 import React from 'react';
 import { motion, useReducedMotion } from "framer-motion";
 import {
-  ChevronLeft, ChevronRight, Info, Workflow, Layers, MousePointerClick,
+  ChevronLeft, ChevronRight, Info, Layers, MousePointerClick,
 } from "lucide-react";
 import Link from 'next/link';
 import { ChapterLayout } from "@/components/ChapterLayout";
 import { IntroRoadmap } from "@/components/ai-internals/IntroRoadmap";
+import { VizSoundToggle } from "@/components/ai-internals/IntroStationViz";
 import { ExpandableLab } from "@/components/ai-internals/ExpandableLab";
 import { EngineReveal } from "@/components/ai-internals/EngineReveal";
 import { HypothesisGuess } from "@/components/ai-internals/HypothesisGuess";
@@ -36,24 +37,25 @@ const HYPOTHESIS_META = [
 
 const ROADMAP_ZONE_META = ['A', 'B', 'C', 'D'] as const;
 
+// לכל תחנה יש סצנה חיה שנפתחת עם הכרטיס (IntroStationViz).
 const ROADMAP_STATION_META = [
   // אזור A - מהטקסט ליחידות עבודה
-  { id: 'request', zone: 'A' },
+  { id: 'request', zone: 'A', viz: 'request' },
   { id: 'tokenize', zone: 'A', viz: 'tokenize' },
-  { id: 'ids', zone: 'A' },
+  { id: 'ids', zone: 'A', viz: 'ids' },
   // אזור B - מטוקנים לייצוגים
   { id: 'embedding', zone: 'B', viz: 'embedding' },
-  { id: 'position', zone: 'B' },
-  { id: 'context', zone: 'B' },
+  { id: 'position', zone: 'B', viz: 'position' },
+  { id: 'context', zone: 'B', viz: 'context' },
   // אזור C - חישוב ההקשר
   { id: 'attention', zone: 'C', viz: 'attention' },
-  { id: 'mix', zone: 'C' },
-  { id: 'layers', zone: 'C' },
-  { id: 'state', zone: 'C' },
+  { id: 'mix', zone: 'C', viz: 'mix' },
+  { id: 'layers', zone: 'C', viz: 'layers' },
+  { id: 'state', zone: 'C', viz: 'state' },
   // אזור D - מהייצוג לתשובה
-  { id: 'logits', zone: 'D' },
+  { id: 'logits', zone: 'D', viz: 'logits' },
   { id: 'softmax', zone: 'D', viz: 'scores' },
-  { id: 'decoding', zone: 'D' },
+  { id: 'decoding', zone: 'D', viz: 'decoding' },
   { id: 'loop', zone: 'D', viz: 'loop' },
 ] as const;
 
@@ -89,7 +91,7 @@ const READALOUD_STATION_IDS = ROADMAP_STATION_META.map((m) => m.id);
 function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
   return (
     <div className="text-center mb-6">
-      <span className="text-cyan-400 text-[11px] font-bold uppercase tracking-[0.25em] block mb-3">
+      <span className="text-cyan-400 text-sm md:text-base font-bold uppercase tracking-[0.2em] block mb-3">
         {eyebrow}
       </span>
       <h2 className="text-2xl md:text-4xl font-black text-white tracking-tight mb-3">{title}</h2>
@@ -305,35 +307,50 @@ export default function BehindTheScenesIntroPage() {
           {/* ══════════ 3 · CHAT vs AGENT (full card, before the map) ══════════ */}
           {/* מוקדם בכוונה: מיד אחרי הניחוש, ניגוד חזק בין Chat ל-Agent לפני שנכנסים */}
           {/* לפירוק המודל במפה. הקופי כאן קדימה-מבט (בלי "עד עכשיו ראינו"). */}
+          {/* הכרטיס נשען כולו על AgentLoop: הכותרת/eyebrow/body עוברים פנימה לקונסולה
+              קומפקטית, וה-closing/note נוחתים ב-slot החי. גבול הכרטיס וההילה מתחלפים
+              לפי המצב (תכלת ל-Chat, סגול ל-Agent), כך שכל הכרטיס נושם עם הסצנה. */}
+          {/* משפט המסגור כשורת-פתיח מוקפדת: קו-מבטא גרדיאנט (תכלת->סגול, רמז ל-Chat->Agent),
+              טקסט גדול ומודגש, ושמות המצבים צבועים בגוון הסצנה שלהם. */}
+          <div className="mx-auto mb-7 mt-20 max-w-3xl text-center">
+            <div className="mx-auto mb-4 h-px w-20 bg-gradient-to-r from-cyan-400/70 via-slate-500/30 to-purple-400/70" />
+            <p className="text-lg font-bold leading-relaxed tracking-tight text-slate-100 md:text-2xl">
+              {intro.agent.intro.split(/(Chat|Agent)/g).map((part, i) =>
+                part === 'Chat' ? <span key={i} className="font-black text-cyan-300">Chat</span>
+                  : part === 'Agent' ? <span key={i} className="font-black text-purple-300">Agent</span>
+                    : <React.Fragment key={i}>{part}</React.Fragment>,
+              )}
+            </p>
+          </div>
+          {/* ExpandableLab עוטף את הכרטיס כולו (כולל כל רכיביו) ומאפשר הגדלה למסך מלא.
+              הכרטיס מוגבל ל-max-w-4xl כדי שגם בתצוגה הרגילה וגם במסך מלא הפרופורציות
+              יישארו נעימות (בלי כותרת שנמתחת יתר על המידה). */}
           <motion.section
             initial={reduce ? false : { opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6 }}
-            className="mt-20 relative overflow-hidden rounded-[2rem] border border-purple-500/30 bg-slate-900/60 p-6 backdrop-blur-xl md:p-8"
+            className="mx-auto mt-5 max-w-5xl"
           >
-            <div className="absolute -top-16 -left-10 w-56 h-56 bg-purple-500/10 blur-[80px] rounded-full pointer-events-none" />
-            <div className="relative flex flex-col gap-5 md:flex-row md:items-start">
-              <div className="shrink-0 rounded-2xl border border-purple-500/30 bg-purple-500/15 p-3">
-                <Workflow className="text-purple-300" size={24} />
-              </div>
-              <div className="min-w-0">
-                {/* משפט מסגור קבוע, קדימה-מבט: לא תלוי במצב המתג */}
-                <p className="mb-3 text-sm md:text-base font-bold leading-relaxed text-purple-100">{intro.agent.intro}</p>
-                <span className="text-purple-300/80 text-[11px] font-bold uppercase tracking-[0.25em] block mb-2">
-                  {agentCard.eyebrow}
-                </span>
-                <h2 className="text-xl md:text-2xl font-black text-white mb-2">{agentCard.title}</h2>
-                <p className="text-sm md:text-base text-slate-300 leading-relaxed">{agentCard.body}</p>
-
-                {/* לולאת הבקרה החיה: Agent כשכבה סביב המודל, לא תחנה פנימית.
-                    ה-closing וה-note מועברים פנימה ונוחתים בתוך ה-slot החי במצב סיום,
-                    במקום שתי פסקאות קבועות שהאריכו את הכרטיס מתחת לבמה. */}
-                <div className="mt-6">
-                  <AgentLoop reduce={!!reduce} demo={agentDemo} mode={agentMode} onModeChange={setAgentMode} dir={dir} closing={agentCard.closing} note={agentCard.note} />
+            <ExpandableLab title={agentCard.title}>
+              <div className={`relative overflow-hidden rounded-[2rem] border bg-slate-900/60 p-4 backdrop-blur-xl md:p-6 transition-colors ${agentMode === 'agent' ? 'border-purple-500/30' : 'border-cyan-500/30'}`}>
+                <div className={`absolute -top-16 -left-10 w-56 h-56 blur-[80px] rounded-full pointer-events-none transition-colors ${agentMode === 'agent' ? 'bg-purple-500/10' : 'bg-cyan-500/10'}`} />
+                <div className="relative">
+                  <AgentLoop
+                    reduce={!!reduce}
+                    demo={agentDemo}
+                    mode={agentMode}
+                    onModeChange={setAgentMode}
+                    dir={dir}
+                    eyebrow={agentCard.eyebrow}
+                    title={agentCard.title}
+                    body={agentCard.body}
+                    closing={agentCard.closing}
+                    note={agentCard.note}
+                  />
                 </div>
               </div>
-            </div>
+            </ExpandableLab>
           </motion.section>
 
           {/* מעבר קצר אל המפה: פותחים את הקופסה האמצעית (המודל) */}
@@ -350,17 +367,18 @@ export default function BehindTheScenesIntroPage() {
               {intro.roadmapHeading.subtitle}
             </SectionHeading>
 
-            {/* רמז עדין שהכרטיסים נפתחים */}
-            <div className="mb-8 flex justify-center">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-900/15 px-3.5 py-1.5 text-xs font-bold text-cyan-200">
+            {/* רמז עדין שהכרטיסים נפתחים + מתג השתקה גלובלי אחד לכל הסצנות */}
+            <div className="mb-8 flex flex-wrap items-center justify-center gap-2">
+              <span className="inline-flex min-h-[32px] items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-900/15 px-3.5 py-1.5 text-xs font-bold text-cyan-200">
                 <MousePointerClick size={13} aria-hidden />
                 {intro.roadmapHeading.hint}
               </span>
+              <VizSoundToggle />
             </div>
 
             <div className="relative">
               <ExpandableLab>
-                <IntroRoadmap zones={roadmapZones} stations={roadmapStations} stationDetailLabels={intro.stationDetailLabels} reduce={!!reduce} dir={dir} defaultOpenId="tokenize" />
+                <IntroRoadmap zones={roadmapZones} stations={roadmapStations} reduce={!!reduce} dir={dir} defaultOpenId="tokenize" />
               </ExpandableLab>
               {/* המנטור מלווה את המפה (xl+), בצד הקריאה הטבעי של הכיוון הפעיל */}
               {/* ב-LTR הוא יושב מימין למפה, ולכן מהופך אופקית כדי לפנות אל התוכן ולא ממנו. */}

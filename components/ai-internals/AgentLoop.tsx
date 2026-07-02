@@ -23,24 +23,36 @@
 // reduced-motion: מבטל תנועות רציפות (טבעות מסתובבות, פולס, parallax, פעימות,
 // סריקת-אור), ומשאיר רק החלפות-מצב עדינות. כל הטקסט מגיע מבחוץ (מוכן ל-i18n).
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Play, Cpu, Keyboard, Sparkles, Target, Wrench, ShieldCheck, Zap, MessageSquare, Lock,
+    Play, Cpu, Keyboard, Sparkles, Target, Wrench, ShieldCheck, Zap, MessageSquare, MessageCircle, Bot,
 } from 'lucide-react';
 import type { AgentDemo } from '@/app/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
-import { GuessButton } from './GuessButton';
 
 const STAGE_ICON: Record<string, React.ReactNode> = {
-    task: <Target size={18} />,
-    tool: <Wrench size={18} />,
-    risk: <ShieldCheck size={18} />,
-    act: <Zap size={18} />,
-    answer: <MessageSquare size={18} />,
-    in: <Keyboard size={18} />,
-    out: <Sparkles size={18} />,
+    task: <Target size={26} />,
+    tool: <Wrench size={26} />,
+    risk: <ShieldCheck size={26} />,
+    act: <Zap size={26} />,
+    answer: <MessageSquare size={26} />,
+    in: <Keyboard size={26} />,
+    out: <Sparkles size={26} />,
 };
+
+// צבע ייחודי לכל תחנה (rgb), נגזר מהמשמעות: קלט=תכלת, הבנת-מטרה=ענבר, בחירת-כלי=סגול,
+// בדיקת-סיכון=ורוד, ביצוע=אמרלד, תשובה=פוקסיה. הצבע נחשף בליבה, בהילה ובפולס שנוחת בתחנה.
+const STAGE_RGB: Record<string, string> = {
+    in: '34,211,238',    // תכלת - קלט/טקסט
+    task: '251,191,36',  // ענבר - הבנת המטרה
+    tool: '167,139,250', // סגול - בחירת כלי
+    risk: '251,113,133', // ורוד - בדיקת סיכון
+    act: '52,211,153',   // אמרלד - ביצוע פעולה
+    answer: '232,121,249', // פוקסיה - התשובה (Agent)
+    out: '232,121,249',  // פוקסיה - התשובה (Chat)
+};
+const stageRgb = (id: string, fallback: string) => STAGE_RGB[id] ?? fallback;
 
 const ORBIT_R = 38; // אחוז רדיוס - טבעת התחנות במצב Agent
 
@@ -52,37 +64,63 @@ type Positioned = Stage & { x: number; y: number };
 
 // ── EngineCore: הליבה המשותפת. זהה בגודל ובמיקום בשני המצבים (רציפות ויזואלית).
 //    הצבע הניטרלי-תכלת נשמר גם ב-Agent; מה שמתחלף הוא העולם *סביב* הליבה, לא היא. ──
-const EngineCore: React.FC<{ coreLabel: string; coreText: string; reduce: boolean }> = ({
-    coreLabel, coreText, reduce,
-}) => (
-    <div className="relative flex h-32 w-32 flex-col items-center justify-center rounded-full border border-cyan-400/30 bg-slate-900/70 backdrop-blur-xl shadow-[0_0_50px_-10px_rgba(34,211,238,0.5),inset_0_0_28px_-12px_rgba(34,211,238,0.5)]">
-        {/* פעימת-נשימה עדינה: שכבת זוהר פנימית שנושמת, בלי להזיז את הטקסט */}
+const EngineCore: React.FC<{
+    coreLabel: string; coreText: string; reduce: boolean;
+    running: boolean; completed: boolean; onRun: () => void; runLabel: string; replayLabel: string;
+}> = ({ coreLabel, coreText, reduce, running, completed, onRun, runLabel, replayLabel }) => (
+    <div className="relative flex h-48 w-48 flex-col items-center justify-center rounded-full border border-cyan-400/40 bg-slate-900/70 backdrop-blur-xl shadow-[0_0_90px_-10px_rgba(34,211,238,0.6),inset_0_0_48px_-16px_rgba(34,211,238,0.65)]">
+        {/* מערבולת-אנרגיה מסתובבת: תחושת ליבה חיה, עדינה ולא מסיחה */}
+        {!reduce && (
+            <motion.div
+                className="pointer-events-none absolute inset-1.5 rounded-full opacity-70"
+                aria-hidden
+                style={{ background: 'conic-gradient(from 0deg, transparent 0deg, rgba(34,211,238,0.30) 55deg, transparent 150deg, rgba(168,85,247,0.24) 250deg, transparent 340deg)' }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 16, repeat: Infinity, ease: 'linear' }}
+            />
+        )}
+        {/* פעימת-נשימה: שכבת זוהר פנימית שנושמת, בלי להזיז את הטקסט */}
         {reduce ? (
-            <div className="pointer-events-none absolute inset-3 rounded-full bg-gradient-to-br from-cyan-400/10 to-purple-400/10 blur-md" aria-hidden />
+            <div className="pointer-events-none absolute inset-4 rounded-full bg-gradient-to-br from-cyan-400/12 to-purple-400/12 blur-md" aria-hidden />
         ) : (
             <motion.div
-                className="pointer-events-none absolute inset-3 rounded-full bg-gradient-to-br from-cyan-400/15 to-purple-400/15 blur-md"
+                className="pointer-events-none absolute inset-4 rounded-full bg-gradient-to-br from-cyan-400/18 to-purple-400/18 blur-lg"
                 aria-hidden
-                animate={{ opacity: [0.55, 1, 0.55], scale: [0.94, 1.04, 0.94] }}
+                animate={{ opacity: [0.5, 1, 0.5], scale: [0.92, 1.05, 0.92] }}
                 transition={{ duration: 3.4, repeat: Infinity, ease: 'easeInOut' }}
             />
         )}
-        <div className="relative mb-1 inline-flex items-center gap-1 rounded-full border border-cyan-500/30 bg-slate-950/60 px-2 py-0.5">
-            <Cpu size={11} className="text-cyan-300" aria-hidden />
-            <span className="font-mono text-[10px] font-bold text-cyan-200" dir="ltr">{coreLabel}</span>
+        {/* טבעת-זכוכית פנימית דקה: הגדרה וחדות */}
+        <div className="pointer-events-none absolute inset-2 rounded-full border border-white/[0.07] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]" aria-hidden />
+        <div className="relative mb-2.5 inline-flex items-center gap-2 rounded-full border border-cyan-500/50 bg-slate-950/70 px-4 py-1.5">
+            <Cpu size={22} className="text-cyan-300" aria-hidden />
+            <span className="font-mono text-lg font-bold tracking-wide text-cyan-200" dir="ltr">{coreLabel}</span>
         </div>
-        <AnimatePresence mode="wait">
-            <motion.span
-                key={coreText}
-                initial={reduce ? false : { opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={reduce ? { opacity: 0 } : { opacity: 0, y: -4 }}
-                transition={reduce ? { duration: 0 } : { duration: 0.25 }}
-                className="relative px-2 text-center text-sm font-black text-white"
+        {running ? (
+            // בזמן סבב: לב-המנוע מציג את שם התחנה שהפולס עובר בה כרגע.
+            <AnimatePresence mode="wait">
+                <motion.span
+                    key={coreText}
+                    initial={reduce ? false : { opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={reduce ? { opacity: 0 } : { opacity: 0, y: -4 }}
+                    transition={reduce ? { duration: 0 } : { duration: 0.25 }}
+                    className="relative px-3.5 text-center text-xl font-bold text-white drop-shadow-[0_1px_6px_rgba(0,0,0,0.55)]"
+                >
+                    {coreText}
+                </motion.span>
+            </AnimatePresence>
+        ) : (
+            // idle/סיום: לב-המנוע *הוא* כפתור ההרצה. Play במרכז - כמו נגן. הליבה היא מה שמריצים.
+            <button
+                type="button"
+                onClick={onRun}
+                className="relative inline-flex items-center gap-1.5 rounded-full border border-cyan-300/60 bg-cyan-500/20 px-4 py-2 text-sm font-black text-white shadow-[0_0_22px_-4px_rgba(34,211,238,0.85)] transition-all hover:scale-[1.04] hover:bg-cyan-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70"
             >
-                {coreText}
-            </motion.span>
-        </AnimatePresence>
+                <Play size={14} className="fill-current" aria-hidden />
+                {completed ? replayLabel : runLabel}
+            </button>
+        )}
     </div>
 );
 
@@ -95,8 +133,8 @@ const ChatStraightPath: React.FC<{ reduce: boolean; running: boolean; isRtl: boo
         {/* מסדרון-הזכוכית: לוח אופקי רחב שממלא את הסצנה ונותן לה גוף (מרוּוח אך לא ריק) */}
         <div className="absolute inset-x-[6%] inset-y-[16%] rounded-[2.25rem] border border-cyan-500/25 bg-cyan-500/[0.04] shadow-[inset_0_1px_0_0_rgba(34,211,238,0.15)]" />
         <div className="absolute inset-x-[6%] inset-y-[16%] rounded-[2.25rem] bg-gradient-to-b from-cyan-400/[0.06] via-transparent to-cyan-500/[0.03]" />
-        {/* הילה רכה סביב הליבה: עומק וכובד-מרכז לעולם התכלת, במקום ריק */}
-        <div className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-400/[0.07] blur-2xl" />
+        {/* הילת-מוקד גדולה ורכה סביב הליבה: עומק וכובד-מרכז לעולם התכלת */}
+        <div className="absolute left-1/2 top-1/2 h-[46%] w-[46%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-400/[0.10] blur-3xl" />
         {/* המסילה: קו דק שמחבר קלט->ליבה->תשובה */}
         <div className="absolute inset-x-[15%] top-1/2 h-[3px] -translate-y-1/2 overflow-hidden rounded-full bg-gradient-to-r from-cyan-500/10 via-cyan-400/50 to-cyan-500/10">
             {running && !reduce && (
@@ -114,14 +152,20 @@ const ChatStraightPath: React.FC<{ reduce: boolean; running: boolean; isRtl: boo
 //    עוברת בדיוק דרך מרכזי התחנות (inset 12% = רדיוס 38%). ──
 const AgentControlRoom: React.FC<{ reduce: boolean }> = ({ reduce }) => (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="absolute inset-[12%] rounded-full border border-dashed border-purple-400/30" />
-        <div className="absolute inset-[12%] rounded-full bg-purple-500/[0.04]" />
+        {/* הילת-מוקד גדולה ורכה מאחורי הליבה: מרכז זוהר כמו גרעין-מערכת */}
+        <div className="absolute left-1/2 top-1/2 h-[46%] w-[46%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-500/20 blur-3xl" />
+        {/* דיסק-רקע עדין בתוך טבעת התחנות, נותן עומק */}
+        <div className="absolute inset-[12%] rounded-full bg-gradient-to-b from-purple-500/[0.07] via-transparent to-slate-950/20" />
+        {/* טבעת התחנות המקווקוות (עוברת דרך מרכזי התחנות) */}
+        <div className="absolute inset-[12%] rounded-full border border-dashed border-purple-400/35" />
+        {/* טבעת דקה נוספת בפנים: שכבתיות של חדר בקרה */}
+        <div className="absolute inset-[30%] rounded-full border border-purple-300/15" />
         {!reduce ? (
             <>
                 <motion.div
                     className="absolute inset-[4%] rounded-full"
                     style={{
-                        background: 'conic-gradient(from 0deg, rgba(168,85,247,0), rgba(168,85,247,0.4), rgba(34,211,238,0.25), rgba(168,85,247,0))',
+                        background: 'conic-gradient(from 0deg, rgba(168,85,247,0), rgba(168,85,247,0.5), rgba(34,211,238,0.3), rgba(168,85,247,0))',
                         WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
                         mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
                     }}
@@ -132,7 +176,7 @@ const AgentControlRoom: React.FC<{ reduce: boolean }> = ({ reduce }) => (
                 <motion.div
                     className="absolute inset-[22%] rounded-full"
                     style={{
-                        background: 'conic-gradient(from 180deg, rgba(34,211,238,0), rgba(34,211,238,0.22), rgba(168,85,247,0))',
+                        background: 'conic-gradient(from 180deg, rgba(34,211,238,0), rgba(34,211,238,0.28), rgba(168,85,247,0))',
                         WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 1px), #000 calc(100% - 1px))',
                         mask: 'radial-gradient(farthest-side, transparent calc(100% - 1px), #000 calc(100% - 1px))',
                     }}
@@ -141,7 +185,7 @@ const AgentControlRoom: React.FC<{ reduce: boolean }> = ({ reduce }) => (
                 />
             </>
         ) : (
-            <div className="absolute inset-[4%] rounded-full border border-purple-400/20" />
+            <div className="absolute inset-[4%] rounded-full border border-purple-400/25" />
         )}
     </div>
 );
@@ -153,41 +197,68 @@ const WorldStatusStrip: React.FC<{
     mode: Mode; completed: boolean; reduce: boolean;
     label: string; chatValue: string; agentValue: string; pendingValue: string;
 }> = ({ mode, completed, reduce, label, chatValue, agentValue, pendingValue }) => {
-    const changed = mode === 'agent' && completed;
-    const value = mode === 'chat' ? chatValue : changed ? agentValue : pendingValue;
+    // התשובה מגיעה רק בסיום הריצה (בשני המצבים). לפני כן: ממתין.
+    const revealed = completed;
+    const value = revealed ? (mode === 'chat' ? chatValue : agentValue) : pendingValue;
+    // גוון-מצב: כשהתשובה מגיעה - ירוק (אמרלד) בשני המצבים (אות "התקבלה תשובה").
+    // לפני כן: תכלת ל-Chat (ממתין בשיחה), סגול ל-Agent (ממתין לפעולה).
+    const accent = revealed ? '52,211,153' : mode === 'chat' ? '34,211,238' : '168,85,247';
 
-    const box = mode === 'chat'
-        ? 'border-slate-700/50 bg-slate-950/40'
-        : changed
-            ? 'border-emerald-500/40 bg-emerald-900/15'
-            : 'border-purple-500/30 bg-purple-900/12';
-    const labelTone = mode === 'chat'
-        ? 'text-slate-500'
-        : changed ? 'text-emerald-300/80' : 'text-purple-300/80';
-    const valueTone = changed ? 'text-slate-100' : 'text-slate-400';
-
+    // עיצוב יפני-מינימליסטי (kanso/ma/shibui): קווים דקים, מרווח נדיב, אינסו (טבעת-זן
+    // מוברשת) כמחוון-מצב, ומשיכת-מכחול אנכית בקצה. מובחן מהכרטיסים הניאוניים סביבו.
     return (
-        <div className={`mx-auto mt-3 flex max-w-md items-center gap-2.5 rounded-xl border px-3 py-2 text-start transition-colors ${box}`}>
-            {mode === 'chat' ? (
-                <Lock size={15} className="shrink-0 text-slate-500" aria-hidden />
-            ) : changed ? (
-                <ShieldCheck size={16} className="shrink-0 text-emerald-300" aria-hidden />
-            ) : (
-                <span className="relative flex h-3 w-3 shrink-0 items-center justify-center" aria-hidden>
-                    {!reduce && <span className="absolute inline-flex h-full w-full rounded-full bg-purple-400/70 animate-ping" />}
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-purple-400" />
-                </span>
+        <motion.div
+            // key מתחלף כשהתשובה חוזרת (revealed) -> הכרטיס נטען-מחדש ומקבל כניסה דרמטית.
+            key={String(revealed)}
+            initial={reduce ? false : revealed ? { scale: 0.85, opacity: 0 } : { opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={reduce ? { duration: 0 } : revealed ? { type: 'spring', stiffness: 260, damping: 15 } : { duration: 0.3 }}
+            className="relative w-full"
+        >
+            {/* פרץ-זוהר בהגעת התשובה: הילה שמתפשטת ודוהה - רגע ה"וואו" של החזרה */}
+            {revealed && !reduce && (
+                <motion.div
+                    aria-hidden
+                    className="pointer-events-none absolute -inset-3 rounded-2xl"
+                    style={{ background: `radial-gradient(closest-side, rgba(${accent},0.55), transparent)` }}
+                    initial={{ opacity: 0.9, scale: 0.6 }}
+                    animate={{ opacity: 0, scale: 1.7 }}
+                    transition={{ duration: 0.85, ease: 'easeOut' }}
+                />
             )}
-            <div className="min-w-0 flex-1">
-                <div className={`text-[10px] font-bold ${labelTone}`}>{label}</div>
-                <div className={`truncate text-xs leading-snug ${valueTone}`}>{value}</div>
-            </div>
-            {/* נורית-עולם: אפור=נעול, סגול=ממתין, ירוק=השתנה (מתמשך) */}
-            <span
+            <div className="relative w-full overflow-hidden rounded-lg border border-white/[0.08] bg-slate-950/55 px-5 py-4 text-start backdrop-blur-md">
+            {/* משיכת-מכחול אנכית (סומי-אה) בקצה-ההתחלה */}
+            <div
                 aria-hidden
-                className={`h-2.5 w-2.5 shrink-0 rounded-full ${mode === 'chat' ? 'bg-slate-600' : changed ? 'bg-emerald-400 shadow-[0_0_10px_2px_rgba(52,211,153,0.6)]' : 'bg-purple-400/60'}`}
+                className="pointer-events-none absolute inset-y-4 start-0 w-[2px] rounded-full"
+                style={{ background: `linear-gradient(to bottom, transparent, rgb(${accent}) 45%, rgba(${accent},0.2))` }}
             />
-        </div>
+            <div className="flex items-center gap-3">
+                {/* אינסו (円相): טבעת-זן מוברשת עם פתח קל, כמחוון-מצב שקט */}
+                <span className="relative grid h-6 w-6 shrink-0 place-items-center" aria-hidden>
+                    <span
+                        className="absolute inset-0 rounded-full"
+                        style={{
+                            background: `conic-gradient(from 210deg, rgba(${accent},0.95), rgba(${accent},0.35) 250deg, transparent 312deg, rgba(${accent},0.95))`,
+                            WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 1.5px), #000 calc(100% - 1.5px))',
+                            mask: 'radial-gradient(farthest-side, transparent calc(100% - 1.5px), #000 calc(100% - 1.5px))',
+                        }}
+                    />
+                    {revealed ? (
+                        <span className="h-1.5 w-1.5 rounded-full" style={{ background: `rgb(${accent})`, boxShadow: `0 0 8px rgba(${accent},0.85)` }} />
+                    ) : (
+                        !reduce ? (
+                            <motion.span className="h-1 w-1 rounded-full" style={{ background: `rgb(${accent})` }} animate={{ opacity: [0.35, 1, 0.35] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }} />
+                        ) : (
+                            <span className="h-1 w-1 rounded-full" style={{ background: `rgb(${accent})` }} />
+                        )
+                    )}
+                </span>
+                <span className="text-sm font-semibold uppercase tracking-[0.22em]" style={{ color: `rgba(${accent},0.92)` }}>{label}</span>
+            </div>
+            <p className="mt-3.5 text-base leading-relaxed text-slate-100">{value}</p>
+            </div>
+        </motion.div>
     );
 };
 
@@ -195,12 +266,13 @@ const WorldStatusStrip: React.FC<{
 //    idle: רמז שקט · running/hover: הסבר התחנה הפעילה · completed: הפאנץ' (closing+note). ──
 const LiveStatusSlot: React.FC<{
     reduce: boolean; showClosing: boolean; activeStage: Stage | null;
-    closing?: string; note?: string; hintPrompt: string;
-}> = ({ reduce, showClosing, activeStage, closing, note, hintPrompt }) => (
+    closing?: string; note?: string; hintPrompt: string; body?: string;
+    inputLabel?: string; inputText?: string;
+}> = ({ reduce, showClosing, activeStage, closing, note, hintPrompt, body, inputLabel, inputText }) => (
     <div
         role="status"
         aria-live="polite"
-        className={`mx-auto mt-3 flex min-h-[2.75rem] max-w-md flex-col items-center justify-center rounded-xl border px-4 py-2.5 text-center text-sm leading-relaxed transition-colors ${showClosing ? 'border-indigo-500/30 bg-indigo-900/15 text-slate-200' : 'border-purple-500/20 bg-purple-900/10 text-slate-300'}`}
+        className={`flex min-h-[2.75rem] w-full flex-col items-center justify-center rounded-xl border px-4 py-2.5 text-center text-base leading-relaxed transition-colors ${showClosing ? 'border-indigo-500/30 bg-indigo-900/15 text-slate-200' : 'border-purple-500/20 bg-purple-900/10 text-slate-300'}`}
     >
         <AnimatePresence mode="wait" initial={false}>
             <motion.div
@@ -213,12 +285,32 @@ const LiveStatusSlot: React.FC<{
                 {showClosing ? (
                     <>
                         <p className="font-bold text-indigo-100">{closing}</p>
-                        {note && <p className="mt-1 text-xs leading-snug text-slate-400">{note}</p>}
+                        {note && <p className="mt-1 text-sm leading-snug text-slate-400">{note}</p>}
                     </>
                 ) : activeStage ? (
-                    <span><span className="font-bold text-purple-200">{activeStage.label}: </span>{activeStage.hint}</span>
+                    <div>
+                        <span><span className="font-bold text-purple-200">{activeStage.label}: </span>{activeStage.hint}</span>
+                        {/* ערך-ההחלטה של התחנה (כוונה/כלי/סיכון/הצעד) עולה לכאן, מעל המנוע, במקום
+                            קונסולה נפרדת מתחת לקפל. מוצג רק בתחנות שיש להן ערך (Agent). */}
+                        {(activeStage.intent ?? activeStage.tool ?? activeStage.risk ?? activeStage.next) ? (
+                            <div className="mt-2 inline-flex items-center rounded-full border border-purple-400/45 bg-purple-500/15 px-3.5 py-1 text-sm font-black text-purple-100">
+                                {activeStage.intent ?? activeStage.tool ?? activeStage.risk ?? activeStage.next}
+                            </div>
+                        ) : null}
+                    </div>
                 ) : (
-                    <span className="text-slate-400">{hintPrompt}</span>
+                    // idle: היררכיה ברורה. הבקשה (הכי חשובה) בתיבה מובחנת ומודגשת, אחריה ההסבר
+                    // כפסקה קריאה, ולבסוף קריאה-לפעולה שקטה. יישור-התחלה לקריאות של רב-שורות.
+                    <div className="space-y-2.5 text-start">
+                        {(inputLabel || inputText) && (
+                            <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/[0.07] px-3 py-2">
+                                <div className="text-xs font-black uppercase tracking-[0.15em] text-cyan-300/90">{inputLabel}</div>
+                                <div className="mt-0.5 text-base font-bold leading-snug text-white">{inputText}</div>
+                            </div>
+                        )}
+                        {body && <p className="text-[15px] leading-relaxed text-slate-300">{body}</p>}
+                        <p className="text-sm text-slate-400">{hintPrompt}</p>
+                    </div>
                 )}
             </motion.div>
         </AnimatePresence>
@@ -234,24 +326,57 @@ export const AgentLoop: React.FC<{
     dir: Direction;
     mode?: Mode;
     onModeChange?: (m: Mode) => void;
+    /** זהות הסצנה בכותרת הקומפקטית, מתחלפת לפי המצב (מגיע מהכרטיס ב-page). */
+    eyebrow?: string;
+    title?: string;
+    /** ההסבר של המצב. יושב ב-slot החי במצב idle (לא בכותרת), כדי לקצר את הכרטיס. */
+    body?: string;
     /** הפאנץ' שנוחת ב-slot החי במצב סיום. מגיע מהכרטיס לפי המצב הפעיל (page). */
     closing?: string;
     /** הערת דיוק קטנה שנלווית ל-closing, באותו slot. */
     note?: string;
-}> = ({ reduce, demo, dir, mode: modeProp, onModeChange, closing, note }) => {
+}> = ({ reduce, demo, dir, mode: modeProp, onModeChange, eyebrow, title, body, closing, note }) => {
     const isRtl = dir === 'rtl';
     // המתג יכול להיות נשלט מבחוץ (כדי שהקופי שמסביב יתחלף יחד איתו) או פנימי.
     const [modeInternal, setModeInternal] = useState<Mode>('chat');
     const mode = modeProp ?? modeInternal;
     const [step, setStep] = useState(-1);
     const [running, setRunning] = useState(false);
-    const [hoverId, setHoverId] = useState<string | null>(null);
-    const [tilt, setTilt] = useState({ x: 0, y: 0 });
     // מזהה הרצה: עולה בכל הרצה, כדי לאפס את פולס-ההחלטה אל תחנת ההתחלה (קלט)
     // במקום שימשיך מהמיקום הקודם (התשובה) ויסחף אחורה.
     const [runId, setRunId] = useState(0);
     // שכבת-חלקיקים עתידית: נקודת-עיגון בלבד (aria-hidden, ריקה) לשלב ה-Canvas.
     const particleLayerRef = useRef<HTMLCanvasElement>(null);
+
+    // ── סאונד עדין (Web Audio API, ללא תלות וללא קבצי-שמע): צליל-טיק סינתטי בכל מעבר של
+    //    הכדור לתחנה, וצליל-סיום מתגמל. הקשר-האודיו נוצר/מתחדש בתוך לחיצת המשתמש על "הריצו". ──
+    const audioRef = useRef<AudioContext | null>(null);
+    const ensureAudio = useCallback((): AudioContext | null => {
+        if (typeof window === 'undefined') return null;
+        const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!AC) return null;
+        if (!audioRef.current) audioRef.current = new AC();
+        if (audioRef.current.state === 'suspended') void audioRef.current.resume();
+        return audioRef.current;
+    }, []);
+    const playTone = useCallback((freq: number, dur: number, peak: number, delay = 0) => {
+        const ctx = ensureAudio();
+        if (!ctx) return;
+        const t0 = ctx.currentTime + delay;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const lp = ctx.createBiquadFilter();
+        lp.type = 'lowpass';
+        lp.frequency.value = 2600; // טימבר חמים ורך, לא צפצוף חד
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        osc.connect(lp); lp.connect(gain); gain.connect(ctx.destination);
+        gain.gain.setValueAtTime(0.0001, t0);
+        gain.gain.exponentialRampToValueAtTime(peak, t0 + 0.015);          // אטאק רך
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);          // דעיכה טבעית עם זנב
+        osc.start(t0);
+        osc.stop(t0 + dur + 0.04);
+    }, [ensureAudio]);
 
     const stages = mode === 'agent' ? demo.agentStages : demo.chatStages;
 
@@ -266,18 +391,39 @@ export const AgentLoop: React.FC<{
         return () => clearTimeout(t);
     }, [running, step, stages.length, reduce]);
 
+    // סאונד: מעבר-תחנה = טיק בסולם פנטטוני עולה (תחושת התקדמות והצטברות), וסיום = צליל
+    // מתגמל עם הרמוניית-קווינטה (רגע ה"תשובה מוכנה"). רק בזמן הרצה, ורק כשאין reduce.
+    useEffect(() => {
+        if (reduce || !running || step < 0) return;
+        const penta = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25]; // C4 D4 E4 G4 A4 C5 - פנטטוני חמים
+        if (step >= stages.length - 1) {
+            // רגע ה"תשובה חזרה": ארפג'ו עולה של אקורד דו-מז'ור + נצנוץ עליון. פלוריש מתגמל וזכיר.
+            playTone(523.25, 0.6, 0.11, 0);      // C5
+            playTone(659.25, 0.6, 0.10, 0.07);   // E5
+            playTone(783.99, 0.7, 0.10, 0.14);   // G5
+            playTone(1046.5, 0.55, 0.06, 0.21);  // C6 - נצנוץ
+        } else {
+            playTone(penta[Math.min(step, penta.length - 1)], 0.26, 0.1);
+        }
+    }, [step, running, reduce, stages.length, playTone]);
+
+    // ניקוי הקשר-האודיו ביציאה מהרכיב.
+    useEffect(() => () => { const a = audioRef.current; if (a) void a.close().catch(() => undefined); }, []);
+
     const switchMode = (m: Mode) => {
         if (onModeChange) onModeChange(m); else setModeInternal(m);
-        setStep(-1); setRunning(false); setHoverId(null);
+        setStep(-1); setRunning(false);
     };
-    const run = () => { setStep(0); setRunning(true); setRunId((n) => n + 1); };
+    // ההקשר-אודיו נוצר/מתחדש כאן, בתוך מחוות-המשתמש (לחיצה), כדי לעמוד במדיניות ה-autoplay.
+    const run = () => { if (!reduce) ensureAudio(); setStep(0); setRunning(true); setRunId((n) => n + 1); };
 
-    const activeId = hoverId ?? (step >= 0 ? stages[step].id : null);
+    // התחנה הפעילה נקבעת אך ורק לפי שלב הסבב (לחיצה על "הריצו"), לא לפי ריחוף עכבר.
+    const activeId = step >= 0 ? stages[step].id : null;
     const activeStage = stages.find((s) => s.id === activeId) ?? null;
     const coreText = activeStage ? activeStage.label : demo.idleCore;
     const completed = step >= 0 && step === stages.length - 1;
-    // הפאנץ' נוחת רק כשהסבב הסתיים ואיננו מרחפים מעל תחנה (ריחוף = חזרה לחקירה).
-    const showClosing = completed && hoverId == null && !!closing;
+    // הפאנץ' נוחת כשהסבב הסתיים.
+    const showClosing = completed && !!closing;
 
     // תחנות שמסביב לליבה. ב-Chat הליבה היא שלב "מודל", ולכן היא לא תחנה על המסילה.
     const orbit = mode === 'agent' ? demo.agentStages : demo.chatStages.filter((s) => s.id !== 'model');
@@ -301,87 +447,116 @@ export const AgentLoop: React.FC<{
     const firstOrbit = positioned.find((n) => n.id === stages[0]?.id);
     const firstPos = firstOrbit ? { x: firstOrbit.x, y: firstOrbit.y } : { x: 50, y: 50 };
 
-    // קונסולת ההחלטה מצטברת לפי השלב שהגענו אליו (Agent בלבד).
-    const cs = { intent: '', tool: '', risk: '', next: '' };
-    if (mode === 'agent' && step >= 0) {
-        for (let i = 0; i <= step; i++) {
-            const s = demo.agentStages[i];
-            cs.intent = s.intent ?? cs.intent;
-            cs.tool = s.tool ?? cs.tool;
-            cs.risk = s.risk ?? cs.risk;
-            cs.next = s.next ?? cs.next;
-        }
-    }
-    const consoleRows = [
-        { key: 'intent', label: demo.consoleLabels.intent, value: cs.intent },
-        { key: 'tool', label: demo.consoleLabels.tool, value: cs.tool },
-        { key: 'risk', label: demo.consoleLabels.risk, value: cs.risk },
-        { key: 'next', label: demo.consoleLabels.next, value: cs.next },
-    ];
-
-    const onMove = (e: React.MouseEvent) => {
-        if (reduce) return;
-        const r = e.currentTarget.getBoundingClientRect();
-        const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
-        const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
-        setTilt({ x: Math.max(-1, Math.min(1, dx)) * 6, y: Math.max(-1, Math.min(1, dy)) * 6 });
-    };
-
     // צבעי הסצנה: תכלת ל-Chat, סגול ל-Agent. הליבה עצמה נשארת ניטרלית בשני המצבים.
+    // גוון ברירת-מחדל לתחנה שאין לה צבע ייחודי (נופל לפי המצב).
     const isAgent = mode === 'agent';
-    const stationActive = isAgent ? 'border-purple-300 bg-purple-500/30 text-white' : 'border-cyan-300 bg-cyan-500/30 text-white';
-    const stationIdle = isAgent ? 'border-purple-500/40 bg-slate-900/80 text-purple-200' : 'border-cyan-500/40 bg-slate-900/80 text-cyan-200';
-    const stationRing = isAgent ? 'focus-visible:ring-purple-400/60' : 'focus-visible:ring-cyan-400/60';
-    const activeHalo = isAgent ? 'ring-purple-300/70' : 'ring-cyan-300/70';
+    const fallbackRgb = isAgent ? '168,85,247' : '34,211,238';
+    // צבע הפולס = צבע התחנה שאליה הוא נוחת. בסיום (התקבלה תשובה) הוא הופך לירוק.
+    const pulseRgb = completed ? '52,211,153' : activeId ? stageRgb(activeId, fallbackRgb) : fallbackRgb;
 
     return (
         <div dir={dir}>
-            {/* מתג מצב + הרצה */}
-            <div className="mb-3 flex flex-wrap items-center justify-center gap-3">
-                <div className="inline-flex rounded-full border border-slate-700/60 bg-slate-950/50 p-1">
-                    {(['chat', 'agent'] as const).map((m) => (
-                        <button
-                            key={m}
-                            type="button"
-                            onClick={() => switchMode(m)}
-                            aria-pressed={mode === m}
-                            className={`rounded-full px-4 py-1.5 text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${mode === m ? (m === 'agent' ? 'bg-purple-500 text-white' : 'bg-cyan-500 text-slate-950') : 'text-slate-400 hover:text-slate-200'}`}
-                        >
-                            {m === 'agent' ? demo.modeAgent : demo.modeChat}
-                        </button>
-                    ))}
+            {/* ── ראש-הסצנה המינימליסטי: ללא תיבת-קונסולה. אוויר נדיב, טיפוגרפיה נקייה,
+                והלב הוא מתג-הנוזל: גלולה זוהרת שמחליקה בין Chat ל-Agent (layoutId spring)
+                וממירה צבע, עם כותרת מונפשת והילת-אווירה שמתחלפת. ── */}
+            <div className="relative isolate mb-6">
+                {/* הילת-אווירה רכה מאחורי הכותרת, מתחלפת בצבע לפי המצב (גימור עדין) */}
+                <div
+                    aria-hidden
+                    className={`pointer-events-none absolute -top-10 end-0 -z-10 h-40 w-2/3 rounded-full blur-3xl transition-colors duration-700 ${isAgent ? 'bg-purple-600/12' : 'bg-cyan-500/12'}`}
+                />
+
+                <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
+                    {/* זהות: eyebrow דק עם מרווח-אותיות רחב + כותרת שמתחלפת בהנפשה */}
+                    <div className="min-w-0 flex-1">
+                        {eyebrow && (
+                            <div className={`mb-1.5 text-sm font-black uppercase tracking-[0.22em] transition-colors duration-500 ${isAgent ? 'text-purple-300/85' : 'text-cyan-300/85'}`}>{eyebrow}</div>
+                        )}
+                        <AnimatePresence mode="wait">
+                            <motion.h3
+                                key={`title-${mode}`}
+                                initial={reduce ? false : { opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={reduce ? { opacity: 0 } : { opacity: 0, y: -10 }}
+                                transition={reduce ? { duration: 0 } : { duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                                className="line-clamp-2 text-base font-black leading-tight tracking-tight text-white sm:line-clamp-1 sm:text-lg"
+                            >
+                                {title}
+                            </motion.h3>
+                        </AnimatePresence>
+                    </div>
+
+                    {/* בקרות: מתג-נוזל + הרצה */}
+                    <div className="flex shrink-0 items-center gap-3">
+                        <div className="relative inline-flex items-center rounded-full border border-white/10 bg-slate-950/60 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
+                            {(['chat', 'agent'] as const).map((m) => {
+                                const on = mode === m;
+                                const isA = m === 'agent';
+                                return (
+                                    <button
+                                        key={m}
+                                        type="button"
+                                        onClick={() => switchMode(m)}
+                                        aria-pressed={on}
+                                        className={`relative z-10 flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-bold transition-colors duration-300 focus:outline-none focus-visible:ring-2 ${isA ? 'focus-visible:ring-purple-400/50' : 'focus-visible:ring-cyan-400/50'} ${on ? (isA ? 'text-white' : 'text-slate-950') : 'text-slate-400 hover:text-slate-200'}`}
+                                    >
+                                        {on && (
+                                            <motion.span
+                                                layoutId="scene-thumb"
+                                                aria-hidden
+                                                className="absolute inset-0 -z-10 rounded-full"
+                                                style={{
+                                                    background: isA
+                                                        ? 'linear-gradient(135deg,#c084fc 0%,#a855f7 45%,#7c3aed 100%)'
+                                                        : 'linear-gradient(135deg,#67e8f9 0%,#22d3ee 45%,#0891b2 100%)',
+                                                    boxShadow: isA
+                                                        ? '0 4px 18px -3px rgba(168,85,247,0.7), inset 0 1px 0 rgba(255,255,255,0.35)'
+                                                        : '0 4px 18px -3px rgba(34,211,238,0.7), inset 0 1px 0 rgba(255,255,255,0.45)',
+                                                }}
+                                                transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 380, damping: 30 }}
+                                            />
+                                        )}
+                                        {isA ? <Bot size={16} aria-hidden /> : <MessageCircle size={16} aria-hidden />}
+                                        {isA ? demo.modeAgent : demo.modeChat}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
-                <GuessButton
-                    onClick={run}
-                    disabled={running}
-                    reduce={reduce}
-                    rgb={isAgent ? '168,85,247' : '34,211,238'}
-                    sheen
-                    leadingIcon={<Play size={13} aria-hidden />}
-                >
-                    {running ? demo.running : completed ? demo.replay : demo.run}
-                </GuessButton>
+
+                {/* מפריד לרוחב מלא: פס דק שמפריד בבירור בין הכותרת לתוכן, עם דהייה בקצוות
+                    וגוון תלוי-מצב. שלילת המרווח (-mx) מותחת אותו עד קצות הכרטיס. */}
+                <div
+                    aria-hidden
+                    className={`mt-5 -mx-4 h-px bg-gradient-to-r from-transparent to-transparent transition-colors duration-500 md:-mx-6 ${isAgent ? 'via-purple-400/50' : 'via-cyan-400/50'}`}
+                />
             </div>
 
-            {/* תווית הסצנה (צבע לפי העולם) + הבקשה הנכנסת - שתי שורות דקות, בלי תיבות כבדות */}
-            <div className="mb-3 flex flex-col items-center gap-1.5">
-                <span
-                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold ${isAgent ? 'border-purple-500/40 bg-purple-900/20 text-purple-200' : 'border-cyan-500/40 bg-cyan-900/20 text-cyan-200'}`}
-                >
-                    {isAgent ? demo.layerLabel : demo.layerLabelChat}
-                </span>
-                <span className="text-center text-sm">
-                    <span className="text-[11px] font-bold text-cyan-300/80">{demo.input.label} </span>
-                    <span className="text-slate-300">{demo.input.text}</span>
-                </span>
+            {/* חדר-הבקרה: רשת 3 עמודות בדסקטופ - עמודת-המנוע קבועה במרכז בין שתי עמודות
+                צדדיות שוות (1fr), כך שהמנוע *תמיד* ממורכז ואינו זז בין המצבים. הפאנלים
+                יושבים בעמודות הצד; במובייל הכל נופל לטור אחד. */}
+            <div>
+            {/* ה-slot החי מעל המנוע. כפתור ההרצה עבר ללב-המנוע (Play במרכז), ולכן כאן נשאר
+                רק כרטיס-הבקשה/ההסבר. רחב יותר (max-w-2xl) כדי שהטקסט יגלוש לפחות שורות ויחסוך גובה. */}
+            <div className="mx-auto mb-4 w-full max-w-2xl">
+                <div className="w-full">
+                    <LiveStatusSlot
+                        reduce={reduce}
+                        showClosing={showClosing}
+                        activeStage={activeStage}
+                        closing={closing}
+                        note={note}
+                        hintPrompt={demo.hintPrompt}
+                        body={body}
+                        inputLabel={demo.input.label}
+                        inputText={demo.input.text}
+                    />
+                </div>
             </div>
-
-            {/* הבמה: ליבה משותפת + סצנה תלוית-מצב (מסילה / חדר-בקרה) + תחנות + פולס */}
-            <div
-                className="relative mx-auto aspect-square w-full max-w-[380px]"
-                onMouseMove={onMove}
-                onMouseLeave={() => setTilt({ x: 0, y: 0 })}
-            >
+            {/* הבמה: ליבה משותפת + סצנה תלוית-מצב. mx-auto ממרכז אותה תמיד. ב-Chat הבמה
+                נמוכה יותר (aspect-[7/5]) כדי שהמנוע יעלה למעלה ולא יישאר מרווח מיותר. */}
+            <div className={`relative mx-auto w-full max-w-[460px] ${isAgent ? 'aspect-square' : 'aspect-[7/5]'}`}>
                 {/* שכבת-חלקיקים עתידית: ריקה, aria-hidden, לא מציירת דבר כרגע (עיגון ל-Canvas). */}
                 <canvas ref={particleLayerRef} aria-hidden className="pointer-events-none absolute inset-0 h-full w-full opacity-0" />
 
@@ -390,12 +565,18 @@ export const AgentLoop: React.FC<{
                     ? <AgentControlRoom reduce={reduce} />
                     : <ChatStraightPath reduce={reduce} running={running} isRtl={isRtl} />}
 
-                {/* ליבת המודל: זהה בשני המצבים (גודל, מיקום, צבע), עם parallax עדין */}
-                <div
-                    className="absolute left-1/2 top-1/2 z-10"
-                    style={{ transform: `translate(-50%, -50%) translate(${tilt.x}px, ${tilt.y}px)` }}
-                >
-                    <EngineCore coreLabel={demo.coreLabel} coreText={coreText} reduce={reduce} />
+                {/* ליבת המודל: זהה בשני המצבים (גודל, מיקום, צבע) */}
+                <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
+                    <EngineCore
+                        coreLabel={demo.coreLabel}
+                        coreText={coreText}
+                        reduce={reduce}
+                        running={running}
+                        completed={completed}
+                        onRun={run}
+                        runLabel={demo.run}
+                        replayLabel={demo.replay}
+                    />
                 </div>
 
                 {/* פולס ההחלטה: נקודה זוהרת שעוברת אל התחנה/הליבה הפעילה */}
@@ -404,10 +585,10 @@ export const AgentLoop: React.FC<{
                         // key לפי הרצה: כל הרצה ממקמת מחדש את הפולס בתחנת הקלט (בלי סחיפה אחורה מהתשובה).
                         key={runId}
                         aria-hidden
-                        className="pointer-events-none absolute z-30 h-3 w-3 rounded-full bg-cyan-300 shadow-[0_0_12px_3px_rgba(34,211,238,0.7)]"
-                        // הכדור 12px: היסט -6px ממרכז ה-(left,top), בתוספת אותו parallax כמו התחנות,
-                        // כך שמרכזו נוחת בדיוק על מרכז האייקון של התחנה הפעילה.
-                        style={{ x: -6 + tilt.x * 0.4, y: -6 + tilt.y * 0.4 }}
+                        className="pointer-events-none absolute z-30 h-4 w-4 rounded-full transition-colors duration-500"
+                        // הכדור 16px: היסט -8px ממרכז ה-(left,top), כך שמרכזו נוחת בדיוק על מרכז האייקון.
+                        // הצבע = גוון התחנה הפעילה (pulseRgb), כך שהאנרגיה מחליפה גוון בין תחנה לתחנה.
+                        style={{ x: -8, y: -8, background: `rgb(${pulseRgb})`, boxShadow: `0 0 16px 5px rgba(${pulseRgb},0.75)` }}
                         initial={{ left: `${firstPos.x}%`, top: `${firstPos.y}%` }}
                         animate={{ left: `${activePos.x}%`, top: `${activePos.y}%` }}
                         transition={{ type: 'spring', stiffness: 60, damping: 20 }}
@@ -417,83 +598,70 @@ export const AgentLoop: React.FC<{
                 {/* תחנות המסלול (Agent: 6 סביב הטבעת · Chat: קלט/תשובה בקצות המסילה) */}
                 {positioned.map((n) => {
                     const isActive = activeId === n.id;
+                    // כל תחנה בצבע הייחודי שלה: במנוחה גוון עדין, בהפעלה הצבע מתלקח + הילה תואמת.
+                    // תחנת התשובה (התחנה הפעילה ברגע הסיום) הופכת לירוק - אות "התקבלה תשובה".
+                    const rgb = isActive && completed ? '52,211,153' : stageRgb(n.id, fallbackRgb);
                     return (
-                        // עוטף-מיקום: ממקם את *מרכז האייקון* בדיוק על (x,y), עם parallax זהה לכדור.
+                        // עוטף-מיקום: ממקם את *מרכז האייקון* בדיוק על (x,y).
                         <div
                             key={n.id}
                             className="absolute z-20"
-                            style={{ left: `${n.x}%`, top: `${n.y}%`, transform: `translate(-50%, -50%) translate(${tilt.x * 0.4}px, ${tilt.y * 0.4}px)` }}
+                            style={{ left: `${n.x}%`, top: `${n.y}%`, transform: 'translate(-50%, -50%)' }}
                         >
-                            <motion.button
-                                type="button"
+                            {/* תחנה = סמן ויזואלי בלבד. לא אינטראקטיבית: מוארת רק כשהפולס עובר בה בזמן סבב. */}
+                            <motion.div
                                 initial={reduce ? false : { opacity: 0, scale: 0.7 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
                                 transition={reduce ? { duration: 0 } : { duration: 0.3 }}
-                                onMouseEnter={() => setHoverId(n.id)}
-                                onMouseLeave={() => setHoverId((cur) => (cur === n.id ? null : cur))}
-                                onFocus={() => setHoverId(n.id)}
-                                onBlur={() => setHoverId((cur) => (cur === n.id ? null : cur))}
-                                aria-pressed={isActive}
-                                aria-label={`${n.label}: ${n.hint}`}
-                                className={`relative flex h-11 w-11 items-center justify-center rounded-2xl border transition-colors focus:outline-none focus-visible:ring-2 ${stationRing} ${isActive ? stationActive : stationIdle}`}
+                                className="relative flex h-14 w-14 items-center justify-center rounded-2xl border transition-all duration-300"
+                                style={{
+                                    borderColor: isActive ? `rgb(${rgb})` : `rgba(${rgb},0.42)`,
+                                    background: isActive ? `rgba(${rgb},0.22)` : 'rgba(15,23,42,0.8)',
+                                    color: isActive ? '#ffffff' : `rgb(${rgb})`,
+                                    boxShadow: isActive ? `0 0 24px -2px rgba(${rgb},0.75)` : 'none',
+                                }}
                             >
                                 {isActive && !reduce && (
                                     <motion.span
                                         aria-hidden
-                                        className={`absolute inset-0 rounded-2xl ring-2 ${activeHalo}`}
+                                        className="absolute inset-0 rounded-2xl"
+                                        style={{ boxShadow: `0 0 0 2px rgba(${rgb},0.7)` }}
                                         animate={{ opacity: [0.4, 0.9, 0.4] }}
                                         transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
                                     />
                                 )}
                                 <span className="relative">{STAGE_ICON[n.id]}</span>
-                                <span className={`pointer-events-none absolute left-1/2 top-full mt-1 w-20 -translate-x-1/2 text-center text-[10px] font-bold leading-tight transition-colors ${isActive ? (isAgent ? 'text-purple-100' : 'text-cyan-100') : 'text-slate-300'}`}>
-                                    {n.label}
-                                </span>
-                            </motion.button>
+                                {/* תוויות התחנה מוצגות רק ב-Chat (שני הקצוות: קלט/תשובה). ב-Agent הוסרו:
+                                    כשהפולס עובר בתחנה, שם התחנה כבר משתנה במרכז המנוע, ולכן התוויות מיותרות
+                                    ומייצרות רעש. הזהות עדיין נחשפת בהרצה (מרכז + ה-slot החי + הקונסולה). */}
+                                {!isAgent && (
+                                    <span
+                                        className="pointer-events-none absolute left-1/2 top-full mt-1.5 w-28 -translate-x-1/2 text-center text-sm font-bold leading-tight transition-colors"
+                                        style={{ color: isActive ? `rgb(${rgb})` : '#cbd5e1' }}
+                                    >
+                                        {n.label}
+                                    </span>
+                                )}
+                            </motion.div>
                         </div>
                     );
                 })}
             </div>
 
-            {/* רצועת העולם/סטטוס: Chat נעולה ומעומעמת · Agent פעילה ומשתנה בסיום */}
-            <WorldStatusStrip
-                mode={mode}
-                completed={completed}
-                reduce={reduce}
-                label={demo.output.label}
-                chatValue={demo.output.chat}
-                agentValue={demo.output.agent}
-                pendingValue={demo.consoleEmpty}
-            />
-
-            {/* ה-slot החי: תיבת נרטיב אחת שנושמת בין idle / תחנה פעילה / סיום */}
-            <LiveStatusSlot
-                reduce={reduce}
-                showClosing={showClosing}
-                activeStage={activeStage}
-                closing={closing}
-                note={note}
-                hintPrompt={demo.hintPrompt}
-            />
-
-            {/* קריאת חדר-הבקרה (Agent בלבד): שורת החלטה קומפקטית שמתמלאת תוך כדי סבב */}
-            {isAgent && (
-                <div className="mx-auto mt-3 max-w-md">
-                    <div className="mb-2 text-center text-[11px] font-black uppercase tracking-wide text-purple-300/80">{demo.consoleTitle}</div>
-                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                        {consoleRows.map((r) => (
-                            <div
-                                key={r.key}
-                                className={`rounded-xl border px-2.5 py-1.5 text-start transition-colors ${r.value ? 'border-purple-500/30 bg-purple-900/15' : 'border-white/5 bg-slate-950/40'}`}
-                            >
-                                <div className="text-[10px] font-bold text-purple-300/80">{r.label}</div>
-                                <div className={`text-xs leading-snug ${r.value ? 'text-slate-100' : 'text-slate-500'}`}>{r.value || demo.consoleEmpty}</div>
-                            </div>
-                        ))}
-                    </div>
+                {/* כרטיס-התשובה (עיצוב יפני) יושב מתחת למנוע, ממורכז וברוחב קריא. */}
+                <div className="mx-auto mt-4 w-full max-w-sm">
+                    <WorldStatusStrip
+                        mode={mode}
+                        completed={completed}
+                        reduce={reduce}
+                        label={demo.output.label}
+                        chatValue={demo.output.chat}
+                        agentValue={demo.output.agent}
+                        pendingValue={demo.consoleEmpty}
+                    />
                 </div>
-            )}
+            </div>
         </div>
     );
 };
