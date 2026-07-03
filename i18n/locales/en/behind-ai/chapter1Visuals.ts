@@ -11,6 +11,7 @@
 // No em dash (U+2014) and no en dash (U+2013). Mentor bubble text carries no emoji.
 
 import type { Locale } from '@/i18n/config';
+import { chapter1Visuals as heChapter1Visuals } from '../../he/behind-ai/chapter1Visuals';
 
 export const chapter1Visuals = {
     contentLocale: 'en' as Locale,
@@ -28,6 +29,9 @@ export const chapter1Visuals = {
         illustrationTitle: 'An illustration of the principles',
         illustrationBody: 'Every model has its own method, but they all rest on the same principles. This is exactly the path your sentence travels.',
     },
+
+    // "Sentence Journey" (Chat mode) strings. TODO(i18n): translate from the Hebrew source.
+    journey: heChapter1Visuals.journey,
 
     // engineTrace: station names, titles, captions and labels
     trace: {

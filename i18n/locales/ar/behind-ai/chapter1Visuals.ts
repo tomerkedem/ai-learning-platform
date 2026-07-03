@@ -6,6 +6,7 @@
 // Demo inputs are kept exactly as coupled to the engine vocabulary.
 
 import type { Locale } from '@/i18n/config';
+import { chapter1Visuals as heChapter1Visuals } from '../../he/behind-ai/chapter1Visuals';
 
 export const chapter1Visuals = {
     contentLocale: 'ar' as Locale,
@@ -23,6 +24,9 @@ export const chapter1Visuals = {
         illustrationTitle: 'توضيح للمبادئ',
         illustrationBody: 'لكل نموذج طريقته الخاصة، لكنها جميعًا تقوم على المبادئ نفسها. هذا بالضبط هو المسار الذي تسلكه جملتكم.',
     },
+
+    // "Sentence Journey" (Chat mode) strings. TODO(i18n): translate from the Hebrew source.
+    journey: heChapter1Visuals.journey,
 
     // engineTrace: station names, titles, captions and labels
     trace: {
