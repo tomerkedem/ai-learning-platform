@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Terminal, ScanSearch, ArrowDown, ScanLine, GitCompare, X, Layers, ChevronDown, Eye, ListChecks } from 'lucide-react';
+import { Terminal, ScanSearch, ArrowDown, ScanLine, GitCompare, X, Layers, ChevronDown, Eye, ListChecks, CircleAlert } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -20,7 +20,7 @@ import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
 import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import type { Accent, ChatMessage, FlowMode } from '@/components/ai-internals/types';
 
-import { runChatEngine, runAgentEngine } from './mockEngine';
+import { runChatEngine, runAgentEngine, type Confidence } from './mockEngine';
 import { traceChatEngine, traceAgentEngine } from './engineTrace';
 import { GlassEnginePanel } from './GlassEnginePanel';
 import { HoloFrame } from './HoloFrame';
@@ -30,6 +30,14 @@ import { PredictDecision } from './PredictDecision';
 import { CounterfactualDiff } from './CounterfactualDiff';
 // גשר-זיהוי: אותם צבעי 14 התחנות של מפת המבוא, כדי לקשר את המעבדה החיה למפה.
 import { STATION_PALETTE } from '@/components/ai-internals/IntroStationViz';
+
+// רגע "עצור ושאל" (שיא הפרק): פלט שבו המנוע עוצר במקום לענות בביטחון - בקשת הבהרה,
+// בקשת אישור, או ביטחון נמוך. משמש גם לסימון ההצעות וגם לזיהוי שהלומד כבר חווה זאת.
+// מוגדר במודול (יציב) כדי לא לשבור תלויות של hooks.
+const isPauseOutcome = (
+    res: { decision: { kind: string }; confidence?: Confidence },
+    m: FlowMode,
+): boolean => res.decision.kind === 'ask' || res.decision.kind === 'stop' || (m === 'chat' && res.confidence === 'Low');
 
 export default function BehindTheScenesChapter1() {
     const reduce = useReducedMotion();
@@ -129,6 +137,20 @@ export default function BehindTheScenesChapter1() {
     // המנוע הלימודי: תוצאה נגזרת מהטקסט שנשלח.
     const chat = useMemo(() => runChatEngine(conversationText), [conversationText]);
     const agent = useMemo(() => runAgentEngine(conversationText), [conversationText]);
+
+    // רגע "עצור ושאל": ההצעות שגורמות למנוע לעצור (בכל אחד מהמצבים) מסומנות, ואחרי
+    // ריצה בטוחה מנטור דוחף לנסות אותן. seenPause נדלק ברגע שהלומד חווה עצירה בפועל.
+    // תלוי-מצב: מסומנות ההצעות שיגרמו לעצירה במצב הנוכחי. ב-Chat זו בעיקר בקשה עמומה,
+    // ב-Agent גם פעולה רגישה ומידע חסר. הסימון "חי" ומתחלף עם המצב, ומראה שהם שונים.
+    const pauseSuggestions = useMemo(
+        () => SUGGESTIONS.filter((s) => isPauseOutcome(mode === 'chat' ? runChatEngine(s) : runAgentEngine(s), mode)),
+        [SUGGESTIONS, mode],
+    );
+    const [seenPause, setSeenPause] = useState(false);
+    const currentPause = isPauseOutcome(isChat ? chat : agent, mode);
+    // הדחיפה מופיעה רק ב-Chat (שם המנוע עונה בביטחון), ומפנה למצב Agent - שם המנוע
+    // עוצר ושואל או מבקש אישור. מעבר ל-Agent מדליק seenPause ומעלים אותה.
+    const showPauseNudge = isChat && sendCount >= 1 && !currentPause && !seenPause;
 
     // חישוב חי (debounced): המנוע מנתח את מה שמקלידים כרגע, ובהיעדר הקלדה - את
     // המשפט האחרון שנשלח. setState ב-setTimeout (לא סינכרוני ב-effect) לכבוד ה-lint.
@@ -272,6 +294,8 @@ export default function BehindTheScenesChapter1() {
         setConversationText(next);
         setLiveText(next); // עדכון מיידי כדי שהמנוע יהיה עקבי עם השליחה, בלי המתנה ל-debounce
         setSendCount((c) => c + 1);
+        setCoachOpen(false); // אחרי האינטראקציה הראשונה, הדרכת ה-first-run מסתיימת
+        if (isPauseOutcome(mode === 'chat' ? runChatEngine(next) : runAgentEngine(next), mode)) setSeenPause(true);
         generateReply(next, mode); // תשובה חיה (או נפילה ל-mock)
     };
 
@@ -286,6 +310,7 @@ export default function BehindTheScenesChapter1() {
     const handleModeChange = (m: FlowMode) => {
         setIsTyping(true);
         setMode(m);
+        if (isPauseOutcome(m === 'chat' ? runChatEngine(conversationText) : runAgentEngine(conversationText), m)) setSeenPause(true);
         generateReply(conversationText, m); // החלפת מצב מייצרת תשובה מתאימה מחדש
     };
     // פתיחה/סגירה של שכבת העומק. מתג ה-Chat/Agent זמין ישירות במסך הראשי, לכן
@@ -453,6 +478,8 @@ export default function BehindTheScenesChapter1() {
                                 live={live}
                                 suggestions={SUGGESTIONS}
                                 onSuggestion={handleSuggestion}
+                                markedSuggestions={pauseSuggestions}
+                                markLabel={viz.journey.pauseTag}
                                 accent={accent}
                                 highlightToken={hoverToken}
                                 onTokenHover={setHoverToken}
@@ -490,6 +517,31 @@ export default function BehindTheScenesChapter1() {
                   <Mentor pose="holographic" line={c1.mentor.holographic} width={400} fallbackSrc="/assets/mentor-inspect.png" flip={!isRtl} />
                 </div>
             </section>
+
+            {/* ══════════ דחיפת "עצור ושאל": שיא הפרק, מאופציונלי לנחווה ══════════ */}
+            {/* אחרי ריצה בטוחה, המנטור מזמין לנסות בקשה שגורמת למנוע לעצור ולשאול או */}
+            {/* לבקש אישור. נעלם ברגע שהלומד חווה עצירה בפועל (seenPause). */}
+            <AnimatePresence>
+                {showPauseNudge && (
+                    <motion.div
+                        initial={reduce ? false : { opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={reduce ? undefined : { opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="mt-8 flex items-center gap-4 overflow-hidden rounded-2xl border border-amber-500/30 bg-amber-900/10 p-4"
+                        dir={dir}
+                    >
+                        <div className="-my-2 shrink-0">
+                            <Mentor pose="think" width={92} float={false} glow={false} flip={!isRtl} />
+                        </div>
+                        <div className="flex-1 text-sm leading-relaxed text-slate-200">
+                            <span className="font-bold text-amber-300">{viz.journey.pauseNudge.start}</span>{' '}
+                            {viz.journey.pauseNudge.body}
+                        </div>
+                        <CircleAlert size={18} className="hidden shrink-0 text-amber-300 sm:block" aria-hidden />
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* ══════════ התובנה המרכזית של הפרק ══════════ */}
             <section className="mt-12 text-start" dir={dir}>

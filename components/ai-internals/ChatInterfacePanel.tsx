@@ -2,7 +2,7 @@
 
 import React, { useContext, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Send, Bot, Sparkles } from 'lucide-react';
+import { Send, Bot, Sparkles, CircleAlert } from 'lucide-react';
 import { ModeToggle } from './ModeToggle';
 import { ACCENTS } from './accents';
 import type { Accent, ChatMessage, FlowMode } from './types';
@@ -29,6 +29,10 @@ interface ChatInterfacePanelProps {
     /** דוגמאות מהירות שמופיעות מעל הקלט. */
     suggestions?: string[];
     onSuggestion?: (text: string) => void;
+    /** הצעות מסומנות (רגע "עצור ושאל"): מודגשות ומקבלות תג, כדי למשוך אליהן את העין. */
+    markedSuggestions?: string[];
+    /** תווית התג להצעה מסומנת (למשל "עוצר ושואל"). משמש גם ל-aria (לא הסתמכות על צבע בלבד). */
+    markLabel?: string;
     accent?: Accent;
     /** טוקן מודגש כרגע (קישור חי למנוע). */
     highlightToken?: string | null;
@@ -71,6 +75,8 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
     live = false,
     suggestions = [],
     onSuggestion,
+    markedSuggestions = [],
+    markLabel,
     accent = 'cyan',
     highlightToken,
     onTokenHover,
@@ -214,15 +220,26 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                         <Sparkles size={11} /> {ci.tryExample}
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        {suggestions.map((s) => (
-                            <button
-                                key={s}
-                                onClick={() => onSuggestion?.(s)}
-                                className="px-3 py-1.5 rounded-full text-xs bg-slate-900 border border-white/10 text-slate-300 hover:border-white/30 hover:text-white transition-colors active:scale-95"
-                            >
-                                {s}
-                            </button>
-                        ))}
+                        {suggestions.map((s) => {
+                            // הצעה מסומנת = רגע "עצור ושאל". טבעת ענבר + אייקון (סימן צורה, לא רק
+                            // צבע) + aria, כדי למשוך את העין ולהתחבר לדחיפת המנטור.
+                            const marked = markedSuggestions.includes(s);
+                            return (
+                                <button
+                                    key={s}
+                                    onClick={() => onSuggestion?.(s)}
+                                    aria-label={marked && markLabel ? `${s} - ${markLabel}` : undefined}
+                                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-colors active:scale-95 ${
+                                        marked
+                                            ? 'bg-amber-900/20 border border-amber-400/50 text-amber-100 hover:border-amber-300'
+                                            : 'bg-slate-900 border border-white/10 text-slate-300 hover:border-white/30 hover:text-white'
+                                    }`}
+                                >
+                                    {marked && <CircleAlert size={13} className="shrink-0 text-amber-300" aria-hidden />}
+                                    {s}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             )}

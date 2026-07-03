@@ -46,6 +46,10 @@ export const chapter1Visuals = {
         },
         unit: 'tokens',
 
+        // Engine output labels (intent / task / decision). Hebrew fallback until
+        // full localization; see he trace.labels. TODO(i18n): translate.
+        labels: heChapter1Visuals.trace.labels,
+
         chat: {
             c1: { title: 'Raw input', note: 'The text you wrote, exactly as it arrived.' },
             c2: { title: 'Normalize', note: 'Extra spaces are trimmed, the text is aligned for processing.' },

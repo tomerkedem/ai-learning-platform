@@ -77,6 +77,11 @@ export function traceChatEngine(text: string, viz: Chapter1VisualsDict): EngineT
     const second = r.intents[1];
     const margin = Math.max(0, (top?.value ?? 0) - (second?.value ?? 0));
 
+    // תוויות הכוונה של mockEngine הן מזהים באנגלית. ממפים לתצוגה בשפת הלומד לפני
+    // שהן מגיעות למסך (Logits + Decoding). הערכים (ההסתברויות) לא משתנים.
+    const intentMap = viz.trace.labels.intent as Record<string, string>;
+    const intentItems: IntentProbability[] = r.intents.map((i) => ({ ...i, label: intentMap[i.label] ?? i.label }));
+
     // ה-pivot לסצנת הקשב: טוקן השלילה אם קיים (למשל "לא" ב"החבילה לא הגיעה"),
     // כי הוא זה שמעצב חזק את המשמעות. אחרת - טוקן שני (או ראשון) כברירת מחדל.
     const vocab = vocabFor(text);
@@ -104,9 +109,9 @@ export function traceChatEngine(text: string, viz: Chapter1VisualsDict): EngineT
         { id: 's9', act: ZC, actEn: 'Computing context', title: st.s9.title, titleEn: 'Transformer', note: st.s9.note, kind: 'layersScene', tokens },
         { id: 's10', act: ZC, actEn: 'Computing context', title: st.s10.title, titleEn: 'Hidden State', note: st.s10.note, kind: 'stateScene', tokens },
 
-        { id: 's11', act: ZD, actEn: 'To the answer', title: st.s11.title, titleEn: 'Logits', note: st.s11.note, kind: 'probabilities', items: r.intents },
+        { id: 's11', act: ZD, actEn: 'To the answer', title: st.s11.title, titleEn: 'Logits', note: st.s11.note, kind: 'probabilities', items: intentItems },
         { id: 's12', act: ZD, actEn: 'To the answer', title: st.s12.title, titleEn: 'Softmax', note: st.s12.note, kind: 'gap', top: top?.value ?? 0, second: second?.value ?? 0, margin },
-        { id: 's13', act: ZD, actEn: 'To the answer', title: st.s13.title, titleEn: 'Decoding', note: st.s13.note, kind: 'decisionScene', items: r.intents, margin, level: r.confidence },
+        { id: 's13', act: ZD, actEn: 'To the answer', title: st.s13.title, titleEn: 'Decoding', note: st.s13.note, kind: 'decisionScene', items: intentItems, margin, level: r.confidence },
         { id: 's14', act: ZD, actEn: 'To the answer', title: st.s14.title, titleEn: 'Output', note: st.s14.note, kind: 'reply', text: viz.mockEngine.chatReplies[r.replyKey] },
     ];
 }
@@ -127,9 +132,15 @@ export function traceAgentEngine(text: string, viz: Chapter1VisualsDict): Engine
     const primaryTool = ag.toolNames[0] ?? '';
     const { understand: ZU, tools: ZT, control: ZG, exec: ZE, output: ZO } = ag.zones;
 
+    // מזהי המשימה וההחלטה של mockEngine הם אנגלית פנימית. ממפים לתצוגה בשפת הלומד.
+    const taskMap = viz.trace.labels.task as Record<string, string>;
+    const decisionMap = viz.trace.labels.decision as Record<string, string>;
+    const goalText = taskMap[r.task] ?? r.task;
+    const finalDecision: DecisionState = { ...r.decision, label: decisionMap[r.decision.label] ?? r.decision.label };
+
     return [
         { id: 'a1', act: ZU, actEn: 'Understand', title: st.a1.title, titleEn: 'Request', note: st.a1.note, kind: 'raw', value: text || '-' },
-        { id: 'a2', act: ZU, actEn: 'Understand', title: st.a2.title, titleEn: 'Goal', note: st.a2.note, kind: 'raw', value: r.task },
+        { id: 'a2', act: ZU, actEn: 'Understand', title: st.a2.title, titleEn: 'Goal', note: st.a2.note, kind: 'raw', value: goalText },
 
         { id: 'a3', act: ZT, actEn: 'Tools via MCP', title: st.a3.title, titleEn: 'Available Tools', note: st.a3.note, kind: 'agentStub', chips: ag.toolNames, mcp: true },
         { id: 'a4', act: ZT, actEn: 'Tools via MCP', title: st.a4.title, titleEn: 'Tool Selection', note: st.a4.note, kind: 'agentStub', chips: [primaryTool] },
@@ -141,6 +152,6 @@ export function traceAgentEngine(text: string, viz: Chapter1VisualsDict): Engine
         { id: 'a8', act: ZE, actEn: 'Execute & loop', title: st.a8.title, titleEn: 'Observation', note: st.a8.note, kind: 'raw', value: ag.observation },
         { id: 'a9', act: ZE, actEn: 'Execute & loop', title: st.a9.title, titleEn: 'Reasoning Loop', note: st.a9.note, kind: 'loopScene', nodes: ag.loopNodes, outcomes: ag.loopOutcomes },
 
-        { id: 'a10', act: ZO, actEn: 'Action or stop', title: st.a10.title, titleEn: 'Final', note: st.a10.note, kind: 'decision', decision: r.decision },
+        { id: 'a10', act: ZO, actEn: 'Action or stop', title: st.a10.title, titleEn: 'Final', note: st.a10.note, kind: 'decision', decision: finalDecision },
     ];
 }

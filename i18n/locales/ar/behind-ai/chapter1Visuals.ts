@@ -41,6 +41,10 @@ export const chapter1Visuals = {
         },
         unit: 'رموز',
 
+        // Engine output labels (intent / task / decision). Hebrew fallback until
+        // full localization; see he trace.labels. TODO(i18n): translate.
+        labels: heChapter1Visuals.trace.labels,
+
         chat: {
             c1: { title: 'مدخل خام', note: 'النص الذي كتبته، تمامًا كما وصل.' },
             c2: { title: 'تطبيع', note: 'تُقص المسافات الزائدة، ويُحاذى النص للمعالجة.' },

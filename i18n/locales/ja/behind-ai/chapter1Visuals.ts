@@ -40,6 +40,10 @@ export const chapter1Visuals = {
         },
         unit: 'トークン',
 
+        // Engine output labels (intent / task / decision). Hebrew fallback until
+        // full localization; see he trace.labels. TODO(i18n): translate.
+        labels: heChapter1Visuals.trace.labels,
+
         chat: {
             c1: { title: '生の入力', note: 'あなたが書いたテキスト、届いたそのままの形です。' },
             c2: { title: '正規化', note: '余分なスペースが削除され、処理に向けてテキストが整えられます。' },
