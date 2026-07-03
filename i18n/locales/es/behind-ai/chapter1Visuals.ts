@@ -34,71 +34,8 @@ export const chapter1Visuals = {
 
     // engineTrace: station names, titles, captions and labels
     trace: {
-        acts: {
-            intake: 'Recepción',
-            analyze: 'Análisis',
-            decide: 'Decisión',
-            output: 'Salida',
-            task: 'Detección de tarea',
-            risk: 'Riesgo y responsabilidad',
-            act: 'Decisión y salida',
-        },
         unit: 'tokens',
-
-        // Engine output labels (intent / task / decision). Hebrew fallback until
-        // full localization; see he trace.labels. TODO(i18n): translate.
         labels: heChapter1Visuals.trace.labels,
-
-        chat: {
-            c1: { title: 'Entrada bruta', note: 'El texto que escribiste, exactamente como llegó.' },
-            c2: { title: 'Normalizar', note: 'Se recortan los espacios extra, el texto se alinea para el procesamiento.' },
-            c3: { title: 'Tokenizar', note: 'El texto se divide en unidades. Aquí la división es por palabras enteras, a modo de ilustración. Un modelo real divide en sub-palabras (subword), y la división en sí varía de modelo a modelo, por lo que la misma frase se rompe en un número distinto de tokens en cada modelo.' },
-            c4: { title: 'Conteo de tokens', note: 'Cuántas unidades hay que procesar. Una primera señal del tamaño de la solicitud.' },
-            c5: { title: 'Escaneo de palabras clave', note: 'Qué palabras de la entrada activan qué intención. Estas son las pistas que mueven la clasificación.' },
-            c6: { title: 'Negación', note: 'Una palabra de negación convierte un asunto en una queja, y refuerza la intención de no entregado.' },
-            c7: { title: 'Intenciones candidatas', note: 'Todas las intenciones posibles entran al ruedo, cada una con su número de coincidencias.' },
-            c8: { title: 'Probabilidades', note: 'Las coincidencias se convierten en probabilidades que suman 100%. La más alta lidera.' },
-            c9: { title: 'Selección del líder', note: 'La intención con la probabilidad más alta se elige como líder.' },
-            c10: { title: 'Diferencia', note: 'La diferencia entre la primera y la segunda. No solo quién lidera, sino por cuánto.' },
-            c11: { title: 'Confianza', note: 'La diferencia se traduce en un nivel de confianza: alto, medio o bajo.' },
-            c12: { title: 'Significado', note: 'La intención líder se asigna al dominio de significado que guiará la respuesta.' },
-            c13: { title: 'Decisión', note: 'Responder cuando la confianza es suficiente, de lo contrario detenerse y pedir una aclaración.' },
-            c14: { title: 'Estado de salida', note: 'Lo que el motor está a punto de devolver en la práctica tras la decisión.' },
-            c15: { title: 'Respuesta', note: 'La redacción final que se muestra al usuario.' },
-        },
-        negationOn: 'Negación encontrada',
-        negationOff: 'Sin negación',
-        negationDetail: 'Refuerza "Package not delivered"',
-
-        agent: {
-            a1: { title: 'Entrada bruta', note: 'La solicitud que escribiste, el punto de entrada al motor de acción.' },
-            a2: { title: 'Normalizar', note: 'Se recortan los espacios extra, el texto se alinea para el procesamiento.' },
-            a3: { title: 'Tokenizar', note: 'El texto se divide en unidades. Aquí la división es por palabras enteras, a modo de ilustración. Un modelo real divide en sub-palabras (subword), y la división en sí varía de modelo a modelo, por lo que la misma frase se rompe en un número distinto de tokens en cada modelo.' },
-            a4: { title: 'Conteo de tokens', note: 'Cuántas unidades hay que procesar.' },
-            a5: { title: 'Palabras de acción', note: 'Palabras como "revisar" o "enviar" indican que esto es una tarea, no una pregunta.' },
-            a6: { title: 'Escaneo de dominio', note: 'Si la solicitud toca la entrega o un paquete, el dominio que el motor sabe manejar.' },
-            a7: { title: 'Identificador', note: 'Una secuencia larga de dígitos = un código de barras. Sin él, una acción real es imposible.' },
-            a8: { title: 'Tarea detectada', note: 'De todas las pistas, el motor resume cuál es la tarea en cuestión.' },
-            a9: { title: 'Información faltante', note: 'Lo que se necesita para actuar, y aún no está en la solicitud.' },
-            a10: { title: 'Necesidad de herramienta', note: 'Si se necesita una fuente externa (como un sistema de seguimiento) para completarla.' },
-            a11: { title: 'Sensibilidad', note: 'Acciones como "enviar" o "actualizar" afectan a un cliente y requieren cuidado.' },
-            a12: { title: 'Preparación para actuar', note: 'Dada la información y el riesgo: si está permitido y es posible actuar ahora.' },
-            a13: { title: 'Decisión', note: 'El paso correcto siguiente: responder, usar una herramienta, pedir información, o detenerse.' },
-            a14: { title: 'Estado de salida', note: 'Lo que ocurrirá en la práctica tras la decisión.' },
-            a15: { title: 'Respuesta', note: 'La redacción final que se muestra al usuario.' },
-        },
-        actionWordsLabel: 'Palabras de acción',
-        deliveryDomainLabel: 'Dominio de entrega',
-        sensitiveLabel: 'Acción sensible',
-        barcodeOn: 'Código de barras encontrado',
-        barcodeOff: 'Sin identificador',
-        barcodeOnDetail: 'Se puede llamar a la Tracking API',
-        barcodeOffDetail: 'Faltará información para actuar',
-        toolNeed: (tool: string) => `Herramienta necesaria: ${tool}`,
-        noTool: 'Sin herramienta externa',
-        canActNow: 'Se puede actuar ahora',
-        cannotActYet: 'No actuar todavía',
-        riskDetail: (risk: string) => `Riesgo: ${risk}`,
     },
 
     // mockEngine: demo replies (resolved by the replyKey the engine returns)

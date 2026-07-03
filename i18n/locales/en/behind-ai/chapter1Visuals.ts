@@ -35,71 +35,8 @@ export const chapter1Visuals = {
 
     // engineTrace: station names, titles, captions and labels
     trace: {
-        acts: {
-            intake: 'Intake',
-            analyze: 'Analysis',
-            decide: 'Decision',
-            output: 'Output',
-            task: 'Task detection',
-            risk: 'Risk and responsibility',
-            act: 'Decision and output',
-        },
         unit: 'tokens',
-
-        // Engine output labels (intent / task / decision). Hebrew fallback until
-        // full localization; see he trace.labels. TODO(i18n): translate.
         labels: heChapter1Visuals.trace.labels,
-
-        chat: {
-            c1: { title: 'Raw input', note: 'The text you wrote, exactly as it arrived.' },
-            c2: { title: 'Normalize', note: 'Extra spaces are trimmed, the text is aligned for processing.' },
-            c3: { title: 'Tokenize', note: 'The text is split into units. The split here is by whole words, for illustration. A real model splits into sub-words (subword), and the split itself varies from model to model, so the same sentence breaks into a different number of tokens in each model.' },
-            c4: { title: 'Token count', note: 'How many units there are to process. A first signal of the request size.' },
-            c5: { title: 'Keyword scan', note: 'Which words in the input trigger which intent. These are the cues that move the ranking.' },
-            c6: { title: 'Negation', note: 'A negation word turns an issue into a complaint, and strengthens the not-delivered intent.' },
-            c7: { title: 'Candidate intents', note: 'All possible intents step into the ring, each with its number of matches.' },
-            c8: { title: 'Probabilities', note: 'The matches turn into probabilities that sum to 100%. The highest leads.' },
-            c9: { title: 'Top selection', note: 'The intent with the highest probability is chosen as the leader.' },
-            c10: { title: 'Margin', note: 'The gap between first and second. Not just who leads, but by how much.' },
-            c11: { title: 'Confidence', note: 'The gap is translated into a confidence level: high, medium, or low.' },
-            c12: { title: 'Meaning', note: 'The leading intent is mapped to the meaning domain that will guide the answer.' },
-            c13: { title: 'Decision', note: 'Answer when confidence is enough, otherwise stop and ask for clarification.' },
-            c14: { title: 'Output state', note: 'What the engine is about to return in practice following the decision.' },
-            c15: { title: 'Reply', note: 'The final wording shown to the user.' },
-        },
-        negationOn: 'Negation found',
-        negationOff: 'No negation',
-        negationDetail: 'Strengthens "Package not delivered"',
-
-        agent: {
-            a1: { title: 'Raw input', note: 'The request you wrote, the entry point to the action engine.' },
-            a2: { title: 'Normalize', note: 'Extra spaces are trimmed, the text is aligned for processing.' },
-            a3: { title: 'Tokenize', note: 'The text is split into units. The split here is by whole words, for illustration. A real model splits into sub-words (subword), and the split itself varies from model to model, so the same sentence breaks into a different number of tokens in each model.' },
-            a4: { title: 'Token count', note: 'How many units there are to process.' },
-            a5: { title: 'Action words', note: 'Words like "check" or "send" signal that this is a task, not a question.' },
-            a6: { title: 'Domain scan', note: 'Whether the request touches delivery or a package, the domain the engine knows how to handle.' },
-            a7: { title: 'Identifier', note: 'A long digit sequence = a barcode. Without it, real action is impossible.' },
-            a8: { title: 'Task detected', note: 'From all the cues, the engine sums up what the task at hand is.' },
-            a9: { title: 'Missing info', note: 'What is needed to act, and is not yet in the request.' },
-            a10: { title: 'Tool need', note: 'Whether an external source (like a tracking system) is needed to complete it.' },
-            a11: { title: 'Sensitivity', note: 'Actions like "send" or "update" affect a customer and require care.' },
-            a12: { title: 'Action readiness', note: 'Given the information and the risk: whether it is allowed and possible to act now.' },
-            a13: { title: 'Decision', note: 'The right next step: answer, use a tool, ask for information, or stop.' },
-            a14: { title: 'Output state', note: 'What will happen in practice following the decision.' },
-            a15: { title: 'Reply', note: 'The final wording shown to the user.' },
-        },
-        actionWordsLabel: 'Action words',
-        deliveryDomainLabel: 'Delivery domain',
-        sensitiveLabel: 'Sensitive action',
-        barcodeOn: 'Barcode found',
-        barcodeOff: 'No identifier',
-        barcodeOnDetail: 'The Tracking API can be called',
-        barcodeOffDetail: 'Information will be missing to act',
-        toolNeed: (tool: string) => `Tool needed: ${tool}`,
-        noTool: 'No external tool',
-        canActNow: 'Can act now',
-        cannotActYet: 'Do not act yet',
-        riskDetail: (risk: string) => `Risk: ${risk}`,
     },
 
     // mockEngine: demo replies (resolved by the replyKey the engine returns)

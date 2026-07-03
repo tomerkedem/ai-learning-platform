@@ -29,71 +29,8 @@ export const chapter1Visuals = {
 
     // engineTrace: station names, titles, captions and labels
     trace: {
-        acts: {
-            intake: '受け取り',
-            analyze: '分析',
-            decide: '判断',
-            output: '出力',
-            task: 'タスク検出',
-            risk: '責任とリスク',
-            act: '判断と出力',
-        },
         unit: 'トークン',
-
-        // Engine output labels (intent / task / decision). Hebrew fallback until
-        // full localization; see he trace.labels. TODO(i18n): translate.
         labels: heChapter1Visuals.trace.labels,
-
-        chat: {
-            c1: { title: '生の入力', note: 'あなたが書いたテキスト、届いたそのままの形です。' },
-            c2: { title: '正規化', note: '余分なスペースが削除され、処理に向けてテキストが整えられます。' },
-            c3: { title: 'トークン化', note: 'テキストを単位に分割します。ここでの分割は説明のため単語単位です。実際のモデルはサブワードに分割し、その分割はモデルごとに異なるため、同じ文でもモデルごとにトークン数が変わります。' },
-            c4: { title: 'トークン数', note: '処理する単位がいくつあるか。リクエストの大きさを示す最初の手がかりです。' },
-            c5: { title: 'キーワード走査', note: '入力のどの単語がどの意図を呼び起こすか。ランキングを動かす手がかりです。' },
-            c6: { title: '否定の検出', note: '否定語は問題を苦情に変え、「未配達」の意図を強めます。' },
-            c7: { title: '候補となる意図', note: '考えられるすべての意図が、それぞれの一致数を携えて土俵に上がります。' },
-            c8: { title: '確率分布', note: '一致が合計100%の確率に変わります。最も高いものが先頭に立ちます。' },
-            c9: { title: '先頭の選択', note: '最も確率の高い意図がリーダーとして選ばれます。' },
-            c10: { title: '差', note: '1位と2位の差。誰が先頭かだけでなく、どれだけ差があるかです。' },
-            c11: { title: '確信度', note: '差が確信度に変換されます: 高・中・低です。' },
-            c12: { title: '意味領域', note: '先頭の意図が、回答を導く意味の領域に対応づけられます。' },
-            c13: { title: '判断', note: '確信が十分なら回答し、そうでなければ止まって確認を求めます。' },
-            c14: { title: '出力の状態', note: '判断を受けてエンジンが実際に返そうとしているもの。' },
-            c15: { title: '回答', note: 'ユーザーに表示される最終的な文面。' },
-        },
-        negationOn: '否定あり',
-        negationOff: '否定なし',
-        negationDetail: '「Package not delivered」を強めます',
-
-        agent: {
-            a1: { title: '生の入力', note: 'あなたが書いた依頼、行動エンジンへの入口です。' },
-            a2: { title: '正規化', note: '余分なスペースが削除され、処理に向けてテキストが整えられます。' },
-            a3: { title: 'トークン化', note: 'テキストを単位に分割します。ここでの分割は説明のため単語単位です。実際のモデルはサブワードに分割し、その分割はモデルごとに異なるため、同じ文でもモデルごとにトークン数が変わります。' },
-            a4: { title: 'トークン数', note: '処理する単位がいくつあるか。' },
-            a5: { title: '行動語', note: '「確認」「送信」などの語は、これが質問ではなくタスクであることを示します。' },
-            a6: { title: '領域走査', note: '依頼が配送や荷物に関わるか。エンジンが扱える領域かどうかです。' },
-            a7: { title: '識別子', note: '長い数字の並び = バーコード。これがないと実際の行動はできません。' },
-            a8: { title: 'タスク検出', note: 'すべての手がかりから、エンジンが目の前のタスクを要約します。' },
-            a9: { title: '不足情報', note: '実行に必要だが、まだ依頼に含まれていないもの。' },
-            a10: { title: 'ツールの必要性', note: '完了に外部の情報源(追跡システムなど)が必要かどうか。' },
-            a11: { title: '感度', note: '「送信」「更新」などの行動は顧客に影響し、注意を要します。' },
-            a12: { title: '実行可否', note: '情報とリスクを踏まえ、今行動してよいか、可能かどうか。' },
-            a13: { title: '判断', note: '正しい次の一歩: 回答、ツール使用、情報の確認、または停止。' },
-            a14: { title: '出力の状態', note: '判断を受けて実際に起こること。' },
-            a15: { title: '回答', note: 'ユーザーに表示される最終的な文面。' },
-        },
-        actionWordsLabel: '行動語',
-        deliveryDomainLabel: '配送領域',
-        sensitiveLabel: '機微な行動',
-        barcodeOn: 'バーコードあり',
-        barcodeOff: '識別子なし',
-        barcodeOnDetail: 'Tracking API を呼び出せます',
-        barcodeOffDetail: '実行に必要な情報が不足します',
-        toolNeed: (tool: string) => `必要なツール: ${tool}`,
-        noTool: '外部ツールなし',
-        canActNow: '今すぐ行動できる',
-        cannotActYet: 'まだ行動しない',
-        riskDetail: (risk: string) => `リスク: ${risk}`,
     },
 
     // mockEngine: demo replies (resolved by the replyKey the engine returns)
