@@ -5,7 +5,6 @@
 // No em dash (U+2014) and no en dash (U+2013). Mentor bubble text carries no emoji.
 
 import type { Locale } from '@/i18n/config';
-import { chapter1Visuals as heChapter1Visuals } from '../../he/behind-ai/chapter1Visuals';
 
 export const chapter1Visuals = {
     contentLocale: 'ja' as Locale,
@@ -24,13 +23,103 @@ export const chapter1Visuals = {
         illustrationBody: 'モデルごとに方法は異なりますが、どれも同じ原理に基づいています。これはまさに、あなたの文がたどる道筋です。',
     },
 
-    // "Sentence Journey" (Chat mode) strings. TODO(i18n): translate from the Hebrew source.
-    journey: heChapter1Visuals.journey,
+    // "Sentence Journey" (Chat mode) strings.
+    journey: {
+        zones: {
+            A: 'テキストから処理単位へ',
+            B: 'トークンから表現へ',
+            C: '文脈の計算',
+            D: '表現から答えへ',
+        },
+        anchorLabel: 'あなたの文、各ステーションで',
+        selectedLabel: '選択',
+        pauseTag: '止まって尋ねる',
+        pauseNudge: {
+            start: '反対の側を試そう。',
+            body: '自信のある回答を見ました。Agent モードに切り替えて、印のついた候補を試し、エンジンが推測せずに止まって尋ねる、または承認を求める様子を見てみましょう。',
+        },
+        stations: {
+            s1: { title: 'リクエストが入る', note: '選んだ文。エンジンをたどる旅の出発点です。' },
+            s2: { title: 'トークンに分割', note: '同じ文が処理単位に切られます。いまやトークンです。' },
+            s3: { title: '各トークンにID', note: '各トークンは語彙から番号を受け取ります。ここから先は数字だけ。' },
+            s4: { title: '数値表現', note: '文のトークンが意味空間へ飛びます。位置が意味を符号化します。辞書引きではありません。' },
+            s5: { title: '位置と順序', note: '各トークンに位置タグがあります。順序は意味の一部で、単語の袋ではありません。' },
+            s6: { title: '文脈ウィンドウ', note: 'エンジンはいまウィンドウにあるものだけで動きます。それが文について見えるすべてです。' },
+            s7: { title: '文脈への注意', note: 'エンジンは単語を数えません。どのトークンが効くかを重み付けします。ここでは強調されたトークンが隣の意味を形づくります。' },
+            s8: { title: '情報の混合', note: '各トークンは feed-forward ネットワークで豊かになります。大きなモデルでは一部の専門家だけが動きます。' },
+            s9: { title: '深さの層', note: '注意と feed-forward が何十もの層で繰り返され、文の理解が研ぎ澄まされます。' },
+            s10: { title: '最新の内部状態', note: '文全体が一つの内部表現に圧縮され、次のトークンを予測します。' },
+            s11: { title: '生のスコア', note: 'エンジンは次の各候補にスコアを与えます。確率で候補を順位付けし、キーワードを数えません。' },
+            s12: { title: 'スコアから確率へ', note: 'スコアは合計100%になる確率に変わります。最も高いものが先頭に立ちます。' },
+            s13: { title: '次のトークンを選ぶ', note: '確率の絵が選択に変わります。先頭が固定されます。' },
+            s14: { title: '答え', note: '選ばれたトークンが加わり、答えが完成するまでループがまた回ります。' },
+        },
+        agent: {
+            zones: {
+                understand: 'タスクの理解',
+                tools: 'MCP 経由のツール',
+                control: '制御と承認',
+                exec: '実行とループ',
+                output: '出力',
+            },
+            stations: {
+                a1: { title: 'リクエストが入る', note: '頼んだタスク。ここからエージェントのラウンドが始まります。' },
+                a2: { title: '目標の理解', note: 'エージェントは言葉だけでなく、本当の目標をつかみます。' },
+                a3: { title: '使えるツール', note: 'エージェントのツールは MCP 経由でつながっています。追跡システム、メッセージ送信など。' },
+                a4: { title: 'ツールの選択と計画', note: 'エージェントはいま目標を前へ進めるツールを選びます。' },
+                a5: { title: '不足情報の確認', note: '実行に足りない情報がある?エージェントは推測せず、止まって尋ねます。' },
+                a6: { title: 'リスクと許可', note: '顧客に影響する行動(送信、更新)は承認が必要で、自ら実行しません。' },
+                a7: { title: 'ツールの呼び出し', note: 'エージェントは MCP 経由でツールを呼びます。たとえば追跡システム。' },
+                a8: { title: 'ツールからの結果', note: 'ツールは観測を返します。世界からの本当のステータスです。' },
+                a9: { title: '推論とループ', note: '結果を手にして、続ける、別のツールを呼ぶ、尋ねる、または終える。' },
+                a10: { title: '行動か停止', note: 'エージェントは答えを返す、行動する、承認を待つ、または止まります。' },
+            },
+            toolNames: ['配送追跡', '顧客へメッセージ送信'],
+            mcp: 'MCP',
+            loopLabel: '考え直す',
+            observation: 'ステータス: 荷物は仕分け中',
+            missingOn: '識別子がない(バーコード)',
+            missingOff: '必要な情報はそろっている',
+            riskOn: '機微な行動: 承認が必要',
+            riskOff: '安全な行動',
+            loopNodes: ['計画', 'ツール呼び出し', '観測', '推論'],
+            loopOutcomes: ['続ける', '尋ねる', '止める', '終える'],
+            agentNode: 'エージェント',
+            resultLabel: '結果',
+            gate: {
+                safe: '安全な回答',
+                ask: '情報を尋ねる',
+                approve: '承認が必要',
+                stop: '停止',
+            },
+        },
+    },
 
     // engineTrace: station names, titles, captions and labels
     trace: {
         unit: 'トークン',
-        labels: heChapter1Visuals.trace.labels,
+        labels: {
+            intent: {
+                'Package not delivered': '荷物が未配達',
+                'Tracking question': '追跡の質問',
+                'System issue': 'システムの問題',
+                'Payment issue': '支払いの問題',
+                'Other': 'その他',
+            },
+            task: {
+                'Send / update on customer record': '顧客レコードの送信または更新',
+                'Check delivery failure': '配送失敗の確認',
+                'Unclear task': '不明確なタスク',
+                'General request': '一般的な依頼',
+            },
+            decision: {
+                'Stop for approval': '承認のため停止',
+                'Use Tracking API': '追跡ツールを使う',
+                'Ask for barcode before action': '行動前にバーコードを尋ねる',
+                'Ask what to handle': '何を扱うか尋ねる',
+                'Answer directly': '直接答える',
+            },
+        },
     },
 
     // mockEngine: demo replies (resolved by the replyKey the engine returns)

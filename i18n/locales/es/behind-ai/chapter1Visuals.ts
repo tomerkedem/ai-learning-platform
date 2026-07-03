@@ -10,7 +10,6 @@
 // No em dash (U+2014) and no en dash (U+2013). Mentor bubble text carries no emoji.
 
 import type { Locale } from '@/i18n/config';
-import { chapter1Visuals as heChapter1Visuals } from '../../he/behind-ai/chapter1Visuals';
 
 export const chapter1Visuals = {
     contentLocale: 'es' as Locale,
@@ -29,13 +28,103 @@ export const chapter1Visuals = {
         illustrationBody: 'Cada modelo tiene su propio método, pero todos se basan en los mismos principios. Este es exactamente el camino que recorre tu frase.',
     },
 
-    // "Sentence Journey" (Chat mode) strings. TODO(i18n): translate from the Hebrew source.
-    journey: heChapter1Visuals.journey,
+    // "Sentence Journey" (Chat mode) strings.
+    journey: {
+        zones: {
+            A: 'Del texto a unidades de trabajo',
+            B: 'De tokens a representaciones',
+            C: 'Calculando el contexto',
+            D: 'De la representación a la respuesta',
+        },
+        anchorLabel: 'Tu frase, en cada estación',
+        selectedLabel: 'Elegido',
+        pauseTag: 'Se detiene y pregunta',
+        pauseNudge: {
+            start: 'Prueba el otro lado.',
+            body: 'Viste una respuesta segura. Cambia al modo Agent y prueba las sugerencias marcadas, y observa cómo el motor se detiene y pregunta, o pide aprobación, en lugar de adivinar.',
+        },
+        stations: {
+            s1: { title: 'Entra la solicitud', note: 'La frase que elegiste - el punto de partida del recorrido por el motor.' },
+            s2: { title: 'División en tokens', note: 'La misma frase se corta en unidades de trabajo. Ahora son tokens.' },
+            s3: { title: 'Un identificador por token', note: 'Cada token recibe un número del vocabulario. De aquí en adelante, solo números.' },
+            s4: { title: 'Representación numérica', note: 'Los tokens de la frase vuelan al espacio de significado. La posición codifica significado - no es una búsqueda en un diccionario.' },
+            s5: { title: 'Posición y orden', note: 'Cada token lleva una etiqueta de posición. El orden es parte del significado - no es una bolsa de palabras.' },
+            s6: { title: 'Ventana de contexto', note: 'El motor trabaja solo con lo que está en la ventana ahora. Eso es todo lo que ve de la frase.' },
+            s7: { title: 'Atención al contexto', note: 'El motor no cuenta palabras - sopesa qué tokens importan. Aquí el token resaltado moldea el significado de sus vecinos.' },
+            s8: { title: 'Mezcla de información', note: 'Cada token se enriquece con una red feed-forward. En los modelos grandes solo se ejecutan algunos expertos.' },
+            s9: { title: 'Capas de profundidad', note: 'Atención y feed-forward se repiten en decenas de capas, y la comprensión de la frase se afina.' },
+            s10: { title: 'Estado interno actualizado', note: 'Toda la frase se comprime en una representación interna, antes de predecir el siguiente token.' },
+            s11: { title: 'Puntuaciones en bruto', note: 'El motor da una puntuación a cada opción siguiente. Ordena las opciones por probabilidad, no cuenta palabras clave.' },
+            s12: { title: 'De la puntuación a la probabilidad', note: 'Las puntuaciones se convierten en probabilidades que suman 100%. La más alta lidera.' },
+            s13: { title: 'Elección del siguiente token', note: 'La imagen probabilística se convierte en una elección: el líder queda fijado.' },
+            s14: { title: 'La respuesta', note: 'El token elegido se une, y el bucle se ejecuta de nuevo hasta que la respuesta está completa.' },
+        },
+        agent: {
+            zones: {
+                understand: 'Comprensión de la tarea',
+                tools: 'Herramientas vía MCP',
+                control: 'Control y aprobación',
+                exec: 'Ejecución y bucle',
+                output: 'Salida',
+            },
+            stations: {
+                a1: { title: 'Entra la solicitud', note: 'La tarea que pediste - aquí empieza la ronda del agente.' },
+                a2: { title: 'Comprensión del objetivo', note: 'El agente capta el objetivo real, no solo las palabras.' },
+                a3: { title: 'Herramientas disponibles', note: 'Las herramientas del agente están conectadas vía MCP: un sistema de seguimiento, envío de mensajes y más.' },
+                a4: { title: 'Elección de herramienta y plan', note: 'El agente elige qué herramienta hace avanzar el objetivo ahora.' },
+                a5: { title: 'Comprobación de información faltante', note: '¿Falta un dato para actuar? El agente se detiene y pregunta, en lugar de adivinar.' },
+                a6: { title: 'Riesgo y permiso', note: 'Una acción que afecta a un cliente (enviar, actualizar) necesita aprobación - no se ejecuta sola.' },
+                a7: { title: 'Llamada a la herramienta', note: 'El agente llama a la herramienta vía MCP, por ejemplo al sistema de seguimiento.' },
+                a8: { title: 'Resultado de la herramienta', note: 'La herramienta devuelve una observación: un estado real del mundo.' },
+                a9: { title: 'Razonamiento y bucle', note: 'Con el resultado en mano: continuar, llamar a otra herramienta, preguntar o terminar.' },
+                a10: { title: 'Actuar o detenerse', note: 'El agente devuelve una respuesta, realiza una acción, espera aprobación o se detiene.' },
+            },
+            toolNames: ['Seguimiento de envíos', 'Enviar un mensaje al cliente'],
+            mcp: 'MCP',
+            loopLabel: 'Repensar',
+            observation: 'Estado: paquete en clasificación',
+            missingOn: 'Falta identificador (código de barras)',
+            missingOff: 'Están todos los datos',
+            riskOn: 'Acción sensible - se requiere aprobación',
+            riskOff: 'Acción segura',
+            loopNodes: ['Planificar', 'Llamada a herramienta', 'Observación', 'Razonar'],
+            loopOutcomes: ['Continuar', 'Preguntar', 'Detener', 'Terminar'],
+            agentNode: 'Agente',
+            resultLabel: 'Resultado',
+            gate: {
+                safe: 'Respuesta segura',
+                ask: 'Pedir información',
+                approve: 'Se requiere aprobación',
+                stop: 'Detener',
+            },
+        },
+    },
 
     // engineTrace: station names, titles, captions and labels
     trace: {
         unit: 'tokens',
-        labels: heChapter1Visuals.trace.labels,
+        labels: {
+            intent: {
+                'Package not delivered': 'Paquete no entregado',
+                'Tracking question': 'Pregunta de seguimiento',
+                'System issue': 'Problema del sistema',
+                'Payment issue': 'Problema de pago',
+                'Other': 'Otro',
+            },
+            task: {
+                'Send / update on customer record': 'Enviar o actualizar un registro de cliente',
+                'Check delivery failure': 'Revisar un fallo de entrega',
+                'Unclear task': 'Tarea poco clara',
+                'General request': 'Solicitud general',
+            },
+            decision: {
+                'Stop for approval': 'Detenerse para aprobación',
+                'Use Tracking API': 'Usar la herramienta de seguimiento',
+                'Ask for barcode before action': 'Pedir el código de barras antes de actuar',
+                'Ask what to handle': 'Preguntar qué gestionar',
+                'Answer directly': 'Responder directamente',
+            },
+        },
     },
 
     // mockEngine: demo replies (resolved by the replyKey the engine returns)
