@@ -34,7 +34,7 @@ export const ProbabilityBars: React.FC<ProbabilityBarsProps> = ({ items, accent 
     const max = items.reduce((m, it) => Math.max(m, it.value), 0);
 
     return (
-        <div className="space-y-3" dir="rtl">
+        <div className="space-y-3" dir="auto">
             {title && (
                 <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{title}</div>
             )}
