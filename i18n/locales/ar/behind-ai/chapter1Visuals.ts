@@ -20,6 +20,8 @@ export const chapter1Visuals = {
         noMatch: '- لا تطابق',
         claudeTokens: (n: number) => `Claude (حقيقي): ${n} رمزًا`,
         claudeNote: 'في الأعلى يُحسب العدد بالكلمات. الرقم الحقيقي مختلف لأن النموذج يقسّم إلى أجزاء من الكلمات - وهو لا يكشف التقسيم نفسه، بل العدد فقط.',
+        illustrationTitle: 'توضيح للمبادئ',
+        illustrationBody: 'لكل نموذج طريقته الخاصة، لكنها جميعًا تقوم على المبادئ نفسها. هذا بالضبط هو المسار الذي تسلكه جملتكم.',
     },
 
     // engineTrace: station names, titles, captions and labels

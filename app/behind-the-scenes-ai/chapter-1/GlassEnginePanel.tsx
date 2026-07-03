@@ -118,24 +118,39 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
 
         case 'tokens':
             if (!step.tokens.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
+            // חתימת החיתוך של מפת המבוא: כל טוקן מתנפץ מהמשפט ונוחת מלמעלה עם
+            // overshoot, סיבוב קל, spring והבזק-נחיתה. אותה שפה ויזואלית בדיוק,
+            // מותאמת לצפיפות המנוע. reduced-motion => הופעה מיידית בלי תנועה/הבזק.
             return (
                 <div className="flex flex-wrap gap-2" dir="auto">
                     {step.tokens.map((token, i) => {
                         const hl = highlightToken === token;
+                        const dropDelay = reduce ? 0 : 0.1 + i * 0.09;
                         return (
-                            <motion.span
-                                key={`${token}-${i}`}
-                                initial={reduce ? false : { opacity: 0, y: 8, scale: 0.85 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                transition={{ duration: 0.3, delay: reduce ? 0 : i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                                onMouseEnter={() => onTokenHover?.(token)}
-                                onMouseLeave={() => onTokenHover?.(null)}
-                                onClick={() => onTokenHover?.(hl ? null : token)}
-                                className={`cursor-pointer rounded-lg border px-2.5 py-1 text-xs font-mono transition-colors
-                                    ${hl ? `${a.solid} ${a.solidText} ${a.glow}` : `bg-slate-900/60 ${a.border} ${a.text}`}`}
-                            >
-                                {token}
-                            </motion.span>
+                            <span key={`${token}-${i}`} className="relative inline-flex">
+                                {/* הבזק-נחיתה מאחורי הטוקן ברגע שהוא מתייצב */}
+                                {!reduce && (
+                                    <motion.span
+                                        aria-hidden
+                                        className={`pointer-events-none absolute inset-0 rounded-lg ${a.solid}`}
+                                        initial={{ scale: 0.6, opacity: 0 }}
+                                        animate={{ scale: [0.6, 1.5], opacity: [0.5, 0] }}
+                                        transition={{ duration: 0.45, delay: dropDelay + 0.05, ease: 'easeOut' }}
+                                    />
+                                )}
+                                <motion.span
+                                    initial={reduce ? false : { opacity: 0, y: -14, scale: 0.6, rotate: i % 2 === 0 ? -8 : 8 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
+                                    transition={reduce ? { duration: 0 } : { delay: dropDelay, type: 'spring', stiffness: 360, damping: 15 }}
+                                    onMouseEnter={() => onTokenHover?.(token)}
+                                    onMouseLeave={() => onTokenHover?.(null)}
+                                    onClick={() => onTokenHover?.(hl ? null : token)}
+                                    className={`relative cursor-pointer rounded-lg border px-2.5 py-1 text-xs font-mono transition-colors
+                                        ${hl ? `${a.solid} ${a.solidText} ${a.glow}` : `bg-slate-900/60 ${a.border} ${a.text}`}`}
+                                >
+                                    {token}
+                                </motion.span>
+                            </span>
                         );
                     })}
                 </div>
@@ -391,6 +406,16 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
 
             {/* גוף הצינור */}
             <div className="custom-scrollbar relative flex-1 overflow-y-auto p-5">
+                {/* מסגור-אמת: התחנות הן המחשה של העקרונות האוניברסליים על המשפט האמיתי
+                    שהוזן, לא פלט-פנים אמיתי של המודל. סטטי (בלי אנימציה) לרוגע ולנגישות. */}
+                <div className="mb-4 flex items-start gap-2.5 rounded-2xl border border-white/10 bg-slate-900/40 px-3.5 py-3">
+                    <Scan size={14} className={`mt-0.5 shrink-0 ${a.text} opacity-80`} />
+                    <div className="min-w-0">
+                        <div className={`text-sm font-black ${a.text}`}>{ep.illustrationTitle}</div>
+                        <p className="mt-0.5 text-[13px] leading-relaxed text-slate-400">{ep.illustrationBody}</p>
+                    </div>
+                </div>
+
                 <motion.div
                     key={replayKey}
                     variants={container}

@@ -19,6 +19,8 @@ export const chapter1Visuals = {
         noMatch: '- 一致なし',
         claudeTokens: (n: number) => `Claude (実際): ${n} トークン`,
         claudeNote: '上の数は単語単位の数え方です。実際の数は異なります。モデルはサブワードに分割するためで、分割そのものは公開されず、数だけが分かります。',
+        illustrationTitle: '原理のイラスト',
+        illustrationBody: 'モデルごとに方法は異なりますが、どれも同じ原理に基づいています。これはまさに、あなたの文がたどる道筋です。',
     },
 
     // engineTrace: station names, titles, captions and labels

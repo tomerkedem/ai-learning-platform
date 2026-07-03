@@ -25,6 +25,8 @@ export const chapter1Visuals = {
         noMatch: '- no match',
         claudeTokens: (n: number) => `Claude (real): ${n} tokens`,
         claudeNote: 'Above, the count is by words. The real number differs because the model splits into sub-words - and it does not reveal the split itself, only the count.',
+        illustrationTitle: 'An illustration of the principles',
+        illustrationBody: 'Every model has its own method, but they all rest on the same principles. This is exactly the path your sentence travels.',
     },
 
     // engineTrace: station names, titles, captions and labels

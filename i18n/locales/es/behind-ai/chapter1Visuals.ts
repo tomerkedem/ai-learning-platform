@@ -24,6 +24,8 @@ export const chapter1Visuals = {
         noMatch: '- sin coincidencia',
         claudeTokens: (n: number) => `Claude (real): ${n} tokens`,
         claudeNote: 'Arriba, el conteo es por palabras. El número real difiere porque el modelo divide en sub-palabras - y no revela la división en sí, solo el conteo.',
+        illustrationTitle: 'Una ilustración de los principios',
+        illustrationBody: 'Cada modelo tiene su propio método, pero todos se basan en los mismos principios. Este es exactamente el camino que recorre tu frase.',
     },
 
     // engineTrace: station names, titles, captions and labels
