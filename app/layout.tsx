@@ -36,10 +36,11 @@ export default function RootLayout({
   return (
     // ברירת המחדל ב-SSR היא עברית/RTL (התנהגות נשמרת). ה-LocaleProvider מסנכרן
     // את lang/dir/data-locale על <html> אחרי mount כשנבחרת שפה אחרת (?lang=).
-    <html lang="he" dir="rtl">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${heebo.variable} antialiased`}
-      >
+    // משתני הגופן (next/font) חייבים לשבת על <html>, לא על <body>: Tailwind מחיל את
+    // font-family דרך var(--default-font-family) על html, וכל טקסט תוכן יורש משם. אם
+    // המשתנים על body בלבד, html נופל ל-ui-sans-serif (גופן המערכת) וכל התוכן איתו.
+    <html lang="he" dir="rtl" className={`${geistSans.variable} ${geistMono.variable} ${heebo.variable}`}>
+      <body className="antialiased">
         <LocaleProvider>
                 {children}
          <CourseFooter />
