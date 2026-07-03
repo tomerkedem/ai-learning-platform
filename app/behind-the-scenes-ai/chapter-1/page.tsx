@@ -288,15 +288,9 @@ export default function BehindTheScenesChapter1() {
         setMode(m);
         generateReply(conversationText, m); // החלפת מצב מייצרת תשובה מתאימה מחדש
     };
-    // פתיחה/סגירה של שכבת העומק. סגירה מחזירה את המעבדה ל-Chat נקי (מתג ה-Agent
-    // חי רק בתוך שכבת העומק), כדי שהמסך הראשי יישאר ממוקד.
-    const toggleDeep = () => {
-        if (deepOpen && mode !== 'chat') {
-            setMode('chat');
-            generateReply(conversationText, 'chat');
-        }
-        setDeepOpen((open) => !open);
-    };
+    // פתיחה/סגירה של שכבת העומק. מתג ה-Chat/Agent זמין ישירות במסך הראשי, לכן
+    // סגירת שכבת העומק אינה מאפסת את המצב שהלומד בחר.
+    const toggleDeep = () => setDeepOpen((open) => !open);
 
     return (
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={1}>
@@ -453,7 +447,7 @@ export default function BehindTheScenesChapter1() {
                                 inputValue={inputValue}
                                 onInputChange={setInputValue}
                                 onSend={handleSend}
-                                showModeToggle={deepOpen}
+                                showModeToggle
                                 isTyping={showTyping}
                                 streaming={streaming}
                                 live={live}
