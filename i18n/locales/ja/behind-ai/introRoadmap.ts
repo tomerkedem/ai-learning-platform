@@ -29,10 +29,12 @@ export const introRoadmap = {
         // ゾーンA - テキストから処理単位へ
         request: {
             title: 'リクエストが入る',
+            term: 'Prompt',
             explanation: 'ユーザーがリクエストを書き、文脈とシステム指示とともに入ってきます。',
         },
         tokenize: {
             title: 'トークンへの分割',
+            term: 'Tokenization',
             explanation: 'テキストは、モデルが処理できる処理単位に分解されます。',
         },
         ids: {
@@ -48,10 +50,12 @@ export const introRoadmap = {
         },
         position: {
             title: '位置と順序',
+            term: 'Positional Encoding',
             explanation: 'モデルは、各トークンが他のトークンに対してどこにあるかを知る必要があります。',
         },
         context: {
             title: '文脈ウィンドウ',
+            term: 'Context Window',
             explanation: 'モデルは、会話、指示、そしてすでに生成されたトークンを考慮します。',
         },
         // ゾーンC - 文脈の計算
@@ -62,7 +66,8 @@ export const introRoadmap = {
         },
         mix: {
             title: '情報の混ぜ合わせ',
-            explanation: '文脈の情報が混ざり合い、表現を更新します。',
+            term: 'Feed-Forward',
+            explanation: '各トークンはfeed-forwardネットワークで強化されます。大きなモデルでは、多くのうち数人の「専門家」だけがトークンごとに動きます。',
         },
         layers: {
             title: '深さの層',
@@ -71,6 +76,7 @@ export const introRoadmap = {
         },
         state: {
             title: '最新の内部表現',
+            term: 'Hidden State',
             explanation: '現在の時点の文脈を要約する内部状態が形づくられます。',
         },
         // ゾーンD - 表現から回答へ
@@ -91,6 +97,7 @@ export const introRoadmap = {
         },
         loop: {
             title: '回答までのループ',
+            term: 'Autoregression',
             explanation: '選ばれたトークンが回答に加わり、そしてすべてがもう一度動きます。',
         },
     },

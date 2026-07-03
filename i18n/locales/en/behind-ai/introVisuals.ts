@@ -38,8 +38,8 @@ export const introVisuals = {
             position: 'The same words in another order change everything. That is why order is kept.',
             context: 'Whatever leaves the window is forgotten. That is how a long chat loses its start.',
             attention: 'Every word listens to the others. Tap a word to see what it attends to.',
-            mix: 'Same word, different context, different meaning.',
-            layers: 'Each layer sharpens a little more. A real model has dozens.',
+            mix: 'Each token is sent to experts. Only a few of many light up - that keeps a huge model fast.',
+            layers: 'Each layer runs attention and feed-forward again and sharpens a little more. A real model has dozens.',
             state: 'The whole context is squeezed into one point. The next word is born from it.',
             logits: 'The model weighs many words at once and scores each one.',
             softmax: 'The scores turn into percentages that add up to a hundred.',
@@ -129,14 +129,13 @@ export const introVisuals = {
 
         // Station 8: one ambiguous word, two contexts, the meaning flips.
         mix: {
-            word: 'order',
-            aLabel: 'My order arrived from the store',
-            aSource: 'store',
-            aMeaning: 'a product you bought',
-            bLabel: 'The sergeant gave an order',
-            bSource: 'sergeant',
-            bMeaning: 'a command to follow',
-            caption: 'The word came in identical in both sentences. Information from its neighbors mixed into its representation, and it came out with a different meaning.',
+            tokenA: 'delivery',
+            tokenB: 'payment',
+            routerLabel: 'Router picks',
+            activeNote: (k: number, n: number) => `${k} of ${n} experts run`,
+            outLabel: 'enriched',
+            hint: 'Switch token and see which experts light up',
+            caption: 'After attention, each token passes through a feed-forward network that enriches it. In large models a router lights up only a few experts out of many - that is Mixture-of-Experts: huge knowledge, but only a small part runs per token.',
         },
 
         layers: {
@@ -148,6 +147,7 @@ export const introVisuals = {
                 'The model gets the reason: happiness explains the running.',
             ] as string[],
             floorLabel: 'Floor',
+            blockLabel: 'Each layer: attention + feed-forward',
             hint: 'Tap a floor to jump there',
             caption: 'A real model has dozens of floors like these, and each one polishes the understanding a bit more.',
         },

@@ -39,8 +39,8 @@ export const introVisuals = {
             position: '同じ言葉でも順番が変われば意味も変わります。だから順番が保たれます。',
             context: '窓から出たものは忘れられます。だから長い会話は最初を失います。',
             attention: 'どの言葉も他の言葉に耳を傾けます。言葉をタップして、つながりを見て。',
-            mix: '同じ言葉、違う文脈、違う意味。',
-            layers: '層ごとに少しずつ研ぎ澄まされます。実際のモデルには何十もあります。',
+            mix: '各トークンは専門家に送られます。多くのうち数人だけが点灯し、巨大なモデルでも速く保てます。',
+            layers: '層ごとにアテンションとfeed-forwardをもう一度行い、少しずつ研ぎ澄まされます。実際のモデルには何十もあります。',
             state: '文脈全体が一つの点に凝縮されます。そこから次の言葉が生まれます。',
             logits: 'モデルは多くの言葉を一度に比べ、それぞれに点をつけます。',
             softmax: '点数は合計100になる割合に変わります。',
@@ -130,14 +130,13 @@ export const introVisuals = {
 
         // Station 8: one ambiguous word, two contexts, the meaning flips.
         mix: {
-            word: 'はし',
-            aLabel: 'はしでラーメンを食べる',
-            aSource: '食べる',
-            aMeaning: '食事に使う道具の箸',
-            bLabel: 'はしを渡って駅へ行く',
-            bSource: '渡って',
-            bMeaning: '川にかかる橋',
-            caption: '言葉は二つの文でまったく同じ形で入ってきました。隣の言葉の情報が表現に混ざり、違う意味になって出ていきます。',
+            tokenA: '配達',
+            tokenB: '支払い',
+            routerLabel: 'ルーターが選ぶ',
+            activeNote: (k: number, n: number) => `${n}人中${k}人の専門家が動く`,
+            outLabel: '強化済み',
+            hint: 'トークンを切り替えて、どの専門家が点灯するか見て',
+            caption: 'アテンションのあと、各トークンはfeed-forwardネットワークを通って強化されます。大きなモデルでは、ルーターが多くのうちほんの数人の専門家だけを点灯させます。これがMixture-of-Experts、膨大な知識を持ちながら、トークンごとにごく一部だけが動きます。',
         },
 
         layers: {
@@ -149,6 +148,7 @@ export const introVisuals = {
                 'モデルは理由を捉えます: 嬉しさが走った理由。',
             ] as string[],
             floorLabel: '階',
+            blockLabel: '各層：アテンション + feed-forward',
             hint: '階をタップすると移動します',
             caption: '実際のモデルには何十もの階があり、それぞれが理解を少しずつ磨きます。',
         },

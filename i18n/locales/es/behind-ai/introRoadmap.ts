@@ -29,10 +29,12 @@ export const introRoadmap = {
         // Zona A - del texto a unidades de trabajo
         request: {
             title: 'Entra la solicitud',
+            term: 'Prompt',
             explanation: 'La persona escribe una solicitud, que entra junto con el contexto y las instrucciones del sistema.',
         },
         tokenize: {
             title: 'División en tokens',
+            term: 'Tokenization',
             explanation: 'El texto se descompone en unidades de trabajo que el modelo puede procesar.',
         },
         ids: {
@@ -48,10 +50,12 @@ export const introRoadmap = {
         },
         position: {
             title: 'Posición y orden',
+            term: 'Positional Encoding',
             explanation: 'El modelo necesita saber dónde está cada token respecto a los demás.',
         },
         context: {
             title: 'Ventana de contexto',
+            term: 'Context Window',
             explanation: 'El modelo tiene en cuenta la conversación, las instrucciones y los tokens ya generados.',
         },
         // Zona C - el cálculo del contexto
@@ -62,7 +66,8 @@ export const introRoadmap = {
         },
         mix: {
             title: 'Mezcla de información',
-            explanation: 'La información del contexto se mezcla y actualiza las representaciones.',
+            term: 'Feed-Forward',
+            explanation: 'Cada token se enriquece con una red feed-forward. En los modelos grandes solo unos pocos "expertos" de entre muchos se ejecutan por token.',
         },
         layers: {
             title: 'Capas de profundidad',
@@ -71,6 +76,7 @@ export const introRoadmap = {
         },
         state: {
             title: 'Representación interna actualizada',
+            term: 'Hidden State',
             explanation: 'Se forma un estado interno que resume el contexto en el momento actual.',
         },
         // Zona D - de la representación a la respuesta
@@ -91,6 +97,7 @@ export const introRoadmap = {
         },
         loop: {
             title: 'Un bucle hasta la respuesta',
+            term: 'Autoregression',
             explanation: 'El token elegido se suma a la respuesta, y luego todo vuelve a ejecutarse.',
         },
     },

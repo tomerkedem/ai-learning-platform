@@ -40,8 +40,8 @@ export const introVisuals = {
             position: 'Las mismas palabras en otro orden lo cambian todo. Por eso se guarda el orden.',
             context: 'Lo que sale de la ventana se olvida. Así una charla larga pierde su inicio.',
             attention: 'Cada palabra escucha a las demás. Toca una palabra y mira a quién atiende.',
-            mix: 'La misma palabra, otro contexto, otro significado.',
-            layers: 'Cada capa afina un poco más. Un modelo real tiene decenas.',
+            mix: 'Cada token se envía a expertos. Solo unos pocos de muchos se encienden - así un modelo enorme sigue siendo rápido.',
+            layers: 'Cada capa vuelve a ejecutar atención y feed-forward, y afina un poco más. Un modelo real tiene decenas.',
             state: 'Todo el contexto se comprime en un punto. De ahí nace la próxima palabra.',
             logits: 'El modelo sopesa muchas palabras a la vez y puntúa cada una.',
             softmax: 'Las puntuaciones se vuelven porcentajes que suman cien.',
@@ -131,14 +131,13 @@ export const introVisuals = {
 
         // Station 8: one ambiguous word, two contexts, the meaning flips.
         mix: {
-            word: 'orden',
-            aLabel: 'Mi orden llegó de la tienda',
-            aSource: 'tienda',
-            aMeaning: 'un pedido que compraste',
-            bLabel: 'El capitán dio una orden',
-            bSource: 'capitán',
-            bMeaning: 'un mando que cumplir',
-            caption: 'La palabra entró idéntica en ambas frases. La información de sus vecinas se mezcló en su representación y salió con otro significado.',
+            tokenA: 'entrega',
+            tokenB: 'pago',
+            routerLabel: 'El router elige',
+            activeNote: (k: number, n: number) => `${k} de ${n} expertos se ejecutan`,
+            outLabel: 'enriquecido',
+            hint: 'Cambia de token y mira qué expertos se encienden',
+            caption: 'Tras la atención, cada token pasa por una red feed-forward que lo enriquece. En los modelos grandes un router enciende solo unos pocos expertos de entre muchos - eso es Mixture-of-Experts: conocimiento enorme, pero solo una parte pequeña se ejecuta por token.',
         },
 
         layers: {
@@ -150,6 +149,7 @@ export const introVisuals = {
                 'El modelo capta la causa: la alegría explica la carrera.',
             ] as string[],
             floorLabel: 'Piso',
+            blockLabel: 'Cada capa: atención + feed-forward',
             hint: 'Toca un piso para saltar allí',
             caption: 'Un modelo real tiene decenas de pisos como estos, y cada uno pule la comprensión un poco más.',
         },

@@ -40,10 +40,12 @@ export const introRoadmap = {
         // אזור A - מהטקסט ליחידות עבודה
         request: {
             title: 'הבקשה נכנסת',
+            term: 'Prompt',
             explanation: 'המשתמש כותב בקשה, והיא נכנסת יחד עם ההקשר והוראות המערכת.',
         },
         tokenize: {
             title: 'פירוק לטוקנים',
+            term: 'Tokenization',
             explanation: 'הטקסט מתפרק ליחידות עבודה שהמודל יודע לעבד.',
         },
         ids: {
@@ -59,10 +61,12 @@ export const introRoadmap = {
         },
         position: {
             title: 'מיקום וסדר',
+            term: 'Positional Encoding',
             explanation: 'המודל צריך לדעת איפה כל טוקן נמצא ביחס לאחרים.',
         },
         context: {
             title: 'חלון הקשר',
+            term: 'Context Window',
             explanation: 'המודל מתחשב בשיחה, בהוראות ובטוקנים שכבר נוצרו.',
         },
         // אזור C - חישוב ההקשר
@@ -73,7 +77,8 @@ export const introRoadmap = {
         },
         mix: {
             title: 'ערבוב מידע',
-            explanation: 'המידע מההקשר מתערבב ומעדכן את הייצוגים.',
+            term: 'Feed-Forward',
+            explanation: 'כל טוקן מועשר ברשת feed-forward. במודלים הגדולים רק כמה "מומחים" מתוך רבים רצים לכל טוקן.',
         },
         layers: {
             title: 'שכבות עומק',
@@ -82,6 +87,7 @@ export const introRoadmap = {
         },
         state: {
             title: 'ייצוג פנימי עדכני',
+            term: 'Hidden State',
             explanation: 'נוצר מצב פנימי שמסכם את ההקשר לרגע הנוכחי.',
         },
         // אזור D - מהייצוג לתשובה
@@ -102,6 +108,7 @@ export const introRoadmap = {
         },
         loop: {
             title: 'לולאה עד תשובה',
+            term: 'Autoregression',
             explanation: 'הטוקן שנבחר מצטרף לתשובה, ואז הכול רץ שוב.',
         },
     },

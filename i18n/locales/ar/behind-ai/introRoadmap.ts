@@ -29,10 +29,12 @@ export const introRoadmap = {
         // المنطقة A - من النص إلى وحدات عمل
         request: {
             title: 'يدخل الطلب',
+            term: 'Prompt',
             explanation: 'يكتب المستخدم طلبًا، فيدخل مع السياق وتعليمات النظام.',
         },
         tokenize: {
             title: 'التقسيم إلى توكنات',
+            term: 'Tokenization',
             explanation: 'يتفكّك النص إلى وحدات عمل يستطيع النموذج معالجتها.',
         },
         ids: {
@@ -48,10 +50,12 @@ export const introRoadmap = {
         },
         position: {
             title: 'الموضع والترتيب',
+            term: 'Positional Encoding',
             explanation: 'يحتاج النموذج إلى معرفة موضع كل توكن بالنسبة إلى البقية.',
         },
         context: {
             title: 'نافذة السياق',
+            term: 'Context Window',
             explanation: 'يأخذ النموذج في حسبانه المحادثة والتعليمات والتوكنات التي أُنشئت بالفعل.',
         },
         // المنطقة C - حساب السياق
@@ -62,7 +66,8 @@ export const introRoadmap = {
         },
         mix: {
             title: 'مزج المعلومات',
-            explanation: 'تمتزج المعلومات من السياق وتحدّث التمثيلات.',
+            term: 'Feed-Forward',
+            explanation: 'يُثرى كل توكن بشبكة feed-forward. في النماذج الكبيرة يعمل بضعة "خبراء" فقط من بين كثيرين لكل توكن.',
         },
         layers: {
             title: 'طبقات العمق',
@@ -71,6 +76,7 @@ export const introRoadmap = {
         },
         state: {
             title: 'تمثيل داخلي محدَّث',
+            term: 'Hidden State',
             explanation: 'يتشكّل حالة داخلية تلخّص السياق في اللحظة الراهنة.',
         },
         // المنطقة D - من التمثيل إلى الإجابة
@@ -91,6 +97,7 @@ export const introRoadmap = {
         },
         loop: {
             title: 'حلقة حتى الإجابة',
+            term: 'Autoregression',
             explanation: 'ينضمّ التوكن المختار إلى الإجابة، ثم يعمل كل شيء من جديد.',
         },
     },

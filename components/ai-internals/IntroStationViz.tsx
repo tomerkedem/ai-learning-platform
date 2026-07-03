@@ -1053,184 +1053,216 @@ const MIX_STYLE = {
     },
 } as const;
 
+// בנק המומחים: 8 מומחים, ורק תת-קבוצה נדלקת לכל טוקן. זו החתימה של מודלי 2026
+// (Mixture-of-Experts): ראוטר מפעיל מעט מומחים מתוך רבים, כך שהמודל עצום אך רק
+// חלק קטן רץ לכל טוקן. הניתוב כאן קבוע להמחשה בלבד; אין התמחות-נושא אמיתית
+// (בפועל הניתוב נלמד ואטום). הרעיון: ניתוב + דלילות.
+const NUM_EXPERTS = 8;
+const EXPERT_ROUTES: Record<'a' | 'b', number[]> = { a: [1, 4, 6], b: [0, 3] };
+
 function MixViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.mix;
-    const [ctx, setCtx] = useState<'a' | 'b'>('a');
+    const [tok, setTok] = useState<'a' | 'b'>('a');
     const touched = useRef(false);
     const after = useTimers();
+    const active = EXPERT_ROUTES[tok];
 
-    // מעבר הקשר: טיק קטן במעבר, וצליל עדין כשהמשמעות החדשה נוחתת. withSound=false
-    // במעבר האוטומטי של הפתיחה (כדי שהלולאה לא תשמיע), true במגע של המשתמש.
-    const switchCtx = (k: 'a' | 'b', withSound: boolean) => {
+    // ניתוב: טיק קטן בבחירה, וצליל עדין כשהטוקן המועשר נוחת. withSound=false
+    // בניתוב האוטומטי של הפתיחה (כדי שהלולאה לא תשמיע), true במגע של המשתמש.
+    const route = (k: 'a' | 'b', withSound: boolean) => {
         if (withSound) {
-            sound.tick(1);
-            after(() => sound.play(659.25, 0.25, 0.04), 950);
+            sound.tick(k === 'a' ? 0 : 2);
+            after(() => sound.play(659.25, 0.22, 0.04), 620);
         }
-        setCtx(k);
+        setTok(k);
     };
 
-    // רצף פתיחה: ההקשר הראשון נמזג אל המילה, ואז מעבר אוטומטי לשני מראה את
-    // היפוך המשמעות בלי שנדרש מגע. מכאן הלומד ממשיך להחליף בעצמו.
+    // רצף פתיחה: טוקן א' מנותב, ואז מעבר אוטומטי לטוקן ב' מראה שנדלקים מומחים
+    // אחרים בלי שנדרש מגע. מכאן הלומד ממשיך להחליף בעצמו.
     useEffect(() => {
-        if (!reduce) after(() => { if (!touched.current) switchCtx('b', !silent); }, 2800);
+        if (!reduce) after(() => { if (!touched.current) route('b', !silent); }, 2600);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const cur = ctx === 'a'
-        ? { source: v.aSource, meaning: v.aMeaning }
-        : { source: v.bSource, meaning: v.bMeaning };
-    const s = MIX_STYLE[ctx];
+    const s = MIX_STYLE[tok];
+    const token = tok === 'a' ? v.tokenA : v.tokenB;
 
     return (
         <div dir={dir}>
-            {/* בחירת הקשר: שני משפטים שמכילים בדיוק את אותה מילה */}
-            <div className="flex flex-col gap-1.5">
+            {/* בחירת טוקן: שני טוקנים לדוגמה, כל אחד מנותב למומחים אחרים */}
+            <div className="flex gap-2">
                 {(['a', 'b'] as const).map((k) => {
-                    const on = ctx === k;
+                    const on = tok === k;
                     return (
                         <button
                             key={k}
                             type="button"
-                            onClick={() => { touched.current = true; switchCtx(k, true); }}
+                            onClick={() => { haptic(); touched.current = true; route(k, true); }}
                             aria-pressed={on}
-                            className={`w-full rounded-xl border px-3 py-2 text-start text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${on ? MIX_STYLE[k].chip : 'border-white/10 bg-slate-950/50 text-slate-400 hover:bg-white/[0.03]'}`}
+                            className={`flex-1 rounded-xl border px-3 py-2 text-center text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${on ? MIX_STYLE[k].chip : 'border-white/10 bg-slate-950/50 text-slate-400 hover:bg-white/[0.03]'}`}
                         >
-                            {k === 'a' ? v.aLabel : v.bLabel}
+                            {k === 'a' ? v.tokenA : v.tokenB}
                         </button>
                     );
                 })}
             </div>
 
-            {/* הזירה: מילת ההקשר נמזגת אל תוך המילה, והמשמעות שיוצאת מתחלפת */}
-            <div className="relative mx-auto mt-3 flex h-44 w-full max-w-xs flex-col items-center justify-between py-1">
+            {/* הזירה: טוקן נכנס -> ראוטר -> בנק מומחים (רק כמה נדלקים) -> טוקן מועשר */}
+            <div className="mt-3 flex flex-col items-center gap-2">
+                {/* טוקן נכנס */}
                 <AnimatePresence mode="wait" initial={false}>
                     <motion.span
-                        key={`src-${ctx}`}
+                        key={`in-${tok}`}
                         initial={reduce ? { opacity: 0 } : { opacity: 0, y: -6 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: reduce ? 0 : 0.25 }}
+                        transition={{ duration: reduce ? 0 : 0.22 }}
                         className={`rounded-full border px-3 py-1 text-sm font-bold ${s.chip}`}
                     >
-                        {cur.source}
+                        {token}
                     </motion.span>
                 </AnimatePresence>
 
-                {/* טיפות המידע: השכנה נמזגת אל המילה */}
-                {!reduce && [0, 1, 2].map((i) => (
-                    <motion.span
-                        key={`${ctx}-${i}`}
-                        aria-hidden
-                        className={`absolute left-1/2 top-10 h-2 w-2 -translate-x-1/2 rounded-full ${s.dot}`}
-                        initial={{ y: 0, opacity: 0 }}
-                        animate={{ y: 50, opacity: [0, 1, 0.9, 0] }}
-                        transition={{ duration: 0.8, delay: 0.3 + i * 0.22, ease: 'easeIn' }}
-                    />
-                ))}
-
-                {/* המילה: נכנסת זהה בשני ההקשרים */}
-                <span className={`rounded-xl border ${a.border} bg-slate-950/80 px-4 py-2 text-lg font-black text-white`}>
-                    {v.word}
+                {/* מוליך זורם מהטוקן אל הראוטר */}
+                <span aria-hidden className="relative h-3 w-0.5 overflow-hidden bg-white/15">
+                    {!reduce && (
+                        <motion.span
+                            key={`wire-${tok}`}
+                            className={`absolute inset-x-0 h-1.5 ${a.solid}`}
+                            initial={{ top: '-50%', opacity: 0 }}
+                            animate={{ top: '110%', opacity: [0, 1, 0] }}
+                            transition={{ duration: 0.5, ease: 'easeIn' }}
+                        />
+                    )}
                 </span>
 
-                {/* המשמעות שיוצאת מהערבוב */}
+                {/* ראוטר */}
+                <div className={`flex items-center gap-1.5 rounded-lg border ${a.border} ${a.bgSoft} px-2.5 py-1`}>
+                    <span className={`h-2 w-2 rounded-sm ${a.solid}`} aria-hidden />
+                    <span className={`text-xs font-bold ${a.text}`}>{v.routerLabel}</span>
+                </div>
+
+                {/* בנק מומחים: 8, ורק active נדלקים בפעימה מדורגת */}
+                <div className="mt-0.5 grid grid-cols-4 gap-1.5">
+                    {Array.from({ length: NUM_EXPERTS }).map((_, i) => {
+                        const on = active.includes(i);
+                        return (
+                            <motion.div
+                                key={`${tok}-e${i}`}
+                                initial={reduce ? false : { scale: on ? 0.8 : 1, opacity: on ? 0.5 : 0.35 }}
+                                animate={on ? { scale: [0.8, 1.12, 1], opacity: 1 } : { scale: 1, opacity: 0.35 }}
+                                transition={reduce ? { duration: 0 } : { duration: 0.4, delay: on ? 0.3 + active.indexOf(i) * 0.14 : 0, ease: 'easeOut' }}
+                                className={`flex h-9 w-9 items-center justify-center rounded-lg border text-[11px] font-black ${on ? `${a.border} ${a.bgSoft} ${a.text} ${a.glow}` : 'border-white/10 bg-slate-950/50 text-slate-600'}`}
+                            >
+                                <span dir="ltr">{i + 1}</span>
+                            </motion.div>
+                        );
+                    })}
+                </div>
+
+                {/* כמה מומחים מתוך כמה רצים */}
+                <span className={`text-xs font-bold ${a.text}`} dir="auto">{v.activeNote(active.length, NUM_EXPERTS)}</span>
+
+                {/* טוקן מועשר יוצא */}
                 <AnimatePresence mode="wait" initial={false}>
                     <motion.span
-                        key={`mean-${ctx}`}
+                        key={`out-${tok}`}
                         initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={reduce ? { duration: 0 } : { delay: 0.8, type: 'spring', stiffness: 300, damping: 22 }}
-                        className={`rounded-full border px-3 py-1 text-center text-sm font-bold ${s.chip}`}
+                        transition={reduce ? { duration: 0 } : { delay: 0.6, type: 'spring', stiffness: 300, damping: 22 }}
+                        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-bold ${s.chip}`}
                     >
-                        {cur.meaning}
+                        <Plus size={12} aria-hidden />
+                        <span>{token} · {v.outLabel}</span>
                     </motion.span>
                 </AnimatePresence>
             </div>
 
-            {/* שתי המשמעויות זו לצד זו, כדי שהניגוד ינחת: הפעילה מודגשת, השנייה מעומעמת */}
-            <div className="mt-1 grid grid-cols-2 gap-2 text-center">
-                {(['a', 'b'] as const).map((k) => {
-                    const on = ctx === k;
-                    return (
-                        <div
-                            key={k}
-                            className={`rounded-lg border px-2 py-1.5 text-xs font-bold leading-snug transition-all ${on ? MIX_STYLE[k].chip : 'border-white/10 bg-slate-950/40 text-slate-500 opacity-70'}`}
-                        >
-                            {k === 'a' ? v.aMeaning : v.bMeaning}
-                        </div>
-                    );
-                })}
-            </div>
+            <p className={`mt-2.5 text-sm font-bold ${a.text}`}>{v.hint}</p>
             <Caption>{v.caption}</Caption>
         </div>
     );
 }
 
-/* ════════════ 9 · שכבות עומק: מעלית שמחדדת את ההבנה ════════════ */
+/* ════════════ 9 · שכבות עומק: אותו בלוק חוזר במגדל, וההבנה מתחדדת ════════════ */
 
-// טשטוש המשפט לפי הקומה הנוכחית: למטה מטושטש, למעלה חד.
+// טשטוש המשפט לפי עומק העיבוד: רדוד מטושטש, עמוק חד. אינדקס לפי שלב (0..2).
 const FLOOR_BLUR = [3, 1.5, 0];
 const FLOOR_OPACITY = [0.55, 0.8, 1];
+// מגדל של שכבות רבות (רמז ל"עשרות"). לכל שלב סמנטי העומק (0-מבוסס) שאליו מגיע
+// הסמן: דקדוק רדוד, קישורים באמצע, משמעות עמוק.
+const NUM_LAYERS = 10;
+const PHASE_AT = [1, 5, 9];
 
 function LayersViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.layers;
-    const [floor, setFloor] = useState(reduce ? v.floors.length - 1 : 0);
+    const [phase, setPhase] = useState(reduce ? v.floors.length - 1 : 0);
     const touched = useRef(false);
     const after = useTimers();
+    // עומק השכבה שכל שלב סמנטי מגיע אליו: דקדוק מוקדם, משמעות עמוק.
+    const depth = PHASE_AT[phase] ?? PHASE_AT[PHASE_AT.length - 1];
 
-    // מעבר קומה: צליל עולה בסולם ככל שעולים, כמו פעמון מעלית קטן. withSound=false
-    // בעליית הפתיחה האוטומטית, true במגע של המשתמש.
-    const goFloor = (i: number, withSound: boolean) => { if (withSound) sound.tick(i + 1); setFloor(i); };
+    // מעבר שלב: צליל עולה בסולם ככל שיורדים עמוק יותר. withSound=false בעלייה
+    // האוטומטית של הפתיחה, true במגע של המשתמש.
+    const goPhase = (i: number, withSound: boolean) => { if (withSound) sound.tick(i + 1); setPhase(i); };
 
-    // רצף פתיחה: המעלית עולה לבד קומה-קומה, והמשפט מתחדד.
+    // רצף פתיחה: הסמן עולה לבד דרך השכבות, השלב מתקדם והמשפט מתחדד.
     useEffect(() => {
         if (reduce) return;
-        after(() => { if (!touched.current) goFloor(1, !silent); }, 1100);
-        after(() => { if (!touched.current) goFloor(2, !silent); }, 2200);
+        after(() => { if (!touched.current) goPhase(1, !silent); }, 1300);
+        after(() => { if (!touched.current) goPhase(2, !silent); }, 2600);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
         <div dir={dir}>
-            {/* המשפט: מטושטש למטה, חד למעלה */}
+            {/* המשפט: מטושטש בעומק רדוד, חד ככל שהעיבוד מעמיק */}
             <motion.div
-                animate={{ filter: `blur(${FLOOR_BLUR[floor]}px)`, opacity: FLOOR_OPACITY[floor] }}
+                animate={{ filter: `blur(${FLOOR_BLUR[phase]}px)`, opacity: FLOOR_OPACITY[phase] }}
                 transition={{ duration: reduce ? 0 : 0.45 }}
                 className="mb-3 rounded-lg border border-white/5 bg-slate-950/50 px-3 py-2 text-center text-sm font-bold text-slate-100"
             >
                 {v.sentence}
             </motion.div>
 
-            {/* הקומות, מלמעלה למטה בתצוגה: הקומה הגבוהה היא המחודדת ביותר */}
-            <div className="relative flex flex-col gap-1.5">
-                {/* פיר המעלית: מסילה אנכית שעוברת דרך מרכזי התגים, והתא (lv-car) נע בה */}
-                <span aria-hidden className="pointer-events-none absolute top-4 bottom-4 w-0.5 bg-white/15" style={{ insetInlineStart: '1.375rem' }} />
-                {[...v.floors].map((_, ri) => v.floors.length - 1 - ri).map((i) => {
-                    const active = i === floor;
-                    return (
-                        <button
-                            key={i}
-                            type="button"
-                            onClick={() => { touched.current = true; goFloor(i, true); }}
-                            aria-pressed={active}
-                            className={`flex w-full items-center gap-2.5 rounded-xl border px-3 py-2 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active ? `${a.border} ${a.bgSoft}` : 'border-white/5 bg-slate-950/40 hover:bg-white/[0.03]'
-                                }`}
-                        >
-                            <span className="relative flex h-5 w-5 shrink-0 items-center justify-center">
-                                {active && (
-                                    <motion.span
-                                        layoutId="lv-car"
-                                        transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 28 }}
-                                        className={`absolute inset-0 rounded-md ${a.solid}`}
-                                        aria-hidden
-                                    />
-                                )}
-                                <span className={`relative text-xs font-black ${active ? a.solidText : 'text-slate-500'}`} dir="ltr">{i + 1}</span>
-                            </span>
-                            <span className="min-w-0 flex-1">
+            <div className="flex gap-3">
+                {/* מגדל העומק: אותו בלוק חוזר בשכבות רבות. הסמן ממלא עד העומק הנוכחי,
+                    וה-"⋮" למעלה מרמז שיש עוד הרבה מעבר למה שמוצג. */}
+                <div className="flex w-14 shrink-0 flex-col items-center">
+                    <span aria-hidden className="mb-1 text-base font-black leading-none text-slate-600">⋮</span>
+                    <div className="flex flex-col-reverse gap-1">
+                        {Array.from({ length: NUM_LAYERS }).map((_, i) => {
+                            const reached = i <= depth;
+                            const cur = i === depth;
+                            return (
+                                <motion.span
+                                    key={i}
+                                    aria-hidden
+                                    initial={false}
+                                    animate={{ opacity: reached ? 1 : 0.2, scale: cur ? 1.14 : 1 }}
+                                    transition={{ duration: reduce ? 0 : 0.3, delay: reduce ? 0 : (reached ? i * 0.03 : 0) }}
+                                    className={`h-2 w-9 rounded-sm ${reached ? a.solid : 'bg-slate-700/50'} ${cur ? a.glow : ''}`}
+                                />
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* שלושת השלבים הסמנטיים לאורך העומק: מהעמוק (משמעות) לרדוד (דקדוק) */}
+                <div className="flex flex-1 flex-col gap-1.5">
+                    {[...v.floors].map((_, ri) => v.floors.length - 1 - ri).map((i) => {
+                        const active = i === phase;
+                        return (
+                            <button
+                                key={i}
+                                type="button"
+                                onClick={() => { haptic(); touched.current = true; goPhase(i, true); }}
+                                aria-pressed={active}
+                                className={`w-full rounded-xl border px-3 py-2 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active ? `${a.border} ${a.bgSoft}` : 'border-white/5 bg-slate-950/40 hover:bg-white/[0.03]'}`}
+                            >
                                 <span className={`block text-sm font-bold ${active ? a.text : 'text-slate-400'}`}>
-                                    {v.floorLabel} <span dir="ltr">{i + 1}</span> · {v.floors[i]}
+                                    {v.floors[i]}
                                 </span>
                                 <AnimatePresence initial={false}>
                                     {active && (
@@ -1245,12 +1277,15 @@ function LayersViz({ a, reduce, silent, viz, dir }: VizProps) {
                                         </motion.span>
                                     )}
                                 </AnimatePresence>
-                            </span>
-                        </button>
-                    );
-                })}
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
-            <p className={`mt-2.5 text-sm font-bold ${a.text}`}>{v.hint}</p>
+
+            {/* מה חוזר בכל שכבה (קשב + feed-forward), ורמז אינטראקציה */}
+            <p className={`mt-2.5 text-center text-[13px] font-bold ${a.text}`} dir="auto">{v.blockLabel}</p>
+            <p className="mt-1 text-center text-[13px] font-bold text-slate-400">{v.hint}</p>
             <Caption>{v.caption}</Caption>
         </div>
     );

@@ -29,10 +29,12 @@ export const introRoadmap = {
         // Zone A - from text to work units
         request: {
             title: 'The request comes in',
+            term: 'Prompt',
             explanation: 'The user writes a request, and it enters along with the context and the system instructions.',
         },
         tokenize: {
             title: 'Breaking into tokens',
+            term: 'Tokenization',
             explanation: 'The text breaks into work units the model can process.',
         },
         ids: {
@@ -48,10 +50,12 @@ export const introRoadmap = {
         },
         position: {
             title: 'Position and order',
+            term: 'Positional Encoding',
             explanation: 'The model needs to know where each token sits relative to the others.',
         },
         context: {
             title: 'Context window',
+            term: 'Context Window',
             explanation: 'The model takes into account the conversation, the instructions, and the tokens already produced.',
         },
         // Zone C - computing the context
@@ -62,7 +66,8 @@ export const introRoadmap = {
         },
         mix: {
             title: 'Mixing information',
-            explanation: 'Information from the context mixes in and updates the representations.',
+            term: 'Feed-Forward',
+            explanation: 'Each token is enriched by a feed-forward network. In large models only a few "experts" out of many run per token.',
         },
         layers: {
             title: 'Depth layers',
@@ -71,6 +76,7 @@ export const introRoadmap = {
         },
         state: {
             title: 'Up-to-date internal representation',
+            term: 'Hidden State',
             explanation: 'An internal state forms that summarizes the context at the current moment.',
         },
         // Zone D - from representation to answer
@@ -91,6 +97,7 @@ export const introRoadmap = {
         },
         loop: {
             title: 'Looping until an answer',
+            term: 'Autoregression',
             explanation: 'The chosen token joins the answer, and then the whole thing runs again.',
         },
     },
