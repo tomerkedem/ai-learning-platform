@@ -550,7 +550,9 @@ export default function BehindTheScenesChapter1() {
                     </div>
                 </div>
 
-                <PredictDecision key={`predict:${mode}`} mode={mode} />
+                <ExpandableLab title={viz.predict.question}>
+                    <PredictDecision key={`predict:${mode}`} mode={mode} />
+                </ExpandableLab>
 
                 <ExpandableLab>
                     <ReadHeadLab key={`${mode}:${conversationText}`} text={conversationText} mode={mode} accent={accent} />
