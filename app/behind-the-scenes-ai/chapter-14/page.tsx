@@ -66,7 +66,7 @@ export default function BehindTheScenesChapter13() {
             </motion.section>
             {/* המנטור: X-Ray של המנוע (xl+, מימין) */}
             <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="inspect" line="X-Ray של המנוע" width={165} />
+              <Mentor pose="inspect" line="X-Ray של המנוע" width={248} />
             </div>
             </div>
 

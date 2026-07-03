@@ -231,7 +231,7 @@ export default function BehindTheScenesChapter2() {
                 </motion.section>
 
                 <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="inputClarity" line={c2.mentor.hero} width={165} flip={!isRtl} />
+                    <Mentor pose="inputClarity" line={c2.mentor.hero} width={248} flip={!isRtl} />
                 </div>
             </div>
 

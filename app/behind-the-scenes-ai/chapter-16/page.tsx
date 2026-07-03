@@ -67,7 +67,7 @@ export default function BehindTheScenesChapter15() {
             </motion.section>
             {/* המנטור: כתיבה טובה היא הגדרה (xl+, מימין) */}
             <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="type" line="כתיבה טובה היא הגדרה" width={165} />
+              <Mentor pose="type" line="כתיבה טובה היא הגדרה" width={248} />
             </div>
             </div>
 

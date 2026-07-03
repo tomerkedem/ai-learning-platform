@@ -170,7 +170,7 @@ export default function BehindTheScenesChapter5() {
 
                 {/* המנטור בונה תשובה צעד אחר צעד מחלקים והקשר (xl+, מימין) */}
                 <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="answerBuilder" line={c5.mentor.hero} width={165} />
+                    <Mentor pose="answerBuilder" line={c5.mentor.hero} width={248} />
                 </div>
             </div>
 

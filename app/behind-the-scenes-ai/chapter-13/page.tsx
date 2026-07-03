@@ -104,7 +104,7 @@ export default function BehindTheScenesChapter12() {
             </motion.section>
             {/* המנטור: מתי לפעול ומתי לעצור (xl+, מימין) */}
             <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="headsup" line="מתי לפעול, ומתי לעצור" width={165} />
+              <Mentor pose="headsup" line="מתי לפעול, ומתי לעצור" width={248} />
             </div>
             </div>
 

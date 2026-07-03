@@ -349,7 +349,7 @@ export default function BehindTheScenesChapter1() {
             </motion.section>
             {/* המנטור מזמין להציץ פנימה - צמוד לקצה החיצוני של הכרטיס (xl+), תלוי-כיוון */}
             <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-              <Mentor pose="peek" line={c1.mentor.peek} width={175} flip={!isRtl} />
+              <Mentor pose="peek" line={c1.mentor.peek} width={263} flip={!isRtl} />
             </div>
             </div>
 

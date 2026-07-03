@@ -200,7 +200,7 @@ export default function BehindTheScenesChapter4() {
 
                 {/* המנטור מציג שזו הערכה הסתברותית (xl+, מימין) */}
                 <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="plausiblePaths" line="המודל מעריך, לא יודע" width={165} />
+                    <Mentor pose="plausiblePaths" line="המודל מעריך, לא יודע" width={248} />
                 </div>
             </div>
 
