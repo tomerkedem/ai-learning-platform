@@ -11,7 +11,6 @@
 // No em dash (U+2014) and no en dash (U+2013). Mentor bubble text carries no emoji.
 
 import type { Locale } from '@/i18n/config';
-import { chapter1Visuals as heChapter1Visuals } from '../../he/behind-ai/chapter1Visuals';
 
 export const chapter1Visuals = {
     contentLocale: 'en' as Locale,
@@ -30,13 +29,103 @@ export const chapter1Visuals = {
         illustrationBody: 'Every model has its own method, but they all rest on the same principles. This is exactly the path your sentence travels.',
     },
 
-    // "Sentence Journey" (Chat mode) strings. TODO(i18n): translate from the Hebrew source.
-    journey: heChapter1Visuals.journey,
+    // "Sentence Journey" (Chat mode) strings.
+    journey: {
+        zones: {
+            A: 'From text to work units',
+            B: 'From tokens to representations',
+            C: 'Computing the context',
+            D: 'From representation to answer',
+        },
+        anchorLabel: 'Your sentence, at every station',
+        selectedLabel: 'Selected',
+        pauseTag: 'Stops and asks',
+        pauseNudge: {
+            start: 'Try the other side.',
+            body: 'You saw a confident answer. Switch to Agent mode and try the marked prompts, and watch the engine stop and ask, or request approval, instead of guessing.',
+        },
+        stations: {
+            s1: { title: 'The request comes in', note: 'The sentence you picked - the starting point of the journey through the engine.' },
+            s2: { title: 'Split into tokens', note: 'The same sentence is cut into work units. Now it is tokens.' },
+            s3: { title: 'An ID for each token', note: 'Each token gets a number from the vocabulary. From here on, only numbers.' },
+            s4: { title: 'Numeric representation', note: 'The sentence tokens fly into the meaning space. Position encodes meaning - not a dictionary lookup.' },
+            s5: { title: 'Position and order', note: 'Each token carries a position tag. Order is part of the meaning - not a bag of words.' },
+            s6: { title: 'Context window', note: 'The engine works only with what is in the window right now. That is all it sees of the sentence.' },
+            s7: { title: 'Attention to context', note: 'The engine does not count words - it weighs which tokens matter. Here the highlighted token shapes the meaning of its neighbors.' },
+            s8: { title: 'Mixing information', note: 'Each token is enriched by a feed-forward network. In large models only a few experts run.' },
+            s9: { title: 'Depth layers', note: 'Attention and feed-forward repeat across dozens of layers, and the sentence understanding sharpens.' },
+            s10: { title: 'Up-to-date internal state', note: 'The whole sentence is compressed into one internal representation, before predicting the next token.' },
+            s11: { title: 'Raw scores', note: 'The engine gives a score to every next option. It ranks options by probability, it does not count keywords.' },
+            s12: { title: 'From score to probability', note: 'The scores turn into probabilities that add up to 100%. The highest one leads.' },
+            s13: { title: 'Choosing the next token', note: 'The probability picture becomes a choice: the leader locks in.' },
+            s14: { title: 'The answer', note: 'The chosen token joins, and the loop runs again until the answer is complete.' },
+        },
+        agent: {
+            zones: {
+                understand: 'Understanding the task',
+                tools: 'Tools via MCP',
+                control: 'Control and approval',
+                exec: 'Execution and loop',
+                output: 'Output',
+            },
+            stations: {
+                a1: { title: 'The request comes in', note: 'The task you asked for - this is where the agent round begins.' },
+                a2: { title: 'Understanding the goal', note: 'The agent grasps the real goal, not just the words.' },
+                a3: { title: 'Available tools', note: 'The agent tools are connected through MCP: a tracking system, sending messages, and more.' },
+                a4: { title: 'Tool selection and plan', note: 'The agent picks which tool moves the goal forward right now.' },
+                a5: { title: 'Checking for missing info', note: 'Is a detail missing to act on? The agent stops and asks, instead of guessing.' },
+                a6: { title: 'Risk and permission', note: 'An action that affects a customer (sending, updating) needs approval - it does not run on its own.' },
+                a7: { title: 'Calling the tool', note: 'The agent calls the tool through MCP, for example the tracking system.' },
+                a8: { title: 'Result from the tool', note: 'The tool returns an observation: a real status from the world.' },
+                a9: { title: 'Reasoning and loop', note: 'With the result in hand: continue, call another tool, ask, or finish.' },
+                a10: { title: 'Act or stop', note: 'The agent returns an answer, performs an action, waits for approval, or stops.' },
+            },
+            toolNames: ['Shipment tracking', 'Send a message to the customer'],
+            mcp: 'MCP',
+            loopLabel: 'Rethink',
+            observation: 'Status: package in sorting',
+            missingOn: 'Missing identifier (barcode)',
+            missingOff: 'All the details are here',
+            riskOn: 'Sensitive action - approval required',
+            riskOff: 'Safe action',
+            loopNodes: ['Plan', 'Tool call', 'Observation', 'Reason'],
+            loopOutcomes: ['Continue', 'Ask', 'Stop', 'Finish'],
+            agentNode: 'Agent',
+            resultLabel: 'Result',
+            gate: {
+                safe: 'Safe answer',
+                ask: 'Ask for info',
+                approve: 'Approval required',
+                stop: 'Stop',
+            },
+        },
+    },
 
     // engineTrace: station names, titles, captions and labels
     trace: {
         unit: 'tokens',
-        labels: heChapter1Visuals.trace.labels,
+        labels: {
+            intent: {
+                'Package not delivered': 'Package not delivered',
+                'Tracking question': 'Tracking question',
+                'System issue': 'System issue',
+                'Payment issue': 'Payment issue',
+                'Other': 'Other',
+            },
+            task: {
+                'Send / update on customer record': 'Send or update a customer record',
+                'Check delivery failure': 'Check a delivery failure',
+                'Unclear task': 'Unclear task',
+                'General request': 'General request',
+            },
+            decision: {
+                'Stop for approval': 'Stop for approval',
+                'Use Tracking API': 'Use the tracking tool',
+                'Ask for barcode before action': 'Ask for a barcode before acting',
+                'Ask what to handle': 'Ask what to handle',
+                'Answer directly': 'Answer directly',
+            },
+        },
     },
 
     // mockEngine: demo replies (resolved by the replyKey the engine returns)
