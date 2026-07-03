@@ -115,6 +115,16 @@ export const chapter1 = {
         footnoteTail: ' を開いて、読み取りヘッドと「どの語が決めたか」のラボで遊んでみてください。',
     },
 
+    lock: {
+        eyebrow: '理解の固定',
+        question: 'エンジンは先頭の候補と次の候補の差が小さいと示しています。正しい一手は?',
+        answerLabel: '自信を持って答える',
+        askLabel: '止まって尋ねる',
+        correctBody: '固定できました。差が小さいことは不確かさを意味し、責任ある一手は推測せず、止まって尋ねることです。',
+        wrongBody: '惜しい。差が小さいことはむしろ不確かさの合図です。ここでの責任ある一手は、止まって尋ねることです。',
+        retry: 'もう一度',
+    },
+
     // Chat seed inputs (default input + quick suggestions)
     // Note: these are demo inputs fed to the learning engine, coupled to the Japanese
     // detection vocabulary in chapter-1/mockEngine.ts.

@@ -115,6 +115,16 @@ export const chapter1 = {
         footnoteTail: ' и поиграйте с головой чтения и лабораторией «какое слово решило».',
     },
 
+    lock: {
+        eyebrow: 'Закрепление понимания',
+        question: 'Движок показывает маленький разрыв между ведущим вариантом и следующим. Каков верный шаг?',
+        answerLabel: 'Ответить уверенно',
+        askLabel: 'Остановиться и спросить',
+        correctBody: 'Вы это закрепили. Маленький разрыв означает неопределённость, и ответственный шаг - остановиться и спросить, а не гадать.',
+        wrongBody: 'Почти. Маленький разрыв как раз сигнализирует о неопределённости. Ответственный шаг здесь - остановиться и спросить.',
+        retry: 'Попробовать снова',
+    },
+
     // Chat seed inputs (default input + quick suggestions)
     // Note: these are demo inputs fed to the learning engine, coupled to the Russian
     // detection vocabulary in chapter-1/mockEngine.ts.

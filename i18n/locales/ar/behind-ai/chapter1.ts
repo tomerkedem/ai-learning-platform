@@ -115,6 +115,16 @@ export const chapter1 = {
         footnoteTail: ' في الأعلى والعب برأس القراءة ومختبر "أي كلمة حسمت".',
     },
 
+    lock: {
+        eyebrow: 'تثبيت الفهم',
+        question: 'يُظهر المحرك فارقًا صغيرًا بين الخيار المتصدّر والذي يليه. ما الخطوة الصحيحة؟',
+        answerLabel: 'الإجابة بثقة',
+        askLabel: 'التوقف والسؤال',
+        correctBody: 'ثبّتّموها. الفارق الصغير يعني عدم اليقين، والخطوة المسؤولة هي التوقف والسؤال، لا التخمين.',
+        wrongBody: 'اقتربتم. الفارق الصغير يشير في الواقع إلى عدم اليقين. الخطوة المسؤولة هنا هي التوقف والسؤال.',
+        retry: 'حاولوا مجددًا',
+    },
+
     // Chat seed inputs (default input + quick suggestions)
     // Note: these are demo inputs fed to the learning engine, coupled to the Arabic
     // detection vocabulary in chapter-1/mockEngine.ts.

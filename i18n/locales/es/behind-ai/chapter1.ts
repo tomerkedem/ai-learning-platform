@@ -115,6 +115,16 @@ export const chapter1 = {
         footnoteTail: ' y juega con el cabezal de lectura y el laboratorio "qué palabra decidió".',
     },
 
+    lock: {
+        eyebrow: 'Fijar la comprensión',
+        question: 'El motor muestra una diferencia pequeña entre la opción líder y la siguiente. ¿Cuál es el paso correcto?',
+        answerLabel: 'Responder con confianza',
+        askLabel: 'Detenerse y preguntar',
+        correctBody: 'Lo fijaste. Una diferencia pequeña significa incertidumbre, y el paso responsable es detenerse y preguntar, no adivinar.',
+        wrongBody: 'Casi. Una diferencia pequeña en realidad señala incertidumbre. El paso responsable aquí es detenerse y preguntar.',
+        retry: 'Intentar de nuevo',
+    },
+
     // Chat seed inputs (default input + quick suggestions)
     // Note: these are demo inputs fed to the learning engine, coupled to the Spanish
     // detection vocabulary in chapter-1/mockEngine.ts.

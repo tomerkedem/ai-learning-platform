@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Terminal, ScanSearch, ArrowDown, ScanLine, GitCompare, X, Layers, ChevronDown, Eye, ListChecks, CircleAlert } from 'lucide-react';
+import { Terminal, ScanSearch, ArrowDown, ScanLine, GitCompare, X, Layers, ChevronDown, Eye, ListChecks, CircleAlert, Lock, RotateCcw } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -113,6 +113,8 @@ export default function BehindTheScenesChapter1() {
     const [isTyping, setIsTyping] = useState(true);
     // הדרכת first-run: רמז עדין מאיפה להתחיל, נסגר בלחיצה כדי לא להפריע לחזרות.
     const [coachOpen, setCoachOpen] = useState(true);
+    // נעילת הבנה לפני המבדק: החלטה בינארית אחת על ליבת הפרק (פער קטן -> לעצור ולשאול).
+    const [lockChoice, setLockChoice] = useState<'answer' | 'ask' | null>(null);
     // חשיפה הדרגתית: שכבת העומק (קריאה חיה, חוגת ביטחון, סיבתיות, פיצול) סגורה
     // כברירת מחדל. פרק 1 נפתח נקי - התשובה והדרך שמאחוריה בלבד - והפרטים נפתחים בבחירה.
     const [deepOpen, setDeepOpen] = useState(false);
@@ -670,6 +672,60 @@ export default function BehindTheScenesChapter1() {
                         <p className="mt-4 text-sm leading-relaxed text-slate-400">
                             {c1.beforeQuiz.footnoteLead}<span className="font-semibold text-cyan-300">{c1.beforeQuiz.footnoteHighlight}</span>{c1.beforeQuiz.footnoteTail}
                         </p>
+                    )}
+                </div>
+            </section>
+
+            {/* ══════════ נעילת הבנה: החלטה אחת מכרעת על ליבת הפרק, לפני המבדק ══════════ */}
+            {/* לא סיכום פסיבי אלא רגע אקטיבי: הלומד בוחר מה נכון כשהפער קטן, ונועל את */}
+            {/* הרעיון (פער קטן = חוסר ודאות -> לעצור ולשאול) לפני שהוא נבחן עליו. */}
+            <section className="mt-8 text-start" dir={dir}>
+                <div className="rounded-2xl border border-cyan-500/25 bg-slate-900/50 p-6 md:p-7">
+                    <span className="mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
+                        <Lock size={14} /> {c1.lock.eyebrow}
+                    </span>
+                    <h3 className="text-lg font-bold leading-relaxed text-white md:text-xl">{c1.lock.question}</h3>
+
+                    {lockChoice === null ? (
+                        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                            {(['answer', 'ask'] as const).map((k) => (
+                                <button
+                                    key={k}
+                                    type="button"
+                                    onClick={() => setLockChoice(k)}
+                                    className="flex-1 rounded-xl border border-slate-700/60 bg-slate-800/40 px-5 py-3 text-base font-bold text-slate-200 transition-colors hover:border-cyan-500/50 hover:bg-cyan-900/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60"
+                                >
+                                    {k === 'answer' ? c1.lock.answerLabel : c1.lock.askLabel}
+                                </button>
+                            ))}
+                        </div>
+                    ) : (
+                        <motion.div
+                            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: reduce ? 0 : 0.35 }}
+                            className={`mt-5 flex items-start gap-4 rounded-xl border p-4 md:p-5 ${lockChoice === 'ask' ? 'border-emerald-500/40 bg-emerald-900/[0.12]' : 'border-amber-400/40 bg-amber-900/[0.12]'}`}
+                            role="status"
+                            aria-live="polite"
+                        >
+                            <div className="hidden shrink-0 self-center sm:block">
+                                <Mentor key={lockChoice} pose={lockChoice === 'ask' ? 'celebrate' : 'reassure'} width={96} float={false} glow={false} flip={!isRtl} />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-base leading-relaxed text-slate-100">
+                                    {lockChoice === 'ask' ? c1.lock.correctBody : c1.lock.wrongBody}
+                                </p>
+                                {lockChoice === 'answer' && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setLockChoice(null)}
+                                        className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-amber-400/40 px-3 py-1.5 text-sm font-bold text-amber-200 transition-colors hover:bg-amber-900/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
+                                    >
+                                        <RotateCcw size={14} /> {c1.lock.retry}
+                                    </button>
+                                )}
+                            </div>
+                        </motion.div>
                     )}
                 </div>
             </section>

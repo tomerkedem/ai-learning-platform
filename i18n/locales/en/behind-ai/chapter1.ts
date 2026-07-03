@@ -115,6 +115,16 @@ export const chapter1 = {
         footnoteTail: ' above and play with the read head and the "which word decided" lab.',
     },
 
+    lock: {
+        eyebrow: 'Understanding lock',
+        question: 'The engine shows a small gap between the top option and the next. What is the right move?',
+        answerLabel: 'Answer confidently',
+        askLabel: 'Stop and ask',
+        correctBody: 'You locked it in. A small gap means uncertainty, and the responsible move is to stop and ask, not to guess.',
+        wrongBody: 'Almost. A small gap actually signals uncertainty. The responsible move here is to stop and ask.',
+        retry: 'Try again',
+    },
+
     // Chat seed inputs (default input + quick suggestions)
     // Note: these are demo inputs fed to the learning engine, coupled to the English
     // detection vocabulary (EN_VOCAB) in chapter-1/mockEngine.ts.
