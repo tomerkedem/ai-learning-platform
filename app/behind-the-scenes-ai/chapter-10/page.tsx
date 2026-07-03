@@ -12,6 +12,7 @@ import { InsightBox } from '@/components/content/InsightBox';
 import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
 import { AnswerBuilderLab } from '@/components/ai-internals/AnswerBuilderLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
+import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
 import { useT } from '@/i18n/useT';
 import type { Chapter5QuizId } from '@/i18n/locales/he/behind-ai/chapter5Quiz';
 
@@ -285,7 +286,9 @@ export default function BehindTheScenesChapter5() {
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-16 mb-4" dir={dir}>
-                <AssessmentEngine {...localizedQuiz} conceptDisplayMap={c5.quiz.conceptLabels} />
+                <ExpandableLab title={localizedQuiz.title}>
+                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={c5.quiz.conceptLabels} />
+                </ExpandableLab>
             </section>
         </ChapterLayout>
     );

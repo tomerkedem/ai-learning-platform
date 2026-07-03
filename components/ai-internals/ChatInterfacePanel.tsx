@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Send, Bot, Sparkles } from 'lucide-react';
 import { ModeToggle } from './ModeToggle';
 import { ACCENTS } from './accents';
 import type { Accent, ChatMessage, FlowMode } from './types';
 import { useT } from '@/i18n/useT';
+import { ExpandableLabContext } from './ExpandableLab';
 
 interface ChatInterfacePanelProps {
     title: string;
@@ -78,6 +79,10 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
     const a = ACCENTS[accent];
     const { t, dir } = useT();
     const isRtl = dir === 'rtl';
+    // במסך מלא (ExpandableLab) הכרטיס גדל בגובה כדי לנצל את המסך; במובייל (עמודות
+    // נערמות) נשאר 640px, וההגדלה חלה מ-lg ומעלה, שם יש שורה אחת עם מקום אנכי פנוי.
+    const expanded = useContext(ExpandableLabContext);
+    const panelHeight = expanded ? 'h-[640px] lg:h-[calc(100vh-6rem)]' : 'h-[640px]';
     const ci = t.behindAi.aiInternals.chatInterface;
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -117,7 +122,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
     const visible = isTyping ? messages.filter((m) => m.role !== 'ai') : messages;
 
     return (
-        <div className="relative isolate flex flex-col rounded-[2rem] border border-white/10 bg-slate-950/80 h-[640px] overflow-hidden" dir={dir}>
+        <div className={`relative isolate flex flex-col rounded-[2rem] border border-white/10 bg-slate-950/80 ${panelHeight} overflow-hidden`} dir={dir}>
             {/* רקע גריד עדין + הילת פינה (המסגרת והזוהר מגיעים מ-HoloFrame) */}
             <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
             <div className={`pointer-events-none absolute -top-24 -right-16 -z-10 h-52 w-52 rounded-full blur-[80px] ${a.bgSoft}`} />

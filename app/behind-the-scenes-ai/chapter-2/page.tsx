@@ -355,7 +355,9 @@ export default function BehindTheScenesChapter2() {
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-12 mb-4" dir={dir}>
-                <AssessmentEngine {...localizedQuiz} conceptDisplayMap={quizText.conceptLabels} />
+                <ExpandableLab title={localizedQuiz.title}>
+                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={quizText.conceptLabels} />
+                </ExpandableLab>
             </section>
         </ChapterLayout>
     );

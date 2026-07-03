@@ -50,16 +50,20 @@ export const ExpandableLab: React.FC<ExpandableLabProps> = ({ children, title })
         };
     }, [expanded]);
 
+    // כפתור ההגדלה (compact) הוא אייקון-בלבד עם tooltip מקורי, לעיצוב נקי מעל המעבדה.
+    // כפתור החזרה (במסך מלא) נשאר עם כיתוב "חזרה לפרק" - זו דרך היציאה של הלומד וכדאי
+    // שתישאר מפורשת. שניהם שומרים aria-label לנגישות.
     const button = (compact: boolean) => (
         <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-label={compact ? z.expandAria : z.collapseAria}
+            title={compact ? z.expand : undefined}
             aria-expanded={!compact}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-600/60 bg-slate-900/85 px-2.5 py-1.5 text-xs font-bold text-slate-200 backdrop-blur transition-colors hover:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60"
+            className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-600/60 bg-slate-900/85 ${compact ? 'p-2' : 'px-2.5 py-1.5'} text-xs font-bold text-slate-200 backdrop-blur transition-colors hover:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60`}
         >
-            {compact ? <Maximize2 size={14} /> : <Minimize2 size={14} />}
-            {compact ? z.expand : z.collapse}
+            {compact ? <Maximize2 size={16} /> : <Minimize2 size={14} />}
+            {!compact && z.collapse}
         </button>
     );
 

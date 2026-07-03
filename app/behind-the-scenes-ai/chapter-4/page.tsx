@@ -408,7 +408,9 @@ export default function BehindTheScenesChapter4() {
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-16 mb-4" dir={dir}>
-                <AssessmentEngine {...localizedQuiz} conceptDisplayMap={c4.quiz.conceptLabels} />
+                <ExpandableLab title={localizedQuiz.title}>
+                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={c4.quiz.conceptLabels} />
+                </ExpandableLab>
             </section>
         </ChapterLayout>
     );

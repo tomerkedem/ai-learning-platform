@@ -28,6 +28,8 @@ import { ReadHeadLab } from './ReadHeadLab';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
 import { PredictDecision } from './PredictDecision';
 import { CounterfactualDiff } from './CounterfactualDiff';
+// גשר-זיהוי: אותם צבעי 14 התחנות של מפת המבוא, כדי לקשר את המעבדה החיה למפה.
+import { STATION_PALETTE } from '@/components/ai-internals/IntroStationViz';
 
 export default function BehindTheScenesChapter1() {
     const reduce = useReducedMotion();
@@ -410,6 +412,21 @@ export default function BehindTheScenesChapter1() {
                     {c1.lab.intro}
                 </p>
 
+                {/* גשר-זיהוי אל מפת המבוא: רצועת 14 התחנות בדיוק בצבעי המפה, כדי שהלומד
+                    יזהה "אלה התחנות שראיתי, עכשיו חיות". הרצועה נושאת משמעות (המשפט), לא
+                    דקורציה בלבד. aria-hidden על הנקודות; המשמעות בטקסט. */}
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
+                    <span className="flex items-center gap-1" dir="ltr" aria-hidden>
+                        {Object.values(STATION_PALETTE).map((s, i) => (
+                            <React.Fragment key={i}>
+                                {i > 0 && <span className="h-px w-1.5 bg-white/15" />}
+                                <span className={`h-2 w-2 rounded-full ${s.solid}`} />
+                            </React.Fragment>
+                        ))}
+                    </span>
+                    <span className="text-sm font-bold text-slate-200 md:text-base">{c1.lab.mapBridge}</span>
+                </div>
+
                 <div className="relative">
                 {/* aurora אמביינטי מאחורי שני החלונות - סטטי כדי להשאיר את המסך הראשי רגוע */}
                 <div
@@ -476,7 +493,7 @@ export default function BehindTheScenesChapter1() {
                 {/* מנטור פרק 1 צמוד לקצה החיצוני של כרטיס הצ'אט השקוף (2xl בלבד - רק שם יש
                     מרווח בין הלוח לסרגל הניווט); תלוי-כיוון: חושף את המנוע מבפנים */}
                 <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-4' : 'right-full mr-4'} z-20 hidden 2xl:block pointer-events-none`}>
-                  <Mentor pose="holographic" line={c1.mentor.holographic} width={200} fallbackSrc="/assets/mentor-inspect.png" flip={!isRtl} />
+                  <Mentor pose="holographic" line={c1.mentor.holographic} width={400} fallbackSrc="/assets/mentor-inspect.png" flip={!isRtl} />
                 </div>
             </section>
 
@@ -611,7 +628,9 @@ export default function BehindTheScenesChapter1() {
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-10 mb-4" dir={dir}>
-                <AssessmentEngine {...localizedQuiz} conceptDisplayMap={quizText.conceptLabels} />
+                <ExpandableLab title={localizedQuiz.title}>
+                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={quizText.conceptLabels} />
+                </ExpandableLab>
             </section>
         </ChapterLayout>
     );

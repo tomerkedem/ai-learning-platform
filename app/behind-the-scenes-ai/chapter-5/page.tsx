@@ -437,7 +437,9 @@ export default function BehindTheScenesChapter5() {
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-16 mb-4" dir={dir}>
-                <AssessmentEngine {...localizedQuiz} conceptDisplayMap={c5.quiz.conceptLabels} />
+                <ExpandableLab title={localizedQuiz.title}>
+                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={c5.quiz.conceptLabels} />
+                </ExpandableLab>
             </section>
         </ChapterLayout>
     );

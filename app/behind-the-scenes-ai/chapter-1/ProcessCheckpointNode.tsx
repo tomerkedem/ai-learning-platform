@@ -24,6 +24,12 @@ interface ProcessCheckpointNodeProps {
     index?: number;
     /** תווית נגישות לא-נראית (שם השלב), לקוראי מסך בלבד. */
     label?: string;
+    /**
+     * מחלקת רקע לליבה (הנקודה) בלבד, לצביעה בצבע-תחנה של מפת המבוא. אם לא סופק,
+     * הליבה משתמשת בגוון-המצב (a.solid). הטבעת, ההילה והמצב תמיד בגוון-המצב, כדי
+     * לשמר את סימון Chat/Agent.
+     */
+    coreClass?: string;
     /** מחלקות נוספות לעטיפה החיצונית. */
     className?: string;
 }
@@ -38,6 +44,7 @@ export const ProcessCheckpointNode: React.FC<ProcessCheckpointNodeProps> = ({
     reduce = false,
     index = 0,
     label,
+    coreClass,
     className = '',
 }) => {
     const a = ACCENTS[accent];
@@ -92,10 +99,10 @@ export const ProcessCheckpointNode: React.FC<ProcessCheckpointNodeProps> = ({
                 />
             )}
 
-            {/* ליבה זוהרת */}
+            {/* ליבה זוהרת: צבע-תחנה (coreClass) אם סופק, אחרת גוון-המצב */}
             <motion.span
                 aria-hidden
-                className={`relative rounded-full ${coreSize} ${isPending ? 'bg-slate-600' : a.solid} ${
+                className={`relative rounded-full ${coreSize} ${isPending ? 'bg-slate-600' : (coreClass ?? a.solid)} ${
                     isCurrent ? a.glow : ''
                 }`}
                 animate={isCurrent && !reduce ? { scale: [1, 1.18, 1], opacity: [0.85, 1, 0.85] } : undefined}

@@ -47,6 +47,8 @@ export const chapter1 = {
         eyebrow: 'Transparent Chat Lab',
         intro: 'هنا ترى أن هناك مسارًا خلف الجواب: على اليمين الجواب كالمعتاد، وعلى اليسار المسار الذي قاد إليه.',
         panelTitle: 'Transparent Chat Lab',
+        // Recognition bridge to the intro map (package anchor): same stations, now live.
+        mapBridge: 'هذه هي محطات الخريطة نفسها - الآن حيّة، على طلبكم بشأن الطرد.',
         chatSubtitle: 'Chat Mode · محادثة',
         agentSubtitle: 'Agent Mode · مهمة',
         focusLead: 'انظر أولًا إلى ',

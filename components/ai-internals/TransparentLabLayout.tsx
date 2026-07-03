@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, ChevronDown } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
 
@@ -101,6 +101,8 @@ const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[]; isRtl: boo
 export const TransparentLabLayout: React.FC<TransparentLabLayoutProps> = ({ chat, engine, accent = 'cyan', tokens = [], dir = 'rtl' }) => {
     const reduce = useReducedMotion();
     const isRtl = dir === 'rtl';
+    const a = ACCENTS[accent];
+    const hasTokens = tokens.length > 0;
     // הצ'אט נכנס מהצד שאליו הוא נוחת (RTL: מימין, LTR: משמאל), והמנוע מהצד הנגדי.
     const chatX = isRtl ? 24 : -24;
 
@@ -114,6 +116,25 @@ export const TransparentLabLayout: React.FC<TransparentLabLayoutProps> = ({ chat
             >
                 {chat}
             </motion.div>
+
+            {/* מחבר מובייל: בדסקטופ הזרימה אופקית (DataFlowConnector בעמודה השלישית),
+                אבל במובייל הלוחות נערמים אנכית, ולכן כאן קו זרימה אנכי קצר עם חבילת-אור
+                שנופלת אל המנוע - כדי שהסיבתיות "זורם אל המנוע" תשרוד גם בטלפון. */}
+            <div className="relative flex h-12 items-center justify-center lg:hidden" aria-hidden>
+                <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/10" />
+                {!reduce && hasTokens && (
+                    <motion.span
+                        key={tokens.join(' ')}
+                        className={`absolute left-1/2 h-2.5 w-2.5 -translate-x-1/2 rounded-full ${a.solid}`}
+                        initial={{ top: '-10%', opacity: 0 }}
+                        animate={{ top: ['-10%', '110%'], opacity: [0, 1, 1, 0] }}
+                        transition={{ duration: 0.9, ease: 'easeIn' }}
+                    />
+                )}
+                <span className={`relative flex items-center justify-center rounded-full border ${a.border} ${a.bgSoft} ${a.text} p-1`}>
+                    <ChevronDown size={14} />
+                </span>
+            </div>
 
             <motion.div
                 initial={reduce ? false : { opacity: 0, x: -chatX }}

@@ -55,6 +55,8 @@ export const chapter1 = {
         eyebrow: 'Transparent Chat Lab',
         intro: 'כאן רואים שיש דרך מאחורי התשובה: מימין התשובה כרגיל, ומשמאל הדרך שהובילה אליה.',
         panelTitle: 'Transparent Chat Lab',
+        // גשר-זיהוי אל מפת המבוא (עוגן החבילות): אותן תחנות, עכשיו חיות על הבקשה.
+        mapBridge: 'אלה בדיוק התחנות מהמפה - עכשיו חיות, על בקשת החבילה שלכם.',
         chatSubtitle: 'Chat Mode · שיחה',
         agentSubtitle: 'Agent Mode · משימה',
         focusLead: 'הסתכלו קודם על ',

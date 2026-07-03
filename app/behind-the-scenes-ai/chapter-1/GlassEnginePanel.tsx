@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import {
     motion, AnimatePresence, useMotionValue, useTransform, animate, useReducedMotion, type Variants,
 } from 'framer-motion';
@@ -15,8 +15,16 @@ import { ConfidenceMeter } from '@/components/ai-internals/ConfidenceMeter';
 import { DecisionCard } from '@/components/ai-internals/DecisionCard';
 import type { Accent, DecisionKind } from '@/components/ai-internals/types';
 
+import { ExpandableLabContext } from '@/components/ai-internals/ExpandableLab';
+
+import { STATION_PALETTE } from '@/components/ai-internals/IntroStationViz';
 import type { EngineTraceStep } from './engineTrace';
 import { ProcessCheckpointNode } from './ProcessCheckpointNode';
+
+// צבעי 14 התחנות של מפת המבוא, בסדר הצינור. ליבת כל צומת נצבעת בצבע-תחנה כדי
+// שהמנוע ילבש את אותם צבעים שהלומד ראה במפה (זיהוי). לא 1:1 לתחנה ספציפית, אלא
+// אותו רצף-צבעים של הרצועה. הטבעת/ההילה נשארות בגוון-המצב (Chat/Agent).
+const STATION_DOTS = Object.values(STATION_PALETTE).map((s) => s.solid);
 
 interface GlassEnginePanelProps {
     title: string;
@@ -295,6 +303,9 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
     const a = ACCENTS[accent];
     const { t, dir } = useT();
     const isRtl = dir === 'rtl';
+    // גדל בגובה במסך מלא כדי לנצל את המסך (מ-lg ומעלה, כמו כרטיס הצ'אט הצמוד).
+    const expanded = useContext(ExpandableLabContext);
+    const panelHeight = expanded ? 'h-[640px] lg:h-[calc(100vh-6rem)]' : 'h-[640px]';
     const ep = t.behindAi.chapter1.visuals.enginePanel;
 
     const actOrder = useMemo(() => {
@@ -318,7 +329,7 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
     }, [steps]);
 
     return (
-        <div className="relative flex h-[640px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/80" dir={dir}>
+        <div className={`relative flex ${panelHeight} flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/80`} dir={dir}>
             {/* רקע גריד */}
             <div
                 className="pointer-events-none absolute inset-0 opacity-[0.06]"
@@ -353,10 +364,9 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
             {/* כותרת */}
             <div className="relative flex items-center justify-between gap-3 border-b border-white/10 p-5 shrink-0">
                 <div className="flex items-center gap-3">
+                    {/* אייקון סטטי (בלי סיבוב אינסופי) - חלק מריסון התנועה המתמדת. */}
                     <div className={`rounded-xl border border-white/10 bg-slate-900 p-2 ${a.text}`}>
-                        <motion.div animate={reduce ? undefined : { rotate: [0, 8, -8, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}>
-                            <Cpu size={18} />
-                        </motion.div>
+                        <Cpu size={18} />
                     </div>
                     <div className="overflow-hidden">
                         <div className="font-mono text-[11px] uppercase tracking-widest text-slate-500">Transparent Engine</div>
@@ -419,6 +429,7 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                                             reduce={!!reduce}
                                             index={i}
                                             label={step.title}
+                                            coreClass={STATION_DOTS[i % STATION_DOTS.length]}
                                         />
                                         {!isLast && (
                                             // spine: מוליך נתונים דק עם גרדיאנט; הקטע שמוביל אל הצומת הנוכחי זוהר מעט
@@ -432,15 +443,16 @@ export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subti
                                                     opacity: i + 1 === currentIdx ? 0.5 : 1,
                                                 }}
                                             >
-                                                {/* חבילת-נתונים זוהרת שזורמת במורד הצינור בין הצמתים. ה-delay לפי
-                                                    האינדקס יוצר מפל זרימה דרך הצינור - תחושת חישוב AI חי. */}
+                                                {/* חבילת-נתונים זוהרת שזורמת במורד הצינור בין הצמתים, פעם אחת בכל
+                                                    ריצה (ה-key על ההורה מנגן מחדש בכל שליחה/החלפה). מפל-זרימה יחיד
+                                                    ואז הפאנל נח - במקום לולאה אינסופית שלא מרגיעה את המסך. */}
                                                 {!reduce && (
                                                     <motion.span
                                                         className={`absolute inset-x-0 h-4 rounded-full ${a.barGradient}`}
                                                         style={{ filter: 'blur(0.4px)' }}
                                                         initial={{ top: '-25%', opacity: 0 }}
                                                         animate={{ top: '110%', opacity: [0, 0.9, 0.9, 0] }}
-                                                        transition={{ duration: 1.9, repeat: Infinity, ease: 'linear', delay: i * 0.2 }}
+                                                        transition={{ duration: 1.3, ease: 'easeIn', delay: 0.25 + i * 0.16 }}
                                                     />
                                                 )}
                                             </div>

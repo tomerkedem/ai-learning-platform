@@ -12,6 +12,7 @@
 
 import React from "react";
 import { AssessmentEngine, type ReviewLink } from "@/components/content/AssessmentEngine";
+import { ExpandableLab } from "@/components/ai-internals/ExpandableLab";
 import { behindAiChapterQuizzes } from "./quizData";
 import { useT } from "@/i18n/useT";
 
@@ -38,14 +39,16 @@ export function ChapterQuiz({ chapterId }: { chapterId: number }) {
         : undefined;
 
     return (
-        <AssessmentEngine
-            {...base}
-            title={cq.title(chapterName)}
-            subtitle={cq.subtitle}
-            startLabel={cq.startLabel}
-            submitLabel={cq.submitLabel}
-            completedTitle={cq.completedTitle}
-            getReviewLinks={getReviewLinks}
-        />
+        <ExpandableLab title={cq.title(chapterName)}>
+            <AssessmentEngine
+                {...base}
+                title={cq.title(chapterName)}
+                subtitle={cq.subtitle}
+                startLabel={cq.startLabel}
+                submitLabel={cq.submitLabel}
+                completedTitle={cq.completedTitle}
+                getReviewLinks={getReviewLinks}
+            />
+        </ExpandableLab>
     );
 }
