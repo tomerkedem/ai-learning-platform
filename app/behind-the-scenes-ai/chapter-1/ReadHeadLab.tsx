@@ -194,6 +194,14 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
                     <span className={`font-semibold ${a.text}`}>{rh.introHeadLabel}</span>{rh.introMid}<span className="text-white font-semibold">{rh.introEmph}</span>{rh.introTail}
                 </p>
 
+                {/* מסגור מנגיד: הדבר האחד שראש הקריאה נותן ומפת המנוע לא (Chat בלבד, שם יש נהר) */}
+                {isChat && (
+                    <p className={`flex items-start gap-2 rounded-lg border ${a.border} ${a.bgSoft} px-3 py-2.5 text-sm leading-relaxed text-slate-200`}>
+                        <ScanLine size={15} className={`mt-0.5 shrink-0 ${a.text}`} aria-hidden />
+                        <span>{rh.distinctNote}</span>
+                    </p>
+                )}
+
                 {/* שבבי הדוגמאות (Chat בלבד) */}
                 {isChat && examples.length > 0 && (
                     <div className="space-y-2">

@@ -155,6 +155,7 @@ export const chapter1Visuals = {
         introMid: ' is the cursor that moves over the sentence word by word, like a finger following the text while reading. At each stop the same engine runs on the words read so far, so you can watch the model ',
         introEmph: 'change its mind while reading',
         introTail: '. Pick an example and run the scanner.',
+        distinctNote: 'The map above shows the whole pipeline at once. The read head shows what it cannot: how the leading guess shifts as it reads, word by word, at your own pace.',
         examplesLabel: 'Pick an example',
         yourSentence: 'Your sentence',
         play: 'Play',

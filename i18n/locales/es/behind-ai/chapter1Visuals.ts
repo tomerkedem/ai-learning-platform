@@ -154,6 +154,7 @@ export const chapter1Visuals = {
         introMid: ' es el cursor que se mueve sobre la frase palabra por palabra, como un dedo que sigue el texto al leer. En cada parada se ejecuta el mismo motor sobre las palabras leídas hasta ahora, así puedes observar al modelo ',
         introEmph: 'cambiar de opinión mientras lee',
         introTail: '. Elige un ejemplo y ejecuta el escáner.',
+        distinctNote: 'El mapa de arriba muestra todo el proceso a la vez. El cabezal de lectura muestra lo que este no puede: cómo la opción líder cambia mientras lee, palabra por palabra, a tu propio ritmo.',
         examplesLabel: 'Elige un ejemplo',
         yourSentence: 'Tu frase',
         play: 'Reproducir',
