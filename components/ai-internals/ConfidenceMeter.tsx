@@ -27,19 +27,18 @@ export const ConfidenceMeter: React.FC<ConfidenceMeterProps> = ({ level }) => {
     const { t, dir } = useT();
     const { pct, accent } = LEVEL[level];
     const a = ACCENTS[accent];
-    // תווית מתורגמת לרמה, לצד שם המונח באנגלית. כשהתווית זהה למונח (אנגלית) לא מציגים פעמיים.
-    const label = t.behindAi.aiInternals.confidenceMeter.levels[level.toLowerCase() as 'high' | 'medium' | 'low'];
+    // תוויות הרמה מהמילון (תלוי-שפה). הערך המרכזי מוצג בשפת הלומד; המונח "Confidence"
+    // נשאר כ-eyebrow אנגלי, עקבי עם תגי-המונח האחרים במנוע (Logits, Decoding).
+    const lv = t.behindAi.aiInternals.confidenceMeter.levels;
+    const label = lv[level.toLowerCase() as 'high' | 'medium' | 'low'];
 
     return (
         <div className="rounded-xl border border-white/10 bg-slate-900/50 p-4 text-start" dir={dir}>
-            <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                    <Gauge size={12} /> Confidence
+            <div className="flex items-center justify-between gap-3 mb-3">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-500">
+                    <Gauge size={13} /> Confidence
                 </div>
-                <div className={`flex items-baseline gap-1.5 font-black ${a.text}`}>
-                    <span className="text-base">{level}</span>
-                    {label !== level && <span className="text-[11px] text-slate-500 font-medium">{label}</span>}
-                </div>
+                <span className={`text-lg font-black ${a.text}`}>{label}</span>
             </div>
 
             <div className="relative h-2.5 w-full rounded-full bg-slate-800 overflow-hidden">
@@ -57,10 +56,10 @@ export const ConfidenceMeter: React.FC<ConfidenceMeterProps> = ({ level }) => {
                 </div>
             </div>
 
-            <div className="flex justify-between mt-1.5 text-[9px] font-mono text-slate-600">
-                <span>Low</span>
-                <span>Medium</span>
-                <span>High</span>
+            <div className="flex justify-between mt-2 text-[13px] font-bold text-slate-500">
+                <span>{lv.low}</span>
+                <span>{lv.medium}</span>
+                <span>{lv.high}</span>
             </div>
         </div>
     );
