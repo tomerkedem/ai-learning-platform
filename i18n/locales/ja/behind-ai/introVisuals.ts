@@ -13,6 +13,13 @@ export const introVisuals = {
         peek: 'のぞく',
         zone: 'ゾーン',
         loopBadge: '経路の最初に戻る',
+        demo: {
+            start: 'プレゼンモード',
+            exit: 'プレゼンを終了',
+            prev: '前へ',
+            next: '次へ',
+            counter: (n: number, total: number) => `ステーション ${n} / ${total}`,
+        },
     },
 
     systems: {

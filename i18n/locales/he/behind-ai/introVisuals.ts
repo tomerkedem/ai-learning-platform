@@ -22,6 +22,14 @@ export const introVisuals = {
         peek: 'הצצה',
         zone: 'אזור',
         loopBadge: 'חוזר לתחילת המסלול',
+        // מצב הדגמה למרצה: ניווט מבוקר בין התחנות בלי עכבר (רווח / חצים / מגע).
+        demo: {
+            start: 'מצב הדגמה',
+            exit: 'סיום הדגמה',
+            prev: 'הקודם',
+            next: 'הבא',
+            counter: (n: number, total: number) => `תחנה ${n} מתוך ${total}`,
+        },
     },
 
     // תוויות מבנה הקורס (CourseSystems)

@@ -14,6 +14,13 @@ export const introVisuals = {
         peek: 'نظرة',
         zone: 'منطقة',
         loopBadge: 'يعود إلى بداية المسار',
+        demo: {
+            start: 'وضع العرض',
+            exit: 'إنهاء العرض',
+            prev: 'السابق',
+            next: 'التالي',
+            counter: (n: number, total: number) => `المحطة ${n} من ${total}`,
+        },
     },
 
     systems: {

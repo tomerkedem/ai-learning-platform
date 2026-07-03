@@ -15,11 +15,12 @@
 // האייקונים, הצבעים, הפריסה והאנימציה.
 
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Keyboard, Scissors, Hash, Network, ListOrdered, MessageCircle,
     Focus, Shuffle, Layers, Brain, BarChart3, Percent, GitBranch, Repeat,
-    CornerDownLeft, ChevronDown,
+    CornerDownLeft, ChevronDown, ChevronUp, Presentation, X,
 } from 'lucide-react';
 import { ACCENTS, type AccentStyle } from './accents';
 import type { Accent } from './types';
@@ -66,13 +67,23 @@ const STATION_ICON: Record<string, React.ReactNode> = {
 /* ── כרטיס תחנה בודד (disclosure) ── */
 // open/onToggle מנוהלים מרמת המפה (אקורדיון מונחה-גלילה, אחד פתוח בכל רגע).
 // registerRef רושם את שורש הכרטיס אצל ה-IntersectionObserver של המפה.
-function StationCard({ station, n, a, reduce, roadmapLabels, open, candidate, onToggle, registerRef }: { station: RoadmapStation; n: number; a: AccentStyle; reduce: boolean; roadmapLabels: RoadmapLabels; open: boolean; candidate: boolean; onToggle: () => void; registerRef: (id: string, el: HTMLElement | null) => void }) {
+// snap: פתיחה מיידית בלי אנימציית גובה (מצב הדגמה). כך הפריסה מתייצבת בפריים אחד
+// והגלילה ל"מרכז/ראש" נוחתת מדויק, בלי שהתחנה תזוז אחרי הפתיחה.
+function StationCard({ station, n, a, reduce, snap, roadmapLabels, open, candidate, onToggle, registerRef }: { station: RoadmapStation; n: number; a: AccentStyle; reduce: boolean; snap: boolean; roadmapLabels: RoadmapLabels; open: boolean; candidate: boolean; onToggle: () => void; registerRef: (id: string, el: HTMLElement | null) => void }) {
     const panelId = useId();
     const isLoop = station.id === 'loop';
     const setRef = useCallback((el: HTMLDivElement | null) => registerRef(station.id, el), [registerRef, station.id]);
+    const instant = reduce || snap;
 
     return (
-        <div ref={setRef} data-station-id={station.id} className={`relative overflow-hidden rounded-2xl border ${a.border} ${a.bgSoft} transition-shadow duration-500 ${open ? a.glow : candidate ? `ring-1 ${a.ringSoft}` : ''}`}>
+        <div
+            ref={setRef}
+            data-station-id={station.id}
+            // עוגן הגלילה במצב הדגמה: התחנה נוחתת מתחת לכותרת הקבועה (--bts-sticky-top,
+            // גובה הכותרת שנמדד ב-ChapterLayout) בתוספת מרווח נשימה, כדי שלא תיפתח גבוה מדי.
+            style={{ scrollMarginTop: 'calc(var(--bts-sticky-top, 6rem) + 1.75rem)' }}
+            className={`relative overflow-hidden rounded-2xl border ${a.border} ${a.bgSoft} transition-shadow duration-500 ${open ? a.glow : candidate ? `ring-1 ${a.ringSoft}` : ''}`}
+        >
             {/* פס-שדרה צבעוני בקצה-ההתחלה: "נטען" עמום כשהכרטיס מכוון בגלילה (candidate),
                 ונדלק במלואו כשהוא נפתח - כך רואים אילו כרטיס עומד להיפתח. */}
             <motion.span
@@ -144,10 +155,10 @@ function StationCard({ station, n, a, reduce, roadmapLabels, open, candidate, on
                         key="panel"
                         id={panelId}
                         role="region"
-                        initial={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
-                        animate={reduce ? { opacity: 1 } : { height: 'auto', opacity: 1 }}
-                        exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
-                        transition={reduce ? { duration: 0 } : { duration: 0.3, ease: 'easeOut' }}
+                        initial={instant ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                        animate={instant ? { opacity: 1 } : { height: 'auto', opacity: 1 }}
+                        exit={instant ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                        transition={instant ? { duration: 0 } : { duration: 0.3, ease: 'easeOut' }}
                         className="overflow-hidden"
                     >
                         <div className={`border-t ${a.border} px-3.5 pb-4 pt-3 md:px-4`}>
@@ -206,6 +217,22 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
     const cardEls = useRef<Map<string, HTMLElement>>(new Map());
     const holdUntil = useRef(0);
 
+    // ── מצב הדגמה (למרצה) ──────────────────────────────────────────────────────
+    // כלי הרצאה: מקפיא את הפתיחה-האוטומטית-בגלילה (המקור ל"תחנה בורחת"), מציג ניווט
+    // הקודם/הבא + מונה, ומאפשר צעידה קבועה במקלדת (רווח/חצים) או במגע. חוויית הלומד
+    // העצמאי (כשמכובה) נשארת כפי שהיא. הבר הצף מרונדר ב-Portal ל-body רק כש-demo פעיל,
+    // מצב שמתרחש רק אחרי לחיצת משתמש בצד הלקוח, ולכן document.body קיים (בטוח ב-SSR).
+    const [demo, setDemo] = useState(false);
+
+    // גלילה יציבה אל התחנה: ראש הכרטיס נוחת באותו מקום בכל צעד (scroll-mt-24), כך
+    // שהתחנה הפעילה לא "קופצת". אחרי הפריים כי הפתיחה במצב הדגמה מיידית (snap).
+    const scrollToCard = useCallback((id: string) => {
+        if (typeof window === 'undefined') return;
+        requestAnimationFrame(() => {
+            cardEls.current.get(id)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+        });
+    }, [reduce]);
+
     const registerRef = useCallback((id: string, el: HTMLElement | null) => {
         if (el) cardEls.current.set(id, el); else cardEls.current.delete(id);
     }, []);
@@ -222,12 +249,43 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
     const toggle = useCallback((id: string) => {
         haptic();
         holdUntil.current = Date.now() + 700;
+        // במצב הדגמה לחיצה בוחרת תחנה (תמיד נפתחת, לא נסגרת) כדי שהתחנה הפעילה לא
+        // תיעלם באמצע הסבר; מחוץ למצב הדגמה מתנהג כאקורדיון רגיל.
+        if (demo) { setOpenId(id); scrollToCard(id); return; }
         setOpenId((prev) => (prev === id ? null : id));
-    }, []);
+    }, [demo, scrollToCard]);
+
+    // צעד הדגמה: קדימה/אחורה תחנה אחת (נעצר בקצוות), פותח מיידית וגולל למקום יציב.
+    const step = useCallback((delta: number) => {
+        haptic();
+        const cur = openIdRef.current;
+        const from = cur ? stations.findIndex((s) => s.id === cur) : 0;
+        const to = Math.max(0, Math.min(stations.length - 1, from + delta));
+        const id = stations[to].id;
+        holdUntil.current = 0;
+        setOpenId(id);
+        scrollToCard(id);
+    }, [stations, scrollToCard]);
+
+    // כניסה/יציאה ממצב הדגמה. בכניסה מוודאים שתחנה אחת פתוחה (הנוכחית או הראשונה)
+    // וגוללים אליה, ומנקים סימון-מועמד שנשאר מהגלילה הרגילה.
+    const toggleDemo = useCallback(() => {
+        setDemo((on) => {
+            const next = !on;
+            if (next) {
+                const id = openIdRef.current ?? stations[0].id;
+                setOpenId(id);
+                setCandidateId(null);
+                scrollToCard(id);
+            }
+            return next;
+        });
+    }, [stations, scrollToCard]);
 
     useEffect(() => {
         // ב-reduced-motion אין פתיחה אוטומטית מונחית-גלילה (הכרטיסים נשארים ידניים).
-        if (reduce || typeof window === 'undefined') return;
+        // במצב הדגמה מכובה לגמרי: המרצה שולט בצעדים, ושום דבר לא נפתח מעצמו בגלילה.
+        if (reduce || demo || typeof window === 'undefined') return;
         let raf = 0;
         let dwell = 0;
         let idle = 0;
@@ -276,7 +334,38 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
             window.clearTimeout(dwell);
             window.clearTimeout(idle);
         };
-    }, [reduce, commitOpen]);
+    }, [reduce, demo, commitOpen]);
+
+    // ── מקלדת במצב הדגמה בלבד (כמו שלט מצגת) ──────────────────────────────────
+    // רווח = הבא. חצים מודעי-כיוון: ב-RTL חץ שמאלה מתקדם, ימינה חוזר; ב-LTR הפוך.
+    // Esc יוצא ממצב הדגמה. מתעלמים כשמקלידים בשדה קלט. ברווח מבטלים פוקוס מכפתור
+    // כדי שלא תהיה הפעלה כפולה (window + click של הכפתור הממוקד).
+    //
+    // capture:true בכוונה: ChapterLayout מאזין לחצים לניווט-בין-פרקים ב-bubble ומדלג
+    // כש-defaultPrevented. מאזין ה-capture שלנו רץ לפניו, ולכן preventDefault כאן גורם
+    // לניווט-הפרקים לדלג. כך במצב הדגמה החצים מזיזים תחנות ולא מחליפים פרק.
+    useEffect(() => {
+        if (!demo || typeof window === 'undefined') return;
+        const onKey = (e: KeyboardEvent) => {
+            const el = e.target as HTMLElement | null;
+            if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return;
+            if (e.key === ' ' || e.code === 'Space') {
+                e.preventDefault();
+                (document.activeElement as HTMLElement | null)?.blur?.();
+                step(1);
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                step(dir === 'rtl' ? -1 : 1);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                step(dir === 'rtl' ? 1 : -1);
+            } else if (e.key === 'Escape') {
+                setDemo(false);
+            }
+        };
+        window.addEventListener('keydown', onKey, { capture: true });
+        return () => window.removeEventListener('keydown', onKey, { capture: true });
+    }, [demo, dir, step]);
 
     // ── מנטור-המדריך שגולש לאורך המפה ─────────────────────────────────────────
     // יעד המיקום: ראש בועת-הדיבור (מעל ראש המנטור) מתיישר לראש הכרטיס הפתוח. מודדים
@@ -325,8 +414,29 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
         }
         : undefined;
 
+    // מצב הדגמה: מיקום התחנה הנוכחית למונה ולנעילת הקצוות של הניווט.
+    const isRtl = dir === 'rtl';
+    const demoLabels = roadmapLabels.demo;
+    const total = stations.length;
+    const currentIndex = openId ? stations.findIndex((s) => s.id === openId) : -1;
+    const atStart = currentIndex <= 0;
+    const atEnd = currentIndex >= total - 1;
+
     return (
         <div ref={rootRef} dir={dir} className="relative flex flex-col gap-4">
+            {/* מתג מצב הדגמה: קטן ולא פולשני, נשאר מחוץ לחוויית הלומד העצמאי כשמכובה */}
+            <div className="flex justify-end">
+                <button
+                    type="button"
+                    onClick={toggleDemo}
+                    aria-pressed={demo}
+                    className={`inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${demo ? 'border-cyan-400/70 bg-cyan-500/20 text-cyan-100' : 'border-slate-600/60 bg-slate-900/70 text-slate-300 hover:border-slate-400'}`}
+                >
+                    <Presentation size={15} aria-hidden />
+                    {demo ? demoLabels.exit : demoLabels.start}
+                </button>
+            </div>
+
             {zones.map((zone, zi) => {
                 const acc = ZONE_ACCENT[zone.id];
                 const a = ACCENTS[acc];
@@ -364,6 +474,7 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                                         n={(indexById.get(station.id) ?? 0) + 1}
                                         a={STATION_PALETTE[station.id] ?? ACCENTS[acc]}
                                         reduce={reduce}
+                                        snap={demo}
                                         roadmapLabels={roadmapLabels}
                                         open={openId === station.id}
                                         candidate={candidateId === station.id && openId !== station.id}
@@ -411,6 +522,65 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                         bubbleTextClass="text-base leading-snug"
                     />
                 </motion.div>
+            )}
+
+            {/* דוק ניווט אנכי למצב הדגמה: מוצמד לקצה הצד דרך Portal ל-body כדי לצאת מכל
+                stacking context (טרנספורמים של סקשנים, מסך מלא) ולהישאר נגיש במגע. יושב
+                בצד הפנימי (הרחק מהסרגל-הצדדי בקצה הקריאה) כדי לא לכסות את התחנות. הכיוון
+                אנכי: למעלה=הקודם, למטה=הבא, תואם לרשימת התחנות. z גבוה מהמסך-המלא (9999). */}
+            {demo && createPortal(
+                <motion.div
+                    dir={dir}
+                    initial={reduce ? false : { opacity: 0, x: isRtl ? -12 : 12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={reduce ? { duration: 0 } : { duration: 0.25 }}
+                    className={`fixed top-1/2 z-[10000] -translate-y-1/2 ${isRtl ? 'left-2 sm:left-3' : 'right-2 sm:right-3'}`}
+                >
+                    <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-cyan-500/40 bg-slate-900/95 p-1.5 shadow-2xl backdrop-blur-xl">
+                        <button
+                            type="button"
+                            onClick={() => step(-1)}
+                            disabled={atStart}
+                            aria-label={demoLabels.prev}
+                            title={demoLabels.prev}
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-600/60 bg-slate-800/70 text-slate-100 transition-colors hover:border-cyan-400/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 disabled:opacity-40 disabled:hover:border-slate-600/60"
+                        >
+                            <ChevronUp size={20} aria-hidden />
+                        </button>
+
+                        {/* מונה קומפקטי: מספר נוכחי מעל הסך-הכל. הטקסט המלא זמין לקוראי-מסך. */}
+                        <div className="flex flex-col items-center py-0.5" aria-live="polite">
+                            <span className="sr-only">{demoLabels.counter(Math.max(1, currentIndex + 1), total)}</span>
+                            <span aria-hidden className="text-base font-black leading-none text-cyan-100">{Math.max(1, currentIndex + 1)}</span>
+                            <span aria-hidden className="my-1 h-px w-4 bg-cyan-500/40" />
+                            <span aria-hidden className="text-xs font-bold leading-none text-slate-400" dir="ltr">{total}</span>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => step(1)}
+                            disabled={atEnd}
+                            aria-label={demoLabels.next}
+                            title={demoLabels.next}
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-500/50 bg-cyan-500/15 text-cyan-50 transition-colors hover:border-cyan-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 disabled:opacity-40"
+                        >
+                            <ChevronDown size={20} aria-hidden />
+                        </button>
+
+                        <span className="my-0.5 h-px w-6 bg-slate-700" aria-hidden />
+
+                        <button
+                            type="button"
+                            onClick={() => setDemo(false)}
+                            aria-label={demoLabels.exit}
+                            title={demoLabels.exit}
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-600/60 bg-slate-800/70 text-slate-300 transition-colors hover:border-slate-400 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60"
+                        >
+                            <X size={18} aria-hidden />
+                        </button>
+                    </div>
+                </motion.div>,
+                document.body,
             )}
         </div>
     );

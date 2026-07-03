@@ -12,6 +12,14 @@ export const introVisuals = {
         peek: 'Peek',
         zone: 'Zone',
         loopBadge: 'Loops back to the start',
+        // Presentation mode for a lecturer: guided station navigation without a mouse.
+        demo: {
+            start: 'Presentation mode',
+            exit: 'Exit presentation',
+            prev: 'Previous',
+            next: 'Next',
+            counter: (n: number, total: number) => `Station ${n} of ${total}`,
+        },
     },
 
     systems: {

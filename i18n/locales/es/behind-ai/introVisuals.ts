@@ -14,6 +14,13 @@ export const introVisuals = {
         peek: 'Vistazo',
         zone: 'Zona',
         loopBadge: 'Vuelve al inicio del recorrido',
+        demo: {
+            start: 'Modo presentación',
+            exit: 'Salir de la presentación',
+            prev: 'Anterior',
+            next: 'Siguiente',
+            counter: (n: number, total: number) => `Estación ${n} de ${total}`,
+        },
     },
 
     systems: {

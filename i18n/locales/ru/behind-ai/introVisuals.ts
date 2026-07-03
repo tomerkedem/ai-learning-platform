@@ -13,6 +13,13 @@ export const introVisuals = {
         peek: 'Заглянуть',
         zone: 'Зона',
         loopBadge: 'Возврат к началу пути',
+        demo: {
+            start: 'Режим показа',
+            exit: 'Выйти из показа',
+            prev: 'Назад',
+            next: 'Вперёд',
+            counter: (n: number, total: number) => `Станция ${n} из ${total}`,
+        },
     },
 
     systems: {
