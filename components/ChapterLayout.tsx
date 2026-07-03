@@ -15,6 +15,10 @@ import { ChevronRight, ChevronLeft, BookOpen, Trophy, Maximize2, Minimize2 } fro
 import { motion, AnimatePresence } from "framer-motion";
 import { EdgeRail, EdgePeekItem } from "@/components/ai-internals/EdgePeek";
 
+// מצב המיקוד נחשף ל-children (למשל כדי לגדל את מנטור ההירו במבוא כשנכנסים למיקוד).
+// ברירת המחדל false, כך שצרכנים מחוץ לפריסה מקבלים ערך בטוח.
+export const FocusModeContext = React.createContext(false);
+
 interface ChapterLayoutProps {
     children: ReactNode;
     courseId: string;
@@ -333,7 +337,9 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                     `}>
                         
                         <div className="min-h-[50vh]">
-                            {children}
+                            <FocusModeContext.Provider value={isFocusMode}>
+                                {children}
+                            </FocusModeContext.Provider>
                         </div>
 
                         {/* --- Footer ניווט --- */}

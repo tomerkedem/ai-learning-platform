@@ -166,6 +166,59 @@ export const QUICK_GUESS: QuickGuessContent = {
     revealCorrect: 'הציגו את ההסבר המדויק',
 } as const;
 
+/* ═══════════ בונוס: "היו אתם המנוע" - ניחוש הטוקן הבא (אחרי בחירה נכונה) ═══════════ */
+// ניחוש אמיתי לקהל חושב: לא בוחרים את "האמת" אלא את הטוקן הכי סביר לפי הקשר. אחרי
+// הבחירה נחשפת ההתפלגות האמיתית (מדורגת), עם ההמשך שהמנוע היה בוחר. שני סבבים:
+// הראשון אינטואיטיבי, השני מראה איך ההקשר הופך את ההסתברויות.
+//
+// כאן נשארים רק הטיפוסים שהרכיב צורך. כל הטקסט הניתן לתרגום (כותרות, משוב, שני
+// המשפטים, מילות הטוקנים, התוויות, הפאנץ') חי במילונים (introduction.nextToken).
+// ההסתברויות (מבני, זהה לכל השפות) יושבות ב-NEXT_TOKEN_META שבשכבת התצוגה (page.tsx).
+
+/** מועמד לטוקן הבא: המילה וההסתברות שלה (באחוזים). */
+export interface NextTokenOption {
+    token: string;
+    /** הסתברות באחוזים (0-100). */
+    p: number;
+}
+
+/** סבב ניחוש בודד: פרומפט חתוך + מועמדים + תובנה. */
+export interface NextTokenRound {
+    /** תווית הקשר קצרה (צ׳יפ), למשל "סטטוס משלוח". */
+    context: string;
+    /** המשפט עד למקום החסר (הטוקן הבא). */
+    prefix: string;
+    /** מועמדי הטוקן הבא, עם הסתברויות. */
+    options: NextTokenOption[];
+    /** מסת ההסתברות שנשארה לכל שאר הטוקנים. */
+    otherP: number;
+    /** תובנה שנחשפת אחרי הבחירה. */
+    insight: string;
+}
+
+export interface NextTokenContent {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    guessLabel: string;
+    /** תווית "הניחוש שלכם" על העמודה שבחר הלומד. */
+    yourPick: string;
+    /** תווית "בחירת המנוע" על העמודה המנצחת. */
+    modelTop: string;
+    /** כותרת כשהלומד צדק (בחר את הטוקן שהמנוע היה בוחר). */
+    matchTitle: string;
+    /** קידומת כשלא צדק, למשל "המנוע העדיף" + הטוקן. */
+    missTitle: string;
+    otherLabel: string;
+    roundLabel: string;
+    ofLabel: string;
+    nextRound: string;
+    restart: string;
+    /** פאנץ' סיום אחרי הסבב האחרון. */
+    closing: string;
+    rounds: NextTokenRound[];
+}
+
 /* ════════════════════════ מפת התחנות המרכזיות ════════════════════════ */
 
 export const ROADMAP_HEADING = {

@@ -107,7 +107,12 @@ export interface MentorAccent {
     shadow: string;
     /** צבע טקסט הבועה (כל ערך CSS תקין, למשל "#a5f3fc"). */
     text: string;
+    /** רקע בועת-הדיבור (כל ערך CSS תקין). ברירת מחדל: slate-900/95. */
+    bubbleBg?: string;
 }
+
+// רקע ברירת המחדל של הבועה (slate-900/95), נשמר כשאין accent מותאם.
+const DEFAULT_BUBBLE_BG = 'rgb(15 23 42 / 0.95)';
 
 const CYAN_ACCENT: MentorAccent = { base: '6 182 212', shadow: '34 211 238', text: '#a5f3fc' };
 
@@ -133,6 +138,10 @@ export interface MentorProps {
     glow?: boolean;
     /** צבע ההדגשה. ברירת מחדל ציאן (תואם BTS-AI). */
     accent?: MentorAccent;
+    /** מחלקת רוחב-מרבי לבועת-הדיבור. ברירת מחדל max-w-[12rem] (שומרת על המצב הקיים). */
+    bubbleWidthClass?: string;
+    /** מחלקת גודל-טקסט לבועת-הדיבור. ברירת מחדל text-[11px] (שומרת על המצב הקיים). */
+    bubbleTextClass?: string;
     className?: string;
 }
 
@@ -147,6 +156,8 @@ export const Mentor: React.FC<MentorProps> = ({
     bubbleSide = 'top',
     glow = true,
     accent = CYAN_ACCENT,
+    bubbleWidthClass = 'max-w-[12rem]',
+    bubbleTextClass = 'text-[11px]',
     className = '',
 }) => {
     const reduce = useReducedMotion();
@@ -171,15 +182,20 @@ export const Mentor: React.FC<MentorProps> = ({
             {/* בועת-דיבור — מחוץ לעטיפת ה-flip כדי שהטקסט לא יתהפך */}
             {line && (
                 <div
-                    className={`absolute left-1/2 z-10 w-max max-w-[12rem] -translate-x-1/2 ${
+                    data-mentor-bubble
+                    className={`absolute left-1/2 z-10 w-max ${bubbleWidthClass} -translate-x-1/2 ${
                         bubbleSide === 'top' ? '-top-2 -translate-y-full' : '-bottom-2 translate-y-full'
                     }`}
                 >
                     <div
-                        className="relative rounded-2xl border bg-slate-900/95 px-3 py-2 text-center shadow-lg backdrop-blur-sm"
-                        style={{ borderColor: `rgb(${accent.base} / 0.4)` }}
+                        className="relative rounded-2xl border px-3 py-2 text-center shadow-lg backdrop-blur-sm"
+                        style={{
+                            borderColor: `rgb(${accent.base} / 0.4)`,
+                            backgroundColor: accent.bubbleBg ?? DEFAULT_BUBBLE_BG,
+                            transition: 'background-color 0.45s ease, border-color 0.45s ease',
+                        }}
                     >
-                        <p className="flex flex-col items-center justify-center gap-1 text-[11px] font-bold leading-snug" style={{ color: accent.text }}>
+                        <p className={`flex flex-col items-center justify-center gap-1 ${bubbleTextClass} font-bold leading-snug`} style={{ color: accent.text }}>
                             {lineIcon && (
                                 // אייקון בולט מעל הטקסט (באדג'). next/image מיותר כאן.
                                 // eslint-disable-next-line @next/next/no-img-element
@@ -195,10 +211,14 @@ export const Mentor: React.FC<MentorProps> = ({
                             <span>{line}</span>
                         </p>
                         <span
-                            className={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 bg-slate-900/95 ${
+                            className={`absolute left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 ${
                                 bubbleSide === 'top' ? '-bottom-1.5 border-b border-r' : '-top-1.5 border-l border-t'
                             }`}
-                            style={{ borderColor: `rgb(${accent.base} / 0.4)` }}
+                            style={{
+                                borderColor: `rgb(${accent.base} / 0.4)`,
+                                backgroundColor: accent.bubbleBg ?? DEFAULT_BUBBLE_BG,
+                                transition: 'background-color 0.45s ease, border-color 0.45s ease',
+                            }}
                         />
                     </div>
                 </div>

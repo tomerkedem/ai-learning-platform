@@ -13,10 +13,11 @@
 // נגישות: כל כרטיס הוא <button> עם aria-pressed, תווית מלאה לקורא-מסך, תמיכת
 // מקלדת מובנית וטבעת פוקוס גלויה. reduced-motion: בלי זוהר מונפש, רק מעבר מיידי.
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { HelpCircle, Eye, Lock, Database, Check } from 'lucide-react';
+import React, { useContext, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { HelpCircle, Eye, Lock, Database, Check, CheckCircle2 } from 'lucide-react';
 import { GuessInvite, GuessVerdict } from './GuessVerdict';
+import { ExpandableLabContext } from './ExpandableLab';
 import { useT } from '@/i18n/useT';
 import type { Hypothesis, HypothesisCue, QuickGuessContent } from '@/app/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
@@ -90,7 +91,9 @@ function stateClasses(state: CardState, reduce: boolean): string {
     }
 }
 
-export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessContent; dir: Direction }> = ({ reduce, content, dir }) => {
+export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessContent; dir: Direction; bonus?: React.ReactNode }> = ({ reduce, content, dir, bonus }) => {
+    // במסך מלא יש רוחב: ארבע ההשערות עוברות לשורה אחת, הכרטיס מתרחב, והכותרת גדלה.
+    const expanded = useContext(ExpandableLabContext);
     const [chosenId, setChosenId] = useState<string | null>(null);
     const [revealed, setRevealed] = useState(false); // נחשף ההסבר המדויק אחרי בחירה שגויה
 
@@ -117,16 +120,37 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
             <div className="relative">
                 {/* מנטור הזמנה: משותף לכל הפרקים - דמות חושבת ממורכזת, נעלמת אחרי הבחירה. */}
                 {!chosen && <GuessInvite pose="think" />}
+
+                {/* אחרי בחירה נכונה הבונוס מחליף את הניחוש הראשוני *במיקומו* (לא מתחתיו). */}
+                <AnimatePresence mode="wait" initial={false}>
+                {chosenCorrect ? (
+                    <motion.div
+                        key="bonus"
+                        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={reduce ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                        {/* אישור הצלחה קומפקטי, במקום כרטיס-ההכרעה הגדול */}
+                        <div className="mb-5 flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-2xl border border-emerald-400/40 bg-emerald-900/15 px-4 py-3">
+                            <CheckCircle2 size={20} className="shrink-0 text-emerald-300" aria-hidden />
+                            <span className="text-lg font-black text-emerald-100 md:text-xl">{content.correctTitle}</span>
+                            <span className="text-sm font-bold text-emerald-200/90 md:text-base">{content.correctLead}</span>
+                        </div>
+                        {bonus}
+                    </motion.div>
+                ) : (
+                    <motion.div key="guess" initial={false} exit={{ opacity: 0 }} transition={reduce ? { duration: 0 } : { duration: 0.25 }}>
                 <div className="text-center">
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-400">
                         <HelpCircle size={14} /> {content.eyebrow}
                     </span>
                     <h3 className="mb-2 text-xl font-black text-white md:text-3xl">{content.question}</h3>
-                    <p className="mx-auto mb-7 max-w-xl text-sm text-slate-400 md:text-base">{content.hint}</p>
+                    <p className={`mx-auto mb-7 text-sm text-slate-400 md:text-base ${expanded ? 'max-w-2xl' : 'max-w-xl'}`}>{content.hint}</p>
                 </div>
 
-                {/* רשת 2x2 של כרטיסי השערה */}
-                <div className="mx-auto grid max-w-3xl grid-cols-1 gap-3.5 sm:grid-cols-2">
+                {/* רשת ההשערות: 2x2 בתצוגה רגילה, שורה אחת (4 עמודות) במסך מלא. */}
+                <div className={`mx-auto grid grid-cols-1 gap-3.5 sm:grid-cols-2 ${expanded ? 'max-w-6xl lg:grid-cols-4' : 'max-w-3xl'}`}>
                     {content.hypotheses.map((h) => {
                         const state = cardStateFor(h);
                         const selected = h.id === chosenId;
@@ -175,7 +199,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                     })}
                 </div>
 
-                {/* התגובה המשותפת: הצלחה מפורשת או טעות תומכת (accent ציאן שמגשר למנוע) */}
+                {/* טעות בלבד (בחירה נכונה עברה לענף הבונוס): תגובה תומכת + חשיפה + בחירה מחדש. */}
                 {chosen && (
                     <GuessVerdict
                         key={chosenId ?? undefined}
@@ -195,6 +219,9 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                         retryLabel={content.retry}
                     />
                 )}
+                    </motion.div>
+                )}
+                </AnimatePresence>
             </div>
         </div>
     );

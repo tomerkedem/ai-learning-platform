@@ -29,6 +29,24 @@ export const introVisuals = {
         soundOn: 'Unmute sounds',
         soundOff: 'Mute sounds',
 
+        // A short mentor line per station: an angle that adds to the on-card explanation.
+        mentorHints: {
+            request: 'Notice: the model never sees just you. Everything comes in together.',
+            tokenize: 'Watch the sentence get cut. This is no longer language, just pieces.',
+            ids: 'From here on there are no words inside, only numbers.',
+            embedding: 'The numbers are not random: similar words get similar numbers.',
+            position: 'The same words in another order change everything. That is why order is kept.',
+            context: 'Whatever leaves the window is forgotten. That is how a long chat loses its start.',
+            attention: 'Every word listens to the others. Tap a word to see what it attends to.',
+            mix: 'Same word, different context, different meaning.',
+            layers: 'Each layer sharpens a little more. A real model has dozens.',
+            state: 'The whole context is squeezed into one point. The next word is born from it.',
+            logits: 'The model weighs many words at once and scores each one.',
+            softmax: 'The scores turn into percentages that add up to a hundred.',
+            decoding: 'Same distribution, different pick. That is why the answer sometimes surprises.',
+            loop: 'A token is chosen, and it all runs again. That is how a full answer is built.',
+        },
+
         request: {
             youTab: 'What you see',
             modelTab: 'What the model gets',

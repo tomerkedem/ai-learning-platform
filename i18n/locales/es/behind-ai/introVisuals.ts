@@ -31,6 +31,24 @@ export const introVisuals = {
         soundOn: 'Activar sonidos',
         soundOff: 'Silenciar sonidos',
 
+        // Una frase de mentor por estación: un ángulo que suma a la explicación de la tarjeta.
+        mentorHints: {
+            request: 'Fíjate: el modelo nunca te ve solo a ti. Todo entra junto.',
+            tokenize: 'Mira cómo se corta la frase. Ya no es lenguaje, son trozos.',
+            ids: 'De aquí en adelante no hay palabras dentro, solo números.',
+            embedding: 'Los números no son al azar: palabras parecidas reciben números parecidos.',
+            position: 'Las mismas palabras en otro orden lo cambian todo. Por eso se guarda el orden.',
+            context: 'Lo que sale de la ventana se olvida. Así una charla larga pierde su inicio.',
+            attention: 'Cada palabra escucha a las demás. Toca una palabra y mira a quién atiende.',
+            mix: 'La misma palabra, otro contexto, otro significado.',
+            layers: 'Cada capa afina un poco más. Un modelo real tiene decenas.',
+            state: 'Todo el contexto se comprime en un punto. De ahí nace la próxima palabra.',
+            logits: 'El modelo sopesa muchas palabras a la vez y puntúa cada una.',
+            softmax: 'Las puntuaciones se vuelven porcentajes que suman cien.',
+            decoding: 'Misma distribución, otra elección. Por eso a veces la respuesta sorprende.',
+            loop: 'Se elige un token y todo vuelve a correr. Así se construye una respuesta completa.',
+        },
+
         request: {
             youTab: 'Lo que ves',
             modelTab: 'Lo que recibe el modelo',

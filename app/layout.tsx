@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Heebo } from "next/font/google";
 import "./globals.css";
 import { CourseFooter } from "@/components/CourseFooter";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
@@ -12,6 +12,15 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// גופן אחיד מבוקר (Heebo, variable) לכל הטקסט הרגיל - עברית וגם לטינית. Heebo מכסה את
+// שני הכתבים ומספק משקלים אמיתיים 100-900, כך שכותרות ותיאורים, וגם מילים לועזיות כמו
+// Chat / Agent בתוך משפט עברי, נראים באותו גופן. Geist נשאר רק כרשת-ביטחון (fallback),
+// ו-Geist Mono נשמר בנפרד לתגים טכניים (LLM, מספרים, מזהי-טוקן) שרוצים רוחב-אותיות קבוע.
+const heebo = Heebo({
+  variable: "--font-hebrew",
+  subsets: ["hebrew", "latin"],
 });
 
 export const metadata: Metadata = {
@@ -29,7 +38,7 @@ export default function RootLayout({
     // את lang/dir/data-locale על <html> אחרי mount כשנבחרת שפה אחרת (?lang=).
     <html lang="he" dir="rtl">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${heebo.variable} antialiased`}
       >
         <LocaleProvider>
                 {children}

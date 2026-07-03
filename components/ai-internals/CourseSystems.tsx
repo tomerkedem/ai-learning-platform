@@ -101,7 +101,7 @@ function SystemGate({ system, index, total, accent, labels, reduce, isFirstSyste
                             {system.range}
                         </span>
                     </span>
-                    <span className="mt-1.5 block text-sm leading-relaxed text-slate-400">{system.teaser}</span>
+                    <span className="mt-1.5 block text-base leading-relaxed text-slate-300 md:text-lg">{system.teaser}</span>
                 </span>
 
                 {/* אפשרות הפעלה */}

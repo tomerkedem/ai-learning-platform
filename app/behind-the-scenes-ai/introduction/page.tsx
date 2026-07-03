@@ -5,12 +5,13 @@ import {
   ChevronLeft, ChevronRight, Info, Layers, MousePointerClick,
 } from "lucide-react";
 import Link from 'next/link';
-import { ChapterLayout } from "@/components/ChapterLayout";
+import { ChapterLayout, FocusModeContext } from "@/components/ChapterLayout";
 import { IntroRoadmap } from "@/components/ai-internals/IntroRoadmap";
 import { VizSoundToggle } from "@/components/ai-internals/IntroStationViz";
 import { ExpandableLab } from "@/components/ai-internals/ExpandableLab";
 import { EngineReveal } from "@/components/ai-internals/EngineReveal";
 import { HypothesisGuess } from "@/components/ai-internals/HypothesisGuess";
+import { NextTokenGuess } from "@/components/ai-internals/NextTokenGuess";
 import { CourseSystems } from "@/components/ai-internals/CourseSystems";
 import { AgentLoop } from "@/components/ai-internals/AgentLoop";
 import { Mentor } from "@/components/ai-internals/Mentor";
@@ -20,7 +21,7 @@ import type { ReadAloudSegment } from "@/components/ai-internals/useReadAloud";
 import { useT } from "@/i18n/useT";
 import type { Locale } from "@/i18n/config";
 import type {
-  QuickGuessContent, RoadmapZone, RoadmapStation, CourseSystem, AgentDemo, AgentStage,
+  QuickGuessContent, RoadmapZone, RoadmapStation, CourseSystem, AgentDemo, AgentStage, NextTokenContent,
 } from "./introContent";
 
 /* ════════════════════════ מטא־דאטה מבני (לא ניתן לתרגום) ════════════════════════ */
@@ -71,6 +72,13 @@ const SYSTEM_META = [
 const AGENT_STAGE_META = ['in', 'task', 'tool', 'risk', 'act', 'answer'] as const;
 const CHAT_STAGE_META = ['in', 'model', 'out'] as const;
 
+// בונוס ניחוש הטוקן הבא: ההסתברויות (מבני, זהה לכל השפות). הסדר תואם למילות הטוקן
+// במילון (introduction.nextToken.rounds[i].tokens) לפי אינדקס. otherP = שאר המסה.
+const NEXT_TOKEN_META = [
+  { probs: [37, 24, 15, 9, 6], otherP: 9 },
+  { probs: [51, 17, 9, 7, 3], otherP: 13 },
+] as const;
+
 const CTA_HREF = '/behind-the-scenes-ai/chapter-1';
 
 // מיפוי locale -> תג שפה BCP-47 להקראה (Web Speech API). מבני, לא ניתן לתרגום.
@@ -86,6 +94,23 @@ const LOCALE_SPEECH_LANG: Record<Locale, string> = {
 
 // סדר 14 התחנות בפס ההקראה, זהה לסדר המפה (ROADMAP_STATION_META).
 const READALOUD_STATION_IDS = ROADMAP_STATION_META.map((m) => m.id);
+
+// מנטור ההירו: הגודל תלוי במצב המיקוד. הרכיב חייב לשבת בתוך ה-children של
+// ChapterLayout (כלומר בתוך ה-Provider) כדי לקרוא את המצב החי. במיקוד פי 2.7
+// (486px, בועה 30px), מחוץ למיקוד פי 2 (360px, בועה 22px).
+function HeroMentor({ line, flip }: { line: string; flip: boolean }) {
+  const isFocusMode = React.useContext(FocusModeContext);
+  return (
+    <Mentor
+      pose="hero"
+      line={line}
+      flip={flip}
+      width={isFocusMode ? 486 : 360}
+      bubbleWidthClass="max-w-md"
+      bubbleTextClass={isFocusMode ? 'text-[30px] leading-tight' : 'text-[22px] leading-tight'}
+    />
+  );
+}
 
 // כותרת-מקטע אחידה
 function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
@@ -189,6 +214,18 @@ export default function BehindTheScenesIntroPage() {
     })),
   };
 
+  // בונוס ניחוש הטוקן הבא: מיזוג המחרוזות מהמילון עם ההסתברויות המבניות (לפי אינדקס).
+  const nextTokenContent: NextTokenContent = {
+    ...intro.nextToken,
+    rounds: intro.nextToken.rounds.map((r, i) => ({
+      context: r.context,
+      prefix: r.prefix,
+      insight: r.insight,
+      otherP: NEXT_TOKEN_META[i].otherP,
+      options: r.tokens.map((token, j) => ({ token, p: NEXT_TOKEN_META[i].probs[j] })),
+    })),
+  };
+
   const roadmapZones: RoadmapZone[] = ROADMAP_ZONE_META.map((id) => ({
     id,
     ...intro.roadmap.zones[id],
@@ -288,7 +325,7 @@ export default function BehindTheScenesIntroPage() {
             {/* המנטור עומד בצד הקריאה הטבעי של הכרטיס המרכזי (xl+ בלבד). */}
             {/* ב-LTR הוא יושב מימין לכרטיס, ולכן מהופך אופקית כדי לפנות אל התוכן ולא ממנו. */}
             <div className={`absolute top-44 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-              <Mentor pose="hero" line={intro.mentor.hero} width={180} flip={!isRtl} />
+              <HeroMentor line={intro.mentor.hero} flip={!isRtl} />
             </div>
           </div>
 
@@ -301,7 +338,14 @@ export default function BehindTheScenesIntroPage() {
             transition={{ duration: 0.6 }}
             className="mt-20"
           >
-            <HypothesisGuess reduce={!!reduce} content={quickGuess} dir={dir} />
+            <ExpandableLab title={intro.quickGuess.question}>
+              <HypothesisGuess
+                reduce={!!reduce}
+                content={quickGuess}
+                dir={dir}
+                bonus={<NextTokenGuess content={nextTokenContent} reduce={!!reduce} dir={dir} />}
+              />
+            </ExpandableLab>
           </motion.section>
 
           {/* ══════════ 3 · CHAT vs AGENT (full card, before the map) ══════════ */}
@@ -346,7 +390,6 @@ export default function BehindTheScenesIntroPage() {
                     title={agentCard.title}
                     body={agentCard.body}
                     closing={agentCard.closing}
-                    note={agentCard.note}
                   />
                 </div>
               </div>
@@ -376,15 +419,12 @@ export default function BehindTheScenesIntroPage() {
               <VizSoundToggle />
             </div>
 
+            {/* המנטור-מדריך גולש אל התחנה הפתוחה; הוא מרונדר בתוך IntroRoadmap כדי
+                שתהיה לו גישה ישירה לכרטיס הפתוח ולמיקומו. */}
             <div className="relative">
               <ExpandableLab>
-                <IntroRoadmap zones={roadmapZones} stations={roadmapStations} reduce={!!reduce} dir={dir} defaultOpenId="tokenize" />
+                <IntroRoadmap zones={roadmapZones} stations={roadmapStations} reduce={!!reduce} dir={dir} mentorLine={intro.mentor.roadmap} mentorWidth={330} />
               </ExpandableLab>
-              {/* המנטור מלווה את המפה (xl+), בצד הקריאה הטבעי של הכיוון הפעיל */}
-              {/* ב-LTR הוא יושב מימין למפה, ולכן מהופך אופקית כדי לפנות אל התוכן ולא ממנו. */}
-              <div className={`absolute top-6 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                <Mentor pose="mapNavigator" line={intro.mentor.roadmap} width={170} flip={!isRtl} />
-              </div>
             </div>
 
             {/* ── 7 · TRUTH NOTE (near the roadmap) ── */}

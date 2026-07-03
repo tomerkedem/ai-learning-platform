@@ -29,8 +29,7 @@ import {
     ArrowLeft, ArrowRight, ArrowRightLeft, CornerDownLeft, Pause, Play, Plus,
     RotateCcw, Square, Volume2, VolumeX,
 } from 'lucide-react';
-import { ACCENTS } from './accents';
-import type { Accent } from './types';
+import type { AccentStyle } from './accents';
 import { useT } from '@/i18n/useT';
 import type { Direction } from '@/i18n/config';
 import type { Dictionary } from '@/i18n/dictionary';
@@ -38,9 +37,124 @@ import type { StationVizKind } from '@/app/behind-the-scenes-ai/introduction/int
 
 type IntroViz = Dictionary['behindAi']['introVisuals']['viz'];
 
+/* ════════════ פלטת "עידן AI": צבע אקזוטי וייחודי לכל תחנה ════════════ */
+// כל תחנה מקבלת גוון ניאון או אבן-חן משלה. הסדר קופץ חזק על גלגל הגוונים כך שכל
+// תחנה שונה קיצונית מזו שלפניה. אלה אינם חלק ממערכת ה-Accent הכללית של הקורס,
+// אלא פלטה ייעודית למפת המבוא, עם ערכי צבע מותאמים (arbitrary) כדי לאפשר גוונים
+// שלא קיימים בפלטה הרגילה. מחלקות ליטרליות בלבד כדי ש-Tailwind יזהה אותן.
+export const STATION_PALETTE: Record<string, AccentStyle> = {
+    // 1 · הבקשה נכנסת - מגנטה פלזמה
+    request: {
+        border: 'border-[#ff3cac]/45', text: 'text-[#ff3cac]', softText: 'text-[#ff3cac]/70', bgSoft: 'bg-[#ff3cac]/12',
+        solid: 'bg-[#ff3cac]', solidText: 'text-white', barFill: 'bg-[#ff3cac]', barGradient: 'bg-gradient-to-l from-[#ff3cac] to-[#ff7ad9]',
+        dot: 'bg-[#ff3cac]', ringSoft: 'ring-[#ff3cac]/30', glow: 'shadow-[0_0_45px_-10px_rgba(255,60,172,0.55)]',
+    },
+    // 2 · פירוק לטוקנים - ליים רדיום
+    tokenize: {
+        border: 'border-[#b6ff2e]/45', text: 'text-[#b6ff2e]', softText: 'text-[#b6ff2e]/70', bgSoft: 'bg-[#b6ff2e]/12',
+        solid: 'bg-[#b6ff2e]', solidText: 'text-slate-950', barFill: 'bg-[#b6ff2e]', barGradient: 'bg-gradient-to-l from-[#b6ff2e] to-[#e6ff57]',
+        dot: 'bg-[#b6ff2e]', ringSoft: 'ring-[#b6ff2e]/30', glow: 'shadow-[0_0_45px_-10px_rgba(182,255,46,0.5)]',
+    },
+    // 3 · מזהים - טורקיז סייבר
+    ids: {
+        border: 'border-[#1fe0ff]/45', text: 'text-[#1fe0ff]', softText: 'text-[#1fe0ff]/70', bgSoft: 'bg-[#1fe0ff]/12',
+        solid: 'bg-[#1fe0ff]', solidText: 'text-slate-950', barFill: 'bg-[#1fe0ff]', barGradient: 'bg-gradient-to-l from-[#1fe0ff] to-[#5ef2ff]',
+        dot: 'bg-[#1fe0ff]', ringSoft: 'ring-[#1fe0ff]/30', glow: 'shadow-[0_0_45px_-10px_rgba(31,224,255,0.5)]',
+    },
+    // 4 · ייצוג מספרי - ענבר סולארי
+    embedding: {
+        border: 'border-[#ffb020]/45', text: 'text-[#ffb020]', softText: 'text-[#ffb020]/70', bgSoft: 'bg-[#ffb020]/12',
+        solid: 'bg-[#ffb020]', solidText: 'text-slate-950', barFill: 'bg-[#ffb020]', barGradient: 'bg-gradient-to-l from-[#ffb020] to-[#ffd152]',
+        dot: 'bg-[#ffb020]', ringSoft: 'ring-[#ffb020]/30', glow: 'shadow-[0_0_45px_-10px_rgba(255,176,32,0.5)]',
+    },
+    // 5 · מיקום וסדר - אולטרה-סגול
+    position: {
+        border: 'border-[#a24bff]/45', text: 'text-[#a24bff]', softText: 'text-[#a24bff]/70', bgSoft: 'bg-[#a24bff]/12',
+        solid: 'bg-[#a24bff]', solidText: 'text-white', barFill: 'bg-[#a24bff]', barGradient: 'bg-gradient-to-l from-[#a24bff] to-[#c98bff]',
+        dot: 'bg-[#a24bff]', ringSoft: 'ring-[#a24bff]/30', glow: 'shadow-[0_0_45px_-10px_rgba(162,75,255,0.55)]',
+    },
+    // 6 · חלון הקשר - מנטה זוהרת
+    context: {
+        border: 'border-[#22ffb0]/45', text: 'text-[#22ffb0]', softText: 'text-[#22ffb0]/70', bgSoft: 'bg-[#22ffb0]/12',
+        solid: 'bg-[#22ffb0]', solidText: 'text-slate-950', barFill: 'bg-[#22ffb0]', barGradient: 'bg-gradient-to-l from-[#22ffb0] to-[#68ffce]',
+        dot: 'bg-[#22ffb0]', ringSoft: 'ring-[#22ffb0]/30', glow: 'shadow-[0_0_45px_-10px_rgba(34,255,176,0.5)]',
+    },
+    // 7 · קשב - ורמיליון
+    attention: {
+        border: 'border-[#ff5a3c]/45', text: 'text-[#ff5a3c]', softText: 'text-[#ff5a3c]/70', bgSoft: 'bg-[#ff5a3c]/12',
+        solid: 'bg-[#ff5a3c]', solidText: 'text-white', barFill: 'bg-[#ff5a3c]', barGradient: 'bg-gradient-to-l from-[#ff5a3c] to-[#ff8a73]',
+        dot: 'bg-[#ff5a3c]', ringSoft: 'ring-[#ff5a3c]/30', glow: 'shadow-[0_0_45px_-10px_rgba(255,90,60,0.55)]',
+    },
+    // 8 · ערבוב - אולטרה-מרין
+    mix: {
+        border: 'border-[#3b7bff]/45', text: 'text-[#3b7bff]', softText: 'text-[#3b7bff]/70', bgSoft: 'bg-[#3b7bff]/12',
+        solid: 'bg-[#3b7bff]', solidText: 'text-white', barFill: 'bg-[#3b7bff]', barGradient: 'bg-gradient-to-l from-[#3b7bff] to-[#79a6ff]',
+        dot: 'bg-[#3b7bff]', ringSoft: 'ring-[#3b7bff]/30', glow: 'shadow-[0_0_45px_-10px_rgba(59,123,255,0.55)]',
+    },
+    // 9 · שכבות - שרטרז
+    layers: {
+        border: 'border-[#d8ff33]/45', text: 'text-[#d8ff33]', softText: 'text-[#d8ff33]/70', bgSoft: 'bg-[#d8ff33]/12',
+        solid: 'bg-[#d8ff33]', solidText: 'text-slate-950', barFill: 'bg-[#d8ff33]', barGradient: 'bg-gradient-to-l from-[#d8ff33] to-[#ecff77]',
+        dot: 'bg-[#d8ff33]', ringSoft: 'ring-[#d8ff33]/30', glow: 'shadow-[0_0_45px_-10px_rgba(216,255,51,0.5)]',
+    },
+    // 10 · מצב פנימי - פוקסיה היפר
+    state: {
+        border: 'border-[#ff2dd4]/45', text: 'text-[#ff2dd4]', softText: 'text-[#ff2dd4]/70', bgSoft: 'bg-[#ff2dd4]/12',
+        solid: 'bg-[#ff2dd4]', solidText: 'text-white', barFill: 'bg-[#ff2dd4]', barGradient: 'bg-gradient-to-l from-[#ff2dd4] to-[#ff74e4]',
+        dot: 'bg-[#ff2dd4]', ringSoft: 'ring-[#ff2dd4]/30', glow: 'shadow-[0_0_45px_-10px_rgba(255,45,212,0.55)]',
+    },
+    // 11 · ציונים - אינפרנו כתום
+    logits: {
+        border: 'border-[#ff8a00]/45', text: 'text-[#ff8a00]', softText: 'text-[#ff8a00]/70', bgSoft: 'bg-[#ff8a00]/12',
+        solid: 'bg-[#ff8a00]', solidText: 'text-slate-950', barFill: 'bg-[#ff8a00]', barGradient: 'bg-gradient-to-l from-[#ff8a00] to-[#ffb347]',
+        dot: 'bg-[#ff8a00]', ringSoft: 'ring-[#ff8a00]/30', glow: 'shadow-[0_0_45px_-10px_rgba(255,138,0,0.5)]',
+    },
+    // 12 · Softmax - טורקיז ניאו
+    softmax: {
+        border: 'border-[#00f0c8]/45', text: 'text-[#00f0c8]', softText: 'text-[#00f0c8]/70', bgSoft: 'bg-[#00f0c8]/12',
+        solid: 'bg-[#00f0c8]', solidText: 'text-slate-950', barFill: 'bg-[#00f0c8]', barGradient: 'bg-gradient-to-l from-[#00f0c8] to-[#57f7dc]',
+        dot: 'bg-[#00f0c8]', ringSoft: 'ring-[#00f0c8]/30', glow: 'shadow-[0_0_45px_-10px_rgba(0,240,200,0.5)]',
+    },
+    // 13 · בחירה - אינדיגו חשמלי
+    decoding: {
+        border: 'border-[#6c4dff]/45', text: 'text-[#6c4dff]', softText: 'text-[#6c4dff]/70', bgSoft: 'bg-[#6c4dff]/12',
+        solid: 'bg-[#6c4dff]', solidText: 'text-white', barFill: 'bg-[#6c4dff]', barGradient: 'bg-gradient-to-l from-[#6c4dff] to-[#9b86ff]',
+        dot: 'bg-[#6c4dff]', ringSoft: 'ring-[#6c4dff]/30', glow: 'shadow-[0_0_45px_-10px_rgba(108,77,255,0.55)]',
+    },
+    // 14 · הלולאה - אודם ניאון
+    loop: {
+        border: 'border-[#ff2e63]/45', text: 'text-[#ff2e63]', softText: 'text-[#ff2e63]/70', bgSoft: 'bg-[#ff2e63]/12',
+        solid: 'bg-[#ff2e63]', solidText: 'text-white', barFill: 'bg-[#ff2e63]', barGradient: 'bg-gradient-to-l from-[#ff2e63] to-[#ff6c92]',
+        dot: 'bg-[#ff2e63]', ringSoft: 'ring-[#ff2e63]/30', glow: 'shadow-[0_0_45px_-10px_rgba(255,46,99,0.55)]',
+    },
+};
+
+// שלשות ה-RGB של אותם 14 גוונים (בפורמט "r g b" של MentorAccent), כדי שהמנטור
+// יוכל לצבוע את בועת-הדיבור בגוון התחנה שהוא מדבר עליה. נגזר מאותם צבעי הפלטה.
+export const STATION_RGB: Record<string, string> = {
+    request: '255 60 172',
+    tokenize: '182 255 46',
+    ids: '31 224 255',
+    embedding: '255 176 32',
+    position: '162 75 255',
+    context: '34 255 176',
+    attention: '255 90 60',
+    mix: '59 123 255',
+    layers: '216 255 51',
+    state: '255 45 212',
+    logits: '255 138 0',
+    softmax: '0 240 200',
+    decoding: '108 77 255',
+    loop: '255 46 99',
+};
+
 interface VizProps {
-    accent: Accent;
+    a: AccentStyle;
     reduce: boolean;
+    // true כשהריצה הנוכחית היא חזרה אוטומטית של לולאת-התצוגה. סצנות משתיקות את
+    // צלילי-הפתיחה שלהן במצב זה, כדי שהלולאה לא תהפוך למטרונום. צלילי מגע של
+    // המשתמש תמיד מתנגנים (הם לא מותנים ב-silent).
+    silent: boolean;
     viz: IntroViz;
     dir: Direction;
 }
@@ -111,15 +225,20 @@ const sound = {
     chime() { this.play(523.25, 0.35, 0.06); this.play(783.99, 0.4, 0.035); },
 };
 
+// רטט עדין במגע (haptics) בטלפונים שתומכים ב-Vibration API. שקט לגמרי היכן שלא
+// נתמך (דסקטופ, iOS Safari). נגיעה פרימיום שמחזקת את תחושת ה"מגע" באינטראקציות.
+export function haptic(ms = 8) {
+    if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') navigator.vibrate(ms);
+}
+
 // כפתור פעולה קטן ואחיד לסצנות (מגע נוח גם בטלפון).
-function VizButton({ onClick, active, disabled, children, accent }: {
-    onClick: () => void; active?: boolean; disabled?: boolean; children: React.ReactNode; accent: Accent;
+function VizButton({ onClick, active, disabled, children, a }: {
+    onClick: () => void; active?: boolean; disabled?: boolean; children: React.ReactNode; a: AccentStyle;
 }) {
-    const a = ACCENTS[accent];
     return (
         <button
             type="button"
-            onClick={onClick}
+            onClick={() => { haptic(); onClick(); }}
             disabled={disabled}
             aria-pressed={active}
             className={`inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active
@@ -137,8 +256,7 @@ function VizButton({ onClick, active, disabled, children, accent }: {
 // רוחבי מקטעי הרצף (הוראות / היסטוריה / הבקשה), באחוזים. להמחשה בלבד.
 const REQ_SEGMENTS = [42, 33, 25];
 
-function RequestViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function RequestViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.request;
     const [view, setView] = useState<'you' | 'model'>(reduce ? 'model' : 'you');
     const touched = useRef(false);
@@ -146,7 +264,7 @@ function RequestViz({ accent, reduce, viz, dir }: VizProps) {
 
     // רצף הפתיחה: קודם רואים את הבועה המוכרת, ואז נחשף מה שהמודל באמת מקבל.
     useEffect(() => {
-        if (!reduce) after(() => { if (!touched.current) { sound.tick(1); setView('model'); } }, 1700);
+        if (!reduce) after(() => { if (!touched.current) { if (!silent) sound.tick(1); setView('model'); } }, 1700);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -155,8 +273,8 @@ function RequestViz({ accent, reduce, viz, dir }: VizProps) {
     return (
         <div dir={dir}>
             <div className="mb-3 flex flex-wrap gap-1.5">
-                <VizButton accent={accent} active={view === 'you'} onClick={() => pick('you')}>{v.youTab}</VizButton>
-                <VizButton accent={accent} active={view === 'model'} onClick={() => pick('model')}>{v.modelTab}</VizButton>
+                <VizButton a={a} active={view === 'you'} onClick={() => pick('you')}>{v.youTab}</VizButton>
+                <VizButton a={a} active={view === 'model'} onClick={() => pick('model')}>{v.modelTab}</VizButton>
             </div>
 
             <div className="min-h-[150px]">
@@ -213,7 +331,8 @@ function RequestViz({ accent, reduce, viz, dir }: VizProps) {
                                 </motion.div>
                             ))}
 
-                            {/* הפאנץ׳: הכל נמתח לרצועה אחת */}
+                            {/* הפאנץ׳: שלוש השכבות נדחסות לרצועה אחת. החץ פועם מטה כדי
+                                לרמז על הזרימה, והרצועה "נתפסת" ב-snap עם סריקת-אור. */}
                             <motion.div
                                 initial={reduce ? false : { opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -221,20 +340,37 @@ function RequestViz({ accent, reduce, viz, dir }: VizProps) {
                                 className="mt-1.5"
                             >
                                 <span className={`mb-1 flex items-center gap-1 text-sm font-bold ${a.text}`}>
-                                    <CornerDownLeft size={13} aria-hidden />
+                                    <motion.span
+                                        aria-hidden
+                                        animate={reduce ? undefined : { y: [0, 3, 0] }}
+                                        transition={reduce ? undefined : { duration: 0.9, delay: 0.85, repeat: 2, ease: 'easeInOut' }}
+                                        className="inline-flex"
+                                    >
+                                        <CornerDownLeft size={13} aria-hidden />
+                                    </motion.span>
                                     {v.stripLabel}
                                 </span>
-                                <div className="flex h-3 w-full overflow-hidden rounded-full" dir={dir}>
+                                <div className="relative flex h-3 w-full overflow-hidden rounded-full" dir={dir}>
                                     {REQ_SEGMENTS.map((w, i) => (
                                         <motion.span
                                             key={i}
                                             initial={reduce ? false : { scaleX: 0 }}
                                             animate={{ scaleX: 1 }}
                                             style={{ width: `${w}%`, originX: dir === 'rtl' ? 1 : 0 }}
-                                            transition={reduce ? { duration: 0 } : { duration: 0.35, delay: 0.9 + i * 0.18 }}
+                                            transition={reduce ? { duration: 0 } : { delay: 0.9 + i * 0.18, type: 'spring', stiffness: 300, damping: 16 }}
                                             className={i === 0 ? 'bg-violet-500' : i === 1 ? 'bg-amber-500' : a.solid}
                                         />
                                     ))}
+                                    {/* סריקת-אור חד-פעמית שעוברת על הרצועה כשהיא מתגבשת */}
+                                    {!reduce && (
+                                        <motion.span
+                                            aria-hidden
+                                            className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent"
+                                            initial={{ left: '-33%', opacity: 0 }}
+                                            animate={{ left: ['-33%', '100%'], opacity: [0, 1, 0] }}
+                                            transition={{ duration: 0.6, delay: 1.5, ease: 'easeInOut' }}
+                                        />
+                                    )}
                                 </div>
                             </motion.div>
                         </motion.div>
@@ -258,8 +394,7 @@ const PIECE_STYLES = [
     { border: 'border-rose-500/40', text: 'text-rose-300' },
 ];
 
-function TokenizeViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function TokenizeViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.tokenize;
     const [variant, setVariant] = useState<'a' | 'b'>('a');
     const after = useTimers();
@@ -267,9 +402,9 @@ function TokenizeViz({ accent, reduce, viz, dir }: VizProps) {
         ? { sentence: v.sentence, tokens: v.tokens, caption: v.caption }
         : { sentence: v.altSentence, tokens: v.altTokens, caption: v.altCaption };
 
-    // צליל "חיתוך" קטן כשקו החיתוך מסיים לעבור על המשפט.
+    // צליל "חיתוך" קטן כשקו החיתוך מסיים לעבור על המשפט (לא בחזרה אוטומטית).
     useEffect(() => {
-        if (!reduce) after(() => sound.play(880, 0.09, 0.045, 'triangle'), 460);
+        if (!reduce && !silent) after(() => sound.play(880, 0.09, 0.045, 'triangle'), 460);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [variant]);
 
@@ -279,16 +414,32 @@ function TokenizeViz({ accent, reduce, viz, dir }: VizProps) {
             <div key={variant}>
                 <div className="relative mb-3 overflow-hidden rounded-lg border border-white/5 bg-slate-950/50 px-3 py-2 text-sm text-slate-300">
                     {data.sentence}
-                    {/* קו החיתוך חולף על המשפט בכיוון הקריאה */}
+                    {/* קו החיתוך: לייזר זוהר שחולף על המשפט בכיוון הקריאה */}
                     {!reduce && (
                         <motion.span
                             aria-hidden
                             className={`absolute inset-y-0 w-0.5 ${a.solid}`}
+                            style={{ boxShadow: `0 0 10px 2px rgb(255 255 255 / 0.5)` }}
                             initial={{ left: dir === 'rtl' ? '100%' : '0%', opacity: 1 }}
                             animate={{ left: dir === 'rtl' ? '0%' : '100%', opacity: [1, 1, 0] }}
                             transition={{ duration: 0.7, ease: 'easeInOut' }}
                         />
                     )}
+                    {/* ניצוץ בכל תפר-חיתוך, פורץ כשהלייזר עובר בו */}
+                    {!reduce && data.tokens.slice(1).map((_, i) => {
+                        const f = (i + 1) / data.tokens.length;
+                        return (
+                            <motion.span
+                                key={`seam-${i}`}
+                                aria-hidden
+                                className="absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-white"
+                                style={{ insetInlineStart: `${f * 100}%` }}
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: [0, 1.8, 0], opacity: [0, 1, 0] }}
+                                transition={{ duration: 0.32, delay: f * 0.6, ease: 'easeOut' }}
+                            />
+                        );
+                    })}
                 </div>
                 <div className="flex flex-wrap gap-2">
                     {data.tokens.map((tok, i) => {
@@ -296,25 +447,39 @@ function TokenizeViz({ accent, reduce, viz, dir }: VizProps) {
                         const piece = variant === 'b'
                             ? PIECE_STYLES[v.altGroups[i] % PIECE_STYLES.length]
                             : { border: a.border, text: a.text };
+                        // התנפצות: כל טוקן נופל כרסיס מהמשפט, עם overshoot וסיבוב קל,
+                        // ונוחת אחרי שהלייזר חתך את התפר שלו. dropDelay מסונכרן עם הניצוץ.
+                        const dropDelay = 0.5 + i * 0.11;
                         return (
-                            <motion.span
-                                key={`${tok}-${i}`}
-                                initial={reduce ? false : { opacity: 0, y: 8, scale: 0.85 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                transition={reduce ? { duration: 0 } : { delay: 0.45 + i * 0.12, type: 'spring', stiffness: 320, damping: 22 }}
-                                className={`inline-flex items-center gap-1.5 rounded-lg border ${piece.border} bg-slate-950/60 px-2.5 py-1.5`}
-                            >
-                                <span className="font-mono text-[10px] text-slate-500" dir="ltr">{i + 1}</span>
-                                <span className={`text-sm font-bold ${piece.text}`}>{tok}</span>
-                            </motion.span>
+                            <span key={`${tok}-${i}`} className="relative inline-flex">
+                                {/* הבזק-נחיתה מאחורי הטוקן ברגע שהוא מתייצב */}
+                                {!reduce && (
+                                    <motion.span
+                                        aria-hidden
+                                        className={`pointer-events-none absolute inset-0 rounded-lg ${a.solid}`}
+                                        initial={{ scale: 0.6, opacity: 0 }}
+                                        animate={{ scale: [0.6, 1.5], opacity: [0.6, 0] }}
+                                        transition={{ duration: 0.45, delay: dropDelay + 0.05, ease: 'easeOut' }}
+                                    />
+                                )}
+                                <motion.span
+                                    initial={reduce ? false : { opacity: 0, y: -14, scale: 0.6, rotate: i % 2 === 0 ? -8 : 8 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
+                                    transition={reduce ? { duration: 0 } : { delay: dropDelay, type: 'spring', stiffness: 360, damping: 15 }}
+                                    className={`relative inline-flex items-center gap-1.5 rounded-lg border ${piece.border} bg-slate-950/60 px-2.5 py-1.5`}
+                                >
+                                    <span className="font-mono text-[10px] text-slate-500" dir="ltr">{i + 1}</span>
+                                    <span className={`text-sm font-bold ${piece.text}`}>{tok}</span>
+                                </motion.span>
+                            </span>
                         );
                     })}
                 </div>
                 <Caption>{data.caption}</Caption>
             </div>
             <div className="mt-2 flex flex-wrap gap-1.5">
-                <VizButton accent={accent} active={variant === 'a'} onClick={() => { sound.tick(0); setVariant('a'); }}>{v.variantA}</VizButton>
-                <VizButton accent={accent} active={variant === 'b'} onClick={() => { sound.tick(0); setVariant('b'); }}>{v.variantB}</VizButton>
+                <VizButton a={a} active={variant === 'a'} onClick={() => { sound.tick(0); setVariant('a'); }}>{v.variantA}</VizButton>
+                <VizButton a={a} active={variant === 'b'} onClick={() => { sound.tick(0); setVariant('b'); }}>{v.variantB}</VizButton>
             </div>
         </div>
     );
@@ -325,8 +490,7 @@ function TokenizeViz({ accent, reduce, viz, dir }: VizProps) {
 // מזהים להמחשה בלבד (כתובות במילון), לא מזהים אמיתיים של מודל.
 const TOKEN_IDS = [7412, 209, 5306, 4812, 1573, 662, 3948, 88];
 
-function IdsViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function IdsViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.ids;
     const tokens = viz.tokenize.tokens;
     const [flipped, setFlipped] = useState<boolean[]>(() => tokens.map(() => reduce));
@@ -336,7 +500,7 @@ function IdsViz({ accent, reduce, viz, dir }: VizProps) {
     useEffect(() => {
         if (reduce) return;
         tokens.forEach((_, i) => {
-            after(() => { sound.tick(i); setFlipped((f) => f.map((x, j) => (j === i ? true : x))); }, 650 + i * 240);
+            after(() => { if (!silent) sound.tick(i); setFlipped((f) => f.map((x, j) => (j === i ? true : x))); }, 650 + i * 240);
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -410,8 +574,7 @@ const CLUSTER_STYLE = [
 ];
 const clusterOf = (i: number) => (i < 2 ? 0 : 1);
 
-function EmbeddingViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function EmbeddingViz({ a, reduce, viz, dir }: VizProps) {
     const [sel, setSel] = useState(0);
     const near = MAP_NEAREST[sel];
 
@@ -453,9 +616,27 @@ function EmbeddingViz({ accent, reduce, viz, dir }: VizProps) {
                     <span className="px-1 font-mono text-[10px] text-slate-600">...</span>
                 </div>
             </div>
+            {/* כיתוב השרשרת יושב מתחת לשרשרת (במקום wall אחד גדול למטה) */}
+            <Caption>{viz.embedding.caption(viz.sharedNote)}</Caption>
 
-            {/* מפת המשמעות: מילים עם המספרים שלהן. דומות במשמעות = מספרים דומים = קרובות */}
-            <div className="relative mt-3 h-36 rounded-xl border border-white/5 bg-slate-950/60 sm:h-44" dir="ltr">
+            {/* מפת המשמעות: נכנסת אחרי השרשרת (חשיפה מדורגת, פחות עומס בבת אחת) */}
+            <motion.div
+                initial={reduce ? false : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={reduce ? { duration: 0 } : { duration: 0.4, delay: 0.7 }}
+                className="relative mt-3 h-36 overflow-hidden rounded-xl border border-white/5 bg-slate-950/60 sm:h-44"
+                dir="ltr"
+            >
+                {/* רשת קואורדינטות עדינה: הופכת את הכרטיס למרחב, כך שברור שהמיקום נושא משמעות */}
+                <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 opacity-[0.18]"
+                    style={{
+                        backgroundImage:
+                            'linear-gradient(to right, rgb(148 163 184 / 0.6) 1px, transparent 1px), linear-gradient(to bottom, rgb(148 163 184 / 0.6) 1px, transparent 1px)',
+                        backgroundSize: '26px 26px',
+                    }}
+                />
                 <svg className={`pointer-events-none absolute inset-0 h-full w-full ${CLUSTER_STYLE[clusterOf(sel)].text}`} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
                     <motion.line
                         key={`ln-${sel}`}
@@ -500,11 +681,12 @@ function EmbeddingViz({ accent, reduce, viz, dir }: VizProps) {
                         </motion.button>
                     );
                 })}
-            </div>
+            </motion.div>
             <p className={`mt-2 text-sm font-bold ${a.text}`}>
                 {viz.embedding.nearLabel}: {viz.embedding.mapWords[sel]} + {viz.embedding.mapWords[near]} · {viz.embedding.mapHint}
             </p>
-            <Caption>{viz.embedding.mapCaption} {viz.embedding.caption(viz.sharedNote)}</Caption>
+            {/* כיתוב המפה בלבד (הערת השרשרת עברה למעלה, מתחת לשרשרת) */}
+            <Caption>{viz.embedding.mapCaption}</Caption>
         </div>
     );
 }
@@ -514,8 +696,7 @@ function EmbeddingViz({ accent, reduce, viz, dir }: VizProps) {
 // אינדקסים מבניים: אילו שתי מילים מתחלפות. המילים עצמן מהמילון.
 const POS_SWAP: readonly [number, number] = [1, 3];
 
-function PositionViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function PositionViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.position;
     const [swapped, setSwapped] = useState(false);
     const touched = useRef(false);
@@ -523,7 +704,7 @@ function PositionViz({ accent, reduce, viz, dir }: VizProps) {
 
     // רצף פתיחה: אחרי שהתגים נחתמים, המילים מתחלפות פעם אחת מול העיניים.
     useEffect(() => {
-        if (!reduce) after(() => { if (!touched.current) { sound.tick(3); setSwapped(true); } }, 1800);
+        if (!reduce) after(() => { if (!touched.current) { if (!silent) sound.tick(3); setSwapped(true); } }, 1800);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -567,25 +748,38 @@ function PositionViz({ accent, reduce, viz, dir }: VizProps) {
 
             {/* המשמעות מתהפכת יחד עם הסדר */}
             <div className="mt-3 flex flex-wrap items-center gap-2">
-                <VizButton accent={accent} onClick={() => { touched.current = true; sound.tick(3); setSwapped((s) => !s); }}>
+                <VizButton a={a} onClick={() => { touched.current = true; sound.tick(3); setSwapped((s) => !s); }}>
                     <ArrowRightLeft size={12} aria-hidden />
                     {v.swapLabel}
                 </VizButton>
-                <AnimatePresence mode="wait" initial={false}>
-                    <motion.span
-                        key={swapped ? 'b' : 'a'}
-                        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: reduce ? 0 : 0.2 }}
-                        className={`rounded-full border px-3 py-1 text-sm font-bold ${swapped
-                            ? 'border-amber-500/40 bg-amber-900/15 text-amber-300'
-                            : 'border-emerald-500/40 bg-emerald-900/15 text-emerald-300'
-                            }`}
-                    >
-                        {swapped ? v.meaningB : v.meaningA}
-                    </motion.span>
-                </AnimatePresence>
+                <div className="relative inline-flex">
+                    {/* ניצוץ שפורץ ברגע שהמשמעות מתהפכת, כדי להדגיש שזה אותו טקסט בדיוק */}
+                    {!reduce && (
+                        <motion.span
+                            key={`spark-${swapped}`}
+                            aria-hidden
+                            className={`pointer-events-none absolute inset-0 rounded-full ${swapped ? 'bg-amber-400' : 'bg-emerald-400'}`}
+                            initial={{ scale: 0.7, opacity: 0.55 }}
+                            animate={{ scale: 1.7, opacity: 0 }}
+                            transition={{ duration: 0.5, ease: 'easeOut' }}
+                        />
+                    )}
+                    <AnimatePresence mode="wait" initial={false}>
+                        <motion.span
+                            key={swapped ? 'b' : 'a'}
+                            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: reduce ? 0 : 0.2 }}
+                            className={`relative rounded-full border px-3 py-1 text-sm font-bold ${swapped
+                                ? 'border-amber-500/40 bg-amber-900/15 text-amber-300'
+                                : 'border-emerald-500/40 bg-emerald-900/15 text-emerald-300'
+                                }`}
+                        >
+                            {swapped ? v.meaningB : v.meaningA}
+                        </motion.span>
+                    </AnimatePresence>
+                </div>
             </div>
             <Caption>{v.caption}</Caption>
         </div>
@@ -596,8 +790,7 @@ function PositionViz({ accent, reduce, viz, dir }: VizProps) {
 
 const CTX_WINDOW = 3;
 
-function ContextViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function ContextViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.context;
     const msgs = v.messages;
     const [count, setCount] = useState(CTX_WINDOW);
@@ -605,7 +798,7 @@ function ContextViz({ accent, reduce, viz, dir }: VizProps) {
 
     // רצף פתיחה: הודעה אחת מגיעה לבד, כדי שיהיה ברור מה הכפתור עושה.
     useEffect(() => {
-        if (!reduce) after(() => { sound.tick(2); setCount((c) => Math.min(c + 1, msgs.length)); }, 1500);
+        if (!reduce) after(() => { if (!silent) sound.tick(2); setCount((c) => Math.min(c + 1, msgs.length)); }, 1500);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -634,8 +827,13 @@ function ContextViz({ accent, reduce, viz, dir }: VizProps) {
                 )}
             </div>
 
-            {/* החלון עצמו: רק מה שבפנים קיים */}
-            <div className={`rounded-xl border-2 ${a.border} ${a.bgSoft} p-2.5 ring-1 ${a.ringSoft}`}>
+            {/* החלון עצמו: רק מה שבפנים קיים. מבזיק כשהודעה נדחפת החוצה (count עולה). */}
+            <motion.div
+                key={`win-${count}`}
+                animate={reduce ? undefined : { boxShadow: ['0 0 0 0 rgba(255,255,255,0)', '0 0 22px 2px rgba(255,255,255,0.18)', '0 0 0 0 rgba(255,255,255,0)'] }}
+                transition={reduce ? undefined : { duration: 0.6, ease: 'easeOut' }}
+                className={`rounded-xl border-2 ${a.border} ${a.bgSoft} p-2.5 ring-1 ${a.ringSoft}`}
+            >
                 <span className={`mb-1.5 block text-xs font-black uppercase tracking-wide ${a.text}`}>
                     {v.windowLabel} · <span dir="ltr">{CTX_WINDOW}</span>
                 </span>
@@ -659,10 +857,10 @@ function ContextViz({ accent, reduce, viz, dir }: VizProps) {
                         );
                     })}
                 </div>
-            </div>
+            </motion.div>
 
             <div className="mt-2.5">
-                <VizButton accent={accent} disabled={done} onClick={() => { sound.tick(2); setCount((c) => Math.min(c + 1, msgs.length)); }}>
+                <VizButton a={a} disabled={done} onClick={() => { sound.tick(2); setCount((c) => Math.min(c + 1, msgs.length)); }}>
                     <Plus size={12} aria-hidden />
                     {v.addLabel}
                 </VizButton>
@@ -687,8 +885,7 @@ const ATTN_DEFAULT_FOCUS = 3;
 
 type AttnArc = { d: string; tx: number; ty: number; lx: number; ly: number };
 
-function AttentionViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function AttentionViz({ a, reduce, viz, dir }: VizProps) {
     const v = viz.attention;
     const wrapRef = useRef<HTMLDivElement>(null);
     const tokRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -797,13 +994,24 @@ function AttentionViz({ accent, reduce, viz, dir }: VizProps) {
                             <button
                                 key={tok}
                                 type="button"
-                                onClick={() => { sound.play(440, 0.15, 0.05); setFocus(i); }}
+                                onClick={() => { haptic(); sound.play(440, 0.15, 0.05); setFocus(i); }}
                                 aria-pressed={i === focus}
-                                className="focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 rounded-lg"
+                                className="relative focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 rounded-lg"
                             >
+                                {/* אדווה שפורצת מהמילה שנגעו בה, כדי שהמגע ירגיש מוחשי */}
+                                {!reduce && i === focus && (
+                                    <motion.span
+                                        key={`ripple-${focus}`}
+                                        aria-hidden
+                                        className={`pointer-events-none absolute inset-0 rounded-lg ${a.solid}`}
+                                        initial={{ scale: 0.8, opacity: 0.5 }}
+                                        animate={{ scale: 1.6, opacity: 0 }}
+                                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                                    />
+                                )}
                                 <span
                                     ref={(el) => { tokRefs.current[i] = el; }}
-                                    className={`inline-block rounded-lg border px-2.5 py-1.5 text-sm font-bold transition-colors ${cls}`}
+                                    className={`relative inline-block rounded-lg border px-2.5 py-1.5 text-sm font-bold transition-colors ${cls}`}
                                 >
                                     {tok}
                                 </span>
@@ -845,24 +1053,26 @@ const MIX_STYLE = {
     },
 } as const;
 
-function MixViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function MixViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.mix;
     const [ctx, setCtx] = useState<'a' | 'b'>('a');
     const touched = useRef(false);
     const after = useTimers();
 
-    // מעבר הקשר: טיק קטן במעבר, וצליל עדין כשהמשמעות החדשה נוחתת.
-    const switchCtx = (k: 'a' | 'b') => {
-        sound.tick(1);
-        after(() => sound.play(659.25, 0.25, 0.04), 950);
+    // מעבר הקשר: טיק קטן במעבר, וצליל עדין כשהמשמעות החדשה נוחתת. withSound=false
+    // במעבר האוטומטי של הפתיחה (כדי שהלולאה לא תשמיע), true במגע של המשתמש.
+    const switchCtx = (k: 'a' | 'b', withSound: boolean) => {
+        if (withSound) {
+            sound.tick(1);
+            after(() => sound.play(659.25, 0.25, 0.04), 950);
+        }
         setCtx(k);
     };
 
     // רצף פתיחה: ההקשר הראשון נמזג אל המילה, ואז מעבר אוטומטי לשני מראה את
     // היפוך המשמעות בלי שנדרש מגע. מכאן הלומד ממשיך להחליף בעצמו.
     useEffect(() => {
-        if (!reduce) after(() => { if (!touched.current) switchCtx('b'); }, 2800);
+        if (!reduce) after(() => { if (!touched.current) switchCtx('b', !silent); }, 2800);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -881,7 +1091,7 @@ function MixViz({ accent, reduce, viz, dir }: VizProps) {
                         <button
                             key={k}
                             type="button"
-                            onClick={() => { touched.current = true; switchCtx(k); }}
+                            onClick={() => { touched.current = true; switchCtx(k, true); }}
                             aria-pressed={on}
                             className={`w-full rounded-xl border px-3 py-2 text-start text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${on ? MIX_STYLE[k].chip : 'border-white/10 bg-slate-950/50 text-slate-400 hover:bg-white/[0.03]'}`}
                         >
@@ -937,6 +1147,21 @@ function MixViz({ accent, reduce, viz, dir }: VizProps) {
                     </motion.span>
                 </AnimatePresence>
             </div>
+
+            {/* שתי המשמעויות זו לצד זו, כדי שהניגוד ינחת: הפעילה מודגשת, השנייה מעומעמת */}
+            <div className="mt-1 grid grid-cols-2 gap-2 text-center">
+                {(['a', 'b'] as const).map((k) => {
+                    const on = ctx === k;
+                    return (
+                        <div
+                            key={k}
+                            className={`rounded-lg border px-2 py-1.5 text-xs font-bold leading-snug transition-all ${on ? MIX_STYLE[k].chip : 'border-white/10 bg-slate-950/40 text-slate-500 opacity-70'}`}
+                        >
+                            {k === 'a' ? v.aMeaning : v.bMeaning}
+                        </div>
+                    );
+                })}
+            </div>
             <Caption>{v.caption}</Caption>
         </div>
     );
@@ -948,21 +1173,21 @@ function MixViz({ accent, reduce, viz, dir }: VizProps) {
 const FLOOR_BLUR = [3, 1.5, 0];
 const FLOOR_OPACITY = [0.55, 0.8, 1];
 
-function LayersViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function LayersViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.layers;
     const [floor, setFloor] = useState(reduce ? v.floors.length - 1 : 0);
     const touched = useRef(false);
     const after = useTimers();
 
-    // מעבר קומה: צליל עולה בסולם ככל שעולים, כמו פעמון מעלית קטן.
-    const goFloor = (i: number) => { sound.tick(i + 1); setFloor(i); };
+    // מעבר קומה: צליל עולה בסולם ככל שעולים, כמו פעמון מעלית קטן. withSound=false
+    // בעליית הפתיחה האוטומטית, true במגע של המשתמש.
+    const goFloor = (i: number, withSound: boolean) => { if (withSound) sound.tick(i + 1); setFloor(i); };
 
     // רצף פתיחה: המעלית עולה לבד קומה-קומה, והמשפט מתחדד.
     useEffect(() => {
         if (reduce) return;
-        after(() => { if (!touched.current) goFloor(1); }, 1100);
-        after(() => { if (!touched.current) goFloor(2); }, 2200);
+        after(() => { if (!touched.current) goFloor(1, !silent); }, 1100);
+        after(() => { if (!touched.current) goFloor(2, !silent); }, 2200);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -978,14 +1203,16 @@ function LayersViz({ accent, reduce, viz, dir }: VizProps) {
             </motion.div>
 
             {/* הקומות, מלמעלה למטה בתצוגה: הקומה הגבוהה היא המחודדת ביותר */}
-            <div className="flex flex-col gap-1.5">
+            <div className="relative flex flex-col gap-1.5">
+                {/* פיר המעלית: מסילה אנכית שעוברת דרך מרכזי התגים, והתא (lv-car) נע בה */}
+                <span aria-hidden className="pointer-events-none absolute top-4 bottom-4 w-0.5 bg-white/15" style={{ insetInlineStart: '1.375rem' }} />
                 {[...v.floors].map((_, ri) => v.floors.length - 1 - ri).map((i) => {
                     const active = i === floor;
                     return (
                         <button
                             key={i}
                             type="button"
-                            onClick={() => { touched.current = true; goFloor(i); }}
+                            onClick={() => { touched.current = true; goFloor(i, true); }}
                             aria-pressed={active}
                             className={`flex w-full items-center gap-2.5 rounded-xl border px-3 py-2 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active ? `${a.border} ${a.bgSoft}` : 'border-white/5 bg-slate-950/40 hover:bg-white/[0.03]'
                                 }`}
@@ -1040,16 +1267,15 @@ const GHOST_POS = [
     { left: '42%', top: '4%' },
 ];
 
-function StateViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function StateViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.state;
     const tokens = viz.attention.tokens;
     const [ghosts, setGhosts] = useState(reduce);
     const after = useTimers();
 
-    // צליל דחיסה חם כשהכדור נולד: בס עדין + נגיעת פעמון.
+    // צליל דחיסה חם כשהכדור נולד: בס עדין + נגיעת פעמון (לא בחזרה אוטומטית).
     useEffect(() => {
-        if (!reduce) after(() => { sound.play(130.81, 0.3, 0.06, 'triangle'); sound.play(523.25, 0.4, 0.04); }, 1600);
+        if (!reduce && !silent) after(() => { sound.play(130.81, 0.3, 0.06, 'triangle'); sound.play(523.25, 0.4, 0.04); }, 1600);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -1080,6 +1306,17 @@ function StateViz({ accent, reduce, viz, dir }: VizProps) {
 
             {/* הזירה: הכדור במרכז, רוחות המילים סביבו */}
             <div className="relative mx-auto h-36 w-full max-w-xs">
+                {/* חלקיקים שמתכנסים מהשוליים אל מרכז הכדור: כל ההקשר נדחס לנקודה */}
+                {!reduce && GHOST_POS.map((p, i) => (
+                    <motion.span
+                        key={`mote-${i}`}
+                        aria-hidden
+                        className={`pointer-events-none absolute h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full ${a.solid}`}
+                        initial={{ left: p.left, top: p.top, opacity: 0, scale: 1 }}
+                        animate={{ left: '50%', top: '50%', opacity: [0, 1, 0], scale: 0.3 }}
+                        transition={{ duration: 0.75, delay: 1.05 + i * 0.06, ease: 'easeIn' }}
+                    />
+                ))}
                 <AnimatePresence>
                     {ghosts && tokens.slice(0, GHOST_POS.length).map((tok, i) => (
                         <motion.span
@@ -1115,7 +1352,7 @@ function StateViz({ accent, reduce, viz, dir }: VizProps) {
             </div>
 
             <div className="mt-2.5 flex justify-center">
-                <VizButton accent={accent} active={ghosts} onClick={() => { sound.tick(4); setGhosts((g) => !g); }}>{v.insideBtn}</VizButton>
+                <VizButton a={a} active={ghosts} onClick={() => { sound.tick(4); setGhosts((g) => !g); }}>{v.insideBtn}</VizButton>
             </div>
             <Caption>{v.caption}</Caption>
         </div>
@@ -1127,16 +1364,17 @@ function StateViz({ accent, reduce, viz, dir }: VizProps) {
 // ציונים גולמיים להמחשה בלבד, בסדר "לא ממוין" בכוונה כדי שהמיון יקרה מול העיניים.
 const LOGIT_SCORES = [8.2, 6.1, 4.0, 5.5, 3.2, 4.8, 2.1, 3.9];
 const LOGIT_MAX = 10;
+// מדליות פודיום לשלושת המובילים (זהב, כסף, ארד). מחלקות סטטיות בלבד.
+const LOGIT_MEDAL = ['bg-amber-400 text-slate-950', 'bg-slate-300 text-slate-950', 'bg-amber-700 text-white'];
 
-function LogitsViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function LogitsViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.logits;
     const [sorted, setSorted] = useState(reduce);
     const after = useTimers();
 
     // רצף פתיחה: העמודות מתמלאות בערבוביה, ואז הרשימה מסתדרת לפי מוביל.
     useEffect(() => {
-        if (!reduce) after(() => { sound.tick(4); setSorted(true); }, 1900);
+        if (!reduce) after(() => { if (!silent) sound.tick(4); setSorted(true); }, 1900);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -1159,6 +1397,19 @@ function LogitsViz({ accent, reduce, viz, dir }: VizProps) {
                             transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 30 }}
                             className={`flex items-center gap-2 rounded-md px-1.5 py-0.5 ${isLeader ? `ring-1 ${a.ringSoft} ${a.bgSoft}` : ''}`}
                         >
+                            {/* מדליית פודיום לשלושת המובילים, מופיעה כשהרשימה מסתדרת */}
+                            <span className="flex h-5 w-5 shrink-0 items-center justify-center" dir="ltr">
+                                {sorted && i < 3 && (
+                                    <motion.span
+                                        initial={reduce ? false : { scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        transition={reduce ? { duration: 0 } : { delay: 0.1 + i * 0.08, type: 'spring', stiffness: 360, damping: 16 }}
+                                        className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-black ${LOGIT_MEDAL[i]}`}
+                                    >
+                                        {i + 1}
+                                    </motion.span>
+                                )}
+                            </span>
                             <span className={`w-16 shrink-0 truncate text-sm font-bold ${isLeader ? a.text : 'text-slate-300'}`}>{w}</span>
                             <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-800/70">
                                 <motion.div
@@ -1188,8 +1439,7 @@ const SCORE_DATA = [
     { raw: 4.0, prob: 6 },
 ];
 
-function ScoresViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function ScoresViz({ a, reduce, silent, viz, dir }: VizProps) {
     const maxRaw = 10; // קנה מידה קבוע לעמודות הציון הגולמי
     const [total, setTotal] = useState(reduce ? 100 : 0);
 
@@ -1208,10 +1458,10 @@ function ScoresViz({ accent, reduce, viz, dir }: VizProps) {
         return () => { window.clearTimeout(to); if (iv) window.clearInterval(iv); };
     }, [reduce]);
 
-    // צליל נעילה קטן כשהמונה מגיע ל-100%.
+    // צליל נעילה קטן כשהמונה מגיע ל-100% (לא בחזרה אוטומטית).
     useEffect(() => {
-        if (total === 100 && !reduce) sound.chime();
-    }, [total, reduce]);
+        if (total === 100 && !reduce && !silent) sound.chime();
+    }, [total, reduce, silent]);
 
     return (
         <div className="flex flex-col gap-2.5">
@@ -1273,8 +1523,7 @@ function ScoresViz({ accent, reduce, viz, dir }: VizProps) {
 // ההסתברויות זהות לתחנת ה-Softmax (72/19/6), כדי שהסיפור יהיה רציף.
 const DECODE_PROBS = [72, 19, 6];
 
-function DecodingViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function DecodingViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.decoding;
     const labels = viz.scores.rowLabels;
     const [mode, setMode] = useState<'sure' | 'surprise'>('sure');
@@ -1291,11 +1540,12 @@ function DecodingViz({ accent, reduce, viz, dir }: VizProps) {
         return r < DECODE_PROBS[0] ? 0 : r < DECODE_PROBS[0] + DECODE_PROBS[1] ? 1 : 2;
     };
 
-    const roll = (m: 'sure' | 'surprise') => {
+    // withSound=false בהגרלה האוטומטית של הפתיחה, true בהגרלה שהמשתמש יזם.
+    const roll = (m: 'sure' | 'surprise', withSound: boolean) => {
         if (spinning) return;
         const target = pick(m);
         if (reduce) {
-            sound.tick(5);
+            if (withSound) sound.tick(5);
             setChosen(target);
             setTally((t) => t.map((n, i) => (i === target ? n + 1 : n)));
             return;
@@ -1309,20 +1559,20 @@ function DecodingViz({ accent, reduce, viz, dir }: VizProps) {
         for (let k = 0; k < steps; k++) {
             t += 70 + k * 26;
             const idx = (k + 1) % 3;
-            after(() => { sound.play(329.63, 0.06, 0.03); setHighlight(idx); }, t);
+            after(() => { if (withSound) sound.play(329.63, 0.06, 0.03); setHighlight(idx); }, t);
         }
         after(() => {
             setHighlight(null);
             setChosen(target);
             setTally((prev) => prev.map((n, i) => (i === target ? n + 1 : n)));
             setSpinning(false);
-            sound.chime();
+            if (withSound) sound.chime();
         }, t + 240);
     };
 
     // רצף פתיחה: הגרלה אחת אוטומטית במצב הבטוח, כדי שהסצנה חיה מיד.
     useEffect(() => {
-        if (!reduce) after(() => roll('sure'), 900);
+        if (!reduce) after(() => roll('sure', !silent), 900);
         else { setChosen(0); setTally([1, 0, 0]); }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -1376,9 +1626,9 @@ function DecodingViz({ accent, reduce, viz, dir }: VizProps) {
 
             {/* מגע: מצב, הגרלה, ותוצאות מצטברות */}
             <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                <VizButton accent={accent} active={mode === 'sure'} onClick={() => setMode('sure')}>{v.sure}</VizButton>
-                <VizButton accent={accent} active={mode === 'surprise'} onClick={() => setMode('surprise')}>{v.surprise}</VizButton>
-                <VizButton accent={accent} disabled={spinning} onClick={() => roll(mode)}>
+                <VizButton a={a} active={mode === 'sure'} onClick={() => setMode('sure')}>{v.sure}</VizButton>
+                <VizButton a={a} active={mode === 'surprise'} onClick={() => setMode('surprise')}>{v.surprise}</VizButton>
+                <VizButton a={a} disabled={spinning} onClick={() => roll(mode, true)}>
                     <Play size={12} aria-hidden />
                     {v.roll}
                 </VizButton>
@@ -1395,24 +1645,24 @@ function DecodingViz({ accent, reduce, viz, dir }: VizProps) {
 
 /* ════════════ 14 · הלולאה: כל סיבוב מנוע מוסיף טוקן אחד ════════════ */
 
-function LoopViz({ accent, reduce, viz, dir }: VizProps) {
-    const a = ACCENTS[accent];
+function LoopViz({ a, reduce, silent, viz, dir }: VizProps) {
     const v = viz.loop;
     const [n, setN] = useState(reduce ? v.words.length : 0);
     const [playing, setPlaying] = useState(!reduce);
     const done = n >= v.words.length;
 
-    // כל "סיבוב מנוע" פולט טוקן אחד עם טיק עולה בסולם. השהיה מקפיאה את התשובה באמצע.
+    // כל "סיבוב מנוע" פולט טוקן אחד עם טיק עולה בסולם (לא בחזרה אוטומטית).
+    // השהיה מקפיאה את התשובה באמצע.
     useEffect(() => {
         if (!playing || done) return;
-        const id = window.setTimeout(() => { sound.tick(n); setN((x) => x + 1); }, n === 0 ? 700 : 850);
+        const id = window.setTimeout(() => { if (!silent) sound.tick(n); setN((x) => x + 1); }, n === 0 ? 700 : 850);
         return () => window.clearTimeout(id);
-    }, [playing, n, done]);
+    }, [playing, n, done, silent]);
 
-    // צליל סיום קטן כשמגיעים לסימן העצירה.
+    // צליל סיום קטן כשמגיעים לסימן העצירה (לא בחזרה אוטומטית).
     useEffect(() => {
-        if (done && !reduce) sound.chime();
-    }, [done, reduce]);
+        if (done && !reduce && !silent) sound.chime();
+    }, [done, reduce, silent]);
 
     return (
         <div dir={dir}>
@@ -1435,7 +1685,7 @@ function LoopViz({ accent, reduce, viz, dir }: VizProps) {
                     {v.tokenLabel} <span className="font-mono" dir="ltr">{n}/{v.words.length}</span>
                 </span>
                 {!reduce && !done && (
-                    <VizButton accent={accent} onClick={() => setPlaying((p) => !p)}>
+                    <VizButton a={a} onClick={() => setPlaying((p) => !p)}>
                         {playing ? <Pause size={12} aria-hidden /> : <Play size={12} aria-hidden />}
                         {playing ? v.pause : v.play}
                     </VizButton>
@@ -1542,7 +1792,7 @@ export const VizSoundToggle: React.FC = () => {
     );
 };
 
-export const StationViz: React.FC<{ kind: StationVizKind; accent: Accent; reduce: boolean }> = ({ kind, accent, reduce }) => {
+export const StationViz: React.FC<{ kind: StationVizKind; a: AccentStyle; reduce: boolean }> = ({ kind, a, reduce }) => {
     const { t, dir } = useT();
     const viz = t.behindAi.introVisuals.viz;
     // key=runId: כל עלייה טוענת את הסצנה מחדש (ידנית או מלולאת התצוגה).
@@ -1550,11 +1800,14 @@ export const StationViz: React.FC<{ kind: StationVizKind; accent: Accent; reduce
     // לולאת תצוגה: כל עוד הכרטיס פתוח ואף אחד לא נגע בסצנה, היא רצה שוב ושוב.
     // מגע בסצנה עוצר את הלולאה (הלומד השתלט); "הפעלה מחדש" מחזירה אותה.
     const [looping, setLooping] = useState(!reduce);
+    // autoReplay=true רק בחזרות האוטומטיות של הלולאה. הפתיחה הראשונה וההפעלה-מחדש
+    // הידנית משאירות false, כדי שהצליל יישמע בהן אך לא בכל סיבוב לולאה.
+    const [autoReplay, setAutoReplay] = useState(false);
     useEffect(() => { armVizAudio(); }, []);
 
     useEffect(() => {
         if (!looping || reduce) return;
-        const id = window.setTimeout(() => setRunId((r) => r + 1), VIZ_RUN_MS[kind] + LOOP_PAUSE_MS);
+        const id = window.setTimeout(() => { setAutoReplay(true); setRunId((r) => r + 1); }, VIZ_RUN_MS[kind] + LOOP_PAUSE_MS);
         return () => window.clearTimeout(id);
     }, [looping, runId, reduce, kind]);
 
@@ -1565,7 +1818,7 @@ export const StationViz: React.FC<{ kind: StationVizKind; accent: Accent; reduce
             <div className="mb-1.5 flex justify-end">
                 <button
                     type="button"
-                    onClick={() => { setLooping(!reduce); setRunId((r) => r + 1); }}
+                    onClick={() => { setAutoReplay(false); setLooping(!reduce); setRunId((r) => r + 1); }}
                     className="inline-flex min-h-[30px] items-center gap-1.5 rounded-full border border-white/10 bg-slate-950/60 px-2.5 py-0.5 text-xs font-bold text-slate-300 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60"
                 >
                     <RotateCcw size={12} aria-hidden />
@@ -1573,7 +1826,7 @@ export const StationViz: React.FC<{ kind: StationVizKind; accent: Accent; reduce
                 </button>
             </div>
             <div key={runId} onPointerDownCapture={stopLoop} onKeyDownCapture={stopLoop}>
-                <Cmp accent={accent} reduce={reduce} viz={viz} dir={dir} />
+                <Cmp a={a} reduce={reduce} viz={viz} dir={dir} silent={autoReplay} />
             </div>
         </div>
     );

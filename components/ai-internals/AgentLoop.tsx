@@ -7,11 +7,13 @@
 // ובמיקום בשני המצבים, כדי שתורגש כמנוע אחד שסביבו מתחלף עולם:
 //
 //   Chat  - עולם תכלת: מסילת-זכוכית אופקית שעוברת ישר דרך הליבה (ChatStraightPath).
-//           מינימלי ומרוּוח. רצועת העולם/סטטוס קיימת אך נעולה ומעומעמת. המסר בסיום:
-//           השיחה השתנתה, העולם שבחוץ לא.
+//           מינימלי ומרוּוח. המסר בסיום: השיחה השתנתה, העולם שבחוץ לא.
 //   Agent - עולם סגול: אותה ליבה, אותו גודל, אותו מיקום, מוקפת בטבעות חדר-בקרה
-//           (AgentControlRoom) עם 6 תחנות. רצועת העולם/סטטוס פעילה, מתקדמת בין
-//           התחנות בזמן הרצה, ובסיום/אישור מציגה שינוי-עולם מתמשך.
+//           (AgentControlRoom) עם 6 תחנות, שהפולס מתקדם ביניהן בזמן הרצה.
+//
+// התשובה כבר לא יושבת בכרטיס נפרד מתחת למנוע. בסיום הסבב היא נחשפת כשורת-תוצאה
+// ירוקה קומפקטית בתוך ה-slot החי שמעל המנוע (LiveStatusSlot), ליד פאנץ' המצב, בלי
+// להגדיל את גובה הכרטיס.
 //
 // ארכיטקטורה: AgentLoop הוא המנצח (state, מתג, הרצה, פולס, תחנות); רכיבי-העזר
 // הפנימיים הם חלקי-הסצנה. שכבת ה-canvas הריקה (aria-hidden) שמורה לשלב עתידי של
@@ -94,7 +96,7 @@ const EngineCore: React.FC<{
         <div className="pointer-events-none absolute inset-2 rounded-full border border-white/[0.07] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]" aria-hidden />
         <div className="relative mb-2.5 inline-flex items-center gap-2 rounded-full border border-cyan-500/50 bg-slate-950/70 px-4 py-1.5">
             <Cpu size={22} className="text-cyan-300" aria-hidden />
-            <span className="font-mono text-lg font-bold tracking-wide text-cyan-200" dir="ltr">{coreLabel}</span>
+            <span className="text-lg font-bold tracking-wide text-cyan-200" dir="ltr">{coreLabel}</span>
         </div>
         {running ? (
             // בזמן סבב: לב-המנוע מציג את שם התחנה שהפולס עובר בה כרגע.
@@ -190,85 +192,16 @@ const AgentControlRoom: React.FC<{ reduce: boolean }> = ({ reduce }) => (
     </div>
 );
 
-// ── WorldStatusStrip: מצב העולם/המערכת מתחת לבמה. משתמש רק במחרוזות קיימות.
-//    Chat  - נעול ומעומעם: תשובה שנשארת בתוך השיחה, בלי שינוי בעולם.
-//    Agent - ממתין בזמן הרצה, ובסיום עובר לשינוי-עולם מתמשך (ירוק, אישור/פעולה). ──
-const WorldStatusStrip: React.FC<{
-    mode: Mode; completed: boolean; reduce: boolean;
-    label: string; chatValue: string; agentValue: string; pendingValue: string;
-}> = ({ mode, completed, reduce, label, chatValue, agentValue, pendingValue }) => {
-    // התשובה מגיעה רק בסיום הריצה (בשני המצבים). לפני כן: ממתין.
-    const revealed = completed;
-    const value = revealed ? (mode === 'chat' ? chatValue : agentValue) : pendingValue;
-    // גוון-מצב: כשהתשובה מגיעה - ירוק (אמרלד) בשני המצבים (אות "התקבלה תשובה").
-    // לפני כן: תכלת ל-Chat (ממתין בשיחה), סגול ל-Agent (ממתין לפעולה).
-    const accent = revealed ? '52,211,153' : mode === 'chat' ? '34,211,238' : '168,85,247';
-
-    // עיצוב יפני-מינימליסטי (kanso/ma/shibui): קווים דקים, מרווח נדיב, אינסו (טבעת-זן
-    // מוברשת) כמחוון-מצב, ומשיכת-מכחול אנכית בקצה. מובחן מהכרטיסים הניאוניים סביבו.
-    return (
-        <motion.div
-            // key מתחלף כשהתשובה חוזרת (revealed) -> הכרטיס נטען-מחדש ומקבל כניסה דרמטית.
-            key={String(revealed)}
-            initial={reduce ? false : revealed ? { scale: 0.85, opacity: 0 } : { opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={reduce ? { duration: 0 } : revealed ? { type: 'spring', stiffness: 260, damping: 15 } : { duration: 0.3 }}
-            className="relative w-full"
-        >
-            {/* פרץ-זוהר בהגעת התשובה: הילה שמתפשטת ודוהה - רגע ה"וואו" של החזרה */}
-            {revealed && !reduce && (
-                <motion.div
-                    aria-hidden
-                    className="pointer-events-none absolute -inset-3 rounded-2xl"
-                    style={{ background: `radial-gradient(closest-side, rgba(${accent},0.55), transparent)` }}
-                    initial={{ opacity: 0.9, scale: 0.6 }}
-                    animate={{ opacity: 0, scale: 1.7 }}
-                    transition={{ duration: 0.85, ease: 'easeOut' }}
-                />
-            )}
-            <div className="relative w-full overflow-hidden rounded-lg border border-white/[0.08] bg-slate-950/55 px-5 py-4 text-start backdrop-blur-md">
-            {/* משיכת-מכחול אנכית (סומי-אה) בקצה-ההתחלה */}
-            <div
-                aria-hidden
-                className="pointer-events-none absolute inset-y-4 start-0 w-[2px] rounded-full"
-                style={{ background: `linear-gradient(to bottom, transparent, rgb(${accent}) 45%, rgba(${accent},0.2))` }}
-            />
-            <div className="flex items-center gap-3">
-                {/* אינסו (円相): טבעת-זן מוברשת עם פתח קל, כמחוון-מצב שקט */}
-                <span className="relative grid h-6 w-6 shrink-0 place-items-center" aria-hidden>
-                    <span
-                        className="absolute inset-0 rounded-full"
-                        style={{
-                            background: `conic-gradient(from 210deg, rgba(${accent},0.95), rgba(${accent},0.35) 250deg, transparent 312deg, rgba(${accent},0.95))`,
-                            WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 1.5px), #000 calc(100% - 1.5px))',
-                            mask: 'radial-gradient(farthest-side, transparent calc(100% - 1.5px), #000 calc(100% - 1.5px))',
-                        }}
-                    />
-                    {revealed ? (
-                        <span className="h-1.5 w-1.5 rounded-full" style={{ background: `rgb(${accent})`, boxShadow: `0 0 8px rgba(${accent},0.85)` }} />
-                    ) : (
-                        !reduce ? (
-                            <motion.span className="h-1 w-1 rounded-full" style={{ background: `rgb(${accent})` }} animate={{ opacity: [0.35, 1, 0.35] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }} />
-                        ) : (
-                            <span className="h-1 w-1 rounded-full" style={{ background: `rgb(${accent})` }} />
-                        )
-                    )}
-                </span>
-                <span className="text-sm font-semibold uppercase tracking-[0.22em]" style={{ color: `rgba(${accent},0.92)` }}>{label}</span>
-            </div>
-            <p className="mt-3.5 text-base leading-relaxed text-slate-100">{value}</p>
-            </div>
-        </motion.div>
-    );
-};
-
 // ── LiveStatusSlot: תיבת הנרטיב הנושמת. מצב יחיד של aria-live לכל הכרטיס.
-//    idle: רמז שקט · running/hover: הסבר התחנה הפעילה · completed: הפאנץ' (closing+note). ──
+//    idle: רמז שקט · running/hover: הסבר התחנה הפעילה · completed: הפאנץ' (closing) +
+//    שורת-תוצאה ירוקה קומפקטית עם התשובה עצמה (אות "התקבלה תשובה"), במקום כרטיס נפרד. ──
 const LiveStatusSlot: React.FC<{
     reduce: boolean; showClosing: boolean; activeStage: Stage | null;
-    closing?: string; note?: string; hintPrompt: string; body?: string;
+    closing?: string; hintPrompt: string; body?: string;
     inputLabel?: string; inputText?: string;
-}> = ({ reduce, showClosing, activeStage, closing, note, hintPrompt, body, inputLabel, inputText }) => (
+    /** התשובה עצמה, שנחשפת בסיום בתוך אותו כרטיס (במקום כרטיס נפרד מתחת למנוע). */
+    answerLabel?: string; answerText?: string;
+}> = ({ reduce, showClosing, activeStage, closing, hintPrompt, body, inputLabel, inputText, answerLabel, answerText }) => (
     <div
         role="status"
         aria-live="polite"
@@ -285,7 +218,38 @@ const LiveStatusSlot: React.FC<{
                 {showClosing ? (
                     <>
                         <p className="font-bold text-indigo-100">{closing}</p>
-                        {note && <p className="mt-1 text-sm leading-snug text-slate-400">{note}</p>}
+                        {/* התשובה עצמה נוחתת כאן, בתוך אותו כרטיס: שורת-תוצאה ירוקה קומפקטית
+                            (אינסו + תווית + הטקסט) במקום כרטיס נפרד מתחת למנוע. גובה הכרטיס
+                            לא גדל: הסגירה קצרה מגוף-המנוחה, והשורה יושבת במרווח שהתפנה. */}
+                        {answerText && (
+                            <span className="relative mt-3 inline-flex max-w-full flex-wrap items-center justify-center gap-x-2.5 gap-y-0.5 rounded-xl border border-emerald-400/35 bg-emerald-500/[0.08] px-3.5 py-1.5">
+                                {/* פרץ-זוהר עדין ברגע ההגעה, מתפשט ודוהה (aria-hidden, reduce-aware) */}
+                                {!reduce && (
+                                    <motion.span
+                                        aria-hidden
+                                        className="pointer-events-none absolute -inset-2 rounded-2xl"
+                                        style={{ background: 'radial-gradient(closest-side, rgba(52,211,153,0.45), transparent)' }}
+                                        initial={{ opacity: 0.85, scale: 0.6 }}
+                                        animate={{ opacity: 0, scale: 1.6 }}
+                                        transition={{ duration: 0.8, ease: 'easeOut' }}
+                                    />
+                                )}
+                                {/* אינסו (円相): טבעת-זן ירוקה כאות "התקבלה תשובה" */}
+                                <span className="relative grid h-4 w-4 shrink-0 place-items-center" aria-hidden>
+                                    <span
+                                        className="absolute inset-0 rounded-full"
+                                        style={{
+                                            background: 'conic-gradient(from 210deg, rgba(52,211,153,0.95), rgba(52,211,153,0.3) 250deg, transparent 312deg, rgba(52,211,153,0.95))',
+                                            WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 1.5px), #000 calc(100% - 1.5px))',
+                                            mask: 'radial-gradient(farthest-side, transparent calc(100% - 1.5px), #000 calc(100% - 1.5px))',
+                                        }}
+                                    />
+                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 8px rgba(52,211,153,0.85)' }} />
+                                </span>
+                                {answerLabel && <span className="text-sm font-black uppercase tracking-[0.18em] text-emerald-300">{answerLabel}</span>}
+                                <span className="text-[15px] font-bold leading-snug text-emerald-50">{answerText}</span>
+                            </span>
+                        )}
                     </>
                 ) : activeStage ? (
                     <div>
@@ -333,9 +297,7 @@ export const AgentLoop: React.FC<{
     body?: string;
     /** הפאנץ' שנוחת ב-slot החי במצב סיום. מגיע מהכרטיס לפי המצב הפעיל (page). */
     closing?: string;
-    /** הערת דיוק קטנה שנלווית ל-closing, באותו slot. */
-    note?: string;
-}> = ({ reduce, demo, dir, mode: modeProp, onModeChange, eyebrow, title, body, closing, note }) => {
+}> = ({ reduce, demo, dir, mode: modeProp, onModeChange, eyebrow, title, body, closing }) => {
     const isRtl = dir === 'rtl';
     // המתג יכול להיות נשלט מבחוץ (כדי שהקופי שמסביב יתחלף יחד איתו) או פנימי.
     const [modeInternal, setModeInternal] = useState<Mode>('chat');
@@ -410,12 +372,15 @@ export const AgentLoop: React.FC<{
     // ניקוי הקשר-האודיו ביציאה מהרכיב.
     useEffect(() => () => { const a = audioRef.current; if (a) void a.close().catch(() => undefined); }, []);
 
-    const switchMode = (m: Mode) => {
-        if (onModeChange) onModeChange(m); else setModeInternal(m);
-        setStep(-1); setRunning(false);
-    };
     // ההקשר-אודיו נוצר/מתחדש כאן, בתוך מחוות-המשתמש (לחיצה), כדי לעמוד במדיניות ה-autoplay.
     const run = () => { if (!reduce) ensureAudio(); setStep(0); setRunning(true); setRunId((n) => n + 1); };
+    // לחיצה על טוגל המצב (Chat/Agent) מחליפה מצב *ומריצה* מיד את הסבב שלו, בלי צורך
+    // בלחיצה נפרדת על "הריצו". הלחיצה עצמה היא מחוות-משתמש, ולכן run() רשאי לאתחל אודיו.
+    // כפתור ההרצה בלב-המנוע נשאר לריצה-חוזרת (replay) בלי החלפת מצב.
+    const switchMode = (m: Mode) => {
+        if (onModeChange) onModeChange(m); else setModeInternal(m);
+        run();
+    };
 
     // התחנה הפעילה נקבעת אך ורק לפי שלב הסבב (לחיצה על "הריצו"), לא לפי ריחוף עכבר.
     const activeId = step >= 0 ? stages[step].id : null;
@@ -538,19 +503,21 @@ export const AgentLoop: React.FC<{
                 יושבים בעמודות הצד; במובייל הכל נופל לטור אחד. */}
             <div>
             {/* ה-slot החי מעל המנוע. כפתור ההרצה עבר ללב-המנוע (Play במרכז), ולכן כאן נשאר
-                רק כרטיס-הבקשה/ההסבר. רחב יותר (max-w-2xl) כדי שהטקסט יגלוש לפחות שורות ויחסוך גובה. */}
-            <div className="mx-auto mb-4 w-full max-w-2xl">
+                רק כרטיס-הבקשה/ההסבר. רחב (max-w-4xl) כדי לנצל את רוחב הכרטיס החיצוני,
+                שהטקסט יגלוש לפחות שורות ויחסוך גובה. */}
+            <div className="mx-auto mb-4 w-full max-w-4xl">
                 <div className="w-full">
                     <LiveStatusSlot
                         reduce={reduce}
                         showClosing={showClosing}
                         activeStage={activeStage}
                         closing={closing}
-                        note={note}
                         hintPrompt={demo.hintPrompt}
                         body={body}
                         inputLabel={demo.input.label}
                         inputText={demo.input.text}
+                        answerLabel={demo.output.label}
+                        answerText={mode === 'chat' ? demo.output.chat : demo.output.agent}
                     />
                 </div>
             </div>
@@ -648,19 +615,6 @@ export const AgentLoop: React.FC<{
                     );
                 })}
             </div>
-
-                {/* כרטיס-התשובה (עיצוב יפני) יושב מתחת למנוע, ממורכז וברוחב קריא. */}
-                <div className="mx-auto mt-4 w-full max-w-sm">
-                    <WorldStatusStrip
-                        mode={mode}
-                        completed={completed}
-                        reduce={reduce}
-                        label={demo.output.label}
-                        chatValue={demo.output.chat}
-                        agentValue={demo.output.agent}
-                        pendingValue={demo.consoleEmpty}
-                    />
-                </div>
             </div>
         </div>
     );

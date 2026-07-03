@@ -79,6 +79,39 @@ export const introduction = {
         },
     },
 
+    // ── Bonus: adivina el siguiente token (NextTokenGuess). Probabilidades en NEXT_TOKEN_META. ──
+    nextToken: {
+        eyebrow: 'Bonus · Sé el motor',
+        title: 'Adivina el siguiente token',
+        subtitle: 'El motor no elige la verdad. Elige el token más probable según lo que aprendió. Intenta pensar como él.',
+        guessLabel: '¿Qué token viene ahora?',
+        yourPick: 'Tu elección',
+        modelTop: 'Elección del motor',
+        matchTitle: '¡Pensaste como el motor!',
+        missTitle: 'El motor prefirió',
+        otherLabel: 'Todo lo demás',
+        roundLabel: 'Ronda',
+        ofLabel: 'de',
+        nextRound: 'Siguiente ronda',
+        restart: 'Empezar de nuevo',
+        closing: 'Así exactamente, token tras token, se construye cada respuesta que da el motor.',
+        // El orden de los tokens coincide con el orden de probabilidades en NEXT_TOKEN_META.
+        rounds: [
+            {
+                context: 'Estado del envío',
+                prefix: 'El último estado del paquete fue:',
+                tokens: ['entregado', 'enviado', 'en clasificación', 'recogido', 'devuelto'],
+                insight: 'El motor no sabe qué pasó con tu paquete. Elige la continuación más común que vio en un contexto así.',
+            },
+            {
+                context: 'Llamada de soporte',
+                prefix: 'El paquete no llegó. Llamé, y el agente dijo que lo',
+                tokens: ['siente', 'lamenta', 'entiende', 'espera', 'celebra'],
+                insight: 'Ambos sabemos que nadie lo "celebra" de verdad. El contexto empujó al motor hacia la continuación cortés y común.',
+            },
+        ],
+    },
+
     // ── Título del mapa de estaciones y la pista de apertura ──
     roadmapHeading: {
         eyebrow: 'Abrimos el motor',

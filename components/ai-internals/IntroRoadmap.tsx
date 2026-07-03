@@ -14,16 +14,17 @@
 // הרכיב ניטרלי לתוכן: הטקסט מגיע מ-introContent (מוכן ל-i18n). כאן חיים רק
 // האייקונים, הצבעים, הפריסה והאנימציה.
 
-import React, { useId, useState } from 'react';
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Keyboard, Scissors, Hash, Network, ListOrdered, MessageCircle,
     Focus, Shuffle, Layers, Brain, BarChart3, Percent, GitBranch, Repeat,
     CornerDownLeft, ChevronDown,
 } from 'lucide-react';
-import { ACCENTS } from './accents';
+import { ACCENTS, type AccentStyle } from './accents';
 import type { Accent } from './types';
-import { StationViz } from './IntroStationViz';
+import { StationViz, STATION_PALETTE, STATION_RGB, haptic } from './IntroStationViz';
+import { Mentor, type MentorAccent } from './Mentor';
 import { useT } from '@/i18n/useT';
 import type {
     RoadmapStation, RoadmapZone, RoadmapZoneId,
@@ -41,24 +42,8 @@ const ZONE_ACCENT: Record<RoadmapZoneId, Accent> = {
     D: 'purple',
 };
 
-// צבע ייחודי לכל תחנה: מסע ספקטרלי מהקלט (כחולים קרים) דרך העיבוד (סגולים)
-// אל הפלט (חמים), ועד הסיום (ירוק). הצבע מזהה את התחנה בכרטיס ובסצנה החיה.
-const STATION_ACCENT: Record<string, Accent> = {
-    request: 'cyan',
-    tokenize: 'sky',
-    ids: 'teal',
-    embedding: 'blue',
-    position: 'indigo',
-    context: 'violet',
-    attention: 'purple',
-    mix: 'fuchsia',
-    layers: 'pink',
-    state: 'rose',
-    logits: 'orange',
-    softmax: 'amber',
-    decoding: 'lime',
-    loop: 'emerald',
-};
+// צבע ייחודי ואקזוטי לכל תחנה מגיע מ-STATION_PALETTE (IntroStationViz), כדי
+// שהכרטיס והסצנה החיה יחלקו את אותו גוון. הצבע מזהה את התחנה לאורך כל המפה.
 
 // אייקון לכל תחנה לפי id. רמז ויזואלי בלבד, לא ניתן לתרגום ולכן נשמר כאן.
 const STATION_ICON: Record<string, React.ReactNode> = {
@@ -79,17 +64,28 @@ const STATION_ICON: Record<string, React.ReactNode> = {
 };
 
 /* ── כרטיס תחנה בודד (disclosure) ── */
-function StationCard({ station, n, accent, reduce, roadmapLabels, defaultOpen = false }: { station: RoadmapStation; n: number; accent: Accent; reduce: boolean; roadmapLabels: RoadmapLabels; defaultOpen?: boolean }) {
-    const [open, setOpen] = useState(defaultOpen);
+// open/onToggle מנוהלים מרמת המפה (אקורדיון מונחה-גלילה, אחד פתוח בכל רגע).
+// registerRef רושם את שורש הכרטיס אצל ה-IntersectionObserver של המפה.
+function StationCard({ station, n, a, reduce, roadmapLabels, open, candidate, onToggle, registerRef }: { station: RoadmapStation; n: number; a: AccentStyle; reduce: boolean; roadmapLabels: RoadmapLabels; open: boolean; candidate: boolean; onToggle: () => void; registerRef: (id: string, el: HTMLElement | null) => void }) {
     const panelId = useId();
-    const a = ACCENTS[accent];
     const isLoop = station.id === 'loop';
+    const setRef = useCallback((el: HTMLDivElement | null) => registerRef(station.id, el), [registerRef, station.id]);
 
     return (
-        <div className={`overflow-hidden rounded-2xl border ${a.border} ${a.bgSoft}`}>
+        <div ref={setRef} data-station-id={station.id} className={`relative overflow-hidden rounded-2xl border ${a.border} ${a.bgSoft} transition-shadow duration-500 ${open ? a.glow : candidate ? `ring-1 ${a.ringSoft}` : ''}`}>
+            {/* פס-שדרה צבעוני בקצה-ההתחלה: "נטען" עמום כשהכרטיס מכוון בגלילה (candidate),
+                ונדלק במלואו כשהוא נפתח - כך רואים אילו כרטיס עומד להיפתח. */}
+            <motion.span
+                aria-hidden
+                className={`pointer-events-none absolute inset-y-0 start-0 w-1 ${a.solid}`}
+                initial={false}
+                animate={{ scaleY: open ? 1 : candidate ? 0.5 : 0, opacity: open ? 1 : candidate ? 0.45 : 0 }}
+                transition={reduce ? { duration: 0 } : { duration: 0.35, ease: 'easeOut' }}
+                style={{ originY: 0 }}
+            />
             <button
                 type="button"
-                onClick={() => setOpen((o) => !o)}
+                onClick={onToggle}
                 aria-expanded={open}
                 aria-controls={panelId}
                 className="flex w-full items-start gap-3.5 p-3.5 text-start transition-colors hover:bg-white/[0.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-900 md:p-4"
@@ -162,7 +158,7 @@ function StationCard({ station, n, accent, reduce, roadmapLabels, defaultOpen = 
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={reduce ? { duration: 0 } : { duration: 0.3, delay: 0.06 }}
                                 >
-                                    <StationViz kind={station.viz} accent={accent} reduce={reduce} />
+                                    <StationViz kind={station.viz} a={a} reduce={reduce} />
                                 </motion.div>
                             )}
                         </div>
@@ -179,18 +175,158 @@ interface IntroRoadmapProps {
     reduce: boolean;
     /** כיוון הכתיבה הפעיל. נקבע בעמוד מ-useT, לא מקובע ב-rtl. */
     dir: Direction;
-    /** מזהה תחנה שתיפתח כברירת מחדל, כדי שהלומד יראה מיד שהכרטיסים מכילים עומק. */
-    defaultOpenId?: string;
+    /** משפט מנטור-המדריך שגולש לאורך המפה אל התחנה הפתוחה (xl+). ללא טקסט - אין מנטור. */
+    mentorLine?: string;
+    /** רוחב מנטור-המדריך בפיקסלים. */
+    mentorWidth?: number;
 }
 
-export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, reduce, dir, defaultOpenId }) => {
+export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, reduce, dir, mentorLine, mentorWidth = 425 }) => {
     // תוויות מסגרת קצרות (אזור / הצצה / תג הלולאה) מהמילון.
-    const roadmapLabels = useT().t.behindAi.introVisuals.roadmap;
+    const introVisuals = useT().t.behindAi.introVisuals;
+    const roadmapLabels = introVisuals.roadmap;
+    // משפט-מנטור קצר לכל תחנה (מוסיף זווית מעבר להסבר שעל הכרטיס). ברירת מחדל:
+    // כשאין תחנה פתוחה, המנטור אומר את משפט הליווי הכללי (mentorLine).
+    const mentorHints = introVisuals.viz.mentorHints as Record<string, string>;
     // מספור רץ ורציף 1..N על פני כל האזורים (סדר המערך = סדר המסלול).
     const indexById = new Map(stations.map((s, i) => [s.id, i]));
 
+    // ── אקורדיון מונחה-גלילה ──────────────────────────────────────────────────
+    // ── "התייצבות מגנטית" בגלילה ────────────────────────────────────────────────
+    // הבעיה עם פתיחה-על-חצייה: גלילה ממשיכה מדפדפת בין כרטיסים לפני שמישהו נפתח.
+    // הפתרון: בזמן גלילה מסמנים "מועמד" (הכרטיס הכי קרוב למרכז) ומדליקים לו רמז
+    // עדין, אבל פותחים אותו רק כשמתייצבים עליו - או כשהגלילה נעצרת (idle), או
+    // כשהוא נשאר במרכז מספיק זמן (dwell). כרטיס שנפתח מוחזק לפחות 700ms כדי לתת
+    // זמן קריאה. כך גלילה מהירה רק "בוחרת יעד", ולא מדפדפת.
+    const [openId, setOpenId] = useState<string | null>(null);
+    const [candidateId, setCandidateId] = useState<string | null>(null);
+    const openIdRef = useRef<string | null>(null);
+    useEffect(() => { openIdRef.current = openId; }, [openId]);
+    const candidateRef = useRef<string | null>(null);
+    const cardEls = useRef<Map<string, HTMLElement>>(new Map());
+    const holdUntil = useRef(0);
+
+    const registerRef = useCallback((id: string, el: HTMLElement | null) => {
+        if (el) cardEls.current.set(id, el); else cardEls.current.delete(id);
+    }, []);
+
+    // פתיחת כרטיס מתוך הגלילה: מכבדת "החזקה מינימלית" (700ms) כדי שכל כרטיס יקבל
+    // רגע קריאה ולא ידופדף מיד על ידי הבא.
+    const commitOpen = useCallback((id: string | null) => {
+        if (!id || id === openIdRef.current) return;
+        if (Date.now() < holdUntil.current) return;
+        holdUntil.current = Date.now() + 700;
+        setOpenId(id);
+    }, []);
+
+    const toggle = useCallback((id: string) => {
+        haptic();
+        holdUntil.current = Date.now() + 700;
+        setOpenId((prev) => (prev === id ? null : id));
+    }, []);
+
+    useEffect(() => {
+        // ב-reduced-motion אין פתיחה אוטומטית מונחית-גלילה (הכרטיסים נשארים ידניים).
+        if (reduce || typeof window === 'undefined') return;
+        let raf = 0;
+        let dwell = 0;
+        let idle = 0;
+
+        // מוצא את הכרטיס הכי קרוב למרכז המסך; מסמן אותו כמועמד, ומתזמן פתיחה
+        // רק אם הוא יציב (dwell) - כלומר הגלילה האטה או נעצרה עליו.
+        const evaluate = () => {
+            const center = window.innerHeight / 2;
+            let best: string | null = null;
+            let bestDist = Infinity;
+            cardEls.current.forEach((el, id) => {
+                const r = el.getBoundingClientRect();
+                const d = Math.abs((r.top + r.bottom) / 2 - center);
+                if (d < bestDist) { bestDist = d; best = id; }
+            });
+            // מועמד רק אם הוא באמת קרוב למרכז, אחרת גלילה בקצה הסקשן לא תפתח כלום.
+            if (best && bestDist > window.innerHeight * 0.3) best = null;
+            setCandidateId(best);
+            // dwell מתאפס רק כשהמועמד מתחלף, כך שגם בגלילה איטית-רציפה כרטיס
+            // שנשאר במרכז ~220ms ייפתח (ולא רק כשעוצרים לגמרי).
+            if (best !== candidateRef.current) {
+                candidateRef.current = best;
+                window.clearTimeout(dwell);
+                if (best) dwell = window.setTimeout(() => commitOpen(candidateRef.current), 220);
+            }
+        };
+
+        const onScroll = () => {
+            // idle: כשמפסיקים לגלול, פותחים את המועמד הנוכחי (נחיתה על יעד) ומנקים
+            // את סימון-המועמד, כדי שהרמז העמום לא יישאר "תקוע" על כרטיס סגור.
+            window.clearTimeout(idle);
+            idle = window.setTimeout(() => {
+                commitOpen(candidateRef.current);
+                candidateRef.current = null;
+                setCandidateId(null);
+            }, 150);
+            if (raf) return;
+            raf = requestAnimationFrame(() => { raf = 0; evaluate(); });
+        };
+
+        // capture:true תופס גם גלילה של מיכל פנימי (הפריסה גוללת ב-container מקונן).
+        window.addEventListener('scroll', onScroll, { capture: true, passive: true });
+        return () => {
+            window.removeEventListener('scroll', onScroll, { capture: true });
+            if (raf) cancelAnimationFrame(raf);
+            window.clearTimeout(dwell);
+            window.clearTimeout(idle);
+        };
+    }, [reduce, commitOpen]);
+
+    // ── מנטור-המדריך שגולש לאורך המפה ─────────────────────────────────────────
+    // יעד המיקום: ראש בועת-הדיבור (מעל ראש המנטור) מתיישר לראש הכרטיס הפתוח. מודדים
+    // את הבועה בפועל (data-mentor-bubble) כדי לדייק בלי ניחוש. מודדים פעמיים: מוקדם
+    // לתגובה מהירה, ושוב אחרי שאנימציית ה"וווש" מתייצבת (scale=1) לדיוק מלא. ה-y
+    // בלתי תלוי גלילה כי הוא נמדד יחסית לשורש המפה.
+    const rootRef = useRef<HTMLDivElement>(null);
+    const mentorRef = useRef<HTMLDivElement>(null);
+    const [mentorY, setMentorY] = useState<number | null>(null);
+    useEffect(() => {
+        if (!openId) return;
+        const measure = () => {
+            const root = rootRef.current;
+            const card = cardEls.current.get(openId);
+            const wrap = mentorRef.current;
+            if (!root || !card || !wrap) return;
+            const rr = root.getBoundingClientRect();
+            const cr = card.getBoundingClientRect();
+            const bubble = wrap.querySelector('[data-mentor-bubble]') as HTMLElement | null;
+            if (bubble) {
+                // הפרש קבוע (בלתי תלוי ב-y הנוכחי): מיקום ראש הבועה יחסית לראש עוטף המנטור.
+                const wr = wrap.getBoundingClientRect();
+                const br = bubble.getBoundingClientRect();
+                setMentorY((cr.top - rr.top) - (br.top - wr.top));
+            } else {
+                // גיבוי: מרכוז אנכי על הכרטיס אם אין בועה.
+                setMentorY((cr.top + cr.bottom) / 2 - rr.top - wrap.offsetHeight / 2);
+            }
+        };
+        const t1 = window.setTimeout(measure, reduce ? 0 : 360);
+        const t2 = window.setTimeout(measure, reduce ? 0 : 760);
+        return () => { window.clearTimeout(t1); window.clearTimeout(t2); };
+    }, [openId, reduce]);
+
+    // בועת-הדיבור מקבלת את גוון התחנה הפתוחה: מסגרת והילה בצבע התחנה, ורקע כהה
+    // מוצלל באותו גוון (color-mix) כדי שהטקסט יישאר קריא. כשאין תחנה פתוחה -
+    // undefined, והמנטור חוזר לגוון ברירת המחדל (ציאן).
+    const mentorRgb = openId ? STATION_RGB[openId] : undefined;
+    const mentorAccent: MentorAccent | undefined = mentorRgb
+        ? {
+            base: mentorRgb,
+            shadow: mentorRgb,
+            // טקסט בגוון בהיר (pastel) של צבע התחנה, קריא על הרקע הכהה המוצלל.
+            text: `color-mix(in srgb, rgb(${mentorRgb}) 70%, white)`,
+            bubbleBg: `color-mix(in srgb, rgb(${mentorRgb}) 18%, #020617)`,
+        }
+        : undefined;
+
     return (
-        <div dir={dir} className="flex flex-col gap-4">
+        <div ref={rootRef} dir={dir} className="relative flex flex-col gap-4">
             {zones.map((zone, zi) => {
                 const acc = ZONE_ACCENT[zone.id];
                 const a = ACCENTS[acc];
@@ -226,10 +362,13 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                                         key={station.id}
                                         station={station}
                                         n={(indexById.get(station.id) ?? 0) + 1}
-                                        accent={STATION_ACCENT[station.id] ?? acc}
+                                        a={STATION_PALETTE[station.id] ?? ACCENTS[acc]}
                                         reduce={reduce}
                                         roadmapLabels={roadmapLabels}
-                                        defaultOpen={station.id === defaultOpenId}
+                                        open={openId === station.id}
+                                        candidate={candidateId === station.id && openId !== station.id}
+                                        onToggle={() => toggle(station.id)}
+                                        registerRef={registerRef}
                                     />
                                 ))}
                             </div>
@@ -246,6 +385,33 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                     </React.Fragment>
                 );
             })}
+
+            {/* מנטור-המדריך: גולש אל הכרטיס הפתוח (xl+ בלבד, דקורטיבי). ב-LTR מהופך
+                אופקית כדי לפנות אל התוכן. float כבוי כדי שהגלישה תהיה התנועה היחידה. */}
+            {mentorLine && (
+                <motion.div
+                    ref={mentorRef}
+                    aria-hidden
+                    className={`pointer-events-none absolute top-0 z-20 hidden xl:block ${dir === 'rtl' ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}
+                    animate={reduce
+                        ? { y: mentorY ?? 0 }
+                        : { y: mentorY ?? 0, scale: mentorY == null ? 1 : [1, 0.82, 1] }}
+                    transition={reduce
+                        ? { duration: 0 }
+                        : { y: { type: 'spring', stiffness: 90, damping: 16 }, scale: { duration: 0.6, times: [0, 0.5, 1], ease: 'easeInOut' } }}
+                >
+                    <Mentor
+                        pose="mapNavigator"
+                        line={(openId ? mentorHints[openId] : undefined) ?? mentorLine}
+                        width={mentorWidth}
+                        flip={dir === 'ltr'}
+                        float={false}
+                        accent={mentorAccent}
+                        bubbleWidthClass="max-w-xs"
+                        bubbleTextClass="text-base leading-snug"
+                    />
+                </motion.div>
+            )}
         </div>
     );
 };

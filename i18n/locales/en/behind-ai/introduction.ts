@@ -79,6 +79,39 @@ export const introduction = {
         },
     },
 
+    // ── Bonus: guess the next token (NextTokenGuess). Probabilities in NEXT_TOKEN_META. ──
+    nextToken: {
+        eyebrow: 'Bonus · Be the engine',
+        title: 'Guess the next token',
+        subtitle: 'The engine does not pick the truth. It picks the most likely token from what it learned. Try to think like it.',
+        guessLabel: 'Which token comes next?',
+        yourPick: 'Your guess',
+        modelTop: "Engine's pick",
+        matchTitle: 'You thought like the engine!',
+        missTitle: 'The engine preferred',
+        otherLabel: 'All the rest',
+        roundLabel: 'Round',
+        ofLabel: 'of',
+        nextRound: 'Next round',
+        restart: 'Start over',
+        closing: 'Exactly like this, token after token, every answer the engine gives is built.',
+        // Token order matches the probability order in NEXT_TOKEN_META.
+        rounds: [
+            {
+                context: 'Shipment status',
+                prefix: "The package's last status was:",
+                tokens: ['delivered', 'shipped', 'processing', 'collected', 'returned'],
+                insight: 'The engine does not know what happened to your package. It picks the most common continuation it saw in a context like this.',
+            },
+            {
+                context: 'Support call',
+                prefix: 'The package never arrived. I called, and the agent said he was so',
+                tokens: ['sorry', 'sad', 'worried', 'upset', 'glad'],
+                insight: 'We both know nobody is truly "glad" here. The context pushed the engine toward the polite, common continuation.',
+            },
+        ],
+    },
+
     // ── Station map heading and the open hint ──
     roadmapHeading: {
         eyebrow: 'Opening the engine',

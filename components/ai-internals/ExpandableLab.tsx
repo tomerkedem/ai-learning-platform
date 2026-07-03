@@ -22,6 +22,10 @@ interface ExpandableLabProps {
     title?: string;
 }
 
+// מאפשר לילדים לדעת אם הם מוצגים כרגע במסך מלא, כדי לסדר את הפריסה אחרת (רוחב,
+// מספר עמודות, גדלים). ברירת מחדל false (תצוגה רגילה). ילדים שלא צורכים - מתעלמים.
+export const ExpandableLabContext = React.createContext(false);
+
 export const ExpandableLab: React.FC<ExpandableLabProps> = ({ children, title }) => {
     const { t, dir } = useT();
     const z = t.behindAi.aiInternals.labZoom;
@@ -63,7 +67,7 @@ export const ExpandableLab: React.FC<ExpandableLabProps> = ({ children, title })
         <div dir={dir}>
             {/* שורה קטנה מעל המעבדה עם כפתור ההגדלה, מיושרת לקצה, בלי לדרוס תוכן */}
             <div className="mb-2 flex justify-end">{button(true)}</div>
-            {!expanded && children}
+            {!expanded && <ExpandableLabContext.Provider value={false}>{children}</ExpandableLabContext.Provider>}
 
             {/* מסך מלא: Portal אל body, מעל הכל */}
             {expanded && mounted &&
@@ -74,7 +78,9 @@ export const ExpandableLab: React.FC<ExpandableLabProps> = ({ children, title })
                             {button(false)}
                         </div>
                         <div className="min-h-0 flex-1 overflow-auto p-3 sm:p-5">
-                            <div className="mx-auto max-w-6xl">{children}</div>
+                            <div className="mx-auto max-w-6xl">
+                                <ExpandableLabContext.Provider value={true}>{children}</ExpandableLabContext.Provider>
+                            </div>
                         </div>
                     </div>,
                     document.body,
