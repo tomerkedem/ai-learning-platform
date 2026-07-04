@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Link2, MousePointerClick, FlaskConical, Lightbulb, ScanSearch, Lock, CheckCircle2, XCircle } from 'lucide-react';
+import { Link2, MousePointerClick, FlaskConical, Lightbulb, ScanSearch, Lock, CheckCircle2, XCircle, Sparkles } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { ChapterQuiz } from '../ChapterQuiz';
@@ -30,6 +30,30 @@ const COPY = {
         titleHighlight: 'אבל לא כל מילה חשובה באותה מידה',
         lede:
             'המשפט כולו נמצא מול המודל בבת אחת. אז למה הוא לא מתייחס לכל המילים בעוצמה זהה? בפרק הזה נגלה איך המודל מחליט, בכל רגע, אילו חלקים בהקשר חשובים לו עכשיו. המנגנון הזה נקרא Attention.',
+    },
+    primer: {
+        eyebrow: 'מה זה Attention',
+        title: 'רגע לפני המעבדה: מה זה Attention?',
+        lead:
+            'לפני שנתחיל לשחק עם המשפט, בואו נבין מה בעצם עושה מנגנון הקשב. כשהמודל קורא משפט, הוא לא מתייחס לכל המילים בעוצמה זהה. בכל רגע הוא שוקל אילו חלקים בטקסט קשורים זה לזה עכשיו, וכמה חזק. זה כל הרעיון של Attention.',
+        points: [
+            {
+                title: 'יחסים, לא מילה אחת חשובה',
+                body: 'הקשב לא בוחר מילה אחת מנצחת ונצמד אליה. הוא שואל, לכל חלק שהוא מעבד, אילו חלקים אחרים חשובים לו עכשיו. לכן החשיבות אינה תכונה קבועה של מילה, אלא נובעת מהקשר בין החלקים.',
+            },
+            {
+                title: 'המתח שבמשפט שלנו',
+                body: 'במשפט "החבילה סומנה כנמסרה, אבל הלקוח אומר שלא קיבל אותה", העיקר הוא לא מילה בודדת אלא המתח בין "נמסרה" לבין "לא קיבל". שם הקשב צריך להיות חזק, כי זו הסתירה שהתשובה חייבת לטפל בה.',
+            },
+            {
+                title: 'מילים קטנות שמזיזות את הקשר',
+                body: 'מילים כמו "אבל", שלילה ("לא"), תנאים ("רק אם"), חריגים וכינויים ("אותה") משנים אילו קשרים נעשים חשובים. שינוי קטן כזה יכול להזיז לגמרי את מוקד הקשב.',
+            },
+            {
+                title: 'מה Attention הוא לא',
+                body: 'הקשב הוא לא תודעה ולא הבנה אנושית. אין למודל רגע של "הבנתי". והוא גם לא בדיקת אמת: משקל קשב גבוה על "נמסרה" לא אומר שהחבילה באמת נמסרה, אלא רק שהמילה חשובה לעיבוד ההקשר.',
+            },
+        ],
     },
     lab: {
         title: 'שנו את המשפט, וראו מי חשוב עכשיו',
@@ -152,7 +176,12 @@ export default function BehindTheScenesChapter6() {
     // ── דוק האזנה מודרכת: מקטעי הקראה יציבים בלבד. לא נכללים: ניחוש, מצב חי של
     // המעבדה, כפתורים, מנטורים וחידון. הפרק בעברית בלבד, לכן שפת הדיבור נעולה ל-he
     // כדי שההקראה תמיד תתאים לתוכן, ללא תלות בשפת הממשק. ──
+    // טקסט ההסבר "רגע לפני המעבדה": כותרת + פתיח + כל הנקודות. משמש גם את הכפתור
+    // הנקודתי בתוך הסקשן וגם את מקטע הדוק, כדי לשמור מקור אחד.
+    const primerText = `${COPY.primer.title}. ${COPY.primer.lead} ${COPY.primer.points.map((p) => `${p.title}. ${p.body}`).join(' ')}`;
+
     const sHero: ReadAloudSegment = { id: 'hero', label: COPY.hero.titleHighlight, text: `${COPY.hero.titleLead} ${COPY.hero.titleHighlight}. ${COPY.hero.lede}` };
+    const sPrimer: ReadAloudSegment = { id: 'primer', label: COPY.primer.title, text: primerText };
     const sLab: ReadAloudSegment = { id: 'lab', label: COPY.lab.title, text: `${COPY.lab.title}. ${COPY.lab.intro}` };
     const sWow: ReadAloudSegment = { id: 'wow', label: COPY.wow.title, text: `${COPY.wow.title}. ${COPY.wow.lead} ${COPY.wow.body}` };
     const sEveryday: ReadAloudSegment = { id: 'everyday', label: COPY.everyday.title, text: `${COPY.everyday.title}. ${COPY.everyday.body}` };
@@ -163,9 +192,9 @@ export default function BehindTheScenesChapter6() {
     const sCaveat: ReadAloudSegment = { id: 'caveat', label: COPY.practical.title, text: COPY.practical.caveat };
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
-        short: [sHero, sLab, sPractical, sCaveat],
-        regular: [sHero, sLab, sWow, sMistake, sPractical, sCaveat],
-        full: [sHero, sLab, sWow, sEveryday, sMistake, sQkv, sLock, sPractical, sCaveat],
+        short: [sHero, sPrimer, sPractical, sCaveat],
+        regular: [sHero, sPrimer, sLab, sWow, sMistake, sPractical, sCaveat],
+        full: [sHero, sPrimer, sLab, sWow, sEveryday, sMistake, sQkv, sLock, sPractical, sCaveat],
     };
 
     return (
@@ -250,6 +279,37 @@ export default function BehindTheScenesChapter6() {
             {/* ══════════ ניחוש לפני הסבר: ארבע השערות על Attention ══════════ */}
             <section className="mt-12 text-right" dir="rtl">
                 <AttentionGuess />
+            </section>
+
+            {/* ══════════ רגע לפני המעבדה: הסבר Attention ══════════ */}
+            {/* חוליית ההסבר בין הניחוש למעבדה: מבססת מה זה קשב לפני שנוגעים במשפט, כדי
+                שהמעבר מהניחוש למעבדה לא יהיה חד מדי. */}
+            <section className="mt-12 text-right" dir="rtl">
+                <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
+                    <div className="mb-4 flex items-start justify-between gap-2.5">
+                        <div>
+                            <span className="mb-2 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-300">
+                                <Sparkles size={14} /> {COPY.primer.eyebrow}
+                            </span>
+                            <h3 className="text-xl font-black text-white md:text-2xl">{COPY.primer.title}</h3>
+                        </div>
+                        <SpeakButton text={primerText} />
+                    </div>
+
+                    <p className="text-[15px] leading-relaxed text-slate-300 md:text-base">{COPY.primer.lead}</p>
+
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                        {COPY.primer.points.map((pt) => (
+                            <div key={pt.title} className="rounded-2xl border border-slate-700/50 bg-slate-950/30 p-4">
+                                <div className="mb-1.5 flex items-center gap-2">
+                                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-violet-400" />
+                                    <div className="text-sm font-bold text-slate-100">{pt.title}</div>
+                                </div>
+                                <p className="text-[15px] leading-relaxed text-slate-300">{pt.body}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </section>
 
             {/* ══════════ מעבדת הקשב ══════════ */}
