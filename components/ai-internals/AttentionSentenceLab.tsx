@@ -116,9 +116,9 @@ export const AttentionSentenceLab: React.FC<AttentionSentenceLabProps> = ({ data
 
             {/* מד עוצמת הקשר בין שני החלקים המרכזיים */}
             <div className="mt-5 rounded-xl border border-slate-700/50 bg-slate-950/30 p-3.5">
-                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                    <span className="flex items-center gap-1.5 text-[13px] font-bold text-slate-300">
-                        <ArrowLeftRight size={14} className="text-violet-300" />
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+                    <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] font-bold text-slate-300">
+                        <ArrowLeftRight size={14} className="shrink-0 text-violet-300" />
                         {data.relationLabel}
                         <span className="text-slate-100">&quot;{v.tokens[pairA]}&quot;</span>
                         <span className="text-slate-500">↔</span>
