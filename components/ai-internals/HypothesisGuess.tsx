@@ -13,9 +13,9 @@
 // נגישות: כל כרטיס הוא <button> עם aria-pressed, תווית מלאה לקורא-מסך, תמיכת
 // מקלדת מובנית וטבעת פוקוס גלויה. reduced-motion: בלי זוהר מונפש, רק מעבר מיידי.
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HelpCircle, Eye, Lock, Database, Check, CheckCircle2 } from 'lucide-react';
+import { HelpCircle, Eye, Lock, Database, Check } from 'lucide-react';
 import { GuessInvite, GuessVerdict } from './GuessVerdict';
 import { SpeakButton } from './SpeakButton';
 import { ExpandableLabContext } from './ExpandableLab';
@@ -98,19 +98,10 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
     const [chosenId, setChosenId] = useState<string | null>(null);
     const [revealed, setRevealed] = useState(false); // נחשף ההסבר המדויק אחרי בחירה שגויה
     const [bonusAccepted, setBonusAccepted] = useState(false); // הבונוס נפתח רק אחרי שהלומד מאשר
-    const [bannerVisible, setBannerVisible] = useState(true); // באנר האישור מתפוגג אחרי 5 שניות
 
     const chosen = content.hypotheses.find((h) => h.id === chosenId) ?? null;
     const chosenCorrect = !!chosen?.correct;
     const correctCard = content.hypotheses.find((h) => h.correct);
-
-    // אחרי אישור הבונוס באנר "נכון מאוד" מילא את תפקידו: הוא נעלם אחרי 5 שניות ומשאיר את הבונוס לבדו.
-    // איפוס הבאנר קורה בבחירה עצמה, כאן רק מתוזמן ההיעלמות.
-    useEffect(() => {
-        if (!bonusAccepted) return;
-        const id = setTimeout(() => setBannerVisible(false), 5000);
-        return () => clearTimeout(id);
-    }, [bonusAccepted]);
 
     const cardStateFor = (h: Hypothesis): CardState => {
         if (!chosen) return 'idle';
@@ -119,7 +110,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
         return 'dim';
     };
 
-    const reset = () => { setChosenId(null); setRevealed(false); setBannerVisible(true); setBonusAccepted(false); };
+    const reset = () => { setChosenId(null); setRevealed(false); setBonusAccepted(false); };
 
     return (
         <div
@@ -142,25 +133,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                         exit={{ opacity: 0 }}
                         transition={reduce ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                     >
-                        {/* אישור הצלחה קומפקטי, במקום כרטיס-ההכרעה הגדול. מתפוגג אחרי 5 שניות ומשאיר את הבונוס לבדו. */}
-                        <AnimatePresence initial={false}>
-                            {bannerVisible && (
-                                <motion.div
-                                    key="banner"
-                                    initial={false}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                                    transition={reduce ? { duration: 0 } : { duration: 0.4, ease: 'easeOut' }}
-                                    className="overflow-hidden"
-                                >
-                                    <div className="mb-5 flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-2xl border border-emerald-400/40 bg-emerald-900/15 px-4 py-3">
-                                        <CheckCircle2 size={20} className="shrink-0 text-emerald-300" aria-hidden />
-                                        <span className="text-lg font-black text-emerald-100 md:text-xl">{content.correctTitle}</span>
-                                        <span className="text-sm font-bold text-emerald-200/90 md:text-base">{content.correctLead}</span>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        {/* הבונוס לבדו: אישור ההצלחה כבר הוצג בכרטיס עם כפתור הבונוס, בלי לחזור עליו כאן. */}
                         {bonus}
                     </motion.div>
                 ) : (
@@ -186,7 +159,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                             <div key={h.id} className="relative">
                             <motion.button
                                 type="button"
-                                onClick={() => { setChosenId(h.id); setRevealed(false); setBannerVisible(true); setBonusAccepted(false); }}
+                                onClick={() => { setChosenId(h.id); setRevealed(false); setBonusAccepted(false); }}
                                 aria-pressed={selected}
                                 aria-label={`${h.title}. ${h.concept}`}
                                 whileHover={reduce ? undefined : { scale: 1.015 }}
