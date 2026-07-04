@@ -19,6 +19,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Volume2, Square } from 'lucide-react';
 import { useT } from '@/i18n/useT';
+import type { Locale } from '@/i18n/config';
 import { LOCALE_SPEECH_LANG } from './readAloudLang';
 import { READ_ALOUD_EXCLUSIVE_EVENT } from './useReadAloud';
 
@@ -30,11 +31,19 @@ export interface SpeakButtonProps {
     text: string;
     /** עיצוב מיקום חיצוני (למשל absolute בפינת כרטיס תשובה). */
     className?: string;
+    /**
+     * שפת הדיבור לטקסט הזה, כשהיא שונה משפת הממשק. שימושי בפרק שהתוכן שלו עדיין
+     * fallback לעברית בזמן שהממשק בשפה אחרת: מעבירים כאן את contentLocale כדי
+     * שההקראה תדבר בשפת התוכן, לא בשפת הממשק. ברירת מחדל: שפת הממשק הפעילה.
+     */
+    speechLocale?: Locale;
 }
 
-export const SpeakButton: React.FC<SpeakButtonProps> = ({ text, className = '' }) => {
+export const SpeakButton: React.FC<SpeakButtonProps> = ({ text, className = '', speechLocale }) => {
     const { t, locale } = useT();
     const labels = t.behindAi.aiInternals.readAloud;
+    // שפת הדיבור ובחירת הקול נגזרות מ-speechLocale אם הועבר, אחרת משפת הממשק.
+    const effectiveLocale = speechLocale ?? locale;
 
     const [phase, setPhase] = useState<'boot' | 'ready' | 'unsupported'>('boot');
     const [speaking, setSpeaking] = useState(false);
@@ -84,7 +93,7 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({ text, className = '' }
         const synth = window.speechSynthesis;
         synth.cancel();
 
-        const lang = LOCALE_SPEECH_LANG[locale];
+        const lang = LOCALE_SPEECH_LANG[effectiveLocale];
         const utt = new SpeechSynthesisUtterance(text);
         utt.lang = lang;
 
@@ -93,7 +102,7 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({ text, className = '' }
         const matched = synth.getVoices().filter((v) => v.lang.toLowerCase().startsWith(base));
         let stored: string | null = null;
         try {
-            stored = window.localStorage.getItem(`bts-readaloud-voice:${locale}`);
+            stored = window.localStorage.getItem(`bts-readaloud-voice:${effectiveLocale}`);
         } catch {
             stored = null;
         }

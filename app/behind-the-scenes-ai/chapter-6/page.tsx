@@ -5,135 +5,55 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Link2, MousePointerClick, FlaskConical, Lightbulb, ScanSearch, Lock, CheckCircle2, XCircle, Sparkles } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
-import { ChapterQuiz } from '../ChapterQuiz';
+import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
+import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
+import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 
-import { AttentionGuess } from '@/components/ai-internals/AttentionGuess';
+import { AttentionGuess, type AttentionGuessCard, type AttentionGuessContent, type Cue, type StatusTone } from '@/components/ai-internals/AttentionGuess';
 import { AttentionSentenceLab } from '@/components/ai-internals/AttentionSentenceLab';
-import { Mentor } from '@/components/ai-internals/Mentor';
+import { Mentor, type MentorPose } from '@/components/ai-internals/Mentor';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
 import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import { useT } from '@/i18n/useT';
+import type { AttentionQuizId } from '@/i18n/locales/he/behind-ai/attentionQuiz';
 
-/** הפרומפט העוגן של הפרק. */
-const PROMPT = 'החבילה סומנה כנמסרה, אבל הלקוח אומר שלא קיבל אותה.';
+/* ════════════════════ מטא-דאטה מבני של כרטיסי הניחוש (לא ניתן לתרגום) ════════════════════ */
+// הטקסט מגיע מהמילון (guess.cards[id]); כאן רק המבנה: אייקון (cue), גוון הסטטוס
+// ופוזת המנטור, שאינם תלויי שפה. הכרטיס הנכון הוא "dynamic".
+type GuessCardId = 'one-word' | 'highlight' | 'dynamic' | 'factcheck';
+const GUESS_CARD_META: { id: GuessCardId; cue: Cue; tone: StatusTone; pose: MentorPose }[] = [
+    { id: 'one-word', cue: 'spotlight', tone: 'partial', pose: 'think' },
+    { id: 'highlight', cue: 'highlighter', tone: 'common', pose: 'reassure' },
+    { id: 'dynamic', cue: 'nodes', tone: 'close', pose: 'correct' },
+    { id: 'factcheck', cue: 'factcheck', tone: 'layer', pose: 'headsup' },
+];
 
-/* ════════════════════════ תוכן הפרק ════════════════════════ */
-// הטקסט מרוכז כאן כדי שמנוע ההקראה והתצוגה יחלקו מקור אחד, ושהמעבר לרב-לשוני
-// בעתיד יהיה קל. הפרק כרגע בעברית בלבד, בהתאם לתוכנית הפרקים.
-const COPY = {
-    hero: {
-        titleLead: 'אותו משפט,',
-        titleHighlight: 'אבל לא כל מילה חשובה באותה מידה',
-        lede:
-            'המשפט כולו נמצא מול המודל בבת אחת. אז למה הוא לא מתייחס לכל המילים בעוצמה זהה? בפרק הזה נגלה איך המודל מחליט, בכל רגע, אילו חלקים בהקשר חשובים לו עכשיו. המנגנון הזה נקרא Attention.',
-    },
-    primer: {
-        eyebrow: 'מה זה Attention',
-        title: 'רגע לפני המעבדה: מה זה Attention?',
-        lead:
-            'לפני שנתחיל לשחק עם המשפט, בואו נבין מה בעצם עושה מנגנון הקשב. כשהמודל קורא משפט, הוא לא מתייחס לכל המילים בעוצמה זהה. בכל רגע הוא שוקל אילו חלקים בטקסט קשורים זה לזה עכשיו, וכמה חזק. זה כל הרעיון של Attention.',
-        points: [
-            {
-                title: 'יחסים, לא מילה אחת חשובה',
-                body: 'הקשב לא בוחר מילה אחת מנצחת ונצמד אליה. הוא שואל, לכל חלק שהוא מעבד, אילו חלקים אחרים חשובים לו עכשיו. לכן החשיבות אינה תכונה קבועה של מילה, אלא נובעת מהקשר בין החלקים.',
-            },
-            {
-                title: 'המתח שבמשפט שלנו',
-                body: 'במשפט "החבילה סומנה כנמסרה, אבל הלקוח אומר שלא קיבל אותה", העיקר הוא לא מילה בודדת אלא המתח בין "נמסרה" לבין "לא קיבל". שם הקשב צריך להיות חזק, כי זו הסתירה שהתשובה חייבת לטפל בה.',
-            },
-            {
-                title: 'מילים קטנות שמזיזות את הקשר',
-                body: 'מילים כמו "אבל", שלילה ("לא"), תנאים ("רק אם"), חריגים וכינויים ("אותה") משנים אילו קשרים נעשים חשובים. שינוי קטן כזה יכול להזיז לגמרי את מוקד הקשב.',
-            },
-            {
-                title: 'מה Attention הוא לא',
-                body: 'הקשב הוא לא תודעה ולא הבנה אנושית. אין למודל רגע של "הבנתי". והוא גם לא בדיקת אמת: משקל קשב גבוה על "נמסרה" לא אומר שהחבילה באמת נמסרה, אלא רק שהמילה חשובה לעיבוד ההקשר.',
-            },
-        ],
-    },
-    lab: {
-        title: 'שנו את המשפט, וראו מי חשוב עכשיו',
-        intro:
-            'תשובה טובה מתחילה מזה שהמודל שוקל נכון את הקשרים בין חלקי המשפט. שנו משהו קטן: הסירו את "אבל", החליפו את הסטטוס, או הפכו את השלילה, וראו איך מוקד הקשב והקשר בין החלקים זזים מיד.',
-    },
-    wow: {
-        title: 'הנקודה המפתיעה',
-        lead: 'אותו משפט. אותו מודל. אבל ברגע שמשנים מילה, חלק אחר במשפט מושך יותר משקל.',
-        body:
-            'אין מילה אחת שהיא "החשובה ביותר". החשיבות אינה תכונה קבועה של מילה, אלא תוצאה של הקשרים בתוך המשפט. וזה ההבדל בין רשימה קבועה של מילים מודגשות לבין מנגנון שמשקלל יחסים ומשתנה לפי מה שכתוב.',
-    },
-    everyday: {
-        title: 'רגע מהחיים',
-        body:
-            'כשאדם קורא "החבילה סומנה כנמסרה, אבל הלקוח אומר שלא קיבל אותה", הוא נעצר רגע ב"אבל". המילה הזו משנה איך קוראים את כל ההמשך. חשוב לזכור: המודל לא נעצר ולא מבין כמו אדם. אין לו רגע של "הבנה". מנגנון הקשב רק נותן לו דרך מתמטית לשקלל אילו חלקים בטקסט קשורים זה לזה חזק יותר, ולפי זה לערבב את המידע.',
-    },
-    mistake: {
-        wrongTitle: 'טעות נפוצה',
-        wrong:
-            '"Attention זה כשהמודל מסמן את המילים החשובות, ואז עונה לפיהן." לפי זה הקשב הוא מעין טוש מדגיש שמסמן פעם אחת מה חשוב.',
-        rightTitle: 'איך זה באמת עובד',
-        right:
-            'Attention הוא לא טוש מדגיש. הוא מנגנון של יחסים. בכל רגע הוא שואל, בעצם: כשאני מעבד את החלק הזה, אילו חלקים אחרים בהקשר צריכים להשפיע עליו הכי הרבה? התשובה משתנה לפי מה שכתוב במשפט.',
-    },
-    qkv: {
-        title: 'איך מנגנון היחסים עובד, בלי נוסחאות',
-        sub: 'Query · Key · Value',
-        body:
-            'כל מילה שולחת מעין שאלה: על מה כדאי לי להסתכל עכשיו? מילים אחרות חושפות אותות: איזה מידע אני מכילה? המודל מחשב אילו זוגות של שאלה ואות מתאימים חזק יותר, ואז מערבב את המידע לפי עוצמת ההתאמה. ככה המשמעות של כל מילה מתעדכנת לפי ההקשר שסביבה. זה כל הרעיון, בלי מתמטיקה.',
-    },
-    lock: {
-        title: 'נעילת הבנה',
-        trueLabel: 'אמת',
-        trueText: 'Attention לא אומר שמילה אחת תמיד חשובה. החשיבות משתנה לפי מה שכתוב במשפט ולפי הקשרים בתוכו.',
-        falseLabel: 'טעות',
-        falseText: '"המודל סימן את המילים החשובות ואז ענה."',
-        question: 'הנה הפרומפט שוב. כשהמודל מכין תשובה זהירה, איזה קשר חשוב במיוחד?',
-        options: [
-            'החבילה ⟵ סומנה',
-            'כנמסרה ⟵ שלא קיבל',
-            'הלקוח ⟵ אומר',
-            'סומנה ⟵ הלקוח',
-        ],
-        correctIndex: 1,
-        explanationLead: 'הקשר החזק הוא',
-        explanationPair: '"כנמסרה" מול "שלא קיבל"',
-        explanationRest:
-            '. העיקר הוא לא רק שחסרה חבילה, אלא הסתירה בין מה שהמערכת מסמנת לבין מה שהלקוח מדווח. שם הקשב צריך להיות חזק כדי שהתשובה לא תניח דבר שעוד לא נבדק.',
-    },
-    practical: {
-        title: 'תובנה מעשית',
-        lead: 'הקשב יודע לשקלל קשרים בתוך מה שכתבתם, אבל רק אם הקשרים באמת נמצאים שם.',
-        uses: [
-            'אם בפרומפט יש תנאי, חריג, סתירה או שלילה, כתבו אותם במפורש. מילים כמו "אבל", "לא" ו"רק אם" הן הסימנים שמכוונים את הקשב אל הקשר הנכון.',
-            'אם חשוב לכם קשר בין שני דברים, הצמידו אותם וכתבו בבירור למה כל כינוי מתייחס. אל תסמכו על כך שהמודל "יבין לבד" מה קשור למה.',
-        ],
-        caveat:
-            'וזכרו: משקל קשב גבוה על מילה לא אומר שהמידע נכון. Attention מחבר חלקי טקסט זה לזה, הוא לא בודק עובדות בעולם. לאימות צריך מקור חיצוני או כלי.',
-    },
-} as const;
-
-/* ════════════════════════ נעילת הבנה: שאלת אבחון ════════════════════════ */
+/* ════════════════════════ נעילת הבנה: התשובה הנכונה מבנית ════════════════════════ */
+const LOCK_CORRECT = 1;
 
 const DiagnosisQuestion: React.FC = () => {
+    const { t, dir } = useT();
+    const c6 = t.behindAi.attention;
+    const lock = c6.lock;
     const [choice, setChoice] = useState<number | null>(null);
     const answered = choice !== null;
-    const lock = COPY.lock;
+    const correct = choice === LOCK_CORRECT;
 
     return (
-        <div dir="rtl" className="text-right">
+        <div dir={dir} className="text-start">
             <div className="mb-3 flex items-center gap-2">
                 <p className="text-sm font-bold text-slate-200">{lock.question}</p>
-                <SpeakButton text={lock.question} />
+                <SpeakButton text={lock.question} speechLocale={c6.contentLocale} />
             </div>
-            <p className="mb-4 rounded-lg border border-slate-700/50 bg-slate-950/40 p-3 text-sm text-slate-300">{PROMPT}</p>
+            <p className="mb-4 rounded-lg border border-slate-700/50 bg-slate-950/40 p-3 text-sm text-slate-300">{c6.prompt}</p>
 
             <div className="grid gap-2 sm:grid-cols-2">
                 {lock.options.map((opt, i) => {
-                    const isCorrect = i === lock.correctIndex;
+                    const isCorrect = i === LOCK_CORRECT;
                     const isChosen = i === choice;
                     let cls = 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600';
                     if (answered && isCorrect) cls = 'border-emerald-400/70 bg-emerald-900/25 text-emerald-100';
@@ -145,7 +65,7 @@ const DiagnosisQuestion: React.FC = () => {
                             onClick={() => setChoice(i)}
                             className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-sm font-bold transition-colors ${cls}`}
                         >
-                            <span dir="rtl">{opt}</span>
+                            <span>{opt}</span>
                             {answered && isCorrect && <CheckCircle2 size={16} className="shrink-0 text-emerald-300" />}
                             {answered && isChosen && !isCorrect && <XCircle size={16} className="shrink-0 text-rose-300" />}
                         </button>
@@ -158,7 +78,9 @@ const DiagnosisQuestion: React.FC = () => {
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.25 }}
-                    className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-3 text-sm leading-relaxed text-slate-200"
+                    className={`mt-4 rounded-xl border p-3 text-sm leading-relaxed text-slate-200 ${
+                        correct ? 'border-emerald-500/30 bg-emerald-950/15' : 'border-rose-500/30 bg-rose-950/15'
+                    }`}
                 >
                     {lock.explanationLead} <span className="font-bold text-emerald-200">{lock.explanationPair}</span>
                     {lock.explanationRest}
@@ -169,32 +91,93 @@ const DiagnosisQuestion: React.FC = () => {
 };
 
 export default function BehindTheScenesChapter6() {
+    const { t, dir } = useT();
     const reduce = useReducedMotion();
-    const { t } = useT();
+    const isRtl = dir === 'rtl';
+    const c6 = t.behindAi.attention;
     const raLabels = t.behindAi.aiInternals.readAloud;
 
-    // ── דוק האזנה מודרכת: מקטעי הקראה יציבים בלבד. לא נכללים: ניחוש, מצב חי של
-    // המעבדה, כפתורים, מנטורים וחידון. הפרק בעברית בלבד, לכן שפת הדיבור נעולה ל-he
-    // כדי שההקראה תמיד תתאים לתוכן, ללא תלות בשפת הממשק. ──
-    // טקסט ההסבר "רגע לפני המעבדה": כותרת + פתיח + כל הנקודות. משמש גם את הכפתור
-    // הנקודתי בתוך הסקשן וגם את מקטע הדוק, כדי לשמור מקור אחד.
-    const primerText = `${COPY.primer.title}. ${COPY.primer.lead} ${COPY.primer.points.map((p) => `${p.title}. ${p.body}`).join(' ')}`;
+    // שפת ההקראה נגזרת מ-contentLocale של הפרק: כל עוד השפה היא fallback לעברית,
+    // ההקראה מדברת עברית ולא מנסה להקריא עברית בקול של שפת הממשק. הכיוון (RTL/LTR)
+    // של הפריסה מגיע מ-dir של שפת הממשק, כדי לאמת את מבנה ה-LTR/RTL.
+    const speechLocale = c6.contentLocale;
 
-    const sHero: ReadAloudSegment = { id: 'hero', label: COPY.hero.titleHighlight, text: `${COPY.hero.titleLead} ${COPY.hero.titleHighlight}. ${COPY.hero.lede}` };
-    const sPrimer: ReadAloudSegment = { id: 'primer', label: COPY.primer.title, text: primerText };
-    const sLab: ReadAloudSegment = { id: 'lab', label: COPY.lab.title, text: `${COPY.lab.title}. ${COPY.lab.intro}` };
-    const sWow: ReadAloudSegment = { id: 'wow', label: COPY.wow.title, text: `${COPY.wow.title}. ${COPY.wow.lead} ${COPY.wow.body}` };
-    const sEveryday: ReadAloudSegment = { id: 'everyday', label: COPY.everyday.title, text: `${COPY.everyday.title}. ${COPY.everyday.body}` };
-    const sMistake: ReadAloudSegment = { id: 'mistake', label: COPY.mistake.rightTitle, text: `${COPY.mistake.rightTitle}. ${COPY.mistake.right}` };
-    const sQkv: ReadAloudSegment = { id: 'qkv', label: COPY.qkv.title, text: `${COPY.qkv.title}. ${COPY.qkv.body}` };
-    const sLock: ReadAloudSegment = { id: 'lock', label: COPY.lock.title, text: COPY.lock.question };
-    const sPractical: ReadAloudSegment = { id: 'practical', label: COPY.practical.title, text: `${COPY.practical.title}. ${COPY.practical.lead} ${COPY.practical.uses.join(' ')}` };
-    const sCaveat: ReadAloudSegment = { id: 'caveat', label: COPY.practical.title, text: COPY.practical.caveat };
+    // ── ניחוש הפתיחה: תוכן + כרטיסים ממוזגים מהמילון עם המטא-דאטה המבני ──
+    const guessContent: AttentionGuessContent = {
+        eyebrow: c6.guess.eyebrow,
+        title: c6.guess.title,
+        subtitle: c6.guess.subtitle,
+        invite: c6.guess.invite,
+        getsRightLabel: c6.guess.getsRightLabel,
+        revealButton: c6.guess.revealButton,
+        resetButton: c6.guess.resetButton,
+        revealTitle: c6.guess.revealTitle,
+        revealCopy: c6.guess.revealCopy,
+        cta: c6.guess.cta,
+    };
+    const guessCards: AttentionGuessCard[] = GUESS_CARD_META.map((meta) => {
+        const card = c6.guess.cards[meta.id];
+        return {
+            id: meta.id,
+            cue: meta.cue,
+            statusTone: meta.tone,
+            mentorPose: meta.pose,
+            title: card.title,
+            desc: card.desc,
+            statusLabel: card.statusLabel,
+            getsRight: card.getsRight,
+            missesLabel: card.missesLabel,
+            misses: card.misses,
+            bridge: card.bridge,
+        };
+    });
+
+    // ── טקסט "רגע לפני המעבדה" להקראה: כותרת + פתיח + כל הנקודות. מקור אחד לכפתור ולדוק. ──
+    const primerText = `${c6.primer.title}. ${c6.primer.lead} ${c6.primer.points.map((p) => `${p.title}. ${p.body}`).join(' ')}`;
+
+    // ── דוק האזנה מודרכת: מקטעי הקראה יציבים בלבד. לא נכללים: ניחוש, מצב חי של
+    // המעבדה, כפתורים, מנטורים וחידון. התוכן נקרא בשפת contentLocale. ──
+    const sHero: ReadAloudSegment = { id: 'hero', label: c6.hero.titleHighlight, text: `${c6.hero.titleLead} ${c6.hero.titleHighlight}. ${c6.hero.lede}` };
+    const sPrimer: ReadAloudSegment = { id: 'primer', label: c6.primer.title, text: primerText };
+    const sLab: ReadAloudSegment = { id: 'lab', label: c6.sentenceLab.sectionTitle, text: `${c6.sentenceLab.sectionTitle}. ${c6.sentenceLab.sectionIntro}` };
+    const sWow: ReadAloudSegment = { id: 'wow', label: c6.wow.title, text: `${c6.wow.title}. ${c6.wow.lead} ${c6.wow.body}` };
+    const sEveryday: ReadAloudSegment = { id: 'everyday', label: c6.everyday.title, text: `${c6.everyday.title}. ${c6.everyday.body}` };
+    const sMistake: ReadAloudSegment = { id: 'mistake', label: c6.mistake.rightTitle, text: `${c6.mistake.rightTitle}. ${c6.mistake.right}` };
+    const sQkv: ReadAloudSegment = { id: 'qkv', label: c6.qkv.title, text: `${c6.qkv.title}. ${c6.qkv.body}` };
+    const sLock: ReadAloudSegment = { id: 'lock', label: c6.lock.title, text: c6.lock.question };
+    const sPractical: ReadAloudSegment = { id: 'practical', label: c6.practical.title, text: `${c6.practical.title}. ${c6.practical.lead} ${c6.practical.uses.join(' ')}` };
+    const sCaveat: ReadAloudSegment = { id: 'caveat', label: c6.practical.title, text: c6.practical.caveat };
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
         short: [sHero, sPrimer, sPractical, sCaveat],
         regular: [sHero, sPrimer, sLab, sWow, sMistake, sPractical, sCaveat],
         full: [sHero, sPrimer, sLab, sWow, sEveryday, sMistake, sQkv, sLock, sPractical, sCaveat],
+    };
+
+    // ── מבדק הפרק: המנגנון המשותף נשמר מ-quizData, וטקסט התצוגה ממוזג לפי מזהה. ──
+    const cq = t.behindAi.chapterQuiz;
+    const baseQuiz = behindAiChapterQuizzes[6];
+    const baseGetReviewLinks = baseQuiz.getReviewLinks;
+    const getReviewLinks = baseGetReviewLinks
+        ? (weakConcepts: string[]): ReviewLink[] =>
+              baseGetReviewLinks(weakConcepts).map((link) => {
+                  const match = link.href.match(/chapter-(\d+)/);
+                  const n = match ? Number(match[1]) : null;
+                  const name = n != null ? cq.chapterNames[n] : undefined;
+                  if (n == null || !name) return link;
+                  return { ...link, label: cq.reviewLinkLabel(n, name) };
+              })
+        : undefined;
+
+    const localizedQuiz = {
+        ...baseQuiz,
+        title: c6.quiz.title,
+        subtitle: c6.quiz.subtitle,
+        startLabel: c6.quiz.startLabel,
+        submitLabel: c6.quiz.submitLabel,
+        completedTitle: c6.quiz.completedTitle,
+        getReviewLinks,
+        questions: baseQuiz.questions.map((q) => ({ ...q, ...c6.quiz.byId[q.id as AttentionQuizId] })),
     };
 
     return (
@@ -206,8 +189,8 @@ export default function BehindTheScenesChapter6() {
                     initial={reduce ? false : { opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={reduce ? { duration: 0 } : { duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                    className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-right"
-                    dir="rtl"
+                    className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-start"
+                    dir={dir}
                 >
                     <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
                     <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-emerald-500/10 blur-[90px] rounded-full pointer-events-none" />
@@ -215,44 +198,45 @@ export default function BehindTheScenesChapter6() {
                     <div className="relative z-10">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
                             <Link2 size={14} className="text-violet-400" />
-                            <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">Behind the Scenes · 06 · Attention</span>
+                            <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300" dir="ltr">{c6.hero.badge}</span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
-                            {COPY.hero.titleLead}{' '}
-                            <span className="bg-gradient-to-l from-violet-400 via-fuchsia-400 to-emerald-400 bg-clip-text text-transparent">
-                                {COPY.hero.titleHighlight}
+                            {c6.hero.titleLead}{' '}
+                            <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-violet-400 via-fuchsia-400 to-emerald-400 bg-clip-text text-transparent`}>
+                                {c6.hero.titleHighlight}
                             </span>
                         </h1>
 
                         <div className="flex items-start gap-2.5 max-w-3xl">
-                            <p className="text-lg text-slate-300 leading-relaxed">{COPY.hero.lede}</p>
-                            <SpeakButton text={`${COPY.hero.titleLead} ${COPY.hero.titleHighlight}. ${COPY.hero.lede}`} className="mt-1" />
+                            <p className="text-lg text-slate-300 leading-relaxed">{c6.hero.lede}</p>
+                            <SpeakButton text={`${c6.hero.titleLead} ${c6.hero.titleHighlight}. ${c6.hero.lede}`} className="mt-1" speechLocale={speechLocale} />
                         </div>
 
                         <div className="mt-6 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4">
                             <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                                <ScanSearch size={13} className="text-violet-400" /> הפרומפט של הפרק
+                                <ScanSearch size={13} className="text-violet-400" /> {c6.hero.promptEyebrow}
                             </div>
-                            <p className="text-base font-bold text-slate-100">{PROMPT}</p>
+                            <p className="text-base font-bold text-slate-100">{c6.prompt}</p>
                         </div>
 
                         <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
                             <span className="inline-flex items-center gap-1.5">
-                                <MousePointerClick size={14} className="text-violet-400" /> שנו משהו במשפט
+                                <MousePointerClick size={14} className="text-violet-400" /> {c6.hero.chipEdit}
                             </span>
                             <span className="inline-flex items-center gap-1.5">
-                                <Link2 size={14} className="text-emerald-400" /> וראו לאן הקשב זז
+                                <Link2 size={14} className="text-emerald-400" /> {c6.hero.chipSee}
                             </span>
                         </div>
 
-                        {/* דוק ההאזנה המודרכת: אותו רכיב של המבוא ופרק 5, נעוץ למסילת הקצה. */}
-                        <FloatingReadAloud dir="rtl">
+                        {/* דוק ההאזנה המודרכת: אותו רכיב של המבוא ופרק 5. הכיוון לפי שפת הממשק,
+                            שפת הדיבור לפי contentLocale (עברית כל עוד השאר fallback). */}
+                        <FloatingReadAloud dir={dir}>
                             <ReadAloudControls
                                 segmentsByMode={readAloudByMode}
-                                lang={LOCALE_SPEECH_LANG.he}
-                                locale="he"
-                                dir="rtl"
+                                lang={LOCALE_SPEECH_LANG[speechLocale]}
+                                locale={speechLocale}
+                                dir={dir}
                                 labels={raLabels}
                                 reduce={!!reduce}
                                 compact
@@ -261,12 +245,12 @@ export default function BehindTheScenesChapter6() {
                     </div>
                 </motion.section>
 
-                {/* מנטור הירו: נכס ייעודי עם אלפא שקוף. בלי בועת דיבור, כדי שלא ישכפל את
-                    כותרת הפרק ולא יתחרה בה. מוצג רק מ-xl ומעלה. */}
-                <div className="pointer-events-none absolute top-1/2 left-full ml-3 2xl:ml-6 z-20 hidden w-[170px] -translate-y-1/2 xl:block">
+                {/* מנטור הירו: נכס ייעודי עם אלפא שקוף. ממוקם בצד החיצוני לפי כיוון הקריאה,
+                    בלי היפוך תמונה (העדפת מיקום-צד על פני שיקוף). מוצג רק מ-xl ומעלה. */}
+                <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[170px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
                     <motion.img
                         src="/assets/chapter-08-attention-mentor-hero-alpha.png"
-                        alt="המנטור של הלומדה"
+                        alt={c6.hero.mentorAlt}
                         initial={reduce ? false : { opacity: 0, scale: 0.94 }}
                         animate={reduce ? { opacity: 1 } : { opacity: 1, y: [0, -10, 0] }}
                         transition={reduce ? { duration: 0 } : { y: { repeat: Infinity, duration: 4, ease: 'easeInOut' }, opacity: { duration: 0.4 } }}
@@ -277,29 +261,28 @@ export default function BehindTheScenesChapter6() {
             </div>
 
             {/* ══════════ ניחוש לפני הסבר: ארבע השערות על Attention ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
-                <AttentionGuess />
+            <section className="mt-12 text-start" dir={dir}>
+                <AttentionGuess content={guessContent} cards={guessCards} prompt={c6.prompt} dir={dir} speechLocale={speechLocale} />
             </section>
 
             {/* ══════════ רגע לפני המעבדה: הסבר Attention ══════════ */}
-            {/* חוליית ההסבר בין הניחוש למעבדה: מבססת מה זה קשב לפני שנוגעים במשפט, כדי
-                שהמעבר מהניחוש למעבדה לא יהיה חד מדי. */}
-            <section className="mt-12 text-right" dir="rtl">
+            {/* חוליית ההסבר בין הניחוש למעבדה: מבססת מה זה קשב לפני שנוגעים במשפט. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
                     <div className="mb-4 flex items-start justify-between gap-2.5">
                         <div>
                             <span className="mb-2 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-300">
-                                <Sparkles size={14} /> {COPY.primer.eyebrow}
+                                <Sparkles size={14} /> {c6.primer.eyebrow}
                             </span>
-                            <h3 className="text-xl font-black text-white md:text-2xl">{COPY.primer.title}</h3>
+                            <h3 className="text-xl font-black text-white md:text-2xl">{c6.primer.title}</h3>
                         </div>
-                        <SpeakButton text={primerText} />
+                        <SpeakButton text={primerText} speechLocale={speechLocale} />
                     </div>
 
-                    <p className="text-[15px] leading-relaxed text-slate-300 md:text-base">{COPY.primer.lead}</p>
+                    <p className="text-[15px] leading-relaxed text-slate-300 md:text-base">{c6.primer.lead}</p>
 
                     <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                        {COPY.primer.points.map((pt) => (
+                        {c6.primer.points.map((pt) => (
                             <div key={pt.title} className="rounded-2xl border border-slate-700/50 bg-slate-950/30 p-4">
                                 <div className="mb-1.5 flex items-center gap-2">
                                     <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-violet-400" />
@@ -313,113 +296,111 @@ export default function BehindTheScenesChapter6() {
             </section>
 
             {/* ══════════ מעבדת הקשב ══════════ */}
-            {/* אין פס הקשר דביק כאן: המשפט העוגן גלוי תמיד בתוך המעבדה עצמה, וגם בהירו,
-                כך שאין צורך להצמיד עותק שלישי שלו. */}
-            <section id="attention-lab" className="relative mt-12 space-y-5 text-right scroll-mt-24" dir="rtl">
+            <section id="attention-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
-                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">Attention Lab</div>
-                        <h3 className="text-2xl font-bold text-white">{COPY.lab.title}</h3>
+                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400" dir="ltr">{c6.sentenceLab.sectionEyebrow}</div>
+                        <h3 className="text-2xl font-bold text-white">{c6.sentenceLab.sectionTitle}</h3>
                     </div>
                 </div>
 
                 <div className="flex items-start gap-2.5">
-                    <p className="text-base leading-relaxed text-slate-300">{COPY.lab.intro}</p>
-                    <SpeakButton text={`${COPY.lab.title}. ${COPY.lab.intro}`} className="mt-1" />
+                    <p className="text-base leading-relaxed text-slate-300">{c6.sentenceLab.sectionIntro}</p>
+                    <SpeakButton text={`${c6.sentenceLab.sectionTitle}. ${c6.sentenceLab.sectionIntro}`} className="mt-1" speechLocale={speechLocale} />
                 </div>
 
-                <AttentionSentenceLab />
+                <AttentionSentenceLab data={c6.sentenceLab} dir={dir} speechLocale={speechLocale} />
 
-                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="explain" line="שנו מילה, והמשקל זז" width={160} />
+                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
+                    <Mentor pose="explain" line={c6.mentor.lab} width={160} flip={!isRtl} />
                 </div>
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
-                <InsightBox type="intuition" title={COPY.wow.title}>
+            <section className="mt-12 text-start" dir={dir}>
+                <InsightBox type="intuition" title={c6.wow.title}>
                     <div className="flex items-start justify-between gap-2.5">
-                        <span className="block text-lg font-bold text-violet-200">{COPY.wow.lead}</span>
-                        <SpeakButton text={`${COPY.wow.title}. ${COPY.wow.lead} ${COPY.wow.body}`} />
+                        <span className="block text-lg font-bold text-violet-200">{c6.wow.lead}</span>
+                        <SpeakButton text={`${c6.wow.title}. ${c6.wow.lead} ${c6.wow.body}`} speechLocale={speechLocale} />
                     </div>
-                    <span className="mt-2 block">{COPY.wow.body}</span>
+                    <span className="mt-2 block">{c6.wow.body}</span>
                 </InsightBox>
             </section>
 
             {/* ══════════ דוגמה יומיומית ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                             <Lightbulb size={18} className="text-amber-300" />
-                            <div className="text-sm font-bold text-slate-100">{COPY.everyday.title}</div>
+                            <div className="text-sm font-bold text-slate-100">{c6.everyday.title}</div>
                         </div>
-                        <SpeakButton text={`${COPY.everyday.title}. ${COPY.everyday.body}`} />
+                        <SpeakButton text={`${c6.everyday.title}. ${c6.everyday.body}`} speechLocale={speechLocale} />
                     </div>
-                    <p>{COPY.everyday.body}</p>
+                    <p>{c6.everyday.body}</p>
                 </div>
             </section>
 
             {/* ══════════ תיקון טעות נפוצה ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl border border-rose-500/30 bg-rose-950/10 p-5">
                         <div className="mb-2 flex items-center gap-2 text-rose-200">
                             <XCircle size={18} />
-                            <span className="text-sm font-bold">{COPY.mistake.wrongTitle}</span>
+                            <span className="text-sm font-bold">{c6.mistake.wrongTitle}</span>
                         </div>
-                        <p className="leading-relaxed text-slate-300">{COPY.mistake.wrong}</p>
+                        <p className="leading-relaxed text-slate-300">{c6.mistake.wrong}</p>
                     </div>
                     <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/10 p-5">
                         <div className="mb-2 flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2 text-emerald-200">
                                 <CheckCircle2 size={18} />
-                                <span className="text-sm font-bold">{COPY.mistake.rightTitle}</span>
+                                <span className="text-sm font-bold">{c6.mistake.rightTitle}</span>
                             </div>
-                            <SpeakButton text={`${COPY.mistake.rightTitle}. ${COPY.mistake.right}`} />
+                            <SpeakButton text={`${c6.mistake.rightTitle}. ${c6.mistake.right}`} speechLocale={speechLocale} />
                         </div>
-                        <p className="leading-relaxed text-slate-300">{COPY.mistake.right}</p>
+                        <p className="leading-relaxed text-slate-300">{c6.mistake.right}</p>
                     </div>
                 </div>
             </section>
 
             {/* ══════════ הסבר Q/K/V עדין ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-violet-500/30 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                             <Link2 size={18} className="text-violet-300" />
                             <div className="leading-tight">
-                                <div className="text-sm font-bold text-slate-100">{COPY.qkv.title}</div>
-                                <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">{COPY.qkv.sub}</div>
+                                <div className="text-sm font-bold text-slate-100">{c6.qkv.title}</div>
+                                <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">{c6.qkv.sub}</div>
                             </div>
                         </div>
-                        <SpeakButton text={`${COPY.qkv.title}. ${COPY.qkv.body}`} />
+                        <SpeakButton text={`${c6.qkv.title}. ${c6.qkv.body}`} speechLocale={speechLocale} />
                     </div>
-                    <p>{COPY.qkv.body}</p>
+                    <p>{c6.qkv.body}</p>
                 </div>
             </section>
 
             {/* ══════════ נעילת הבנה ══════════ */}
-            <section className="relative mt-12 text-right" dir="rtl">
-                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="celebrate" line="נעלתם את הקשב" width={160} />
+            <section className="relative mt-12 text-start" dir={dir}>
+                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
+                    <Mentor pose="celebrate" line={c6.mentor.lock} width={160} flip={!isRtl} />
                 </div>
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center gap-2">
                         <Lock size={20} className="text-violet-300" />
-                        <h3 className="text-xl font-bold text-white">{COPY.lock.title}</h3>
+                        <h3 className="text-xl font-bold text-white">{c6.lock.title}</h3>
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">
                         <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/10 p-4">
-                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-emerald-300">{COPY.lock.trueLabel}</div>
-                            <p className="text-sm leading-relaxed text-slate-200">{COPY.lock.trueText}</p>
+                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-emerald-300">{c6.lock.trueLabel}</div>
+                            <p className="text-sm leading-relaxed text-slate-200">{c6.lock.trueText}</p>
                         </div>
                         <div className="rounded-xl border border-rose-500/30 bg-rose-950/10 p-4">
-                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-rose-300">{COPY.lock.falseLabel}</div>
-                            <p className="text-sm leading-relaxed text-slate-200">{COPY.lock.falseText}</p>
+                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-rose-300">{c6.lock.falseLabel}</div>
+                            <p className="text-sm leading-relaxed text-slate-200">{c6.lock.falseText}</p>
                         </div>
                     </div>
 
@@ -430,30 +411,32 @@ export default function BehindTheScenesChapter6() {
             </section>
 
             {/* ══════════ תובנה מעשית ══════════ */}
-            <section className="relative mt-12 text-right" dir="rtl">
-                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-                    <Mentor pose="pointdown" line="ככה כותבים פרומפט שהקשב מבין" width={160} />
+            <section className="relative mt-12 text-start" dir={dir}>
+                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
+                    <Mentor pose="pointdown" line={c6.mentor.practical} width={160} flip={!isRtl} />
                 </div>
-                <InsightBox type="intuition" title={COPY.practical.title}>
+                <InsightBox type="intuition" title={c6.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
-                        <span className="block">{COPY.practical.lead}</span>
-                        <SpeakButton text={`${COPY.practical.title}. ${COPY.practical.lead} ${COPY.practical.uses.join(' ')} ${COPY.practical.caveat}`} />
+                        <span className="block">{c6.practical.lead}</span>
+                        <SpeakButton text={`${c6.practical.title}. ${c6.practical.lead} ${c6.practical.uses.join(' ')} ${c6.practical.caveat}`} speechLocale={speechLocale} />
                     </div>
                     <ul className="mt-3 space-y-2">
-                        {COPY.practical.uses.map((line) => (
+                        {c6.practical.uses.map((line) => (
                             <li key={line} className="flex items-start gap-2.5">
                                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-400" />
                                 <span className="text-sm">{line}</span>
                             </li>
                         ))}
                     </ul>
-                    <span className="mt-3 block text-sm text-slate-400">{COPY.practical.caveat}</span>
+                    <span className="mt-3 block text-sm text-slate-400">{c6.practical.caveat}</span>
                 </InsightBox>
             </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
-            <section className="mt-12 mb-4" dir="rtl">
-                <ChapterQuiz chapterId={6} />
+            <section className="mt-12 mb-4" dir={dir}>
+                <ExpandableLab title={localizedQuiz.title}>
+                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} />
+                </ExpandableLab>
             </section>
         </ChapterLayout>
     );

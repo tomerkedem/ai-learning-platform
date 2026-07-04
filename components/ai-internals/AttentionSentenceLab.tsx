@@ -5,141 +5,71 @@
 //
 // הרעיון המרכזי: Attention הוא לא טוש שמסמן "מילים חשובות" פעם אחת. הוא שקלול
 // יחסים בין חלקי המשפט. הלומד עורך את המשפט (מסיר מילת ניגוד, מחליף סטטוס, הופך
-// שלילה, בוחן כינוי) ורואה איך הקשב והקשר בין החלקים משתנים מיד. אותו מנגנון,
-// משפט אחר, מוקד קשב אחר.
+// שלילה, בוחן כינוי) ורואה איך הקשב והקשר בין החלקים משתנים מיד.
 //
-// זו המחשה לימודית מפושטת, לא שיקוף מלא של מנגנון Attention במודל אמיתי. המשקלים
-// כתובים ידנית לצורך ההדגמה בלבד. אין בקובץ הזה מקף ארוך או מקף בינוני.
+// i18n: כל הטקסט והנתונים תלויי-השפה (variants, tokens, weights, pair, captions,
+// labels) מגיעים מ-data (מילון attentionLab לפי locale). מיפוי הגוונים (tension ->
+// צבע) הוא היחיד שנשאר כאן, כי הוא מבני ואינו תלוי שפה. הכיוון (RTL/LTR) מגיע מ-dir.
+//
+// זו המחשה לימודית מפושטת, לא שיקוף מלא של מנגנון Attention במודל אמיתי. אין בקובץ
+// הזה מקף ארוך או מקף בינוני.
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link2, Pencil, Sparkles, ArrowLeftRight } from 'lucide-react';
+import type { Direction, Locale } from '@/i18n/config';
+import type { AttentionLabContent, LabTension } from '@/i18n/locales/he/behind-ai/attentionLab';
 import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
 
-/** עוצמת הקשר בין שני החלקים: חזק, בינוני, חלש, או מוסט (המוקד עבר למקום אחר). */
-type Tension = 'high' | 'medium' | 'low' | 'shifted';
-
-interface Variant {
-    id: string;
-    /** תווית הכפתור: העריכה עצמה. */
-    control: string;
-    /** המשפט המלא במצב הזה (לתצוגה ולהקראה). */
-    sentence: string;
-    /** מילות המשפט בסדר קריאה (RTL). */
-    tokens: string[];
-    /** משקל קשב לכל טוקן (0..1), כתוב ידנית להמחשה. */
-    weights: number[];
-    /** שני האינדקסים שמרכיבים את הקשר המרכזי במצב הזה. */
-    pair: [number, number];
-    /** עוצמת הקשר בין החלקים (0..1). */
-    pairStrength: number;
-    tension: Tension;
-    /** כיתוב שמסביר מה השתנה ולמה הקשב זז. */
-    caption: string;
-}
-
-const VARIANTS: Variant[] = [
-    {
-        id: 'base',
-        control: 'המקור',
-        sentence: 'החבילה סומנה כנמסרה, אבל הלקוח אומר שלא קיבל אותה.',
-        tokens: ['החבילה', 'סומנה', 'כנמסרה', 'אבל', 'הלקוח', 'אומר', 'שלא', 'קיבל', 'אותה'],
-        weights: [0.55, 0.35, 0.95, 0.6, 0.3, 0.25, 0.8, 0.9, 0.3],
-        pair: [2, 7],
-        pairStrength: 0.9,
-        tension: 'high',
-        caption:
-            'המתח המרכזי הוא בין "כנמסרה" לבין "שלא קיבל". שם הקשב חייב להיות חזק, כי זו הסתירה שהתשובה צריכה לטפל בה, ולא רק העובדה שחסרה חבילה.',
-    },
-    {
-        id: 'no-abal',
-        control: 'בלי "אבל"',
-        sentence: 'החבילה סומנה כנמסרה. הלקוח אומר שלא קיבל אותה.',
-        tokens: ['החבילה', 'סומנה', 'כנמסרה', 'הלקוח', 'אומר', 'שלא', 'קיבל', 'אותה'],
-        weights: [0.5, 0.35, 0.75, 0.3, 0.25, 0.6, 0.7, 0.3],
-        pair: [2, 6],
-        pairStrength: 0.5,
-        tension: 'medium',
-        caption:
-            'הורדנו את "אבל". שני החלקים עדיין כאן, אבל הם רק מונחים זה לצד זה. "אבל" הוא הסימן שאומר למודל שיש כאן ניגוד ושכדאי לשקלל את הקשר חזק יותר. בלעדיו הקשר פחות מסומן.',
-    },
-    {
-        id: 'status',
-        control: '"כנמסרה" נהיה "בדרך"',
-        sentence: 'החבילה עדיין בדרך, אבל הלקוח אומר שלא קיבל אותה.',
-        tokens: ['החבילה', 'עדיין', 'בדרך', 'אבל', 'הלקוח', 'אומר', 'שלא', 'קיבל', 'אותה'],
-        weights: [0.5, 0.3, 0.45, 0.35, 0.3, 0.25, 0.4, 0.45, 0.3],
-        pair: [2, 7],
-        pairStrength: 0.2,
-        tension: 'low',
-        caption:
-            'שינינו את הסטטוס ל"בדרך", ועכשיו אין סתירה. ברור שחבילה שעדיין בדרך לא התקבלה. אין מתח מיוחד לשקלל, והקשב מתפזר בצורה שטוחה יותר.',
-    },
-    {
-        id: 'received-late',
-        control: '"שלא קיבל" נהיה "קיבל באיחור"',
-        sentence: 'החבילה סומנה כנמסרה, אבל הלקוח אומר שקיבל אותה באיחור.',
-        tokens: ['החבילה', 'סומנה', 'כנמסרה', 'אבל', 'הלקוח', 'אומר', 'שקיבל', 'אותה', 'באיחור'],
-        weights: [0.5, 0.3, 0.6, 0.4, 0.25, 0.25, 0.55, 0.3, 0.9],
-        pair: [2, 8],
-        pairStrength: 0.4,
-        tension: 'shifted',
-        caption:
-            'הפכנו את השלילה. עכשיו הלקוח כן קיבל, רק באיחור. הסתירה נעלמה, והמשקל עובר אל "באיחור", הפרט החדש שמעצב את התשובה. מילת שלילה אחת שינתה את כל מוקד הקשב.',
-    },
-    {
-        id: 'pronoun',
-        control: 'הכינוי "אותה"',
-        sentence: 'החבילה סומנה כנמסרה, אבל הלקוח אומר שלא קיבל אותה.',
-        tokens: ['החבילה', 'סומנה', 'כנמסרה', 'אבל', 'הלקוח', 'אומר', 'שלא', 'קיבל', 'אותה'],
-        weights: [0.85, 0.3, 0.5, 0.35, 0.35, 0.3, 0.4, 0.45, 0.9],
-        pair: [8, 0],
-        pairStrength: 0.85,
-        tension: 'high',
-        caption:
-            'המילה "אותה" לא עומדת לבד. המודל צריך לחבר אותה חזרה ל"החבילה", אחרת לא ברור על מה הלקוח מדבר. גם זה קשב: קשר בין מילה לבין מה שהיא מחליפה.',
-    },
-];
-
-const TENSION_META: Record<Tension, { label: string; bar: string; text: string }> = {
-    high: { label: 'קשר חזק', bar: 'bg-emerald-400', text: 'text-emerald-200' },
-    medium: { label: 'קשר בינוני', bar: 'bg-amber-400', text: 'text-amber-200' },
-    low: { label: 'קשר חלש', bar: 'bg-slate-500', text: 'text-slate-300' },
-    shifted: { label: 'המוקד עבר', bar: 'bg-sky-400', text: 'text-sky-200' },
+/** מיפוי גוון הקשר -> צבעי המד. מבני, אינו תלוי שפה (התוויות מגיעות מהמילון). */
+const TENSION_COLORS: Record<LabTension, { bar: string; text: string }> = {
+    high: { bar: 'bg-emerald-400', text: 'text-emerald-200' },
+    medium: { bar: 'bg-amber-400', text: 'text-amber-200' },
+    low: { bar: 'bg-slate-500', text: 'text-slate-300' },
+    shifted: { bar: 'bg-sky-400', text: 'text-sky-200' },
 };
 
-export const AttentionSentenceLab: React.FC = () => {
+interface AttentionSentenceLabProps {
+    data: AttentionLabContent;
+    dir: Direction;
+    /** שפת ההקראה של התוכן (contentLocale). ברירת מחדל: שפת הממשק. */
+    speechLocale?: Locale;
+}
+
+export const AttentionSentenceLab: React.FC<AttentionSentenceLabProps> = ({ data, dir, speechLocale }) => {
     const reduce = useReducedMotion();
-    const [variantId, setVariantId] = useState(VARIANTS[0].id);
-    const v = VARIANTS.find((x) => x.id === variantId) ?? VARIANTS[0];
+    const [variantId, setVariantId] = useState(data.variants[0].id);
+    const v = data.variants.find((x) => x.id === variantId) ?? data.variants[0];
 
     const maxW = useMemo(() => Math.max(...v.weights, 0.0001), [v]);
     const [pairA, pairB] = v.pair;
-    const tone = TENSION_META[v.tension];
+    const tone = TENSION_COLORS[v.tension];
+    const toneLabel = data.tensionLabels[v.tension];
+    const pairPct = Math.round(v.pairStrength * 100);
 
     return (
-        <div className="rounded-2xl border border-violet-500/30 bg-slate-900/50 p-5 text-right" dir="rtl">
+        <div className="rounded-2xl border border-violet-500/30 bg-slate-900/50 p-5 text-start" dir={dir}>
             {/* כותרת */}
             <div className="mb-4 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <Link2 size={18} className="text-violet-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-100">שנו משהו במשפט, וראו לאן הקשב זז</div>
-                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Attention sentence lab</div>
+                        <div className="text-sm font-bold text-slate-100">{data.heading}</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">{data.kicker}</div>
                     </div>
                 </div>
-                <SpeakButton text={speakJoin(`המשפט: ${v.sentence}`, v.caption)} />
+                <SpeakButton text={speakJoin(v.sentence, v.caption)} speechLocale={speechLocale} />
             </div>
 
             {/* בורר עריכות */}
             <p className="mb-2 flex items-center gap-1.5 text-[13px] text-slate-400">
                 <Pencil size={13} className="text-violet-400" />
-                בחרו עריכה במשפט. נראה איך הקשב והקשר בין החלקים משתנים.
+                {data.pickHint}
             </p>
-            <div className="mb-5 flex flex-wrap gap-2" role="group" aria-label="בחירת עריכה במשפט">
-                {VARIANTS.map((item) => {
+            <div className="mb-5 flex flex-wrap gap-2" role="group" aria-label={data.sr.group}>
+                {data.variants.map((item) => {
                     const active = item.id === variantId;
                     return (
                         <button
@@ -159,8 +89,8 @@ export const AttentionSentenceLab: React.FC = () => {
             </div>
 
             {/* המשפט כמילים, עוצמת רקע לפי המשקל, טבעת על זוג הקשר */}
-            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">המשפט עכשיו</div>
-            <div className="flex flex-wrap items-stretch gap-2" dir="rtl">
+            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">{data.nowLabel}</div>
+            <div className="flex flex-wrap items-stretch gap-2" dir={dir}>
                 {v.tokens.map((tok, j) => {
                     const inPair = j === pairA || j === pairB;
                     const intensity = v.weights[j] / maxW; // 0..1 ביחס למוביל
@@ -172,7 +102,7 @@ export const AttentionSentenceLab: React.FC = () => {
                             layout={!reduce}
                             animate={reduce ? undefined : { scale: inPair ? 1.04 : 1 }}
                             transition={reduce ? { duration: 0 } : { duration: 0.25 }}
-                            aria-label={`${tok}, עוצמת קשב ${pct} אחוז${inPair ? ', חלק מהקשר המרכזי' : ''}`}
+                            aria-label={`${tok}, ${data.sr.attention} ${pct} ${data.sr.percent}${inPair ? `, ${data.sr.inPair}` : ''}`}
                             className={`relative flex flex-col items-center gap-1 rounded-xl border px-3 py-2 text-center ${inPair ? 'border-emerald-400/70 ring-1 ring-emerald-400/50' : 'border-white/10'
                                 }`}
                             style={{ backgroundColor: bg }}
@@ -189,18 +119,18 @@ export const AttentionSentenceLab: React.FC = () => {
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                     <span className="flex items-center gap-1.5 text-[13px] font-bold text-slate-300">
                         <ArrowLeftRight size={14} className="text-violet-300" />
-                        הקשר הנשקל:
+                        {data.relationLabel}
                         <span className="text-slate-100">&quot;{v.tokens[pairA]}&quot;</span>
                         <span className="text-slate-500">↔</span>
                         <span className="text-slate-100">&quot;{v.tokens[pairB]}&quot;</span>
                     </span>
-                    <span className={`text-[13px] font-bold ${tone.text}`}>{tone.label}</span>
+                    <span className={`text-[13px] font-bold ${tone.text}`}>{toneLabel}</span>
                 </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-white/10" role="img" aria-label={`עוצמת הקשר ${Math.round(v.pairStrength * 100)} אחוז, ${tone.label}`}>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-white/10" role="img" aria-label={`${data.sr.strength} ${pairPct} ${data.sr.percent}, ${toneLabel}`}>
                     <motion.div
                         className={`h-full rounded-full ${tone.bar}`}
                         initial={false}
-                        animate={{ width: `${Math.round(v.pairStrength * 100)}%` }}
+                        animate={{ width: `${pairPct}%` }}
                         transition={reduce ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                     />
                 </div>
@@ -220,10 +150,7 @@ export const AttentionSentenceLab: React.FC = () => {
                 {v.caption}
             </motion.p>
 
-            <p className="mt-3 text-[13px] leading-relaxed text-slate-500">
-                זו המחשה לימודית מפושטת, לא שיקוף מלא של מנגנון Attention במודל אמיתי. המספרים כאן נועדו להראות את הרעיון:
-                שינוי קטן במשפט מזיז את מוקד הקשב ואת עוצמת הקשר בין החלקים.
-            </p>
+            <p className="mt-3 text-[13px] leading-relaxed text-slate-500">{data.disclaimer}</p>
         </div>
     );
 };
