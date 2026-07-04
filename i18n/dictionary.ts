@@ -75,6 +75,12 @@ import { attention as ruAttention } from './locales/ru/behind-ai/attention';
 import { attention as enAttention } from './locales/en/behind-ai/attention';
 import { attention as esAttention } from './locales/es/behind-ai/attention';
 import { attention as jaAttention } from './locales/ja/behind-ai/attention';
+import { contextWindow as heContextWindow } from './locales/he/behind-ai/contextWindow';
+import { contextWindow as arContextWindow } from './locales/ar/behind-ai/contextWindow';
+import { contextWindow as ruContextWindow } from './locales/ru/behind-ai/contextWindow';
+import { contextWindow as enContextWindow } from './locales/en/behind-ai/contextWindow';
+import { contextWindow as esContextWindow } from './locales/es/behind-ai/contextWindow';
+import { contextWindow as jaContextWindow } from './locales/ja/behind-ai/contextWindow';
 
 // המבוא (i18n של המבוא). העברית היא המקור; שאר השפות הן stubs שמייצאים מחדש את
 // העברית (fallback בטוח) עד שיתורגמו בשלב מאוחר יותר.
@@ -140,6 +146,7 @@ export type Chapter4Dict = typeof heChapter4;
 export type Chapter5Dict = typeof heChapter5;
 export type SemanticSpaceDict = typeof heSemanticSpace;
 export type AttentionDict = typeof heAttention;
+export type ContextWindowDict = typeof heContextWindow;
 export type IntroductionDict = typeof heIntroduction;
 export type ConceptLabelsDict = typeof heConceptLabels;
 export type FinalExamDict = typeof heFinalExam;
@@ -157,6 +164,7 @@ export interface BehindAiDict {
     chapter5: Chapter5Dict;
     semanticSpace: SemanticSpaceDict;
     attention: AttentionDict;
+    contextWindow: ContextWindowDict;
     conceptLabels: ConceptLabelsDict;
     finalExam: FinalExamDict;
     chapterQuiz: ChapterQuizDict;
@@ -171,12 +179,12 @@ export interface Dictionary {
 }
 
 const DICTS: Record<Locale, Dictionary> = {
-    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter1: heChapter1, chapter2: heChapter2, chapter3: heChapter3, chapter4: heChapter4, chapter5: heChapter5, semanticSpace: heSemanticSpace, attention: heAttention, conceptLabels: heConceptLabels, finalExam: heFinalExam, chapterQuiz: heChapterQuiz, introVisuals: heIntroVisuals, aiInternals: heAiInternals } },
-    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter1: arChapter1, chapter2: arChapter2, chapter3: arChapter3, chapter4: arChapter4, chapter5: arChapter5, semanticSpace: arSemanticSpace, attention: arAttention, conceptLabels: arConceptLabels, finalExam: arFinalExam, chapterQuiz: arChapterQuiz, introVisuals: arIntroVisuals, aiInternals: arAiInternals } },
-    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter1: ruChapter1, chapter2: ruChapter2, chapter3: ruChapter3, chapter4: ruChapter4, chapter5: ruChapter5, semanticSpace: ruSemanticSpace, attention: ruAttention, conceptLabels: ruConceptLabels, finalExam: ruFinalExam, chapterQuiz: ruChapterQuiz, introVisuals: ruIntroVisuals, aiInternals: ruAiInternals } },
-    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter1: enChapter1, chapter2: enChapter2, chapter3: enChapter3, chapter4: enChapter4, chapter5: enChapter5, semanticSpace: enSemanticSpace, attention: enAttention, conceptLabels: enConceptLabels, finalExam: enFinalExam, chapterQuiz: enChapterQuiz, introVisuals: enIntroVisuals, aiInternals: enAiInternals } },
-    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter1: esChapter1, chapter2: esChapter2, chapter3: esChapter3, chapter4: esChapter4, chapter5: esChapter5, semanticSpace: esSemanticSpace, attention: esAttention, conceptLabels: esConceptLabels, finalExam: esFinalExam, chapterQuiz: esChapterQuiz, introVisuals: esIntroVisuals, aiInternals: esAiInternals } },
-    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter1: jaChapter1, chapter2: jaChapter2, chapter3: jaChapter3, chapter4: jaChapter4, chapter5: jaChapter5, semanticSpace: jaSemanticSpace, attention: jaAttention, conceptLabels: jaConceptLabels, finalExam: jaFinalExam, chapterQuiz: jaChapterQuiz, introVisuals: jaIntroVisuals, aiInternals: jaAiInternals } },
+    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter1: heChapter1, chapter2: heChapter2, chapter3: heChapter3, chapter4: heChapter4, chapter5: heChapter5, semanticSpace: heSemanticSpace, attention: heAttention, contextWindow: heContextWindow, conceptLabels: heConceptLabels, finalExam: heFinalExam, chapterQuiz: heChapterQuiz, introVisuals: heIntroVisuals, aiInternals: heAiInternals } },
+    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter1: arChapter1, chapter2: arChapter2, chapter3: arChapter3, chapter4: arChapter4, chapter5: arChapter5, semanticSpace: arSemanticSpace, attention: arAttention, contextWindow: arContextWindow, conceptLabels: arConceptLabels, finalExam: arFinalExam, chapterQuiz: arChapterQuiz, introVisuals: arIntroVisuals, aiInternals: arAiInternals } },
+    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter1: ruChapter1, chapter2: ruChapter2, chapter3: ruChapter3, chapter4: ruChapter4, chapter5: ruChapter5, semanticSpace: ruSemanticSpace, attention: ruAttention, contextWindow: ruContextWindow, conceptLabels: ruConceptLabels, finalExam: ruFinalExam, chapterQuiz: ruChapterQuiz, introVisuals: ruIntroVisuals, aiInternals: ruAiInternals } },
+    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter1: enChapter1, chapter2: enChapter2, chapter3: enChapter3, chapter4: enChapter4, chapter5: enChapter5, semanticSpace: enSemanticSpace, attention: enAttention, contextWindow: enContextWindow, conceptLabels: enConceptLabels, finalExam: enFinalExam, chapterQuiz: enChapterQuiz, introVisuals: enIntroVisuals, aiInternals: enAiInternals } },
+    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter1: esChapter1, chapter2: esChapter2, chapter3: esChapter3, chapter4: esChapter4, chapter5: esChapter5, semanticSpace: esSemanticSpace, attention: esAttention, contextWindow: esContextWindow, conceptLabels: esConceptLabels, finalExam: esFinalExam, chapterQuiz: esChapterQuiz, introVisuals: esIntroVisuals, aiInternals: esAiInternals } },
+    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter1: jaChapter1, chapter2: jaChapter2, chapter3: jaChapter3, chapter4: jaChapter4, chapter5: jaChapter5, semanticSpace: jaSemanticSpace, attention: jaAttention, contextWindow: jaContextWindow, conceptLabels: jaConceptLabels, finalExam: jaFinalExam, chapterQuiz: jaChapterQuiz, introVisuals: jaIntroVisuals, aiInternals: jaAiInternals } },
 };
 
 /** מחזיר את המילון לשפה, עם נפילה לעברית אם השפה לא נמצאה. */

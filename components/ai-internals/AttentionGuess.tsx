@@ -60,6 +60,12 @@ interface AttentionGuessProps {
     dir: Direction;
     /** שפת ההקראה של התוכן (contentLocale). ברירת מחדל: שפת הממשק. */
     speechLocale?: Locale;
+    /**
+     * מזהה סקשן המעבדה שאליו כפתור ה-CTA גולל. ברירת המחדל 'attention-lab'
+     * שומרת על התנהגות פרק 6 בדיוק. פרקים אחרים שמשתמשים באותו ניחוש מעבירים
+     * את מזהה המעבדה שלהם (למשל 'context-window-lab' בפרק 7).
+     */
+    labTargetId?: string;
 }
 
 const STATUS_TONE: Record<StatusTone, string> = {
@@ -113,7 +119,7 @@ function CueIllustration({ cue }: { cue: Cue }) {
     );
 }
 
-export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, prompt, dir, speechLocale }) => {
+export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, prompt, dir, speechLocale, labTargetId = 'attention-lab' }) => {
     const reduce = useReducedMotion();
     const isRtl = dir === 'rtl';
     const [chosenId, setChosenId] = useState<string | null>(null);
@@ -123,7 +129,7 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
     const choiceMade = chosenId !== null;
 
     const goToLab = () => {
-        const el = typeof document !== 'undefined' ? document.getElementById('attention-lab') : null;
+        const el = typeof document !== 'undefined' ? document.getElementById(labTargetId) : null;
         if (el) el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
     };
 
