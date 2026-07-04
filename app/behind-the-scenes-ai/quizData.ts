@@ -576,7 +576,7 @@ export const chapter7Quiz: QuizQuestion[] = [
 ];
 
 // ===== CHAPTER 8 =====
-// Attention, מי חשוב עכשיו: הקשב הוא מנגנון יחסים דינמי. אין מילה אחת שתמיד חשובה,
+// Attention: מי חשוב עכשיו: הקשב הוא מנגנון יחסים דינמי. אין מילה אחת שתמיד חשובה,
 // המשקל עובר ממילה למילה לפי מה שהמודל מעבד עכשיו. הקשב מחבר הקשר, לא מאמת עובדות.
 export const chapter8Quiz: QuizQuestion[] = [
     {
@@ -1535,7 +1535,7 @@ export const CHAPTER_LABELS: Record<number, string> = {
     3: "Tokenization",
     4: "ממילים למספרים",
     5: "Semantic Space",
-    6: "Attention, מי חשוב עכשיו",
+    6: "Attention: מי חשוב עכשיו",
     7: "Context Window",
     8: "Logits & Softmax",
     9: "Decoding",

@@ -21,7 +21,7 @@ export const chapterQuiz = {
         3: 'Tokenization',
         4: 'Embeddings',
         5: 'Semantic Space: The Map of Meaning',
-        6: 'Attention, Who Matters Now',
+        6: 'Attention: Who Matters Now',
         7: 'Context Window',
         8: 'Logits & Softmax',
         9: 'Decoding',

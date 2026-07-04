@@ -22,7 +22,7 @@ export const chapterQuiz = {
         3: 'Tokenization',
         4: 'Embeddings',
         5: 'Semantic Space: خريطة المعنى',
-        6: 'Attention، ما المهم الآن',
+        6: 'Attention: ما المهم الآن',
         7: 'Context Window',
         8: 'Logits & Softmax',
         9: 'Decoding',
