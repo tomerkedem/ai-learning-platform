@@ -30,6 +30,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Play, Cpu, Keyboard, Sparkles, Target, Wrench, ShieldCheck, Zap, MessageSquare, MessageCircle, Bot,
 } from 'lucide-react';
+import { SpeakButton } from './SpeakButton';
+import { speakJoin } from './GuessVerdict';
 import type { AgentDemo } from '@/app/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
 
@@ -437,18 +439,22 @@ export const AgentLoop: React.FC<{
                         {eyebrow && (
                             <div className={`mb-1.5 text-sm font-black uppercase tracking-[0.22em] transition-colors duration-500 ${isAgent ? 'text-purple-300/85' : 'text-cyan-300/85'}`}>{eyebrow}</div>
                         )}
-                        <AnimatePresence mode="wait">
-                            <motion.h3
-                                key={`title-${mode}`}
-                                initial={reduce ? false : { opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={reduce ? { opacity: 0 } : { opacity: 0, y: -10 }}
-                                transition={reduce ? { duration: 0 } : { duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                                className="line-clamp-2 text-base font-black leading-tight tracking-tight text-white sm:line-clamp-1 sm:text-lg"
-                            >
-                                {title}
-                            </motion.h3>
-                        </AnimatePresence>
+                        <div className="flex items-center gap-2.5">
+                            <AnimatePresence mode="wait">
+                                <motion.h3
+                                    key={`title-${mode}`}
+                                    initial={reduce ? false : { opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={reduce ? { opacity: 0 } : { opacity: 0, y: -10 }}
+                                    transition={reduce ? { duration: 0 } : { duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                                    className="line-clamp-2 text-base font-black leading-tight tracking-tight text-white sm:line-clamp-1 sm:text-lg"
+                                >
+                                    {title}
+                                </motion.h3>
+                            </AnimatePresence>
+                            {/* הקראת הקופי של המצב הפעיל (מתחלף יחד עם מתג Chat/Agent) */}
+                            <SpeakButton text={speakJoin(eyebrow, title, body, closing)} />
+                        </div>
                     </div>
 
                     {/* בקרות: מתג-נוזל + הרצה */}

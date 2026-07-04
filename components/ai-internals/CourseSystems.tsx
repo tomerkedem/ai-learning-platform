@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { ACCENTS } from './accents';
+import { SpeakButton } from './SpeakButton';
+import { speakJoin } from './GuessVerdict';
 import type { Accent } from './types';
 import { useT } from '@/i18n/useT';
 import type { CourseSystem } from '@/app/behind-the-scenes-ai/introduction/introContent';
@@ -138,8 +140,12 @@ function SystemGate({ system, index, total, accent, labels, reduce, isFirstSyste
                                 transition={reduce ? { duration: 0 } : { duration: 0.3, delay: 0.05 }}
                                 className="mb-4"
                             >
-                                <div className={`inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wide ${a.text}`}>
-                                    <Sparkles size={12} aria-hidden /> {labels.purpose}
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className={`inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wide ${a.text}`}>
+                                        <Sparkles size={12} aria-hidden /> {labels.purpose}
+                                    </div>
+                                    {/* הקראת השער כולו: כותרת, טווח פרקים, טיזר ותכלית */}
+                                    <SpeakButton text={speakJoin(system.title, system.range, system.teaser, system.purpose)} className="shrink-0" />
                                 </div>
                                 <p className="mt-1 text-sm leading-relaxed text-slate-300">{system.purpose}</p>
                             </motion.div>

@@ -92,8 +92,6 @@ const LOCALE_SPEECH_LANG: Record<Locale, string> = {
   ja: 'ja-JP',
 };
 
-// סדר 14 התחנות בפס ההקראה, זהה לסדר המפה (ROADMAP_STATION_META).
-const READALOUD_STATION_IDS = ROADMAP_STATION_META.map((m) => m.id);
 
 // מנטור ההירו: הגודל תלוי במצב המיקוד. הרכיב חייב לשבת בתוך ה-children של
 // ChapterLayout (כלומר בתוך ה-Provider) כדי לקרוא את המצב החי. במיקוד פי 2.7
@@ -150,9 +148,18 @@ export default function BehindTheScenesIntroPage() {
     id: 'roadmap-subtitle', label: intro.roadmapHeading.title,
     text: intro.roadmapHeading.subtitle,
   };
-  const sStations: ReadAloudSegment[] = READALOUD_STATION_IDS.map((id) => {
-    const s = intro.roadmap.stations[id];
-    return { id: `station-${id}`, label: s.title, text: `${s.title}. ${s.explanation}` };
+  // מסלול המפה בקול: כל אזור נקרא לפני התחנות שלו, וכל תחנה כוללת גם את רמז-המנטור
+  // שלה (הבועה שמעל ראש המנטור במפה), כדי שהזווית הזו לא תאבד למי שלא רואה אותה.
+  const mentorHints = t.behindAi.introVisuals.viz.mentorHints as Record<string, string>;
+  const sStations: ReadAloudSegment[] = ROADMAP_ZONE_META.flatMap((zid) => {
+    const z = intro.roadmap.zones[zid];
+    const zoneSeg: ReadAloudSegment = { id: `zone-${zid}`, label: z.title, text: `${z.title}. ${z.caption}` };
+    const stationSegs = ROADMAP_STATION_META.filter((m) => m.zone === zid).map((m) => {
+      const s = intro.roadmap.stations[m.id];
+      const hint = mentorHints[m.id];
+      return { id: `station-${m.id}`, label: s.title, text: `${s.title}. ${s.explanation}${hint ? ` ${hint}` : ''}` };
+    });
+    return [zoneSeg, ...stationSegs];
   });
   const sTruth: ReadAloudSegment = { id: 'truth', label: intro.truthNote, text: intro.truthNote };
   const sCta: ReadAloudSegment = {
@@ -172,13 +179,15 @@ export default function BehindTheScenesIntroPage() {
     id: 'gate', label: intro.chat.gateLead,
     text: `${intro.chat.gateLead} ${intro.chat.bridge}`,
   };
+  // כרטיס Chat מול Agent: משפט המסגור שלפני הכרטיס, הקופי של שני המצבים (לא רק
+  // Agent), ומשפט המעבר אל המפה, כדי שכל הטקסט סביב הכרטיס יהיה בפס ההקראה.
   const sAgent: ReadAloudSegment = {
     id: 'agent', label: intro.agent.card.agent.title,
-    text: `${intro.agent.card.agent.title}. ${intro.agent.card.agent.body} ${intro.agent.card.agent.closing}`,
+    text: `${intro.agent.intro} ${intro.agent.card.chat.title}. ${intro.agent.card.chat.body} ${intro.agent.card.chat.closing} ${intro.agent.card.agent.title}. ${intro.agent.card.agent.body} ${intro.agent.card.agent.closing} ${intro.agent.transition}`,
   };
   const sSystems: ReadAloudSegment[] = SYSTEM_META.map((m) => {
     const sx = intro.systems.items[m.id];
-    return { id: `system-${m.id}`, label: sx.title, text: sx.purpose };
+    return { id: `system-${m.id}`, label: sx.title, text: `${sx.title}. ${sx.teaser} ${sx.purpose}` };
   });
 
   const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {

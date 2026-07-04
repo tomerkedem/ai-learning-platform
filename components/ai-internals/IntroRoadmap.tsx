@@ -25,6 +25,8 @@ import {
 import { ACCENTS, type AccentStyle } from './accents';
 import type { Accent } from './types';
 import { StationViz, STATION_PALETTE, STATION_RGB, haptic } from './IntroStationViz';
+import { SpeakButton } from './SpeakButton';
+import { speakJoin } from './GuessVerdict';
 import { Mentor, type MentorAccent } from './Mentor';
 import { useT } from '@/i18n/useT';
 import type {
@@ -69,7 +71,7 @@ const STATION_ICON: Record<string, React.ReactNode> = {
 // registerRef רושם את שורש הכרטיס אצל ה-IntersectionObserver של המפה.
 // snap: פתיחה מיידית בלי אנימציית גובה (מצב הדגמה). כך הפריסה מתייצבת בפריים אחד
 // והגלילה ל"מרכז/ראש" נוחתת מדויק, בלי שהתחנה תזוז אחרי הפתיחה.
-function StationCard({ station, n, a, reduce, snap, roadmapLabels, open, candidate, onToggle, registerRef }: { station: RoadmapStation; n: number; a: AccentStyle; reduce: boolean; snap: boolean; roadmapLabels: RoadmapLabels; open: boolean; candidate: boolean; onToggle: () => void; registerRef: (id: string, el: HTMLElement | null) => void }) {
+function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, candidate, onToggle, registerRef }: { station: RoadmapStation; n: number; a: AccentStyle; reduce: boolean; snap: boolean; roadmapLabels: RoadmapLabels; hint?: string; open: boolean; candidate: boolean; onToggle: () => void; registerRef: (id: string, el: HTMLElement | null) => void }) {
     const panelId = useId();
     const isLoop = station.id === 'loop';
     const setRef = useCallback((el: HTMLDivElement | null) => registerRef(station.id, el), [registerRef, station.id]);
@@ -162,6 +164,15 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, open, candida
                         className="overflow-hidden"
                     >
                         <div className={`border-t ${a.border} px-3.5 pb-4 pt-3 md:px-4`}>
+                            {/* מהות התחנה בקול: הקראת הכותרת, ההסבר ורמז-המנטור של התחנה הפתוחה.
+                                רמז-המנטור מוצג כאן גם כטקסט מתחת ל-xl, כי שם בועת המנטור לא קיימת. */}
+                            <div className="mb-2.5 flex items-start justify-between gap-2.5">
+                                {hint && <p className={`text-sm leading-relaxed ${a.text} xl:hidden`}>{hint}</p>}
+                                <SpeakButton
+                                    text={speakJoin(station.title, station.term, station.explanation, hint)}
+                                    className="ms-auto shrink-0"
+                                />
+                            </div>
                             {/* הסצנה החיה היא ההעמקה: היא מתנגנת מיד, ושורת התובנה שלה נושאת את הטקסט */}
                             {station.viz && (
                                 <motion.div
@@ -463,6 +474,8 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                                     <h3 className="text-lg font-black text-white md:text-xl">{zone.title}</h3>
                                     <p className="mt-0.5 text-sm leading-relaxed text-slate-400">{zone.caption}</p>
                                 </div>
+                                {/* הקראת כותרת האזור והכיתוב שלו */}
+                                <SpeakButton text={speakJoin(zone.title, zone.caption)} className="ms-auto shrink-0" />
                             </header>
 
                             {/* תחנות האזור */}
@@ -476,6 +489,7 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                                         reduce={reduce}
                                         snap={demo}
                                         roadmapLabels={roadmapLabels}
+                                        hint={mentorHints[station.id]}
                                         open={openId === station.id}
                                         candidate={candidateId === station.id && openId !== station.id}
                                         onToggle={() => toggle(station.id)}

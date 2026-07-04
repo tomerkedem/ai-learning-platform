@@ -13,6 +13,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { User, Sparkles, Send } from 'lucide-react';
+import { SpeakButton } from './SpeakButton';
+import { speakJoin } from './GuessVerdict';
 import type { Direction } from '@/i18n/config';
 
 interface EngineRevealProps {
@@ -68,6 +70,11 @@ export const EngineReveal: React.FC<EngineRevealProps> = ({
                         )}
                         <p className="text-center text-sm leading-relaxed text-slate-400">{outsideLine}</p>
                         <p className="text-center text-base font-bold leading-relaxed text-cyan-200 md:text-lg">{curiosityLine}</p>
+                        {/* הקראת סיפור הכרטיס כולו בסדר הקריאה: בקשה, הרווח שבאמצע, תשובה */}
+                        <SpeakButton
+                            text={speakJoin(`${promptRole}: ${prompt}`, outsideLine, curiosityLine, `${answerRole}: ${answer}`)}
+                            className="absolute top-2 end-2"
+                        />
                     </div>
                 </div>
 

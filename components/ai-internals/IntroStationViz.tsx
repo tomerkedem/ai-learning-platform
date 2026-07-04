@@ -30,6 +30,7 @@ import {
     RotateCcw, Square, Volume2, VolumeX,
 } from 'lucide-react';
 import type { AccentStyle } from './accents';
+import { SpeakButton } from './SpeakButton';
 import { useT } from '@/i18n/useT';
 import type { Direction } from '@/i18n/config';
 import type { Dictionary } from '@/i18n/dictionary';
@@ -160,7 +161,15 @@ interface VizProps {
 }
 
 function Caption({ children }: { children: React.ReactNode }) {
-    return <p className="mt-3 text-[13px] leading-relaxed text-slate-400">{children}</p>;
+    // שורת התובנה של הסצנה, עם הקראה נקודתית שלה. הטקסט תמיד מגיע כמחרוזת מהמילון
+    // (כולל כיתובים דינמיים), אז ההקראה תמיד תואמת את מה שמוצג כרגע.
+    const text = typeof children === 'string' ? children : undefined;
+    return (
+        <div className="mt-3 flex items-start gap-2">
+            <p className="flex-1 text-[13px] leading-relaxed text-slate-400">{children}</p>
+            {text && <SpeakButton text={text} className="shrink-0" />}
+        </div>
+    );
 }
 
 // חץ זרימה תלוי-כיוון: בעברית וערבית הזרימה שמאלה, בשאר השפות ימינה.
