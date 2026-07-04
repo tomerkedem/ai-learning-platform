@@ -257,7 +257,7 @@ const LiveStatusSlot: React.FC<{
                         {/* ערך-ההחלטה של התחנה (כוונה/כלי/סיכון/הצעד) עולה לכאן, מעל המנוע, במקום
                             קונסולה נפרדת מתחת לקפל. מוצג רק בתחנות שיש להן ערך (Agent). */}
                         {(activeStage.intent ?? activeStage.tool ?? activeStage.risk ?? activeStage.next) ? (
-                            <div className="mt-2 inline-flex items-center rounded-full border border-purple-400/45 bg-purple-500/15 px-3.5 py-1 text-sm font-black text-purple-100">
+                            <div className="mt-2 ms-2.5 inline-flex items-center rounded-full border border-purple-400/45 bg-purple-500/15 px-3.5 py-1 text-sm font-black text-purple-100">
                                 {activeStage.intent ?? activeStage.tool ?? activeStage.risk ?? activeStage.next}
                             </div>
                         ) : null}
