@@ -808,6 +808,85 @@ export const logitsSoftmaxQuiz: QuizQuestion[] = [
     }
 ];
 
+// ===== DECODING (נתיב פרק 9) =====
+// בחירת הטוקן הבא: אחרי שההסתברויות קיימות, סגנון הבחירה (Decoding) קובע איזה טוקן
+// נבחר מתוכן. שמרני נוטה לסביר ביותר ויציב יותר, פתוח יכול לדגום אפשרות נמוכה יותר.
+// עצם הבחירה אינה אימות, וטוקן שנבחר אינו בהכרח נכון. טקסט התצוגה ממוזג מהמילון
+// decodingQuiz לפי מזהה השאלה. כאן חי המנגנון בלבד: correctAnswer, difficulty, concept.
+// סדר ה-options זהה למילון.
+export const decodingQuiz: QuizQuestion[] = [
+    {
+        id: 1,
+        question: "מהו Decoding, שלב בחירת הטוקן?",
+        options: [
+            "השלב שבו הציונים הגולמיים הופכים להסתברויות",
+            "השלב שבו המודל בוחר את הטוקן הבא מתוך התפלגות ההסתברויות",
+            "בדיקה של העובדות מול מקור חיצוני",
+            "תרגום התשובה לשפה אחרת"
+        ],
+        correctAnswer: 1,
+        explanation: "Decoding הוא שלב הבחירה: מתוך התפלגות ההסתברויות שכבר קיימת, המודל בוחר את הטוקן הבא. הפיכת הציונים להסתברויות קרתה כבר קודם, ב-Softmax. הבחירה עצמה לא בודקת עובדות ולא מתרגמת.",
+        difficulty: "easy",
+        concept: "מהי בחירת טוקן"
+    },
+    {
+        id: 2,
+        question: "למה שלב הבחירה בא אחרי שההסתברויות כבר קיימות?",
+        options: [
+            "כי אי אפשר לבחור טוקן לפני שיש התפלגות לבחור ממנה",
+            "כי הבחירה היא זו שיוצרת את ההסתברויות",
+            "כי הבחירה מוחקת את ההסתברויות",
+            "כי המודל בוחר את כל התשובה השלמה בבת אחת"
+        ],
+        correctAnswer: 0,
+        explanation: "קודם נוצרת ההתפלגות, ורק אז אפשר לבחור ממנה טוקן. הבחירה לא יוצרת ולא מוחקת את ההסתברויות, היא מסתמכת עליהן. והמודל בונה תשובה טוקן אחר טוקן, לא בוחר את כל התשובה בבת אחת.",
+        difficulty: "easy",
+        concept: "אחרי ההסתברויות"
+    },
+    {
+        id: 3,
+        question: "מה ההבדל בין בחירה שמרנית לבין בחירה פתוחה?",
+        options: [
+            "שמרני בוחר אקראית לגמרי, ופתוח בוחר תמיד את הגבוהה ביותר",
+            "שמרני נוטה לאפשרות הסבירה ביותר ויציב יותר, ופתוח יכול לבחור גם אפשרות פחות סבירה ומגוון יותר",
+            "שניהם תמיד בוחרים בדיוק את אותו טוקן",
+            "פתוח בודק עובדות, ושמרני לא"
+        ],
+        correctAnswer: 1,
+        explanation: "בחירה שמרנית נוטה לאפשרות עם ההסתברות הגבוהה ביותר, ולכן הפלט צפוי ויציב יותר. בחירה פתוחה נותנת סיכוי גם לאפשרויות נמוכות יותר, ולכן היא מגוונת יותר אבל פחות יציבה. אף אחד מהם לא בודק עובדות.",
+        difficulty: "medium",
+        concept: "שמרני מול פתוח"
+    },
+    {
+        id: 4,
+        question: "בסגנון פתוח נבחר המשך עם הסתברות נמוכה יחסית. למה זה קרה?",
+        options: [
+            "כי סגנון פתוח נותן סיכוי גם לאפשרויות נמוכות יותר בהתפלגות",
+            "כי האפשרות הנמוכה היא בעצם הנכונה",
+            "כי המודל בדק ומצא שהיא עדיפה",
+            "כי ההסתברויות התהפכו ברגע הבחירה"
+        ],
+        correctAnswer: 0,
+        explanation: "סגנון פתוח לא מתעלם מההסתברויות, אבל הוא נותן סיכוי גם לאפשרויות פחות סבירות. לכן לפעמים נבחרת אפשרות נמוכה יותר. זה מוסיף גיוון, אבל לא אומר שהמודל בדק אותה או שההסתברויות השתנו.",
+        difficulty: "medium",
+        concept: "למה נבחרת אפשרות נמוכה"
+    },
+    {
+        id: 5,
+        question: "המודל בחר המשך שנשמע משכנע, אבל בפועל הוא לא נכון. איפה הכשל בהסקה ש\"אם נבחר, אז זה נכון\"?",
+        options: [
+            "אין כשל, מה שנבחר תמיד נכון",
+            "סגנון הבחירה קובע איך בוחרים מתוך ההסתברויות, הוא לא בודק את העולם. לאימות צריך מקור או כלי",
+            "הכשל הוא שהמודל בכלל לא אמור לבחור טוקנים",
+            "הכשל הוא שההמשך לא קיבל הסתברות גבוהה מספיק"
+        ],
+        correctAnswer: 1,
+        explanation: "עצם הבחירה לא מאמתת דבר. סגנון הבחירה רק קובע איך בוחרים מתוך ההסתברויות הקיימות, הוא לא פונה לשום מקור חיצוני. כדי לדעת אם החבילה באמת התעכבה או נמסרה צריך כלי מעקב או מקור מאומת, לא את עצם הבחירה.",
+        difficulty: "hard",
+        concept: "בחירה אינה אמת"
+    }
+];
+
 // ===== CHAPTER 9 =====
 // ביטחון כשער החלטה: פער בין האפשרויות, סף וסיכון מכריעים אם לפעול או לעצור ולבקש הקשר.
 export const chapter9Quiz: QuizQuestion[] = [
@@ -1705,10 +1784,10 @@ export const CHAPTER_LABELS: Record<number, string> = {
     16: "לעבוד נכון עם AI",
 };
 
-// מיפוי מספר הפרק החדש אל מבדק הפרק, אחרי שינוי סדר Stage 3A. הפרק החדש 9 (Decoding)
-// עדיין מציין מקום ובלי מבדק, ולכן אינו כאן. פרק 7 (Context Window) כבר נבנה במלואו.
-// מבדקי הפרקים שנותקו (chapter9Quiz = ביטחון, chapter10Quiz = מ-Prompt למשימה)
-// שמורים תחת _parked ואינם רשומים כעת.
+// מיפוי מספר הפרק החדש אל מבדק הפרק, אחרי שינוי סדר Stage 3A. פרק 7 (Context Window),
+// פרק 8 (Logits & Softmax) ופרק 9 (Decoding) כבר נבנו במלואם. מבדק הביטחון הישן
+// (chapter9Quiz) ומבדק chapter10Quiz (מ-Prompt למשימה) נותקו ושמורים תחת _parked,
+// ואינם רשומים כעת.
 const CHAPTER_QUIZZES: Record<number, QuizQuestion[]> = {
     1: chapter1Quiz, 2: chapter2Quiz, 3: chapter3Quiz,
     4: chapter6Quiz,   // Embeddings: ממספר חסר משמעות למשמעות
@@ -1716,6 +1795,7 @@ const CHAPTER_QUIZZES: Record<number, QuizQuestion[]> = {
     6: chapter8Quiz,   // Attention: מי חשוב עכשיו
     7: contextWindowQuiz, // Context Window: מה המודל באמת רואה עכשיו
     8: logitsSoftmaxQuiz, // Logits & Softmax: מציונים להסתברויות
+    9: decodingQuiz,   // Decoding: בחירת הטוקן הבא
     10: chapter5Quiz,  // Generation Loop: איך AI בונה תשובה
     11: chapter11Quiz, 12: chapter12Quiz,
     13: chapter13Quiz, 14: chapter14Quiz, 15: chapter15Quiz, 16: chapter16Quiz,
@@ -1726,7 +1806,7 @@ const CHAPTER_QUIZZES: Record<number, QuizQuestion[]> = {
 const CONCEPT_TO_CHAPTER: Record<string, number> = {};
 for (let n = 1; n <= 16; n++) {
     const qs = CHAPTER_QUIZZES[n];
-    if (!qs) continue; // פרק מציין מקום (9 Decoding) עדיין בלי מבדק
+    if (!qs) continue; // פרק בלי מבדק רשום (למשל אם עדיין מציין מקום)
     for (const q of qs) {
         if (!(q.concept in CONCEPT_TO_CHAPTER)) CONCEPT_TO_CHAPTER[q.concept] = n;
     }
@@ -1780,7 +1860,7 @@ function chapterOnComplete(chapterId: number) {
 export const behindAiChapterQuizzes: Record<number, ChapterQuizMeta> = {};
 for (let n = 1; n <= 16; n++) {
     const questions = CHAPTER_QUIZZES[n];
-    if (!questions) continue; // פרק מציין מקום (9) עדיין בלי מבדק
+    if (!questions) continue; // פרק בלי מבדק רשום (למשל אם עדיין מציין מקום)
     behindAiChapterQuizzes[n] = {
         title: `מבדק הבנה: ${CHAPTER_LABELS[n]}`,
         subtitle: QUIZ_SUBTITLE,

@@ -685,11 +685,11 @@ export const courses: Record<string, CourseData> = {
                 num: "09",
                 label: { he: "Decoding", en: "Decoding", ar: "Decoding", ru: "Decoding", es: "Decoding", ja: "Decoding" },
                 title: { he: "Decoding: בחירת הטוקן הבא", en: "Decoding: Choosing the Next Token", ar: "Decoding: اختيار التوكن التالي", ru: "Decoding: выбор следующего токена", es: "Decoding: elegir el siguiente token", ja: "Decoding：次のトークンを選ぶ" },
-                description: { he: "אחרי שיש הסתברויות, המודל עדיין צריך לבחור טוקן אחד. כאן נראה איך הבחירה נעשית, ולמה אותה התפלגות יכולה להוביל לתשובות שונות. פרק זה עדיין בבנייה.", en: "Once there are probabilities, the model still has to choose a single token. Here we see how the choice is made, and why the same distribution can lead to different answers. This chapter is still under construction.", ar: "بعد أن تتوفّر الاحتمالات، لا يزال على النموذج أن يختار توكنًا واحدًا. هنا نرى كيف يُتّخذ الاختيار، ولماذا قد يقود التوزيع نفسه إلى إجابات مختلفة. هذا الفصل لا يزال قيد الإنشاء.", ru: "Когда вероятности уже есть, модель всё ещё должна выбрать один токен. Здесь мы увидим, как делается выбор и почему одно и то же распределение может приводить к разным ответам. Эта глава пока в разработке.", es: "Una vez que hay probabilidades, el modelo todavía tiene que elegir un solo token. Aquí vemos cómo se toma la decisión y por qué la misma distribución puede llevar a respuestas distintas. Este capítulo todavía está en construcción.", ja: "確率が出そろっても、モデルはなお一つのトークンを選ばなければならない。ここでは、その選択がどう行われるのか、そして同じ分布がなぜ異なる答えにつながりうるのかを見ていく。この章はまだ作成中です。" },
-                readTime: "5 דקות",
-                labelColor: "text-slate-400",
-                colorFrom: "from-slate-400",
-                colorTo: "to-slate-600"
+                description: { he: "אחרי שההסתברויות מוכנות, המודל עדיין צריך לבחור טוקן אחד. כאן נראה איך סגנון הבחירה קובע מה נבחר: בחירה שמרנית יציבה יותר, בחירה פתוחה מגוונת יותר, ואף אחת מהן לא בודקת אם זה נכון.", en: "Once the probabilities are ready, the model still has to choose a single token. Here we see how the decoding style shapes the choice: a conservative choice is more stable, an open choice is more varied, and neither one checks whether it is true.", ar: "بعد أن تصبح الاحتمالات جاهزة، لا يزال على النموذج أن يختار توكنًا واحدًا. هنا نرى كيف يشكّل أسلوب الاختيار (Decoding) القرار: الاختيار المحافظ أكثر ثباتًا، والاختيار المنفتح أكثر تنوّعًا، ولا أحد منهما يتحقّق ممّا إذا كان صحيحًا.", ru: "Когда вероятности готовы, модель всё ещё должна выбрать один токен. Здесь мы увидим, как стиль выбора (Decoding) формирует решение: консервативный выбор стабильнее, открытый разнообразнее, и ни один из них не проверяет, правда ли это.", es: "Una vez que las probabilidades están listas, el modelo todavía tiene que elegir un solo token. Aquí vemos cómo el estilo de elección (Decoding) da forma a la decisión: una elección conservadora es más estable, una abierta es más variada, y ninguna comprueba si es verdad.", ja: "確率が用意できても、モデルはなお一つのトークンを選ばなければならない。ここでは、選び方（Decoding）が選択をどう形づくるかを見る。保守的な選び方はより安定し、開いた選び方はより多様で、どちらも正しいかどうかを確かめはしない。" },
+                readTime: "10 דקות",
+                labelColor: "text-sky-400",
+                colorFrom: "from-sky-400",
+                colorTo: "to-indigo-500"
             },
             {
                 id: 10,
