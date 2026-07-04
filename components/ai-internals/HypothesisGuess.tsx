@@ -97,19 +97,20 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
     const expanded = useContext(ExpandableLabContext);
     const [chosenId, setChosenId] = useState<string | null>(null);
     const [revealed, setRevealed] = useState(false); // נחשף ההסבר המדויק אחרי בחירה שגויה
+    const [bonusAccepted, setBonusAccepted] = useState(false); // הבונוס נפתח רק אחרי שהלומד מאשר
     const [bannerVisible, setBannerVisible] = useState(true); // באנר האישור מתפוגג אחרי 5 שניות
 
     const chosen = content.hypotheses.find((h) => h.id === chosenId) ?? null;
     const chosenCorrect = !!chosen?.correct;
     const correctCard = content.hypotheses.find((h) => h.correct);
 
-    // אחרי בחירה נכונה באנר "נכון מאוד" מילא את תפקידו: הוא נעלם אחרי 5 שניות ומשאיר את הבונוס לבדו.
+    // אחרי אישור הבונוס באנר "נכון מאוד" מילא את תפקידו: הוא נעלם אחרי 5 שניות ומשאיר את הבונוס לבדו.
     // איפוס הבאנר קורה בבחירה עצמה, כאן רק מתוזמן ההיעלמות.
     useEffect(() => {
-        if (!chosenCorrect) return;
+        if (!bonusAccepted) return;
         const id = setTimeout(() => setBannerVisible(false), 5000);
         return () => clearTimeout(id);
-    }, [chosenCorrect]);
+    }, [bonusAccepted]);
 
     const cardStateFor = (h: Hypothesis): CardState => {
         if (!chosen) return 'idle';
@@ -118,7 +119,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
         return 'dim';
     };
 
-    const reset = () => { setChosenId(null); setRevealed(false); setBannerVisible(true); };
+    const reset = () => { setChosenId(null); setRevealed(false); setBannerVisible(true); setBonusAccepted(false); };
 
     return (
         <div
@@ -131,9 +132,9 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                 {/* מנטור הזמנה: משותף לכל הפרקים - דמות חושבת ממורכזת, נעלמת אחרי הבחירה. */}
                 {!chosen && <GuessInvite pose="think" width={162} />}
 
-                {/* אחרי בחירה נכונה הבונוס מחליף את הניחוש הראשוני *במיקומו* (לא מתחתיו). */}
+                {/* רק אחרי שהלומד מאשר את הבונוס הוא מחליף את הניחוש הראשוני *במיקומו* (לא מתחתיו). */}
                 <AnimatePresence mode="wait" initial={false}>
-                {chosenCorrect ? (
+                {chosenCorrect && bonusAccepted ? (
                     <motion.div
                         key="bonus"
                         initial={reduce ? { opacity: 0 } : { opacity: 0, y: 10 }}
@@ -185,7 +186,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                             <div key={h.id} className="relative">
                             <motion.button
                                 type="button"
-                                onClick={() => { setChosenId(h.id); setRevealed(false); setBannerVisible(true); }}
+                                onClick={() => { setChosenId(h.id); setRevealed(false); setBannerVisible(true); setBonusAccepted(false); }}
                                 aria-pressed={selected}
                                 aria-label={`${h.title}. ${h.concept}`}
                                 whileHover={reduce ? undefined : { scale: 1.015 }}
@@ -230,19 +231,18 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                     })}
                 </div>
 
-                {/* טעות בלבד (בחירה נכונה עברה לענף הבונוס): תגובה תומכת + חשיפה + בחירה מחדש. */}
+                {/* התגובה המשותפת: הצלחה חוגגת עם הזמנה לבונוס (אישור מפורש), או טעות תומכת עם חשיפה ובחירה מחדש. */}
                 {chosen && (
                     <GuessVerdict
                         key={chosenId ?? undefined}
                         correct={chosenCorrect}
                         reduce={reduce}
                         accent="cyan"
-                        withSpeak
                         correctTitle={content.correctTitle}
                         correctLead={content.correctLead}
                         correctExplain={content.correctBody}
                         correctInsight={content.correctBridge}
-                        correctInsightArrow
+                        continueCta={chosenCorrect ? { label: content.bonusStart, onClick: () => setBonusAccepted(true) } : undefined}
                         wrongTitle={content.wrongLead}
                         wrongExplain={chosen.whyTempting ?? ''}
                         wrongExplainMore={chosen.whyWrong}

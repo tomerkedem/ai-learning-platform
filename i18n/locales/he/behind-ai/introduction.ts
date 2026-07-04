@@ -63,6 +63,7 @@ export const introduction = {
         wrongLead: 'זו טעות חשיבה נפוצה, אבל זה לא מה שקורה בפועל.',
         retry: 'בחרו שוב',
         revealCorrect: 'הציגו את ההסבר המדויק',
+        bonusStart: 'הרווחתם בונוס: עוד שני ניחושים',
 
         /** טקסט ארבע ההשערות, לפי מזהה ההשערה. המבנה (cue, correct) ברובד התצוגה. */
         hypotheses: {

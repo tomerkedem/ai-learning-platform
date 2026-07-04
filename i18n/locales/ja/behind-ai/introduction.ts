@@ -52,6 +52,7 @@ export const introduction = {
         wrongLead: 'これはよくある思い違いですが、実際に起きていることとは違います。',
         retry: 'もう一度選ぶ',
         revealCorrect: '正確な説明を表示する',
+        bonusStart: 'ボーナス獲得：あと2回の予想',
 
         /** Text of the four hypotheses, by id. Structure (cue, correct) lives in the view layer. */
         hypotheses: {

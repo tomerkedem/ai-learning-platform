@@ -25,7 +25,7 @@ export const introduction = {
         prompt: 'Mi paquete no llegó. ¿Qué hago?',
         inputPlaceholder: 'Escribe un mensaje...',
         answerRole: 'La respuesta',
-        answer: 'Lamento escuchar eso. Conviene revisar el estado del envío para ver si hay alguna actualización del centro logístico.',
+        answer: 'Lamento lo ocurrido. Conviene revisar el estado del envío para ver si hay alguna actualización del centro logístico.',
         outsideLine: 'Desde fuera parece que son dos pasos: escribiste una solicitud y recibiste una respuesta.',
         curiosityLine: 'Pero la verdadera pregunta es qué ocurrió en el medio.',
         gateLead: 'Ahora vamos a abrir lo que ocurrió entre la solicitud y la respuesta.',
@@ -43,7 +43,7 @@ export const introduction = {
     quickGuess: {
         eyebrow: 'Adivinanza rápida · Cuatro explicaciones que compiten',
         question: '¿Qué explicación está más cerca de lo que ocurre en el medio?',
-        hint: 'Elige la explicación que te parezca más cercana a la realidad. Aquí no hay puntaje, solo la elección de un modelo mental.',
+        hint: 'Elige la explicación que te parezca más cercana a la realidad. Aquí no hay puntuación, solo la elección de un modelo mental.',
         correctTitle: '¡Exacto!',
         correctLead: 'Esta es la imagen más precisa.',
         correctBody: 'El modelo trabaja con tokens, calcula el contexto, elige el siguiente token y luego repite el proceso.',
@@ -51,6 +51,7 @@ export const introduction = {
         wrongLead: 'Es un error de razonamiento común, pero no es lo que ocurre en realidad.',
         retry: 'Elegir de nuevo',
         revealCorrect: 'Mostrar la explicación precisa',
+        bonusStart: 'Ganaste un extra: dos intentos más',
 
         /** Text of the four hypotheses, by id. Structure (cue, correct) lives in the view layer. */
         hypotheses: {

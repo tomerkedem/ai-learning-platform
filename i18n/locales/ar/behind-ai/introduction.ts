@@ -51,6 +51,7 @@ export const introduction = {
         wrongLead: 'هذا خطأ تفكير شائع، لكنه ليس ما يحدث فعليًا.',
         retry: 'اختر من جديد',
         revealCorrect: 'اعرض التفسير الدقيق',
+        bonusStart: 'ربحت مكافأة: تخمينان إضافيان',
 
         /** Text of the four hypotheses, by id. Structure (cue, correct) lives in the view layer. */
         hypotheses: {

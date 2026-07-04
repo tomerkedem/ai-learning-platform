@@ -206,6 +206,7 @@ export default function BehindTheScenesIntroPage() {
     wrongLead: intro.quickGuess.wrongLead,
     retry: intro.quickGuess.retry,
     revealCorrect: intro.quickGuess.revealCorrect,
+    bonusStart: intro.quickGuess.bonusStart,
     hypotheses: HYPOTHESIS_META.map((m) => ({
       id: m.id,
       cue: m.cue,

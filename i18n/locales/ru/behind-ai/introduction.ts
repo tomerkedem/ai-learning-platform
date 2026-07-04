@@ -51,6 +51,7 @@ export const introduction = {
         wrongLead: 'Это распространённое заблуждение, но на самом деле всё происходит не так.',
         retry: 'Выбрать заново',
         revealCorrect: 'Показать точное объяснение',
+        bonusStart: 'Вы заработали бонус: ещё две попытки',
 
         /** Text of the four hypotheses, by id. Structure (cue, correct) lives in the view layer. */
         hypotheses: {

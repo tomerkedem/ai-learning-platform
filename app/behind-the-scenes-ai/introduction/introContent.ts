@@ -127,6 +127,8 @@ export interface QuickGuessContent {
     wrongLead: string;
     retry: string;
     revealCorrect: string;
+    /** כפתור אישור לפתיחת הבונוס (שני ניחושים נוספים) אחרי בחירה נכונה. */
+    bonusStart: string;
 }
 
 export const QUICK_GUESS: QuickGuessContent = {
@@ -164,6 +166,7 @@ export const QUICK_GUESS: QuickGuessContent = {
     wrongLead: 'זו טעות חשיבה נפוצה, אבל זה לא מה שקורה בפועל.',
     retry: 'בחרו שוב',
     revealCorrect: 'הציגו את ההסבר המדויק',
+    bonusStart: 'הרווחתם בונוס: עוד שני ניחושים',
 } as const;
 
 /* ═══════════ בונוס: "היו אתם המנוע" - ניחוש הטוקן הבא (אחרי בחירה נכונה) ═══════════ */
