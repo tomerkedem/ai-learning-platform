@@ -14,6 +14,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export type ReadAloudStatus = 'unsupported' | 'idle' | 'speaking' | 'paused';
 
+/**
+ * אירוע window גלובלי לבלעדיות הקראה: הקראה נקודתית (SpeakButton) משדרת אותו לפני
+ * שהיא מתחילה, וכל מופע useReadAloud עוצר את עצמו. בלי זה, cancel() חיצוני מפעיל את
+ * onend של המקטע הנוכחי והדוק "ממשיך" למקטע הבא מעל ההקראה הנקודתית.
+ */
+export const READ_ALOUD_EXCLUSIVE_EVENT = 'bts-readaloud-exclusive-start';
+
 /** מקטע הקראה בודד: מזהה יציב + הטקסט שיוקרא. */
 export interface ReadAloudSegment {
     id: string;
@@ -283,6 +290,13 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
         setCurrentIndex(-1);
         setWordRange(null);
     }, [supported]);
+
+    // בלעדיות מול הקראה נקודתית (SpeakButton): כשהיא מתחילה, הדוק עוצר מיד.
+    useEffect(() => {
+        if (!supported) return;
+        window.addEventListener(READ_ALOUD_EXCLUSIVE_EVENT, stop);
+        return () => window.removeEventListener(READ_ALOUD_EXCLUSIVE_EVENT, stop);
+    }, [supported, stop]);
 
     // תיקון נכונות: עצירת הקראה כשמשתנים locale / שפת דיבור / מצב היקף (resetSignal).
     // מדלגים על הריצה הראשונה (mount) כדי לא לעצור לפני שבכלל התחילה הקראה.

@@ -20,6 +20,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { HelpCircle, Sparkles, Highlighter, Globe, Check, ArrowDown, RotateCcw } from 'lucide-react';
 import { Mentor, type MentorPose } from './Mentor';
+import { SpeakButton } from './SpeakButton';
 
 type Cue = 'spotlight' | 'highlighter' | 'nodes' | 'factcheck';
 type StatusTone = 'close' | 'partial' | 'common' | 'layer';
@@ -212,7 +213,11 @@ export const AttentionGuess: React.FC = () => {
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-400">
                         <HelpCircle size={14} /> {CONTENT.eyebrow}
                     </span>
-                    <h3 className="mb-2 text-xl font-black text-white md:text-3xl">{CONTENT.title}</h3>
+                    <div className="mb-2 flex items-center justify-center gap-2.5">
+                        <h3 className="text-xl font-black text-white md:text-3xl">{CONTENT.title}</h3>
+                        {/* הקראה אחת לשאלה יחד עם שורת ההסבר שמתחתיה */}
+                        <SpeakButton text={`${CONTENT.title} ${CONTENT.subtitle}`} />
+                    </div>
                     <p className="mx-auto mb-4 max-w-xl text-sm text-slate-400 md:text-base">{CONTENT.subtitle}</p>
                     <p className="mx-auto mb-7 max-w-xl rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-sm font-bold text-slate-200">
                         {PROMPT}
@@ -222,24 +227,27 @@ export const AttentionGuess: React.FC = () => {
                 {/* רשת 2x2 של כרטיסי השערה */}
                 <div className="mx-auto grid max-w-3xl grid-cols-1 gap-3.5 sm:grid-cols-2">
                     {CARDS.map((card) => (
-                        <motion.button
-                            key={card.id}
-                            type="button"
-                            onClick={() => { setChosenId(card.id); setRevealed(false); }}
-                            aria-pressed={card.id === chosenId}
-                            aria-label={`${card.title}. ${card.desc}`}
-                            whileHover={reduce ? undefined : { scale: 1.015 }}
-                            whileTap={reduce ? undefined : { scale: 0.985 }}
-                            className={`relative flex flex-col gap-2.5 rounded-2xl border p-4 text-right transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${cardClasses(card.id)}`}
-                        >
-                            <span className="w-fit rounded-xl border border-white/10 bg-slate-950/50 px-2.5 py-2">
-                                <CueIllustration cue={card.cue} />
-                            </span>
-                            <div>
-                                <div className="text-base font-black text-white">{card.title}</div>
-                                <p className="mt-1 text-sm leading-relaxed text-slate-300">{card.desc}</p>
-                            </div>
-                        </motion.button>
+                        <div key={card.id} className="relative">
+                            <motion.button
+                                type="button"
+                                onClick={() => { setChosenId(card.id); setRevealed(false); }}
+                                aria-pressed={card.id === chosenId}
+                                aria-label={`${card.title}. ${card.desc}`}
+                                whileHover={reduce ? undefined : { scale: 1.015 }}
+                                whileTap={reduce ? undefined : { scale: 0.985 }}
+                                className={`relative flex h-full w-full flex-col gap-2.5 rounded-2xl border p-4 text-right transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${cardClasses(card.id)}`}
+                            >
+                                <span className="w-fit rounded-xl border border-white/10 bg-slate-950/50 px-2.5 py-2">
+                                    <CueIllustration cue={card.cue} />
+                                </span>
+                                <div>
+                                    <div className="text-base font-black text-white">{card.title}</div>
+                                    <p className="mt-1 text-sm leading-relaxed text-slate-300">{card.desc}</p>
+                                </div>
+                            </motion.button>
+                            {/* הקראת הכרטיס: אח של כפתור-הכרטיס (button בתוך button אסור) */}
+                            <SpeakButton text={`${card.title}. ${card.desc}`} className="absolute end-2 top-2 z-10" />
+                        </div>
                     ))}
                 </div>
 

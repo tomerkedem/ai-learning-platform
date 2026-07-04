@@ -6,6 +6,7 @@ import { HelpCircle, Lightbulb, ArrowDown, RotateCcw } from 'lucide-react';
 
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { GuessInvite, GuessButton, ShimmerFrame, AuroraBloom, SparkleBurst, DrawCheck } from '@/components/ai-internals/GuessVerdict';
+import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import type { FlowMode } from '@/components/ai-internals/types';
 import { useT } from '@/i18n/useT';
 
@@ -153,13 +154,17 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ mode }) => {
 
             <div className="relative">
                 {/* מנטור הזמנה: משותף לכל הפרקים - דמות חושבת ממורכזת, נעלמת אחרי הניחוש */}
-                {!answered && <GuessInvite pose="think" width={104} />}
+                {!answered && <GuessInvite pose="think" width={156} />}
 
                 <div className="text-center">
                     <span className={`mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] ${accentText}`}>
                         <HelpCircle size={14} /> {pd.eyebrow}
                     </span>
-                    <h3 className="mb-2 text-xl font-black text-white md:text-2xl">{pd.question}</h3>
+                    <div className="mb-2 flex items-center justify-center gap-2.5">
+                        <h3 className="text-xl font-black text-white md:text-2xl">{pd.question}</h3>
+                        {/* הקראה אחת לשאלה יחד עם שורת ההסבר שמתחתיה */}
+                        <SpeakButton text={`${pd.question} ${pd.subtitle}`} />
+                    </div>
                     <p className="mx-auto mb-6 max-w-xl text-sm text-slate-400">{pd.subtitle}</p>
                 </div>
 
@@ -193,17 +198,20 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ mode }) => {
                 {!answered && (
                     <div className="flex flex-wrap items-center justify-center gap-3">
                         {WORD_META.map((w) => (
-                            <motion.button
-                                key={w.id}
-                                type="button"
-                                onClick={() => setGuessId(w.id)}
-                                aria-label={wordText(w.id)}
-                                whileHover={reduce ? undefined : { scale: 1.04 }}
-                                whileTap={reduce ? undefined : { scale: 0.97 }}
-                                className={`rounded-2xl border border-slate-700/60 bg-slate-800/40 px-5 py-3 text-base font-black text-slate-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${optionHover}`}
-                            >
-                                {wordText(w.id)}
-                            </motion.button>
+                            <span key={w.id} className="relative inline-flex">
+                                <motion.button
+                                    type="button"
+                                    onClick={() => setGuessId(w.id)}
+                                    aria-label={wordText(w.id)}
+                                    whileHover={reduce ? undefined : { scale: 1.04 }}
+                                    whileTap={reduce ? undefined : { scale: 0.97 }}
+                                    className={`rounded-2xl border border-slate-700/60 bg-slate-800/40 ps-5 pe-12 py-3 text-base font-black text-slate-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${optionHover}`}
+                                >
+                                    {wordText(w.id)}
+                                </motion.button>
+                                {/* הקראת המילה: אח של כפתור-הבחירה (button בתוך button אסור) */}
+                                <SpeakButton text={wordText(w.id)} className="absolute end-2 top-1/2 z-10 -translate-y-1/2" />
+                            </span>
                         ))}
                     </div>
                 )}

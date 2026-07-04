@@ -25,6 +25,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { CheckCircle2, Lightbulb, RotateCcw, ArrowDown, Sparkles } from 'lucide-react';
 import { Mentor, type MentorPose } from './Mentor';
 import { GuessButton } from './GuessButton';
+import { SpeakButton } from './SpeakButton';
 
 // re-export כדי שקוד קיים שמייבא GuessButton מ-GuessVerdict ימשיך לעבוד.
 export { GuessButton } from './GuessButton';
@@ -221,6 +222,23 @@ export interface GuessVerdictProps {
     /** דריסת פוזות מנטור. ברירת מחדל: celebrate להצלחה, reassure לטעות. */
     correctPose?: MentorPose;
     wrongPose?: MentorPose;
+
+    /**
+     * כפתור הקראה נקודתי לכל תכולת הכרטיס (כותרת, הסברים, וההסבר המדויק כשנחשף).
+     * הטקסט מורכב מהתוכן הנוכחי, כך שהוא נכון גם כשהכרטיס משתנה בין בחירות.
+     */
+    withSpeak?: boolean;
+}
+
+/** חיבור מקטעי הקראה: מסנן ריקים ומוסיף נקודה רק כשאין סימן סיום, למניעת "..". */
+function speakJoin(...parts: Array<string | false | undefined>): string {
+    return parts
+        .filter((p): p is string => !!p && !!p.trim())
+        .map((p) => {
+            const s = p.trim();
+            return /[.!?:،؟。]$/.test(s) ? s : `${s}.`;
+        })
+        .join(' ');
 }
 
 export const GuessVerdict: React.FC<GuessVerdictProps> = ({
@@ -241,10 +259,21 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
     retryLabel,
     correctPose = 'celebrate',
     wrongPose = 'reassure',
+    withSpeak = false,
 }) => {
     const reducedMotion = useReducedMotion();
     const reduce = reduceProp ?? !!reducedMotion;
     const a = ACCENT[accent];
+
+    // טקסט ההקראה נגזר מהתוכן הנוכחי של הכרטיס, כולל ההסבר המדויק רק אחרי שנחשף.
+    const correctSpeak = speakJoin(correctTitle, correctLead, correctExplain, correctInsight);
+    const wrongSpeak = speakJoin(
+        wrongTitle,
+        wrongExplain,
+        wrongExplainMore,
+        !!reveal?.revealed && reveal.title,
+        !!reveal?.revealed && reveal.body,
+    );
 
     const bounce = reduce
         ? {}
@@ -281,6 +310,7 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                     >
                                         {correctTitle}
                                     </motion.span>
+                                    {withSpeak && <SpeakButton text={correctSpeak} className="ms-auto" />}
                                 </div>
                                 {correctLead && <p className={`mt-2 text-sm font-bold md:text-base ${a.lead}`}>{correctLead}</p>}
                                 <p className="mt-2 text-sm leading-relaxed text-slate-200">{correctExplain}</p>
@@ -345,6 +375,7 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                         <Lightbulb size={20} className="shrink-0 text-amber-300" />
                                     </motion.span>
                                     <span className="text-lg font-black text-amber-200 md:text-xl">{wrongTitle}</span>
+                                    {withSpeak && <SpeakButton text={wrongSpeak} className="ms-auto" />}
                                 </div>
                                 <p className="mt-2.5 text-sm leading-relaxed text-slate-200">{wrongExplain}</p>
                                 {wrongExplainMore && (

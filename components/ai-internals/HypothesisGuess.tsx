@@ -13,10 +13,11 @@
 // נגישות: כל כרטיס הוא <button> עם aria-pressed, תווית מלאה לקורא-מסך, תמיכת
 // מקלדת מובנית וטבעת פוקוס גלויה. reduced-motion: בלי זוהר מונפש, רק מעבר מיידי.
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HelpCircle, Eye, Lock, Database, Check, CheckCircle2 } from 'lucide-react';
 import { GuessInvite, GuessVerdict } from './GuessVerdict';
+import { SpeakButton } from './SpeakButton';
 import { ExpandableLabContext } from './ExpandableLab';
 import { useT } from '@/i18n/useT';
 import type { Hypothesis, HypothesisCue, QuickGuessContent } from '@/app/behind-the-scenes-ai/introduction/introContent';
@@ -96,10 +97,19 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
     const expanded = useContext(ExpandableLabContext);
     const [chosenId, setChosenId] = useState<string | null>(null);
     const [revealed, setRevealed] = useState(false); // נחשף ההסבר המדויק אחרי בחירה שגויה
+    const [bannerVisible, setBannerVisible] = useState(true); // באנר האישור מתפוגג אחרי 5 שניות
 
     const chosen = content.hypotheses.find((h) => h.id === chosenId) ?? null;
     const chosenCorrect = !!chosen?.correct;
     const correctCard = content.hypotheses.find((h) => h.correct);
+
+    // אחרי בחירה נכונה באנר "נכון מאוד" מילא את תפקידו: הוא נעלם אחרי 5 שניות ומשאיר את הבונוס לבדו.
+    // איפוס הבאנר קורה בבחירה עצמה, כאן רק מתוזמן ההיעלמות.
+    useEffect(() => {
+        if (!chosenCorrect) return;
+        const id = setTimeout(() => setBannerVisible(false), 5000);
+        return () => clearTimeout(id);
+    }, [chosenCorrect]);
 
     const cardStateFor = (h: Hypothesis): CardState => {
         if (!chosen) return 'idle';
@@ -108,7 +118,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
         return 'dim';
     };
 
-    const reset = () => { setChosenId(null); setRevealed(false); };
+    const reset = () => { setChosenId(null); setRevealed(false); setBannerVisible(true); };
 
     return (
         <div
@@ -119,7 +129,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
 
             <div className="relative">
                 {/* מנטור הזמנה: משותף לכל הפרקים - דמות חושבת ממורכזת, נעלמת אחרי הבחירה. */}
-                {!chosen && <GuessInvite pose="think" />}
+                {!chosen && <GuessInvite pose="think" width={162} />}
 
                 {/* אחרי בחירה נכונה הבונוס מחליף את הניחוש הראשוני *במיקומו* (לא מתחתיו). */}
                 <AnimatePresence mode="wait" initial={false}>
@@ -131,12 +141,25 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                         exit={{ opacity: 0 }}
                         transition={reduce ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                     >
-                        {/* אישור הצלחה קומפקטי, במקום כרטיס-ההכרעה הגדול */}
-                        <div className="mb-5 flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-2xl border border-emerald-400/40 bg-emerald-900/15 px-4 py-3">
-                            <CheckCircle2 size={20} className="shrink-0 text-emerald-300" aria-hidden />
-                            <span className="text-lg font-black text-emerald-100 md:text-xl">{content.correctTitle}</span>
-                            <span className="text-sm font-bold text-emerald-200/90 md:text-base">{content.correctLead}</span>
-                        </div>
+                        {/* אישור הצלחה קומפקטי, במקום כרטיס-ההכרעה הגדול. מתפוגג אחרי 5 שניות ומשאיר את הבונוס לבדו. */}
+                        <AnimatePresence initial={false}>
+                            {bannerVisible && (
+                                <motion.div
+                                    key="banner"
+                                    initial={false}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                                    transition={reduce ? { duration: 0 } : { duration: 0.4, ease: 'easeOut' }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="mb-5 flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-2xl border border-emerald-400/40 bg-emerald-900/15 px-4 py-3">
+                                        <CheckCircle2 size={20} className="shrink-0 text-emerald-300" aria-hidden />
+                                        <span className="text-lg font-black text-emerald-100 md:text-xl">{content.correctTitle}</span>
+                                        <span className="text-sm font-bold text-emerald-200/90 md:text-base">{content.correctLead}</span>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                         {bonus}
                     </motion.div>
                 ) : (
@@ -145,7 +168,11 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-400">
                         <HelpCircle size={14} /> {content.eyebrow}
                     </span>
-                    <h3 className="mb-2 text-xl font-black text-white md:text-3xl">{content.question}</h3>
+                    <div className="mb-2 flex items-center justify-center gap-2.5">
+                        <h3 className="text-xl font-black text-white md:text-3xl">{content.question}</h3>
+                        {/* הקראה אחת לשאלה יחד עם שורת ההסבר שמתחתיה */}
+                        <SpeakButton text={`${content.question} ${content.hint}`} />
+                    </div>
                     <p className={`mx-auto mb-7 text-sm text-slate-400 md:text-base ${expanded ? 'max-w-2xl' : 'max-w-xl'}`}>{content.hint}</p>
                 </div>
 
@@ -155,15 +182,15 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                         const state = cardStateFor(h);
                         const selected = h.id === chosenId;
                         return (
+                            <div key={h.id} className="relative">
                             <motion.button
-                                key={h.id}
                                 type="button"
-                                onClick={() => { setChosenId(h.id); setRevealed(false); }}
+                                onClick={() => { setChosenId(h.id); setRevealed(false); setBannerVisible(true); }}
                                 aria-pressed={selected}
                                 aria-label={`${h.title}. ${h.concept}`}
                                 whileHover={reduce ? undefined : { scale: 1.015 }}
                                 whileTap={reduce ? undefined : { scale: 0.985 }}
-                                className={`relative flex flex-col gap-2.5 rounded-2xl border p-4 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${stateClasses(state, reduce)}`}
+                                className={`relative flex h-full w-full flex-col gap-2.5 rounded-2xl border p-4 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${stateClasses(state, reduce)}`}
                             >
                                 {/* פעימת-אישור חד-פעמית בבחירה נכונה */}
                                 {!reduce && state === 'correct' && (
@@ -175,7 +202,8 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                                         transition={{ duration: 0.7, ease: 'easeOut' }}
                                     />
                                 )}
-                                <div className="flex items-center justify-between gap-2">
+                                {/* pe-8 שומר את הפינה לכפתור ההקראה (אח של הכרטיס, ממוקם absolute) */}
+                                <div className="flex items-center justify-between gap-2 pe-8">
                                     <span className="rounded-xl border border-white/10 bg-slate-950/50 px-2.5 py-2">
                                         <CueIllustration cue={h.cue} />
                                     </span>
@@ -195,6 +223,9 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                                     <p className="mt-1 text-sm leading-relaxed text-slate-300">{h.concept}</p>
                                 </div>
                             </motion.button>
+                            {/* הקראת הכרטיס: אח של כפתור-הכרטיס (button בתוך button אסור) */}
+                            <SpeakButton text={`${h.title}. ${h.concept}`} className="absolute end-2 top-2 z-10" />
+                            </div>
                         );
                     })}
                 </div>
@@ -206,6 +237,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                         correct={chosenCorrect}
                         reduce={reduce}
                         accent="cyan"
+                        withSpeak
                         correctTitle={content.correctTitle}
                         correctLead={content.correctLead}
                         correctExplain={content.correctBody}

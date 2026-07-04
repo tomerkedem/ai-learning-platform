@@ -11,6 +11,7 @@ import { InsightBox } from '@/components/content/InsightBox';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { GuessButton } from '@/components/ai-internals/GuessButton';
 import { GuessInvite, GuessVerdict } from '@/components/ai-internals/GuessVerdict';
+import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import { WordToNumberLab } from '@/components/ai-internals/WordToNumberLab';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
@@ -64,7 +65,11 @@ const MeaningGuess: React.FC = () => {
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-400">
                         <HelpCircle size={14} /> {g.eyebrow}
                     </span>
-                    <h3 className="mb-2 text-xl font-black text-white md:text-3xl">{g.title}</h3>
+                    <div className="mb-2 flex items-center justify-center gap-2.5">
+                        <h3 className="text-xl font-black text-white md:text-3xl">{g.title}</h3>
+                        {/* הקראה אחת לשאלה יחד עם שורת ההסבר שמתחתיה */}
+                        <SpeakButton text={`${g.title} ${g.subtitle}`} />
+                    </div>
                     <p className="mx-auto mb-4 max-w-xl text-sm text-slate-400 md:text-base">{g.subtitle}</p>
                     <p className="mx-auto mb-6 max-w-xl rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-sm font-bold text-slate-200" dir="ltr">{g.prompt}</p>
                 </div>
@@ -79,23 +84,26 @@ const MeaningGuess: React.FC = () => {
                                 const Icon = meta.icon;
                                 const opt = g.options[meta.id];
                                 return (
-                                    <motion.button
-                                        key={meta.id}
-                                        type="button"
-                                        onClick={() => setChosenId(meta.id)}
-                                        aria-label={`${opt.title}. ${opt.desc}`}
-                                        whileHover={reduce ? undefined : { scale: 1.015 }}
-                                        whileTap={reduce ? undefined : { scale: 0.985 }}
-                                        className="flex flex-col gap-2.5 rounded-2xl border border-slate-700/60 bg-slate-900/50 p-4 text-start transition-colors hover:border-violet-500/50 hover:bg-violet-900/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60"
-                                    >
-                                        <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-slate-950/50">
-                                            <Icon size={18} className="text-violet-300" />
-                                        </span>
-                                        <div>
-                                            <div className="text-base font-black text-white">{opt.title}</div>
-                                            <p className="mt-1 text-sm leading-relaxed text-slate-300">{opt.desc}</p>
-                                        </div>
-                                    </motion.button>
+                                    <div key={meta.id} className="relative">
+                                        <motion.button
+                                            type="button"
+                                            onClick={() => setChosenId(meta.id)}
+                                            aria-label={`${opt.title}. ${opt.desc}`}
+                                            whileHover={reduce ? undefined : { scale: 1.015 }}
+                                            whileTap={reduce ? undefined : { scale: 0.985 }}
+                                            className="flex h-full w-full flex-col gap-2.5 rounded-2xl border border-slate-700/60 bg-slate-900/50 p-4 text-start transition-colors hover:border-violet-500/50 hover:bg-violet-900/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60"
+                                        >
+                                            <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-slate-950/50">
+                                                <Icon size={18} className="text-violet-300" />
+                                            </span>
+                                            <div>
+                                                <div className="text-base font-black text-white">{opt.title}</div>
+                                                <p className="mt-1 text-sm leading-relaxed text-slate-300">{opt.desc}</p>
+                                            </div>
+                                        </motion.button>
+                                        {/* הקראת הכרטיס: אח של כפתור-הכרטיס (button בתוך button אסור) */}
+                                        <SpeakButton text={`${opt.title}. ${opt.desc}`} className="absolute end-2 top-2 z-10" />
+                                    </div>
                                 );
                             })}
                         </div>

@@ -10,6 +10,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Check, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SpeakButton } from './SpeakButton';
 import type { NextTokenContent } from '@/app/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
 
@@ -52,9 +53,13 @@ export const NextTokenGuess: React.FC<{ content: NextTokenContent; reduce: boole
 
                 {/* פאנל הפרומפט: הקשר + המשפט החתוך + סמן מהבהב (לפני), הטוקן הנבחר (אחרי) */}
                 <div className="rounded-2xl border border-slate-700/60 bg-slate-900/60 p-4">
-                    <span className="mb-2 inline-block rounded-md border border-cyan-500/30 bg-cyan-950/40 px-2 py-0.5 text-[13px] font-bold text-cyan-200">
-                        {round.context}
-                    </span>
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                        <span className="rounded-md border border-cyan-500/30 bg-cyan-950/40 px-2 py-0.5 text-[13px] font-bold text-cyan-200">
+                            {round.context}
+                        </span>
+                        {/* הקראת שאלת הסבב: ההקשר + המשפט החתוך. הטקסט מתחלף עם הסבב. */}
+                        <SpeakButton text={`${round.context}. ${round.prefix}`} />
+                    </div>
                     <p className="text-lg font-bold leading-relaxed text-slate-100 md:text-xl">
                         {round.prefix}{' '}
                         {revealed ? (
@@ -84,14 +89,17 @@ export const NextTokenGuess: React.FC<{ content: NextTokenContent; reduce: boole
                             <p className="mb-2.5 mt-4 text-sm font-bold text-slate-400">{content.guessLabel}</p>
                             <div className="flex flex-wrap gap-2.5">
                                 {round.options.map((o) => (
-                                    <button
-                                        key={o.token}
-                                        type="button"
-                                        onClick={() => setPick(o.token)}
-                                        className="rounded-xl border border-slate-600/60 bg-slate-900/60 px-4 py-2.5 text-base font-bold text-slate-100 transition-colors hover:border-cyan-400/60 hover:bg-cyan-900/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60"
-                                    >
-                                        {o.token}
-                                    </button>
+                                    <span key={o.token} className="relative inline-flex">
+                                        <button
+                                            type="button"
+                                            onClick={() => setPick(o.token)}
+                                            className="rounded-xl border border-slate-600/60 bg-slate-900/60 ps-4 pe-11 py-2.5 text-base font-bold text-slate-100 transition-colors hover:border-cyan-400/60 hover:bg-cyan-900/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60"
+                                        >
+                                            {o.token}
+                                        </button>
+                                        {/* הקראת המועמד: אח של כפתור-הבחירה (button בתוך button אסור) */}
+                                        <SpeakButton text={o.token} className="absolute end-1.5 top-1/2 z-10 -translate-y-1/2" />
+                                    </span>
                                 ))}
                             </div>
                         </motion.div>
