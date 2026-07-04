@@ -129,19 +129,13 @@ export const ReadHeadLab: React.FC<ReadHeadLabProps> = ({ text, mode, accent }) 
     const flipCount = flipAt.filter(Boolean).length;
     const lastFlipIndex = flipAt.lastIndexOf(true);
 
-    const [head, setHead] = useState(Math.max(0, n - 1));
+    // ברירת המחדל: המילה הראשונה. אין הפעלה אוטומטית - בכניסה הראשונה הלומד רואה "הרץ" ופותח את הסריקה בעצמו.
+    const [head, setHead] = useState(0);
     const [playing, setPlaying] = useState(false);
 
     const clampedHead = Math.min(Math.max(0, head), Math.max(0, n - 1));
     const atEnd = clampedHead >= n - 1;
     const isRunning = playing && !atEnd;
-
-    // הפעלה אוטומטית מהמילה הראשונה (אלא אם יש העדפת תנועה מופחתת).
-    useEffect(() => {
-        if (reduce || n <= 1) return;
-        const id = setTimeout(() => { setHead(0); setPlaying(true); }, 0);
-        return () => clearTimeout(id);
-    }, [reduce, n, selectedId]);
 
     // לולאת הסורק. נעצרת מעצמה בסוף.
     useEffect(() => {

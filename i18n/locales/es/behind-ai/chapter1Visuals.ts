@@ -151,7 +151,7 @@ export const chapter1Visuals = {
         title: 'Cabezal de lectura',
         subtitle: 'El cursor que se mueve sobre la frase palabra por palabra',
         introHeadLabel: 'El cabezal de lectura',
-        introMid: ' es el cursor que se mueve sobre la frase palabra por palabra, como un dedo que sigue el texto al leer. En cada parada se ejecuta el mismo motor sobre las palabras leídas hasta ahora, así puedes observar al modelo ',
+        introMid: ' se detiene después de cada palabra. En cada parada el mismo motor recalcula la opción líder a partir de lo leído hasta ahora, así puedes observar al modelo ',
         introEmph: 'cambiar de opinión mientras lee',
         introTail: '. Elige un ejemplo y ejecuta el escáner.',
         distinctNote: 'El mapa de arriba muestra todo el proceso a la vez. El cabezal de lectura muestra lo que este no puede: cómo la opción líder cambia mientras lee, palabra por palabra, a tu propio ritmo.',
