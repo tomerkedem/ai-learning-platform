@@ -1,4 +1,4 @@
-// שלד "מעבדת בניית התשובה" של פרק 5 ("איך AI בונה תשובה"): מבנה לוגי בלבד, בלי טקסט
+// שלד "מעבדת לולאת הייצור" של פרק 10 (Generation Loop): מבנה לוגי בלבד, בלי טקסט
 // תצוגה. מודל לימודי דטרמיניסטי, אין כאן LLM אמיתי, קריאת API או רשת.
 //
 // הרעיון: אותו פרומפט, אותה לולאת ייצור. בכל צעד המודל שוקל כמה חלקי המשך, בוחר אחד
@@ -8,7 +8,7 @@
 // ── הפרדת מבנה מטקסט (Phase 2) ──
 // כאן נשאר רק המבנה: מזהי מסלולים, גוון (accent), מידות התאמה (fit) ואינדקס החלק הנבחר
 // בכל צעד. כל טקסט התצוגה (פרומפט, פתיחות, מה השתנה, חלקי המשך, תוויות, סיכומים) עבר
-// למילון השפה (i18n/locales/<locale>/behind-ai/chapter5Lab.ts, תת-המרחב scenario).
+// למילון השפה (i18n/locales/<locale>/behind-ai/generationLoopLab.ts, תת-המרחב scenario).
 // composeScenario ממזג שלד + טקסט מתורגם לכדי תרחיש מוכן לרינדור. הבחירה מזוהה לפי
 // chosenIndex (אינדקס), לא לפי השוואת מחרוזות עברית.
 //
@@ -193,4 +193,65 @@ export function chosenFragmentsUpTo(branch: BuildBranch, stepCount: number): str
 /** מספר הצעדים הכולל במסלול, כולל הפתיחה. */
 export function totalSteps(branch: BuildBranch): number {
     return branch.steps.length + 1;
+}
+
+/* ════════════════════════ מצב ב: וריאנטים של הוראה (prompt variants) ════════════════════════ */
+// המצב השני של המעבדה: אותה משימה (מענה ללקוח על חבילה שהתעכבה), אבל ההוראה משתנה.
+// כל וריאנט הוא מסלול ייצור דטרמיניסטי וקבוע מראש, בלי אקראיות ובלי קריאת מודל אמיתי.
+// המבנה כאן (מזהה, גוון, סוג התוצאה) אינו תלוי-שפה; כל הטקסט חי במילון (lab.variants.items).
+// המטרה הלימודית: להראות שההוראה שנכתבת בהתחלה נכנסת להקשר ומעצבת את כל המסלול והתוצאה.
+
+/** מזהי הוריאנטים של ההוראה. הסדר קובע את סדר הכפתורים. */
+export type PromptVariantId = 'vague' | 'confident' | 'careful' | 'structured';
+
+/** סוג התוצאה של וריאנט. קובע את גוון התג ואם מוצגת אזהרה. */
+export type VariantOutcome = 'generic' | 'caution' | 'careful' | 'stable';
+
+/** שלד מבני של וריאנט הוראה (לא תלוי שפה). */
+export interface VariantSkeleton {
+    id: PromptVariantId;
+    accent: Accent;
+    outcome: VariantOutcome;
+}
+
+export const PROMPT_VARIANTS_SKELETON: VariantSkeleton[] = [
+    { id: 'vague', accent: 'slate', outcome: 'generic' },
+    { id: 'confident', accent: 'rose', outcome: 'caution' },
+    { id: 'careful', accent: 'emerald', outcome: 'careful' },
+    { id: 'structured', accent: 'violet', outcome: 'stable' },
+];
+
+/** טקסט מתורגם לוריאנט אחד. caution קיים רק לוריאנט עם ודאות לא מבוססת. */
+export interface VariantText {
+    /** שם קצר לכפתור הוריאנט. */
+    label: string;
+    /** ההוראה עצמה, כפי שהיא נכתבת. */
+    prompt: string;
+    /** חלקי הבנייה, לפי סדר. המחשה לימודית מפושטת של ייצור צעד אחר צעד. */
+    chunks: string[];
+    /** התשובה שנבנתה, טקסט מלא. */
+    finalAnswer: string;
+    /** תווית התג (למשל "כללי", "ביטחון לא מבוסס"). */
+    outcomeLabel: string;
+    /** מה קרה במסלול הזה ולמה. */
+    outcomeNote: string;
+    /** אזהרה, רק כשההוראה דוחפת לוודאות שלא נבדקה. */
+    caution?: string;
+}
+
+/** וריאנט הוראה אחרי מיזוג שלד + טקסט. */
+export interface PromptVariant extends VariantText {
+    id: PromptVariantId;
+    accent: Accent;
+    outcome: VariantOutcome;
+}
+
+/** ממזג את שלד הוריאנטים עם הטקסט המתורגם, לפי מזהה. שומר על סדר הכפתורים. */
+export function composeVariants(text: Record<PromptVariantId, VariantText>): PromptVariant[] {
+    return PROMPT_VARIANTS_SKELETON.map((vs) => ({
+        id: vs.id,
+        accent: vs.accent,
+        outcome: vs.outcome,
+        ...text[vs.id],
+    }));
 }

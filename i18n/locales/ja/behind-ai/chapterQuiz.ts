@@ -25,7 +25,7 @@ export const chapterQuiz = {
         7: 'Context Window',
         8: 'Logits & Softmax',
         9: 'Decoding',
-        10: 'AI はどう答えを作るか',
+        10: 'Generation Loop',
         11: 'ツールの選択',
         12: 'Tool Call と判断ループ',
         13: '停止、承認、責任',

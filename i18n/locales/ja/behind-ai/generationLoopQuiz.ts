@@ -1,9 +1,9 @@
-// i18n/locales/ja/behind-ai/chapter5Quiz.ts
-// Japanese Chapter 5 quiz display text. Shape source: ../../he/behind-ai/chapter5Quiz.
+// i18n/locales/ja/behind-ai/generationLoopQuiz.ts
+// Japanese Chapter 5 quiz display text. Shape source: ../../he/behind-ai/generationLoopQuiz.
 // Option order matches the Hebrew source so the stored correctAnswer index stays valid.
 // Uses プロンプト (katakana) for prompt; concept keys stay Hebrew, conceptLabels translated.
 
-export const chapter5Quiz = {
+export const generationLoopQuiz = {
     title: '理解度チェック：AIはどのように回答を組み立てるか',
     subtitle: 'この章で学んだことを研ぎ澄ます5つの問い',
     startLabel: 'チェックを始める',
@@ -59,23 +59,15 @@ export const chapter5Quiz = {
         },
         5: {
             question:
-                '友人がこう言います。「モデルはもう完全な回答を頭の中に持っていて、それをそのまま打ち出しているだけだ」。この発言のどこが不正確でしょうか。',
+                '「返事しておいて」ではなく、「共感、わかっていること、確認が必要なこと、の三部で」という返信を求めました。なぜ構造化された指示のほうが安定した回答になるのでしょうか。',
             options: [
-                '誤りはない。完全な回答は実際に保存され、そのまま表示される',
-                'あらかじめ保存された完全な回答はない。少しずつ組み立てられ、各部分はその前に書かれた内容に依存する',
-                '誤りは、モデルが打つのではなく話すこと',
-                '誤りは、モデルが複数の完全な回答を持って一つを選ぶこと',
+                '構造化された指示は、モデルに事実を世界と照らして確認させるから',
+                '指示の各部分が文脈に入り、次の各ステップを制約するので、ループが求めた構造に沿って組み立てられるから',
+                '長い回答は短い回答より常に正確だから',
+                '構造によって、モデルが記憶から出来合いの回答を取り出すから',
             ],
             explanation:
-                'あらかじめ用意された完全な回答はありません。モデルは部分ごとに組み立て、各部分はすでに書かれた文脈に基づいて作られます。だからこそ同じ問いでも毎回少しずつ違うように組み立てられ、固定の引用のように繰り返されるわけではありません。',
+                '構造化された指示や慎重な言い回しは最初から文脈に入り、その文脈が各ステップの選択を制約します。そのためループは求めた構造に沿って組み立てられ、ぶれにくくなります。あいまいな指示は自由度が高く、その分だけ安定しません。ただし、安定は真実ではありません。よい構造は組み立てを安定させますが、事実を検証はしません。',
         },
-    },
-
-    conceptLabels: {
-        'בנייה צעד אחר צעד': '一歩ずつの組み立て',
-        'פלט הופך לקלט': '出力が入力になる',
-        'צעד מוקדם מכוון': '早い段階が方向を決める',
-        'ייצור אינו אימות': '生成は検証ではない',
-        'אין תשובה מוכנה': '完成した回答はない',
     },
 };

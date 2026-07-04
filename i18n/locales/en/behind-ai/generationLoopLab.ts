@@ -1,10 +1,10 @@
-// i18n/locales/en/behind-ai/chapter5Lab.ts
-// English Answer Builder Lab strings. Shape source: ../../he/behind-ai/chapter5Lab.
+// i18n/locales/en/behind-ai/generationLoopLab.ts
+// English Answer Builder Lab strings. Shape source: ../../he/behind-ai/generationLoopLab.
 // scenario candidate order matches the skeleton (first candidate = chosen). The first
 // step's fragments are capitalized so the assembled answer reads cleanly after the
 // opener: "Opener. Fragment, fragment, and fragment."
 
-export const chapter5Lab = {
+export const generationLoopLab = {
     loop: {
         contextSoFar: 'Context so far',
         candidates: 'Possible parts',
@@ -32,6 +32,57 @@ export const chapter5Lab = {
 
     transparencyNote:
         'This is a simplified educational illustration. Real models generate the answer in smaller units and over a very large vocabulary. We work at the level of sentence parts so the loop is clear. The bars illustrate degree of fit, not a real computation.',
+
+    // ── lab mode toggle ──
+    modeToggleLabel: 'Lab mode',
+    modeA: 'Watch it build',
+    modeB: 'Change the instruction',
+
+    // ── Mode B: change the instruction (prompt variants) ──
+    variants: {
+        intro: 'Same task: the model writes a reply to a customer about a delayed package. Change the instruction, and watch how it enters the context and shapes the whole answer built after it.',
+        pickLabel: 'Pick an instruction',
+        promptLabel: 'The instruction',
+        buildsLabel: 'How the answer is built, part by part',
+        finalLabel: 'The answer built',
+        cautionLabel: 'Note:',
+        disclaimer: 'These parts are a simplified educational illustration of step-by-step generation, not a real trace from a model.',
+        items: {
+            vague: {
+                label: 'Vague',
+                prompt: 'Just answer him.',
+                chunks: ['Sorry for the wait', 'we will look into it', 'and update you soon'],
+                finalAnswer: 'Sorry for the wait. We will look into it and update you soon.',
+                outcomeLabel: 'Generic',
+                outcomeNote: 'The instruction gave no direction, so the loop built a generic, safe answer that does not really help the customer. No structure, no details, and no practical step.',
+            },
+            confident: {
+                label: 'Too confident',
+                prompt: 'Tell him the package will arrive tomorrow.',
+                chunks: ['Your package is on the way', 'it will arrive tomorrow', 'no need to worry', 'and sorry for the delay'],
+                finalAnswer: 'Your package is on the way and will arrive tomorrow. No need to worry, and sorry for the delay.',
+                outcomeLabel: 'Unsupported certainty',
+                outcomeNote: 'The instruction pushed the loop into a confident opening, and once that was written, the rest was built around certainty. The answer is fluent and convincing, but it promises a time that was never checked.',
+                caution: 'No step in the loop checked the package status. Fluency is not truth, and an answer like this can mislead the customer.',
+            },
+            careful: {
+                label: 'Careful',
+                prompt: 'Write a short, helpful reply, without guessing a status that was not checked.',
+                chunks: ['Sorry for the delay', 'we cannot confirm an arrival time', 'without checking the status', 'and we would be glad to check for you'],
+                finalAnswer: 'Sorry for the delay. We cannot confirm an arrival time without checking the status, and we would be glad to check for you.',
+                outcomeLabel: 'Careful',
+                outcomeNote: 'The instruction explicitly asked not to guess, and that guidance entered the context. So the loop avoided an unsupported promise and built a helpful, accurate reply.',
+            },
+            structured: {
+                label: 'Structured',
+                prompt: 'Write the reply in three parts: empathy, what is known, and what needs checking.',
+                chunks: ['Empathy: sorry for the delay', 'What is known: the order was received and shipped', 'What to check: the current status with the carrier', 'and we will update you as soon as we know'],
+                finalAnswer: 'Sorry for the delay. What is known: the order was received and shipped. What to check: the current status with the carrier. We will update you as soon as we have information.',
+                outcomeLabel: 'Structured and stable',
+                outcomeNote: 'The instruction set a three-part structure, and each part entered the context and shaped the next step. So the loop built a stable reply that keeps the structure you asked for and separates what is known from what needs checking.',
+            },
+        },
+    },
 
     scenario: {
         prompt: "My package hasn't arrived. What should I do?",

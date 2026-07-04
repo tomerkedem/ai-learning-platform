@@ -25,7 +25,7 @@ export const chapterQuiz = {
         7: 'Context Window',
         8: 'Logits & Softmax',
         9: 'Decoding',
-        10: 'How AI Builds an Answer',
+        10: 'Generation Loop',
         11: 'Choosing a Tool',
         12: 'Tool Call and the Decision Loop',
         13: 'Stopping, Approval and Responsibility',

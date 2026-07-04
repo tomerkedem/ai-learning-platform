@@ -1,9 +1,9 @@
-// i18n/locales/es/behind-ai/chapter5Lab.ts
-// Spanish Answer Builder Lab strings. Shape source: ../../he/behind-ai/chapter5Lab.
+// i18n/locales/es/behind-ai/generationLoopLab.ts
+// Spanish Answer Builder Lab strings. Shape source: ../../he/behind-ai/generationLoopLab.
 // The first step's fragments are capitalized so the assembled answer reads cleanly
 // after the opener. Uses the shorter "Contacta con atención al cliente" opener.
 
-export const chapter5Lab = {
+export const generationLoopLab = {
     loop: {
         contextSoFar: 'Contexto hasta ahora',
         candidates: 'Partes posibles',
@@ -31,6 +31,57 @@ export const chapter5Lab = {
 
     transparencyNote:
         'Esta es una ilustración educativa simplificada. Los modelos reales generan la respuesta en unidades más pequeñas y sobre un vocabulario muy grande. Trabajamos a nivel de partes de frase para que el bucle quede claro. Las barras ilustran el grado de ajuste, no un cálculo real.',
+
+    // ── selector de modo del laboratorio ──
+    modeToggleLabel: 'Modo del laboratorio',
+    modeA: 'Míralo construirse',
+    modeB: 'Cambia la instrucción',
+
+    // ── Modo B: cambia la instrucción (prompt variants) ──
+    variants: {
+        intro: 'La misma tarea: el modelo escribe una respuesta a un cliente sobre un paquete retrasado. Cambia la instrucción y observa cómo entra en el contexto y da forma a toda la respuesta que se construye después.',
+        pickLabel: 'Elige una instrucción',
+        promptLabel: 'La instrucción',
+        buildsLabel: 'Cómo se construye la respuesta, parte a parte',
+        finalLabel: 'La respuesta construida',
+        cautionLabel: 'Atención:',
+        disclaimer: 'Estas partes son una ilustración educativa simplificada de la generación paso a paso, no un rastro real de un modelo.',
+        items: {
+            vague: {
+                label: 'Vaga',
+                prompt: 'Contéstale.',
+                chunks: ['Lamentamos la espera', 'lo revisaremos', 'y te avisaremos pronto'],
+                finalAnswer: 'Lamentamos la espera. Lo revisaremos y te avisaremos pronto.',
+                outcomeLabel: 'Genérica',
+                outcomeNote: 'La instrucción no dio dirección, así que el bucle construyó una respuesta genérica y segura que no ayuda de verdad al cliente. Sin estructura, sin detalles y sin un paso práctico.',
+            },
+            confident: {
+                label: 'Demasiado segura',
+                prompt: 'Dile que el paquete llegará mañana.',
+                chunks: ['Tu paquete está en camino', 'llegará mañana', 'no te preocupes', 'y lamentamos el retraso'],
+                finalAnswer: 'Tu paquete está en camino y llegará mañana. No te preocupes, y lamentamos el retraso.',
+                outcomeLabel: 'Certeza no fundamentada',
+                outcomeNote: 'La instrucción empujó al bucle a una apertura segura, y una vez escrita, el resto se construyó en torno a la certeza. La respuesta es fluida y convincente, pero promete una fecha que nunca se comprobó.',
+                caution: 'Ningún paso del bucle comprobó el estado del paquete. La fluidez no es verdad, y una respuesta así puede engañar al cliente.',
+            },
+            careful: {
+                label: 'Prudente',
+                prompt: 'Escribe una respuesta breve y amable, sin adivinar un estado que no se ha comprobado.',
+                chunks: ['Lamentamos el retraso', 'no podemos confirmar una fecha de llegada', 'sin comprobar el estado', 'y con gusto lo comprobamos por ti'],
+                finalAnswer: 'Lamentamos el retraso. No podemos confirmar una fecha de llegada sin comprobar el estado, y con gusto lo comprobamos por ti.',
+                outcomeLabel: 'Prudente',
+                outcomeNote: 'La instrucción pidió explícitamente no adivinar, y esa indicación entró en el contexto. Así el bucle evitó una promesa infundada y construyó una respuesta útil y precisa.',
+            },
+            structured: {
+                label: 'Estructurada',
+                prompt: 'Escribe la respuesta en tres partes: empatía, lo que se sabe y lo que hay que comprobar.',
+                chunks: ['Empatía: lamentamos el retraso', 'Lo que se sabe: el pedido se recibió y se envió', 'Lo que hay que comprobar: el estado actual con la empresa de transporte', 'y te avisaremos en cuanto sepamos'],
+                finalAnswer: 'Lamentamos el retraso. Lo que se sabe: el pedido se recibió y se envió. Lo que hay que comprobar: el estado actual con la empresa de transporte. Te avisaremos en cuanto tengamos información.',
+                outcomeLabel: 'Estructurada y estable',
+                outcomeNote: 'La instrucción fijó una estructura de tres partes, y cada parte entró en el contexto y dio forma al siguiente paso. Así el bucle construyó una respuesta estable que mantiene la estructura que pediste y separa lo que se sabe de lo que hay que comprobar.',
+            },
+        },
+    },
 
     scenario: {
         prompt: 'Mi paquete no llegó. ¿Qué hago?',

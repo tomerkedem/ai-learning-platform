@@ -1,9 +1,9 @@
-// i18n/locales/ja/behind-ai/chapter5Lab.ts
-// Japanese Answer Builder Lab strings. Shape source: ../../he/behind-ai/chapter5Lab.
+// i18n/locales/ja/behind-ai/generationLoopLab.ts
+// Japanese Answer Builder Lab strings. Shape source: ../../he/behind-ai/generationLoopLab.
 // Uses プロンプト (katakana). Japanese assembled-answer punctuation (。、) comes from
 // i18n/format.ts.
 
-export const chapter5Lab = {
+export const generationLoopLab = {
     loop: {
         contextSoFar: 'ここまでの文脈',
         candidates: '続きの候補',
@@ -31,6 +31,57 @@ export const chapter5Lab = {
 
     transparencyNote:
         'これは簡略化した学習用の図解です。実際のモデルはもっと小さな単位で、とても大きな語彙の上で回答を生成します。ここではループがはっきりするよう、文の部分の単位で扱っています。バーは適合度の目安であり、本物の計算ではありません。',
+
+    // ── ラボのモード切り替え ──
+    modeToggleLabel: 'ラボのモード',
+    modeA: '組み立てを見る',
+    modeB: '指示を変える',
+
+    // ── モード B: 指示を変える (prompt variants) ──
+    variants: {
+        intro: '同じ作業：モデルは、遅延した荷物について顧客への返信を書きます。指示を変えて、それが文脈に入り、あとに組み立てられる回答全体をどう形づくるかを見てみましょう。',
+        pickLabel: '指示を選ぶ',
+        promptLabel: '指示',
+        buildsLabel: '回答がどう組み立てられるか、部分ごとに',
+        finalLabel: '組み立てられた回答',
+        cautionLabel: '注意：',
+        disclaimer: 'ここでの部分は、一歩ずつの生成を示す簡略化した学習用の図解であり、モデルから取り出した本物の記録ではありません。',
+        items: {
+            vague: {
+                label: 'あいまい',
+                prompt: '返事しておいて。',
+                chunks: ['お待たせして申し訳ありません', '確認いたします', 'のちほどご連絡します'],
+                finalAnswer: 'お待たせして申し訳ありません。確認して、のちほどご連絡します。',
+                outcomeLabel: '一般的',
+                outcomeNote: '指示が方向を示さなかったので、ループは一般的で無難な、顧客の役に本当には立たない回答を組み立てました。構造も、詳細も、実際の一歩もありません。',
+            },
+            confident: {
+                label: '自信過剰',
+                prompt: '荷物は明日届くと伝えて。',
+                chunks: ['お荷物は配送中です', '明日届きます', 'ご心配は要りません', '遅延をお詫びします'],
+                finalAnswer: 'お荷物は配送中で、明日届きます。ご心配は要りません。遅延をお詫びします。',
+                outcomeLabel: '根拠のない断定',
+                outcomeNote: '指示がループを自信のある書き出しへ押し出し、それが書かれた時点で、あとはすべて断定を軸に組み立てられました。回答はなめらかで説得力がありますが、確認していない期日を約束しています。',
+                caution: 'ループのどの段階でも荷物の状況は確認していません。なめらかさは真実ではなく、このような回答は顧客を誤解させかねません。',
+            },
+            careful: {
+                label: '慎重',
+                prompt: '確認していない状況は推測せず、短く丁寧な返信を書いて。',
+                chunks: ['遅延をお詫びします', '到着日は確定できません', '状況を確認しないままでは', 'こちらで確認いたします'],
+                finalAnswer: '遅延をお詫びします。状況を確認しないままでは到着日を確定できません。こちらで確認いたします。',
+                outcomeLabel: '慎重',
+                outcomeNote: '指示は推測しないよう明確に求め、その指示が文脈に入りました。そのためループは根拠のない約束を避け、丁寧で正確な返信を組み立てました。',
+            },
+            structured: {
+                label: '構造化',
+                prompt: '共感、わかっていること、確認が必要なこと、の三部で返信を書いて。',
+                chunks: ['共感：遅延をお詫びします', 'わかっていること：注文を受け付け、発送済みです', '確認が必要なこと：配送業者での現在の状況', 'わかり次第ご連絡します'],
+                finalAnswer: '遅延をお詫びします。わかっていること：注文を受け付け、発送済みです。確認が必要なこと：配送業者での現在の状況。情報がわかり次第ご連絡します。',
+                outcomeLabel: '構造化されて安定',
+                outcomeNote: '指示が三部構成を定め、各部分が文脈に入って次の一歩を決めました。そのためループは、求めた構造を保ち、わかっていることと確認が必要なことを分けた安定した回答を組み立てました。',
+            },
+        },
+    },
 
     scenario: {
         prompt: '荷物が届きません。どうすればいいですか。',

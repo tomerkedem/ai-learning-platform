@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Sparkles, RotateCcw, Check, ArrowLeftRight, CornerLeftDown, Repeat } from 'lucide-react';
+import { Sparkles, RotateCcw, Check, ArrowLeftRight, CornerLeftDown, Repeat, AlertTriangle, Eye, SlidersHorizontal } from 'lucide-react';
 
 import { ACCENTS } from './accents';
 import { useT } from '@/i18n/useT';
@@ -12,8 +12,10 @@ import {
     getBranch,
     chosenFragmentsUpTo,
     totalSteps,
+    composeVariants,
     type BuildBranch,
     type FragmentCandidate,
+    type PromptVariantId,
 } from '@/app/behind-the-scenes-ai/chapter-10/answerBuildSteps';
 
 /** עמודת "מידת התאמה" להמחשה לימודית בלבד. */
@@ -35,7 +37,7 @@ const FitBar: React.FC<{ value: number; accent: keyof typeof ACCENTS; muted?: bo
 /** שורת חלק המשך אחד מתוך האפשרויות שנשקלות בצעד. */
 const CandidateRow: React.FC<{ cand: FragmentCandidate; accent: keyof typeof ACCENTS }> = ({ cand, accent }) => {
     const { t } = useT();
-    const lab = t.behindAi.chapter5.lab;
+    const lab = t.behindAi.generationLoop.lab;
     const a = ACCENTS[accent];
     const lead = !!cand.leading;
     return (
@@ -58,22 +60,18 @@ const CandidateRow: React.FC<{ cand: FragmentCandidate; accent: keyof typeof ACC
 };
 
 /**
- * AnswerBuilderLab - מעבדת בניית התשובה של פרק 5.
- * מציגה את לולאת הייצור: פרומפט קבוע, הקשר שמצטבר, חלקי המשך אפשריים, החלק שנבחר
- * שמצטרף להקשר, והשינוי באפשרויות בצעד הבא. שני מסלולים קבועים מתפצלים מהבחירה
- * הראשונה כדי להראות שצעד מוקדם מכוון את כל מה שאחריו. דטרמיניסטי לחלוטין, בלי API.
- *
- * השלד המבני מגיע מ-answerBuildSteps.ts, והטקסט מהמילון (lab.scenario). composeScenario
- * ממזג ביניהם לפי locale. כיוון הכתיבה (dir) נגזר מהרישום, לא מהנחת RTL.
+ * WatchBuildMode - מצב א "צפו בבנייה". מציג את לולאת הייצור על פרומפט קבוע: הקשר מצטבר,
+ * חלקי המשך אפשריים, החלק שנבחר שמצטרף להקשר, והשינוי באפשרויות בצעד הבא. שני מסלולים
+ * קבועים מתפצלים מהבחירה הראשונה כדי להראות שצעד מוקדם מכוון את כל מה שאחריו. התנהגות זו
+ * נשמרה במלואה ממעבדת הפרק המקורית. דטרמיניסטי לחלוטין, בלי API.
  */
-export const AnswerBuilderLab: React.FC = () => {
+const WatchBuildMode: React.FC = () => {
     const reduce = useReducedMotion();
-    const { t, dir } = useT();
-    const c5 = t.behindAi.chapter5;
-    const lab = c5.lab;
+    const { t } = useT();
+    const c10 = t.behindAi.generationLoop;
+    const lab = c10.lab;
     // פורמטרים תלויי-תוכן משתמשים בשפת התוכן בפועל (contentLocale), לא בשפת ה-UI.
-    // כך תוכן עברית בנפילה (כש-?lang=ja וכו') מקבל פיסוק עברי ולא פיסוק של שפת ה-UI.
-    const contentLocale = c5.contentLocale;
+    const contentLocale = c10.contentLocale;
 
     // מיזוג שלד + טקסט מתורגם לתרחיש מוכן לרינדור (נבנה מחדש כשהשפה מתחלפת).
     const scenario = useMemo(() => composeScenario(lab.scenario), [lab.scenario]);
@@ -109,7 +107,7 @@ export const AnswerBuilderLab: React.FC = () => {
     const accent = branch ? branch.accent : 'purple';
 
     return (
-        <div className="space-y-4" dir={dir}>
+        <div className="space-y-4">
             {/* תרשים הלולאה: קבוע, מסביר את הרעיון של כל המעבדה */}
             <div className="flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-3 text-center text-xs font-bold">
                 <span className="rounded-full border border-slate-600/60 bg-slate-950/40 px-3 py-1 text-slate-200">{lab.loop.contextSoFar}</span>
@@ -289,6 +287,164 @@ export const AnswerBuilderLab: React.FC = () => {
             <div className="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500">
                 {lab.transparencyNote}
             </div>
+        </div>
+    );
+};
+
+/**
+ * InstructionMode - מצב ב "שנו את ההוראה". אותה משימה (מענה ללקוח על חבילה שהתעכבה),
+ * אבל ההוראה משתנה: עמומה, בטוחה מדי, זהירה, מובנית. כל וריאנט הוא מסלול ייצור דטרמיניסטי
+ * וקבוע מראש, שמראה איך ההוראה נכנסת להקשר ומעצבת את כל המסלול והתוצאה. אלה חלקים לימודיים
+ * מפושטים, לא עקבה אמיתית מתוך מודל. בלי אקראיות ובלי API.
+ */
+const InstructionMode: React.FC = () => {
+    const reduce = useReducedMotion();
+    const { t, dir } = useT();
+    const lab = t.behindAi.generationLoop.lab;
+    const v = lab.variants;
+    const variants = useMemo(() => composeVariants(v.items), [v.items]);
+    const [variantId, setVariantId] = useState<PromptVariantId>('vague');
+    const selected = variants.find((x) => x.id === variantId) ?? variants[0];
+    const a = ACCENTS[selected.accent];
+
+    return (
+        <div className="space-y-4">
+            <p className="text-sm leading-relaxed text-slate-300">{v.intro}</p>
+
+            {/* בורר ההוראה */}
+            <div>
+                <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{v.pickLabel}</div>
+                <div className="grid grid-cols-2 gap-2">
+                    {variants.map((item) => {
+                        const ia = ACCENTS[item.accent];
+                        const active = item.id === variantId;
+                        return (
+                            <button
+                                key={item.id}
+                                type="button"
+                                onClick={() => setVariantId(item.id)}
+                                aria-pressed={active}
+                                className={`rounded-xl border p-3 text-start transition-colors ${active ? `${ia.border} ${ia.bgSoft}` : 'border-slate-700/50 bg-slate-950/30 hover:border-slate-600'}`}
+                            >
+                                <div className={`text-sm font-bold ${active ? ia.text : 'text-slate-200'}`}>{item.label}</div>
+                                <div className="mt-1 text-[11px] leading-snug text-slate-400">&quot;{item.prompt}&quot;</div>
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* פירוט הוריאנט הנבחר */}
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={variantId}
+                    initial={reduce ? false : { opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={reduce ? undefined : { opacity: 0, y: -8 }}
+                    transition={reduce ? { duration: 0 } : { duration: 0.25 }}
+                    className="space-y-3"
+                >
+                    {/* ההוראה שנבחרה */}
+                    <div className="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4">
+                        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{v.promptLabel}</div>
+                        <p className="mt-1 text-sm font-bold text-slate-100">&quot;{selected.prompt}&quot;</p>
+                    </div>
+
+                    {/* איך זה נבנה: חלק אחרי חלק */}
+                    <div>
+                        <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{v.buildsLabel}</div>
+                        <div className="space-y-1.5">
+                            {selected.chunks.map((c, i) => (
+                                <motion.div
+                                    key={`${variantId}-${i}`}
+                                    initial={reduce ? false : { opacity: 0, x: dir === 'rtl' ? 8 : -8 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={reduce ? { duration: 0 } : { duration: 0.25, delay: i * 0.12 }}
+                                    className="flex items-center gap-2 rounded-lg border border-slate-700/50 bg-slate-900/40 px-3 py-2"
+                                >
+                                    <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${a.bgSoft} ${a.text} text-[11px] font-bold`} dir="ltr">{i + 1}</span>
+                                    <span className="text-sm text-slate-200">{c}</span>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* התשובה שנבנתה */}
+                    <div className={`rounded-2xl border ${a.border} ${a.bgSoft} p-4`}>
+                        <div className={`mb-1 text-[10px] font-bold uppercase tracking-[0.2em] ${a.text}`}>{v.finalLabel}</div>
+                        <p className="text-sm font-bold leading-relaxed text-slate-100">{selected.finalAnswer}</p>
+                    </div>
+
+                    {/* מה קרה במסלול הזה */}
+                    <div className="flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-900/40 p-3">
+                        <span className={`mt-0.5 inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 text-[10px] font-bold ${a.border} ${a.text}`}>{selected.outcomeLabel}</span>
+                        <span className="text-sm leading-relaxed text-slate-300">{selected.outcomeNote}</span>
+                    </div>
+
+                    {/* אזהרה, רק לוריאנט שדוחף לוודאות שלא נבדקה */}
+                    {selected.caution && (
+                        <div className="flex items-start gap-2 rounded-xl border border-rose-500/40 bg-rose-950/15 p-3">
+                            <AlertTriangle size={16} className="mt-0.5 shrink-0 text-rose-300" />
+                            <span className="text-sm leading-relaxed text-rose-100">
+                                <span className="font-bold text-rose-200">{v.cautionLabel} </span>
+                                {selected.caution}
+                            </span>
+                        </div>
+                    )}
+                </motion.div>
+            </AnimatePresence>
+
+            {/* הערת שקיפות (המחשה לימודית) */}
+            <div className="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500">
+                {v.disclaimer}
+            </div>
+        </div>
+    );
+};
+
+/**
+ * GenerationLoopLab - מעבדת לולאת הייצור של פרק 10. שני מצבים:
+ *   א. "צפו בבנייה" (WatchBuildMode): פרומפט קבוע, שתי פתיחות שמתפצלות, כדי לראות שצעד
+ *      מוקדם מכוון את כל ההמשך. זו התנהגות המעבדה המקורית, נשמרה כמות שהיא.
+ *   ב. "שנו את ההוראה" (InstructionMode): אותה משימה, הוראה משתנה (עמומה/בטוחה מדי/זהירה/
+ *      מובנית), כדי לראות איך ההוראה מעצבת את כל התשובה, ומתי נוצרת ודאות לא מבוססת.
+ * שני המצבים דטרמיניסטיים לחלוטין, בלי מודל אמיתי וללא קריאת רשת. כיוון הכתיבה מהרישום.
+ */
+export const GenerationLoopLab: React.FC = () => {
+    const { t, dir } = useT();
+    const lab = t.behindAi.generationLoop.lab;
+    const [mode, setMode] = useState<'watch' | 'instruction'>('watch');
+
+    const tabs = [
+        { id: 'watch' as const, label: lab.modeA, icon: Eye },
+        { id: 'instruction' as const, label: lab.modeB, icon: SlidersHorizontal },
+    ];
+
+    return (
+        <div className="space-y-4" dir={dir}>
+            {/* בורר מצב המעבדה */}
+            <div className="flex gap-1 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-1" role="tablist" aria-label={lab.modeToggleLabel}>
+                {tabs.map((tab) => {
+                    const active = tab.id === mode;
+                    const Icon = tab.icon;
+                    return (
+                        <button
+                            key={tab.id}
+                            type="button"
+                            role="tab"
+                            aria-selected={active}
+                            onClick={() => setMode(tab.id)}
+                            className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold transition-colors ${
+                                active ? 'border border-violet-500/40 bg-violet-500/20 text-violet-100' : 'border border-transparent text-slate-400 hover:text-slate-200'
+                            }`}
+                        >
+                            <Icon size={15} aria-hidden /> {tab.label}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {mode === 'watch' ? <WatchBuildMode /> : <InstructionMode />}
         </div>
     );
 };

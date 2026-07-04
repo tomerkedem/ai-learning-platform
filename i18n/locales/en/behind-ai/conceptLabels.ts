@@ -16,7 +16,7 @@ export const conceptLabels: Record<string, string> = {
     "UX חושף תהליך": "UX reveals the process",
     "אי-שימוש כצעד נכון": "Not using is a valid step",
     "אימות דורש מקור": "Verification needs a source",
-    "אין תשובה מוכנה": "No ready answer",
+    "מבנה מייצב פלט": "Structure stabilizes output",
     "ארבע התנהגויות": "Four behaviors",
     "ארבעת השערים": "The four gates",
     "בחירה בין Chat ל-Agent": "Choosing Chat or Agent",

@@ -1,11 +1,11 @@
-// i18n/locales/en/behind-ai/chapter5Quiz.ts
-// English Chapter 5 quiz display text. Shape source: ../../he/behind-ai/chapter5Quiz.
+// i18n/locales/en/behind-ai/generationLoopQuiz.ts
+// English Chapter 5 quiz display text. Shape source: ../../he/behind-ai/generationLoopQuiz.
 // Mechanics (correctAnswer, difficulty, concept) stay in the shared quizData.ts; the
 // page merges this display text by question id. Option order matches the Hebrew source
 // so the stored correctAnswer index stays valid. concept keys stay Hebrew (stable);
 // conceptLabels provide the translated display label (not wired yet).
 
-export const chapter5Quiz = {
+export const generationLoopQuiz = {
     title: 'Knowledge check: how AI builds an answer',
     subtitle: 'Five questions that sharpen what you learned in this chapter',
     startLabel: 'Start the quiz',
@@ -61,23 +61,15 @@ export const chapter5Quiz = {
         },
         5: {
             question:
-                "A friend says: 'The model already holds the full answer in its head, and it just types it out'. What is inaccurate about that statement?",
+                "You asked for a reply 'in three parts: empathy, what is known, and what needs checking', instead of just 'answer him'. Why does the structured instruction give a more stable answer?",
             options: [
-                'There is no mistake, the full answer really is stored and shown as is',
-                'There is no complete answer stored in advance. It is built gradually, and each part depends on what was written before it',
-                'The mistake is that the model does not type but speaks',
-                'The mistake is that the model holds several complete answers and picks one',
+                'Because a structured instruction makes the model check the facts against the world',
+                'Because each part of the instruction enters the context and constrains the next steps, so the loop is built along the structure you asked for',
+                'Because a longer answer is always more accurate than a short one',
+                'Because the structure makes the model pull a ready-made answer from memory',
             ],
             explanation:
-                'There is no complete answer waiting ready. The model builds it part by part, and each part is created based on the context already written. That is why the same question can be built a little differently each time, instead of repeating as a fixed quote.',
+                'A structured instruction or careful wording enters the context right at the start, and that context constrains the choices at every step. So the loop is built along the structure you asked for and drifts less. A vague instruction leaves more freedom and is therefore less stable. Note that stability is not truth. Good structure stabilizes the building, it does not verify facts.',
         },
-    },
-
-    conceptLabels: {
-        'בנייה צעד אחר צעד': 'Step-by-step building',
-        'פלט הופך לקלט': 'Output becomes input',
-        'צעד מוקדם מכוון': 'An early step sets direction',
-        'ייצור אינו אימות': 'Generation is not verification',
-        'אין תשובה מוכנה': 'No ready-made answer',
     },
 };

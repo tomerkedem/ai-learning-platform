@@ -20,6 +20,7 @@ import { HelpCircle, Check, type LucideIcon } from 'lucide-react';
 import { GuessInvite, GuessVerdict } from './GuessVerdict';
 import { SpeakButton } from './SpeakButton';
 import type { MentorPose } from './Mentor';
+import type { Locale } from '@/i18n/config';
 
 /** גוון הצ׳יפ של הסטטוס. precise=הצלחה, partial=חלקי, common=טעות נפוצה, layer=שכבה אחרת. */
 export type GuessTone = 'precise' | 'partial' | 'common' | 'layer';
@@ -85,7 +86,10 @@ function cardClasses(state: CardState, reduce: boolean): string {
     }
 }
 
-export const OpeningGuess: React.FC<{ content: OpeningGuessContent; cards: DiscoveryGuessCard[] }> = ({ content, cards }) => {
+// speechLocale (אופציונלי): שפת ההקראה של כפתורי ה-SpeakButton כשהיא שונה משפת הממשק
+// (למשל contentLocale של הפרק). כשאינו מועבר, ההקראה נופלת לשפת הממשק כברירת מחדל,
+// כך שכל הצרכנים הקיימים מתנהגים בדיוק כמקודם.
+export const OpeningGuess: React.FC<{ content: OpeningGuessContent; cards: DiscoveryGuessCard[]; speechLocale?: Locale }> = ({ content, cards, speechLocale }) => {
     const reduce = useReducedMotion();
     const [chosenId, setChosenId] = useState<string | null>(null);
     const [revealed, setRevealed] = useState(false);
@@ -123,7 +127,7 @@ export const OpeningGuess: React.FC<{ content: OpeningGuessContent; cards: Disco
                     <div className="mb-2 flex items-center justify-center gap-2.5">
                         <h3 className="text-xl font-black text-white md:text-3xl">{content.title}</h3>
                         {/* הקראה אחת לשאלה יחד עם שורת ההסבר שמתחתיה */}
-                        <SpeakButton text={`${content.title} ${content.subtitle}`} />
+                        <SpeakButton text={`${content.title} ${content.subtitle}`} speechLocale={speechLocale} />
                     </div>
                     <p className="mx-auto mb-4 max-w-xl text-sm text-slate-400 md:text-base">{content.subtitle}</p>
                     {content.prompt && (
@@ -182,7 +186,7 @@ export const OpeningGuess: React.FC<{ content: OpeningGuessContent; cards: Disco
                                 </div>
                             </motion.button>
                             {/* הקראת הכרטיס: אח של כפתור-הכרטיס (button בתוך button אסור) */}
-                            <SpeakButton text={`${card.title}. ${card.desc}`} className="absolute end-2 top-2 z-10" />
+                            <SpeakButton text={`${card.title}. ${card.desc}`} speechLocale={speechLocale} className="absolute end-2 top-2 z-10" />
                             </div>
                         );
                     })}

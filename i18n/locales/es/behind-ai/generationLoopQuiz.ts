@@ -1,9 +1,9 @@
-// i18n/locales/es/behind-ai/chapter5Quiz.ts
-// Spanish Chapter 5 quiz display text. Shape source: ../../he/behind-ai/chapter5Quiz.
+// i18n/locales/es/behind-ai/generationLoopQuiz.ts
+// Spanish Chapter 5 quiz display text. Shape source: ../../he/behind-ai/generationLoopQuiz.
 // Option order matches the Hebrew source so the stored correctAnswer index stays valid.
 // Uses "IA" in natural Spanish prose; concept keys stay Hebrew, conceptLabels translated.
 
-export const chapter5Quiz = {
+export const generationLoopQuiz = {
     title: 'Comprobación: cómo construye una respuesta la IA',
     subtitle: 'Cinco preguntas que afinan lo que aprendiste en este capítulo',
     startLabel: 'Empezar la comprobación',
@@ -59,23 +59,15 @@ export const chapter5Quiz = {
         },
         5: {
             question:
-                'Un amigo dice: «El modelo ya tiene toda la respuesta en la cabeza y simplemente la escribe». ¿Qué es inexacto en esa afirmación?',
+                'Pediste una respuesta «en tres partes: empatía, lo que se sabe y lo que hay que comprobar», en lugar de solo «contéstale». ¿Por qué la instrucción estructurada da una respuesta más estable?',
             options: [
-                'No hay error, la respuesta completa de verdad está guardada y se muestra tal cual',
-                'No hay una respuesta completa guardada de antemano. Se construye de forma gradual, y cada parte depende de lo que se escribió antes',
-                'El error es que el modelo no escribe, sino que habla',
-                'El error es que el modelo tiene varias respuestas completas y elige una',
+                'Porque una instrucción estructurada hace que el modelo compruebe los hechos contra el mundo',
+                'Porque cada parte de la instrucción entra en el contexto y limita los pasos siguientes, así el bucle se construye siguiendo la estructura que pediste',
+                'Porque una respuesta larga siempre es más precisa que una corta',
+                'Porque la estructura hace que el modelo saque una respuesta ya hecha de la memoria',
             ],
             explanation:
-                'No hay una respuesta completa esperando ya hecha. El modelo la construye parte por parte, y cada parte se crea a partir del contexto ya escrito. Por eso la misma pregunta puede construirse un poco distinta cada vez, en lugar de repetirse como una cita fija.',
+                'Una instrucción estructurada o una redacción prudente entra en el contexto desde el principio, y ese contexto limita las elecciones en cada paso. Así el bucle se construye siguiendo la estructura que pediste y se desvía menos. Una instrucción vaga deja más libertad y por eso es menos estable. Ten en cuenta que estabilidad no es verdad. Una buena estructura estabiliza la construcción, no verifica los hechos.',
         },
-    },
-
-    conceptLabels: {
-        'בנייה צעד אחר צעד': 'Construcción paso a paso',
-        'פלט הופך לקלט': 'La salida se vuelve entrada',
-        'צעד מוקדם מכוון': 'Un paso temprano marca el rumbo',
-        'ייצור אינו אימות': 'Generar no es verificar',
-        'אין תשובה מוכנה': 'No hay respuesta ya hecha',
     },
 };

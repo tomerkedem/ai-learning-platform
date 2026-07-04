@@ -1,16 +1,16 @@
-// i18n/locales/es/behind-ai/chapter5.ts
-// Spanish Chapter 5 ("How AI builds an answer"). Shape source: ../../he/behind-ai/chapter5.
+// i18n/locales/es/behind-ai/generationLoop.ts
+// Spanish Chapter 5 ("How AI builds an answer"). Shape source: ../../he/behind-ai/generationLoop.
 // contentLocale = 'es'. Natural Spanish prose uses "IA"; brand/chrome labels stay English.
 
 import type { Locale } from '@/i18n/config';
-import { chapter5Lab } from './chapter5Lab';
-import { chapter5Quiz } from './chapter5Quiz';
+import { generationLoopLab } from './generationLoopLab';
+import { generationLoopQuiz } from './generationLoopQuiz';
 
-export const chapter5 = {
+export const generationLoop = {
     contentLocale: 'es' as Locale,
 
     hero: {
-        badge: 'Behind the Scenes · 05',
+        badge: 'Behind the Scenes · 10 · Generation Loop',
         titleLead: 'Cada palabra que el modelo escribe',
         titleHighlight: 'vuelve hacia dentro',
         lede: 'Vimos que el modelo elige una continuación que parece razonable. Pero no se detiene después de una sola elección. Repite esa elección una y otra vez, y cada parte que escribe se suma al contexto e influye en la siguiente elección. La respuesta no nace de golpe, se construye en un bucle.',
@@ -23,8 +23,8 @@ export const chapter5 = {
         hero: 'Cada paso construye el siguiente',
         labExplain: 'Cada parte vuelve hacia dentro',
         misconception: 'Ninguna respuesta espera ya hecha',
-        takeaways: 'Construir no es verificar',
         lock: 'Has fijado la idea',
+        practical: 'Orienta el bucle desde el inicio',
     },
 
     sections: {
@@ -32,6 +32,51 @@ export const chapter5 = {
         labTitle: 'Laboratorio de construcción de la respuesta',
         labIntro:
             'El mismo Prompt y un único bucle que construye la respuesta. Elige la primera parte, luego avanza y observa cómo cada parte elegida se suma al contexto y cómo el contexto actualizado cambia las opciones para la siguiente parte. Prueba los dos inicios y comprueba que el mismo Prompt lleva a dos respuestas distintas.',
+    },
+
+    primer: {
+        eyebrow: 'De un solo paso a un bucle completo',
+        title: 'Antes del laboratorio: ¿qué es el Generation Loop?',
+        subtitle: 'Una respuesta completa se construye paso a paso',
+        lead:
+            'Antes de ver cómo se construye la respuesta, veamos qué ocurre aquí. El modelo no escribe un párrafo entero de golpe. Elige una parte pequeña, la suma al texto ya escrito y luego elige la siguiente parte según el contexto actualizado. Ese bucle se repite hasta que la respuesta está completa o llega una señal de parada.',
+        points: [
+            {
+                title: 'Qué es el bucle de generación',
+                body: 'Después de que el modelo elige un token o un fragmento pequeño, esa parte se suma al texto escrito hasta ahora. El contexto crece, y el modelo elige la siguiente parte según el texto actualizado. Elegir, sumar, elegir otra vez, y así sucesivamente.',
+            },
+            {
+                title: 'Por qué viene después del capítulo anterior',
+                body: 'El capítulo anterior mostró cómo se elige un token entre las probabilidades. Aquí esa misma elección se repite una y otra vez. Este capítulo no trata de una sola elección, sino de lo que ocurre cuando sucede decenas de veces seguidas.',
+            },
+            {
+                title: 'Cada parte elegida actualiza el contexto',
+                body: 'La parte que se escribe no solo sale hacia fuera, también vuelve hacia dentro y pasa a formar parte de la entrada del siguiente paso. Por eso cada elección cambia un poco lo que el modelo sopesa al elegir la continuación.',
+            },
+            {
+                title: 'Por qué importan las primeras palabras',
+                body: 'Las primeras partes fijan el tono, el nivel de cautela y la estructura. Si la respuesta empezó con un tono demasiado seguro, el resto tiende a seguir demasiado seguro. Una apertura prudente invita a una continuación prudente. Un paso temprano es un marco para todo lo que sigue.',
+            },
+            {
+                title: 'Por qué la respuesta se siente continua',
+                body: 'El bucle corre muy rápido, así que desde fuera parece una sola respuesta fluida. Pero por debajo se armó parte tras parte, no apareció ya hecha.',
+            },
+            {
+                title: 'La fluidez no es verdad',
+                body: 'Una respuesta suave y convincente puede ser igualmente errónea. El bucle arma una continuación que encaja con el contexto y con los patrones que el modelo aprendió, no comprueba si el contenido es cierto en el mundo. Si el estado importa, hace falta una fuente o una herramienta, o decir qué falta.',
+            },
+            {
+                title: 'Qué verás en el laboratorio',
+                body: 'En un momento verás una respuesta que se construye paso a paso, y cambiarás la apertura y la instrucción para ver cómo cambia todo lo demás con ellas.',
+            },
+        ],
+    },
+
+    see: {
+        title: 'Del Prompt a una respuesta completa, paso a paso',
+        steps: ['El Prompt', 'La parte elegida', 'La respuesta se actualiza', 'La siguiente elección', 'La respuesta completa'],
+        caption:
+            'Cada parte elegida se suma a la respuesta, y la respuesta que crece se convierte en el contexto de la siguiente elección. Así avanza el bucle hasta que la respuesta está completa. Es una ilustración educativa de la generación paso a paso, no un rastro real de un modelo, y el bucle construye la continuación, no comprueba hechos.',
     },
 
     guess: {
@@ -108,15 +153,19 @@ export const chapter5 = {
         rightBody: 'El modelo construye la respuesta de forma gradual. Cada parte que crea se suma al contexto e influye en lo que vendrá después. No hay una respuesta completa guardada y esperando.',
     },
 
-    takeawaysTitle: 'Qué llevarte de este capítulo',
-    takeaways: [
-        'Generar la respuesta es un proceso que se repite, no una sola acción.',
-        'En cada paso el modelo estima cuál es la siguiente parte adecuada, igual que vimos en el capítulo anterior.',
-        'La parte creada se suma al contexto, y el contexto actualizado es la entrada para el siguiente paso.',
-        'Las elecciones tempranas pueden orientar las posteriores, y de ahí viene la coherencia.',
-        'La coherencia no es verificación de la verdad. Construir paso a paso no comprueba si el contenido es correcto en el mundo.',
-        'Una comprobación real necesita una herramienta o una fuente externa, un tema para un capítulo posterior.',
-    ],
+    practical: {
+        title: 'Idea práctica',
+        lead:
+            'Si quieres una respuesta estable y útil, ayuda orientar el bucle de generación antes incluso de que empiece. La apertura, la estructura y la redacción de tu petición moldean todo lo que se construye después. Para una tarea importante, pide de forma explícita:',
+        uses: [
+            'Una estructura clara: «Escribe la respuesta en tres partes: empatía, lo que se sabe y lo que hay que comprobar.»',
+            'Una redacción prudente: «No adivines una fecha de llegada que no se ha comprobado. Si falta el número de seguimiento, pídelo.»',
+            'Una separación entre lo conocido y lo supuesto: pídele que marque qué es un hecho y qué es una suposición.',
+            'Una comprobación de fuente cuando el estado importa: «Si no se puede confirmar el estado, dilo en lugar de adivinar.»',
+        ],
+        caveat:
+            'Aun así, ninguna redacción convierte la fluidez en verdad. Un buen Prompt no solo elige un tema, moldea cómo se construirá la respuesta. Pero para verificar contra el mundo sigues necesitando una fuente externa o una herramienta.',
+    },
 
     lock: {
         title: 'Fijar la comprensión',
@@ -131,6 +180,6 @@ export const chapter5 = {
             'La parte escrita se suma al contexto de inmediato, y el contexto actualizado es lo que cambia qué continuaciones reciben más peso en el siguiente paso. Esto no es una comprobación con la realidad ni un reinicio. Construir paso a paso arma una continuación adecuada, no verifica si es correcta en el mundo.',
     },
 
-    lab: chapter5Lab,
-    quiz: chapter5Quiz,
+    lab: generationLoopLab,
+    quiz: generationLoopQuiz,
 };

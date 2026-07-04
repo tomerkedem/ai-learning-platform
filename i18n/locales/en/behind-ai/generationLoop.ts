@@ -1,18 +1,18 @@
-// i18n/locales/en/behind-ai/chapter5.ts
-// English Chapter 5 ("How AI builds an answer"). Shape source: ../../he/behind-ai/chapter5.
+// i18n/locales/en/behind-ai/generationLoop.ts
+// English Chapter 5 ("How AI builds an answer"). Shape source: ../../he/behind-ai/generationLoop.
 // contentLocale = 'en' (real translation), so content-dependent formatters (step counter,
 // answer punctuation) use English. "AI" is kept as the product term; brand/chrome labels
 // (badge, Answer Builder Lab) stay in English by design.
 
 import type { Locale } from '@/i18n/config';
-import { chapter5Lab } from './chapter5Lab';
-import { chapter5Quiz } from './chapter5Quiz';
+import { generationLoopLab } from './generationLoopLab';
+import { generationLoopQuiz } from './generationLoopQuiz';
 
-export const chapter5 = {
+export const generationLoop = {
     contentLocale: 'en' as Locale,
 
     hero: {
-        badge: 'Behind the Scenes · 05',
+        badge: 'Behind the Scenes · 10 · Generation Loop',
         titleLead: 'Every word the model writes',
         titleHighlight: 'loops back in',
         lede: 'We saw that the model picks a continuation that looks plausible. But it does not stop after a single choice. It repeats that choice again and again, and every part it writes joins the context and shapes the next choice. The answer is not born all at once, it is built in a loop.',
@@ -25,8 +25,8 @@ export const chapter5 = {
         hero: 'Each step builds the next',
         labExplain: 'Every part loops back in',
         misconception: 'No answer waits ready',
-        takeaways: 'Building is not verifying',
         lock: 'You locked the idea in',
+        practical: 'Steer the loop up front',
     },
 
     sections: {
@@ -34,6 +34,51 @@ export const chapter5 = {
         labTitle: 'The Answer Builder Lab',
         labIntro:
             'The same prompt, and one loop that builds the answer. Pick the first part, then step forward and watch how each chosen part joins the context, and how the updated context changes the options for the next part. Try both openers, and see that the same prompt leads to two different answers.',
+    },
+
+    primer: {
+        eyebrow: 'From a single step to a full loop',
+        title: 'Before the lab: what is the Generation Loop?',
+        subtitle: 'A full answer is built one step after another',
+        lead:
+            'Before we watch the answer being built, let us see what is happening here. The model does not write a whole paragraph at once. It chooses a small part, joins it to the text already written, and then chooses the next part based on the updated context. That loop repeats until the answer is complete or a stop signal is reached.',
+        points: [
+            {
+                title: 'What the generation loop is',
+                body: 'After the model picks a token or a small chunk, that part joins the text written so far. The context grows, and the model chooses the next part based on the updated text. Choose, join, choose again, and so on.',
+            },
+            {
+                title: 'Why it comes after the previous chapter',
+                body: 'The previous chapter showed how one token is chosen from the probabilities. Here that same choice repeats again and again. This chapter is not about a single choice, but about what happens when it occurs dozens of times in a row.',
+            },
+            {
+                title: 'Each chosen part updates the context',
+                body: 'The part that is written does not only go out, it also loops back in and becomes part of the input for the next step. So every choice slightly changes what the model weighs when it picks the continuation.',
+            },
+            {
+                title: 'Why the first words matter',
+                body: 'The first parts set the tone, the level of caution, and the structure. If the answer opened in an over-confident voice, the rest tends to stay over-confident. A careful opening invites a careful continuation. An early step is a frame for everything that follows.',
+            },
+            {
+                title: 'Why the answer feels continuous',
+                body: 'The loop runs very fast, so from the outside it looks like one flowing answer. But under the surface it was assembled part after part, it did not appear ready-made.',
+            },
+            {
+                title: 'Fluency is not truth',
+                body: 'A smooth, convincing answer can still be wrong. The loop assembles a continuation that fits the context and the patterns the model learned, it does not check whether the content is true in the world. If the status matters, you need a source or a tool, or you say what is missing.',
+            },
+            {
+                title: 'What you will see in the lab',
+                body: 'In a moment you will watch an answer being built step by step, and change the opening and the instruction to see how everything else changes with them.',
+            },
+        ],
+    },
+
+    see: {
+        title: 'From prompt to a full answer, step by step',
+        steps: ['The prompt', 'The chosen part', 'The answer updates', 'The next choice', 'The full answer'],
+        caption:
+            'Each chosen part joins the answer, and the growing answer becomes the context for the next choice. That is how the loop moves forward until the answer is complete. This is an educational illustration of step-by-step generation, not a real trace from a model, and the loop builds the continuation, it does not check facts.',
     },
 
     guess: {
@@ -110,15 +155,19 @@ export const chapter5 = {
         rightBody: 'The model builds the answer gradually. Each part it creates joins the context and shapes what comes next. There is no complete answer stored and waiting.',
     },
 
-    takeawaysTitle: 'What to take from this chapter',
-    takeaways: [
-        'Generating the answer is a repeating process, not a single action.',
-        'At every step the model estimates the next fitting part, exactly as we saw in the previous chapter.',
-        'The part that is created is joined to the context, and the updated context is the input for the next step.',
-        'Early choices can steer later choices, and that is where coherence comes from.',
-        'Coherence is not truth verification. Step-by-step building does not check whether the content is correct in the world.',
-        'A real check requires a tool or an external source, a topic for a later chapter.',
-    ],
+    practical: {
+        title: 'Practical takeaway',
+        lead:
+            'If you want a stable, useful answer, it helps to steer the generation loop before it even starts. The opening, the structure, and the wording of your request shape everything that gets built after them. For an important task, ask explicitly for:',
+        uses: [
+            'A clear structure: "Write the reply in three parts: empathy, what is known, and what needs checking."',
+            'Cautious wording: "Do not guess an arrival time that was not checked. If the tracking number is missing, ask for it."',
+            'A split between known and assumed: ask it to mark what is fact and what is an assumption.',
+            'A source check when status matters: "If the status cannot be confirmed, say so instead of guessing."',
+        ],
+        caveat:
+            'Even so, no wording turns fluency into truth. A good prompt does not only pick a topic, it shapes how the answer will be built. But to verify against the world you still need an external source or a tool.',
+    },
 
     lock: {
         title: 'Understanding lock',
@@ -133,6 +182,6 @@ export const chapter5 = {
             'The written part joins the context immediately, and the updated context is what changes which continuations get high weight in the next step. This is not a real-world check and not a restart. Step-by-step building assembles a fitting continuation, it does not verify whether it is correct in the world.',
     },
 
-    lab: chapter5Lab,
-    quiz: chapter5Quiz,
+    lab: generationLoopLab,
+    quiz: generationLoopQuiz,
 };

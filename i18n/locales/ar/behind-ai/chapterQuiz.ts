@@ -26,7 +26,7 @@ export const chapterQuiz = {
         7: 'Context Window',
         8: 'Logits & Softmax',
         9: 'Decoding',
-        10: 'كيف يبني AI إجابة',
+        10: 'Generation Loop',
         11: 'اختيار الأداة',
         12: 'Tool Call وحلقة القرار',
         13: 'التوقّف والموافقة والمسؤولية',
