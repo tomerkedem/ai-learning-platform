@@ -334,13 +334,14 @@ export default function BehindTheScenesChapter4() {
                     <Mentor pose="meaningSpace" line={c4.mentor.hero} width={150} flip={!isRtl} />
                 </div>
                 <ExpandableLab title={c4.embeddingLookup.title}>
-                    <EmbeddingLookupLab dir={dir} />
+                    <EmbeddingLookupLab dir={dir} labNumber={1} />
                 </ExpandableLab>
             </section>
 
             {/* ══════════ Reveal: המסלול המלא של משפט (טוקניזציה -> Token IDs -> וקטור) ══════════ */}
             <section id="word-lab" className="mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
                 <div className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-sm font-black text-slate-200">2</span>
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
                         <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">{c4.hood.eyebrow}</div>

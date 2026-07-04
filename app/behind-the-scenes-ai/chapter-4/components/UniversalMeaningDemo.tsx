@@ -30,9 +30,11 @@ const numTone = (n: number) => (n >= 0 ? 'text-cyan-200' : 'text-violet-200');
 
 interface UniversalMeaningDemoProps {
     dir?: 'rtl' | 'ltr';
+    /** מספר המעבדה בפרק (מוצג כתג ליד הכותרת). לא מוצג אם לא הועבר. */
+    labNumber?: number;
 }
 
-export const UniversalMeaningDemo: React.FC<UniversalMeaningDemoProps> = ({ dir = 'rtl' }) => {
+export const UniversalMeaningDemo: React.FC<UniversalMeaningDemoProps> = ({ dir = 'rtl', labNumber }) => {
     const lab = useChapter4Lab();
     const m = lab.map;
     const o = m.objects;
@@ -62,6 +64,11 @@ export const UniversalMeaningDemo: React.FC<UniversalMeaningDemoProps> = ({ dir 
                     {/* כותרת ותת-כותרת מעל השדה: מה המפה מלמדת */}
                     <div className="mb-3">
                         <div className="flex items-center gap-2">
+                            {labNumber != null && (
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-sm font-black text-slate-200">
+                                    {labNumber}
+                                </span>
+                            )}
                             <Sparkles size={18} className="text-cyan-300" />
                             <h4 className="text-lg font-bold text-white">{m.visualTitle}</h4>
                         </div>

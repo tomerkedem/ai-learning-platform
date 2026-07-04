@@ -289,7 +289,7 @@ export default function BehindTheScenesChapter5() {
                 <ExpandableLab title={c4Lab.map.visualTitle}>
                     <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
                         <Chapter4LabProvider value={c4Lab}>
-                            <UniversalMeaningDemo dir={dir} />
+                            <UniversalMeaningDemo dir={dir} labNumber={1} />
                         </Chapter4LabProvider>
                     </div>
                 </ExpandableLab>
@@ -298,6 +298,7 @@ export default function BehindTheScenesChapter5() {
             {/* ══════════ Semantic Space Lab ══════════ */}
             <section id="semantic-lab" className="relative mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
                 <div className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-sm font-black text-slate-200">2</span>
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
                         <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">{c5.sections.labEyebrow}</div>
@@ -391,7 +392,7 @@ export default function BehindTheScenesChapter5() {
                         </div>
 
                         <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
-                            <MeaningDnaStrip active={dnaA} compare={dnaB} geneLabels={c4Lab.genes} dna={c4Lab.dna} dir={dir} />
+                            <MeaningDnaStrip active={dnaA} compare={dnaB} geneLabels={c4Lab.genes} dna={c4Lab.dna} dir={dir} labNumber={3} />
                         </div>
                     </div>
                   </ExpandableLab>

@@ -49,9 +49,11 @@ const fmt = (n: number) => (n >= 0 ? `+${n.toFixed(2)}` : n.toFixed(2));
 
 interface EmbeddingLookupLabProps {
     dir?: 'rtl' | 'ltr';
+    /** מספר המעבדה בפרק (מוצג כתג ליד הכותרת). לא מוצג אם לא הועבר. */
+    labNumber?: number;
 }
 
-export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'rtl' }) => {
+export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'rtl', labNumber }) => {
     const { t } = useT();
     const c = t.behindAi.chapter4.embeddingLookup;
     const reduce = useReducedMotion();
@@ -74,12 +76,19 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
     return (
         <div dir={dir} className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-5 backdrop-blur-xl sm:p-7 text-start">
             {/* כותרת ומבוא */}
-            <div className="mb-5">
-                <span className="mb-2 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
-                    <Table2 size={14} /> {c.eyebrow}
-                </span>
-                <h3 className="text-xl font-black text-white md:text-2xl">{c.title}</h3>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-slate-400">{c.intro}</p>
+            <div className="mb-5 flex items-start gap-3">
+                {labNumber != null && (
+                    <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-sm font-black text-slate-200">
+                        {labNumber}
+                    </span>
+                )}
+                <div>
+                    <span className="mb-2 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
+                        <Table2 size={14} /> {c.eyebrow}
+                    </span>
+                    <h3 className="text-xl font-black text-white md:text-2xl">{c.title}</h3>
+                    <p className="mt-1.5 text-[14px] leading-relaxed text-slate-400">{c.intro}</p>
+                </div>
             </div>
 
             {/* בורר מילה: הצ'יפים תמיד מילים, כדי שהתווית "בחרו מילה" תהיה תמיד נכונה */}

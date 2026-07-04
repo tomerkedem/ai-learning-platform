@@ -31,6 +31,8 @@ interface MeaningDnaStripProps {
     geneLabels: Chapter4LabDict['genes'];
     dna: Chapter4LabDict['dna'];
     dir: 'rtl' | 'ltr';
+    /** מספר המעבדה בפרק (מוצג כתג ליד הכותרת). לא מוצג אם לא הועבר. */
+    labNumber?: number;
 }
 
 const LIT = 0.4; // סף "נדלק" לרכיב
@@ -78,7 +80,7 @@ function railPaths(phase: number, closeness: number): { a: string; b: string } {
     return { a: a.trim(), b: b.trim() };
 }
 
-export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compare, geneLabels, dna, dir }) => {
+export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compare, geneLabels, dna, dir, labNumber }) => {
     const reduce = useReducedMotion();
 
     // פאזת הפיתול, מונעת ב-rAF. reduced-motion משאיר 0 (סולם סטטי וקריא).
@@ -178,7 +180,14 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
 
     return (
         <div dir={dir} className="text-start">
-            <div className="mb-2 text-base font-bold text-slate-100">{dna.title}</div>
+            <div className="mb-2 flex items-center gap-2.5">
+                {labNumber != null && (
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-sm font-black text-slate-200">
+                        {labNumber}
+                    </span>
+                )}
+                <div className="text-base font-bold text-slate-100">{dna.title}</div>
+            </div>
 
             {/* מסגור קבוע: למה זה DNA ומה כל חלק אומר */}
             <p className="mb-2.5 text-[12px] leading-relaxed text-slate-400">{dna.intro}</p>
