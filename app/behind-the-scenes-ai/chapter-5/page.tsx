@@ -255,7 +255,7 @@ export default function BehindTheScenesChapter5() {
                 </motion.section>
                 {/* מנטור: כל משפט מקבל מקום במפה (xl+, צד חיצוני לפי כיוון) */}
                 <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="meaningSpace" line={c5.mentor.hero} width={248} flip={!isRtl} />
+                    <Mentor pose="holographicUi" line={c5.mentor.hero} width={248} flip={!isRtl} />
                 </div>
             </div>
 
