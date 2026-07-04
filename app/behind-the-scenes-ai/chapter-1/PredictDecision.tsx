@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { HelpCircle, Lightbulb, ArrowDown, RotateCcw } from 'lucide-react';
 
 import { Mentor } from '@/components/ai-internals/Mentor';
-import { GuessInvite, GuessButton, ShimmerFrame, AuroraBloom, SparkleBurst, DrawCheck } from '@/components/ai-internals/GuessVerdict';
+import { GuessInvite, GuessButton, ShimmerFrame, AuroraBloom, SparkleBurst, DrawCheck, speakJoin } from '@/components/ai-internals/GuessVerdict';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import type { FlowMode } from '@/components/ai-internals/types';
 import { useT } from '@/i18n/useT';
@@ -100,6 +100,15 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ mode }) => {
                     ) : (
                         <span className="text-lg font-black text-amber-200 md:text-xl">{pd.wrongTitle}</span>
                     )}
+                    {/* הקראת כל תכולת פאנל הגילוי לפי התוצאה הנוכחית */}
+                    <SpeakButton
+                        text={speakJoin(
+                            correct ? pd.correctTitle : pd.wrongTitle,
+                            correct ? pd.correctBody : pd.wrongBody,
+                            pd.bridge,
+                        )}
+                        className="ms-auto"
+                    />
                 </div>
                 <p className="mt-2 text-sm leading-relaxed text-slate-200">{correct ? pd.correctBody : pd.wrongBody}</p>
 

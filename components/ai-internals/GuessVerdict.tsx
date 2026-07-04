@@ -222,16 +222,10 @@ export interface GuessVerdictProps {
     /** דריסת פוזות מנטור. ברירת מחדל: celebrate להצלחה, reassure לטעות. */
     correctPose?: MentorPose;
     wrongPose?: MentorPose;
-
-    /**
-     * כפתור הקראה נקודתי לכל תכולת הכרטיס (כותרת, הסברים, וההסבר המדויק כשנחשף).
-     * הטקסט מורכב מהתוכן הנוכחי, כך שהוא נכון גם כשהכרטיס משתנה בין בחירות.
-     */
-    withSpeak?: boolean;
 }
 
 /** חיבור מקטעי הקראה: מסנן ריקים ומוסיף נקודה רק כשאין סימן סיום, למניעת "..". */
-function speakJoin(...parts: Array<string | false | undefined>): string {
+export function speakJoin(...parts: Array<string | false | undefined>): string {
     return parts
         .filter((p): p is string => !!p && !!p.trim())
         .map((p) => {
@@ -259,12 +253,12 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
     retryLabel,
     correctPose = 'celebrate',
     wrongPose = 'reassure',
-    withSpeak = false,
 }) => {
     const reducedMotion = useReducedMotion();
     const reduce = reduceProp ?? !!reducedMotion;
     const a = ACCENT[accent];
 
+    // הקראה נקודתית בכל כרטיסי המשוב בלומדה: אף טקסט בניחוש לא נשאר בלי הקראה.
     // טקסט ההקראה נגזר מהתוכן הנוכחי של הכרטיס, כולל ההסבר המדויק רק אחרי שנחשף.
     const correctSpeak = speakJoin(correctTitle, correctLead, correctExplain, correctInsight);
     const wrongSpeak = speakJoin(
@@ -310,7 +304,7 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                     >
                                         {correctTitle}
                                     </motion.span>
-                                    {withSpeak && <SpeakButton text={correctSpeak} className="ms-auto" />}
+                                    <SpeakButton text={correctSpeak} className="ms-auto" />
                                 </div>
                                 {correctLead && <p className={`mt-2 text-sm font-bold md:text-base ${a.lead}`}>{correctLead}</p>}
                                 <p className="mt-2 text-sm leading-relaxed text-slate-200">{correctExplain}</p>
@@ -375,7 +369,7 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                         <Lightbulb size={20} className="shrink-0 text-amber-300" />
                                     </motion.span>
                                     <span className="text-lg font-black text-amber-200 md:text-xl">{wrongTitle}</span>
-                                    {withSpeak && <SpeakButton text={wrongSpeak} className="ms-auto" />}
+                                    <SpeakButton text={wrongSpeak} className="ms-auto" />
                                 </div>
                                 <p className="mt-2.5 text-sm leading-relaxed text-slate-200">{wrongExplain}</p>
                                 {wrongExplainMore && (
@@ -389,9 +383,13 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                         transition={reduce ? { duration: 0 } : { duration: 0.3 }}
                                         className="mt-4 rounded-xl border border-emerald-400/35 bg-emerald-900/15 p-3.5"
                                     >
-                                        <p className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-200">
-                                            <CheckCircle2 size={15} className="text-emerald-300" /> {reveal.title}
-                                        </p>
+                                        <div className="flex items-start justify-between gap-2">
+                                            <p className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-200">
+                                                <CheckCircle2 size={15} className="text-emerald-300" /> {reveal.title}
+                                            </p>
+                                            {/* הקראת ההסבר המדויק הנחשף, בנפרד משאר הכרטיס */}
+                                            <SpeakButton text={speakJoin(reveal.title, reveal.body)} />
+                                        </div>
                                         <p className="mt-1 text-sm leading-relaxed text-slate-300">{reveal.body}</p>
                                     </motion.div>
                                 )}

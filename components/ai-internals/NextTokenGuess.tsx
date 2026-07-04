@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Check, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SpeakButton } from './SpeakButton';
+import { speakJoin } from './GuessVerdict';
 import type { NextTokenContent } from '@/app/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
 
@@ -173,6 +174,15 @@ export const NextTokenGuess: React.FC<{ content: NextTokenContent; reduce: boole
                                         </span>
                                     )}
                                     {matched ? content.matchTitle : `${content.missTitle} "${top.token}"`}
+                                    {/* הקראת ההכרעה והתובנה של הסבב הנוכחי (ובסבב האחרון גם הפאנץ') */}
+                                    <SpeakButton
+                                        text={speakJoin(
+                                            matched ? content.matchTitle : `${content.missTitle} "${top.token}"`,
+                                            round.insight,
+                                            isLast && content.closing,
+                                        )}
+                                        className="ms-auto"
+                                    />
                                 </p>
                             </div>
                             <p className="mt-2.5 text-sm leading-relaxed text-slate-300 md:text-base">{round.insight}</p>

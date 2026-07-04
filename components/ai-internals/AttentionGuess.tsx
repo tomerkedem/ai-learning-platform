@@ -21,6 +21,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { HelpCircle, Sparkles, Highlighter, Globe, Check, ArrowDown, RotateCcw } from 'lucide-react';
 import { Mentor, type MentorPose } from './Mentor';
 import { SpeakButton } from './SpeakButton';
+import { speakJoin } from './GuessVerdict';
 
 type Cue = 'spotlight' | 'highlighter' | 'nodes' | 'factcheck';
 type StatusTone = 'close' | 'partial' | 'common' | 'layer';
@@ -272,9 +273,20 @@ export const AttentionGuess: React.FC = () => {
                                     </div>
 
                                     <div className="flex-1">
-                                        <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${STATUS_TONE[chosen.statusTone]}`}>
-                                            {chosen.statusLabel}
-                                        </span>
+                                        <div className="flex items-start justify-between gap-2">
+                                            <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${STATUS_TONE[chosen.statusTone]}`}>
+                                                {chosen.statusLabel}
+                                            </span>
+                                            {/* הקראת כל תכולת פאנל המשוב של הבחירה הנוכחית */}
+                                            <SpeakButton
+                                                text={speakJoin(
+                                                    chosen.statusLabel,
+                                                    `${CONTENT.getsRightLabel}: ${chosen.getsRight}`,
+                                                    `${chosen.missesLabel}: ${chosen.misses}`,
+                                                    chosen.bridge,
+                                                )}
+                                            />
+                                        </div>
 
                                         <div className="mt-3 space-y-2 text-sm leading-relaxed text-slate-200">
                                             <p>
@@ -326,9 +338,13 @@ export const AttentionGuess: React.FC = () => {
                             className="mx-auto mt-4 max-w-2xl"
                         >
                             <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/15 p-5 text-center">
-                                <p className="inline-flex items-center gap-2 text-base font-bold text-emerald-200 md:text-lg">
-                                    <Sparkles size={16} /> {CONTENT.revealTitle}
-                                </p>
+                                <div className="flex items-center justify-center gap-2.5">
+                                    <p className="inline-flex items-center gap-2 text-base font-bold text-emerald-200 md:text-lg">
+                                        <Sparkles size={16} /> {CONTENT.revealTitle}
+                                    </p>
+                                    {/* הקראת התובנה הגדולה הנחשפת */}
+                                    <SpeakButton text={speakJoin(CONTENT.revealTitle, CONTENT.revealCopy)} />
+                                </div>
                                 <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-slate-300">{CONTENT.revealCopy}</p>
 
                                 <div className="mt-4 flex flex-col items-center gap-2">
