@@ -9,6 +9,7 @@
 // Token ID, Tool Call, UX) are kept on purpose.
 
 export const conceptLabels: Record<string, string> = {
+    "מהציון להסתברות": "スコアから確率へ",
     "Chat מול Agent": "Chat と Agent",
     "Token ID ככתובת": "Token ID はアドレス",
     "Tool Call": "Tool Call",

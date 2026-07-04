@@ -1,0 +1,84 @@
+// i18n/locales/ja/behind-ai/logitsSoftmaxLab.ts
+//
+// 第8章(Logits & Softmax)の「Logits と Softmax のラボ」データ。日本語(ja、LTR)。
+// ヘブライ語が原文で、型(LogitsSoftmaxLabContent)を定義する。
+//
+// 中心となる考え: モデルは続きを選ぶ前に、それぞれの選択肢に生のスコア(logit)を
+// 与える。Softmax はそのスコアを確率の分布に変える。どの続きも割合を受け取り、
+// 合わせて 100 になる。文脈の手がかりを変えるとスコアが動き、割合も動く。学習者は
+// スコアを手で調整して、確率がすぐ変わるようすを見ることもできる。
+//
+// スコアも割合も、すべて学習用の図解であり、モデルの実際の出力ではない。続きは
+// 読みやすさのためにひとまとまりの言い回しで示すが、これは次のトークンをめぐる
+// 競争を表すものであって、モデルの内部の正確な記録ではない。
+//
+// これは日本語の初回訳であり、後でネイティブによるレビューを行う。
+//
+// ダッシュ(em/enダッシュ)は使わない。読点「、」句点「。」は使用可。
+
+import type { LogitsSoftmaxLabContent } from '../../he/behind-ai/logitsSoftmaxLab';
+
+export const logitsSoftmaxLab: LogitsSoftmaxLabContent = {
+    sectionEyebrow: 'Logits & Softmax Lab',
+    sectionTitle: '文脈やスコアを変えて、確率が動くようすを見てみましょう',
+    sectionIntro:
+        '同じ文のはじまりに、続きの候補がいくつか。どの続きも生のスコアを受け取り、Softmax がそのスコアを、合わせて 100 になる割合に変えます。文脈の手がかりを選ぶか、スコアを自分で調整して、いまどれが先頭で、どれだけ差があるかを見てみましょう。',
+    heading: '生のスコアから確率へ',
+    kicker: 'Logits & Softmax Lab',
+    promptBase: '荷物はおそらく...',
+    promptLabel: 'プロンプト全体',
+    pickContextLabel: '文脈の手がかりを選ぶ',
+    scoreLabel: '生のスコア',
+    probabilityLabel: '確率',
+    topLabel: 'いまの先頭',
+    adjustTitle: 'スコアを自分で調整する',
+    adjustHint: 'プラスかマイナスを押して、続きのスコアを変えてみましょう。割合がすぐに反応するようすに注目してください。',
+    resetScores: '文脈のスコアに戻す',
+    softmaxNoteTitle: 'スコアはどう割合になるか',
+    softmaxNote:
+        'Softmax は 100 パーセントを、スコアに応じて続きの間で分けます。スコアが高いほど大きな取り分になります。スコアのわずかな差が、割合ではかなりの差を開くことがあり、だからこそ文脈の小さな変化がもう画面を動かします。',
+    continuationNote:
+        '続きはここでは、読みやすいようにひとまとまりの言い回しで示しています。実際にはモデルは次のトークンを一歩ずつ順位づけしています。これはその競争を表した図解であり、モデルの内部の正確な記録ではありません。',
+    disclaimer:
+        'ここでのスコアと割合は学習用の図解であり、モデルの実際の出力ではありません。スコアがどう確率になるか、そして文脈がどうそれを動かすかを示すためのものです。スコアが高いとは、その続きがテキストに照らしてより自然だという意味であって、それが世界で正しいという意味ではありません。',
+    sr: {
+        increase: 'スコアを上げる',
+        decrease: 'スコアを下げる',
+        contextGroup: '文脈の手がかりの選択',
+    },
+    continuations: [
+        { id: 'delayed', label: '遅延した' },
+        { id: 'delivered', label: '配達された' },
+        { id: 'pickup', label: '受け取り待ち' },
+        { id: 'lost', label: '紛失した' },
+    ],
+    contexts: [
+        {
+            id: 'neutral',
+            control: '手がかりなし',
+            note: '手がかりがないと、「遅延した」がいちばん高いスコアを受け取りますが、続きどうしの差はそれほど大きくありません。これはやはり推測であって、確かめた事実ではありません。',
+            scores: { delayed: 4, delivered: 3, pickup: 2, lost: 1 },
+        },
+        {
+            id: 'delay',
+            control: 'まだスキャンされていない',
+            promptExtra: '荷物は昨日センターを出て、まだスキャンされていません。',
+            note: '「まだスキャンされていない」という手がかりが「遅延した」を後押しし、その周りの分布をくっきりさせます。まったく同じ続きで、スコアだけが違います。',
+            scores: { delayed: 5, delivered: 2, pickup: 2, lost: 3 },
+        },
+        {
+            id: 'delivered',
+            control: '配達完了の記録',
+            promptExtra: 'システムに配達完了の記録が表示されています。',
+            note: '配達完了の記録が、先頭を「配達された」へ移します。モデルは現実を確かめたのではなく、文脈に書かれたことを重みづけしただけです。',
+            scores: { delayed: 3, delivered: 5, pickup: 2, lost: 2 },
+        },
+        {
+            id: 'pickup',
+            control: '受け取り待ち',
+            promptExtra: '最新のステータスは「受け取り待ち」です。',
+            note: '「受け取り待ち」というステータスが、それに合う続きを先頭へ押し上げます。続きの顔ぶれは変わりません。だれが先頭かは文脈が決めます。',
+            scores: { delayed: 2, delivered: 3, pickup: 5, lost: 2 },
+        },
+    ],
+};

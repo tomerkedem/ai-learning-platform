@@ -16,6 +16,7 @@
 // אין מקף ארוך (U+2014) בקובץ הזה.
 
 export const conceptLabels: Record<string, string> = {
+    "מהציון להסתברות": "מהציון להסתברות",
     "Chat מול Agent": "Chat מול Agent",
     "Token ID ככתובת": "Token ID ככתובת",
     "Tool Call": "Tool Call",
