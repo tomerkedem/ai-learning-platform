@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 
 import type { Direction } from '@/i18n/config';
@@ -103,12 +103,12 @@ export const BeliefStream: React.FC<BeliefStreamProps> = ({ steps, head, dir, re
         };
     }, [n, isRtl]);
 
-    // פסי השטח: לכל ערוץ פוליגון מגבול עליון (i=0..vis) חזרה דרך הגבול התחתון.
-    const bands = useMemo(() => {
+    // פסי השטח: לכל ערוץ פוליגון מגבול עליון (i=0..upto) חזרה דרך הגבול התחתון.
+    const buildBands = useCallback((upto: number) => {
         return LANE_ORDER.map((lane) => {
             const top: Array<[number, number]> = [];
             const bot: Array<[number, number]> = [];
-            for (let i = 0; i <= vis; i++) {
+            for (let i = 0; i <= upto; i++) {
                 const dist = steps[i].dist;
                 let above = 0;
                 for (const k of LANE_ORDER) {
@@ -126,7 +126,12 @@ export const BeliefStream: React.FC<BeliefStreamProps> = ({ steps, head, dir, re
             d += 'Z';
             return { lane, d };
         });
-    }, [steps, vis, xAt]);
+    }, [steps, xAt]);
+
+    // הנהר שנקרא עד ראש הקריאה (נדלק), ומתחתיו כל המסע כ"רפאים" עמומים כך שהגרף
+    // לעולם לא נראה ריק לפני שמריצים - יש כאן נהר, והקריאה מדליקה אותו קטע-קטע.
+    const bands = useMemo(() => buildBands(vis), [buildBands, vis]);
+    const bandsFull = useMemo(() => buildBands(n - 1), [buildBands, n]);
 
     const headX = xAt(vis);
     const curDist = steps[vis]?.dist;
@@ -143,6 +148,10 @@ export const BeliefStream: React.FC<BeliefStreamProps> = ({ steps, head, dir, re
             {/* הגרף הזורם */}
             <div className="relative overflow-hidden rounded-xl border border-white/10 bg-slate-950/60">
                 <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="block h-48 w-full sm:h-56" role="img" aria-label={labels.streamHint}>
+                    {/* רפאים: כל מסע הנהר עמום, כדי שהגרף ייראה כגרף גם לפני הרצה. */}
+                    {bandsFull.map(({ lane, d }) => (
+                        <path key={`ghost-${lane}`} d={d} fill={LANE_COLOR[lane]} opacity={0.13} />
+                    ))}
                     {bands.map(({ lane, d }) => (
                         <motion.path
                             key={lane}
