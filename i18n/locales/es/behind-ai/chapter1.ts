@@ -76,8 +76,8 @@ export const chapter1 = {
     deep: {
         toggleOpen: 'Cerrar la capa de profundidad',
         toggleClosed: 'Abrir el motor completo',
-        hint: 'Aquí se abren las herramientas avanzadas: un cabezal de lectura en vivo y una prueba que muestra qué palabra decidió. Puedes explorar a tu propio ritmo.',
-        intro1: 'Mira una capa de profundidad: a partir de aquí se vuelve más técnico. Tienes delante dos laboratorios numerados, cada uno muestra un ángulo distinto del mismo camino. No hace falta terminar todo de una vez.',
+        hint: 'Aquí se abre la herramienta avanzada: un cabezal de lectura en vivo que muestra cómo el motor cambia de opinión mientras lee. Puedes explorar a tu propio ritmo.',
+        intro1: 'Mira una capa de profundidad: a partir de aquí se vuelve más técnico. Tienes delante un laboratorio en vivo que revela otro ángulo del mismo camino. Explóralo a tu propio ritmo.',
         intro2Lead: 'En ',
         intro2Mid: ' el sistema elige una respuesta. En ',
         intro2Tail: ' comprueba cuál es el paso correcto siguiente - responder, usar una herramienta, o detenerse y pedir información. Cambia entre ambos con el interruptor en la parte superior del chat.',
@@ -94,7 +94,7 @@ export const chapter1 = {
     // Summary (two insights inside the depth layer)
     summary: {
         understandTitle: 'Lo que entiendes ahora',
-        understandBody: 'El motor de IA no "sabe" la respuesta - clasifica opciones, y decide según la diferencia entre ellas. Cuando la diferencia es grande responde con confianza; cuando la diferencia es pequeña, el paso correcto es detenerse y preguntar, no adivinar. Lo viste tú mismo: el cabezal de lectura mostró cómo el líder cambiaba mientras leía, y una sola palabra que se cambió volteó toda una decisión.',
+        understandBody: 'El motor de IA no "sabe" la respuesta - clasifica opciones, y decide según la diferencia entre ellas. Cuando la diferencia es grande responde con confianza; cuando la diferencia es pequeña, el paso correcto es detenerse y preguntar, no adivinar. Lo viste tú mismo: el cabezal de lectura mostró cómo el líder cambiaba mientras leía, y una sola palabra puede inclinar toda la decisión.',
         ruleTitle: 'La regla práctica',
         ruleBody: 'Confía en el motor cuando la diferencia es grande y el riesgo es bajo. Cuando la diferencia es pequeña o la acción es sensible - detenerse y pedir una aclaración no es un fallo, es el paso responsable. Aquí es exactamente donde empieza el vínculo entre probabilidad y responsabilidad.',
     },

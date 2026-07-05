@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Terminal, ScanSearch, ArrowDown, ScanLine, GitCompare, X, Layers, ChevronDown, Eye, ListChecks, CircleAlert, Lock, RotateCcw } from 'lucide-react';
+import { Terminal, ScanSearch, ArrowDown, ScanLine, X, Layers, ChevronDown, Eye, ListChecks, CircleAlert, Lock, RotateCcw } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -27,7 +27,6 @@ import { HoloFrame } from './HoloFrame';
 import { ReadHeadLab } from './ReadHeadLab';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
 import { PredictDecision } from './PredictDecision';
-import { CounterfactualDiff } from './CounterfactualDiff';
 // גשר-זיהוי: אותם צבעי 14 התחנות של מפת המבוא, כדי לקשר את המעבדה החיה למפה.
 import { STATION_PALETTE } from '@/components/ai-internals/IntroStationViz';
 
@@ -58,7 +57,7 @@ export default function BehindTheScenesChapter1() {
     const sInsight: ReadAloudSegment = { id: 'insight', label: c1.insightIdea.title, text: c1.insightIdea.body };
     const sDeep1: ReadAloudSegment = { id: 'deep-1', label: c1.deep.intro1, text: c1.deep.intro1 };
     const sDeep2: ReadAloudSegment = { id: 'deep-2', label: c1Deep2, text: c1Deep2 };
-    const sLabs: ReadAloudSegment[] = [c1.labs.readHead, c1.labs.causality].map((lab, i) => ({ id: `lab-${i}`, label: lab.title, text: lab.title }));
+    const sLabs: ReadAloudSegment[] = [c1.labs.readHead].map((lab, i) => ({ id: `lab-${i}`, label: lab.title, text: lab.title }));
     const sUnderstand: ReadAloudSegment = { id: 'understand', label: c1.summary.understandTitle, text: c1.summary.understandBody };
     const sRule: ReadAloudSegment = { id: 'rule', label: c1.summary.ruleTitle, text: c1.summary.ruleBody };
     const sBq1: ReadAloudSegment = { id: 'bq-1', label: c1.beforeQuiz.point1Lead, text: `${c1.beforeQuiz.point1Lead}${c1.beforeQuiz.point1Body}` };
@@ -593,10 +592,9 @@ export default function BehindTheScenesChapter1() {
                 {c1.deep.intro2Lead}<span className="text-cyan-300 font-semibold">Chat Mode</span>{c1.deep.intro2Mid}<span className="text-purple-300 font-semibold">Agent Mode</span>{c1.deep.intro2Tail}
             </p>
 
-            {/* ══════════ מעבדה 1 · Read Head ══════════ */}
+            {/* ══════════ המעבדה החיה · Read Head ══════════ */}
             <section className="mt-12 space-y-5 text-start" dir={dir}>
                 <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">1</span>
                     <ScanLine size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
                     <div>
                         <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>{c1.labs.readHead.eyebrow}</div>
@@ -611,20 +609,6 @@ export default function BehindTheScenesChapter1() {
                 <ExpandableLab>
                     <ReadHeadLab key={`${mode}:${conversationText}`} text={conversationText} mode={mode} accent={accent} />
                 </ExpandableLab>
-            </section>
-
-            {/* ══════════ מעבדה 2 · Causality (Counterfactual) ══════════ */}
-            <section className="mt-12 space-y-5 text-start" dir={dir}>
-                <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-base font-black text-slate-200">2</span>
-                    <GitCompare size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
-                    <div>
-                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>{c1.labs.causality.eyebrow}</div>
-                        <h3 className="text-2xl font-bold text-white">{c1.labs.causality.title}</h3>
-                    </div>
-                </div>
-
-                <CounterfactualDiff key={`cf:${mode}`} mode={mode} accent={accent} />
             </section>
 
             {/* ══════════ סיכום ══════════ */}
