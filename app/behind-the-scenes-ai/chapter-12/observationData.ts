@@ -11,7 +11,7 @@
 //     ההחלטה הבאה מחושבת חי מ-decideNext, היא לא מקודדת קשיח.
 //   * לשנות את הקריאה: TOOL_CALL (method, inputKey). הכלי עצמו מגיע מפרק 11.
 
-import { selectFor, getTool, BARCODE_SAMPLE } from '@/app/behind-the-scenes-ai/chapter-11/toolData';
+import { selectFor, getTool, BARCODE_SAMPLE } from '@/app/behind-the-scenes-ai/_parked/tool-selection/toolData';
 import {
     decideNext, canAnswer, TIMELINE_STEPS,
     type ObservationQuality, type Confidence, type RiskLevel,

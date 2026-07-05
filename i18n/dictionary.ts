@@ -94,6 +94,15 @@ import { decoding as enDecoding } from './locales/en/behind-ai/decoding';
 import { decoding as esDecoding } from './locales/es/behind-ai/decoding';
 import { decoding as jaDecoding } from './locales/ja/behind-ai/decoding';
 
+// פרק Hallucinations (פרק 11, "למה תשובה בטוחה יכולה להיות שגויה"). העברית היא שפת
+// המקור, וכל שש השפות מתורגמות באמת (contentLocale משלהן), לא נפילה לעברית.
+import { hallucinations as heHallucinations } from './locales/he/behind-ai/hallucinations';
+import { hallucinations as arHallucinations } from './locales/ar/behind-ai/hallucinations';
+import { hallucinations as ruHallucinations } from './locales/ru/behind-ai/hallucinations';
+import { hallucinations as enHallucinations } from './locales/en/behind-ai/hallucinations';
+import { hallucinations as esHallucinations } from './locales/es/behind-ai/hallucinations';
+import { hallucinations as jaHallucinations } from './locales/ja/behind-ai/hallucinations';
+
 // המבוא (i18n של המבוא). העברית היא המקור; שאר השפות הן stubs שמייצאים מחדש את
 // העברית (fallback בטוח) עד שיתורגמו בשלב מאוחר יותר.
 import { introduction as heIntroduction } from './locales/he/behind-ai/introduction';
@@ -161,6 +170,7 @@ export type AttentionDict = typeof heAttention;
 export type ContextWindowDict = typeof heContextWindow;
 export type LogitsSoftmaxDict = typeof heLogitsSoftmax;
 export type DecodingDict = typeof heDecoding;
+export type HallucinationsDict = typeof heHallucinations;
 export type IntroductionDict = typeof heIntroduction;
 export type ConceptLabelsDict = typeof heConceptLabels;
 export type FinalExamDict = typeof heFinalExam;
@@ -181,6 +191,7 @@ export interface BehindAiDict {
     contextWindow: ContextWindowDict;
     logitsSoftmax: LogitsSoftmaxDict;
     decoding: DecodingDict;
+    hallucinations: HallucinationsDict;
     conceptLabels: ConceptLabelsDict;
     finalExam: FinalExamDict;
     chapterQuiz: ChapterQuizDict;
@@ -195,12 +206,12 @@ export interface Dictionary {
 }
 
 const DICTS: Record<Locale, Dictionary> = {
-    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter1: heChapter1, chapter2: heChapter2, chapter3: heChapter3, chapter4: heChapter4, generationLoop: heGenerationLoop, semanticSpace: heSemanticSpace, attention: heAttention, contextWindow: heContextWindow, logitsSoftmax: heLogitsSoftmax, decoding: heDecoding, conceptLabels: heConceptLabels, finalExam: heFinalExam, chapterQuiz: heChapterQuiz, introVisuals: heIntroVisuals, aiInternals: heAiInternals } },
-    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter1: arChapter1, chapter2: arChapter2, chapter3: arChapter3, chapter4: arChapter4, generationLoop: arGenerationLoop, semanticSpace: arSemanticSpace, attention: arAttention, contextWindow: arContextWindow, logitsSoftmax: arLogitsSoftmax, decoding: arDecoding, conceptLabels: arConceptLabels, finalExam: arFinalExam, chapterQuiz: arChapterQuiz, introVisuals: arIntroVisuals, aiInternals: arAiInternals } },
-    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter1: ruChapter1, chapter2: ruChapter2, chapter3: ruChapter3, chapter4: ruChapter4, generationLoop: ruGenerationLoop, semanticSpace: ruSemanticSpace, attention: ruAttention, contextWindow: ruContextWindow, logitsSoftmax: ruLogitsSoftmax, decoding: ruDecoding, conceptLabels: ruConceptLabels, finalExam: ruFinalExam, chapterQuiz: ruChapterQuiz, introVisuals: ruIntroVisuals, aiInternals: ruAiInternals } },
-    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter1: enChapter1, chapter2: enChapter2, chapter3: enChapter3, chapter4: enChapter4, generationLoop: enGenerationLoop, semanticSpace: enSemanticSpace, attention: enAttention, contextWindow: enContextWindow, logitsSoftmax: enLogitsSoftmax, decoding: enDecoding, conceptLabels: enConceptLabels, finalExam: enFinalExam, chapterQuiz: enChapterQuiz, introVisuals: enIntroVisuals, aiInternals: enAiInternals } },
-    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter1: esChapter1, chapter2: esChapter2, chapter3: esChapter3, chapter4: esChapter4, generationLoop: esGenerationLoop, semanticSpace: esSemanticSpace, attention: esAttention, contextWindow: esContextWindow, logitsSoftmax: esLogitsSoftmax, decoding: esDecoding, conceptLabels: esConceptLabels, finalExam: esFinalExam, chapterQuiz: esChapterQuiz, introVisuals: esIntroVisuals, aiInternals: esAiInternals } },
-    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter1: jaChapter1, chapter2: jaChapter2, chapter3: jaChapter3, chapter4: jaChapter4, generationLoop: jaGenerationLoop, semanticSpace: jaSemanticSpace, attention: jaAttention, contextWindow: jaContextWindow, logitsSoftmax: jaLogitsSoftmax, decoding: jaDecoding, conceptLabels: jaConceptLabels, finalExam: jaFinalExam, chapterQuiz: jaChapterQuiz, introVisuals: jaIntroVisuals, aiInternals: jaAiInternals } },
+    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter1: heChapter1, chapter2: heChapter2, chapter3: heChapter3, chapter4: heChapter4, generationLoop: heGenerationLoop, semanticSpace: heSemanticSpace, attention: heAttention, contextWindow: heContextWindow, logitsSoftmax: heLogitsSoftmax, decoding: heDecoding, hallucinations: heHallucinations, conceptLabels: heConceptLabels, finalExam: heFinalExam, chapterQuiz: heChapterQuiz, introVisuals: heIntroVisuals, aiInternals: heAiInternals } },
+    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter1: arChapter1, chapter2: arChapter2, chapter3: arChapter3, chapter4: arChapter4, generationLoop: arGenerationLoop, semanticSpace: arSemanticSpace, attention: arAttention, contextWindow: arContextWindow, logitsSoftmax: arLogitsSoftmax, decoding: arDecoding, hallucinations: arHallucinations, conceptLabels: arConceptLabels, finalExam: arFinalExam, chapterQuiz: arChapterQuiz, introVisuals: arIntroVisuals, aiInternals: arAiInternals } },
+    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter1: ruChapter1, chapter2: ruChapter2, chapter3: ruChapter3, chapter4: ruChapter4, generationLoop: ruGenerationLoop, semanticSpace: ruSemanticSpace, attention: ruAttention, contextWindow: ruContextWindow, logitsSoftmax: ruLogitsSoftmax, decoding: ruDecoding, hallucinations: ruHallucinations, conceptLabels: ruConceptLabels, finalExam: ruFinalExam, chapterQuiz: ruChapterQuiz, introVisuals: ruIntroVisuals, aiInternals: ruAiInternals } },
+    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter1: enChapter1, chapter2: enChapter2, chapter3: enChapter3, chapter4: enChapter4, generationLoop: enGenerationLoop, semanticSpace: enSemanticSpace, attention: enAttention, contextWindow: enContextWindow, logitsSoftmax: enLogitsSoftmax, decoding: enDecoding, hallucinations: enHallucinations, conceptLabels: enConceptLabels, finalExam: enFinalExam, chapterQuiz: enChapterQuiz, introVisuals: enIntroVisuals, aiInternals: enAiInternals } },
+    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter1: esChapter1, chapter2: esChapter2, chapter3: esChapter3, chapter4: esChapter4, generationLoop: esGenerationLoop, semanticSpace: esSemanticSpace, attention: esAttention, contextWindow: esContextWindow, logitsSoftmax: esLogitsSoftmax, decoding: esDecoding, hallucinations: esHallucinations, conceptLabels: esConceptLabels, finalExam: esFinalExam, chapterQuiz: esChapterQuiz, introVisuals: esIntroVisuals, aiInternals: esAiInternals } },
+    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter1: jaChapter1, chapter2: jaChapter2, chapter3: jaChapter3, chapter4: jaChapter4, generationLoop: jaGenerationLoop, semanticSpace: jaSemanticSpace, attention: jaAttention, contextWindow: jaContextWindow, logitsSoftmax: jaLogitsSoftmax, decoding: jaDecoding, hallucinations: jaHallucinations, conceptLabels: jaConceptLabels, finalExam: jaFinalExam, chapterQuiz: jaChapterQuiz, introVisuals: jaIntroVisuals, aiInternals: jaAiInternals } },
 };
 
 /** מחזיר את המילון לשפה, עם נפילה לעברית אם השפה לא נמצאה. */

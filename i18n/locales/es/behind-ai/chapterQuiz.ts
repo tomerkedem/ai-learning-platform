@@ -27,7 +27,7 @@ export const chapterQuiz = {
         8: 'Logits & Softmax',
         9: 'Decoding',
         10: 'Generation Loop',
-        11: 'Elegir una herramienta',
+        11: 'Hallucinations',
         12: 'Tool Call y el bucle de decisión',
         13: 'Detenerse, aprobar y responsabilidad',
         14: 'El laboratorio unificado',

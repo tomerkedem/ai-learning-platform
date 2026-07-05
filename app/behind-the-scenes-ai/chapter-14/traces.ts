@@ -16,7 +16,7 @@ import { INTENT_META, metaFor } from '@/app/behind-the-scenes-ai/_parked/confide
 import { evaluateGate, buildClarifyingQuestion } from '@/app/behind-the-scenes-ai/_parked/confidence/gateLogic';
 import { DEFAULT_THRESHOLD } from '@/app/behind-the-scenes-ai/_parked/confidence/gateData';
 import { parse } from '@/app/behind-the-scenes-ai/_parked/chat-to-agent/taskData';
-import { selectFor, getTool } from '@/app/behind-the-scenes-ai/chapter-11/toolData';
+import { selectFor, getTool } from '@/app/behind-the-scenes-ai/_parked/tool-selection/toolData';
 import { TOOL_CALL, getObservation } from '@/app/behind-the-scenes-ai/chapter-12/observationData';
 import { evaluate as evaluateControl } from '@/app/behind-the-scenes-ai/chapter-13/controlEngine';
 import { ACTION_META, RISK_META as CONTROL_RISK_META } from '@/app/behind-the-scenes-ai/chapter-13/controlData';

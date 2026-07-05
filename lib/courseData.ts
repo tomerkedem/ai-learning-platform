@@ -707,13 +707,13 @@ export const courses: Record<string, CourseData> = {
                 id: 11,
                 href: "/behind-the-scenes-ai/chapter-11",
                 num: "11",
-                label: { he: "בחירת כלי", en: "Tool Selection", ar: "اختيار الأداة", ru: "Выбор инструмента", es: "Selección de herramienta", ja: "ツールの選択" },
-                title: { he: "בחירת Tool - מתי Agent צריך כלי", en: "Tool Selection - When an Agent Needs a Tool", ar: "اختيار Tool: متى يحتاج Agent إلى أداة", ru: "Выбор Tool - когда Agent нужен инструмент", es: "Selección de Tool: cuándo un Agent necesita una herramienta", ja: "Tool の選択：Agent はいつツールを必要とするか" },
-                description: { he: "Agent לא אמור לנחש מידע שאפשר לבדוק בכלי, אבל גם לא להשתמש בכלי כשלא צריך. בחירת כלי היא החלטה רב-גורמית: התאמה, נתונים, סיכון והרשאה.", en: "An agent should not guess data a tool could check, but also should not use a tool when none is needed. Tool selection is a multi-factor decision: match, data, risk, and permission.", ar: "لا ينبغي لـ Agent أن يخمّن معلومات يمكن التحقّق منها بأداة، ولا أن يستخدم أداة دون حاجة. اختيار الأداة قرار متعدّد العوامل: الملاءمة والبيانات والمخاطرة والإذن.", ru: "Agent не должен угадывать данные, которые можно проверить инструментом, но и не должен использовать инструмент без надобности. Выбор инструмента - многофакторное решение: соответствие, данные, риск и разрешение.", es: "Un Agent no debería adivinar datos que puede comprobar con una herramienta, pero tampoco usar una herramienta cuando no hace falta. Elegir una herramienta es una decisión multifactor: ajuste, datos, riesgo y permiso.", ja: "Agent はツールで確認できる情報を当てずっぽうで埋めるべきではないが、不要なときにツールを使うべきでもない。ツールの選択は、適合・データ・リスク・権限という多要素の判断だ。" },
-                readTime: "15 דקות",
-                labelColor: "text-violet-400",
-                colorFrom: "from-violet-400",
-                colorTo: "to-emerald-500"
+                label: { he: "Hallucinations", en: "Hallucinations", ar: "Hallucinations", ru: "Hallucinations", es: "Hallucinations", ja: "Hallucinations" },
+                title: { he: "Hallucinations: למה תשובה בטוחה יכולה להיות שגויה", en: "Hallucinations: Why a Confident Answer Can Be Wrong", ar: "Hallucinations: لماذا قد تكون الإجابة الواثقة خاطئة", ru: "Hallucinations: почему уверенный ответ может быть ошибочным", es: "Hallucinations: por qué una respuesta segura puede estar equivocada", ja: "Hallucinations：自信のある答えが間違っていることがある理由" },
+                description: { he: "המודל בונה תשובה שוטפת, אבל שטף אינו אמת. הוא יכול להישמע בטוח ומדויק גם כשלא בדק את העובדות, ופשוט משלים את החסר בטקסט סביר. נלמד מתי לאמת.", en: "The model builds a fluent answer, but fluency is not truth. It can sound confident and precise even when it did not check the facts, filling the gap with plausible text. We learn when to verify.", ar: "يبني النموذج إجابة سلسة، لكن الطلاقة ليست حقيقة. قد يبدو واثقًا ودقيقًا حتى دون أن يتحقّق من الحقائق، فيملأ الفجوة بنص محتمل. سنتعلّم متى نتحقّق.", ru: "Модель строит гладкий ответ, но гладкость не есть истина. Он может звучать уверенно и точно, даже если факты не проверялись, просто заполняя пробел правдоподобным текстом. Мы учимся, когда проверять.", es: "El modelo construye una respuesta fluida, pero la fluidez no es la verdad. Puede sonar segura y precisa aunque no haya comprobado los hechos, llenando el vacío con texto plausible. Aprendemos cuándo verificar.", ja: "モデルは滑らかな答えを組み立てるが、滑らかさは真実ではない。事実を確認していなくても自信たっぷりで正確に聞こえ、もっともらしい文章で空白を埋めてしまう。いつ確かめるべきかを学ぶ。" },
+                readTime: "11 דקות",
+                labelColor: "text-amber-400",
+                colorFrom: "from-amber-400",
+                colorTo: "to-rose-500"
             },
             {
                 id: 12,

@@ -9,6 +9,12 @@
 // Token ID, Tool Call, UX) are kept on purpose.
 
 export const conceptLabels: Record<string, string> = {
+    // Capítulo 11 (Hallucinations)
+    "שטף אינו אמת": "La fluidez no es la verdad",
+    "ביטחון אינו ראיה": "La confianza no es evidencia",
+    "מידע חסר גורם להשלמה": "La falta de datos invita a rellenar",
+    "מקור מפחית סיכון": "Una fuente reduce el riesgo",
+    "תשובה זהירה עדיפה מניחוש": "Una respuesta cautelosa supera a una conjetura",
     "מהציון להסתברות": "De la puntuación a la probabilidad",
     "Chat מול Agent": "Chat frente a Agent",
     "Token ID ככתובת": "Token ID como dirección",

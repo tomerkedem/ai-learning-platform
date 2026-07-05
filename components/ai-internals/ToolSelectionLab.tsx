@@ -17,8 +17,8 @@ import {
     selectFor, TOOLS, SCENARIOS, NARRATION, DECISION_META, RISK_META, PERMISSION_META,
     GATE_STEPS, BARCODE_SAMPLE, DEFAULT_SCENARIO_ID,
     type SectionNarration, type DecisionTone,
-} from '@/app/behind-the-scenes-ai/chapter-11/toolData';
-import type { ToolEval, ToolSelection } from '@/app/behind-the-scenes-ai/chapter-11/toolEngine';
+} from '@/app/behind-the-scenes-ai/_parked/tool-selection/toolData';
+import type { ToolEval, ToolSelection } from '@/app/behind-the-scenes-ai/_parked/tool-selection/toolEngine';
 import type { TaskAnalysis } from '@/app/behind-the-scenes-ai/_parked/chat-to-agent/taskEngine';
 
 /* ════════════════════════ טון צבעוני ═════════════════════════════════════ */

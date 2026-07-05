@@ -26,7 +26,7 @@ export const chapterQuiz = {
         8: 'Logits & Softmax',
         9: 'Decoding',
         10: 'Generation Loop',
-        11: 'Выбор инструмента',
+        11: 'Hallucinations',
         12: 'Tool Call и цикл решения',
         13: 'Остановка, подтверждение и ответственность',
         14: 'Объединённая лаборатория',

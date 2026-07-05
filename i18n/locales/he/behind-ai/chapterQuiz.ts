@@ -37,7 +37,7 @@ export const chapterQuiz = {
         8: 'Logits & Softmax',
         9: 'Decoding',
         10: 'Generation Loop',
-        11: 'בחירת כלי',
+        11: 'Hallucinations',
         12: 'Tool Call ולולאת ההחלטה',
         13: 'עצירה, אישור ואחריות',
         14: 'המעבדה המאוחדת',

@@ -26,7 +26,7 @@ export const chapterQuiz = {
         8: 'Logits & Softmax',
         9: 'Decoding',
         10: 'Generation Loop',
-        11: 'ツールの選択',
+        11: 'Hallucinations',
         12: 'Tool Call と判断ループ',
         13: '停止、承認、責任',
         14: '統合ラボ',
