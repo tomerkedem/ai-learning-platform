@@ -27,7 +27,7 @@ export const chapterQuiz = {
         9: 'Decoding',
         10: 'Generation Loop',
         11: 'Hallucinations',
-        12: 'Tool Call and the Decision Loop',
+        12: 'RAG & Grounding',
         13: 'Stopping, Approval and Responsibility',
         14: 'The Unified Lab',
         15: 'Does AI Learn From Mistakes',

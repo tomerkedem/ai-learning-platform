@@ -719,13 +719,13 @@ export const courses: Record<string, CourseData> = {
                 id: 12,
                 href: "/behind-the-scenes-ai/chapter-12",
                 num: "12",
-                label: { he: "הפעלת כלי ותוצאה", en: "Tool Call and Observation", ar: "استدعاء الأداة والملاحظة", ru: "Вызов инструмента и наблюдение", es: "Llamada a herramienta y observación", ja: "ツール呼び出しと観測" },
-                title: { he: "Tool Call, Observation והחלטה הבאה", en: "Tool Call, Observation and the Next Decision", ar: "Tool Call وObservation والقرار التالي", ru: "Tool Call, Observation и следующее решение", es: "Tool Call, Observation y la siguiente decisión", ja: "Tool Call、Observation、そして次の判断" },
-                description: { he: "Agent פועל בלולאה: מחליט, מפעיל כלי, קורא תוצאה, ומחליט שוב. Tool Call אינו סוף הסיפור, הוא רק דרך להביא Observation חדשה.", en: "An agent works in a loop: it decides, calls a tool, reads the result, and decides again. A tool call is not the end of the story, only a way to bring a new observation.", ar: "يعمل Agent في حلقة: يقرّر، يستدعي أداة، يقرأ النتيجة، ثم يقرّر من جديد. ليس Tool Call نهاية القصّة، بل طريقة لجلب Observation جديدة.", ru: "Agent работает в цикле: решает, вызывает инструмент, читает результат и снова решает. Tool Call - не конец истории, а лишь способ получить новое Observation.", es: "Un Agent trabaja en un bucle: decide, llama a una herramienta, lee el resultado y vuelve a decidir. Un Tool Call no es el final de la historia, solo una forma de traer una nueva Observation.", ja: "Agent はループで動く：判断し、ツールを呼び、結果を読み、また判断する。Tool Call は物語の終わりではなく、新しい Observation を得る手段にすぎない。" },
-                readTime: "15 דקות",
-                labelColor: "text-violet-400",
-                colorFrom: "from-violet-400",
-                colorTo: "to-teal-500"
+                label: { he: "RAG & Grounding", en: "RAG & Grounding", ar: "RAG & Grounding", ru: "RAG & Grounding", es: "RAG & Grounding", ja: "RAG & Grounding" },
+                title: { he: "RAG & Grounding: איך מחברים AI למקורות", en: "RAG & Grounding: How AI Connects to Sources", ar: "RAG & Grounding: كيف يتّصل AI بالمصادر", ru: "RAG & Grounding: как AI подключается к источникам", es: "RAG & Grounding: cómo la AI se conecta a fuentes", ja: "RAG & Grounding：AI はどのように情報源につながるのか" },
+                description: { he: "תשובה בטוחה יכולה לטעות. הדרך להקטין את הסיכון היא לעגן את התשובה במקור: לאחזר מידע רלוונטי, להוסיף אותו להקשר, ולנסח תשובה שנשענת עליו. מקור מפחית ניחוש, אבל אינו קסם.", en: "A confident answer can be wrong. The way to lower that risk is to ground the answer in a source: retrieve relevant information, add it to the context, and answer based on it. A source reduces guessing, but it is not magic.", ar: "قد تكون الإجابة الواثقة خاطئة. وطريقة تقليل هذا الخطر هي تثبيت الإجابة في مصدر: استرجاع معلومات ذات صلة، وإضافتها إلى السياق، وصياغة إجابة تستند إليها. المصدر يقلّل التخمين، لكنه ليس سحرًا.", ru: "Уверенный ответ может быть ошибочным. Способ снизить этот риск: опереть ответ на источник, то есть найти нужную информацию, добавить её в контекст и ответить на её основе. Источник уменьшает догадки, но это не волшебство.", es: "Una respuesta segura puede estar equivocada. La forma de reducir ese riesgo es anclar la respuesta en una fuente: recuperar información relevante, añadirla al contexto y responder a partir de ella. Una fuente reduce las conjeturas, pero no es magia.", ja: "自信のある答えが間違っていることがある。そのリスクを下げる方法は、答えを情報源に基づかせることだ。関連情報を取り出し、文脈に加え、それをもとに答える。情報源は当て推量を減らすが、魔法ではない。" },
+                readTime: "13 דקות",
+                labelColor: "text-teal-400",
+                colorFrom: "from-teal-400",
+                colorTo: "to-emerald-500"
             },
             {
                 id: 13,

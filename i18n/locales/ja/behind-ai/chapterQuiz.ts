@@ -27,7 +27,7 @@ export const chapterQuiz = {
         9: 'Decoding',
         10: 'Generation Loop',
         11: 'Hallucinations',
-        12: 'Tool Call と判断ループ',
+        12: 'RAG & Grounding',
         13: '停止、承認、責任',
         14: '統合ラボ',
         15: 'AI は失敗から学ぶか',

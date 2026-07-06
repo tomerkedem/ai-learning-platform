@@ -38,7 +38,7 @@ export const chapterQuiz = {
         9: 'Decoding',
         10: 'Generation Loop',
         11: 'Hallucinations',
-        12: 'Tool Call ולולאת ההחלטה',
+        12: 'RAG & Grounding',
         13: 'עצירה, אישור ואחריות',
         14: 'המעבדה המאוחדת',
         15: 'האם AI לומד מטעויות',

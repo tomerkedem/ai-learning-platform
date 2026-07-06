@@ -15,6 +15,12 @@ export const conceptLabels: Record<string, string> = {
     "מידע חסר גורם להשלמה": "Missing info invites filling",
     "מקור מפחית סיכון": "A source lowers risk",
     "תשובה זהירה עדיפה מניחוש": "A cautious answer beats a guess",
+    // Chapter 12 (RAG & Grounding)
+    "תשובה מעוגנת במקור": "A grounded answer",
+    "אחזור לפני ניסוח": "Retrieve before answering",
+    "מקור מפחית ניחוש": "A source reduces guessing",
+    "מקור אינו קסם": "A source is not magic",
+    "חסר מידע צריך להיאמר": "Missing info must be stated",
     "מהציון להסתברות": "From score to probability",
     "Chat מול Agent": "Chat vs Agent",
     "Token ID ככתובת": "Token ID as an address",

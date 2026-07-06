@@ -1,187 +1,429 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Repeat, MousePointerClick, Eye, FlaskConical, ArrowLeft, Lock, Workflow } from 'lucide-react';
+import { Database, MousePointerClick, Layers, FlaskConical, Lightbulb, Lock, CheckCircle2, XCircle, Sparkles, Link2, GraduationCap, Globe, ShieldCheck, ArrowLeft, ArrowRight } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
-import { ChapterQuiz } from '../ChapterQuiz';
+import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
+import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 
-import { ObservationLoopLab } from '@/components/ai-internals/ObservationLoopLab';
+import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
+import { GroundingLab } from '@/components/ai-internals/GroundingLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
+import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
+import { SpeakButton } from '@/components/ai-internals/SpeakButton';
+import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
+import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
+import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
+import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
+import { useT } from '@/i18n/useT';
+import type { GroundingQuizId } from '@/i18n/locales/he/behind-ai/groundingQuiz';
 
-/** מיקום הפרק במסלול ה-Agent: בחירת הכלי מאחורינו, הפעלת הכלי כאן. */
-const AGENT_FLOW: { he: string; en: string; state: 'done' | 'active' | 'locked' }[] = [
-    { he: 'הבנת המשימה', en: 'Understand task', state: 'done' },
-    { he: 'בחירת כלי', en: 'Select tool', state: 'done' },
-    { he: 'הפעלת כלי וקריאת תוצאה', en: 'Call tool, read result', state: 'active' },
-    { he: 'עצירה לאישור', en: 'Stop for approval', state: 'locked' },
-];
+// טקסט הכרטיסים מגיע מהמילון (t.behindAi.grounding.guess.cards) לפי מזהה. כאן נשאר רק
+// המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה. הכרטיס עם
+// statusTone === 'precise' הוא הבחירה הנכונה.
+const GUESS_CARD_META = [
+    { id: 'grounded', icon: Link2, statusTone: 'precise', mentorPose: 'correct' },
+    { id: 'smarter', icon: GraduationCap, statusTone: 'common', mentorPose: 'reassure' },
+    { id: 'knowsAll', icon: Globe, statusTone: 'layer', mentorPose: 'headsup' },
+    { id: 'autoTrue', icon: ShieldCheck, statusTone: 'partial', mentorPose: 'think' },
+] as const;
 
-const AgentFlowStrip: React.FC = () => {
-    const reduce = useReducedMotion();
+/* ════════════════════════ נעילת הבנה: שאלת סיווג ════════════════════════ */
+// התשובה הנכונה מבנית: "החבילה בעיכוב, ואין מועד הגעה מאושר במקור שסופק" היא האפשרות
+// השנייה (אינדקס 1).
+const LOCK_CORRECT = 1;
+
+const UnderstandingLock: React.FC = () => {
+    const { t, dir } = useT();
+    const c12 = t.behindAi.grounding;
+    const lock = c12.lock;
+    const [choice, setChoice] = useState<number | null>(null);
+    const answered = choice !== null;
+
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-right" dir="rtl">
-            <div className="mb-4 flex items-center gap-2">
-                <Workflow size={16} className="text-violet-300" />
-                <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">מסלול ה-Agent</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Understand to Act</div>
-                </div>
+        <div dir={dir} className="text-start">
+            <div className="mb-3 flex items-center gap-2">
+                <p className="text-sm font-bold text-slate-200">{lock.question}</p>
+                <SpeakButton text={lock.question} speechLocale={c12.contentLocale} />
             </div>
-            <div className="flex flex-wrap items-center gap-2" dir="ltr">
-                {AGENT_FLOW.map((s, i) => (
-                    <React.Fragment key={s.en}>
-                        {i > 0 && <ArrowLeft size={15} className="rotate-180 text-slate-600" />}
-                        <motion.div
-                            initial={reduce ? false : { opacity: 0, y: 6 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={reduce ? { duration: 0 } : { duration: 0.3, delay: i * 0.05 }}
-                            className={`relative rounded-xl border px-3 py-1.5 text-center leading-tight ${
-                                s.state === 'active' ? 'border-violet-500/50 bg-violet-900/25' : s.state === 'done' ? 'border-emerald-500/40 bg-emerald-900/15' : 'border-slate-700/40 bg-slate-950/30'
-                            }`}
+
+            <div className="grid gap-2 sm:grid-cols-2">
+                {lock.options.map((opt, i) => {
+                    const isCorrect = i === LOCK_CORRECT;
+                    const isChosen = i === choice;
+                    let cls = 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600';
+                    if (answered && isCorrect) cls = 'border-emerald-400/70 bg-emerald-900/25 text-emerald-100';
+                    else if (answered && isChosen && !isCorrect) cls = 'border-rose-400/70 bg-rose-900/20 text-rose-100';
+                    return (
+                        <button
+                            key={opt}
+                            type="button"
+                            onClick={() => setChoice(i)}
+                            className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-start text-sm font-bold transition-colors ${cls}`}
                         >
-                            <span className={`flex items-center gap-1 text-[11px] font-bold ${s.state === 'active' ? 'text-violet-200' : s.state === 'done' ? 'text-emerald-200' : 'text-slate-500'}`}>
-                                {s.state === 'locked' && <Lock size={9} />}
-                                {s.he}
-                            </span>
-                            <span className="block text-[8px] uppercase tracking-wider text-slate-500" dir="ltr">{s.en}</span>
-                        </motion.div>
-                    </React.Fragment>
-                ))}
+                            <span dir={dir}>{opt}</span>
+                            {answered && isCorrect && <CheckCircle2 size={16} className="shrink-0 text-emerald-300" />}
+                            {answered && isChosen && !isCorrect && <XCircle size={16} className="shrink-0 text-rose-300" />}
+                        </button>
+                    );
+                })}
             </div>
-            <p className="mt-4 text-xs leading-relaxed text-slate-400">
-השלב הפעיל כאן הוא הפעלת הכלי וקריאת התוצאה: בחירת הכלי כבר מאחורינו, ואישור הפעולה הרגישה מחכה לפרק 13.
-            </p>
+
+            {answered && (
+                <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-3 text-sm leading-relaxed text-slate-200"
+                >
+                    {lock.success}
+                </motion.p>
+            )}
         </div>
     );
 };
 
-export default function BehindTheScenesChapter11() {
+export default function BehindTheScenesChapter12() {
     const reduce = useReducedMotion();
+    const { t, dir } = useT();
+    const isRtl = dir === 'rtl';
+    const c12 = t.behindAi.grounding;
+    const raLabels = t.behindAi.aiInternals.readAloud;
+
+    // שפת ההקראה נגזרת מ-contentLocale של הפרק, כדי שההקראה תדבר בשפת התוכן ולא בשפת
+    // הממשק. הכיוון (RTL/LTR) של הפריסה מגיע מ-dir של שפת הממשק.
+    const speechLocale = c12.contentLocale;
+    const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
+
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
+    const guessContent: OpeningGuessContent = {
+        eyebrow: c12.guess.eyebrow,
+        title: c12.guess.title,
+        subtitle: c12.guess.subtitle,
+        invite: c12.guess.invite,
+        invitePose: 'think',
+        correctTitle: c12.guess.correctTitle,
+        wrongTitle: c12.guess.wrongTitle,
+        getsRightLabel: c12.guess.getsRightLabel,
+        revealButton: c12.guess.revealButton,
+        revealTitle: c12.guess.revealTitle,
+        revealCopy: c12.guess.revealCopy,
+        revealPose: 'pointdown',
+        cta: c12.guess.cta,
+        ctaTargetId: 'grounding-lab',
+        resetButton: c12.guess.resetButton,
+        exploreHint: c12.guess.exploreHint,
+    };
+    const guessCards: DiscoveryGuessCard[] = GUESS_CARD_META.map((m) => ({
+        id: m.id,
+        icon: m.icon,
+        statusTone: m.statusTone,
+        mentorPose: m.mentorPose,
+        ...c12.guess.cards[m.id],
+    }));
+
+    // ── טקסט "רגע לפני המעבדה" להקראה: כותרת, תת-כותרת, פתיח וכל הנקודות. מקור אחד. ──
+    const primerText = `${c12.primer.title}. ${c12.primer.subtitle}. ${c12.primer.lead} ${c12.primer.points.map((p) => `${p.title}. ${p.body}`).join(' ')}`;
+
+    // ── דוק האזנה מודרכת: מקטעי הקראה יציבים בלבד (בלי מצב חי של המעבדה, כפתורים,
+    // מנטורים או חידון). התוכן נקרא בשפת contentLocale. ──
+    const sHero: ReadAloudSegment = { id: 'hero', label: c12.hero.titleHighlight, text: `${c12.hero.titleLead} ${c12.hero.titleHighlight}. ${c12.hero.lede}` };
+    const sGuess: ReadAloudSegment = { id: 'guess', label: c12.guess.eyebrow, text: `${c12.guess.title} ${c12.guess.subtitle}` };
+    const sPrimer: ReadAloudSegment = { id: 'primer', label: c12.primer.title, text: primerText };
+    const sSee: ReadAloudSegment = { id: 'see', label: c12.see.title, text: `${c12.see.title}. ${c12.see.steps.join(', ')}. ${c12.see.caption}` };
+    const sLab: ReadAloudSegment = { id: 'lab', label: c12.lab.sectionTitle, text: `${c12.lab.sectionTitle}. ${c12.lab.sectionIntro}` };
+    const sWow: ReadAloudSegment = { id: 'wow', label: c12.insight.title, text: `${c12.insight.title}. ${c12.insight.lead} ${c12.insight.body}` };
+    const sEveryday: ReadAloudSegment = { id: 'everyday', label: c12.analogy.title, text: `${c12.analogy.title}. ${c12.analogy.body}` };
+    const sMisconception: ReadAloudSegment = { id: 'misconception', label: c12.misconception.rightLabel, text: `${c12.misconception.rightLabel}. ${c12.misconception.rightBody}` };
+    const sLock: ReadAloudSegment = { id: 'lock', label: c12.lock.title, text: c12.lock.question };
+    const sPractical: ReadAloudSegment = { id: 'practical', label: c12.practical.title, text: `${c12.practical.title}. ${c12.practical.lead} ${c12.practical.uses.join(' ')}` };
+    const sCaveat: ReadAloudSegment = { id: 'caveat', label: c12.practical.title, text: c12.practical.caveat };
+
+    const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
+        short: [sHero, sPrimer, sLab, sPractical, sCaveat],
+        regular: [sHero, sGuess, sPrimer, sLab, sWow, sLock, sPractical, sCaveat],
+        full: [sHero, sGuess, sPrimer, sSee, sLab, sWow, sEveryday, sMisconception, sLock, sPractical, sCaveat],
+    };
+
+    // ── מבדק הפרק: המנגנון המשותף נשמר מ-quizData, וטקסט התצוגה ממוזג לפי מזהה.
+    // קישורי החזרה הממוקדים מתורגמים דרך chapterQuiz, בדיוק כמו בפרקים הקודמים. ──
+    const cq = t.behindAi.chapterQuiz;
+    const baseQuiz = behindAiChapterQuizzes[12];
+    const baseGetReviewLinks = baseQuiz.getReviewLinks;
+    const getReviewLinks = baseGetReviewLinks
+        ? (weakConcepts: string[]): ReviewLink[] =>
+              baseGetReviewLinks(weakConcepts).map((link) => {
+                  const match = link.href.match(/chapter-(\d+)/);
+                  const n = match ? Number(match[1]) : null;
+                  const name = n != null ? cq.chapterNames[n] : undefined;
+                  if (n == null || !name) return link;
+                  return { ...link, label: cq.reviewLinkLabel(n, name) };
+              })
+        : undefined;
+
+    const localizedQuiz = {
+        ...baseQuiz,
+        title: c12.quiz.title,
+        subtitle: c12.quiz.subtitle,
+        startLabel: c12.quiz.startLabel,
+        submitLabel: c12.quiz.submitLabel,
+        completedTitle: c12.quiz.completedTitle,
+        getReviewLinks,
+        questions: baseQuiz.questions.map((q) => ({ ...q, ...c12.quiz.byId[q.id as GroundingQuizId] })),
+    };
 
     return (
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={12}>
 
             {/* ══════════ HERO ══════════ */}
-            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
             <div className="relative">
-            <motion.section
-                initial={reduce ? false : { opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={reduce ? { duration: 0 } : { duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-right"
-                dir="rtl"
-            >
-                <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
-                <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-teal-500/10 blur-[90px] rounded-full pointer-events-none" />
+                <motion.section
+                    initial={reduce ? false : { opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={reduce ? { duration: 0 } : { duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-start"
+                    dir={dir}
+                >
+                    <div className="absolute -top-16 -right-16 w-56 h-56 bg-teal-500/10 blur-[80px] rounded-full pointer-events-none" />
+                    <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-emerald-500/10 blur-[90px] rounded-full pointer-events-none" />
 
-                <div className="relative z-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
-                        <Repeat size={14} className="text-violet-400" />
-                        <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">Behind the Scenes · 12</span>
-                    </div>
-
-                    <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
-                        Agent פועל בלולאה,{' '}
-                        <span className="bg-gradient-to-l from-violet-400 via-fuchsia-400 to-teal-400 bg-clip-text text-transparent">
-                            לא בקו ישר
-                        </span>
-                    </h1>
-
-                    <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">
-                        Tool Call אינו סוף הסיפור, הוא רק דרך להביא Observation חדשה. ה-Agent לא ידע את התוצאה מראש, הוא ביקש אותה מכלי,
-                        קרא אותה, והחליט מחדש לפיה. ואותה משימה יכולה להוביל לשלוש החלטות שונות לגמרי, תלוי במה הכלי החזיר.
-                    </p>
-
-                    <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
-                        <span className="inline-flex items-center gap-1.5">
-                            <MousePointerClick size={14} className="text-violet-400" /> עברו בין שלוש התוצאות
-                        </span>
-                        <span className="inline-flex items-center gap-1.5">
-                            <Eye size={14} className="text-teal-400" /> הריצו את הלולאה שוב, שלב אחר שלב
-                        </span>
-                    </div>
-                </div>
-            </motion.section>
-            {/* המנטור: ה-Agent פועל בלולאה (xl+, מימין) */}
-            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="explain-opposite" line="ה-Agent פועל בלולאה" width={248} />
-            </div>
-            </div>
-
-            {/* ══════════ מסלול קריאה ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
-                <div className="space-y-3 rounded-2xl border border-slate-700/50 bg-slate-900/50 p-6 leading-relaxed text-slate-300">
-                    <div className="flex items-center gap-2">
-                        <Repeat size={18} className="text-violet-300" />
-                        <div className="leading-tight">
-                            <div className="text-sm font-bold text-slate-200">מה נלמד בפרק הזה</div>
-                            <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Reading path</div>
+                    <div className="relative z-10">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-teal-500/30 mb-5">
+                            <Database size={14} className="text-teal-400" />
+                            <span className="font-mono text-[11px] tracking-widest uppercase text-teal-300" dir="ltr">{c12.hero.badge}</span>
                         </div>
+
+                        <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
+                            {c12.hero.titleLead}{' '}
+                            <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-teal-400 via-emerald-400 to-sky-400 bg-clip-text text-transparent`}>
+                                {c12.hero.titleHighlight}
+                            </span>
+                        </h1>
+
+                        <div className="flex items-start gap-2.5 max-w-3xl">
+                            <p className="text-lg text-slate-300 leading-relaxed">{c12.hero.lede}</p>
+                            <SpeakButton text={`${c12.hero.titleLead} ${c12.hero.titleHighlight}. ${c12.hero.lede}`} className="mt-1" speechLocale={speechLocale} />
+                        </div>
+
+                        <p className="mt-4 text-base font-bold text-teal-200">
+                            {c12.hero.hook}
+                        </p>
+
+                        <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
+                            <span className="inline-flex items-center gap-1.5">
+                                <MousePointerClick size={14} className="text-teal-400" /> {c12.hero.chipTry}
+                            </span>
+                            <span className="inline-flex items-center gap-1.5">
+                                <Layers size={14} className="text-emerald-400" /> {c12.hero.chipCompare}
+                            </span>
+                        </div>
+
+                        {/* דוק ההאזנה המודרכת: אותו רכיב של המבוא ושאר הפרקים */}
+                        <FloatingReadAloud dir={dir}>
+                            <ReadAloudControls
+                                segmentsByMode={readAloudByMode}
+                                lang={LOCALE_SPEECH_LANG[speechLocale]}
+                                locale={speechLocale}
+                                dir={dir}
+                                labels={raLabels}
+                                reduce={!!reduce}
+                                compact
+                            />
+                        </FloatingReadAloud>
                     </div>
-                    <p>
-                        בפרק הקודם ה-Agent בחר כלי מתאים. עכשיו נראה מה קורה כשהוא מפעיל אותו, דרך שלושה מושגים שמרכיבים את לולאת הפעולה.
-                    </p>
-                    <p>
-                        <span className="font-bold text-violet-200">Tool Call</span> הוא הרגע שבו ה-Agent מפעיל את הכלי. <span className="font-bold text-violet-200">Observation</span> היא התוצאה שהכלי מחזיר, מידע חדש שהגיע מבחוץ. ו-<span className="font-bold text-violet-200">Next Decision</span> הוא מה שה-Agent בוחר אחרי שהוא קורא את התוצאה ומשווה אותה להקשר.
-                    </p>
-                    <p className="font-bold text-violet-200">
-                        המסר: Agent פועל בלולאה, לא בקו ישר. הוא מחליט, מפעיל, קורא, ומחליט שוב.
-                    </p>
+                </motion.section>
+
+                {/* המנטור: תנו למודל על מה להישען. ממוקם בצד החיצוני לפי כיוון הקריאה. */}
+                <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[248px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
+                    <Mentor pose="headsup" line={c12.mentor.hero} width={248} flip={!isRtl} />
+                </div>
+            </div>
+
+            {/* ══════════ ניחוש פתיחה ══════════ */}
+            <section className="mt-12 text-start" dir={dir}>
+                <OpeningGuess content={guessContent} cards={guessCards} speechLocale={speechLocale} />
+            </section>
+
+            {/* ══════════ רגע לפני המעבדה ══════════ */}
+            <section className="mt-12 text-start" dir={dir}>
+                <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
+                    <div className="mb-4 flex items-start justify-between gap-2.5">
+                        <div>
+                            <span className="mb-2 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-teal-300">
+                                <Sparkles size={14} /> {c12.primer.eyebrow}
+                            </span>
+                            <h3 className="text-xl font-black text-white md:text-2xl">{c12.primer.title}</h3>
+                            <p className="mt-1 text-sm font-medium text-slate-400">{c12.primer.subtitle}</p>
+                        </div>
+                        <SpeakButton text={primerText} speechLocale={speechLocale} />
+                    </div>
+
+                    <p className="text-[15px] leading-relaxed text-slate-300 md:text-base">{c12.primer.lead}</p>
+
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                        {c12.primer.points.map((pt) => (
+                            <div key={pt.title} className="rounded-2xl border border-slate-700/50 bg-slate-950/30 p-4">
+                                <div className="mb-1.5 flex items-center gap-2">
+                                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
+                                    <div className="text-sm font-bold text-slate-100">{pt.title}</div>
+                                </div>
+                                <p className="text-[15px] leading-relaxed text-slate-300">{pt.body}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            {/* ══════════ מסלול ה-Agent ══════════ */}
-            <section className="mt-8 text-right" dir="rtl">
-                <AgentFlowStrip />
+            {/* ══════════ See: איך מקור נכנס לתשובה ══════════ */}
+            <section className="mt-12 text-start" dir={dir}>
+                <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5">
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                        <div className="text-sm font-bold text-slate-100">{c12.see.title}</div>
+                        <SpeakButton text={`${c12.see.title}. ${c12.see.steps.join(', ')}. ${c12.see.caption}`} speechLocale={speechLocale} />
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                        {c12.see.steps.map((step, i) => (
+                            <React.Fragment key={step}>
+                                <span className={`rounded-full border px-3 py-1.5 text-sm font-bold ${
+                                    i === c12.see.steps.length - 1
+                                        ? 'border-teal-400/50 bg-teal-900/20 text-teal-200'
+                                        : 'border-slate-700/60 bg-slate-950/40 text-slate-300'
+                                }`}>
+                                    {step}
+                                </span>
+                                {i < c12.see.steps.length - 1 && <FlowArrow size={15} className="text-emerald-400" aria-hidden />}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-slate-400">{c12.see.caption}</p>
+                </div>
             </section>
 
-            {/* ══════════ Observation Loop Lab ══════════ */}
-            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
+            {/* ══════════ מעבדת העיגון ══════════ */}
+            <section id="grounding-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
-                    <FlaskConical size={24} className="text-violet-400" />
+                    <FlaskConical size={24} className="text-teal-400" />
                     <div>
-                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">Agent Loop Lab</div>
-                        <h3 className="text-2xl font-bold text-white">מעבדת לולאת ה-Agent</h3>
+                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-teal-400" dir="ltr">{c12.lab.sectionEyebrow}</div>
+                        <h3 className="text-2xl font-bold text-white">{c12.lab.sectionTitle}</h3>
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    כל רכיב כאן מלווה בהקדמה, בשורת מסקנה, ובהנחיית Try this. עברו בין שלוש התוצאות, ברורה, חלקית וסותרת, וראו איך אותו כלי
-                    מוביל לשלוש החלטות שונות. הסירו את הברקוד וראו ש-Tool selected אינו Tool called. ובסוף, הריצו את כל הלולאה שוב, שלב
-                    אחר שלב, ועצרו בכל נקודה. כל שדה תוצאה והחלטה מחושבים חי ממודל לימודי שקוף.
+                <div className="flex items-start gap-2.5">
+                    <p className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
+                        {c12.lab.sectionIntro}
+                    </p>
+                    <SpeakButton text={`${c12.lab.sectionTitle}. ${c12.lab.sectionIntro}`} className="mt-1" speechLocale={speechLocale} />
                 </div>
 
-                <ObservationLoopLab />
-                {/* המנטור: אותו כלי, שלוש החלטות (xl+, משמאל) */}
-                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-                  <Mentor pose="inspect" line="אותו כלי, שלוש החלטות" width={160} />
+                <GroundingLab data={c12.lab} dir={dir} speechLocale={speechLocale} />
+
+                {/* המנטור: אותה שאלה, מקור משנה הכל */}
+                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
+                    <Mentor pose="inspect" line={c12.mentor.labExplain} width={160} flip={!isRtl} />
                 </div>
             </section>
 
-            {/* ══════════ סיכום ══════════ */}
-            <section className="relative mt-12 text-right" dir="rtl">
-                {/* המנטור: מחליט, מפעיל, קורא, שוב (xl+, מימין) */}
-                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                  <Mentor pose="happy" line="מחליט, מפעיל, קורא, שוב" width={160} />
-                </div>
-                <InsightBox type="intuition" title="הנקודה החשובה בפרק">
-                    <span className="block font-bold text-violet-200">Tool Call הוא לא סוף הסיפור, הוא רק דרך להביא Observation חדשה.</span>
-                    ראינו שאחרי שהמידע חוזר, ה-Agent מחליט מחדש מה נכון לעשות. תוצאה ברורה הובילה לתשובה, תוצאה חלקית לצעד אחר בלי המצאת
-                    סיבה, ותוצאה סותרת להצפת הסתירה במקום לפסול את המשתמש. וראינו שגם אחרי תוצאה טובה, שער הסיכון נשאר: פעולה רגישה
-                    עוצרת לאישור גם כשהתשובה ברורה.
-                    <span className="mt-3 block text-sm text-slate-400">
-                        גשר לפרק 13: גם כשיש תשובה אפשרית, לפעמים הצעד הנכון הוא לעצור ולבקש אישור. מתי עוצרים, ולמה, זה נושא הפרק הבא.
-                    </span>
+            {/* ══════════ רגע ה-wow ══════════ */}
+            <section className="mt-12 text-start" dir={dir}>
+                <InsightBox type="intuition" title={c12.insight.title}>
+                    <div className="flex items-start justify-between gap-2.5">
+                        <span className="block text-lg font-bold text-teal-200">{c12.insight.lead}</span>
+                        <SpeakButton text={`${c12.insight.title}. ${c12.insight.lead} ${c12.insight.body}`} speechLocale={speechLocale} />
+                    </div>
+                    <span className="mt-2 block">{c12.insight.body}</span>
                 </InsightBox>
             </section>
 
+            {/* ══════════ דוגמה יומיומית ══════════ */}
+            <section className="mt-12 text-start" dir={dir}>
+                <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <Lightbulb size={18} className="text-teal-300" />
+                            <div className="text-sm font-bold text-slate-100">{c12.analogy.title}</div>
+                        </div>
+                        <SpeakButton text={`${c12.analogy.title}. ${c12.analogy.body}`} speechLocale={speechLocale} />
+                    </div>
+                    <p>{c12.analogy.body}</p>
+                </div>
+            </section>
+
+            {/* ══════════ תיקון טעות נפוצה ══════════ */}
+            <section className="relative mt-12 text-start" dir={dir}>
+                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
+                    <Mentor pose="reassure" line={c12.mentor.misconception} width={155} flip={!isRtl} />
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                    <div className="rounded-2xl border border-rose-500/30 bg-rose-950/10 p-5">
+                        <div className="mb-2 flex items-center gap-2 text-rose-200">
+                            <XCircle size={18} />
+                            <span className="text-sm font-bold">{c12.misconception.wrongLabel}</span>
+                        </div>
+                        <p className="leading-relaxed text-slate-300">{c12.misconception.wrongQuote}</p>
+                    </div>
+                    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/10 p-5">
+                        <div className="mb-2 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 text-emerald-200">
+                                <CheckCircle2 size={18} />
+                                <span className="text-sm font-bold">{c12.misconception.rightLabel}</span>
+                            </div>
+                            <SpeakButton text={`${c12.misconception.rightLabel}. ${c12.misconception.rightBody}`} speechLocale={speechLocale} />
+                        </div>
+                        <p className="leading-relaxed text-slate-300">
+                            {c12.misconception.rightBody}
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            {/* ══════════ נעילת הבנה ══════════ */}
+            <section className="relative mt-12 text-start" dir={dir}>
+                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
+                    <Mentor pose="happy" line={c12.mentor.lock} width={160} flip={!isRtl} />
+                </div>
+                <div className="rounded-2xl border border-teal-500/40 bg-slate-900/60 p-6">
+                    <div className="mb-5 flex items-center gap-2">
+                        <Lock size={20} className="text-teal-300" />
+                        <h3 className="text-xl font-bold text-white">{c12.lock.title}</h3>
+                    </div>
+
+                    <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
+                        <UnderstandingLock />
+                    </div>
+                </div>
+            </section>
+
+            {/* ══════════ תובנה מעשית ══════════ */}
+            <section className="relative mt-12 text-start" dir={dir}>
+                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
+                    <Mentor pose="pointdown" line={c12.mentor.practical} width={160} flip={!isRtl} />
+                </div>
+                <InsightBox type="intuition" title={c12.practical.title}>
+                    <div className="flex items-start justify-between gap-2.5">
+                        <span className="block">{c12.practical.lead}</span>
+                        <SpeakButton text={`${c12.practical.title}. ${c12.practical.lead} ${c12.practical.uses.join(' ')} ${c12.practical.caveat}`} speechLocale={speechLocale} />
+                    </div>
+                    <ul className="mt-3 space-y-2">
+                        {c12.practical.uses.map((line) => (
+                            <li key={line} className="flex items-start gap-2.5">
+                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" />
+                                <span className="text-sm">{line}</span>
+                            </li>
+                        ))}
+                    </ul>
+                    <span className="mt-3 block text-sm text-slate-400">{c12.practical.caveat}</span>
+                </InsightBox>
+            </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
-            <section className="mt-16 mb-4" dir="rtl">
-                <ChapterQuiz chapterId={12} />
+            <section className="mt-16 mb-4" dir={dir}>
+                <ExpandableLab title={localizedQuiz.title}>
+                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} />
+                </ExpandableLab>
             </section>
         </ChapterLayout>
     );

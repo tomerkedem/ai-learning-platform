@@ -27,7 +27,7 @@ export const chapterQuiz = {
         9: 'Decoding',
         10: 'Generation Loop',
         11: 'Hallucinations',
-        12: 'Tool Call и цикл решения',
+        12: 'RAG & Grounding',
         13: 'Остановка, подтверждение и ответственность',
         14: 'Объединённая лаборатория',
         15: 'Учится ли AI на ошибках',
