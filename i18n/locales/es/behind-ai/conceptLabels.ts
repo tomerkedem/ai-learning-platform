@@ -9,6 +9,12 @@
 // Token ID, Tool Call, UX) are kept on purpose.
 
 export const conceptLabels: Record<string, string> = {
+    // Capítulo 19 (Full Trace)
+    "Trace גלוי": "Traza visible",
+    "Trace אינו מחשבה נסתרת": "La traza no es pensamiento oculto",
+    "מקור לפני מסקנה": "La fuente antes que la conclusion",
+    "גבול אישור": "Limite de aprobacion",
+    "תוצר מבוקר": "Salida controlada",
     // Capítulo 18 (Guardrails)
     "סיכון קובע פעולה": "El riesgo decide la acción",
     "חסר מידע עוצר": "La falta de información detiene",

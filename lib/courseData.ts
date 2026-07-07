@@ -572,10 +572,9 @@ export const courses: Record<string, CourseData> = {
     // --- לומדה 4: מאחורי הקלעים של AI ---
     "behind-the-scenes-ai": {
         id: "behind-the-scenes-ai",
-        // התוכנית הסופית כוללת 19 פרקים. הפרק האחרון הבנוי כרגע הוא 17, ועוד מחכים
-        // פרק 18 (Guardrails) ופרק 19 (Full Trace), ולכן מסך הסיום של הפוטר לא יאמר
-        // שהלומדה הסתיימה. הסירו את הדגל כשפרק 19 ייבנה.
-        hasUpcomingChapters: true,
+        // התוכנית הסופית כוללת 19 פרקים, וכולם בנויים. הפרק האחרון בתוכנית הוא 19
+        // (Full Trace), שמסתיים ב-CTA למבחן הסיום. לכן אין דגל hasUpcomingChapters:
+        // הפוטר של פרק 19 מציג את מסך הסיום הרגיל.
         title: { he: "מאחורי הקלעים של AI", en: "Behind the Scenes of AI", ar: "ما وراء كواليس AI", ru: "AI за кулисами", es: "Entre bastidores de AI", ja: "AI の舞台裏" },
         description: { he: "מה קורה כשכותבים לצ'ט או ל-Agent", en: "What happens when you write to a chat or an agent", ar: "ما الذي يحدث عندما تكتب إلى محادثة أو وكيل", ru: "Что происходит, когда вы пишете в чат или агенту", es: "Qué ocurre cuando escribes a un chat o a un agente", ja: "チャットやエージェントに入力したとき、何が起きるのか" },
         chapters: [
@@ -806,6 +805,18 @@ export const courses: Record<string, CourseData> = {
                 labelColor: "text-indigo-400",
                 colorFrom: "from-indigo-400",
                 colorTo: "to-sky-500"
+            },
+            {
+                id: 19,
+                href: "/behind-the-scenes-ai/chapter-19",
+                num: "19",
+                label: { he: "Full Trace", en: "Full Trace", ar: "Full Trace", ru: "Full Trace", es: "Full Trace", ja: "Full Trace" },
+                title: { he: "Full Trace: פרומפט אחד, כל התחנות", en: "Full Trace: One Prompt, All Stations", ar: "Full Trace: طلب واحد، كل المحطات", ru: "Full Trace: один промпт, все станции", es: "Full Trace: un prompt, todas las estaciones", ja: "Full Trace：一つのプロンプト、すべての駅" },
+                description: { he: "פרק הסיכום: פרומפט אחד עובר את כל התחנות, מהקלט דרך משמעות, ייצור, עיגון ושכבת ה-Agent, ועד ההחלטה המבוקרת. לא רק התשובה בקצה, אלא כל הדרך אליה, ומתי מבקשים מקור, בדיקה או אישור.", en: "The capstone: one prompt passes through every station, from input through meaning, generation, grounding, and the agent layer, to the controlled decision. Not just the answer at the end, but the whole path to it, and where to ask for a source, a check, or approval.", ar: "فصل الختام: طلب واحد يمر عبر كل المحطات، من المدخل عبر المعنى والتوليد والربط وطبقة الوكيل، حتى القرار المضبوط. ليس الجواب في النهاية فقط، بل الطريق كله إليه، وأين تطلب مصدرا أو فحصا أو موافقة.", ru: "Заключительная глава: один промпт проходит через все станции, от ввода через смысл, генерацию, привязку и слой агента, до контролируемого решения. Не только ответ в конце, но весь путь к нему, и где просить источник, проверку или одобрение.", es: "El capítulo de cierre: un prompt pasa por todas las estaciones, desde la entrada por el significado, la generación, el anclaje y la capa del agente, hasta la decisión controlada. No solo la respuesta al final, sino todo el camino hacia ella, y dónde pedir una fuente, una comprobación o una aprobación.", ja: "総まとめの章：一つのプロンプトが、入力から意味、生成、接地、エージェント層を通り、制御された判断まで、すべての駅を通る。終わりの答えだけでなく、そこまでの道のり全体と、どこで情報源・確認・承認を求めるか。" },
+                readTime: "12 דקות",
+                labelColor: "text-emerald-400",
+                colorFrom: "from-emerald-400",
+                colorTo: "to-teal-500"
             }
         ]
     }

@@ -73,7 +73,7 @@ export default function FinalExamPage() {
                     {/* כותרת */}
                     <header className="text-center space-y-4">
                         <Link
-                            href="/behind-the-scenes-ai/chapter-16"
+                            href="/behind-the-scenes-ai/chapter-19"
                             className="inline-flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-blue-400 transition-colors no-underline group"
                         >
                             {dir === "rtl"

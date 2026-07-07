@@ -45,5 +45,6 @@ export const chapterQuiz = {
         16: 'האם AI לומד ממני',
         17: 'Chat to Agent',
         18: 'Guardrails',
+        19: 'Full Trace',
     } as Record<number, string>,
 };

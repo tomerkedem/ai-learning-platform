@@ -9,6 +9,12 @@
 // Token ID, Tool Call, UX) are kept on purpose.
 
 export const conceptLabels: Record<string, string> = {
+    // 第19章 (Full Trace)
+    "Trace גלוי": "見えるトレース",
+    "Trace אינו מחשבה נסתרת": "トレースは隠れた思考ではない",
+    "מקור לפני מסקנה": "結論の前に情報源",
+    "גבול אישור": "承認の境界",
+    "תוצר מבוקר": "制御された出力",
     // 第18章 (Guardrails)
     "סיכון קובע פעולה": "リスクが行動を決める",
     "חסר מידע עוצר": "足りない情報は止める",
