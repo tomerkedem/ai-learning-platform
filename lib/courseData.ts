@@ -30,6 +30,10 @@ export interface CourseData {
     title: LocalizedText;
     description: LocalizedText;
     chapters: ChapterData[];
+    // כשהפרק האחרון הבנוי אינו הפרק האחרון בתוכנית (עוד פרקים מתוכננים אך טרם נבנו),
+    // מסך הסיום של הפוטר משתמש בניסוח ניטרלי במקום "סיימת את כל הפרקים". ברירת מחדל:
+    // לא מוגדר, כלומר לומדה שהושלמה מציגה את מסך הסיום הרגיל.
+    hasUpcomingChapters?: boolean;
 }
 
 export const courses: Record<string, CourseData> = {
@@ -568,6 +572,10 @@ export const courses: Record<string, CourseData> = {
     // --- לומדה 4: מאחורי הקלעים של AI ---
     "behind-the-scenes-ai": {
         id: "behind-the-scenes-ai",
+        // התוכנית הסופית כוללת 19 פרקים. הפרק האחרון הבנוי כרגע הוא 17, ועוד מחכים
+        // פרק 18 (Guardrails) ופרק 19 (Full Trace), ולכן מסך הסיום של הפוטר לא יאמר
+        // שהלומדה הסתיימה. הסירו את הדגל כשפרק 19 ייבנה.
+        hasUpcomingChapters: true,
         title: { he: "מאחורי הקלעים של AI", en: "Behind the Scenes of AI", ar: "ما وراء كواليس AI", ru: "AI за кулисами", es: "Entre bastidores de AI", ja: "AI の舞台裏" },
         description: { he: "מה קורה כשכותבים לצ'ט או ל-Agent", en: "What happens when you write to a chat or an agent", ar: "ما الذي يحدث عندما تكتب إلى محادثة أو وكيل", ru: "Что происходит, когда вы пишете в чат или агенту", es: "Qué ocurre cuando escribes a un chat o a un agente", ja: "チャットやエージェントに入力したとき、何が起きるのか" },
         chapters: [
@@ -774,6 +782,18 @@ export const courses: Record<string, CourseData> = {
                 labelColor: "text-violet-400",
                 colorFrom: "from-violet-400",
                 colorTo: "to-fuchsia-500"
+            },
+            {
+                id: 17,
+                href: "/behind-the-scenes-ai/chapter-17",
+                num: "17",
+                label: { he: "Chat to Agent", en: "Chat to Agent", ar: "Chat to Agent", ru: "Chat to Agent", es: "Chat to Agent", ja: "Chat to Agent" },
+                title: { he: "Chat to Agent: כששאלה הופכת למשימה", en: "Chat to Agent: When a Question Becomes a Task", ar: "Chat to Agent: عندما يتحوّل السؤال إلى مهمّة", ru: "Chat to Agent: когда вопрос становится задачей", es: "Chat to Agent: cuando una pregunta se convierte en tarea", ja: "Chat to Agent：問いがタスクになるとき" },
+                description: { he: "צ'אט מקבל קלט ומחזיר תשובה. Agent מקבל מטרה ומתקדם לעברה: מזהה מה חסר, יכול לבחור כלי, בודק תוצאה, ומחליט אם להמשיך, לעצור, או לבקש אישור. אותה בקשה על חבילה יכולה להיענות כתשובה או להתנהל כמשימה מבוקרת.", en: "A chat receives input and returns an answer. An agent receives a goal and works toward it: it spots what is missing, may choose a tool, checks the result, and decides whether to continue, stop, or ask for approval. The same request about a package can be answered as text or handled as a controlled task.", ar: "المحادثة تتلقّى مُدخلًا وتعيد جوابًا. أمّا الوكيل فيتلقّى هدفًا ويتقدّم نحوه: يلاحظ ما هو ناقص، وقد يختار أداة، ويفحص النتيجة، ويقرّر هل يتابع أم يتوقّف أم يطلب موافقة. الطلب نفسه حول طرد قد يُجاب كنصّ أو يُدار كمهمّة مضبوطة.", ru: "Чат получает ввод и возвращает ответ. Агент получает цель и продвигается к ней: замечает, чего не хватает, может выбрать инструмент, проверяет результат и решает, продолжать, остановиться или запросить подтверждение. Один и тот же запрос о посылке можно ответить текстом или выполнить как контролируемую задачу.", es: "Un chat recibe una entrada y devuelve una respuesta. Un agente recibe un objetivo y avanza hacia él: detecta lo que falta, puede elegir una herramienta, revisa el resultado y decide si continuar, detenerse o pedir aprobación. La misma solicitud sobre un paquete puede responderse como texto o gestionarse como una tarea controlada.", ja: "チャットは入力を受け取り、答えを返す。エージェントは目標を受け取り、それに向かって進む。足りないものに気づき、ツールを選ぶこともあり、結果を確認し、続けるか、止めるか、承認を求めるかを判断する。荷物についての同じ依頼が、テキストの答えにも、制御されたタスクにもなりうる。" },
+                readTime: "11 דקות",
+                labelColor: "text-teal-400",
+                colorFrom: "from-teal-400",
+                colorTo: "to-violet-500"
             }
         ]
     }

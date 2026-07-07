@@ -9,6 +9,12 @@
 // Token ID, Tool Call, UX) are kept on purpose.
 
 export const conceptLabels: Record<string, string> = {
+    // Capítulo 17 (Chat to Agent)
+    "צ'אט עונה, Agent מתקדם": "El chat responde, el agente avanza",
+    "כלי מרחיב יכולת": "Una herramienta amplía la capacidad",
+    "מידע חסר עוצר פעולה": "La información que falta detiene la acción",
+    "אישור לפני פעולה": "Aprobación antes de actuar",
+    "משימה בטוחה ל-Agent": "Una tarea segura para un agente",
     // Capítulo 15 (Evaluation & Generalization)
     "הכללה למקרה חדש": "Generalizar a un caso nuevo",
     "דוגמה אחת אינה מבחן": "Un ejemplo no es una prueba",

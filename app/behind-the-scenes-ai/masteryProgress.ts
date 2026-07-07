@@ -11,7 +11,7 @@ import type { AssessmentResult } from "@/components/content/AssessmentEngine";
 
 export const MASTERY_STORAGE_KEY = "behindAiMasteryProgress";
 export const MASTERY_UPDATED_EVENT = "behindai:mastery-updated";
-export const TOTAL_CHAPTER_QUIZZES = 16;
+export const TOTAL_CHAPTER_QUIZZES = 17;
 export const FINAL_EXAM_QUIZ_ID = "behind-ai-final";
 
 export interface QuizRecord {

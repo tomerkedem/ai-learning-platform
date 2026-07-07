@@ -20,6 +20,8 @@ export const chrome: typeof heChrome = {
         prev: '前へ',
         finishedTitle: 'すべての章を修了しました！',
         finishedSub: 'お見事です。最後までたどり着きました。',
+        moreComingTitle: 'いま利用できる章の最後に到達しました',
+        moreComingSub: '次の章がコースを続けます',
     },
 
     focus: {

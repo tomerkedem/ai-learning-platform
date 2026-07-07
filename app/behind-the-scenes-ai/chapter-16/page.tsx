@@ -13,12 +13,11 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
     BrainCircuit, RotateCcw, Layers, FlaskConical, Lock,
     CheckCircle2, XCircle, Sparkles, MessageSquare, Ban, Users,
-    GraduationCap, ArrowLeft, ArrowRight,
+    ArrowLeft, ArrowRight,
 } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
@@ -427,25 +426,9 @@ export default function BehindTheScenesChapter16() {
                 </ExpandableLab>
             </section>
 
-            {/* ══════════ מעבר למבחן סיום הלומדה (הפרק הבנוי האחרון בשלב זה) ══════════ */}
-            <section className="mt-16 mb-4" dir={dir}>
-                <Link
-                    href="/behind-the-scenes-ai/final-exam"
-                    className="group block max-w-md mx-auto rounded-3xl border border-blue-500/30 bg-gradient-to-br from-blue-900/20 to-slate-900/40 p-8 text-center transition-all hover:border-blue-400/50 hover:from-blue-900/30 no-underline"
-                >
-                    <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-blue-500/20">
-                        <GraduationCap size={32} className="text-blue-400" />
-                    </div>
-                    <h3 className="text-2xl font-black text-white mb-2">{c16.finalExamCta.title}</h3>
-                    <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                        {c16.finalExamCta.body}
-                    </p>
-                    <span className="inline-flex items-center gap-2 bg-blue-600 group-hover:bg-blue-500 text-white font-black py-3 px-8 rounded-2xl transition-colors">
-                        {c16.finalExamCta.button}
-                        <FlowArrow size={18} className={`transition-transform ${isRtl ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
-                    </span>
-                </Link>
-            </section>
+            {/* המעבר הקדימה מטופל ע"י ניווט הפוטר המשותף של ChapterLayout: פרק 16 זורם
+                לפרק 17 (Chat to Agent). מבחן הסיום אינו מוצג כאן, כי פרק 16 כבר אינו
+                הפרק האחרון בתוכנית. ה-CTA למבחן הסיום יחזור בסוף המסלול, אחרי פרק 19. */}
         </ChapterLayout>
     );
 }

@@ -20,6 +20,8 @@ export const chrome: typeof heChrome = {
         prev: 'Anterior',
         finishedTitle: '¡Completaste todos los capítulos!',
         finishedSub: 'Bien hecho, llegaste hasta el final.',
+        moreComingTitle: 'Has llegado al final de los capítulos disponibles por ahora',
+        moreComingSub: 'Los próximos capítulos continuarán el curso',
     },
 
     focus: {

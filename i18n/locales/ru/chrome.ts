@@ -20,6 +20,8 @@ export const chrome: typeof heChrome = {
         prev: 'Назад',
         finishedTitle: 'Вы прошли все главы!',
         finishedSub: 'Отлично - вы дошли до конца.',
+        moreComingTitle: 'Вы дошли до конца доступных сейчас глав',
+        moreComingSub: 'Следующие главы продолжат курс',
     },
 
     focus: {

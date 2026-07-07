@@ -20,6 +20,8 @@ export const chrome: typeof heChrome = {
         prev: 'السابق',
         finishedTitle: 'أكملت جميع الفصول!',
         finishedSub: 'أحسنت - وصلت إلى النهاية.',
+        moreComingTitle: 'وصلت إلى نهاية الفصول المتاحة حاليًا',
+        moreComingSub: 'ستواصل الفصول التالية الدورة',
     },
 
     focus: {

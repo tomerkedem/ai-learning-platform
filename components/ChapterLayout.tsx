@@ -11,7 +11,7 @@ import { getDictionary } from "@/i18n/dictionary";
 import { dirOf } from "@/i18n/config";
 import { tField } from "@/lib/localize";
 import { formatChapterLabel, formatNextChapterLabel, formatReadTime, parseReadTimeMinutes } from "@/i18n/format";
-import { ChevronRight, ChevronLeft, BookOpen, Trophy, Maximize2, Minimize2 } from "lucide-react";
+import { ChevronRight, ChevronLeft, BookOpen, Trophy, Maximize2, Minimize2, Milestone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { EdgeRail, EdgePeekItem } from "@/components/ai-internals/EdgePeek";
 
@@ -385,6 +385,15 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                         </Link>
                                     );
                                 })()
+                            ) : currentCourse.hasUpcomingChapters ? (
+                                // הפרק האחרון הבנוי אינו הפרק האחרון בתוכנית: ניסוח ניטרלי שלא
+                                // מרמז שהלומדה הסתיימה (למשל "מאחורי הקלעים של AI", שבה מחכים
+                                // עוד פרקים באזור ה-Agent).
+                                <div className="p-6 rounded-2xl border border-indigo-500/30 bg-indigo-900/10 flex flex-col items-center justify-center text-center gap-2">
+                                    <Milestone size={28} className="text-indigo-400" />
+                                    <span className="font-bold text-lg text-white">{t.chrome.nav.moreComingTitle}</span>
+                                    <span className="text-sm text-slate-400">{t.chrome.nav.moreComingSub}</span>
+                                </div>
                             ) : (
                                 <div className="p-6 rounded-2xl border border-amber-500/30 bg-amber-900/10 flex flex-col items-center justify-center text-center gap-2">
                                     <Trophy size={28} className="text-amber-400" />
