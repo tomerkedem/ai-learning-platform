@@ -17,8 +17,8 @@ import {
     Send, User, Trash2, GraduationCap,
 } from 'lucide-react';
 
-import { GuessButton } from './GuessButton';
-import { ACCENTS } from './accents';
+import { GuessButton } from '@/components/ai-internals/GuessButton';
+import { ACCENTS } from '@/components/ai-internals/accents';
 import {
     INCONTEXT_EXAMPLE,
     THREE_LAYERS,
@@ -26,7 +26,7 @@ import {
     WEIGHTS_FROZEN,
     TRAINING_SNAPSHOTS,
     type LearningLayer,
-} from '@/app/behind-the-scenes-ai/chapter-15/learningData';
+} from './learningData';
 
 /* ════════════════════════ שכבת קריינות לימודית ═══════════════════════════ */
 // אותו pattern כמו פרקים 7-8: הקדמה, שורה תחתונה, ונסו את זה.

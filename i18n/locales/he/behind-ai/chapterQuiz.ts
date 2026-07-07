@@ -41,7 +41,7 @@ export const chapterQuiz = {
         12: 'RAG & Grounding',
         13: 'Self-Check: בדיקה עצמית',
         14: 'Learning from Mistakes',
-        15: 'האם AI לומד מטעויות',
+        15: 'שינן או הבין',
         16: 'לעבוד נכון עם AI',
     } as Record<number, string>,
 };

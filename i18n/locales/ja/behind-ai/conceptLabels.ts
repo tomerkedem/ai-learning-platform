@@ -9,6 +9,12 @@
 // Token ID, Tool Call, UX) are kept on purpose.
 
 export const conceptLabels: Record<string, string> = {
+    // 第15章 (Evaluation & Generalization)
+    "הכללה למקרה חדש": "新しいケースへの一般化",
+    "דוגמה אחת אינה מבחן": "一つの例はテストではない",
+    "סט בדיקה מגוון": "多様なテストセット",
+    "כישלון חושף חולשה": "失敗が弱点を明らかにする",
+    "בדיקה לפני אמון": "信頼の前にテスト",
     // 第11章 (Hallucinations)
     "שטף אינו אמת": "流暢さは真実ではない",
     "ביטחון אינו ראיה": "自信は証拠ではない",

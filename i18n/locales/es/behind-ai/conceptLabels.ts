@@ -9,6 +9,12 @@
 // Token ID, Tool Call, UX) are kept on purpose.
 
 export const conceptLabels: Record<string, string> = {
+    // Capítulo 15 (Evaluation & Generalization)
+    "הכללה למקרה חדש": "Generalizar a un caso nuevo",
+    "דוגמה אחת אינה מבחן": "Un ejemplo no es una prueba",
+    "סט בדיקה מגוון": "Un conjunto de prueba variado",
+    "כישלון חושף חולשה": "Un fallo revela una debilidad",
+    "בדיקה לפני אמון": "Probar antes de confiar",
     // Capítulo 11 (Hallucinations)
     "שטף אינו אמת": "La fluidez no es la verdad",
     "ביטחון אינו ראיה": "La confianza no es evidencia",

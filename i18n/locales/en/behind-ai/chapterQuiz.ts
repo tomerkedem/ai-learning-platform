@@ -30,7 +30,7 @@ export const chapterQuiz = {
         12: 'RAG & Grounding',
         13: 'Self-Check',
         14: 'Learning from Mistakes',
-        15: 'Does AI Learn From Mistakes',
+        15: 'Evaluation & Generalization',
         16: 'Working Well With AI',
     } as Record<number, string>,
 };

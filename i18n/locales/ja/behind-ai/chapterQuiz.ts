@@ -30,7 +30,7 @@ export const chapterQuiz = {
         12: 'RAG & Grounding',
         13: 'Self-Check',
         14: 'Learning from Mistakes',
-        15: 'AI は失敗から学ぶか',
+        15: '評価と一般化',
         16: 'AI と上手に付き合う',
     } as Record<number, string>,
 };

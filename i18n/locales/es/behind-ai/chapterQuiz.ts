@@ -31,7 +31,7 @@ export const chapterQuiz = {
         12: 'RAG & Grounding',
         13: 'Self-Check',
         14: 'Learning from Mistakes',
-        15: '¿Aprende la IA de los errores?',
+        15: 'Evaluación y generalización',
         16: 'Trabajar bien con la IA',
     } as Record<number, string>,
 };
