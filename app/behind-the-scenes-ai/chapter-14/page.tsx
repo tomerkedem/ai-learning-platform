@@ -32,7 +32,7 @@ const GUESS_CARD_META = [
 ] as const;
 
 /* ════════════════════════ נעילת הבנה: איזו פרשנות בטוחה ════════════════════════ */
-// התשובה הנכונה מבנית: "התיקון יכול לעזור לשיחה הנוכחית" (אינדקס 1).
+// התשובה הנכונה מבנית: טעות חוזרת הופכת לשיפור מבוקר דרך איסוף, סקירה, תיקון והערכה (אינדקס 1).
 const LOCK_CORRECT = 1;
 
 const UnderstandingLock: React.FC = () => {
@@ -234,7 +234,7 @@ export default function BehindTheScenesChapter14() {
                     </div>
                 </motion.section>
 
-                {/* המנטור: תיקון אחד, לא בהכרח שינוי במודל. ממוקם בצד החיצוני לפי כיוון הקריאה. */}
+                {/* המנטור: שיפור אמיתי הוא תהליך, לא קסם. ממוקם בצד החיצוני לפי כיוון הקריאה. */}
                 <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[248px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
                     <Mentor pose="headsup" line={c14.mentor.hero} width={248} flip={!isRtl} />
                 </div>
