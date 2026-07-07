@@ -42,6 +42,6 @@ export const chapterQuiz = {
         13: 'Self-Check: בדיקה עצמית',
         14: 'Learning from Mistakes',
         15: 'שינן או הבין',
-        16: 'לעבוד נכון עם AI',
+        16: 'האם AI לומד ממני',
     } as Record<number, string>,
 };

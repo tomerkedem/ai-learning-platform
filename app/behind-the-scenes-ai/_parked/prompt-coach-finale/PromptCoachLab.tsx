@@ -8,12 +8,12 @@ import {
     AlertTriangle, Sparkles, ArrowLeft, ArrowDown, Target, ClipboardList, ListChecks,
 } from 'lucide-react';
 
-import { coach, recommendModeForText, type CoachResult, type DimTone, type DimEval, type RecommendedMode } from '@/app/behind-the-scenes-ai/chapter-16/coachEngine';
+import { coach, recommendModeForText, type CoachResult, type DimTone, type DimEval, type RecommendedMode } from './coachEngine';
 import {
     COACH_SCENARIOS, SELECTOR_SCENARIOS, TEMPLATES, IMPROVEMENTS, NARRATION,
     MODE_META, FORMULA_PARTS, GOOD_REQUEST_FORMULA, ROUTES, DEFAULT_TEXT, lockedImprovement,
     type SectionNarration,
-} from '@/app/behind-the-scenes-ai/chapter-16/coachData';
+} from './coachData';
 
 /* ════════════════════════ טון צבעוני ═════════════════════════════════════ */
 // ממד חזק או מצב מומלץ ב-teal, חסר ב-amber, סיכון גבוה ב-crimson.

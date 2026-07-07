@@ -1,144 +1,434 @@
 "use client";
 
-import React from 'react';
+// ────────────────────────────────────────────────────────────────────────
+// פרק 16: Does AI Learn From Me (האם AI לומד ממני).
+//
+// הרעיון: כשמתקנים את המודל בשיחה, הוא יכול להשתמש בתיקון כי הוא בהקשר. זה לא אומר
+// שהמודל הבסיסי למד לתמיד. הקשר, זיכרון (תכונת מוצר), לוגים ומשוב, ואימון הם שכבות
+// שונות. הפרק כללי ומושגי, בלי טענות על מדיניות/פרטיות/אימון של מוצר מסוים.
+//
+// i18n-first: כל הטקסט הגלוי מגיע מ-t.behindAi.doesAiLearn (6 שפות אמיתיות). המבנה
+// (אייקונים, גוונים, פוזות מנטור, מזהי אלמנטים) נשאר כאן. פרק 16 הוא הפרק הבנוי
+// האחרון בשלב הנוכחי, ולכן הוא שומר על מעבר למבחן סיום הלומדה.
+// ────────────────────────────────────────────────────────────────────────
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
-import { PenLine, MousePointerClick, GitFork, FlaskConical, Compass, GraduationCap, ArrowLeft } from 'lucide-react';
+import {
+    BrainCircuit, RotateCcw, Layers, FlaskConical, Lock,
+    CheckCircle2, XCircle, Sparkles, MessageSquare, Ban, Users,
+    GraduationCap, ArrowLeft, ArrowRight,
+} from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
-import { ChapterQuiz } from '../ChapterQuiz';
+import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
+import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 
-import { PromptCoachLab } from '@/components/ai-internals/PromptCoachLab';
+import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
+import { DoesAiLearnLab } from '@/components/ai-internals/DoesAiLearnLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
+import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
+import { SpeakButton } from '@/components/ai-internals/SpeakButton';
+import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
+import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
+import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
+import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
+import { useT } from '@/i18n/useT';
+import type { DoesAiLearnQuizId } from '@/i18n/locales/he/behind-ai/doesAiLearnQuiz';
 
-export default function BehindTheScenesChapter15() {
+// טקסט הכרטיסים מגיע מהמילון (t.behindAi.doesAiLearn.guess.cards) לפי מזהה. כאן נשאר
+// רק המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה. הכרטיס עם
+// statusTone === 'precise' הוא הבחירה הנכונה (התיקון עוזר בהקשר, לא בהכרח נלמד לתמיד).
+const GUESS_CARD_META = [
+    { id: 'alwaysRemembers', icon: RotateCcw, statusTone: 'common', mentorPose: 'reassure' },
+    { id: 'contextNotPermanent', icon: MessageSquare, statusTone: 'precise', mentorPose: 'correct' },
+    { id: 'cantUseAtAll', icon: Ban, statusTone: 'layer', mentorPose: 'headsup' },
+    { id: 'everyoneGetsIt', icon: Users, statusTone: 'partial', mentorPose: 'think' },
+] as const;
+
+/* ════════════════════════ נעילת הבנה: מה ההנחה הבטוחה בשיחה חדשה ════════════════════════ */
+// התשובה הנכונה: "ייתכן שהשיחה החדשה לא כוללת את התיקון, אלא אם זיכרון או הקשר מספקים אותו" (אינדקס 1).
+const LOCK_CORRECT = 1;
+
+const UnderstandingLock: React.FC = () => {
+    const { t, dir } = useT();
+    const c16 = t.behindAi.doesAiLearn;
+    const lock = c16.lock;
+    const [choice, setChoice] = useState<number | null>(null);
+    const answered = choice !== null;
+
+    return (
+        <div dir={dir} className="text-start">
+            <div className="mb-3 flex items-center gap-2">
+                <p className="text-sm font-bold text-slate-200">{lock.question}</p>
+                <SpeakButton text={lock.question} speechLocale={c16.contentLocale} />
+            </div>
+
+            <div className="grid gap-2 sm:grid-cols-2">
+                {lock.options.map((opt, i) => {
+                    const isCorrect = i === LOCK_CORRECT;
+                    const isChosen = i === choice;
+                    let cls = 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600';
+                    if (answered && isCorrect) cls = 'border-emerald-400/70 bg-emerald-900/25 text-emerald-100';
+                    else if (answered && isChosen && !isCorrect) cls = 'border-rose-400/70 bg-rose-900/20 text-rose-100';
+                    return (
+                        <button
+                            key={opt}
+                            type="button"
+                            onClick={() => setChoice(i)}
+                            className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-start text-sm font-bold transition-colors ${cls}`}
+                        >
+                            <span dir={dir}>{opt}</span>
+                            {answered && isCorrect && <CheckCircle2 size={16} className="shrink-0 text-emerald-300" />}
+                            {answered && isChosen && !isCorrect && <XCircle size={16} className="shrink-0 text-rose-300" />}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {answered && (
+                <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-3 text-sm leading-relaxed text-slate-200"
+                >
+                    {lock.success}
+                </motion.p>
+            )}
+        </div>
+    );
+};
+
+export default function BehindTheScenesChapter16() {
     const reduce = useReducedMotion();
+    const { t, dir } = useT();
+    const isRtl = dir === 'rtl';
+    const c16 = t.behindAi.doesAiLearn;
+    const raLabels = t.behindAi.aiInternals.readAloud;
+
+    // שפת ההקראה נגזרת מ-contentLocale של הפרק, כדי שההקראה תדבר בשפת התוכן ולא בשפת
+    // הממשק. הכיוון (RTL/LTR) של הפריסה מגיע מ-dir של שפת הממשק.
+    const speechLocale = c16.contentLocale;
+    const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
+
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
+    const guessContent: OpeningGuessContent = {
+        eyebrow: c16.guess.eyebrow,
+        title: c16.guess.title,
+        subtitle: c16.guess.subtitle,
+        invite: c16.guess.invite,
+        invitePose: 'think',
+        correctTitle: c16.guess.correctTitle,
+        wrongTitle: c16.guess.wrongTitle,
+        getsRightLabel: c16.guess.getsRightLabel,
+        revealButton: c16.guess.revealButton,
+        revealTitle: c16.guess.revealTitle,
+        revealCopy: c16.guess.revealCopy,
+        revealPose: 'pointdown',
+        cta: c16.guess.cta,
+        ctaTargetId: 'does-ai-learn-lab',
+        resetButton: c16.guess.resetButton,
+        exploreHint: c16.guess.exploreHint,
+    };
+    const guessCards: DiscoveryGuessCard[] = GUESS_CARD_META.map((m) => ({
+        id: m.id,
+        icon: m.icon,
+        statusTone: m.statusTone,
+        mentorPose: m.mentorPose,
+        ...c16.guess.cards[m.id],
+    }));
+
+    // ── טקסט "רגע לפני המעבדה" להקראה: כותרת, תת-כותרת, פתיח וכל הנקודות. מקור אחד. ──
+    const primerText = `${c16.primer.title}. ${c16.primer.subtitle}. ${c16.primer.lead} ${c16.primer.points.map((p) => `${p.title}. ${p.body}`).join(' ')}`;
+
+    // ── דוק האזנה מודרכת: מקטעי הקראה יציבים בלבד (בלי מצב חי של המעבדה, כפתורים,
+    // מנטורים או חידון). התוכן נקרא בשפת contentLocale. ──
+    const sHero: ReadAloudSegment = { id: 'hero', label: c16.hero.titleHighlight, text: `${c16.hero.titleLead} ${c16.hero.titleHighlight}. ${c16.hero.lede}` };
+    const sGuess: ReadAloudSegment = { id: 'guess', label: c16.guess.eyebrow, text: `${c16.guess.title} ${c16.guess.subtitle}` };
+    const sPrimer: ReadAloudSegment = { id: 'primer', label: c16.primer.title, text: primerText };
+    const sSee: ReadAloudSegment = { id: 'see', label: c16.see.title, text: `${c16.see.title}. ${c16.see.steps.join(', ')}. ${c16.see.caption}` };
+    const sLab: ReadAloudSegment = { id: 'lab', label: c16.lab.sectionTitle, text: `${c16.lab.sectionTitle}. ${c16.lab.sectionIntro}` };
+    const sWow: ReadAloudSegment = { id: 'wow', label: c16.insight.title, text: `${c16.insight.title}. ${c16.insight.lead} ${c16.insight.body}` };
+    const sMisconception: ReadAloudSegment = { id: 'misconception', label: c16.misconception.rightLabel, text: `${c16.misconception.rightLabel}. ${c16.misconception.rightBody}` };
+    const sLock: ReadAloudSegment = { id: 'lock', label: c16.lock.title, text: c16.lock.question };
+    const sPractical: ReadAloudSegment = { id: 'practical', label: c16.practical.title, text: `${c16.practical.title}. ${c16.practical.lead} ${c16.practical.uses.join(' ')}` };
+    const sCaveat: ReadAloudSegment = { id: 'caveat', label: c16.practical.title, text: c16.practical.caveat };
+
+    const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
+        short: [sHero, sPrimer, sLab, sPractical, sCaveat],
+        regular: [sHero, sGuess, sPrimer, sLab, sWow, sLock, sPractical, sCaveat],
+        full: [sHero, sGuess, sPrimer, sSee, sLab, sWow, sMisconception, sLock, sPractical, sCaveat],
+    };
+
+    // ── מבדק הפרק: המנגנון המשותף נשמר מ-quizData, וטקסט התצוגה ממוזג לפי מזהה.
+    // קישורי החזרה הממוקדים מתורגמים דרך chapterQuiz, בדיוק כמו בפרקים הקודמים. ──
+    const cq = t.behindAi.chapterQuiz;
+    const baseQuiz = behindAiChapterQuizzes[16];
+    const baseGetReviewLinks = baseQuiz.getReviewLinks;
+    const getReviewLinks = baseGetReviewLinks
+        ? (weakConcepts: string[]): ReviewLink[] =>
+              baseGetReviewLinks(weakConcepts).map((link) => {
+                  const match = link.href.match(/chapter-(\d+)/);
+                  const n = match ? Number(match[1]) : null;
+                  const name = n != null ? cq.chapterNames[n] : undefined;
+                  if (n == null || !name) return link;
+                  return { ...link, label: cq.reviewLinkLabel(n, name) };
+              })
+        : undefined;
+
+    const localizedQuiz = {
+        ...baseQuiz,
+        title: c16.quiz.title,
+        subtitle: c16.quiz.subtitle,
+        startLabel: c16.quiz.startLabel,
+        submitLabel: c16.quiz.submitLabel,
+        completedTitle: c16.quiz.completedTitle,
+        getReviewLinks,
+        questions: baseQuiz.questions.map((q) => ({ ...q, ...c16.quiz.byId[q.id as DoesAiLearnQuizId] })),
+    };
 
     return (
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={16}>
 
             {/* ══════════ HERO ══════════ */}
-            {/* עטיפת relative בלי overflow כדי שהמנטור יוכל לחרוג מגבול הכרטיס */}
             <div className="relative">
-            <motion.section
-                initial={reduce ? false : { opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={reduce ? { duration: 0 } : { duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-right"
-                dir="rtl"
-            >
-                <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
-                <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-teal-500/10 blur-[90px] rounded-full pointer-events-none" />
+                <motion.section
+                    initial={reduce ? false : { opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={reduce ? { duration: 0 } : { duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-start"
+                    dir={dir}
+                >
+                    <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
+                    <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-fuchsia-500/10 blur-[90px] rounded-full pointer-events-none" />
 
-                <div className="relative z-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
-                        <PenLine size={14} className="text-violet-400" />
-                        <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">Behind the Scenes · 16</span>
-                    </div>
-
-                    <div className="mb-5 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-slate-300 leading-relaxed">
-                        עד עכשיו הסתכלנו על AI מבפנים, איך טקסט הופך ל-Tokens, למספרים, לייצוג, להחלטות, ואיך Agent מזהה משימה ובוחר אם להמשיך או לעצור.
-                        <br />
-                        עכשיו חוזרים אל המשתמש: השאלה המעשית היא איך כותבים ל-AI טוב יותר. לא כדי לרמות את המודל, אלא כדי לעבוד איתו מקצועית.
-                    </div>
-
-                    <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
-                        מי שמבין מה קורה מאחורי הקלעים{' '}
-                        <span className="bg-gradient-to-l from-violet-400 via-fuchsia-400 to-teal-400 bg-clip-text text-transparent">
-                            יודע לכתוב טוב יותר
-                        </span>
-                    </h1>
-
-                    <p className="text-lg text-slate-300 leading-relaxed max-w-3xl">
-                        כתיבה טובה ל-AI אינה קסם של מילים, היא הגדרה ברורה של מטרה, הקשר, מידע חסר, תוצאה רצויה וגבולות פעולה. ככל
-                        שמגדירים טוב יותר, כך המערכת צריכה לנחש פחות. הכלים כאן הם כלי אימון, לא הצצה למנוע.
-                    </p>
-
-                    <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
-                        <span className="inline-flex items-center gap-1.5">
-                            <MousePointerClick size={14} className="text-violet-400" /> כתבו בקשה וקבלו הצעת שיפור
-                        </span>
-                        <span className="inline-flex items-center gap-1.5">
-                            <GitFork size={14} className="text-teal-400" /> בדקו אם זה מתאים ל-Chat או ל-Agent
-                        </span>
-                    </div>
-                </div>
-            </motion.section>
-            {/* המנטור: כתיבה טובה היא הגדרה (xl+, מימין) */}
-            <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-              <Mentor pose="type" line="כתיבה טובה היא הגדרה" width={248} />
-            </div>
-            </div>
-
-            {/* ══════════ מסלול קריאה ══════════ */}
-            <section className="mt-12 text-right" dir="rtl">
-                <div className="space-y-3 rounded-2xl border border-slate-700/50 bg-slate-900/50 p-6 leading-relaxed text-slate-300">
-                    <div className="flex items-center gap-2">
-                        <Compass size={18} className="text-violet-300" />
-                        <div className="leading-tight">
-                            <div className="text-sm font-bold text-slate-200">מה נלמד בפרק הזה</div>
-                            <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">Reading path</div>
+                    <div className="relative z-10">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
+                            <BrainCircuit size={14} className="text-violet-400" />
+                            <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300" dir="ltr">{c16.hero.badge}</span>
                         </div>
+
+                        <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
+                            {c16.hero.titleLead}{' '}
+                            <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-violet-400 via-fuchsia-400 to-indigo-400 bg-clip-text text-transparent`}>
+                                {c16.hero.titleHighlight}
+                            </span>
+                        </h1>
+
+                        <div className="flex items-start gap-2.5 max-w-3xl">
+                            <p className="text-lg text-slate-300 leading-relaxed">{c16.hero.lede}</p>
+                            <SpeakButton text={`${c16.hero.titleLead} ${c16.hero.titleHighlight}. ${c16.hero.lede}`} className="mt-1" speechLocale={speechLocale} />
+                        </div>
+
+                        <p className="mt-4 text-base font-bold text-violet-200">
+                            {c16.hero.hook}
+                        </p>
+
+                        <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
+                            <span className="inline-flex items-center gap-1.5">
+                                <RotateCcw size={14} className="text-violet-400" /> {c16.hero.chipTry}
+                            </span>
+                            <span className="inline-flex items-center gap-1.5">
+                                <Layers size={14} className="text-fuchsia-400" /> {c16.hero.chipCompare}
+                            </span>
+                        </div>
+
+                        {/* דוק ההאזנה המודרכת: אותו רכיב של המבוא ושאר הפרקים */}
+                        <FloatingReadAloud dir={dir}>
+                            <ReadAloudControls
+                                segmentsByMode={readAloudByMode}
+                                lang={LOCALE_SPEECH_LANG[speechLocale]}
+                                locale={speechLocale}
+                                dir={dir}
+                                labels={raLabels}
+                                reduce={!!reduce}
+                                compact
+                            />
+                        </FloatingReadAloud>
                     </div>
-                    <p>
-                        כל הלומדה פתחה את המנוע מבפנים. הפרק האחרון מחזיר את הכל אל המשתמש: אחרי שמבינים איך המנוע עובד, אפשר להשתמש בידע הזה כדי לכתוב בקשות טובות יותר.
-                    </p>
-                    <p>
-                        נכיר שלושה כלי אימון: <span className="font-bold text-violet-200">מאמן הבקשות</span> שמראה מה חסר ואיך לשפר, <span className="font-bold text-violet-200">מד איכות</span> שבודק חמישה ממדים, ו<span className="font-bold text-violet-200">בורר</span> שממליץ בין Chat ל-Agent. כל אחד מחבר מושג שכבר למדנו אל הבקשה שלכם.
-                    </p>
-                    <p className="font-bold text-violet-200">
-                        המסר: זה לא פרק על טריקים, זה פרק על שיתוף פעולה מדויק עם המערכת.
-                    </p>
+                </motion.section>
+
+                {/* המנטור: תיקון עכשיו הוא לא בהכרח למידה לתמיד. ממוקם בצד החיצוני לפי כיוון הקריאה. */}
+                <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[248px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
+                    <Mentor pose="headsup" line={c16.mentor.hero} width={248} flip={!isRtl} />
+                </div>
+            </div>
+
+            {/* ══════════ ניחוש פתיחה ══════════ */}
+            <section className="mt-12 text-start" dir={dir}>
+                <OpeningGuess content={guessContent} cards={guessCards} speechLocale={speechLocale} />
+            </section>
+
+            {/* ══════════ רגע לפני המעבדה ══════════ */}
+            <section className="mt-12 text-start" dir={dir}>
+                <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
+                    <div className="mb-4 flex items-start justify-between gap-2.5">
+                        <div>
+                            <span className="mb-2 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-300">
+                                <Sparkles size={14} /> {c16.primer.eyebrow}
+                            </span>
+                            <h3 className="text-xl font-black text-white md:text-2xl">{c16.primer.title}</h3>
+                            <p className="mt-1 text-sm font-medium text-slate-400">{c16.primer.subtitle}</p>
+                        </div>
+                        <SpeakButton text={primerText} speechLocale={speechLocale} />
+                    </div>
+
+                    <p className="text-[15px] leading-relaxed text-slate-300 md:text-base">{c16.primer.lead}</p>
+
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                        {c16.primer.points.map((pt) => (
+                            <div key={pt.title} className="rounded-2xl border border-slate-700/50 bg-slate-950/30 p-4">
+                                <div className="mb-1.5 flex items-center gap-2">
+                                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-violet-400" />
+                                    <div className="text-sm font-bold text-slate-100">{pt.title}</div>
+                                </div>
+                                <p className="text-[15px] leading-relaxed text-slate-300">{pt.body}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            {/* ══════════ Prompt Coach Lab ══════════ */}
-            <section className="relative mt-12 space-y-5 text-right" dir="rtl">
+            {/* ══════════ See: מהתיקון ועד שיפור קבוע ══════════ */}
+            <section className="mt-12 text-start" dir={dir}>
+                <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5">
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                        <div className="text-sm font-bold text-slate-100">{c16.see.title}</div>
+                        <SpeakButton text={`${c16.see.title}. ${c16.see.steps.join(', ')}. ${c16.see.caption}`} speechLocale={speechLocale} />
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                        {c16.see.steps.map((step, i) => (
+                            <React.Fragment key={step}>
+                                <span className={`rounded-full border px-3 py-1.5 text-sm font-bold ${
+                                    i === c16.see.steps.length - 1
+                                        ? 'border-violet-400/50 bg-violet-900/20 text-violet-200'
+                                        : 'border-slate-700/60 bg-slate-950/40 text-slate-300'
+                                }`}>
+                                    {step}
+                                </span>
+                                {i < c16.see.steps.length - 1 && <FlowArrow size={15} className="text-fuchsia-400" aria-hidden />}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-slate-400">{c16.see.caption}</p>
+                </div>
+            </section>
+
+            {/* ══════════ מעבדת האם AI לומד ממני ══════════ */}
+            <section id="does-ai-learn-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
-                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">Prompt Coach Lab</div>
-                        <h3 className="text-2xl font-bold text-white">מעבדת האימון</h3>
+                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400" dir="ltr">{c16.lab.sectionEyebrow}</div>
+                        <h3 className="text-2xl font-bold text-white">{c16.lab.sectionTitle}</h3>
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    כתבו בקשה, וראו אותה דרך העיניים של המערכת: מה זוהה, מה חסר, ואיך לשפר. כל כלי כאן מלווה בהקדמה, בשורת מסקנה,
-                    ובהנחיית Try this. זכרו: המטרה אינה Prompt ארוך, אלא Prompt ברור, בטוח ומתאים לסוג העבודה.
+                <div className="flex items-start gap-2.5">
+                    <p className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
+                        {c16.lab.sectionIntro}
+                    </p>
+                    <SpeakButton text={`${c16.lab.sectionTitle}. ${c16.lab.sectionIntro}`} className="mt-1" speechLocale={speechLocale} />
                 </div>
 
-                <PromptCoachLab />
-                {/* המנטור: מה חסר ואיך לשפר (xl+, משמאל) */}
-                <div className="absolute top-1/2 -translate-y-1/2 right-full mr-3 2xl:mr-6 z-20 hidden xl:block pointer-events-none">
-                  <Mentor pose="explain" line="מה חסר, ואיך לשפר" width={160} />
+                <DoesAiLearnLab data={c16.lab} dir={dir} speechLocale={speechLocale} />
+
+                {/* המנטור: עברו בין השכבות וראו מה משתנה */}
+                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
+                    <Mentor pose="inspect" line={c16.mentor.labExplain} width={160} flip={!isRtl} />
                 </div>
             </section>
 
-            {/* ══════════ סיכום הלומדה (רגע האסימון) ══════════ */}
-            <section className="relative mt-12 text-right" dir="rtl">
-                {/* המנטור חוגג את סיום הלומדה (xl+, מימין) */}
-                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-3 2xl:ml-6 z-20 hidden xl:block pointer-events-none">
-                  <Mentor pose="celebrate" line="סיימתם את הלומדה!" width={165} />
-                </div>
-                <InsightBox type="intuition" title="סוף הלומדה: רגע האסימון">
-                    <span className="block font-bold text-violet-200">כתיבה טובה ל-AI אינה קסם של מילים, אלא הגדרה.</span>
-                    הגדרה ברורה של מטרה, הקשר, מידע חסר, תוצאה רצויה וגבולות פעולה. ככל שהמשתמש מגדיר טוב יותר את המשימה והגבולות, כך
-                    ה-AI צריך לנחש פחות ולעבוד נכון יותר. שאלת הבהרה אינה כישלון, ולא כל בקשה צריכה Agent.
-                    <span className="mt-3 block text-sm text-slate-400">
-                        התחלנו את הלומדה ברעיון אחד: AI הוא לא רק תשובה, מאחוריה יש תהליך. פתחנו את התהליך שכבה אחר שכבה, מ-Tokens ועד עצירה אחראית. וסיימנו ביכולת שלכם להשתמש בתהליך הזה לטובתכם. עכשיו, כשאתם כותבים ל-AI, אתם כבר יודעים מה קורה מאחורי הקלעים.
-                    </span>
+            {/* ══════════ רגע ה-wow ══════════ */}
+            <section className="mt-12 text-start" dir={dir}>
+                <InsightBox type="intuition" title={c16.insight.title}>
+                    <div className="flex items-start justify-between gap-2.5">
+                        <span className="block text-lg font-bold text-violet-200">{c16.insight.lead}</span>
+                        <SpeakButton text={`${c16.insight.title}. ${c16.insight.lead} ${c16.insight.body}`} speechLocale={speechLocale} />
+                    </div>
+                    <span className="mt-2 block">{c16.insight.body}</span>
                 </InsightBox>
             </section>
 
-
-            {/* ══════════ מבדק הבנה ══════════ */}
-            <section className="mt-16 mb-4" dir="rtl">
-                <ChapterQuiz chapterId={16} />
+            {/* ══════════ תיקון טעות נפוצה ══════════ */}
+            <section className="relative mt-12 text-start" dir={dir}>
+                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
+                    <Mentor pose="reassure" line={c16.mentor.misconception} width={155} flip={!isRtl} />
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                    <div className="rounded-2xl border border-rose-500/30 bg-rose-950/10 p-5">
+                        <div className="mb-2 flex items-center gap-2 text-rose-200">
+                            <XCircle size={18} />
+                            <span className="text-sm font-bold">{c16.misconception.wrongLabel}</span>
+                        </div>
+                        <p className="leading-relaxed text-slate-300">{c16.misconception.wrongQuote}</p>
+                    </div>
+                    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/10 p-5">
+                        <div className="mb-2 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 text-emerald-200">
+                                <CheckCircle2 size={18} />
+                                <span className="text-sm font-bold">{c16.misconception.rightLabel}</span>
+                            </div>
+                            <SpeakButton text={`${c16.misconception.rightLabel}. ${c16.misconception.rightBody}`} speechLocale={speechLocale} />
+                        </div>
+                        <p className="leading-relaxed text-slate-300">
+                            {c16.misconception.rightBody}
+                        </p>
+                    </div>
+                </div>
             </section>
 
-            {/* ══════════ מעבר למבחן סיום הלומדה ══════════ */}
-            <section className="mt-16 mb-4" dir="rtl">
+            {/* ══════════ נעילת הבנה ══════════ */}
+            <section className="relative mt-12 text-start" dir={dir}>
+                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
+                    <Mentor pose="happy" line={c16.mentor.lock} width={160} flip={!isRtl} />
+                </div>
+                <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
+                    <div className="mb-5 flex items-center gap-2">
+                        <Lock size={20} className="text-violet-300" />
+                        <h3 className="text-xl font-bold text-white">{c16.lock.title}</h3>
+                    </div>
+
+                    <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
+                        <UnderstandingLock />
+                    </div>
+                </div>
+            </section>
+
+            {/* ══════════ תובנה מעשית ══════════ */}
+            <section className="relative mt-12 text-start" dir={dir}>
+                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
+                    <Mentor pose="pointdown" line={c16.mentor.practical} width={160} flip={!isRtl} />
+                </div>
+                <InsightBox type="intuition" title={c16.practical.title}>
+                    <div className="flex items-start justify-between gap-2.5">
+                        <span className="block">{c16.practical.lead}</span>
+                        <SpeakButton text={`${c16.practical.title}. ${c16.practical.lead} ${c16.practical.uses.join(' ')} ${c16.practical.caveat}`} speechLocale={speechLocale} />
+                    </div>
+                    <ul className="mt-3 space-y-2">
+                        {c16.practical.uses.map((line) => (
+                            <li key={line} className="flex items-start gap-2.5">
+                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-400" />
+                                <span className="text-sm">{line}</span>
+                            </li>
+                        ))}
+                    </ul>
+                    <span className="mt-3 block text-sm text-slate-400">{c16.practical.caveat}</span>
+                </InsightBox>
+            </section>
+
+            {/* ══════════ מבדק הבנה ══════════ */}
+            <section className="mt-16 mb-4" dir={dir}>
+                <ExpandableLab title={localizedQuiz.title}>
+                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} />
+                </ExpandableLab>
+            </section>
+
+            {/* ══════════ מעבר למבחן סיום הלומדה (הפרק הבנוי האחרון בשלב זה) ══════════ */}
+            <section className="mt-16 mb-4" dir={dir}>
                 <Link
                     href="/behind-the-scenes-ai/final-exam"
                     className="group block max-w-md mx-auto rounded-3xl border border-blue-500/30 bg-gradient-to-br from-blue-900/20 to-slate-900/40 p-8 text-center transition-all hover:border-blue-400/50 hover:from-blue-900/30 no-underline"
@@ -146,13 +436,13 @@ export default function BehindTheScenesChapter15() {
                     <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-blue-500/20">
                         <GraduationCap size={32} className="text-blue-400" />
                     </div>
-                    <h3 className="text-2xl font-black text-white mb-2">מוכנים למבחן סיום הלומדה?</h3>
+                    <h3 className="text-2xl font-black text-white mb-2">{c16.finalExamCta.title}</h3>
                     <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                        שמונה עשרה שאלות שמסכמות את כל המסלול, מהקלט ועד ההחלטה האחראית. אפשר לחזור אליו בכל עת, וההתקדמות נשמרת.
+                        {c16.finalExamCta.body}
                     </p>
                     <span className="inline-flex items-center gap-2 bg-blue-600 group-hover:bg-blue-500 text-white font-black py-3 px-8 rounded-2xl transition-colors">
-                        מעבר למבחן סיום הלומדה
-                        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                        {c16.finalExamCta.button}
+                        <FlowArrow size={18} className={`transition-transform ${isRtl ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
                     </span>
                 </Link>
             </section>

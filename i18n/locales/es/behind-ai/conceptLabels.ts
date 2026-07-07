@@ -15,6 +15,12 @@ export const conceptLabels: Record<string, string> = {
     "סט בדיקה מגוון": "Un conjunto de prueba variado",
     "כישלון חושף חולשה": "Un fallo revela una debilidad",
     "בדיקה לפני אמון": "Probar antes de confiar",
+    // Capítulo 16 (Does AI Learn From Me)
+    "הקשר נוכחי": "Contexto actual",
+    "שיחה חדשה אינה זיכרון": "Un chat nuevo no es memoria",
+    "זיכרון אינו אימון": "La memoria no es entrenamiento",
+    "אימון דורש תהליך": "El entrenamiento requiere un proceso",
+    "ספקו כלל או מקור": "Aporta una regla o fuente",
     // Capítulo 11 (Hallucinations)
     "שטף אינו אמת": "La fluidez no es la verdad",
     "ביטחון אינו ראיה": "La confianza no es evidencia",

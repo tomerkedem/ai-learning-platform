@@ -31,6 +31,6 @@ export const chapterQuiz = {
         13: 'Self-Check',
         14: 'Learning from Mistakes',
         15: '評価と一般化',
-        16: 'AI と上手に付き合う',
+        16: 'AI は私から学ぶのか',
     } as Record<number, string>,
 };

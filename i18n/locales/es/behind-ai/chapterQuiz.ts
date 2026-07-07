@@ -32,6 +32,6 @@ export const chapterQuiz = {
         13: 'Self-Check',
         14: 'Learning from Mistakes',
         15: 'Evaluación y generalización',
-        16: 'Trabajar bien con la IA',
+        16: '¿La AI aprende de mí?',
     } as Record<number, string>,
 };
