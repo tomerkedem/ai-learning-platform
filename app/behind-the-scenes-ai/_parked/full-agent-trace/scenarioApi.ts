@@ -1,12 +1,12 @@
-// API route של "מחולל התרחיש החי" (השכבה החיה, layer 2) של המעבדה המאוחדת.
+// מוקפא (parked): מחולל התרחיש החי (השכבה החיה, layer 2) של המעבדה המאוחדת הישנה.
+// נשמר תחת _parked/full-agent-trace לשימוש עתידי בפרקי ה-Agent (17-19). מכיוון שהקובץ
+// יושב בתיקיית _parked (תיקייה פרטית שאינה מנותבת), הוא כבר אינו endpoint פעיל.
 //
-// תפקיד יחיד ואופציונלי: להפוך טקסט חופשי שהלומד מקליד לתרחיש בסכמה הקנונית,
-// כדי שהמנוע השקוף יציג אותו דרך אותו pipeline בדיוק. רץ אך ורק בצד שרת -
+// תפקידו המקורי: להפוך טקסט חופשי שהלומד מקליד לתרחיש בסכמה הקנונית, כדי שהמנוע
+// השקוף יציג אותו דרך אותו pipeline בדיוק. רץ אך ורק בצד שרת -
 // ANTHROPIC_API_KEY לעולם לא מגיע לדפדפן.
 //
 // גארדריילים:
-//   * זו שכבה 2 בלבד. בלי מפתח / בלי רשת - ה-route מחזיר 503/502 והלקוח נופל
-//     לחוויית שכבה 1 המלאה (canonical + ספרייה). שום דבר לא נשבר.
 //   * structured output כפוי + ולידציה בצד שרת, כדי שהפלט תמיד תואם לסכמה
 //     שה-presenter (scenarioLibrary.ts) יודע לצייר.
 
@@ -14,7 +14,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { NextResponse } from 'next/server';
 
 import { rateLimit } from '@/lib/rateLimit';
-import type { LibraryScenario, Tone, LibAgentBehavior, LibChatBehavior } from '@/app/behind-the-scenes-ai/chapter-14/scenarioLibrary';
+import type { LibraryScenario, Tone, LibAgentBehavior, LibChatBehavior } from './scenarioLibrary';
 
 export const runtime = 'nodejs';
 

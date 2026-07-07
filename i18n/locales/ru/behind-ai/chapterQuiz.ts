@@ -29,7 +29,7 @@ export const chapterQuiz = {
         11: 'Hallucinations',
         12: 'RAG & Grounding',
         13: 'Self-Check',
-        14: 'Объединённая лаборатория',
+        14: 'Learning from Mistakes',
         15: 'Учится ли AI на ошибках',
         16: 'Правильно работать с AI',
     } as Record<number, string>,

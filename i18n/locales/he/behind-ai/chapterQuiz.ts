@@ -40,7 +40,7 @@ export const chapterQuiz = {
         11: 'Hallucinations',
         12: 'RAG & Grounding',
         13: 'Self-Check: בדיקה עצמית',
-        14: 'המעבדה המאוחדת',
+        14: 'Learning from Mistakes',
         15: 'האם AI לומד מטעויות',
         16: 'לעבוד נכון עם AI',
     } as Record<number, string>,

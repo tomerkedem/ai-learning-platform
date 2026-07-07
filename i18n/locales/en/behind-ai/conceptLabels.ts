@@ -27,6 +27,12 @@ export const conceptLabels: Record<string, string> = {
     "טענה לא נתמכת": "An unsupported claim",
     "בדיקה אינה אמת": "A check is not truth",
     "בקשת בדיקה גלויה": "Asking for a visible check",
+    // Chapter 14 (Learning from Mistakes)
+    "תיקון בתוך הקשר": "A correction in context",
+    "הקשר אינו אימון": "Context is not training",
+    "שיפור מערכת": "System improvement",
+    "בדיקה לפני הכרזה על שיפור": "Evaluate before claiming improvement",
+    "תיקון שימושי": "A useful correction",
     "מהציון להסתברות": "From score to probability",
     "Chat מול Agent": "Chat vs Agent",
     "Token ID ככתובת": "Token ID as an address",
