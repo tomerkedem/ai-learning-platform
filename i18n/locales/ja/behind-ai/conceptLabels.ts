@@ -9,6 +9,11 @@
 // Token ID, Tool Call, UX) are kept on purpose.
 
 export const conceptLabels: Record<string, string> = {
+    // 第18章 (Guardrails)
+    "סיכון קובע פעולה": "リスクが行動を決める",
+    "חסר מידע עוצר": "足りない情報は止める",
+    "אישור לפעולה רגישה": "慎重を要する行動には承認",
+    "פעולה חסומה": "遮断された行動",
     // 第17章 (Chat to Agent)
     "צ'אט עונה, Agent מתקדם": "チャットは答え、エージェントは進む",
     "כלי מרחיב יכולת": "ツールは能力を広げる",

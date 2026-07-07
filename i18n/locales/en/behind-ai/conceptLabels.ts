@@ -9,6 +9,11 @@
 // Token ID, Tool Call, UX) are kept on purpose.
 
 export const conceptLabels: Record<string, string> = {
+    // Chapter 18 (Guardrails). "יכולת אינה הרשאה" already appears below as a shared concept.
+    "סיכון קובע פעולה": "Risk decides the action",
+    "חסר מידע עוצר": "Missing info stops",
+    "אישור לפעולה רגישה": "Approval for a sensitive action",
+    "פעולה חסומה": "A blocked action",
     // Chapter 17 (Chat to Agent)
     "צ'אט עונה, Agent מתקדם": "Chat answers, agent advances",
     "כלי מרחיב יכולת": "A tool extends capability",

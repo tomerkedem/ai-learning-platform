@@ -9,6 +9,11 @@
 // Token ID, Tool Call, UX) are kept on purpose.
 
 export const conceptLabels: Record<string, string> = {
+    // Capítulo 18 (Guardrails)
+    "סיכון קובע פעולה": "El riesgo decide la acción",
+    "חסר מידע עוצר": "La falta de información detiene",
+    "אישור לפעולה רגישה": "Aprobación para una acción sensible",
+    "פעולה חסומה": "Una acción bloqueada",
     // Capítulo 17 (Chat to Agent)
     "צ'אט עונה, Agent מתקדם": "El chat responde, el agente avanza",
     "כלי מרחיב יכולת": "Una herramienta amplía la capacidad",

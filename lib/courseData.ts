@@ -794,6 +794,18 @@ export const courses: Record<string, CourseData> = {
                 labelColor: "text-teal-400",
                 colorFrom: "from-teal-400",
                 colorTo: "to-violet-500"
+            },
+            {
+                id: 18,
+                href: "/behind-the-scenes-ai/chapter-18",
+                num: "18",
+                label: { he: "Guardrails", en: "Guardrails", ar: "Guardrails", ru: "Guardrails", es: "Guardrails", ja: "Guardrails" },
+                title: { he: "Guardrails: סיכון, הרשאות, אישור ועצירה", en: "Guardrails: Risk, Permissions, Approval, and Stopping", ar: "Guardrails: المخاطر والأذونات والموافقة والتوقّف", ru: "Guardrails: риск, разрешения, одобрение и остановка", es: "Guardrails: riesgo, permisos, aprobación y parada", ja: "Guardrails：リスク・権限・承認・停止" },
+                description: { he: "אותה יכולת מובילה להחלטה שונה לפי הסיכון. פעולה בטוחה ממשיכה, מידע חסר עוצר ושואל, פעולה רגישה מכינה טיוטה או עוצרת לאישור, ופעולה אסורה נחסמת. יכולת לבצע אינה הרשאה לבצע.", en: "The same capability leads to a different decision depending on risk. A safe action continues, missing information stops and asks, a sensitive action prepares a draft or waits for approval, and a forbidden action is blocked. Being able to act is not permission to act.", ar: "القدرة نفسها تؤدّي إلى قرار مختلف بحسب المخاطرة. الفعل الآمن يستمرّ، والمعلومة الناقصة توقِف وتسأل، والفعل الحسّاس يجهّز مسودّة أو ينتظر الموافقة، والفعل الممنوع يُحظر. القدرة على الفعل ليست إذنًا بالفعل.", ru: "Одна и та же возможность ведёт к разному решению в зависимости от риска. Безопасное действие продолжается, при нехватке информации агент останавливается и спрашивает, чувствительное действие готовит черновик или ждёт одобрения, а запрещённое действие блокируется. Умение действовать не есть разрешение действовать.", es: "La misma capacidad lleva a una decisión distinta según el riesgo. Una acción segura continúa, la información que falta detiene y pregunta, una acción sensible prepara un borrador o espera aprobación, y una acción prohibida se bloquea. Poder actuar no es permiso para actuar.", ja: "同じ能力でも、リスクによって判断は変わる。安全な行動は続行し、情報が足りなければ止まって尋ね、慎重を要する行動は下書きを用意するか承認を待ち、禁じられた行動は阻止される。実行できることは、実行してよいことではない。" },
+                readTime: "11 דקות",
+                labelColor: "text-indigo-400",
+                colorFrom: "from-indigo-400",
+                colorTo: "to-sky-500"
             }
         ]
     }

@@ -33,5 +33,6 @@ export const chapterQuiz = {
         15: 'Evaluation & Generalization',
         16: 'Does AI Learn From Me',
         17: 'Chat to Agent',
+        18: 'Guardrails',
     } as Record<number, string>,
 };
