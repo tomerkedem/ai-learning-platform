@@ -187,7 +187,6 @@ export const chatToAgent = {
         eyebrow: 'What is waiting in the next chapter',
         title: 'Guardrails: risk, permissions, approval, and stopping',
         body: 'We saw that a good agent can stop for approval before a sensitive action. The next chapter focuses on exactly that layer: how you define risk, permissions, and when the system must stop or ask for approval before acting.',
-        note: 'The next chapter will open here later.',
     },
 
     lab: chatToAgentLab,

@@ -1,6 +1,6 @@
 // i18n/locales/he/behind-ai/generationLoopQuiz.ts
 //
-// מחרוזות מבדק ההבנה של פרק 5 ("איך AI בונה תשובה"), עברית = שפת המקור.
+// מחרוזות מבדק ההבנה של פרק 10 ("איך AI בונה תשובה"), עברית = שפת המקור.
 //
 // חשוב: זהו טקסט התצוגה בלבד. המנגנון המשותף (correctAnswer, difficulty, concept,
 // onComplete, getReviewLinks, nextHref) נשאר ב-quizData.ts המשותף לכל הפרקים ולמבחן
@@ -20,7 +20,7 @@ export interface GenerationLoopQuizText {
     explanation: string;
 }
 
-/** מזהי שאלות פרק 5. byId חייב לכלול את כולם, כך ששפה מתורגמת שתחסיר מזהה תיכשל בבנייה. */
+/** מזהי שאלות פרק 10. byId חייב לכלול את כולם, כך ששפה מתורגמת שתחסיר מזהה תיכשל בבנייה. */
 export type GenerationLoopQuizId = 1 | 2 | 3 | 4 | 5;
 
 export const generationLoopQuiz = {

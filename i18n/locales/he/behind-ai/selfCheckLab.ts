@@ -160,7 +160,7 @@ export const selfCheckLab: SelfCheckLabContent = {
             ],
             checks: [
                 { id: 'question', state: 'pass', label: 'עונה על השאלה?', note: 'כן. הלקוח שאל איפה החבילה, והתשובה מתייחסת לזה.' },
-                { id: 'source', state: 'warn', label: 'נשענת על המקור?', note: 'חלקית. "בעיכוב" לקוח מהמקור, אבל "מחר" לא.' },
+                { id: 'source', state: 'warn', label: 'נשענת על המקור?', note: 'חלקית. "בעיכוב" נלקח מהמקור, אבל "מחר" לא.'},
                 { id: 'invents', state: 'fail', label: 'ממציאה מועד הגעה?', note: 'כן. "תגיע מחר" הוא מועד שהמקור מציין כלא זמין.' },
                 { id: 'missing', state: 'fail', label: 'מציינת מה חסר?', note: 'לא. התשובה לא אומרת שאין מועד הגעה מאושר.' },
                 { id: 'confidence', state: 'fail', label: 'רמת ביטחון מתאימה?', note: 'לא. הניסוח בטוח מדי ביחס למה שהמקור באמת אומר.' },

@@ -9,7 +9,7 @@
 // No em dash (U+2014) and no en dash (U+2013) in this file.
 
 export const finalExam = {
-    backToChapter: 'Back to chapter 16',
+    backToChapter: 'Back to chapter 19',
     pageTitle: 'Course final exam',
     pageSubtitle:
         'The summary exam for "Behind the Scenes of AI". It tests the whole path: from input to the responsible decision, and the links between the concepts. You can return to it any time, and your progress is saved on your device.',

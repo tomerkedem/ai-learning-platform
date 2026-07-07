@@ -189,7 +189,6 @@ export const guardrails = {
         eyebrow: 'Que espera en el proximo capitulo',
         title: 'Full Trace: un prompt, todas las estaciones',
         body: 'Vimos la capa de control que decide cuando continuar, preguntar, preparar un borrador, o detenerse. El proximo capitulo lo conecta todo: un prompt que pasa por todas las estaciones, desde la entrada hasta la decision responsable.',
-        note: 'El proximo capitulo se abrira aqui mas adelante.',
     },
 
     lab: guardrailsLab,

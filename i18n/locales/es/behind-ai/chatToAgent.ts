@@ -188,7 +188,6 @@ export const chatToAgent = {
         eyebrow: 'Que espera en el proximo capitulo',
         title: 'Guardrails: riesgo, permisos, aprobacion y parada',
         body: 'Vimos que un buen agente puede detenerse para aprobacion antes de una accion sensible. El proximo capitulo se centra justo en esa capa: como se define el riesgo, los permisos, y cuando el sistema debe detenerse o pedir aprobacion antes de actuar.',
-        note: 'El proximo capitulo se abrira aqui mas adelante.',
     },
 
     lab: chatToAgentLab,

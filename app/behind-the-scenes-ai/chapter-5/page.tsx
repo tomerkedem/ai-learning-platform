@@ -356,7 +356,7 @@ export default function BehindTheScenesChapter5() {
                                                 type="button"
                                                 onClick={() => setDnaAId(id)}
                                                 aria-pressed={on}
-                                                className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-colors ${
+                                                className={`rounded-lg border px-2.5 py-1 text-sm font-bold transition-colors ${
                                                     on ? 'border-cyan-400/60 bg-cyan-900/25 text-cyan-100' : 'border-slate-700/50 bg-slate-800/30 text-slate-300 hover:border-slate-600'
                                                 }`}
                                             >
@@ -379,7 +379,7 @@ export default function BehindTheScenesChapter5() {
                                                 type="button"
                                                 onClick={() => setDnaBId(id)}
                                                 aria-pressed={on}
-                                                className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-colors ${
+                                                className={`rounded-lg border px-2.5 py-1 text-sm font-bold transition-colors ${
                                                     on ? 'border-violet-400/60 bg-violet-900/25 text-violet-100' : 'border-slate-700/50 bg-slate-800/30 text-slate-300 hover:border-slate-600'
                                                 }`}
                                             >

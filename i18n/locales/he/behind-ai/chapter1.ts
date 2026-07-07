@@ -51,7 +51,7 @@ export const chapter1 = {
 
     // ── מעבדת הצ'אט השקוף ──
     lab: {
-        title: "הצ'ט השקוף",
+        title: "הצ'אט השקוף",
         eyebrow: 'Transparent Chat Lab',
         intro: 'כאן רואים שיש דרך מאחורי התשובה: מימין התשובה כרגיל, ומשמאל הדרך שהובילה אליה.',
         panelTitle: 'Transparent Chat Lab',

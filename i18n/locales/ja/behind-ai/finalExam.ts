@@ -9,7 +9,7 @@
 // No em dash (U+2014) and no en dash (U+2013) in this file.
 
 export const finalExam = {
-    backToChapter: '第16章に戻る',
+    backToChapter: '第19章に戻る',
     pageTitle: 'コース修了テスト',
     pageSubtitle:
         '「AI の舞台裏」の総まとめテストです。入力から責任ある判断まで、全体の流れと概念のつながりを確認します。いつでも戻ることができ、進捗はお使いの端末に保存されます。',

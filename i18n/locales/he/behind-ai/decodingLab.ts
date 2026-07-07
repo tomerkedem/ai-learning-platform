@@ -92,7 +92,7 @@ export const decodingLab: DecodingLabContent = {
     varietyLabel: 'מגוון',
     selectedLabel: 'הטוקן שנבחר',
     whyLabel: 'למה זה נבחר',
-    replayButton: 'נסה בחירה נוספת',
+    replayButton: 'נסו בחירה נוספת',
     continuationNote:
         'ההמשכים מוצגים כאן כביטויים שלמים כדי שיהיה קל לקרוא. בפועל המודל בוחר את הטוקן הבא צעד אחר צעד. זו המחשה של הבחירה, לא עקבה פנימית מדויקת של המודל.',
     disclaimer:

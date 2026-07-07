@@ -189,7 +189,6 @@ export const guardrails = {
         eyebrow: 'What is waiting in the next chapter',
         title: 'Full Trace: one prompt, every station',
         body: 'We saw the control layer that decides when to continue, ask, prepare a draft, or stop. The next chapter connects it all: one prompt that passes through every station, from input to the responsible decision.',
-        note: 'The next chapter will open here later.',
     },
 
     lab: guardrailsLab,

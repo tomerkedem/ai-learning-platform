@@ -10,7 +10,7 @@
 // No em dash (U+2014) and no en dash (U+2013) in this file.
 
 export const finalExam = {
-    backToChapter: 'Volver al capítulo 16',
+    backToChapter: 'Volver al capítulo 19',
     pageTitle: 'Examen final del curso',
     pageSubtitle:
         'El examen final de "Entre bastidores de la IA". Evalúa todo el recorrido: desde la entrada hasta la decisión responsable, y las conexiones entre los conceptos. Puedes volver a él en cualquier momento, y tu progreso se guarda en tu dispositivo.',

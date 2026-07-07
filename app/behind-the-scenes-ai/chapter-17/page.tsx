@@ -450,7 +450,7 @@ export default function BehindTheScenesChapter17() {
             </section>
 
             {/* ══════════ גשר לפרק הבא (פרק 18 Guardrails). תצוגה מקדימה מושגית, לא קישור
-                פעיל, כי הפרק עדיין לא נבנה. מבחן הסיום יחזור אחרי פרק 19. ══════════ */}
+                פעיל. הניווט בין הפרקים מטופל על ידי ChapterLayout. ══════════ */}
             <section className="mt-16 mb-4 text-start" dir={dir}>
                 <div className="mx-auto max-w-2xl rounded-3xl border border-teal-500/25 bg-gradient-to-br from-teal-900/15 to-slate-900/40 p-7">
                     <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-teal-300">
@@ -461,9 +461,6 @@ export default function BehindTheScenesChapter17() {
                         <SpeakButton text={`${c17.bridge.title}. ${c17.bridge.body}`} speechLocale={speechLocale} />
                     </div>
                     <p className="mt-2 text-sm leading-relaxed text-slate-300">{c17.bridge.body}</p>
-                    <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
-                        <FlowArrow size={13} className="text-teal-400/70" aria-hidden /> {c17.bridge.note}
-                    </p>
                 </div>
             </section>
         </ChapterLayout>
