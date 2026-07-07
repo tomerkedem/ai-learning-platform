@@ -29,7 +29,7 @@ export const chapterQuiz = {
         10: 'Generation Loop',
         11: 'Hallucinations',
         12: 'RAG & Grounding',
-        13: 'التوقّف والموافقة والمسؤولية',
+        13: 'Self-Check',
         14: 'المختبر الموحّد',
         15: 'هل يتعلّم AI من الأخطاء',
         16: 'العمل بشكل صحيح مع AI',

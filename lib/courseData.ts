@@ -731,13 +731,13 @@ export const courses: Record<string, CourseData> = {
                 id: 13,
                 href: "/behind-the-scenes-ai/chapter-13",
                 num: "13",
-                label: { he: "עצירה ואחריות", en: "Stop and Responsibility", ar: "التوقّف والمسؤولية", ru: "Остановка и ответственность", es: "Detenerse y responsabilidad", ja: "停止と責任" },
-                title: { he: "עצירה, אישור ואחריות", en: "Stopping, Approval and Responsibility", ar: "التوقّف والموافقة والمسؤولية", ru: "Остановка, одобрение и ответственность", es: "Detenerse, aprobación y responsabilidad", ja: "停止、承認、そして責任" },
-                description: { he: "Agent טוב יודע מתי לפעול ומתי לעצור. ככל שהוא קרוב יותר לפעולה אמיתית בעולם, כך הוא צריך יותר בקרה, הרשאה ואחריות. עצירה אינה כישלון.", en: "A good agent knows when to act and when to stop. The closer it gets to real-world action, the more control, permission, and responsibility it needs. Stopping is not failure.", ar: "يعرف Agent الجيّد متى يتصرّف ومتى يتوقّف. وكلّما اقترب من فعل حقيقي في العالم، احتاج إلى مزيد من الرقابة والإذن والمسؤولية. التوقّف ليس فشلًا.", ru: "Хороший Agent знает, когда действовать и когда остановиться. Чем ближе он к реальному действию в мире, тем больше нужны контроль, разрешение и ответственность. Остановка - не провал.", es: "Un buen Agent sabe cuándo actuar y cuándo detenerse. Cuanto más cerca está de una acción real en el mundo, más control, permiso y responsabilidad necesita. Detenerse no es un fracaso.", ja: "良い Agent は、行動するときと止まるときを知っている。現実世界での実際の行動に近づくほど、より多くの制御・権限・責任が必要になる。止まることは失敗ではない。" },
-                readTime: "15 דקות",
-                labelColor: "text-violet-400",
-                colorFrom: "from-violet-400",
-                colorTo: "to-rose-500"
+                label: { he: "Self-Check", en: "Self-Check", ar: "Self-Check", ru: "Self-Check", es: "Self-Check", ja: "Self-Check" },
+                title: { he: "Self-Check: בדיקה עצמית בזמן תשובה", en: "Self-Check: Checking the Answer While It Is Being Built", ar: "Self-Check: فحص ذاتي أثناء بناء الإجابة", ru: "Self-Check: самопроверка во время ответа", es: "Self-Check: verificar la respuesta mientras se construye", ja: "Self-Check：回答をつくりながら自分で確認する" },
+                description: { he: "גם כשיש מקור, המודל עדיין מנסח את התשובה בעצמו ויכול לומר יותר ממה שהמקור אומר. בדיקה עצמית היא שלב גלוי שמשווה כל טענה לשאלה ולמקור לפני שהתשובה סופית. היא מועילה, אבל אינה מבטיחה אמת.", en: "Even with a source, the model still writes the answer itself and can say more than the source does. Self-check is a visible step that compares each claim against the question and the source before the answer is final. It helps, but it does not guarantee truth.", ar: "حتى مع وجود مصدر، لا يزال النموذج يصوغ الإجابة بنفسه وقد يقول أكثر مما يقوله المصدر. الفحص الذاتي خطوة ظاهرة تقارن كل ادعاء بالسؤال والمصدر قبل أن تصبح الإجابة نهائية. إنه مفيد لكنه لا يضمن الحقيقة.", ru: "Даже с источником модель всё равно сама формулирует ответ и может сказать больше, чем сказано в источнике. Самопроверка это видимый шаг, который сверяет каждое утверждение с вопросом и источником до того, как ответ станет окончательным. Это помогает, но не гарантирует истину.", es: "Incluso con una fuente, el modelo aún redacta la respuesta por sí mismo y puede decir más de lo que dice la fuente. La autoverificación es un paso visible que compara cada afirmación con la pregunta y la fuente antes de que la respuesta sea definitiva. Ayuda, pero no garantiza la verdad.", ja: "情報源があっても、モデルは自分で答えを書き、情報源より多くを語ってしまうことがある。セルフチェックは、答えが最終になる前に、各主張を質問と情報源に照らして確認する見える工程だ。役に立つが、真実を保証するわけではない。" },
+                readTime: "13 דקות",
+                labelColor: "text-indigo-400",
+                colorFrom: "from-indigo-400",
+                colorTo: "to-sky-500"
             },
             {
                 id: 14,

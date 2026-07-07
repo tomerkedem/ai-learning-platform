@@ -14,7 +14,7 @@ import {
     GATE_META, DECISION_META, CONTROL_NODES, STOP_INDEX,
     type ControlState, type Scenario, type SectionNarration, type DecisionTone,
     type RiskLevel, type Permission,
-} from '@/app/behind-the-scenes-ai/chapter-13/controlData';
+} from '@/app/behind-the-scenes-ai/_parked/agent-control/controlData';
 
 /* ════════════════════════ טון צבעוני ═════════════════════════════════════ */
 // Continue/Answer ב-teal, Draft/Ask ב-amber, Stop ב-crimson של זהירות אחראית.

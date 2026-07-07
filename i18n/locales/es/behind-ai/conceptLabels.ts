@@ -21,6 +21,12 @@ export const conceptLabels: Record<string, string> = {
     "מקור מפחית ניחוש": "Una fuente reduce las conjeturas",
     "מקור אינו קסם": "Una fuente no es magia",
     "חסר מידע צריך להיאמר": "Lo que falta debe decirse",
+    // Capitulo 13 (Self-Check)
+    "בדיקה עצמית היא שלב": "La autoverificacion es un paso",
+    "בדיקה גם אחרי מקור": "Verificar incluso con una fuente",
+    "טענה לא נתמכת": "Una afirmacion sin respaldo",
+    "בדיקה אינה אמת": "Una verificacion no es la verdad",
+    "בקשת בדיקה גלויה": "Pedir una verificacion visible",
     "מהציון להסתברות": "De la puntuación a la probabilidad",
     "Chat מול Agent": "Chat frente a Agent",
     "Token ID ככתובת": "Token ID como dirección",

@@ -21,6 +21,12 @@ export const conceptLabels: Record<string, string> = {
     "מקור מפחית ניחוש": "A source reduces guessing",
     "מקור אינו קסם": "A source is not magic",
     "חסר מידע צריך להיאמר": "Missing info must be stated",
+    // Chapter 13 (Self-Check)
+    "בדיקה עצמית היא שלב": "Self-check is a step",
+    "בדיקה גם אחרי מקור": "Check even after a source",
+    "טענה לא נתמכת": "An unsupported claim",
+    "בדיקה אינה אמת": "A check is not truth",
+    "בקשת בדיקה גלויה": "Asking for a visible check",
     "מהציון להסתברות": "From score to probability",
     "Chat מול Agent": "Chat vs Agent",
     "Token ID ככתובת": "Token ID as an address",

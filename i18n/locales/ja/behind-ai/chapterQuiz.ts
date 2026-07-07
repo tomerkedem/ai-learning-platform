@@ -28,7 +28,7 @@ export const chapterQuiz = {
         10: 'Generation Loop',
         11: 'Hallucinations',
         12: 'RAG & Grounding',
-        13: '停止、承認、責任',
+        13: 'Self-Check',
         14: '統合ラボ',
         15: 'AI は失敗から学ぶか',
         16: 'AI と上手に付き合う',
