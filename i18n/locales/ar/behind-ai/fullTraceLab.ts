@@ -83,7 +83,7 @@ export const fullTraceLab: FullTraceLabContent = {
             title: 'من أين تأتي المعلومة الحقيقية',
             summary: 'يلجأ النظام إلى أداة تتبع، ويفصل بين ما هو مرتبط بالمصدر وما ليس كذلك.',
             panels: [
-                { kind: 'note', label: 'الأداة المختارة', text: 'تحقق من التتبع (tracking lookup)', tone: 'neutral' },
+                { kind: 'note', label: 'الأداة المختارة', text: 'تحقق من التتبع عبر MCP (tracking lookup)', tone: 'neutral' },
                 { kind: 'result', label: 'نتيجة الأداة (مثال)', rows: ['الحالة: متأخر', 'موعد التسليم المتوقع: غير متاح'] },
                 {
                     kind: 'split',

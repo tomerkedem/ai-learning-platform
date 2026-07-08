@@ -85,7 +85,7 @@ export const fullTraceLab: FullTraceLabContent = {
             title: 'Откуда берётся настоящая информация',
             summary: 'Система обращается к инструменту отслеживания и отделяет то, что привязано к источнику, от того, что нет.',
             panels: [
-                { kind: 'note', label: 'Выбранный инструмент', text: 'Проверка отслеживания (tracking lookup)', tone: 'neutral' },
+                { kind: 'note', label: 'Выбранный инструмент', text: 'Проверка отслеживания через MCP (tracking lookup)', tone: 'neutral' },
                 { kind: 'result', label: 'Результат инструмента (пример)', rows: ['Статус: задерживается', 'Предполагаемая дата доставки: недоступна'] },
                 {
                     kind: 'split',

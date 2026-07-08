@@ -50,7 +50,7 @@ export const guardrails = {
         points: [
             {
                 title: 'Que son los guardrails',
-                body: 'Los guardrails son las reglas, los permisos y las comprobaciones que deciden que puede hacer el agente en el siguiente paso. Envuelven la tarea, no la sustituyen.',
+                body: 'Los guardrails son las reglas, los permisos y las comprobaciones que deciden que puede hacer el agente en el siguiente paso. Envuelven la tarea, no la sustituyen. Incluso cuando una herramienta se conecta mediante MCP, la conexion da acceso, no permiso: cada accion sigue pasando por la capa de control.',
             },
             {
                 title: 'Niveles de riesgo',
@@ -182,7 +182,7 @@ export const guardrails = {
             'Cual es la condicion de parada: "No marques un paquete como entregado sin un fundamento en la fuente."',
         ],
         caveat:
-            'Los guardrails no dicen que la IA sea peligrosa ni que no deba actuar. Dicen que una buena accion de un agente es ejecutar los pasos seguros, preguntar cuando falta informacion, preparar borradores para revision, y detenerse antes de una accion sensible o irreversible.',
+            'Los guardrails no dicen que la IA sea peligrosa ni que no deba actuar. Dicen que una buena accion de un agente es ejecutar los pasos seguros, preguntar cuando falta informacion, preparar borradores para revision, y detenerse antes de una accion sensible o irreversible. La capa de control reduce el riesgo, pero no garantiza una seguridad absoluta. La calidad depende de las reglas, los permisos y las comprobaciones que define el sistema.',
     },
 
     bridge: {

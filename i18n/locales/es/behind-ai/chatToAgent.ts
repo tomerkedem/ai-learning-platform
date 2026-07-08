@@ -57,7 +57,7 @@ export const chatToAgent = {
             },
             {
                 title: 'Herramientas',
-                body: 'Un agente puede usar herramientas solo cuando estan disponibles y permitidas: consulta de seguimiento, busqueda en documentos, redactar un borrador, enviar un mensaje y mas. Una herramienta amplia la capacidad, no hace al modelo mas inteligente.',
+                body: 'Un agente puede usar herramientas solo cuando estan disponibles y permitidas: consulta de seguimiento, busqueda en documentos, redactar un borrador, enviar un mensaje y mas. Una herramienta amplia la capacidad, no hace al modelo mas inteligente. La forma estructurada de conectar un agente con herramientas y fuentes externas se llama MCP: da acceso controlado, no permiso para hacer todo, y siguen haciendo falta permisos, aprobacion y reglas de parada. No todo agente usa MCP, y no es la unica forma de conectar herramientas.',
             },
             {
                 title: 'Informacion que falta',

@@ -50,7 +50,7 @@ export const guardrails = {
         points: [
             {
                 title: 'What guardrails are',
-                body: 'Guardrails are the rules, permissions, and checks that decide what the agent may do next. They wrap the task, they do not replace it.',
+                body: 'Guardrails are the rules, permissions, and checks that decide what the agent may do next. They wrap the task, they do not replace it. Even when a tool is connected through MCP, the connection gives access, not permission: every action still passes through the control layer.',
             },
             {
                 title: 'Risk levels',
@@ -182,7 +182,7 @@ export const guardrails = {
             'What the stop condition is: "Do not mark a package as delivered without a basis in the source."',
         ],
         caveat:
-            'Guardrails do not say that AI is dangerous or that it must not act. They say that a good agent action is to perform the safe steps, ask when info is missing, prepare drafts for review, and stop before a sensitive or irreversible action.',
+            'Guardrails do not say that AI is dangerous or that it must not act. They say that a good agent action is to perform the safe steps, ask when info is missing, prepare drafts for review, and stop before a sensitive or irreversible action. The control layer reduces risk, but it does not guarantee absolute safety. The quality depends on the rules, permissions, and checks that the system defines.',
     },
 
     bridge: {

@@ -86,7 +86,7 @@ export const fullTraceLab: FullTraceLabContent = {
             title: 'Where real information comes from',
             summary: 'The system reaches for a tracking tool and separates what is grounded in the source from what is not.',
             panels: [
-                { kind: 'note', label: 'Selected tool', text: 'Tracking lookup', tone: 'neutral' },
+                { kind: 'note', label: 'Selected tool', text: 'Tracking lookup via MCP', tone: 'neutral' },
                 { kind: 'result', label: 'Tool result (example)', rows: ['Status: delayed', 'Estimated delivery: unavailable'] },
                 {
                     kind: 'split',

@@ -84,7 +84,7 @@ export const fullTraceLab: FullTraceLabContent = {
             title: '本当の情報はどこから来るか',
             summary: 'システムは追跡ツールに頼り、情報源に接地している事柄と、そうでない事柄を分けます。',
             panels: [
-                { kind: 'note', label: '選ばれたツール', text: '追跡の確認（tracking lookup）', tone: 'neutral' },
+                { kind: 'note', label: '選ばれたツール', text: 'MCP経由の追跡の確認（tracking lookup）', tone: 'neutral' },
                 { kind: 'result', label: 'ツールの結果（例）', rows: ['状況: 遅延', '配達予定日: 利用不可'] },
                 {
                     kind: 'split',

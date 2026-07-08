@@ -86,7 +86,7 @@ export const fullTraceLab: FullTraceLabContent = {
             title: 'De donde viene la informacion real',
             summary: 'El sistema recurre a una herramienta de seguimiento y separa lo anclado en la fuente de lo que no lo esta.',
             panels: [
-                { kind: 'note', label: 'Herramienta elegida', text: 'Consulta de seguimiento (tracking lookup)', tone: 'neutral' },
+                { kind: 'note', label: 'Herramienta elegida', text: 'Consulta de seguimiento via MCP (tracking lookup)', tone: 'neutral' },
                 { kind: 'result', label: 'Resultado de la herramienta (ejemplo)', rows: ['Estado: con retraso', 'Fecha estimada de entrega: no disponible'] },
                 {
                     kind: 'split',

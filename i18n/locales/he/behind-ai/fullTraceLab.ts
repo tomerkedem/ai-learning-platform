@@ -149,7 +149,7 @@ export const fullTraceLab: FullTraceLabContent = {
             title: 'מאיפה מגיע מידע אמיתי',
             summary: 'המערכת פונה לכלי מעקב, ומפרידה בין מה שמעוגן במקור לבין מה שלא.',
             panels: [
-                { kind: 'note', label: 'כלי נבחר', text: 'בדיקת מעקב (tracking lookup)', tone: 'neutral' },
+                { kind: 'note', label: 'כלי נבחר', text: 'בדיקת מעקב דרך MCP (tracking lookup)', tone: 'neutral' },
                 { kind: 'result', label: 'תוצאת הכלי (דוגמה)', rows: ['סטטוס: בעיכוב', 'מועד הגעה משוער: לא זמין'] },
                 {
                     kind: 'split',

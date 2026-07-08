@@ -56,7 +56,7 @@ export const chatToAgent = {
             },
             {
                 title: 'Tools',
-                body: 'An agent can use tools only when they are available and allowed: tracking lookup, document search, drafting, sending a message, and more. A tool extends capability, it does not make the model smarter.',
+                body: 'An agent can use tools only when they are available and allowed: tracking lookup, document search, drafting, sending a message, and more. A tool extends capability, it does not make the model smarter. The structured way to connect an agent to external tools and data sources is called MCP: it gives controlled access, not permission to do everything, and permissions, approval, and stopping rules still apply. Not every agent uses MCP, and it is not the only way to connect tools.',
             },
             {
                 title: 'Missing information',
