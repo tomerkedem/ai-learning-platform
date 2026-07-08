@@ -22,7 +22,7 @@ export const attentionLab: AttentionLabContent = {
     nowLabel: 'The sentence now',
     relationLabel: 'The link being weighed:',
     disclaimer:
-        'This is a simplified teaching illustration, not a full picture of the Attention mechanism in a real model. The numbers here are meant to show the idea: a small change in the sentence moves the focus of attention and the strength of the link between the parts.',
+        'This is a simplified teaching illustration, not a full picture of the Attention mechanism in a real model. The numbers here are meant to show the idea: a small change in the sentence moves the focus of attention and the strength of the link between the parts. The percentage next to each word is a weight at this moment, not a fixed importance score for the word.',
     tensionLabels: {
         high: 'strong link',
         medium: 'medium link',

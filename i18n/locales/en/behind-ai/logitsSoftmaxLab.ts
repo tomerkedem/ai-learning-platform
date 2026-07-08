@@ -90,7 +90,7 @@ export const logitsSoftmaxLab: LogitsSoftmaxLabContent = {
     softmaxNote:
         'Softmax splits 100 percent among the continuations by their scores: a higher score gets a bigger share. A small gap in score can open a noticeable gap in percentages, which is why even a small change in context already moves the picture.',
     continuationNote:
-        'The continuations are shown here as full phrases so they are easy to read. In practice the model ranks the next token step by step. This is an illustration of that same competition, not an exact internal trace of the model.',
+        'The continuations are shown here as full phrases so they are easy to read. In practice the model ranks the next token step by step. This is an illustration of that same competition, not an exact internal trace of the model. And remember that these are only a few of many possible continuations. In a real model the computation runs over a much larger vocabulary.',
     disclaimer:
         'The scores and percentages here are a teaching illustration, not real model output. They are meant to show how scores become probabilities, and how the context moves them. A high score means the continuation is more likely per the text, not that it is true in the world.',
     sr: {

@@ -89,7 +89,7 @@ export const logitsSoftmaxLab: LogitsSoftmaxLabContent = {
     softmaxNote:
         'Softmax reparte 100 por ciento entre las continuaciones según las puntuaciones: una puntuación más alta recibe una porción mayor. Una diferencia pequeña en la puntuación puede abrir una diferencia notable en los porcentajes, y por eso un cambio pequeño en el contexto ya mueve la imagen.',
     continuationNote:
-        'Aquí las continuaciones se muestran como frases completas para que sea fácil leerlas. En la práctica el modelo puntúa el siguiente token paso a paso. Esto es una ilustración de esa misma competencia, no una traza interna exacta del modelo.',
+        'Aquí las continuaciones se muestran como frases completas para que sea fácil leerlas. En la práctica el modelo puntúa el siguiente token paso a paso. Esto es una ilustración de esa misma competencia, no una traza interna exacta del modelo. Y recuerda que estas son solo algunas de muchas continuaciones posibles. En un modelo real el cálculo se hace sobre un vocabulario mucho más grande.',
     disclaimer:
         'Las puntuaciones y los porcentajes de aquí son una ilustración didáctica, no una salida real de un modelo. Sirven para mostrar cómo las puntuaciones se convierten en probabilidades, y cómo el contexto las mueve. Una puntuación alta significa que la continuación es más probable según el texto, no que sea verdadera en el mundo.',
     sr: {

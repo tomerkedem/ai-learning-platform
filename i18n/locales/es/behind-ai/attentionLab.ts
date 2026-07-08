@@ -24,7 +24,7 @@ export const attentionLab: AttentionLabContent = {
     nowLabel: 'La frase ahora',
     relationLabel: 'El vínculo ponderado:',
     disclaimer:
-        'Esto es una ilustración didáctica simplificada, no un reflejo completo del mecanismo de Attention en un modelo real. Los números de aquí buscan mostrar la idea: un cambio pequeño en la frase mueve el foco de la atención y la fuerza del vínculo entre las partes.',
+        'Esto es una ilustración didáctica simplificada, no un reflejo completo del mecanismo de Attention en un modelo real. Los números de aquí buscan mostrar la idea: un cambio pequeño en la frase mueve el foco de la atención y la fuerza del vínculo entre las partes. El porcentaje junto a cada palabra es un peso en este momento, no una puntuación de importancia fija de la palabra.',
     tensionLabels: {
         high: 'vínculo fuerte',
         medium: 'vínculo medio',
