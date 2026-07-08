@@ -121,23 +121,33 @@ export const NextTokenGuess: React.FC<{ content: NextTokenContent; reduce: boole
                                 {sorted.map((o) => {
                                     const isTop = o.token === top.token;
                                     const isPick = o.token === pick;
+                                    // תגי "בחירת המנוע"/"הניחוש שלכם". במסך רחב הם צפים על העמודה,
+                                    // במסך צר הם יורדים לשורה נפרדת מתחת לעמודה כדי לא לכסות את האחוז.
+                                    const badges = (
+                                        <>
+                                            {isTop && <span className="rounded bg-emerald-950/70 px-1.5 py-0.5 text-[11px] font-bold text-emerald-200">{content.modelTop}</span>}
+                                            {isPick && <span className="rounded border border-white/40 bg-slate-950/40 px-1.5 py-0.5 text-[11px] font-bold text-white">{content.yourPick}</span>}
+                                        </>
+                                    );
                                     return (
                                         <div key={o.token} className="flex items-center gap-3">
                                             <span className={`w-16 shrink-0 text-sm font-bold md:w-20 ${isTop ? 'text-emerald-200' : 'text-slate-200'}`}>{o.token}</span>
-                                            <div className={`relative h-8 flex-1 overflow-hidden rounded-lg bg-slate-800/50 ${isPick ? 'ring-2 ring-white/40' : ''}`}>
-                                                <motion.div
-                                                    className={`h-full rounded-lg ${isTop ? 'bg-gradient-to-l from-emerald-400 to-emerald-500' : 'bg-gradient-to-l from-cyan-500/70 to-cyan-700/50'}`}
-                                                    initial={reduce ? false : { width: 0 }}
-                                                    animate={{ width: `${o.p}%` }}
-                                                    transition={reduce ? { duration: 0 } : { duration: 0.7, ease: 'easeOut' }}
-                                                />
-                                                <div className="absolute inset-0 flex items-center justify-between px-2.5">
-                                                    <span className="flex items-center gap-1.5">
-                                                        {isTop && <span className="rounded bg-emerald-950/70 px-1.5 py-0.5 text-[11px] font-bold text-emerald-200">{content.modelTop}</span>}
-                                                        {isPick && <span className="rounded border border-white/40 bg-slate-950/40 px-1.5 py-0.5 text-[11px] font-bold text-white">{content.yourPick}</span>}
-                                                    </span>
-                                                    <span className="text-sm font-black text-white" dir="ltr">{o.p}%</span>
+                                            <div className="min-w-0 flex-1">
+                                                <div className={`relative h-8 overflow-hidden rounded-lg bg-slate-800/50 ${isPick ? 'ring-2 ring-white/40' : ''}`}>
+                                                    <motion.div
+                                                        className={`h-full rounded-lg ${isTop ? 'bg-gradient-to-l from-emerald-400 to-emerald-500' : 'bg-gradient-to-l from-cyan-500/70 to-cyan-700/50'}`}
+                                                        initial={reduce ? false : { width: 0 }}
+                                                        animate={{ width: `${o.p}%` }}
+                                                        transition={reduce ? { duration: 0 } : { duration: 0.7, ease: 'easeOut' }}
+                                                    />
+                                                    <div className="absolute inset-0 flex items-center justify-between px-2.5">
+                                                        <span className="hidden items-center gap-1.5 md:flex">{badges}</span>
+                                                        <span className="text-sm font-black text-white" dir="ltr">{o.p}%</span>
+                                                    </div>
                                                 </div>
+                                                {(isTop || isPick) && (
+                                                    <div className="mt-1 flex flex-wrap gap-1 md:hidden">{badges}</div>
+                                                )}
                                             </div>
                                         </div>
                                     );
