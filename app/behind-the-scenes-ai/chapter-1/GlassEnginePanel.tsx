@@ -410,31 +410,48 @@ const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlight
             );
 
         case 'embeddingScene': {
-            // טוקני המשפט עפים מלמטה (טקסט) אל מרחב-משמעות דו-ממדי. המיקום נגזר
-            // מ-hash יציב לכל טוקן (המחשה): כל טוקן הופך לנקודה במרחב, לא ערך במילון.
+            // טוקני המשפט עפים מלמטה (טקסט) אל מרחב-משמעות דו-ממדי. היישות במרחב היא
+            // נקודה + וקטור מספרי (נגזר מאותו hash יציב שקובע את המיקום, המחשה); המילה
+            // מוצמדת כתווית-עזר מקווקוות ללומד. הווקטור מתגלה רגע אחרי הנחיתה - זהו
+            // רגע הלמידה: מאחורי כל תווית יש מספרים, לא המילה עצמה יושבת במרחב.
             const toks = step.tokens;
             if (!toks.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
             const posOf = (tok: string, i: number) => {
                 let h = 0;
                 for (let k = 0; k < tok.length; k++) h = (h * 31 + tok.charCodeAt(k)) % 997;
-                return { x: 12 + (h % 76), y: 14 + ((h * 7 + i * 53) % 72) };
+                return { x: 18 + (h % 64), y: 20 + ((h * 7 + i * 53) % 56) };
             };
             return (
                 <div className="relative h-40 w-full overflow-hidden rounded-xl border border-white/10 bg-slate-950/50" dir="ltr">
                     <div className="pointer-events-none absolute inset-0 opacity-[0.07]" aria-hidden style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
                     {toks.map((tok, i) => {
                         const p = posOf(tok, i);
+                        const landAt = 0.15 + i * 0.12;
                         return (
-                            <motion.span
+                            <motion.div
                                 key={`${tok}-${i}`}
-                                dir="auto"
-                                className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-md border px-1.5 py-0.5 text-xs font-mono ${a.border} ${a.bgSoft} ${a.text}`}
+                                className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5"
                                 initial={reduce ? false : { left: '50%', top: '112%', opacity: 0, scale: 0.6 }}
                                 animate={{ left: `${p.x}%`, top: `${p.y}%`, opacity: 1, scale: 1 }}
-                                transition={{ duration: reduce ? 0 : 0.7, delay: reduce ? 0 : 0.15 + i * 0.12, type: 'spring', stiffness: 120, damping: 16 }}
+                                transition={{ duration: reduce ? 0 : 0.7, delay: reduce ? 0 : landAt, type: 'spring', stiffness: 120, damping: 16 }}
                             >
-                                {tok}
-                            </motion.span>
+                                <span aria-hidden className={`h-2 w-2 rounded-full ${a.dot} shadow-[0_0_10px_2px_rgba(255,255,255,0.18)]`} />
+                                <span
+                                    dir="auto"
+                                    className="rounded-md border border-dashed border-white/25 bg-slate-900/70 px-1.5 py-0.5 text-xs text-slate-300"
+                                >
+                                    {tok}
+                                </span>
+                                <motion.span
+                                    aria-hidden
+                                    className={`font-mono text-xs ${a.text}`}
+                                    initial={reduce ? false : { opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: reduce ? 0 : 0.3, delay: reduce ? 0 : landAt + 0.6 }}
+                                >
+                                    [{(p.x / 100).toFixed(2)}, {(p.y / 100).toFixed(2)}]
+                                </motion.span>
+                            </motion.div>
                         );
                     })}
                 </div>

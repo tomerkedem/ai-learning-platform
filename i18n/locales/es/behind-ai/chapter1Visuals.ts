@@ -47,7 +47,7 @@ export const chapter1Visuals = {
             s1: { title: 'Entra la solicitud', note: 'La frase que elegiste - el punto de partida del recorrido por el motor.' },
             s2: { title: 'División en tokens', note: 'La misma frase se corta en unidades de trabajo. Ahora son tokens.' },
             s3: { title: 'Un identificador por token', note: 'Cada token recibe un número del vocabulario. De aquí en adelante, solo números.' },
-            s4: { title: 'Representación numérica', note: 'Los tokens de la frase vuelan al espacio de significado. La posición codifica significado - no es una búsqueda en un diccionario.' },
+            s4: { title: 'Representación numérica', note: 'Los tokens de la frase vuelan al espacio de significado, y la posición codifica significado. Las palabras son etiquetas para ti - detrás de cada etiqueta hay un vector numérico que el modelo compara.' },
             s5: { title: 'Posición y orden', note: 'Cada token lleva una etiqueta de posición. El orden es parte del significado - no es una bolsa de palabras.' },
             s6: { title: 'Ventana de contexto', note: 'El motor trabaja solo con lo que está en la ventana ahora. Eso es todo lo que ve de la frase.' },
             s7: { title: 'Atención al contexto', note: 'El motor no cuenta palabras - sopesa qué tokens importan. Aquí el token resaltado moldea el significado de sus vecinos.' },

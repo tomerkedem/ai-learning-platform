@@ -48,7 +48,7 @@ export const chapter1Visuals = {
             s1: { title: 'The request comes in', note: 'The sentence you picked - the starting point of the journey through the engine.' },
             s2: { title: 'Split into tokens', note: 'The same sentence is cut into work units. Now it is tokens.' },
             s3: { title: 'An ID for each token', note: 'Each token gets a number from the vocabulary. From here on, only numbers.' },
-            s4: { title: 'Numeric representation', note: 'The sentence tokens fly into the meaning space. Position encodes meaning - not a dictionary lookup.' },
+            s4: { title: 'Numeric representation', note: 'The sentence tokens fly into the meaning space, and position encodes meaning. The words are labels for you - behind each label is a numeric vector the model compares.' },
             s5: { title: 'Position and order', note: 'Each token carries a position tag. Order is part of the meaning - not a bag of words.' },
             s6: { title: 'Context window', note: 'The engine works only with what is in the window right now. That is all it sees of the sentence.' },
             s7: { title: 'Attention to context', note: 'The engine does not count words - it weighs which tokens matter. Here the highlighted token shapes the meaning of its neighbors.' },
