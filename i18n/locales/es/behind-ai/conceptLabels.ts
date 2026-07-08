@@ -57,6 +57,7 @@ export const conceptLabels: Record<string, string> = {
     "בדיקה אינה אמת": "Una verificacion no es la verdad",
     "בקשת בדיקה גלויה": "Pedir una verificacion visible",
     // Capitulo 14 (Learning from Mistakes)
+    "טעות היא אות": "Un error es una señal",
     "תיקון בתוך הקשר": "Una corrección en el contexto",
     "הקשר אינו אימון": "El contexto no es entrenamiento",
     "שיפור מערכת": "Mejora del sistema",

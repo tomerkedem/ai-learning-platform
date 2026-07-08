@@ -23,16 +23,16 @@ export const mistakeLearning = {
 
     hero: {
         badge: 'Behind the Scenes · 14 · Learning from Mistakes',
-        titleLead: 'You corrected AI.',
-        titleHighlight: 'What really improved?',
-        lede: 'In the previous chapters we saw that a fluent answer can be wrong, that a source reduces guessing, and that a self-check catches unsupported claims. Now we ask a different question: when you correct AI, what actually improves, and when?',
-        hook: 'The model answered "The package will arrive tomorrow", and you corrected it. Did the model learn this forever?',
+        titleLead: 'The same mistake keeps coming back.',
+        titleHighlight: 'How does it become an improvement?',
+        lede: 'In the previous chapters we saw that a fluent answer can be wrong, that a source reduces guessing, and that a self-check catches unsupported claims. Now we ask a different question: when the same mistake keeps recurring, how does a team turn it into a real improvement, and how do you know the improvement really worked?',
+        hook: 'The model invents an arrival date that has no source, again and again. One correction helps now, but what has to happen for this mistake to really stop?',
         chipTry: 'Move between the four levels of improvement',
         chipCompare: 'Compare what improved with what did not',
     },
 
     mentor: {
-        hero: 'One correction is not necessarily a change to the model',
+        hero: 'Real improvement is a process, not magic',
         labExplain: 'Where the improvement really happens',
         misconception: 'A correction in a conversation is not training',
         lock: 'Separate an improvement in a conversation from a change to the model',
@@ -77,34 +77,34 @@ export const mistakeLearning = {
         title: 'Two speeds of improvement',
         steps: ['A mistake', 'A correction in the conversation', 'A fixed answer now', 'A pattern is collected and checked', 'A future improvement in the system or the model'],
         caption:
-            'Two different speeds: on one side an immediate correction inside the context, on the other side a slow improvement through a system change or training. The first helps now, the second needs a process and evaluation. This is a teaching illustration, not a description of a specific product.',
+            'The first station helps right away: a correction in the context fixes the answer now. But the real improvement begins when the recurring mistake is collected as an example, reviewed, turned into a candidate fix, and measured in an evaluation before it is released. This is a teaching illustration, not a description of a specific product.',
     },
 
     guess: {
-        eyebrow: 'Quick guess · after you corrected it',
-        title: 'The model answered "The package will arrive tomorrow", and you corrected it: "There is no arrival date in the source". What really improved now?',
+        eyebrow: 'Quick guess · a recurring mistake',
+        title: 'The model invents an arrival date that has no source, and you correct it. What does that correction really do?',
         subtitle: 'Pick the safest interpretation. There is no score here, there is one direction that describes what really happened.',
-        invite: 'Before we open this up, try to guess what exactly changed the moment you corrected it.',
+        invite: 'Before we open this up, try to guess what exactly one correction like this does.',
         correctTitle: 'Exactly right!',
         wrongTitle: 'Almost!',
         getsRightLabel: 'What this gets right',
         revealButton: 'Reveal the core idea',
-        revealTitle: 'So what really improved?',
+        revealTitle: 'So what really leads to improvement?',
         revealCopy:
-            'The correction entered the context of the conversation, so the model can fix the answer now. That does not mean the base model changed forever, and it does not mean every user will get this answer from now on. A change like that needs a separate process.',
+            'One correction helps now, because it enters the context of the conversation. But it is mostly a signal: if the same mistake keeps recurring, you can collect it as an example, review it, fix the system or train a new version, and measure in an evaluation whether the improvement really worked. Real improvement is a process, not the result of a single message.',
         cta: 'Let us see it in the lab',
         resetButton: 'Choose again',
         exploreHint: 'You can pick another option too and see how it sounds.',
 
         cards: {
             context: {
-                title: 'The model can use the correction inside the current conversation',
-                desc: 'The correction is now in the context, so the model can write a better answer here.',
+                title: 'Helps now, and is also a signal for improvement later',
+                desc: 'The correction enters the context, so the model fixes the answer here. And if the mistake keeps recurring, the correction is a signal you can act on.',
                 statusLabel: 'You chose right',
-                getsRight: 'Exactly. The correction is part of the context of the conversation, so it helps the current answer.',
+                getsRight: 'Exactly. The correction helps the current conversation, and it is also a sign: a recurring mistake can be turned into a controlled improvement.',
                 missesLabel: 'What is left to see',
-                misses: 'In the lab we will see that the correction helps now, but it is not necessarily kept in the base model for other conversations.',
-                bridge: 'Helps now, does not change the model forever.',
+                misses: 'In the lab we will see how such a signal becomes an example, a review, a fix in the system or in training, and a check that measures whether the improvement worked.',
+                bridge: 'Helps now, and a signal for a controlled improvement later.',
             },
             permanent: {
                 title: 'The model changed itself permanently',
@@ -138,28 +138,28 @@ export const mistakeLearning = {
 
     insight: {
         title: 'The key point of this chapter',
-        lead: 'Your correction does not necessarily enter the mind of the model.',
-        body: 'But it can improve the current conversation, because it sits in the context. And when many corrections point to the same problem, they can help improve the system, the checks, the sources, or a future version of the model. An immediate improvement and a permanent improvement are two different things.',
+        lead: 'A single correction is a signal, not a model update.',
+        body: 'It helps the current conversation, but real improvement begins when many corrections point to the same problem. Then you can collect them as examples, review them, change a prompt, a source, a rule, a check or the training, and measure in an evaluation whether things really improved. Improvement is a controlled process, not magic that happens from a single message.',
     },
 
     misconception: {
         wrongLabel: 'Common mistake',
-        wrongQuote: '"I corrected AI, so now it knows this forever."',
+        wrongQuote: '"I corrected AI once, so the system already improved."',
         rightLabel: 'How it really works',
-        rightBody: 'The correction helped the current conversation because it entered the context. But the base model did not necessarily change, and it does not automatically remember the correction in a new conversation. A permanent change needs a separate process: a system change, or training a new version with a check. An improvement in a conversation is real, but it is not training.',
+        rightBody: 'A single correction helps the current conversation, and it is a signal worth paying attention to. But improving the system needs a separate process: collect the mistake as an example, review it, change a prompt, a source, a rule, a check or the training, and measure in an evaluation that the change really helped and did not break something else. Without measurement, "we improved" is a hope, not knowledge.',
     },
 
     lock: {
         title: 'Lock in your understanding',
-        question: 'You corrected the model inside a conversation: "Do not write that the package will arrive tomorrow. There is no arrival date in the source." What is the safest interpretation?',
+        question: 'The same mistake ("The package will arrive tomorrow" with no source) keeps recurring for many users. What is the right way to make it really improve?',
         options: [
-            'The base model learned this forever, for all users.',
-            'The correction can help the current conversation, because it is now part of the context.',
-            'The correction has no effect at all.',
-            'The answer is now guaranteed to be correct forever.',
+            'One user\'s correction already changed the model for all users.',
+            'Collect the mistake as an example, review it, fix the system or the training, and measure in an evaluation before releasing.',
+            'Wait for the model to fix itself over time.',
+            'There is nothing to do, because the model is frozen and cannot improve at all.',
         ],
         success:
-            'A correction in the context can improve the answer in the current conversation. A permanent improvement to the model needs a separate process: a system change or training a new version, with evaluation.',
+            'A recurring mistake is a signal. Real improvement is a controlled process: collect examples, review them, fix the system or train a new version, and measure in an evaluation that the change really helped. A correction in a conversation helps now, but it does not replace the process.',
     },
 
     practical: {

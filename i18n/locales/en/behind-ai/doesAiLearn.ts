@@ -176,7 +176,6 @@ export const doesAiLearn = {
             'Provide the important rule or source again in each new chat, instead of assuming the model remembers.',
             'Phrase the rule explicitly, for example: "Do not invent an arrival date if there is no source. If there is no date in tracking, write that there is no confirmed date."',
             'If the product offers memory or saved preferences, use them for what needs to repeat.',
-            'For teams building systems: define the rule, add it to the system instructions, ground it in a source, build test cases, and collect repeated failures for a controlled improvement.',
             'After every change, check again that the behavior really improved.',
         ],
         caveat:

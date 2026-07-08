@@ -23,15 +23,15 @@ export const mistakeLearningQuiz = {
 
     byId: {
         1: {
-            question: 'Corregiste al modelo a mitad de una conversación. ¿Qué pasó de verdad ahora?',
+            question: 'El mismo error se repite una y otra vez con muchos usuarios. ¿Qué lo convierte en una mejora real?',
             options: [
-                'El modelo se cambió a sí mismo de forma permanente para todos los usuarios',
-                'La corrección entró en el contexto de la conversación, y el modelo puede usarla para corregir la respuesta ahora',
-                'La corrección no tiene ningún efecto, porque la IA no puede mejorar',
-                'El modelo te recuerda y usará la corrección en conversaciones futuras',
+                'La corrección en la conversación ya mejoró por sí sola el modelo para todos los usuarios',
+                'Recoger el error como ejemplo, revisarlo, probar una corrección candidata, y publicarla solo si la evaluación muestra que ayuda',
+                'Esperar a que el modelo aprenda solo después de suficientes veces',
+                'Pedir a los usuarios que formulen la pregunta de otra manera',
             ],
             explanation:
-                'La corrección pasa a formar parte del contexto de la conversación, y por eso el modelo puede redactar una respuesta mejor ahora. Es una mejora de la conversación actual, no un cambio permanente del modelo base.',
+                'Una corrección aislada es una señal, no una actualización del modelo. La mejora real es un proceso controlado: se recoge el error como ejemplo, se revisa, se prueba una corrección candidata en el sistema o en el entrenamiento, y se mide con una evaluación si el cambio ayudó de verdad antes de publicarlo.',
         },
         2: {
             question: '¿Por qué una corrección en el chat no cambia de forma automática el modelo base?',

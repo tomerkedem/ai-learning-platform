@@ -23,15 +23,15 @@ export const mistakeLearningQuiz = {
 
     byId: {
         1: {
-            question: 'You corrected the model in the middle of a conversation. What actually happened now?',
+            question: 'The same mistake keeps recurring for many users. What turns it into a real improvement?',
             options: [
-                'The model changed itself permanently for all users',
-                'The correction entered the context of the conversation, and the model can use it to fix the answer now',
-                'The correction has no effect, because AI cannot improve',
-                'The model remembers you and will use the correction in future conversations',
+                'The correction in the conversation already improved the model for all users by itself',
+                'Collect the mistake as an example, review it, test a candidate fix, and release it only if the evaluation shows it helps',
+                'Wait for the model to learn it on its own after enough times',
+                'Ask users to phrase the question differently',
             ],
             explanation:
-                'The correction becomes part of the context of the conversation, so the model can write a better answer now. That is an improvement to the current conversation, not a permanent change to the base model.',
+                'A single correction is a signal, not a model update. Real improvement is a controlled process: collect the mistake as an example, review it, test a candidate fix in the system or in training, and measure in an evaluation whether the change really helped before releasing it.',
         },
         2: {
             question: 'Why does a single correction in Chat not automatically change the base model?',

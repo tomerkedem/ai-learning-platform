@@ -24,17 +24,17 @@ export const mistakeLearning = {
     // ── Hero ──
     hero: {
         badge: 'Behind the Scenes · 14 · Learning from Mistakes',
-        titleLead: 'Corregiste a la IA.',
-        titleHighlight: '¿Qué mejoró de verdad?',
-        lede: 'En los capítulos anteriores vimos que una respuesta fluida puede equivocarse, que una fuente reduce las suposiciones, y que la autocomprobación detecta afirmaciones sin respaldo. Ahora hacemos otra pregunta: cuando corriges a la IA, ¿qué mejora en realidad, y cuándo?',
-        hook: 'El modelo respondió "El paquete llegará mañana", y tú lo corregiste. ¿El modelo aprendió eso para siempre?',
+        titleLead: 'El mismo error vuelve una y otra vez.',
+        titleHighlight: '¿Cómo se convierte en una mejora?',
+        lede: 'En los capítulos anteriores vimos que una respuesta fluida puede equivocarse, que una fuente reduce las suposiciones, y que la autocomprobación detecta afirmaciones sin respaldo. Ahora hacemos otra pregunta: cuando el mismo error se repite una y otra vez, ¿cómo lo convierte un equipo en una mejora real, y cómo se sabe que la mejora funcionó de verdad?',
+        hook: 'El modelo inventa una fecha de entrega que no tiene fuente, una y otra vez. Una corrección ayuda ahora, pero ¿qué tiene que pasar para que ese error se detenga de verdad?',
         chipTry: 'Muévete entre los cuatro niveles de mejora',
         chipCompare: 'Compara qué mejoró frente a qué no',
     },
 
     // ── Llamadas del mentor (solo texto de la burbuja, sin emoji) ──
     mentor: {
-        hero: 'Una corrección no es necesariamente un cambio en el modelo',
+        hero: 'La mejora real es un proceso, no magia',
         labExplain: 'Dónde ocurre de verdad la mejora',
         misconception: 'Una corrección en la conversación no es entrenamiento',
         lock: 'Separa una mejora en la conversación de un cambio en el modelo',
@@ -81,22 +81,22 @@ export const mistakeLearning = {
         title: 'Dos ritmos de mejora',
         steps: ['Error', 'Corrección en la conversación', 'Respuesta corregida ahora', 'Patrón recogido y revisado', 'Mejora futura en el sistema o en el modelo'],
         caption:
-            'Dos ritmos distintos: por un lado, una corrección inmediata dentro del contexto, por otro, una mejora lenta a través de cambiar el sistema o entrenar. El primero ayuda ahora, el segundo exige un proceso y una evaluación. Es una ilustración didáctica, no la descripción de un producto concreto.',
+            'La primera estación ayuda de inmediato: una corrección en el contexto arregla la respuesta ahora. Pero la mejora real empieza cuando el error que se repite se recoge como ejemplo, se revisa, se convierte en una corrección candidata, y se mide con una evaluación antes de publicarla. Es una ilustración didáctica, no la descripción de un producto concreto.',
     },
 
     // ── Adivinanza de apertura (OpeningGuess) ──
     guess: {
-        eyebrow: 'Adivina rápido · después de corregir',
-        title: 'El modelo respondió "El paquete llegará mañana", y tú corregiste: "No hay una fecha de entrega en la fuente". ¿Qué mejoró de verdad ahora?',
+        eyebrow: 'Adivina rápido · un error que se repite',
+        title: 'El modelo inventa una fecha de entrega que no tiene fuente, y tú lo corriges. ¿Qué hace de verdad esa corrección?',
         subtitle: 'Elige la interpretación más segura. Aquí no hay nota, hay una dirección que describe lo que pasó de verdad.',
-        invite: 'Antes de abrir esto, intenta adivinar qué cambió exactamente en el momento en que corregiste.',
+        invite: 'Antes de abrir esto, intenta adivinar qué hace exactamente una sola corrección así.',
         correctTitle: '¡Exacto!',
         wrongTitle: '¡Casi!',
         getsRightLabel: 'Qué acierta',
         revealButton: 'Revela la idea principal',
-        revealTitle: '¿Y qué mejoró de verdad?',
+        revealTitle: '¿Y qué lleva de verdad a la mejora?',
         revealCopy:
-            'La corrección entró en el contexto de la conversación, así que el modelo puede corregir la respuesta ahora. Eso no quiere decir que el modelo base haya cambiado para siempre, ni que todos los usuarios reciban a partir de ahora esta respuesta. Un cambio así exige un proceso aparte.',
+            'Una corrección ayuda ahora, porque entra en el contexto de la conversación. Pero sobre todo es una señal: si el mismo error se repite, se puede recoger como ejemplo, revisarlo, corregir el sistema o entrenar una versión nueva, y medir con una evaluación si la mejora funcionó de verdad. La mejora real es un proceso, no el resultado de un solo mensaje.',
         cta: 'Veámoslo en el laboratorio',
         resetButton: 'Elegir de nuevo',
         exploreHint: 'También puedes elegir otra opción y ver cómo suena.',
@@ -104,13 +104,13 @@ export const mistakeLearning = {
         /** Texto de las cuatro tarjetas de hipótesis, por id de la tarjeta. */
         cards: {
             context: {
-                title: 'El modelo puede usar la corrección dentro de la conversación actual',
-                desc: 'La corrección ya está en el contexto, así que el modelo puede redactar una respuesta mejor aquí.',
+                title: 'Ayuda ahora, y además es una señal para mejorar después',
+                desc: 'La corrección entra en el contexto, así que el modelo arregla la respuesta aquí. Y si el error se repite, la corrección es una señal sobre la que se puede actuar.',
                 statusLabel: 'Elegiste bien',
-                getsRight: 'Exacto. La corrección forma parte del contexto de la conversación, y por eso ayuda a la respuesta actual.',
+                getsRight: 'Exacto. La corrección ayuda a la conversación actual, y además es una señal: un error que se repite se puede convertir en una mejora controlada.',
                 missesLabel: 'Qué queda por ver',
-                misses: 'En el laboratorio veremos que la corrección ayuda ahora, pero no se guarda necesariamente en el modelo base para otras conversaciones.',
-                bridge: 'Ayuda ahora, no cambia el modelo para siempre.',
+                misses: 'En el laboratorio veremos cómo una señal así se convierte en un ejemplo, en una revisión, en una corrección del sistema o del entrenamiento, y en una comprobación que mide si la mejora funcionó.',
+                bridge: 'Ayuda ahora, y es una señal para una mejora controlada después.',
             },
             permanent: {
                 title: 'El modelo se cambió a sí mismo de forma permanente',
@@ -145,30 +145,30 @@ export const mistakeLearning = {
     // ── Idea "wow" (InsightBox) ──
     insight: {
         title: 'Lo clave del capítulo',
-        lead: 'Tu corrección no entra necesariamente en la mente del modelo.',
-        body: 'Pero sí puede mejorar la conversación actual, porque está en el contexto. Y cuando muchas correcciones apuntan al mismo problema, pueden ayudar a mejorar el sistema, las comprobaciones, las fuentes, o una versión futura del modelo. Una mejora inmediata y una mejora permanente son dos cosas distintas.',
+        lead: 'Una corrección aislada es una señal, no una actualización del modelo.',
+        body: 'Ayuda a la conversación actual, pero la mejora real empieza cuando muchas correcciones apuntan al mismo problema. Entonces se pueden recoger como ejemplos, revisar, cambiar una instrucción, una fuente, una regla, una comprobación o el entrenamiento, y medir con una evaluación si mejoramos de verdad. La mejora es un proceso controlado, no magia que ocurre por un solo mensaje.',
     },
 
     // ── Corrección de un error común ──
     misconception: {
         wrongLabel: 'Error común',
-        wrongQuote: '"Corregí a la IA, así que ahora lo sabe para siempre."',
+        wrongQuote: '"Corregí a la IA una vez, así que el sistema ya mejoró."',
         rightLabel: 'Cómo funciona en realidad',
-        rightBody: 'La corrección ayudó a la conversación actual porque entró en el contexto. Pero el modelo base no cambió necesariamente, y no recuerda de forma automática la corrección en una conversación nueva. Un cambio permanente exige un proceso aparte: cambiar el sistema, o entrenar una versión nueva con evaluación. Una mejora en la conversación es real, pero no es entrenamiento.',
+        rightBody: 'Una corrección aislada ayuda a la conversación actual, y es una señal a la que conviene prestar atención. Pero mejorar el sistema exige un proceso aparte: recoger el error como ejemplo, revisarlo, cambiar una instrucción, una fuente, una regla, una comprobación o el entrenamiento, y medir con una evaluación que el cambio ayudó de verdad y no rompió otra cosa. Sin medición, "mejoramos" es una esperanza, no conocimiento.',
     },
 
     // ── Fija la comprensión ──
     lock: {
         title: 'Fija la comprensión',
-        question: 'Corregiste al modelo dentro de una conversación: "No escribas que el paquete llegará mañana. No hay una fecha de entrega en la fuente." ¿Cuál es la interpretación más segura?',
+        question: 'El mismo error ("El paquete llegará mañana" sin fuente) se repite con muchos usuarios. ¿Qué es lo correcto para que mejore de verdad?',
         options: [
-            'El modelo base lo aprendió para siempre, para todos los usuarios.',
-            'La corrección puede ayudar a la conversación actual, porque ahora forma parte del contexto.',
-            'La corrección no tiene ningún efecto.',
-            'La respuesta queda garantizada como correcta para siempre.',
+            'La corrección de un solo usuario ya cambió el modelo para todos los usuarios.',
+            'Recoger el error como ejemplo, revisar, corregir en el sistema o en el entrenamiento, y medir con una evaluación antes de publicar.',
+            'Esperar a que el modelo se corrija solo con el tiempo.',
+            'No hay nada que hacer, porque el modelo está congelado y no puede mejorar en absoluto.',
         ],
         success:
-            'Una corrección en el contexto puede mejorar la respuesta en la conversación actual. Una mejora permanente del modelo exige un proceso aparte: cambiar el sistema o entrenar una versión nueva, con evaluación.',
+            'Un error que se repite es una señal. La mejora real es un proceso controlado: se recogen ejemplos, se revisan, se corrige el sistema o se entrena una versión nueva, y se mide con una evaluación que el cambio ayudó de verdad. Una corrección en la conversación ayuda ahora, pero no sustituye al proceso.',
     },
 
     // ── Idea práctica ──

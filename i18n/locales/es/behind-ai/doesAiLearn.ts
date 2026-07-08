@@ -177,7 +177,6 @@ export const doesAiLearn = {
             'Aporta de nuevo la regla o la fuente importante en cada chat nuevo, en vez de suponer que el modelo la recuerda.',
             'Formula la regla de forma explicita, por ejemplo: "No inventes una fecha de llegada si no hay fuente. Si no hay fecha en el seguimiento, escribe que no hay fecha confirmada."',
             'Si el producto ofrece memoria o preferencias guardadas, usalas para lo que deba repetirse.',
-            'Para equipos que construyen sistemas: define la regla, agregala a las instrucciones del sistema, ancla la en una fuente, crea casos de prueba, y recopila fallos repetidos para una mejora controlada.',
             'Despues de cada cambio, comprueba de nuevo que el comportamiento mejoro de verdad.',
         ],
         caveat:
