@@ -157,7 +157,7 @@ export const chapter3Lab: Chapter3LabContent = {
     },
 
     roleInfo: {
-        object: { label: '対象', en: 'Object', why: 'これは文章が話している相手です。エンジンは、何が起きたかを言う前に、何についてかを知る必要があります。' },
+        object: { label: '対象', en: 'Object', why: 'これは文章が話している相手です。ラベルは、文の残りを処理する前に、何についてかを示します。' },
         negation: { label: '否定', en: 'Negation', why: 'この言葉は文章の向きをひっくり返すことがあります。これがないと意味は反対になります。' },
         action: { label: '動作', en: 'Action', why: '対象に何が起きたか。動詞が実際の状態を決めます。' },
         'action-signal': { label: '動作のサイン', en: 'Action signal', why: 'この言葉は、入力を説明から実行の依頼へと変えます。流れ全体が変わります。' },

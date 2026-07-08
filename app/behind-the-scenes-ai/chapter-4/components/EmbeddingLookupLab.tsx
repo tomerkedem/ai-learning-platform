@@ -243,7 +243,7 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
             </div>
 
             {/* הבהרה: המספרים להמחשה, וקטור אמיתי הוא מאות ממדים לא קריאים */}
-            <p className="mt-4 text-[11px] leading-relaxed text-slate-500">{c.disclaimer}</p>
+            <p className="mt-4 text-[13px] leading-relaxed text-slate-400">{c.disclaimer}</p>
         </div>
     );
 };

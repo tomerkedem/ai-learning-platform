@@ -213,6 +213,7 @@ export const chapter4Lab: Chapter4LabDict = {
         guideBond: 'Un enlace verde que late indica un componente compartido, y eso es lo que acerca el significado.',
         stayedClose: 'El significado se mantuvo cerca',
         drifted: 'El significado derivó',
+        axesNote: 'Los ejes aquí son etiquetas educativas. En un modelo real el vector tiene cientos o miles de dimensiones numéricas que no se leen como rasgos humanos.',
     },
 
     controls: {

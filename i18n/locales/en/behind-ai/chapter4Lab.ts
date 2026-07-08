@@ -213,6 +213,7 @@ export const chapter4Lab: Chapter4LabDict = {
         guideBond: 'A pulsing green bond means a shared component, and that is what brings the meaning closer.',
         stayedClose: 'The meaning stayed close',
         drifted: 'The meaning drifted',
+        axesNote: 'The axes here are educational labels. In a real model the vector has hundreds or thousands of numeric dimensions that are not readable as human traits.',
     },
 
     controls: {

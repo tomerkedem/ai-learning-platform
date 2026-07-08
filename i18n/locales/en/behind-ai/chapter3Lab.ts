@@ -157,7 +157,7 @@ export const chapter3Lab: Chapter3LabContent = {
     },
 
     roleInfo: {
-        object: { label: 'Object', en: 'Object', why: 'This is what the sentence is about. The engine needs to know the subject before it can tell what happened to it.' },
+        object: { label: 'Object', en: 'Object', why: 'This is what the sentence is about. The label marks the subject, before the rest of the sentence is processed.' },
         negation: { label: 'Negation', en: 'Negation', why: 'This word can flip the direction of the sentence. Without it the meaning is the opposite.' },
         action: { label: 'Action', en: 'Action', why: 'What happened to the object. The verb sets the actual state of things.' },
         'action-signal': { label: 'Action signal', en: 'Action signal', why: 'This word shifts the input from a description to a request for action. It changes the whole route.' },

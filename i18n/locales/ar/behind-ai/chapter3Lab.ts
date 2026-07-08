@@ -154,7 +154,7 @@ export const chapter3Lab: Chapter3LabContent = {
     },
 
     roleInfo: {
-        object: { label: 'كائن', en: 'Object', why: 'هذا ما تتحدث عنه الجملة. يحتاج المحرك أن يعرف الموضوع قبل أن يعرف ماذا حدث له.' },
+        object: { label: 'كائن', en: 'Object', why: 'هذا ما تتحدث عنه الجملة. التسمية تحدد الموضوع، قبل معالجة بقية الجملة.' },
         negation: { label: 'نفي', en: 'Negation', why: 'هذه الكلمة قد تقلب اتجاه الجملة. بدونها يصبح المعنى عكسيًا.' },
         action: { label: 'فعل', en: 'Action', why: 'ما حدث للكائن. الفعل يحدد الحالة الفعلية للأمور.' },
         'action-signal': { label: 'إشارة فعل', en: 'Action signal', why: 'هذه الكلمة تحوّل المُدخل من وصف إلى طلب تنفيذ. تغيّر المسار كله.' },

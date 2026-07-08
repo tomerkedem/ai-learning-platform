@@ -109,7 +109,7 @@ export const SemanticSpaceLab: React.FC<{ content: SemanticSpaceLabDict; dir: Di
             </AnimatePresence>
 
             {/* disclaimer */}
-            <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500" dir={dir}>
+            <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[13px] leading-relaxed text-slate-400" dir={dir}>
                 <Info size={14} className="mt-0.5 shrink-0" />
                 <span>{content.disclaimer}</span>
             </div>

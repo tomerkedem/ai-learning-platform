@@ -152,7 +152,7 @@ export const chapter3Lab: Chapter3LabContent = {
     },
 
     roleInfo: {
-        object: { label: 'Objeto', en: 'Object', why: 'Es aquello de lo que trata la frase. El motor necesita saber el sujeto antes de poder decir qué le pasó.' },
+        object: { label: 'Objeto', en: 'Object', why: 'Es aquello de lo que trata la frase. La etiqueta marca el sujeto, antes de procesar el resto de la frase.' },
         negation: { label: 'Negación', en: 'Negation', why: 'Esta palabra puede invertir la dirección de la frase. Sin ella el significado es el opuesto.' },
         action: { label: 'Acción', en: 'Action', why: 'Lo que le pasó al objeto. El verbo fija el estado real de las cosas.' },
         'action-signal': { label: 'Señal de acción', en: 'Action signal', why: 'Esta palabra cambia la entrada de una descripción a una petición de acción. Cambia todo el recorrido.' },

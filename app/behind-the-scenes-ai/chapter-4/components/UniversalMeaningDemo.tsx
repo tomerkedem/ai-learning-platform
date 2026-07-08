@@ -105,7 +105,7 @@ export const UniversalMeaningDemo: React.FC<UniversalMeaningDemoProps> = ({ dir 
                             )}
                         </div>
                         <p className="mt-2.5 text-[11px] leading-relaxed text-slate-400">{m.numericNote}</p>
-                        <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">{m.numericDisclaimer}</p>
+                        <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">{m.numericDisclaimer}</p>
                     </div>
                 </div>
 

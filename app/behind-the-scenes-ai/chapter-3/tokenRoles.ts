@@ -56,7 +56,7 @@ export interface RoleInfo {
 }
 
 export const ROLE_INFO: Record<TokenRole, RoleInfo> = {
-    object: { he: 'אובייקט', en: 'Object', whyHe: 'זה הדבר שהמשפט מדבר עליו. המנוע צריך לדעת על מה מדובר לפני שהוא מבין מה קרה לו.' },
+    object: { he: 'אובייקט', en: 'Object', whyHe: 'זה הדבר שהמשפט מדבר עליו. התווית מסמנת על מה מדובר, עוד לפני שמעבדים את שאר המשפט.' },
     negation: { he: 'שלילה', en: 'Negation', whyHe: 'המילה הזאת יכולה להפוך את כיוון המשפט. בלעדיה המשמעות הפוכה לגמרי.' },
     action: { he: 'פעולה', en: 'Action', whyHe: 'מה קרה לאובייקט. הפועל קובע את מצב הדברים בפועל.' },
     'action-signal': { he: 'אות פעולה', en: 'Action signal', whyHe: 'המילה הזאת מסיטה את הקלט ממשפט תיאורי לבקשת פעולה. היא משנה את כל המסלול.' },

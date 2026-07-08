@@ -213,6 +213,7 @@ export const chapter4Lab: Chapter4LabDict = {
         guideBond: '緑に脈打つ結合は共通の要素で、それが意味を近づけます。',
         stayedClose: '意味は近いまま',
         drifted: '意味がずれた',
+        axesNote: 'ここでの軸は学習用のラベルです。実際のモデルでは、ベクトルは人間の特徴として読めない数百から数千の数値次元を持ちます。',
     },
 
     controls: {

@@ -158,6 +158,8 @@ export interface Chapter4LabDict {
         guideBond: string;
         stayedClose: string;
         drifted: string;
+        /** הבהרה קבועה: הצירים הם תוויות לימודיות, לא ממדי embedding קריאים לאדם. */
+        axesNote: string;
     };
 
     controls: {
