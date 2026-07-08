@@ -66,7 +66,7 @@ export const introduction = {
                 title: '固定された経路',
                 concept: 'モデルは常に同じ決まった数のステップを通る。製造ラインのように。',
                 whyTempting: 'モデルを、ステップ数の決まった整然とした製造ラインと考えると気持ちがよいものです。',
-                whyWrong: '決まったステップ数はありません。1回ごとに膨大な計算が走り、モデルと文脈によって変わります。',
+                whyWrong: '内部のステップ自体は決まっていますが、周回の数は決まっていません。トークンごとに経路全体がもう一度走り、答えが完成するまでくり返されます。',
             },
             tokens: {
                 title: 'トークンのエンジン',
@@ -139,7 +139,7 @@ export const introduction = {
                 title: 'Chat は入力、モデル、そして1つの回答',
                 body: 'Chat モードでは、モデルはリクエストを受け取り、1つの回答を返します。ツールもなく、世界への働きかけもなく、あるのは入力、モデル、回答だけです。',
                 closing: 'Chat は回答ができた瞬間に止まります。ツールを動かさず、会話の外側のものを変えることもありません。',
-                note: 'これはまさに Transformer の層です。テキストが入り、テキストが出ます。',
+                note: 'これはまさに Transformer そのものです。テキストが入り、テキストが出ます。',
             },
             agent: {
                 eyebrow: '追加の層',
@@ -162,8 +162,8 @@ export const introduction = {
             running: '実行中...',
             replay: 'もう一度実行',
             hintPrompt: 'ループを実行すると、エンジンの動きを一歩ずつ見られます。',
-            input: { label: 'リクエスト', text: 'メールを要約して返信を送って' },
-            output: { label: '回答', agent: '要約ができました。送信の承認待ちです', chat: 'ご依頼の要約はこちらです' },
+            input: { label: 'リクエスト', text: '貼り付けたメールを要約して返信を送って' },
+            output: { label: '回答', agent: '要約ができました。送信の承認待ちです', chat: '要約はこちらです。送信は私にはできません。' },
             consoleTitle: '判断コンソール',
             consoleLabels: { intent: '意図', tool: 'ツール', risk: 'リスク', next: '次のステップ' },
             consoleEmpty: '待機中',
@@ -195,7 +195,7 @@ export const introduction = {
         },
         labels: {
             purpose: '何がわかる?',
-            stations: 'マップ上の関連ステーション',
+            stations: '重要な概念',
             chapters: 'どの章につながる?',
             open: 'ゲートを開く',
             startHere: 'ここから始める',

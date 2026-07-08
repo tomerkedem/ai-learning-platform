@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Check, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
+import { useT } from '@/i18n/useT';
 import type { NextTokenContent } from '@/app/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
 
@@ -20,6 +21,9 @@ export const NextTokenGuess: React.FC<{ content: NextTokenContent; reduce: boole
     // מעצמו כי הכרטיס רחב יותר, בלי לשנות גדלי טקסט.
     const [roundIdx, setRoundIdx] = useState(0);
     const [pick, setPick] = useState<string | null>(null);
+    // הערת היושרה המשותפת של סצנות המבוא (מפתח מילון קיים, תרגום זהה בכל השפות):
+    // ההתפלגות שנחשפת כאן היא להמחשה בלבד, לא פלט אמיתי של מודל.
+    const sharedNote = useT().t.behindAi.introVisuals.viz.sharedNote;
 
     const round = content.rounds[roundIdx];
     const revealed = pick !== null;
@@ -154,6 +158,7 @@ export const NextTokenGuess: React.FC<{ content: NextTokenContent; reduce: boole
                                     </div>
                                 </div>
                             </div>
+                            <p className="mt-2 text-[13px] leading-relaxed text-slate-400">{sharedNote}</p>
 
                             {/* הכרעה: צדקתם כמו המנוע, או שהמנוע העדיף אחרת */}
                             <div className={`relative mt-4 overflow-hidden rounded-xl border px-4 py-3 ${matched ? 'border-emerald-400/40 bg-emerald-900/20' : 'border-slate-600/50 bg-slate-900/50'}`}>

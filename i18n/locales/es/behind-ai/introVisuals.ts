@@ -144,7 +144,7 @@ export const introVisuals = {
             activeNote: (k: number, n: number) => `${k} de ${n} expertos se ejecutan`,
             outLabel: 'enriquecido',
             hint: 'Cambia de token y mira qué expertos se encienden',
-            caption: 'Tras la atención, cada token pasa por una red feed-forward que lo enriquece. En los modelos grandes un router enciende solo unos pocos expertos de entre muchos - eso es Mixture-of-Experts: conocimiento enorme, pero solo una parte pequeña se ejecuta por token.',
+            caption: 'Tras la atención, cada token pasa por una red feed-forward que lo enriquece. En los modelos grandes un router enciende solo unos pocos expertos de entre muchos - eso es Mixture-of-Experts: conocimiento enorme, pero solo una parte pequeña se ejecuta por token. Los "expertos" no son expertos humanos en temas: el enrutamiento se aprende en el entrenamiento, es puramente numérico y no es legible de forma directa para las personas.',
         },
 
         layers: {
@@ -164,7 +164,7 @@ export const introVisuals = {
         state: {
             orbLabel: 'Una sola representación de todo el contexto',
             insideBtn: '¿Qué hay comprimido dentro?',
-            caption: 'Todo el contexto queda comprimido en un punto. De ahí nacerá la próxima palabra.',
+            caption: 'Todo el contexto queda comprimido en un punto. De ahí nacerá la próxima palabra. El contexto en sí no se borra: en cada vuelta el modelo vuelve a mirarlo.',
         },
 
         logits: {

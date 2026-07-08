@@ -65,7 +65,7 @@ export const introduction = {
                 title: 'A fixed track',
                 concept: 'The model always goes through the same fixed number of steps, like an assembly line.',
                 whyTempting: 'It is appealing to think of the model as a tidy assembly line with a known number of steps.',
-                whyWrong: 'There is no fixed number of steps. Each pass runs a huge number of computations, and it varies with the model and the context.',
+                whyWrong: 'The inner stages are in fact fixed, but the number of rounds is not: the whole route runs again for every token, until the answer is complete.',
             },
             tokens: {
                 title: 'A token engine',
@@ -138,7 +138,7 @@ export const introduction = {
                 title: 'Chat is input, model, and one answer',
                 body: 'In Chat mode the model receives a request and returns one answer. No tools, no action in the world - just input, model, and answer.',
                 closing: 'Chat stops the moment the answer is ready. It does not run tools and does not change anything outside the conversation.',
-                note: 'This is exactly the Transformer layer: text in, text out.',
+                note: 'This is exactly the Transformer itself: text in, text out.',
             },
             agent: {
                 eyebrow: 'An extra layer',
@@ -161,8 +161,8 @@ export const introduction = {
             running: 'Running...',
             replay: 'Run again',
             hintPrompt: 'Run a loop to watch the engine work, step by step.',
-            input: { label: 'Request', text: 'Summarize the email and send a reply' },
-            output: { label: 'Answer', agent: 'Summary ready, waiting for approval to send', chat: 'Here is the summary you asked for' },
+            input: { label: 'Request', text: 'Summarize the email I pasted and send a reply' },
+            output: { label: 'Answer', agent: 'Summary ready, waiting for approval to send', chat: 'Here is the summary. I cannot send it for you.' },
             consoleTitle: 'Decision console',
             consoleLabels: { intent: 'Intent', tool: 'Tool', risk: 'Risk', next: 'Next step' },
             consoleEmpty: 'Waiting',
@@ -194,7 +194,7 @@ export const introduction = {
         },
         labels: {
             purpose: 'What will you discover?',
-            stations: 'Related stations on the map',
+            stations: 'Key concepts',
             chapters: 'Which chapters does this lead to?',
             open: 'Open the gate',
             startHere: 'Start here',

@@ -65,7 +65,7 @@ export const introduction = {
                 title: 'Un recorrido fijo',
                 concept: 'El modelo siempre pasa por el mismo número fijo de pasos, como una línea de montaje.',
                 whyTempting: 'Resulta cómodo pensar en el modelo como una línea de montaje ordenada con un número de pasos conocido.',
-                whyWrong: 'No hay un número fijo de pasos. En cada pasada se ejecutan muchísimos cálculos, y eso varía según el modelo y el contexto.',
+                whyWrong: 'Las etapas internas sí son fijas, pero el número de vueltas no: todo el recorrido vuelve a ejecutarse por cada token, hasta completar la respuesta.',
             },
             tokens: {
                 title: 'Un motor de tokens',
@@ -138,7 +138,7 @@ export const introduction = {
                 title: 'El Chat es entrada, modelo y una respuesta',
                 body: 'En modo Chat el modelo recibe una solicitud y devuelve una sola respuesta. Sin herramientas, sin acción en el mundo - solo entrada, modelo y respuesta.',
                 closing: 'El Chat se detiene en el momento en que la respuesta está lista. No ejecuta herramientas ni cambia nada fuera de la conversación.',
-                note: 'Esta es exactamente la capa del Transformer: entra texto, sale texto.',
+                note: 'Este es exactamente el Transformer en sí: entra texto, sale texto.',
             },
             agent: {
                 eyebrow: 'Una capa adicional',
@@ -161,8 +161,8 @@ export const introduction = {
             running: 'Ejecutando...',
             replay: 'Ejecutar de nuevo',
             hintPrompt: 'Ejecuta un ciclo para ver el motor en acción, paso a paso.',
-            input: { label: 'Solicitud', text: 'Resume el correo y envía una respuesta' },
-            output: { label: 'Respuesta', agent: 'Resumen listo, esperando aprobación para enviar', chat: 'Aquí está el resumen que pediste' },
+            input: { label: 'Solicitud', text: 'Resume el correo que pegué y envía una respuesta' },
+            output: { label: 'Respuesta', agent: 'Resumen listo, esperando aprobación para enviar', chat: 'Aquí está el resumen. No puedo enviarlo por ti.' },
             consoleTitle: 'Consola de decisión',
             consoleLabels: { intent: 'Intención', tool: 'Herramienta', risk: 'Riesgo', next: 'Siguiente paso' },
             consoleEmpty: 'Esperando',
@@ -194,7 +194,7 @@ export const introduction = {
         },
         labels: {
             purpose: '¿Qué vas a descubrir?',
-            stations: 'Estaciones relacionadas en el mapa',
+            stations: 'Conceptos clave',
             chapters: '¿A qué capítulos lleva esto?',
             open: 'Abre la puerta',
             startHere: 'Empieza aquí',

@@ -143,7 +143,7 @@ export const introVisuals = {
             activeNote: (k: number, n: number) => `${k} of ${n} experts run`,
             outLabel: 'enriched',
             hint: 'Switch token and see which experts light up',
-            caption: 'After attention, each token passes through a feed-forward network that enriches it. In large models a router lights up only a few experts out of many - that is Mixture-of-Experts: huge knowledge, but only a small part runs per token.',
+            caption: 'After attention, each token passes through a feed-forward network that enriches it. In large models a router lights up only a few experts out of many - that is Mixture-of-Experts: huge knowledge, but only a small part runs per token. The "experts" are not human subject-matter experts: the routing is learned in training, purely numerical, and not directly human-readable.',
         },
 
         layers: {
@@ -163,7 +163,7 @@ export const introVisuals = {
         state: {
             orbLabel: 'One representation of the whole context',
             insideBtn: 'What is packed inside?',
-            caption: 'The whole context is compressed into one point. The next word will be born from it.',
+            caption: 'The whole context is compressed into one point. The next word will be born from it. The context itself is not deleted: every generation round looks at it again.',
         },
 
         logits: {
