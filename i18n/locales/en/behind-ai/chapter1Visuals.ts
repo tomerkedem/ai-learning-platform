@@ -153,7 +153,7 @@ export const chapter1Visuals = {
         subtitle: 'The cursor that moves over the sentence word by word',
         introHeadLabel: 'The read head',
         introMid: ' stops after each word. At each stop the same engine recomputes the leading guess from what it has read so far, so you can watch the model ',
-        introEmph: 'change its mind while reading',
+        introEmph: 'update its leading guess while reading',
         introTail: '. Pick an example and run the scanner.',
         distinctNote: 'The map above shows the whole pipeline at once. The read head shows what it cannot: how the leading guess shifts as it reads, word by word, at your own pace.',
         examplesLabel: 'Pick an example',
@@ -176,12 +176,12 @@ export const chapter1Visuals = {
         insightTitle: 'What happened here',
         insightChanges: (n: number) =>
             n === 0
-                ? 'The model never switched leader across the whole sentence - it read without changing its mind, only growing more confident.'
+                ? 'The model never switched leader across the whole sentence - it read without the leading option flipping, only growing more confident.'
                 : n === 1
-                    ? 'The model changed its mind once while reading.'
-                    : `The model changed its mind ${n} times while reading.`,
+                    ? 'The model switched leader once while reading.'
+                    : `The model switched leader ${n} times while reading.`,
         insightPivot: (w: string) => `The word that flipped the final decision: "${w}".`,
-        scriptedNote: 'Guided example: the probabilities here are a learning illustration of how belief accumulates word by word, not the output of a real model.',
+        scriptedNote: 'Guided example: the probabilities here are an educational illustration of how the model\'s estimate sharpens word by word, not output from a real model.',
         liveNote: 'This is your sentence, run through the chapter learning engine. Notice that the probabilities move only when a keyword enters.',
         examples: [],
     },

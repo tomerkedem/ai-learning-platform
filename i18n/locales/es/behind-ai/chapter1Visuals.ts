@@ -152,7 +152,7 @@ export const chapter1Visuals = {
         subtitle: 'El cursor que se mueve sobre la frase palabra por palabra',
         introHeadLabel: 'El cabezal de lectura',
         introMid: ' se detiene después de cada palabra. En cada parada el mismo motor recalcula la opción líder a partir de lo leído hasta ahora, así puedes observar al modelo ',
-        introEmph: 'cambiar de opinión mientras lee',
+        introEmph: 'actualizar su opción líder mientras lee',
         introTail: '. Elige un ejemplo y ejecuta el escáner.',
         distinctNote: 'El mapa de arriba muestra todo el proceso a la vez. El cabezal de lectura muestra lo que este no puede: cómo la opción líder cambia mientras lee, palabra por palabra, a tu propio ritmo.',
         examplesLabel: 'Elige un ejemplo',
@@ -175,12 +175,12 @@ export const chapter1Visuals = {
         insightTitle: 'Qué pasó aquí',
         insightChanges: (n: number) =>
             n === 0
-                ? 'El modelo no cambió de líder en toda la frase - leyó sin cambiar de opinión, solo ganó más confianza.'
+                ? 'El modelo no cambió de líder en toda la frase - leyó sin que la opción líder cambiara, solo ganó más confianza.'
                 : n === 1
-                    ? 'El modelo cambió de opinión una vez mientras leía.'
-                    : `El modelo cambió de opinión ${n} veces mientras leía.`,
+                    ? 'El modelo cambió de líder una vez mientras leía.'
+                    : `El modelo cambió de líder ${n} veces mientras leía.`,
         insightPivot: (w: string) => `La palabra que volteó la decisión final: "${w}".`,
-        scriptedNote: 'Ejemplo guiado: las probabilidades aquí son una ilustración didáctica de cómo se acumula la creencia palabra por palabra, no la salida de un modelo real.',
+        scriptedNote: 'Ejemplo guiado: las probabilidades aquí son una ilustración didáctica de cómo se afina la estimación del modelo palabra por palabra, no la salida de un modelo real.',
         liveNote: 'Esta es tu frase, ejecutada con el motor didáctico del capítulo. Fíjate en que las probabilidades solo se mueven cuando entra una palabra clave.',
         examples: [],
     },
