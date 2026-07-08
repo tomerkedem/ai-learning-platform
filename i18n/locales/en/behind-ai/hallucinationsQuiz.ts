@@ -60,18 +60,18 @@ export const hallucinationsQuiz = {
                 'Repeating the question a few times until the answer sounds convincing',
             ],
             explanation:
-                'Confidence in phrasing, length or repetition do not make an answer grounded. What lowers risk is grounding: provide a source, ask it to separate known from assumed, and ask the model to say what is missing. A real situation needs a source or a tool.',
+                'Confidence in phrasing, length or repetition do not make an answer grounded. What lowers risk is grounding: provide a source, ask it to separate known from assumed, and ask the model to say what is missing. A real situation needs a source or a tool. How a source actually enters an answer is the topic of the next chapter.',
         },
         5: {
-            question: "Three answers to the same question: (a) 'The package will arrive tomorrow', (b) 'A date cannot be confirmed without checking the status', (c) 'According to the provided source, the package is delayed and there is no confirmed date'. Which is most accurate?",
+            question: "Three answers to the same question: (a) 'The package will arrive tomorrow', (b) 'A date cannot be confirmed without checking the status', (c) 'What is known: the promised date has passed. What is not known: when it will arrive. The status needs checking'. Which is most accurate?",
             options: [
                 '(a) is best, because it is the clearest and most confident',
-                '(b) and (c) are safer than (a), because they do not invent a date, and (c) also ties the claim to a source',
+                '(b) and (c) are safer than (a), because they do not invent a date, and (c) also separates what is known from what is not',
                 'All three are equal, because they are all well phrased',
-                '(c) is poor, because it admits there is no confirmed date',
+                '(c) is poor, because it admits there are things it does not know',
             ],
             explanation:
-                '(a) is fluent but invents an unchecked date, which makes it the risky one. (b) is careful and invents nothing. (c) is grounded in a source and also honest about what the source does not say. A careful or grounded answer beats a confident guess. Admitting what is unknown is a strength, not a weakness.',
+                '(a) is fluent but invents an unchecked date, which makes it the risky one. (b) is careful and invents nothing. (c) explicitly marks what is known, what is not, and what needs checking. An answer that marks the limits of what it knows beats a confident guess. Admitting what is unknown is a strength, not a weakness.',
         },
     } satisfies Record<HallucinationsQuizId, HallucinationsQuizText>,
 };

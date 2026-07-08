@@ -61,18 +61,18 @@ export const hallucinationsQuiz = {
                 'Repetir la pregunta varias veces hasta que la respuesta suene convincente',
             ],
             explanation:
-                'La seguridad en la redacción, la longitud o la repetición no hacen que una respuesta esté fundamentada. Lo que reduce el riesgo es el fundamento: aportar una fuente, pedir que separe lo conocido de lo supuesto, y pedir al modelo que diga qué falta. Una situación real necesita una fuente o una herramienta.',
+                'La seguridad en la redacción, la longitud o la repetición no hacen que una respuesta esté fundamentada. Lo que reduce el riesgo es el fundamento: aportar una fuente, pedir que separe lo conocido de lo supuesto, y pedir al modelo que diga qué falta. Una situación real necesita una fuente o una herramienta. Cómo entra de verdad una fuente en la respuesta es el tema del próximo capítulo.',
         },
         5: {
-            question: "Tres respuestas a la misma pregunta: (a) 'El paquete llegará mañana', (b) 'No se puede confirmar una fecha sin comprobar el estado', (c) 'Según la fuente aportada, el paquete está retrasado y no hay fecha confirmada'. ¿Cuál es la más exacta?",
+            question: "Tres respuestas a la misma pregunta: (a) 'El paquete llegará mañana', (b) 'No se puede confirmar una fecha sin comprobar el estado', (c) 'Lo que se sabe: la fecha prometida ya pasó. Lo que no se sabe: cuándo llegará. Hay que comprobar el estado'. ¿Cuál es la más exacta?",
             options: [
                 '(a) es la mejor, porque es la más clara y segura',
-                '(b) y (c) son más seguras que (a), porque no inventan una fecha, y (c) además liga la afirmación a una fuente',
+                '(b) y (c) son más seguras que (a), porque no inventan una fecha, y (c) además separa lo que se sabe de lo que no',
                 'Las tres son iguales, porque todas están bien redactadas',
-                '(c) es mala, porque admite que no hay fecha confirmada',
+                '(c) es mala, porque admite que hay cosas que no se saben',
             ],
             explanation:
-                '(a) es fluida pero inventa una fecha sin comprobar, por lo que es la arriesgada. (b) es prudente y no inventa nada. (c) está fundamentada en una fuente y además es honesta sobre lo que la fuente no dice. Una respuesta prudente o fundamentada supera a una suposición segura. Admitir lo que no se sabe es una fortaleza, no una debilidad.',
+                '(a) es fluida pero inventa una fecha sin comprobar, por lo que es la arriesgada. (b) es prudente y no inventa nada. (c) marca de forma explícita qué se sabe, qué no y qué hay que comprobar. Una respuesta que marca los límites de lo que sabe supera a una suposición segura. Admitir lo que no se sabe es una fortaleza, no una debilidad.',
         },
     } satisfies Record<HallucinationsQuizId, HallucinationsQuizText>,
 };

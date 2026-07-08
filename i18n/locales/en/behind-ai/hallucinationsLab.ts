@@ -6,8 +6,9 @@
 //
 // Core idea: the exact same customer question, and four answer styles. The learner picks a
 // style and sees what is behind each answer: risk level, fact check, what is missing, and a
-// bottom line. A fluent, confident answer can invent a date, while a careful or a
-// source-grounded answer is far safer.
+// bottom line. A fluent, confident answer can invent a date, while a careful answer is far
+// safer. The "What if there was a source?" style is a peek only: a short hint from a source
+// shows there is something to lean on, and the full mechanism opens in the next chapter.
 //
 // Fully deterministic: no randomness, no real model call, and no claim that the trace comes
 // from a real model. Every example here is a teaching example only.
@@ -22,7 +23,7 @@ export const hallucinationsLab: HallucinationsLabContent = {
     sectionEyebrow: 'Hallucination Lab',
     sectionTitle: 'Same question, four answer styles: which is grounded and which guesses?',
     sectionIntro:
-        'A customer asks where their package is. Pick an answer style, and see what is behind each answer: whether a source was checked, which claims are backed, and the risk of sending it as is. The exact same question can get a confident answer that invents a date, or a careful answer that says what is missing.',
+        'A customer asks where their package is. Pick an answer style and compare: a confident answer that invents a date versus a careful answer that says what is missing. Behind each answer you will see which claims are backed, what is missing, and the risk of sending it as is.',
     heading: 'Behind the answer',
     kicker: 'Hallucination Lab',
     questionLabel: 'Customer question',
@@ -34,15 +35,13 @@ export const hallucinationsLab: HallucinationsLabContent = {
     missingLabel: 'What is missing?',
     takeawayLabel: 'Bottom line',
     source: {
-        label: 'Tracking status (sample data)',
-        caption: 'A sample card for illustration only. This is not real data.',
+        label: 'Hint from a source (a peek)',
+        caption: 'Two sample status rows only, not real data.',
         rows: [
-            { label: 'Barcode', value: 'RR123456789IL' },
-            { label: 'Last scan', value: 'Sorting center' },
             { label: 'Status', value: 'Delayed' },
             { label: 'Estimated delivery', value: 'Not available' },
         ],
-        note: 'Note: the source itself gives no delivery date. A good answer will not invent one.',
+        note: 'Even this hint gives no delivery date. How a full source enters an answer, we will see in the next chapter.',
     },
     disclaimer:
         'All the answers, checks and the source here are a teaching example, not real model output. They are meant to show the difference between a fluent answer and a grounded one. An answer that sounds confident is not evidence that the fact was checked.',
@@ -85,20 +84,20 @@ export const hallucinationsLab: HallucinationsLabContent = {
         },
         {
             id: 'grounded',
-            control: 'Grounded in a source',
+            control: 'What if there was a source?',
             risk: 'low',
             riskLabel: 'Low risk',
-            riskNote: 'Every claim in the answer rests on a value that appears in the source shown here.',
+            riskNote: 'A peek only: with a hint from a source, the answer has something to lean on, and the temptation to fill in details shrinks.',
             showSource: true,
-            answer: 'According to the tracking status shown here, the package is delayed at the sorting center. There is no confirmed delivery date right now, so I cannot commit to a date.',
-            answerSummary: 'Every claim rests on a value in the source. No invented date.',
+            answer: 'According to the hint shown here, the package is delayed. A delivery date is not yet available, so I have no date to give.',
+            answerSummary: 'With a hint from a source, the answer no longer needs to guess. It is confident only about what has support.',
             checks: [
-                { id: 'source', state: 'pass', label: 'Source checked?', note: 'Yes, the answer rests on the status card shown above.' },
-                { id: 'backed', state: 'pass', label: 'Is every claim backed?', note: 'The delay and the location are taken directly from the source.' },
-                { id: 'invents', state: 'pass', label: 'Invents a date?', note: "No. The source says 'not available', and the answer leaves it open." },
+                { id: 'source', state: 'pass', label: 'Something to lean on?', note: 'Yes. This time there is a hint from a source, not just a language continuation.' },
+                { id: 'backed', state: 'pass', label: 'Does confidence match support?', note: 'Yes. The answer is confident about the delay that appears in the hint, and careful about everything that does not appear in it.' },
+                { id: 'invents', state: 'pass', label: 'Invents a date?', note: "No. The hint says 'not available', and the answer does not fill the gap." },
             ],
-            missing: 'The source itself gives no delivery date, and the answer reflects that honestly instead of filling the gap. Uncertainty stays exactly where the source is silent.',
-            takeaway: 'An answer tied to a source is stronger than a nicely worded one. The strength is in grounding, not phrasing.',
+            missing: 'The delivery date is still missing, and the hint does not give it. Above all, the mechanism itself is missing: how a full source enters an answer, and what happens when it is missing or contradicts. That is what the next chapter opens.',
+            takeaway: 'A source can help, but it is a mechanism of its own. Here we only peeked, and in the next chapter we will open it.',
         },
         {
             id: 'missing',

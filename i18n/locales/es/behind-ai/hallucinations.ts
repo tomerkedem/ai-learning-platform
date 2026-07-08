@@ -21,7 +21,7 @@ export const hallucinations = {
         lede: 'Vimos al modelo construir una respuesta fluida paso a paso. Pero la fluidez no es comprobar los hechos. El modelo puede redactar una respuesta plausible y convincente aunque no tenga la información real, y simplemente rellena el vacío con un texto que suena correcto.',
         hook: 'Si la respuesta suena segura, ordenada y servicial, ¿cómo sabemos si de verdad se comprobó?',
         chipTry: 'Elige un estilo de respuesta',
-        chipCompare: 'Compara segura, prudente y fundamentada',
+        chipCompare: 'Compara segura frente a prudente',
     },
 
     mentor: {
@@ -96,7 +96,7 @@ export const hallucinations = {
                 statusLabel: 'Elegiste bien',
                 getsRight: 'Exacto. La fluidez del lenguaje basta para producir una respuesta convincente. No exige que el hecho se compruebe.',
                 missesLabel: 'Qué queda por ver',
-                misses: 'En el laboratorio veremos cómo la misma pregunta recibe una respuesta que inventa una fecha, junto a una respuesta fundamentada en una fuente.',
+                misses: 'En el laboratorio veremos cómo la misma pregunta recibe una respuesta que inventa una fecha, y cómo reconocer que esa seguridad no se apoya en nada.',
                 bridge: 'La confianza en la redacción no es prueba de que la información sea correcta.',
             },
             confidentTrue: {
@@ -167,7 +167,7 @@ export const hallucinations = {
         uses: [
             'Separa hecho de suposición: "Indica qué se sabe, qué falta y qué hay que comprobar, y no adivines."',
             'Pide que diga qué falta: "Si no hay datos de seguimiento, no inventes un estado, pide el número de seguimiento."',
-            'Aporta una fuente cuando puedas: "Basándote solo en el siguiente estado de seguimiento, redacta una respuesta para el cliente."',
+            'Detente en cada dato preciso: una fecha, una hora o un estado en la respuesta, y pregunta dónde se comprobó antes de confiar en él.',
             'Exige una redacción prudente: "Si no hay fecha de entrega confirmada, dilo de forma explícita."',
             'Verifica los hechos importantes antes de actuar, y usa una herramienta o fuente para el estado operativo real.',
         ],

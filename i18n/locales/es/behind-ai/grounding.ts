@@ -42,7 +42,7 @@ export const grounding = {
         points: [
             {
                 title: 'Qué significa Grounding',
-                body: 'Fundamentar significa que la respuesta está anclada a información que se aportó o se recuperó, no solo a lo que suena plausible. Si la fuente dice algo, la respuesta se apoya en ello. Si la fuente calla, la respuesta no inventa.',
+                body: 'Fundamentar significa que la respuesta está anclada a información que se aportó o se recuperó, no solo a lo que suena plausible. Es la misma idea que en el capítulo anterior llamamos una respuesta fundamentada: conectar la respuesta con una fuente. Si la fuente dice algo, la respuesta se apoya en ello. Si la fuente calla, la respuesta no inventa.',
             },
             {
                 title: 'Qué significa RAG',

@@ -42,7 +42,7 @@ export const grounding = {
         points: [
             {
                 title: 'What Grounding means',
-                body: 'Grounding means the answer is anchored to information that was provided or retrieved, not just to what sounds plausible. If the source says something, the answer rests on it. If the source is silent, the answer does not invent.',
+                body: 'Grounding means the answer is anchored to information that was provided or retrieved, not just to what sounds plausible. It is the same idea the previous chapter called being grounded: connecting an answer to a source. If the source says something, the answer rests on it. If the source is silent, the answer does not invent.',
             },
             {
                 title: 'What RAG means',

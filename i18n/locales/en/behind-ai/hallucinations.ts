@@ -21,7 +21,7 @@ export const hallucinations = {
         lede: 'We saw the model build a fluent answer step by step. But fluency is not fact checking. The model can phrase a plausible, convincing answer even when it does not have the real information, and simply fill the gap with text that sounds right.',
         hook: 'If the answer sounds confident, tidy and helpful, how do we know whether it was actually checked?',
         chipTry: 'Pick an answer style',
-        chipCompare: 'Compare confident, careful and grounded',
+        chipCompare: 'Compare confident vs careful',
     },
 
     mentor: {
@@ -96,7 +96,7 @@ export const hallucinations = {
                 statusLabel: 'You chose right',
                 getsRight: 'Exactly. Language fluency is enough to produce a convincing answer. It does not require that the fact be checked.',
                 missesLabel: 'What is left to see',
-                misses: 'In the lab we will see how the same question gets an answer that invents a date, alongside an answer grounded in a source.',
+                misses: 'In the lab we will see how the same question gets an answer that invents a date, and how to spot that this confidence rests on nothing.',
                 bridge: 'Confidence in phrasing is not evidence that the information is correct.',
             },
             confidentTrue: {
@@ -167,7 +167,7 @@ export const hallucinations = {
         uses: [
             'Separate fact from assumption: "State what is known, what is missing, and what needs checking, and do not guess."',
             'Ask it to say what is missing: "If there is no tracking data, do not invent a status, ask for the tracking number."',
-            'Provide a source when you can: "Based only on the following tracking status, write an answer for the customer."',
+            'Stop at every precise detail: a date, a time or a status in the answer, and ask where it was checked before relying on it.',
             'Require careful phrasing: "If there is no confirmed delivery date, state that explicitly."',
             'Verify important facts before acting, and use a tool or source for real operational status.',
         ],
