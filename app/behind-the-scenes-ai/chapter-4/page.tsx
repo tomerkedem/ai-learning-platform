@@ -77,7 +77,7 @@ const MeaningGuess: React.FC = () => {
                 {/* מצב לפני בחירה: מנטור מהורהר מזמין + כרטיסים */}
                 {!answered && (
                     <>
-                        <GuessInvite pose="think" line={g.invite} width={104} />
+                        <GuessInvite pose="think" line={g.invite} width={156} />
 
                         <div className="mx-auto grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
                             {GUESS_CARD_META.map((meta) => {

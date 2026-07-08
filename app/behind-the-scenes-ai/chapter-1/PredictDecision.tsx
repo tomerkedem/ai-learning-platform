@@ -163,7 +163,7 @@ export const PredictDecision: React.FC<PredictDecisionProps> = ({ mode }) => {
 
             <div className="relative">
                 {/* מנטור הזמנה: משותף לכל הפרקים - דמות חושבת ממורכזת, נעלמת אחרי הניחוש */}
-                {!answered && <GuessInvite pose="think" width={156} />}
+                {!answered && <GuessInvite pose="think" width={234} />}
 
                 <div className="text-center">
                     <span className={`mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] ${accentText}`}>

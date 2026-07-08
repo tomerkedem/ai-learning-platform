@@ -315,6 +315,8 @@ export default function BehindTheScenesChapter5() {
                 </ExpandableLab>
 
                 {/* מנטור: קרוב במרחב, קרוב במשמעות (xl+, צד פנימי לפי כיוון) */}
+                {/* חריג מודע לגדול x1.5 הגלובלי של think: הסלוט בשוליים החיצוניים צר, וגודל
+                    מוגדל נחתך בקצה המסך ב-xl. נשמר הגודל המקורי כדי לשמור על איכות הפריסה. */}
                 <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'} z-20 hidden xl:block pointer-events-none`}>
                     <Mentor pose="think" line={c5.mentor.lab} width={160} flip={!isRtl} />
                 </div>

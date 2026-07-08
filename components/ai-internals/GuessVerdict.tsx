@@ -179,7 +179,8 @@ export const ShimmerFrame: React.FC<{
 export const GuessInvite: React.FC<{ pose?: MentorPose; line?: string; width?: number }> = ({
     pose = 'think',
     line,
-    width = 108,
+    // מנטור-think של ההזמנה מוצג בגודל מוגדל (x1.5) ברחבי הלומדה כברירת מחדל.
+    width = 162,
 }) => (
     <div className="mb-5 hidden flex-col items-center sm:flex">
         <Mentor pose={pose} width={width} glow={false} />

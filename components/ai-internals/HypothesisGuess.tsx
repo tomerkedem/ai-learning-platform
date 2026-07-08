@@ -121,7 +121,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
 
             <div className="relative">
                 {/* מנטור הזמנה: משותף לכל הפרקים - דמות חושבת ממורכזת, נעלמת אחרי הבחירה. */}
-                {!chosen && <GuessInvite pose="think" width={162} />}
+                {!chosen && <GuessInvite pose="think" width={243} />}
 
                 {/* רק אחרי שהלומד מאשר את הבונוס הוא מחליף את הניחוש הראשוני *במיקומו* (לא מתחתיו). */}
                 <AnimatePresence mode="wait" initial={false}>

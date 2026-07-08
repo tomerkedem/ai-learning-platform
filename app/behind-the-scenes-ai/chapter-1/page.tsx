@@ -398,7 +398,7 @@ export default function BehindTheScenesChapter1() {
                         dir={dir}
                     >
                         <div className="-my-2 shrink-0">
-                            <Mentor pose="think" width={92} float={false} glow={false} flip={!isRtl} />
+                            <Mentor pose="think" width={138} float={false} glow={false} flip={!isRtl} />
                         </div>
                         <div className="flex-1 text-sm leading-relaxed text-slate-200">
                             <span className="font-bold text-emerald-300">{c1.coach.start}</span>
@@ -533,7 +533,7 @@ export default function BehindTheScenesChapter1() {
                         dir={dir}
                     >
                         <div className="-my-2 shrink-0">
-                            <Mentor pose="think" width={92} float={false} glow={false} flip={!isRtl} />
+                            <Mentor pose="think" width={138} float={false} glow={false} flip={!isRtl} />
                         </div>
                         <div className="flex-1 text-sm leading-relaxed text-slate-200">
                             <span className="font-bold text-amber-300">{viz.journey.pauseNudge.start}</span>{' '}
