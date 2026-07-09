@@ -27,7 +27,7 @@ export const chapter2 = {
     mentor: {
         hero: 'Empecemos por lo que realmente se escribió',
         lab: 'La misma necesidad, material distinto',
-        lock: 'Fijaste la idea',
+        lock: 'Detente y elige una respuesta. Así sabrás si captaste la idea del capítulo.',
     },
 
     // Opening guess (DiscoveryGuess): text only; poses and target are structural in the page
@@ -96,7 +96,7 @@ export const chapter2 = {
     inputLab: {
         eyebrow: 'Input Comparison Lab',
         title: 'Comparar lo que llega al modelo',
-        intro: 'La misma necesidad, cinco formulaciones. Elige una y observa qué llega realmente al modelo: qué es explícito, qué falta, qué cambió y hacia dónde se inclina. El objetivo es ver que la entrada en sí ya decide mucho, antes de que comience cualquier procesamiento más profundo.',
+        intro: 'Aquí está la misma solicitud en cinco formulaciones. Elige una y el panel muestra qué recibe realmente el modelo: qué es explícito, qué falta y qué cambió.',
     },
 
     // Everyday example
@@ -139,9 +139,10 @@ export const chapter2 = {
     diagnosis: {
         prompt: '¿No llegó mi paquete?',
         question: 'El usuario escribió este mensaje. ¿Qué recibió realmente el modelo?',
+        choosePrompt: 'Elige la respuesta que te parezca correcta y recibirás una breve explicación.',
         options: [
-            'El problema completo, con todos los detalles',
             'Un texto corto con un signo de interrogación, sin una solicitud explícita',
+            'El problema completo, con todos los detalles',
             'La intención de abrir un ticket de soporte',
             'La respuesta que debe devolver',
         ],

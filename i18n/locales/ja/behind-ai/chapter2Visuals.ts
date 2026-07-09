@@ -13,8 +13,8 @@ export const chapter2Visuals = {
 
     // Input Comparison Lab chrome
     inputLab: {
-        tokenizationHint: 'この後の学習で、文章はトークンに分割されます。今は分割の前に、入力が何を含んでいるかだけを見ています。',
-        pickerHint: '言い回しを選んで、実際にモデルに何が届くか見てみましょう。',
+        tokenizationHint: 'あとで扱う注記：ここでは入力に何が含まれるかだけを見ます。テキストをトークンに分けることは、あとの別の章で扱います。',
+        pickerHint: '下のボタンは同じ依頼の五つの言い回しです。一つ選ぶと、下のパネルがモデルの受け取る内容に更新されます。',
         pickerAria: '比較する言い回しを選ぶ',
         ambiguityPrefix: '曖昧さ',
         outro: '同じ目的、違う言い回し。それぞれで、より深い処理が始まる前に、モデルが扱う材料が変わります。',

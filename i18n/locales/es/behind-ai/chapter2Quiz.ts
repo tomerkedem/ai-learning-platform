@@ -31,8 +31,8 @@ export const chapter2Quiz = {
             question: 'Un usuario escribe "Mi paquete no llegó?" sin ningún otro detalle. ¿Qué dice esto sobre lo que el modelo puede hacer?',
             options: [
                 'El modelo sabe exactamente qué paquete y cuándo, porque la intención es clara',
-                'Faltan detalles, así que es probable que el modelo adivine, pregunte o responda de forma general',
                 'El modelo ignorará el mensaje porque no tiene suficiente información',
+                'Faltan detalles, así que es probable que el modelo adivine, pregunte o responda de forma general',
                 'El modelo sacará la respuesta correcta de un banco de respuestas',
             ],
             explanation:
@@ -42,8 +42,8 @@ export const chapter2Quiz = {
             question:
                 '"Mi paquete no llegó. ¿Qué hago?" frente a "Mi paquete no llegó?". La misma intención, pero ¿cuál es la diferencia desde el punto de vista del modelo?',
             options: [
-                'Ninguna diferencia, porque ambos mensajes tratan del mismo paquete',
                 'La primera formulación pide orientación de forma explícita, mientras que la segunda se queda en una duda sin una petición clara',
+                'Ninguna diferencia, porque ambos mensajes tratan del mismo paquete',
                 'La diferencia es solo de longitud, y eso no influye',
                 'La segunda es más clara porque tiene un signo de interrogación',
             ],
@@ -54,23 +54,23 @@ export const chapter2Quiz = {
             question: 'El usuario añade "El número de seguimiento es 12345". ¿Por qué cambia esto lo que el modelo puede hacer?',
             options: [
                 'Porque un número largo siempre tiene prioridad para el modelo',
-                'Porque ahora hay un identificador que permite comprobar un estado real, en lugar de adivinar',
-                'Porque el número le dice al modelo que es una solicitud urgente',
                 'Porque los números hacen que el modelo responda más rápido',
+                'Porque el número le dice al modelo que es una solicitud urgente',
+                'Porque ahora hay un identificador que permite comprobar un estado real, en lugar de adivinar',
             ],
             explanation:
                 'El identificador no es solo más texto. Convierte una solicitud general en algo que se puede comprobar contra un sistema de seguimiento externo. La nueva entrada abre una opción de acción que antes no existía, y puede desplazar la conducta hacia una comprobación real.',
         },
         5: {
-            question: 'En medio de una conversación el usuario escribe "No zapatos, pedí un libro". ¿Qué cambia esto de verdad?',
+            question: 'En medio de una conversación sobre zapatos, el usuario escribe "No zapatos, pedí un libro". ¿Qué hace este mensaje?',
             options: [
-                'Reentrena el modelo para que lo recuerde en todas las conversaciones futuras',
-                'Actualiza el contexto actual de la conversación, pero no cambia lo que el modelo aprendió en el entrenamiento',
-                'No cambia nada, porque el modelo ya respondió',
                 'Borra todo lo dicho antes en la conversación',
+                'Actualiza el contexto actual, así que de aquí en adelante el modelo lo trata como un libro, no como zapatos',
+                'No cambia nada, porque el modelo ya entendió zapatos',
+                'Cambia el modelo mismo para siempre, en todas las conversaciones futuras',
             ],
             explanation:
-                'Una corrección en la conversación cambia el contexto con el que el modelo trabaja ahora, así que las siguientes respuestas de la conversación lo tendrán en cuenta. Pero esto no es entrenamiento: los pesos del modelo no cambian, y en cuanto la conversación termina, la corrección no se guarda. Esta distinción se desarrolla en profundidad en el capítulo sobre aprendizaje y memoria.',
+                'La corrección entra como nueva entrada y actualiza el contexto de la conversación actual, así que las siguientes respuestas trabajan con el libro. No cambia el modelo mismo, solo lo que tiene delante en esta conversación.',
         },
     },
 

@@ -27,7 +27,7 @@ export const chapter2 = {
     mentor: {
         hero: '実際に書かれたものから始めましょう',
         lab: '同じ目的、違う材料',
-        lock: '考え方をつかみました',
+        lock: '少し止まって、答えを選びましょう。そうすれば、この章の考え方をつかめたか分かります。',
     },
 
     // Opening guess (DiscoveryGuess): text only; poses and target are structural in the page
@@ -96,7 +96,7 @@ export const chapter2 = {
     inputLab: {
         eyebrow: 'Input Comparison Lab',
         title: 'モデルに届くものを比べる',
-        intro: '同じ目的、五つの言い回し。一つ選んで、実際にモデルに何が届くかを見てみましょう。何が明示され、何が欠け、何が変わり、どこに寄るのか。狙いは、より深い処理が始まる前に、入力そのものがすでに多くを決めていると気づくことです。',
+        intro: '同じ依頼を五つの言い回しで示します。一つ選ぶと、モデルが実際に受け取るものがパネルに表示されます。何が明示され、何が欠け、何が変わったか。',
     },
 
     // Everyday example
@@ -139,9 +139,10 @@ export const chapter2 = {
     diagnosis: {
         prompt: '私の荷物が届いていない?',
         question: 'ユーザーはこのメッセージを書きました。モデルが本当に受け取ったのは何でしょうか。',
+        choosePrompt: '正しいと思う答えを選ぶと、短い説明が表示されます。',
         options: [
-            'すべての詳細を含む、問題の全体',
             '疑問符のついた短い文章で、明示的な依頼はない',
+            'すべての詳細を含む、問題の全体',
             'サポートへの問い合わせを開く意図',
             '返すべき答え',
         ],

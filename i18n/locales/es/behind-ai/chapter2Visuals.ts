@@ -13,8 +13,8 @@ export const chapter2Visuals = {
 
     // Input Comparison Lab chrome
     inputLab: {
-        tokenizationHint: 'Más adelante en el curso el texto se divide en tokens. Por ahora solo miramos qué contiene la entrada, antes de cualquier división.',
-        pickerHint: 'Elige una formulación y observa qué llega realmente al modelo.',
+        tokenizationHint: 'Una nota para más adelante: aquí solo miramos qué contiene la entrada. Dividir el texto en tokens llega en un capítulo aparte más adelante.',
+        pickerHint: 'Los botones de abajo son cinco formulaciones de la misma solicitud. Elige uno y el panel de abajo se actualiza según lo que recibe el modelo.',
         pickerAria: 'Elegir una formulación para comparar',
         ambiguityPrefix: 'Ambigüedad',
         outro: 'La misma necesidad, formulaciones distintas. Con cada una el modelo obtiene material distinto con el cual trabajar, antes de que comience cualquier procesamiento más profundo.',

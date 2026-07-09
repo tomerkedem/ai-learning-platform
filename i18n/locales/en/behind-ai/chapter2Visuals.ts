@@ -13,8 +13,8 @@ export const chapter2Visuals = {
 
     // Input Comparison Lab chrome
     inputLab: {
-        tokenizationHint: 'Later in the course the text gets split into tokens. For now we are only looking at what the input contains, before any splitting.',
-        pickerHint: 'Pick a phrasing and see what actually reaches the model.',
+        tokenizationHint: 'A note for later: here we only look at what the input contains. Breaking the text into tokens comes in a separate chapter later on.',
+        pickerHint: 'The buttons below are five phrasings of the same request. Pick one, and the panel below updates to what the model receives.',
         pickerAria: 'Choose a phrasing to compare',
         ambiguityPrefix: 'Ambiguity',
         outro: 'Same need, different phrasings. With each one the model gets different material to work with, before any deeper processing begins.',

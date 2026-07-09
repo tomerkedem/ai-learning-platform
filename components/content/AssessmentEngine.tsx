@@ -13,6 +13,7 @@ import {
 import confetti from 'canvas-confetti';
 import { Mentor, type MentorAccent } from '../ai-internals/Mentor';
 import { GuessButton } from '../ai-internals/GuessButton';
+import { SpeakButton } from '../ai-internals/SpeakButton';
 import { useT } from '@/i18n/useT';
 
 interface Question {
@@ -85,6 +86,23 @@ interface AssessmentProps {
     conceptDisplayMap?: Record<string, string>;
 }
 
+// בונה סדר תצוגה מעורבב לכל שאלה (Fisher-Yates). המפתח הוא q.id, והערך הוא מערך של
+// אינדקסים מקוריים מ-question.options בסדר התצוגה הרצוי. ערבוב תצוגה בלבד: לא נוגע
+// ב-options או ב-correctAnswer, ואינו רץ בזמן render (נבנה רק בפעולת משתמש) כדי למנוע
+// אי-התאמת hydration. משמש כדי שהתשובה הנכונה לא תופיע תמיד באותו מיקום.
+function buildOptionOrder(questions: { id: number; options: string[] }[]): Record<number, number[]> {
+    const order: Record<number, number[]> = {};
+    for (const q of questions) {
+        const idxs = q.options.map((_, i) => i);
+        for (let i = idxs.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [idxs[i], idxs[j]] = [idxs[j], idxs[i]];
+        }
+        order[q.id] = idxs;
+    }
+    return order;
+}
+
 // סף וצבע לדרגות ברירת המחדל (מבני, לא תלוי שפה). התווית והכותרת מגיעות מהמילון.
 const DEFAULT_TIER_META: { min: number; color: string }[] = [
     { min: 90, color: "text-emerald-400" },
@@ -137,6 +155,15 @@ export const AssessmentEngine = ({
     const [isStarted, setIsStarted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<number, number>>({});
+    // Stage A (Decision Console): selected-but-not-committed option for the current
+    // question, stored as the ORIGINAL question.options index. Presentational scaffold
+    // only; the scorer keeps reading `answers`, never `armedIndex`.
+    const [armedIndex, setArmedIndex] = useState<number | null>(null);
+    // Stage A: per-session display order per question. optionOrder[q.id] is an array of
+    // ORIGINAL option indices in the order to render. Shuffle is presentation only:
+    // question.options / question.correctAnswer are never mutated, and answers[q.id]
+    // always stores an original index (never a display slot).
+    const [optionOrder, setOptionOrder] = useState<Record<number, number[]>>({});
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isReviewMode, setIsReviewMode] = useState(false);
     const [direction, setDirection] = useState(0);
@@ -227,12 +254,23 @@ export const AssessmentEngine = ({
 
     const handleStart = () => {
         playSound('click');
+        // בונים סדר תצוגה מעורבב פעם אחת עם תחילת הניסיון. יציב לכל אורך הניסיון
+        // (render/arm/lock/ניווט) ומתאפס רק בהתחלה מחדש או בניסיון חוזר.
+        setOptionOrder(buildOptionOrder(questions));
         setIsStarted(true);
         setIsActive(true);
     };
 
-    const handleAnswer = useCallback((oIdx: number) => {
-        if (isAnswered && !isReviewMode) return;
+    // ── Arm/select (normal flow): מסמן אפשרות בלי לפתור ובלי לכתוב ל-answers. ──
+    // oIdx הוא האינדקס המקורי מ-question.options. שאלה שכבר ננעלה אינה ניתנת לשינוי.
+    const handleArm = useCallback((oIdx: number) => {
+        if (answers[currentQuestion.id] !== undefined) return;
+        setArmedIndex(oIdx);
+    }, [answers, currentQuestion]);
+
+    // ── Commit/lock: הכותב היחיד של answers ושל streak. שומר את האינדקס המקורי בלבד ──
+    // (לעולם לא את מיקום התצוגה), ונושא בדיוק את תופעות הלוואי של הזרימה המיידית הקודמת.
+    const commitAnswer = useCallback((oIdx: number) => {
         const isCorrect = oIdx === currentQuestion.correctAnswer;
         if (isCorrect) {
             setStreak(prev => prev + 1);
@@ -242,11 +280,17 @@ export const AssessmentEngine = ({
             playSound('wrong');
         }
         setAnswers(prev => ({ ...prev, [currentQuestion.id]: oIdx }));
-    }, [currentQuestion, isAnswered, isReviewMode, playSound]);
+    }, [currentQuestion, playSound]);
+
+    // גשר תאימות זמני: הרינדור הנוכחי עדיין קורא ל-handleAnswer (בחירה = נעילה מיידית,
+    // ההתנהגות הקודמת). מיפוי ל-commitAnswer שומר על ההתנהגות עד שזרימת ה-arm/lock
+    // החדשה תחווט לרינדור. אינו נוגע ב-armedIndex/optionOrder.
+    const handleAnswer = commitAnswer;
 
     const handleNext = useCallback(() => {
         playSound('click');
         if (currentIndex < questions.length - 1) {
+            setArmedIndex(null);
             setDirection(1);
             setCurrentIndex(prev => prev + 1);
         } else if (isReviewMode) {
@@ -273,11 +317,25 @@ export const AssessmentEngine = ({
 
     const handleBack = useCallback(() => {
         if (currentIndex > 0) {
+            setArmedIndex(null);
             playSound('click');
             setDirection(-1);
             setCurrentIndex(prev => prev - 1);
         }
     }, [currentIndex, playSound]);
+
+    // הכפתור הראשי מפריד בבירור בין שני מצבים, גם אם הוא קורא להנדלר משותף אחד:
+    // 1) יש בחירה חמושה שעדיין לא ננעלה  -> נעילה (commitAnswer), נשארים כדי להציג פתרון.
+    // 2) כבר ננעל (או מצב סקירה)          -> המשך/סיום כרגיל (handleNext), בלי שינוי.
+    const handlePrimary = useCallback(() => {
+        const committed = answers[currentQuestion.id] !== undefined;
+        if (!committed && !isReviewMode) {
+            if (armedIndex === null) return;
+            commitAnswer(armedIndex);
+            return;
+        }
+        handleNext();
+    }, [answers, currentQuestion, isReviewMode, armedIndex, commitAnswer, handleNext]);
 
     // 1. מסך פתיחה - Start Screen
     if (!isStarted) {
@@ -557,7 +615,7 @@ export const AssessmentEngine = ({
                         {a.reviewAnswers}
                     </GuessButton>
                     <GuessButton
-                        onClick={() => { setAnswers({}); setCurrentIndex(0); setIsSubmitted(false); setIsReviewMode(false); setStreak(0); setSeconds(0); setIsActive(true); setDirection(0); }}
+                        onClick={() => { setAnswers({}); setCurrentIndex(0); setIsSubmitted(false); setIsReviewMode(false); setStreak(0); setSeconds(0); setIsActive(true); setDirection(0); setArmedIndex(null); setOptionOrder(buildOptionOrder(questions)); }}
                         variant="ghost"
                     >
                         {a.retry}
@@ -623,9 +681,14 @@ export const AssessmentEngine = ({
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     >
                         <div className="bg-slate-900/50 border border-white/10 p-6 sm:p-8 rounded-[2rem] backdrop-blur-md shadow-2xl">
-                            <h4 className="text-lg sm:text-xl font-bold text-white mb-6 leading-relaxed">
-                                {currentQuestion.question}
-                            </h4>
+                            {/* הקראה נקודתית (תוספת בלבד): מקריא את השאלה והאפשרויות הגלויות.
+                                אינו נוגע בניקוד, בזרימת המצב או בלוגיקת התוצאות. */}
+                            <div className="mb-6 flex items-start justify-between gap-2">
+                                <h4 className="text-lg sm:text-xl font-bold text-white leading-relaxed">
+                                    {currentQuestion.question}
+                                </h4>
+                                <SpeakButton text={`${currentQuestion.question} ${currentQuestion.options.join('. ')}`} />
+                            </div>
 
                             <div className="grid gap-3">
                                 {currentQuestion.options.map((opt, oIdx) => {

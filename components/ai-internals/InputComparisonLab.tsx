@@ -58,11 +58,6 @@ export const InputComparisonLab: React.FC = () => {
 
     return (
         <div className="rounded-2xl border border-violet-500/30 bg-slate-900/50 p-5 text-start" dir={dir}>
-            {/* רמיזה קצרה לטוקניזציה, בלי ללמד אותה כאן */}
-            <p className="mb-4 rounded-xl border border-slate-700/40 bg-slate-950/30 p-3 text-xs leading-relaxed text-slate-400">
-                {viz.tokenizationHint}
-            </p>
-
             {/* בורר ניסוחים */}
             <p className="mb-2 flex items-center gap-1.5 text-xs text-slate-400">
                 <MousePointerClick size={13} className="text-violet-400" />
@@ -156,6 +151,11 @@ export const InputComparisonLab: React.FC = () => {
 
             <p className="mt-4 text-xs leading-relaxed text-slate-500">
                 {viz.outro}
+            </p>
+
+            {/* רמיזה קצרה לטוקניזציה כהערת "בהמשך", אחרי הלוח כדי לא לקטוע את זרימת המעבדה */}
+            <p className="mt-4 rounded-xl border border-slate-700/40 bg-slate-950/30 p-3 text-xs leading-relaxed text-slate-400">
+                {viz.tokenizationHint}
             </p>
         </div>
     );

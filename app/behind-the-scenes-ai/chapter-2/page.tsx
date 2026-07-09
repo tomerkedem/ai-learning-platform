@@ -15,6 +15,7 @@ import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
+import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
 import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import { useT } from '@/i18n/useT';
@@ -30,7 +31,7 @@ const GUESS_CARD_META = [
 
 /* ════════════════════════ נעילת הבנה: שאלת אבחון ════════════════════════ */
 // התשובה הנכונה מבנית; הטקסט (שאלה, פרומפט, אפשרויות, הסבר) מגיע מהמילון.
-const DIAG_CORRECT = 1;
+const DIAG_CORRECT = 0;
 
 const DiagnosisQuestion: React.FC = () => {
     const { t, dir } = useT();
@@ -38,10 +39,17 @@ const DiagnosisQuestion: React.FC = () => {
     const [choice, setChoice] = useState<number | null>(null);
     const answered = choice !== null;
 
+    // הקראת האבחון (לומד שמעדיף להאזין): שאלה, ההודעה לדיון, הנחיית הבחירה והאפשרויות.
+    const speakText = `${d.question} ${d.prompt}. ${d.choosePrompt} ${d.options.join('. ')}`;
+
     return (
         <div dir={dir} className="text-start">
-            <p className="mb-3 text-sm font-bold text-slate-200">{d.question}</p>
+            <div className="mb-3 flex items-start justify-between gap-2">
+                <p className="text-sm font-bold text-slate-200">{d.question}</p>
+                <SpeakButton text={speakText} />
+            </div>
             <p className="mb-4 rounded-lg border border-slate-700/50 bg-slate-950/40 p-3 text-sm text-slate-300">{d.prompt}</p>
+            <p className="mb-3 text-xs font-medium text-indigo-200">{d.choosePrompt}</p>
 
             <div className="grid gap-2 sm:grid-cols-2">
                 {d.options.map((opt, i) => {
@@ -66,14 +74,15 @@ const DiagnosisQuestion: React.FC = () => {
             </div>
 
             {answered && (
-                <motion.p
+                <motion.div
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.25 }}
-                    className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-3 text-sm leading-relaxed text-slate-200"
+                    className="mt-4 flex items-start justify-between gap-2 rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-3"
                 >
-                    {d.explanation}
-                </motion.p>
+                    <p className="text-sm leading-relaxed text-slate-200">{d.explanation}</p>
+                    <SpeakButton text={d.explanation} />
+                </motion.div>
             )}
         </div>
     );
@@ -262,9 +271,11 @@ export default function BehindTheScenesChapter2() {
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
+                {/* פתיח קצר כטקסט-מוביל תחת כותרת המקטע (לא כרטיס נפרד), כדי שהפתיח והמעבדה
+                    ייקראו כיחידה אחת ולא כשני כרטיסים מנותקים */}
+                <p className="leading-relaxed text-slate-300">
                     {c2.inputLab.intro}
-                </div>
+                </p>
 
                 <ExpandableLab>
                     <InputComparisonLab />
@@ -328,7 +339,7 @@ export default function BehindTheScenesChapter2() {
             {/* ══════════ נעילת הבנה ══════════ */}
             <section className="relative mt-12 text-start" dir={dir}>
                 <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="happy" line={c2.mentor.lock} width={160} flip={!isRtl} />
+                    <Mentor pose="happy" line={c2.mentor.lock} width={200} flip={!isRtl} bubbleWidthClass="max-w-[14rem]" />
                 </div>
                 <div className="rounded-2xl border border-indigo-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center gap-2">

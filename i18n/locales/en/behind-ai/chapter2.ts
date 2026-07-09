@@ -27,7 +27,7 @@ export const chapter2 = {
     mentor: {
         hero: 'Let us start from what was actually written',
         lab: 'Same need, different material',
-        lock: 'You locked in the idea',
+        lock: 'Pause and pick an answer. That is how you will know if you caught the chapter idea.',
     },
 
     // Opening guess (DiscoveryGuess): text only; poses and target are structural in the page
@@ -96,7 +96,7 @@ export const chapter2 = {
     inputLab: {
         eyebrow: 'Input Comparison Lab',
         title: 'Comparing what reaches the model',
-        intro: 'Same need, five phrasings. Pick one and see what actually reaches the model: what is explicit, what is missing, what changed, and where it leans. The goal is to see that the input itself already decides a lot, before any deeper processing begins.',
+        intro: 'Here is the same request in five phrasings. Pick one, and the panel shows what the model actually receives: what is explicit, what is missing, and what changed.',
     },
 
     // Everyday example
@@ -139,9 +139,10 @@ export const chapter2 = {
     diagnosis: {
         prompt: 'My package has not arrived?',
         question: 'The user wrote this message. What did the model really receive?',
+        choosePrompt: 'Choose the answer that seems right to you, and you will get a short explanation.',
         options: [
-            'The full problem, with all the details',
             'A short text with a question mark, with no explicit request',
+            'The full problem, with all the details',
             'The intent to open a support ticket',
             'The answer it should return',
         ],

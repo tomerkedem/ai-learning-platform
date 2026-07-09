@@ -31,8 +31,8 @@ export const chapter2Quiz = {
             question: "A user writes 'My package didn't arrive?' with no other detail. What does this say about what the model can do?",
             options: [
                 'The model knows exactly which package and when, because the intent is clear',
-                'Details are missing, so the model will likely guess, ask, or answer in general terms',
                 'The model will ignore the message because it lacks enough information',
+                'Details are missing, so the model will likely guess, ask, or answer in general terms',
                 'The model will pull the correct answer from a store of replies',
             ],
             explanation:
@@ -42,8 +42,8 @@ export const chapter2Quiz = {
             question:
                 "'My package didn't arrive. What should I do?' versus 'My package didn't arrive?'. Same intent, but what is the difference from the model's point of view?",
             options: [
-                'No difference, because both messages are about the same package',
                 'The first phrasing explicitly asks for guidance, while the second stays a wondering with no clear request',
+                'No difference, because both messages are about the same package',
                 'The difference is only in length, and that has no effect',
                 'The second is clearer because it has a question mark',
             ],
@@ -54,23 +54,23 @@ export const chapter2Quiz = {
             question: "The user adds 'The tracking number is 12345'. Why does this change what the model can do?",
             options: [
                 'Because a long number always gets priority with the model',
-                'Because now there is an identifier that allows checking a real status, instead of guessing',
-                'Because the number tells the model this is an urgent request',
                 'Because numbers make the model answer faster',
+                'Because the number tells the model this is an urgent request',
+                'Because now there is an identifier that allows checking a real status, instead of guessing',
             ],
             explanation:
                 'The identifier is not just more text. It turns a general request into something that can be checked against an external tracking system. The new input opens an option for action that did not exist before, and can shift the behavior toward a real check.',
         },
         5: {
-            question: "In the middle of a conversation the user writes 'Not shoes, I ordered a book'. What does this really change?",
+            question: "In the middle of a conversation about shoes, the user writes 'Not shoes, I ordered a book'. What does this message do?",
             options: [
-                'It retrains the model so it remembers this in every future conversation',
-                'It updates the current context of the conversation, but does not change what the model learned in training',
-                'It changes nothing, because the model already answered',
                 'It erases everything said earlier in the conversation',
+                'It updates the current context, so from here on the model treats it as a book, not shoes',
+                'It changes nothing, because the model already understood shoes',
+                'It changes the model itself for good, in every future conversation',
             ],
             explanation:
-                'A correction in the conversation changes the context the model is working with right now, so the next replies in the conversation take it into account. But this is not training: the model\'s weights do not change, and once the conversation ends the correction is not kept. This distinction is opened in depth in the chapter on learning and memory.',
+                'The correction enters as new input and updates the context of the current conversation, so the next replies work with the book. It does not change the model itself, only what sits in front of it in this conversation.',
         },
     },
 
