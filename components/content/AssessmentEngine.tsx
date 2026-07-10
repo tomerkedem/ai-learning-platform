@@ -13,6 +13,8 @@ import {
 import confetti from 'canvas-confetti';
 import { Mentor, type MentorAccent } from '../ai-internals/Mentor';
 import { GuessButton } from '../ai-internals/GuessButton';
+import { SpeakButton } from '../ai-internals/SpeakButton';
+import { speakJoin } from '../ai-internals/GuessVerdict';
 import { useT } from '@/i18n/useT';
 
 interface Question {
@@ -651,10 +653,13 @@ export const AssessmentEngine = ({
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     >
                         <div className="rounded-3xl border border-white/10 bg-slate-900/40 p-5 backdrop-blur-md sm:p-7">
-                            {/* שורת השאלה: prompt חזק, לא כרטיס שאלון רגיל */}
-                            <h4 className="mb-6 text-xl font-bold leading-relaxed text-white sm:text-2xl">
-                                {currentQuestion.question}
-                            </h4>
+                            {/* שורת השאלה: prompt חזק. הקראה נקודתית של טקסט השאלה בלבד (אח, לא מקונן). */}
+                            <div className="mb-6 flex items-start justify-between gap-3">
+                                <h4 className="text-xl font-bold leading-relaxed text-white sm:text-2xl">
+                                    {currentQuestion.question}
+                                </h4>
+                                <SpeakButton text={currentQuestion.question} className="mt-1 shrink-0" />
+                            </div>
 
                             {/* שורות אות (signal rows). ההתנהגות זהה לחלוטין: לחיצה = פתרון מיידי
                                 עם האינדקס המקורי (oIdx); displayPos הוא רק מיקום התצוגה. רק המראה שודרג.
@@ -683,20 +688,25 @@ export const AssessmentEngine = ({
                                         }
                                     }
 
+                                    // הקראת האפשרות היא אח ממוקם של כפתור-השורה (button בתוך button אסור).
+                                    // היא יושבת בפינת ה-end בלבד; pe-12 שומר על מקומה בלי לכסות טקסט או אייקון
+                                    // סטטוס, והיא אינה חוסמת את שטח הלחיצה של השורה (רק פינה קטנה).
                                     return (
-                                        <button
-                                            key={oIdx}
-                                            disabled={showResult && !isReviewMode}
-                                            onClick={() => handleAnswer(oIdx)}
-                                            className={`group flex w-full items-center gap-3.5 rounded-2xl border py-3.5 pe-4 ps-3 text-start transition-colors ${rowCls}`}
-                                        >
-                                            <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[13px] font-black transition-colors ${chipCls}`}>
-                                                {displayPos + 1}
-                                            </span>
-                                            <span className="flex-1 break-words text-[15px] font-semibold leading-snug">{opt}</span>
-                                            {showResult && isCorrect && <Check size={18} className="shrink-0 text-emerald-300 stroke-[3px]" />}
-                                            {showResult && isSelected && !isCorrect && <X size={18} className="shrink-0 text-amber-300 stroke-[3px]" />}
-                                        </button>
+                                        <div key={oIdx} className="relative">
+                                            <button
+                                                disabled={showResult && !isReviewMode}
+                                                onClick={() => handleAnswer(oIdx)}
+                                                className={`group flex w-full items-center gap-3.5 rounded-2xl border py-3.5 pe-12 ps-3 text-start transition-colors ${rowCls}`}
+                                            >
+                                                <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[13px] font-black transition-colors ${chipCls}`}>
+                                                    {displayPos + 1}
+                                                </span>
+                                                <span className="flex-1 break-words text-[15px] font-semibold leading-snug">{opt}</span>
+                                                {showResult && isCorrect && <Check size={18} className="shrink-0 text-emerald-300 stroke-[3px]" />}
+                                                {showResult && isSelected && !isCorrect && <X size={18} className="shrink-0 text-amber-300 stroke-[3px]" />}
+                                            </button>
+                                            <SpeakButton text={opt} className="absolute end-2 top-1/2 z-10 -translate-y-1/2" />
+                                        </div>
                                     );
                                 })}
                             </div>
@@ -716,9 +726,11 @@ export const AssessmentEngine = ({
                                         <div className="mt-5 rounded-2xl border border-s-2 border-cyan-400/20 border-s-cyan-400/60 bg-cyan-500/[0.06] p-4">
                                             <div className="flex items-start gap-3">
                                                 <Lightbulb size={18} className="mt-0.5 shrink-0 text-cyan-300" />
-                                                <p className="text-[14px] font-medium leading-relaxed text-slate-200 sm:text-[15px]">
+                                                <p className="flex-1 text-[14px] font-medium leading-relaxed text-slate-200 sm:text-[15px]">
                                                     {currentQuestion.explanation}
                                                 </p>
+                                                {/* הקראת ה-readout: השאלה ואז ההסבר (אח של ה-p, לא מקונן) */}
+                                                <SpeakButton text={speakJoin(currentQuestion.question, currentQuestion.explanation)} className="shrink-0" />
                                             </div>
                                         </div>
                                     </motion.div>
