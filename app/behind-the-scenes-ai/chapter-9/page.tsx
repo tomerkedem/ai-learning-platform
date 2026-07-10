@@ -407,9 +407,12 @@ export default function BehindTheScenesChapter9() {
                     <Mentor pose="celebrate" line={c9.mentor.lock} width={160} flip={!isRtl} />
                 </div>
                 <div className="rounded-2xl border border-sky-500/40 bg-slate-900/60 p-6">
-                    <div className="mb-5 flex items-center gap-2">
-                        <Lock size={20} className="text-sky-300" />
-                        <h3 className="text-xl font-bold text-white">{c9.lock.title}</h3>
+                    <div className="mb-5 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <Lock size={20} className="text-sky-300" />
+                            <h3 className="text-xl font-bold text-white">{c9.lock.title}</h3>
+                        </div>
+                        <SpeakButton text={`${c9.lock.title}. ${c9.lock.trueLabel}: ${c9.lock.trueText} ${c9.lock.falseLabel}: ${c9.lock.falseText}`} speechLocale={speechLocale} />
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">
