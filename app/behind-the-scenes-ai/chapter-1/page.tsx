@@ -16,6 +16,7 @@ import { ChatInterfacePanel } from '@/components/ai-internals/ChatInterfacePanel
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
+import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
 import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import type { Accent, ChatMessage, FlowMode } from '@/components/ai-internals/types';
@@ -63,6 +64,8 @@ export default function BehindTheScenesChapter1() {
     const sBq1: ReadAloudSegment = { id: 'bq-1', label: c1.beforeQuiz.point1Lead, text: `${c1.beforeQuiz.point1Lead}${c1.beforeQuiz.point1Body}` };
     const sBq2: ReadAloudSegment = { id: 'bq-2', label: c1.beforeQuiz.point2Lead, text: `${c1.beforeQuiz.point2Lead}${c1.beforeQuiz.point2BeforeChat}Chat${c1.beforeQuiz.point2AfterChat}Agent${c1.beforeQuiz.point2AfterAgent}` };
     const sBq3: ReadAloudSegment = { id: 'bq-3', label: c1.beforeQuiz.point3Lead, text: `${c1.beforeQuiz.point3Lead}${c1.beforeQuiz.point3Body}` };
+    // הקראת כרטיס "לפני המבדק": כותרת + שלוש הנקודות, ממקור אחד עם מקטעי הדוק.
+    const beforeQuizText = `${c1.beforeQuiz.title}. ${sBq1.text} ${sBq2.text} ${sBq3.text}`;
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
         short: [sTitle, sLabIntro, sInsight, sRule],
@@ -348,10 +351,13 @@ export default function BehindTheScenesChapter1() {
                         ?
                     </h1>
 
-                    <p className="text-lg text-slate-300 leading-relaxed">
-                        {c1.hero.ledeLead}
-                        <span className="text-white font-semibold">{c1.hero.ledeHighlight}</span>{c1.hero.ledeRest}
-                    </p>
+                    <div className="flex items-start gap-2.5">
+                        <p className="text-lg text-slate-300 leading-relaxed">
+                            {c1.hero.ledeLead}
+                            <span className="text-white font-semibold">{c1.hero.ledeHighlight}</span>{c1.hero.ledeRest}
+                        </p>
+                        <SpeakButton text={`${c1.hero.titleLead} ${c1.hero.titleHighlight}. ${c1Lede}`} className="mt-1" />
+                    </div>
 
                     <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
                         <span className="inline-flex items-center gap-1.5">
@@ -427,10 +433,13 @@ export default function BehindTheScenesChapter1() {
                     </div>
                 </div>
 
-                <p className="flex items-start gap-2.5 text-base leading-relaxed text-slate-200">
-                    <Eye size={18} className="mt-0.5 shrink-0 text-cyan-400" />
-                    {c1.lab.intro}
-                </p>
+                <div className="flex items-start gap-2.5">
+                    <p className="flex items-start gap-2.5 text-base leading-relaxed text-slate-200">
+                        <Eye size={18} className="mt-0.5 shrink-0 text-cyan-400" />
+                        {c1.lab.intro}
+                    </p>
+                    <SpeakButton text={`${c1.lab.title}. ${c1.lab.intro}`} className="mt-1" />
+                </div>
 
                 {/* גשר-זיהוי אל מפת המבוא: רצועת 14 התחנות בדיוק בצבעי המפה, כדי שהלומד
                     יזהה "אלה התחנות שראיתי, עכשיו חיות". הרצועה נושאת משמעות (המשפט), לא
@@ -547,7 +556,10 @@ export default function BehindTheScenesChapter1() {
             {/* ══════════ התובנה המרכזית של הפרק ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c1.insightIdea.title}>
-                    {c1.insightIdea.body}
+                    <div className="flex items-start justify-between gap-2.5">
+                        <span className="block">{c1.insightIdea.body}</span>
+                        <SpeakButton text={`${c1.insightIdea.title}. ${c1.insightIdea.body}`} />
+                    </div>
                 </InsightBox>
             </section>
 
@@ -614,10 +626,16 @@ export default function BehindTheScenesChapter1() {
             {/* ══════════ סיכום ══════════ */}
             <section className="mt-12 space-y-4 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c1.summary.understandTitle}>
-                    {c1.summary.understandBody}
+                    <div className="flex items-start justify-between gap-2.5">
+                        <span className="block">{c1.summary.understandBody}</span>
+                        <SpeakButton text={`${c1.summary.understandTitle}. ${c1.summary.understandBody}`} />
+                    </div>
                 </InsightBox>
                 <InsightBox type="warning" title={c1.summary.ruleTitle}>
-                    {c1.summary.ruleBody}
+                    <div className="flex items-start justify-between gap-2.5">
+                        <span className="block">{c1.summary.ruleBody}</span>
+                        <SpeakButton text={`${c1.summary.ruleTitle}. ${c1.summary.ruleBody}`} />
+                    </div>
                 </InsightBox>
             </section>
             </motion.div>
@@ -628,9 +646,12 @@ export default function BehindTheScenesChapter1() {
             {/* גם מי שלא פתח את שכבת העומק רואה כאן את שלושת הרעיונות שהמבדק בודק. */}
             <section className="mt-16 text-start" dir={dir}>
                 <div className="rounded-[1.75rem] border border-cyan-500/30 bg-gradient-to-b from-slate-900/70 to-slate-950/60 p-6 md:p-7">
-                    <div className="mb-4 flex items-center gap-2.5">
-                        <ListChecks size={20} className="text-cyan-300" />
-                        <h3 className="text-xl font-bold text-white">{c1.beforeQuiz.title}</h3>
+                    <div className="mb-4 flex items-center justify-between gap-2.5">
+                        <div className="flex items-center gap-2.5">
+                            <ListChecks size={20} className="text-cyan-300" />
+                            <h3 className="text-xl font-bold text-white">{c1.beforeQuiz.title}</h3>
+                        </div>
+                        <SpeakButton text={beforeQuizText} />
                     </div>
                     <ul className="space-y-3.5">
                         <li className="flex gap-3">
@@ -665,9 +686,12 @@ export default function BehindTheScenesChapter1() {
             {/* הרעיון (פער קטן = חוסר ודאות -> לעצור ולשאול) לפני שהוא נבחן עליו. */}
             <section className="mt-8 text-start" dir={dir}>
                 <div className="rounded-2xl border border-cyan-500/25 bg-slate-900/50 p-6 md:p-7">
-                    <span className="mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
-                        <Lock size={14} /> {c1.lock.eyebrow}
-                    </span>
+                    <div className="mb-3 flex items-start justify-between gap-2.5">
+                        <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
+                            <Lock size={14} /> {c1.lock.eyebrow}
+                        </span>
+                        <SpeakButton text={`${c1.lock.eyebrow}. ${c1.lock.question}`} />
+                    </div>
                     <h3 className="text-lg font-bold leading-relaxed text-white md:text-xl">{c1.lock.question}</h3>
 
                     {lockChoice === null ? (

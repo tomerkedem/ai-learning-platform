@@ -18,6 +18,7 @@ import { TokenizationRoadmap } from '@/components/ai-internals/TokenizationRoadm
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
+import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
 import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import { Chapter3LabProvider, getLabContent } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
@@ -47,7 +48,10 @@ const LockQuestion: React.FC = () => {
 
     return (
         <div dir={dir} className="text-start">
-            <p className="mb-3 text-sm font-bold text-slate-200">{lock.question}</p>
+            <div className="mb-3 flex items-start justify-between gap-2">
+                <p className="text-sm font-bold text-slate-200">{lock.question}</p>
+                <SpeakButton text={lock.question} />
+            </div>
 
             <div className="grid gap-2 sm:grid-cols-2">
                 {lock.options.map((opt, i) => {
@@ -183,9 +187,12 @@ export default function BehindTheScenesChapter3() {
                             </span>
                         </h1>
 
-                        <p className="text-lg text-slate-300 leading-relaxed">
-                            {c3.hero.lede}
-                        </p>
+                        <div className="flex items-start gap-2.5">
+                            <p className="text-lg text-slate-300 leading-relaxed">
+                                {c3.hero.lede}
+                            </p>
+                            <SpeakButton text={`${c3.hero.titleLead} ${c3.hero.titleHighlight}. ${c3.hero.lede}`} className="mt-1" />
+                        </div>
 
                         <p className="mt-4 text-base font-bold text-violet-200">{c3.hero.question}</p>
 
@@ -226,9 +233,12 @@ export default function BehindTheScenesChapter3() {
             {/* ══════════ הסבר פשוט: מה באמת קורה כאן (במקום "הנקודה המפתיעה") ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
-                    <div className="mb-3 flex items-center gap-2">
-                        <Lightbulb size={18} className="text-violet-300" />
-                        <h3 className="text-xl font-black text-white md:text-2xl">{c3.insight.title}</h3>
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <Lightbulb size={18} className="text-violet-300" />
+                            <h3 className="text-xl font-black text-white md:text-2xl">{c3.insight.title}</h3>
+                        </div>
+                        <SpeakButton text={`${c3.insight.title}. ${c3.insight.lead} ${c3.insight.body}`} />
                     </div>
                     <p className="mb-2.5 text-lg font-bold text-violet-200">{c3.insight.lead}</p>
                     <p className="text-[15px] leading-relaxed text-slate-300">{c3.insight.body}</p>
@@ -246,8 +256,9 @@ export default function BehindTheScenesChapter3() {
                         </div>
                     </div>
 
-                    <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                        {c3.lab.intro}
+                    <div className="flex items-start justify-between gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
+                        <span>{c3.lab.intro}</span>
+                        <SpeakButton text={`${c3.lab.title}. ${c3.lab.intro}`} className="mt-0.5" />
                     </div>
 
                     <ExpandableLab>
@@ -267,9 +278,12 @@ export default function BehindTheScenesChapter3() {
                     <Mentor pose="happy" line={c3.mentor.lock} width={160} flip={!isRtl} />
                 </div>
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
-                    <div className="mb-5 flex items-center gap-2">
-                        <Lock size={20} className="text-violet-300" />
-                        <h3 className="text-xl font-bold text-white">{c3.lock.title}</h3>
+                    <div className="mb-5 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <Lock size={20} className="text-violet-300" />
+                            <h3 className="text-xl font-bold text-white">{c3.lock.title}</h3>
+                        </div>
+                        <SpeakButton text={`${c3.lock.title}. ${c3.lock.truthLabel}: ${c3.lock.truthText} ${c3.lock.mistakeLabel}: ${c3.lock.mistakeText}`} />
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">
@@ -295,9 +309,12 @@ export default function BehindTheScenesChapter3() {
                     <Mentor pose="pointdown" line={c3.mentor.practical} width={160} flip={!isRtl} />
                 </div>
                 <div className="rounded-2xl border border-violet-500/30 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    <div className="mb-3 flex items-center gap-2">
-                        <Lightbulb size={18} className="text-amber-300" />
-                        <div className="text-sm font-bold text-slate-100">{c3.practical.title}</div>
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <Lightbulb size={18} className="text-amber-300" />
+                            <div className="text-sm font-bold text-slate-100">{c3.practical.title}</div>
+                        </div>
+                        <SpeakButton text={`${c3.practical.title}. ${c3.practical.intro} ${c3.practical.points.join(' ')}`} />
                     </div>
                     <p className="mb-3 text-sm">{c3.practical.intro}</p>
                     <ul className="space-y-2">

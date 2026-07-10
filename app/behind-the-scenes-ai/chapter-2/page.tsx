@@ -209,9 +209,12 @@ export default function BehindTheScenesChapter2() {
                             </span>
                         </h1>
 
-                        <p className="text-lg text-slate-300 leading-relaxed">
-                            {c2.hero.lede}
-                        </p>
+                        <div className="flex items-start gap-2.5">
+                            <p className="text-lg text-slate-300 leading-relaxed">
+                                {c2.hero.lede}
+                            </p>
+                            <SpeakButton text={`${c2.hero.titleLead} ${c2.hero.titleHighlight}. ${c2.hero.lede}`} className="mt-1" />
+                        </div>
 
                         <p className="mt-4 text-base font-bold text-indigo-200">{c2.hero.question}</p>
 
@@ -252,9 +255,12 @@ export default function BehindTheScenesChapter2() {
             {/* ══════════ הסבר פשוט: מה באמת קורה כאן (במקום "הנקודה המפתיעה") ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
-                    <div className="mb-3 flex items-center gap-2">
-                        <Lightbulb size={18} className="text-indigo-300" />
-                        <h3 className="text-xl font-black text-white md:text-2xl">{c2.insight.title}</h3>
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <Lightbulb size={18} className="text-indigo-300" />
+                            <h3 className="text-xl font-black text-white md:text-2xl">{c2.insight.title}</h3>
+                        </div>
+                        <SpeakButton text={`${c2.insight.title}. ${c2.insight.lead} ${c2.insight.body}`} />
                     </div>
                     <p className="mb-2.5 text-lg font-bold text-indigo-200">{c2.insight.lead}</p>
                     <p className="text-[15px] leading-relaxed text-slate-300">{c2.insight.body}</p>
@@ -273,9 +279,12 @@ export default function BehindTheScenesChapter2() {
 
                 {/* פתיח קצר כטקסט-מוביל תחת כותרת המקטע (לא כרטיס נפרד), כדי שהפתיח והמעבדה
                     ייקראו כיחידה אחת ולא כשני כרטיסים מנותקים */}
-                <p className="leading-relaxed text-slate-300">
-                    {c2.inputLab.intro}
-                </p>
+                <div className="flex items-start gap-2.5">
+                    <p className="leading-relaxed text-slate-300">
+                        {c2.inputLab.intro}
+                    </p>
+                    <SpeakButton text={`${c2.inputLab.title}. ${c2.inputLab.intro}`} className="mt-1" />
+                </div>
 
                 <ExpandableLab>
                     <InputComparisonLab />
@@ -289,9 +298,12 @@ export default function BehindTheScenesChapter2() {
             {/* ══════════ דוגמה יומיומית ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    <div className="mb-3 flex items-center gap-2">
-                        <Lightbulb size={18} className="text-amber-300" />
-                        <div className="text-sm font-bold text-slate-100">{c2.everyday.title}</div>
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <Lightbulb size={18} className="text-amber-300" />
+                            <div className="text-sm font-bold text-slate-100">{c2.everyday.title}</div>
+                        </div>
+                        <SpeakButton text={`${c2.everyday.title}. ${c2.everyday.body}`} />
                     </div>
                     <p>
                         {c2.everyday.body}
@@ -310,9 +322,12 @@ export default function BehindTheScenesChapter2() {
                         <p className="leading-relaxed text-slate-300">{c2.mistake.wrongText}</p>
                     </div>
                     <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/10 p-5">
-                        <div className="mb-2 flex items-center gap-2 text-emerald-200">
-                            <CheckCircle2 size={18} />
-                            <span className="text-sm font-bold">{c2.mistake.rightLabel}</span>
+                        <div className="mb-2 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 text-emerald-200">
+                                <CheckCircle2 size={18} />
+                                <span className="text-sm font-bold">{c2.mistake.rightLabel}</span>
+                            </div>
+                            <SpeakButton text={`${c2.mistake.rightLabel}. ${c2.mistake.rightText}`} />
                         </div>
                         <p className="leading-relaxed text-slate-300">
                             {c2.mistake.rightText}
@@ -324,7 +339,10 @@ export default function BehindTheScenesChapter2() {
             {/* ══════════ הסבר פשוט ════════════ */}
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-indigo-500/30 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    <div className="mb-3 text-sm font-bold text-slate-100">{c2.takeaway.title}</div>
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                        <div className="text-sm font-bold text-slate-100">{c2.takeaway.title}</div>
+                        <SpeakButton text={`${c2.takeaway.title}. ${c2.takeaway.points.join(' ')}`} />
+                    </div>
                     <ul className="space-y-2">
                         {c2.takeaway.points.map((line) => (
                             <li key={line} className="flex items-start gap-2.5">
@@ -342,9 +360,12 @@ export default function BehindTheScenesChapter2() {
                     <Mentor pose="happy" line={c2.mentor.lock} width={200} flip={!isRtl} bubbleWidthClass="max-w-[14rem]" />
                 </div>
                 <div className="rounded-2xl border border-indigo-500/40 bg-slate-900/60 p-6">
-                    <div className="mb-5 flex items-center gap-2">
-                        <Lock size={20} className="text-indigo-300" />
-                        <h3 className="text-xl font-bold text-white">{c2.lock.title}</h3>
+                    <div className="mb-5 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <Lock size={20} className="text-indigo-300" />
+                            <h3 className="text-xl font-bold text-white">{c2.lock.title}</h3>
+                        </div>
+                        <SpeakButton text={`${c2.lock.title}. ${c2.lock.truthLabel}: ${c2.lock.truthText} ${c2.lock.mistakeLabel}: ${c2.lock.mistakeText}`} />
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">

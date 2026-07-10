@@ -33,6 +33,7 @@ const DNA_COMPARE_IDS: SentenceId[] = [
 ];
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
+import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
 import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import { useT } from '@/i18n/useT';
@@ -61,7 +62,10 @@ const LockQuestion: React.FC = () => {
 
     return (
         <div dir={dir} className="text-start">
-            <p className="mb-3 text-sm font-bold text-slate-200">{lock.question}</p>
+            <div className="mb-3 flex items-start justify-between gap-2">
+                <p className="text-sm font-bold text-slate-200">{lock.question}</p>
+                <SpeakButton text={lock.question} />
+            </div>
 
             <div className="grid gap-2 sm:grid-cols-3">
                 {lock.options.map((opt, i) => {
@@ -229,7 +233,10 @@ export default function BehindTheScenesChapter5() {
                             </span>
                         </h1>
 
-                        <p className="text-lg text-slate-300 leading-relaxed">{c5.hero.lede}</p>
+                        <div className="flex items-start gap-2.5">
+                            <p className="text-lg text-slate-300 leading-relaxed">{c5.hero.lede}</p>
+                            <SpeakButton text={`${c5.hero.titleLead} ${c5.hero.titleHighlight}. ${c5.hero.lede}`} className="mt-1" />
+                        </div>
 
                         <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
                             <span className="inline-flex items-center gap-1.5">
@@ -262,9 +269,12 @@ export default function BehindTheScenesChapter5() {
             {/* ══════════ במילים פשוטות ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
-                    <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
-                        <Sparkles size={14} /> {c5.plain.eyebrow}
-                    </span>
+                    <div className="flex items-start justify-between gap-2.5">
+                        <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
+                            <Sparkles size={14} /> {c5.plain.eyebrow}
+                        </span>
+                        <SpeakButton text={`${c5.plain.title} ${c5.plain.lines.join(' ')}`} />
+                    </div>
                     <h3 className="mb-4 text-xl font-black text-white md:text-2xl">{c5.plain.title}</h3>
                     <ul className="space-y-3">
                         {c5.plain.lines.map((line) => (
@@ -306,8 +316,9 @@ export default function BehindTheScenesChapter5() {
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    {c5.sections.labIntro}
+                <div className="flex items-start justify-between gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
+                    <span>{c5.sections.labIntro}</span>
+                    <SpeakButton text={`${c5.sections.labTitle}. ${c5.sections.labIntro}`} className="mt-0.5" />
                 </div>
 
                 <ExpandableLab title={c5.sections.labTitle}>
@@ -325,7 +336,10 @@ export default function BehindTheScenesChapter5() {
             {/* ══════════ מה המפה מלמדת ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-6">
-                    <h3 className="mb-4 text-lg font-bold text-slate-200">{c5.explain.title}</h3>
+                    <div className="mb-4 flex items-start justify-between gap-2.5">
+                        <h3 className="text-lg font-bold text-slate-200">{c5.explain.title}</h3>
+                        <SpeakButton text={`${c5.explain.title}. ${c5.explain.paragraphs.join(' ')}`} />
+                    </div>
                     <div className="space-y-3">
                         {c5.explain.paragraphs.map((p, i) => (
                             <p key={i} className="text-[15px] leading-relaxed text-slate-300">{p}</p>
@@ -421,7 +435,10 @@ export default function BehindTheScenesChapter5() {
                     <Mentor pose="pointdown" line={c5.mentor.practical} width={160} flip={!isRtl} />
                 </div>
                 <InsightBox type="intuition" title={c5.practical.title}>
-                    <span className="block">{c5.practical.lead}</span>
+                    <div className="flex items-start justify-between gap-2.5">
+                        <span className="block">{c5.practical.lead}</span>
+                        <SpeakButton text={`${c5.practical.title}. ${c5.practical.lead} ${c5.practical.uses.join(' ')} ${c5.practical.caveat}`} />
+                    </div>
                     <ul className="mt-3 space-y-2">
                         {c5.practical.uses.map((line) => (
                             <li key={line} className="flex items-start gap-2.5">

@@ -142,7 +142,10 @@ const LockQuestion: React.FC = () => {
 
     return (
         <div dir={dir} className="text-start">
-            <p className="mb-3 text-sm font-bold text-slate-200">{lock.question}</p>
+            <div className="mb-3 flex items-start justify-between gap-2">
+                <p className="text-sm font-bold text-slate-200">{lock.question}</p>
+                <SpeakButton text={lock.question} />
+            </div>
 
             <div className="grid gap-2 sm:grid-cols-3">
                 {lock.options.map((opt, i) => {
@@ -275,7 +278,10 @@ export default function BehindTheScenesChapter4() {
                             </span>
                         </h1>
 
-                        <p className="text-lg text-slate-300 leading-relaxed">{c4.hero.lede}</p>
+                        <div className="flex items-start gap-2.5">
+                            <p className="text-lg text-slate-300 leading-relaxed">{c4.hero.lede}</p>
+                            <SpeakButton text={`${c4.hero.titleLead} ${c4.hero.titleHighlight}. ${c4.hero.lede}`} className="mt-1" />
+                        </div>
 
                         <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
                             <span className="inline-flex items-center gap-1.5">
@@ -313,9 +319,12 @@ export default function BehindTheScenesChapter4() {
             {/* ══════════ במילים פשוטות: מה Embedding באמת עושה ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
-                    <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
-                        <Sparkles size={14} /> {c4.plain.eyebrow}
-                    </span>
+                    <div className="flex items-start justify-between gap-2.5">
+                        <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
+                            <Sparkles size={14} /> {c4.plain.eyebrow}
+                        </span>
+                        <SpeakButton text={`${c4.plain.title} ${c4.plain.lines.join(' ')}`} />
+                    </div>
                     <h3 className="mb-4 text-xl font-black text-white md:text-2xl">{c4.plain.title}</h3>
                     <ul className="space-y-3">
                         {c4.plain.lines.map((line) => (
@@ -353,6 +362,7 @@ export default function BehindTheScenesChapter4() {
                 <div className="flex items-start gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5">
                     <Table2 size={18} className="mt-0.5 shrink-0 text-cyan-300" />
                     <p className="text-[15px] leading-relaxed text-slate-300">{c4.embeddingTable.body}</p>
+                    <SpeakButton text={`${c4.embeddingTable.title}. ${c4.embeddingTable.body}`} className="mt-0.5" />
                 </div>
 
                 <ExpandableLab title={c4.embeddingTable.title}>
@@ -362,10 +372,11 @@ export default function BehindTheScenesChapter4() {
                 {/* אימון מול הרצה: הערכים נלמדו פעם אחת, נשלפים בכל שיחה */}
                 <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-900/10 p-5">
                     <GraduationCap size={18} className="mt-0.5 shrink-0 text-emerald-300" />
-                    <div>
+                    <div className="flex-1">
                         <div className="mb-1 text-sm font-bold text-emerald-100">{c4.trainingInference.title}</div>
                         <p className="text-[15px] leading-relaxed text-slate-200">{c4.trainingInference.body}</p>
                     </div>
+                    <SpeakButton text={`${c4.trainingInference.title}. ${c4.trainingInference.body}`} className="mt-0.5" />
                 </div>
             </section>
 
@@ -389,7 +400,10 @@ export default function BehindTheScenesChapter4() {
                     <Mentor pose="pointdown" line={c4.mentor.practical} width={160} flip={!isRtl} />
                 </div>
                 <InsightBox type="intuition" title={c4.practical.title}>
-                    <span className="block">{c4.practical.lead}</span>
+                    <div className="flex items-start justify-between gap-2.5">
+                        <span className="block">{c4.practical.lead}</span>
+                        <SpeakButton text={`${c4.practical.title}. ${c4.practical.lead} ${c4.practical.uses.join('. ')} ${c4.practical.caveat}`} />
+                    </div>
                     <ul className="mt-3 space-y-2">
                         {c4.practical.uses.map((line) => (
                             <li key={line} className="flex items-start gap-2.5">
