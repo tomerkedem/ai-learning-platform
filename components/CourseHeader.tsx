@@ -8,7 +8,6 @@ interface CourseHeaderProps {
     chapterLable?: string;
     chapterNum: string;
     title: string;
-    description: string;
     readTime?: string;
     isScrolled: boolean;
     scrollProgress: number;
@@ -20,10 +19,9 @@ interface CourseHeaderProps {
 
 export const CourseHeader: React.FC<CourseHeaderProps> = ({ 
     chapterLable, 
-    chapterNum, 
-    title, 
-    description,
-    readTime = "10 דקות", 
+    chapterNum,
+    title,
+    readTime = "10 דקות",
     isScrolled,
     scrollProgress,
     colorFrom = "from-indigo-500", // ברירת מחדל
@@ -106,14 +104,6 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
                     <h1 className={`font-black text-white leading-tight transition-all duration-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] ${isScrolled ? 'text-2xl' : 'text-3xl md:text-4xl'}`}>
                         {title}
                     </h1>
-
-                    <div className={`transition-all duration-500 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 mt-0' : 'max-h-32 opacity-90 mt-2'}`}>
-                        {/* בלי max-w-2xl: התיאור מנצל את כל רוחב בלוק הכותרת (עד max-w-5xl של ההורה),
-                            כך שבמסכים רחבים הוא נשאר בשורה אחת במקום להישבר מוקדם ולהשאיר רווח ריק. */}
-                        <p className="text-sm text-slate-300 leading-relaxed font-medium w-fit max-w-full drop-shadow-md bg-[#0F172A]/40 p-2 rounded-md border border-white/5 backdrop-blur-sm">
-                            {description}
-                        </p>
-                    </div>
                 </div>
 
                 {/* צד שמאל: נתונים */}

@@ -181,7 +181,6 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
         num: `0`,
         label: { he: "", en: "" },
         title: { he: "פרק לא נמצא", en: "Chapter not found" },
-        description: { he: "לא נמצא מידע.", en: "No data found." },
         readTime: "0 דקות",
         labelColor: "text-slate-400",
         colorFrom: "from-slate-400",
@@ -197,7 +196,6 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
 
     const chapterNumDisplay = activeChapter.id === 0 ? t.chrome.intro : formatChapterLabel(locale, activeChapter.id);
     const chapterTitle = tField(activeChapter.title, locale);
-    const chapterDesc = tField(activeChapter.description, locale);
     const chapterLabel = tField(activeChapter.label, locale);
 
     const extractColorName = (fullClass: string) => {
@@ -315,7 +313,6 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                             labelColor={activeChapter.labelColor} 
                             chapterNum={chapterNumDisplay}
                             title={chapterTitle}
-                            description={chapterDesc}
                             readTime={formatReadTime(locale, parseReadTimeMinutes(activeChapter.readTime))}
                             isScrolled={isScrolled}
                             scrollProgress={scrollProgress}
