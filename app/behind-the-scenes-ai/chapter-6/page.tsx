@@ -91,7 +91,7 @@ const DiagnosisQuestion: React.FC = () => {
 };
 
 export default function BehindTheScenesChapter6() {
-    const { t, dir } = useT();
+    const { t, dir, locale } = useT();
     const reduce = useReducedMotion();
     const isRtl = dir === 'rtl';
     const c6 = t.behindAi.attention;
@@ -245,19 +245,29 @@ export default function BehindTheScenesChapter6() {
                     </div>
                 </motion.section>
 
-                {/* מנטור הירו: נכס ייעודי עם אלפא שקוף. ממוקם בצד החיצוני לפי כיוון הקריאה,
-                    בלי היפוך תמונה (העדפת מיקום-צד על פני שיקוף). מוצג רק מ-xl ומעלה. */}
-                <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[170px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <motion.img
-                        src="/assets/chapter-06-attention-mentor-hero-alpha.png"
-                        alt={c6.hero.mentorAlt}
-                        initial={reduce ? false : { opacity: 0, scale: 0.94 }}
-                        animate={reduce ? { opacity: 1 } : { opacity: 1, y: [0, -10, 0] }}
-                        transition={reduce ? { duration: 0 } : { y: { repeat: Infinity, duration: 4, ease: 'easeInOut' }, opacity: { duration: 0.4 } }}
-                        className="block h-auto w-full object-contain drop-shadow-[0_15px_35px_rgba(34,211,238,0.30)]"
-                        draggable={false}
-                    />
-                </div>
+                {/* מנטור הירו: פתרון תלוי-לוקאל (מקרה מיוחד לפרק 6). עברית – התמונה עם הצ'יפים
+                    בעברית; היא פונה שמאלה מטבעה, לכן בצד ימין ובלי היפוך. שאר השפות – פוזה גנרית
+                    ללא טקסט מוטבע דרך רכיב Mentor, עם flip לפי כיוון כדי לפנות לתוך הכרטיס.
+                    pointer-events-none; מוצג רק מ-xl ומעלה. */}
+                {locale === 'he' ? (
+                    <div className="pointer-events-none absolute bottom-8 right-0 z-20 hidden w-[340px] translate-x-[84%] xl:block">
+                        <motion.img
+                            src="/assets/chapter-06-attention-mentor-hero-alpha.png"
+                            alt={c6.hero.mentorAlt}
+                            initial={reduce ? false : { opacity: 0, scale: 0.94 }}
+                            animate={reduce ? { opacity: 1 } : { opacity: 1, y: [0, -10, 0] }}
+                            transition={reduce ? { duration: 0 } : { y: { repeat: Infinity, duration: 4, ease: 'easeInOut' }, opacity: { duration: 0.4 } }}
+                            className="block h-auto w-full object-contain drop-shadow-[0_15px_35px_rgba(34,211,238,0.30)]"
+                            draggable={false}
+                        />
+                    </div>
+                ) : (
+                    <div className={`pointer-events-none absolute bottom-4 z-20 hidden xl:block ${isRtl ? 'right-0 translate-x-[72%]' : 'left-0 -translate-x-[72%]'}`}>
+                        {/* פוזה גנרית ללא טקסט מוטבע (inspect – מתאימה לנושא Attention), שונה ממנטור
+                            פרק 7. flip לפי כיוון כדי לפנות לתוך הכרטיס. */}
+                        <Mentor pose="inspect" width={240} flip={!isRtl} />
+                    </div>
+                )}
             </div>
 
             {/* ══════════ ניחוש לפני הסבר: ארבע השערות על Attention ══════════ */}
