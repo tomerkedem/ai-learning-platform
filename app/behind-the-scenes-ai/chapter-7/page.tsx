@@ -250,8 +250,8 @@ export default function BehindTheScenesChapter7() {
                     (pose="presenter") כדי לקבל בועת-דיבור מתורגמת, הילה ותנועה עקביות עם שאר הפרקים.
                     הרוחב מנורמל כלפי מידת פרק 2 (248) בהתאמה קלה לדמות גוף-מלא. ממוקם כמציג לצד
                     הכרטיס לפי כיוון הקריאה; pointer-events-none; מוסתר במובייל (מ-xl ומעלה). */}
-                <div className={`pointer-events-none absolute bottom-6 z-20 hidden xl:block ${isRtl ? 'right-0 translate-x-[68%]' : 'left-0 -translate-x-[68%]'}`}>
-                    <Mentor pose="presenter" line={c7.mentor.hero} width={374} flip={!isRtl} />
+                <div className={`pointer-events-none absolute bottom-6 z-20 hidden xl:block ${isRtl ? 'right-0 translate-x-[60%]' : 'left-0 -translate-x-[60%]'}`}>
+                    <Mentor pose="presenter" line={c7.mentor.hero} width={374} flip={!isRtl} bubbleShiftX={70} />
                 </div>
             </div>
 
@@ -382,9 +382,12 @@ export default function BehindTheScenesChapter7() {
                     <Mentor pose="celebrate" line={c7.mentor.lock} width={160} flip={!isRtl} />
                 </div>
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
-                    <div className="mb-5 flex items-center gap-2">
-                        <Lock size={20} className="text-violet-300" />
-                        <h3 className="text-xl font-bold text-white">{c7.lock.title}</h3>
+                    <div className="mb-5 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <Lock size={20} className="text-violet-300" />
+                            <h3 className="text-xl font-bold text-white">{c7.lock.title}</h3>
+                        </div>
+                        <SpeakButton text={`${c7.lock.title}. ${c7.lock.trueLabel}: ${c7.lock.trueText} ${c7.lock.falseLabel}: ${c7.lock.falseText}`} speechLocale={speechLocale} />
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">

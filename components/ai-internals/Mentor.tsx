@@ -142,6 +142,9 @@ export interface MentorProps {
     float?: boolean;
     /** צד בועת-הדיבור ביחס לדמות. */
     bubbleSide?: 'top' | 'bottom';
+    /** הזזה אופקית של הבועה (px) כשהראש אינו במרכז המסגרת (למשל פוזת presenter של גוף-מלא).
+     *  חיובי = ימינה. ממורכז אוטומטית לפי flip, כך שהחץ נשאר מעל הראש בשני הכיוונים. ברירת מחדל 0. */
+    bubbleShiftX?: number;
     /** הילת רקע רכה. ברירת מחדל true. */
     glow?: boolean;
     /** צבע ההדגשה. ברירת מחדל ציאן (תואם BTS-AI). */
@@ -162,6 +165,7 @@ export const Mentor: React.FC<MentorProps> = ({
     flip = false,
     float = true,
     bubbleSide = 'top',
+    bubbleShiftX = 0,
     glow = true,
     accent = CYAN_ACCENT,
     bubbleWidthClass = 'max-w-[12rem]',
@@ -194,6 +198,7 @@ export const Mentor: React.FC<MentorProps> = ({
                     className={`absolute left-1/2 z-10 w-max ${bubbleWidthClass} -translate-x-1/2 ${
                         bubbleSide === 'top' ? '-top-2 -translate-y-full' : '-bottom-2 translate-y-full'
                     }`}
+                    style={bubbleShiftX ? { left: `calc(50% + ${flip ? -bubbleShiftX : bubbleShiftX}px)` } : undefined}
                 >
                     <div
                         className="relative rounded-2xl border px-3 py-2 text-center shadow-lg backdrop-blur-sm"
