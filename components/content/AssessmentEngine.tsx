@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import {
   Check, X, Lightbulb,
   Trophy, ChevronRight, ChevronLeft,
-  Timer, Eye, EyeOff, Flame, Volume2, VolumeX, Play, ArrowLeft, ArrowRight, RotateCcw,
+  Timer, Eye, Flame, Volume2, VolumeX, Play, ArrowLeft, ArrowRight, RotateCcw,
   ListChecks
 } from "lucide-react";
 import confetti from 'canvas-confetti';
@@ -164,7 +164,6 @@ export const AssessmentEngine = ({
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isReviewMode, setIsReviewMode] = useState(false);
     const [direction, setDirection] = useState(0);
-    const [showExplanation, setShowExplanation] = useState(true);
     const [streak, setStreak] = useState(0);
     const [isMuted, setIsMuted] = useState(false);
     const [seconds, setSeconds] = useState(0);
@@ -595,65 +594,100 @@ export const AssessmentEngine = ({
         );
     }
 
-    // 3. מסך השאלות - Question Screen (ממוזער ב-30%)
+    // Stage B: מצב הקונסולה לצביעה אדפטיבית (ויזואלי בלבד; לא נוגע בלוגיקה/ניקוד).
+    const answeredCorrect = isAnswered && answers[currentQuestion?.id] === currentQuestion?.correctAnswer;
+    const answeredWrong = isAnswered && !answeredCorrect;
+    const stateGlow = isReviewMode
+        ? 'rgb(100 116 139 / 0.10)'
+        : answeredCorrect
+            ? 'rgb(16 185 129 / 0.14)'
+            : answeredWrong
+                ? 'rgb(245 158 11 / 0.12)'
+                : `rgb(${accent.base} / 0.12)`;
+
+    // 3. מסך השאלות - Decision Console (עיצוב Stage B)
     return (
         <div className="w-full max-w-2xl mx-auto px-4 py-4 font-sans" dir={dir}>
-            {/* שורת-על: כותרת המבדק + השתקה */}
-            <div className="mb-5 flex items-start justify-between gap-3">
-                <div>
-                    <h1 className="text-base font-black leading-tight text-white sm:text-lg">{title}</h1>
-                    <p className="mt-0.5 text-[13px] font-medium text-slate-500">{subtitle}</p>
-                </div>
-                {soundEnabled && (
-                    <button
-                        onClick={() => setIsMuted(!isMuted)}
-                        aria-label={isMuted ? a.unmute : a.mute}
-                        className="shrink-0 rounded-xl border border-white/10 bg-white/5 p-2 text-slate-500 transition-colors hover:text-white"
-                    >
-                        {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-                    </button>
-                )}
-            </div>
+            {/* ===== קונסולת ההחלטה: כרטיס אחד מאוחד. הכרטיס, הכותרת, ההתקדמות והפוטר
+                 נשארים מונטים ויציבים; רק תוכן השאלה הפנימי מתחלף (רצף חלק, בלי מסגרת ריקה). ===== */}
+            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-b from-slate-900/70 to-slate-950/70 shadow-2xl backdrop-blur-md">
+                {/* הילה אדפטיבית לפי מצב (ויזואלי בלבד): ציאן רגוע, אמרלד נכון, ענבר תיקון, אפור בסקירה */}
+                <div
+                    aria-hidden
+                    className="pointer-events-none absolute -top-28 left-1/2 h-56 w-72 -translate-x-1/2 rounded-full blur-3xl transition-colors duration-500"
+                    style={{ background: stateGlow }}
+                />
 
-            {/* שורת מטא שקטה: מונה (mono), טיימר, רצף, ופס התקדמות. שקט בכוונה (לא gamified). */}
-            <div className="mb-6 flex flex-wrap items-center gap-2.5">
-                <span className="font-mono text-[13px] font-bold tracking-wide text-slate-400 tabular-nums">
-                    {a.questionCounter(currentIndex + 1, questions.length)}
-                </span>
-                {showTimer && (
-                    <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-slate-400">
-                        <Timer size={13} />
-                        <span className="font-mono text-[13px] font-bold tabular-nums">{formatTime(seconds)}</span>
-                    </span>
-                )}
-                {streak > 1 && (
-                    <span className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-slate-300">
-                        <Flame size={13} className="text-orange-400/80" />
-                        <span className="text-[13px] font-bold">{a.streak(streak)}</span>
-                    </span>
-                )}
-                <div className="ms-auto h-1.5 w-24 overflow-hidden rounded-full bg-white/10">
-                    <motion.div
-                        animate={{ width: `${progress}%` }}
-                        transition={{ duration: 0.4, ease: 'easeOut' }}
-                        className="h-full rounded-full"
-                        style={{ background: `rgb(${accent.shadow})` }}
-                    />
-                </div>
-            </div>
+                {/* ---- Header band: כותרת + טיימר/רצף/השתקה, ואז מונה "שאלה X מתוך Y" + התקדמות ---- */}
+                <div className="relative border-b border-white/10 px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
+                    <div className="mb-4 flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                            <h1 className="truncate text-[15px] font-black leading-tight text-white sm:text-base">{title}</h1>
+                            <p className="mt-0.5 hidden truncate text-[13px] font-medium text-slate-500 sm:block">{subtitle}</p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                            {showTimer && (
+                                <span className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-400/15 bg-white/[0.04] px-2.5 py-1 text-slate-200">
+                                    <Timer size={13} className="text-cyan-300/70" />
+                                    <span className="font-mono text-[13px] font-bold tabular-nums text-slate-100">{formatTime(seconds)}</span>
+                                </span>
+                            )}
+                            {streak > 1 && (
+                                <span className="inline-flex items-center gap-1.5 rounded-lg border border-amber-400/25 bg-amber-400/[0.06] px-2.5 py-1 text-amber-200/90">
+                                    <Flame size={13} className="text-orange-400" />
+                                    <span className="text-[13px] font-bold">{a.streak(streak)}</span>
+                                </span>
+                            )}
+                            {soundEnabled && (
+                                <button
+                                    onClick={() => setIsMuted(!isMuted)}
+                                    aria-label={isMuted ? a.unmute : a.mute}
+                                    className="rounded-lg border border-white/10 bg-white/[0.04] p-2 text-slate-500 transition-colors hover:text-white"
+                                >
+                                    {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+                                </button>
+                            )}
+                        </div>
+                    </div>
 
-            {/* Question Card */}
-            <div className="relative min-h-80">
-                <AnimatePresence mode="wait" custom={direction}>
-                    <motion.div 
-                        key={currentIndex} custom={direction}
-                        initial={{ x: direction > 0 ? -30 : 30, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: direction < 0 ? -30 : 30, opacity: 0 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    >
-                        <div className="rounded-3xl border border-white/10 bg-slate-900/40 p-5 backdrop-blur-md sm:p-7">
-                            {/* שורת השאלה: prompt חזק. הקראה נקודתית של טקסט השאלה בלבד (אח, לא מקונן). */}
+                    <div className="flex items-center gap-3">
+                        {/* המונה קבוצה נפרדת מהטיימר, וברור */}
+                        <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-slate-300">
+                            {a.questionCounter(currentIndex + 1, questions.length)}
+                        </span>
+                        {/* פס התקדמות accent מונפש עם נצנוץ אור חד-פעמי בכל מעבר */}
+                        <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+                            <motion.div
+                                animate={{ width: `${progress}%` }}
+                                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                                className="relative h-full overflow-hidden rounded-full"
+                                style={{ background: `linear-gradient(90deg, rgba(${accentRgb},0.75), rgba(16,185,129,0.9))` }}
+                            >
+                                <motion.span
+                                    key={currentIndex}
+                                    aria-hidden
+                                    className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                                    initial={{ x: '-120%' }}
+                                    animate={{ x: '360%' }}
+                                    transition={{ duration: 0.8, ease: 'easeInOut' }}
+                                />
+                            </motion.div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ---- גוף: רק כאן מתחלף התוכן. grid-stack לקרוספייד בלי מסגרת ריקה ובלי קריסת פריסה ---- */}
+                <div className="relative grid min-h-[16rem] px-5 py-6 sm:px-7 sm:py-7">
+                    <AnimatePresence initial={false}>
+                        <motion.div
+                            key={currentIndex}
+                            className="[grid-area:1/1]"
+                            initial={{ opacity: 0, x: (direction < 0 ? -1 : 1) * (isRTL ? -18 : 18) }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: (direction < 0 ? 1 : -1) * (isRTL ? -18 : 18) }}
+                            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                            {/* שורת השאלה: prompt חזק + הקראה (אח, לא מקונן) */}
                             <div className="mb-6 flex items-start justify-between gap-3">
                                 <h4 className="text-xl font-bold leading-relaxed text-white sm:text-2xl">
                                     {currentQuestion.question}
@@ -661,71 +695,104 @@ export const AssessmentEngine = ({
                                 <SpeakButton text={currentQuestion.question} className="mt-1 shrink-0" />
                             </div>
 
-                            {/* שורות אות (signal rows). ההתנהגות זהה לחלוטין: לחיצה = פתרון מיידי
-                                עם האינדקס המקורי (oIdx); displayPos הוא רק מיקום התצוגה. רק המראה שודרג.
-                                fallback לסדר המקורי אם עדיין אין order. */}
-                            <div className="grid gap-2.5">
+                            {/* שורות החלטה פרימיום. ההתנהגות זהה: לחיצה = פתרון מיידי עם האינדקס
+                                המקורי (oIdx); displayPos הוא מיקום התצוגה בלבד. */}
+                            <div className="relative grid gap-2.5">
                                 {(optionOrder[currentQuestion.id] ?? currentQuestion.options.map((_, i) => i)).map((oIdx, displayPos) => {
                                     const opt = currentQuestion.options[oIdx];
                                     const isSelected = answers[currentQuestion.id] === oIdx;
                                     const isCorrect = oIdx === currentQuestion.correctAnswer;
                                     const showResult = isAnswered || isReviewMode;
 
-                                    // שגוי = ענבר רגוע (לא אדום מאיים). לא נשענים על צבע בלבד:
-                                    // מסגרת + קו-פתיחה לוגי (border-s) + צ'יפ + אייקון סטטוס.
-                                    let rowCls = "border-white/10 bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.06]";
-                                    let chipCls = "bg-white/10 text-slate-300 group-hover:bg-white/20";
+                                    // שגוי = ענבר רגוע (לא אדום). לא צבע בלבד: מסגרת + קו-פתיחה + צ'יפ + אייקון + זוהר.
+                                    // textCls נקבע במפורש בכל מצב: טקסט האפשרות תמיד בהיר וקריא על רקע כהה
+                                    // (לא יורש שחור). מצב מעומעם רך אך עדיין קריא.
+                                    let rowCls = "border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.015] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] hover:border-cyan-400/40 hover:from-white/[0.10]";
+                                    let chipCls = "bg-gradient-to-b from-white/20 to-white/[0.06] text-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] group-hover:from-cyan-400/40 group-hover:text-white";
+                                    let textCls = "text-slate-100 group-hover:text-white";
                                     if (showResult) {
                                         if (isCorrect) {
-                                            rowCls = "border-s-2 border-emerald-400/40 border-s-emerald-400 bg-emerald-500/[0.08]";
+                                            rowCls = "border-emerald-400/50 border-s-2 border-s-emerald-400 bg-gradient-to-b from-emerald-500/[0.14] to-emerald-500/[0.03] shadow-[0_0_26px_-8px_rgba(16,185,129,0.55)]";
                                             chipCls = "bg-emerald-400 text-slate-950";
+                                            textCls = "text-emerald-50";
                                         } else if (isSelected) {
-                                            rowCls = "border-s-2 border-amber-400/40 border-s-amber-400 bg-amber-500/[0.07]";
+                                            rowCls = "border-amber-400/50 border-s-2 border-s-amber-400 bg-gradient-to-b from-amber-500/[0.12] to-amber-500/[0.02]";
                                             chipCls = "bg-amber-400 text-slate-950";
+                                            textCls = "text-amber-50";
                                         } else {
-                                            rowCls = "border-white/5 bg-transparent opacity-45";
-                                            chipCls = "bg-white/10 text-slate-500";
+                                            rowCls = "border-white/5 bg-transparent opacity-70";
+                                            chipCls = "bg-white/10 text-slate-400";
+                                            textCls = "text-slate-300";
                                         }
                                     }
 
-                                    // הקראת האפשרות היא אח ממוקם של כפתור-השורה (button בתוך button אסור).
-                                    // היא יושבת בפינת ה-end בלבד; pe-12 שומר על מקומה בלי לכסות טקסט או אייקון
-                                    // סטטוס, והיא אינה חוסמת את שטח הלחיצה של השורה (רק פינה קטנה).
+                                    // הקראת האפשרות: אח ממוקם של כפתור-השורה (button בתוך button אסור). בפינת
+                                    // ה-end בלבד; pe-12 שומר מקום ואינו חוסם את שטח הלחיצה של השורה.
                                     return (
                                         <div key={oIdx} className="relative">
                                             <button
                                                 disabled={showResult && !isReviewMode}
                                                 onClick={() => handleAnswer(oIdx)}
-                                                className={`group flex w-full items-center gap-3.5 rounded-2xl border py-3.5 pe-12 ps-3 text-start transition-colors ${rowCls}`}
+                                                className={`group relative flex w-full items-center gap-3.5 overflow-hidden rounded-2xl border py-3.5 pe-12 ps-2.5 text-start transition-all duration-200 ${rowCls} ${showResult ? '' : 'hover:-translate-y-px active:scale-[0.99]'}`}
                                             >
-                                                <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[13px] font-black transition-colors ${chipCls}`}>
+                                                <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-[13px] font-black transition-colors ${chipCls}`}>
                                                     {displayPos + 1}
                                                 </span>
-                                                <span className="flex-1 break-words text-[15px] font-semibold leading-snug">{opt}</span>
+                                                <span className={`flex-1 break-words text-[15px] font-semibold leading-snug ${textCls}`}>{opt}</span>
                                                 {showResult && isCorrect && <Check size={18} className="shrink-0 text-emerald-300 stroke-[3px]" />}
                                                 {showResult && isSelected && !isCorrect && <X size={18} className="shrink-0 text-amber-300 stroke-[3px]" />}
+                                                {/* הדגשת-אישור חד-פעמית לשורה הנכונה (לא בסקירה) */}
+                                                {showResult && isCorrect && !isReviewMode && (
+                                                    <motion.span
+                                                        aria-hidden
+                                                        className="pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-emerald-400/60"
+                                                        initial={{ opacity: 0.8, scale: 1 }}
+                                                        animate={{ opacity: 0, scale: 1.03 }}
+                                                        transition={{ duration: 0.7, ease: 'easeOut' }}
+                                                    />
+                                                )}
                                             </button>
                                             <SpeakButton text={opt} className="absolute end-2 top-1/2 z-10 -translate-y-1/2" />
                                         </div>
                                     );
                                 })}
+
+                                {/* Decision scan: סריקת אור עדינה חד-פעמית אחרי הבחירה. משוב ממשק על ההחלטה,
+                                    לא הצגת "חשיבת מודל". */}
+                                {isAnswered && !isReviewMode && (
+                                    <motion.div
+                                        aria-hidden
+                                        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-14 bg-gradient-to-b from-transparent via-cyan-400/15 to-transparent"
+                                        initial={{ y: '-30%', opacity: 0 }}
+                                        animate={{ y: '340%', opacity: [0, 1, 0] }}
+                                        transition={{ duration: 0.6, ease: 'easeOut' }}
+                                    />
+                                )}
                             </div>
 
-                            {/* Readout חינוכי: מוצג מיד עם התשובה (לא הערה נסתרת). טקסט ההסבר הקיים. */}
+                            {/* Readout: פאנל משוב חינוכי פרימיום, גלוי מיד אחרי הבחירה, state-aware (אמרלד/ענבר).
+                                כניסה בסגנון "פלט קונסולה" (blur-in). טקסט ההסבר הקיים בלבד. */}
                             <AnimatePresence>
-                                {(isAnswered || isReviewMode) && showExplanation && (
+                                {(isAnswered || isReviewMode) && (
                                     <motion.div
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: "auto", opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.25, ease: 'easeOut' }}
-                                        className="overflow-hidden"
+                                        initial={{ opacity: 0, y: 10, filter: 'blur(6px)' }}
+                                        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                                        className="mt-5"
                                         role="status"
                                         aria-live="polite"
                                     >
-                                        <div className="mt-5 rounded-2xl border border-s-2 border-cyan-400/20 border-s-cyan-400/60 bg-cyan-500/[0.06] p-4">
+                                        <div className={`relative overflow-hidden rounded-2xl border border-white/10 border-s-2 bg-gradient-to-b to-slate-950/40 p-4 ${answeredWrong ? 'border-s-amber-400/70 from-amber-500/[0.09]' : 'border-s-emerald-400/70 from-emerald-500/[0.09]'}`}>
                                             <div className="flex items-start gap-3">
-                                                <Lightbulb size={18} className="mt-0.5 shrink-0 text-cyan-300" />
+                                                <motion.span
+                                                    initial={{ scale: 0.6, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    transition={{ type: 'spring', stiffness: 300, damping: 16 }}
+                                                    className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-lg ${answeredWrong ? 'bg-amber-400/15 text-amber-300' : 'bg-emerald-400/15 text-emerald-300'}`}
+                                                >
+                                                    <Lightbulb size={14} />
+                                                </motion.span>
                                                 <p className="flex-1 text-[14px] font-medium leading-relaxed text-slate-200 sm:text-[15px]">
                                                     {currentQuestion.explanation}
                                                 </p>
@@ -736,40 +803,29 @@ export const AssessmentEngine = ({
                                     </motion.div>
                                 )}
                             </AnimatePresence>
-                        </div>
-                    </motion.div>
-                </AnimatePresence>
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
             </div>
 
-            {/* Navigation Bar - סרגל דביק בתחתית, כך שכפתור ההמשך תמיד נראה וזמין
-                גם כשהשאלה או ההסבר ארוכים ודוחפים את התוכן מתחת לקפל. */}
-            <div className="sticky bottom-0 z-20 -mx-4 mt-6 flex items-center justify-between border-t border-white/10 bg-slate-950/85 px-4 py-3 backdrop-blur-md">
+            {/* ===== סרגל ניווט דביק: מחוץ ל-AnimatePresence, יציב ולא מהבהב. רק Back + המשך. ===== */}
+            <div className="sticky bottom-0 z-20 -mx-4 mt-5 flex items-center justify-between border-t border-white/10 bg-slate-950/85 px-4 py-3 backdrop-blur-md">
                 <button
                     onClick={handleBack}
                     disabled={currentIndex === 0}
-                    className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold transition-all rounded-xl ${currentIndex === 0 ? 'opacity-0 pointer-events-none' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                    className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-bold transition-all ${currentIndex === 0 ? 'pointer-events-none opacity-0' : 'text-slate-500 hover:bg-white/5 hover:text-white'}`}
                 >
                     {isRTL ? <ChevronRight size={18} /> : <ChevronLeft size={18} />} {a.prev}
                 </button>
 
-                <div className="flex gap-3">
-                    {isAnswered && (
-                        <button 
-                            onClick={() => { playSound('click'); setShowExplanation(!showExplanation); }}
-                            className="p-2.5 rounded-xl bg-white/5 text-slate-500 hover:text-white border border-white/10 transition-all"
-                        >
-                            {showExplanation ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </button>
-                    )}
-                    <GuessButton
-                        onClick={handleNext}
-                        disabled={!isAnswered && !isReviewMode}
-                        rgb={accentRgb}
-                        trailingIcon={isRTL ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-                    >
-                        {currentIndex === questions.length - 1 ? submitLabelR : a.continue}
-                    </GuessButton>
-                </div>
+                <GuessButton
+                    onClick={handleNext}
+                    disabled={!isAnswered && !isReviewMode}
+                    rgb={accentRgb}
+                    trailingIcon={isRTL ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+                >
+                    {currentIndex === questions.length - 1 ? submitLabelR : a.continue}
+                </GuessButton>
             </div>
         </div>
     );
