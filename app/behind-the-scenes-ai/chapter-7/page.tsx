@@ -246,10 +246,21 @@ export default function BehindTheScenesChapter7() {
                     </div>
                 </motion.section>
 
-                {/* מנטור הירו: רכיב מבוסס-פוזה (בלי נכס ייעודי). ממוקם בצד החיצוני לפי כיוון
-                    הקריאה, בלי שיקוף תמונה. מוצג רק מ-xl ומעלה. */}
-                <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[150px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="explain" width={150} flip={!isRtl} />
+                {/* מנטור הירו של פרק 7: תמונת presenter ייעודית ישירות (לא דרך רכיב Mentor/pose),
+                    כי הנכס הזה מיוחד לפרק. ממוקמת כמו מציג לצד הכרטיס, נוגעת בקצה, לפי כיוון הקריאה.
+                    pointer-events-none; מוסתרת במובייל (מ-xl ומעלה); flip כדי שהמחווה תפנה לתוכן. */}
+                <div className={`pointer-events-none absolute bottom-16 z-20 hidden xl:block ${isRtl ? 'right-0 translate-x-[60%]' : 'left-0 -translate-x-[60%]'}`}>
+                    <div className="relative" style={{ width: 440 }}>
+                        <div className="pointer-events-none absolute inset-0 rounded-full blur-2xl" style={{ background: 'rgb(139 92 246 / 0.15)' }} aria-hidden />
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src="/assets/mentor-presenter.png"
+                            alt="המנטור של הלומדה"
+                            draggable={false}
+                            className="relative block h-auto w-full object-contain"
+                            style={{ transform: isRtl ? undefined : 'scaleX(-1)', filter: 'drop-shadow(0 15px 35px rgb(34 211 238 / 0.35))' }}
+                        />
+                    </div>
                 </div>
             </div>
 
