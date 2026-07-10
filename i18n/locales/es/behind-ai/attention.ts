@@ -129,6 +129,7 @@ export const attention = {
 
     // ── Llamadas del mentor ──
     mentor: {
+        hero: 'El modelo elige en qué palabras fijarse',
         lab: 'Cambia una palabra y el peso se mueve',
         lock: 'Bloqueaste la atención',
         practical: 'Así se escribe un prompt que la atención entiende',

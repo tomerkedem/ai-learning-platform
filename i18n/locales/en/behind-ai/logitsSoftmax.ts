@@ -205,6 +205,7 @@ export const logitsSoftmax = {
 
     // -- Mentor lines --
     mentor: {
+        hero: 'Here scores turn into percentages',
         lab: 'Change a detail, and the percentages shift',
         lock: 'You locked in the idea',
         practical: 'This is how you steer the distribution',

@@ -250,22 +250,32 @@ export default function BehindTheScenesChapter6() {
                     ללא טקסט מוטבע דרך רכיב Mentor, עם flip לפי כיוון כדי לפנות לתוך הכרטיס.
                     pointer-events-none; מוצג רק מ-xl ומעלה. */}
                 {locale === 'he' ? (
-                    <div className="pointer-events-none absolute bottom-8 right-0 z-20 hidden w-[340px] translate-x-[84%] xl:block">
-                        <motion.img
-                            src="/assets/chapter-06-attention-mentor-hero-alpha.png"
-                            alt={c6.hero.mentorAlt}
-                            initial={reduce ? false : { opacity: 0, scale: 0.94 }}
-                            animate={reduce ? { opacity: 1 } : { opacity: 1, y: [0, -10, 0] }}
-                            transition={reduce ? { duration: 0 } : { y: { repeat: Infinity, duration: 4, ease: 'easeInOut' }, opacity: { duration: 0.4 } }}
-                            className="block h-auto w-full object-contain drop-shadow-[0_15px_35px_rgba(34,211,238,0.30)]"
-                            draggable={false}
-                        />
+                    // עברית שומרת על נכס האמנות הייעודי (עם הצ'יפים בעברית), מנורמל כלפי מידת פרק 2
+                    // ל-280px (גובה נראה תואם לירו של פרק 2). מעליו בועת-דיבור מתורגמת בסגנון בועת המנטור.
+                    <div className="pointer-events-none absolute bottom-8 right-0 z-20 hidden w-[280px] translate-x-[80%] xl:block">
+                        <div className="relative">
+                            <div data-mentor-bubble className="absolute left-1/2 -top-2 z-10 w-max max-w-[12rem] -translate-x-1/2 -translate-y-full">
+                                <div className="relative rounded-2xl border px-3 py-2 text-center shadow-lg backdrop-blur-sm" style={{ borderColor: 'rgb(6 182 212 / 0.4)', backgroundColor: 'rgb(15 23 42 / 0.95)' }}>
+                                    <p className="text-[11px] font-bold leading-snug" style={{ color: '#a5f3fc' }}>{c6.mentor.hero}</p>
+                                    <span className="absolute left-1/2 -bottom-1.5 h-3 w-3 -translate-x-1/2 rotate-45 border-b border-r" style={{ borderColor: 'rgb(6 182 212 / 0.4)', backgroundColor: 'rgb(15 23 42 / 0.95)' }} />
+                                </div>
+                            </div>
+                            <motion.img
+                                src="/assets/chapter-06-attention-mentor-hero-alpha.png"
+                                alt={c6.hero.mentorAlt}
+                                initial={reduce ? false : { opacity: 0, scale: 0.94 }}
+                                animate={reduce ? { opacity: 1 } : { opacity: 1, y: [0, -10, 0] }}
+                                transition={reduce ? { duration: 0 } : { y: { repeat: Infinity, duration: 4, ease: 'easeInOut' }, opacity: { duration: 0.4 } }}
+                                className="block h-auto w-full object-contain drop-shadow-[0_15px_35px_rgba(34,211,238,0.30)]"
+                                draggable={false}
+                            />
+                        </div>
                     </div>
                 ) : (
                     <div className={`pointer-events-none absolute bottom-4 z-20 hidden xl:block ${isRtl ? 'right-0 translate-x-[72%]' : 'left-0 -translate-x-[72%]'}`}>
-                        {/* פוזה גנרית ללא טקסט מוטבע (inspect – מתאימה לנושא Attention), שונה ממנטור
-                            פרק 7. flip לפי כיוון כדי לפנות לתוך הכרטיס. */}
-                        <Mentor pose="inspect" width={240} flip={!isRtl} />
+                        {/* פוזה גנרית ללא טקסט עברי מוטבע (inspect – מתאימה לנושא Attention). בועת-דיבור
+                            מתורגמת דרך הרכיב. מנורמל למידת פרק 2 (248). flip לפי כיוון לפנות לתוך הכרטיס. */}
+                        <Mentor pose="inspect" line={c6.mentor.hero} width={248} flip={!isRtl} />
                     </div>
                 )}
             </div>

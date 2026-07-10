@@ -211,6 +211,7 @@ export const decoding = {
 
     // -- Mentor lines --
     mentor: {
+        hero: 'Same distribution, a different choice',
         lab: 'Change the style, and you get a different token',
         lock: 'You locked in the idea',
         practical: 'This is how you pick a style to fit the task',

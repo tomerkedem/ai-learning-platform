@@ -246,21 +246,12 @@ export default function BehindTheScenesChapter7() {
                     </div>
                 </motion.section>
 
-                {/* מנטור הירו של פרק 7: תמונת presenter ייעודית ישירות (לא דרך רכיב Mentor/pose),
-                    כי הנכס הזה מיוחד לפרק. ממוקמת כמו מציג לצד הכרטיס, נוגעת בקצה, לפי כיוון הקריאה.
-                    pointer-events-none; מוסתרת במובייל (מ-xl ומעלה); flip כדי שהמחווה תפנה לתוכן. */}
-                <div className={`pointer-events-none absolute bottom-16 z-20 hidden xl:block ${isRtl ? 'right-0 translate-x-[60%]' : 'left-0 -translate-x-[60%]'}`}>
-                    <div className="relative" style={{ width: 440 }}>
-                        <div className="pointer-events-none absolute inset-0 rounded-full blur-2xl" style={{ background: 'rgb(139 92 246 / 0.15)' }} aria-hidden />
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src="/assets/mentor-presenter.png"
-                            alt="המנטור של הלומדה"
-                            draggable={false}
-                            className="relative block h-auto w-full object-contain"
-                            style={{ transform: isRtl ? undefined : 'scaleX(-1)', filter: 'drop-shadow(0 15px 35px rgb(34 211 238 / 0.35))' }}
-                        />
-                    </div>
+                {/* מנטור הירו של פרק 7: נכס ה-presenter הייעודי נשמר, אך מוצג דרך רכיב Mentor
+                    (pose="presenter") כדי לקבל בועת-דיבור מתורגמת, הילה ותנועה עקביות עם שאר הפרקים.
+                    הרוחב מנורמל כלפי מידת פרק 2 (248) בהתאמה קלה לדמות גוף-מלא. ממוקם כמציג לצד
+                    הכרטיס לפי כיוון הקריאה; pointer-events-none; מוסתר במובייל (מ-xl ומעלה). */}
+                <div className={`pointer-events-none absolute bottom-6 z-20 hidden xl:block ${isRtl ? 'right-0 translate-x-[68%]' : 'left-0 -translate-x-[68%]'}`}>
+                    <Mentor pose="presenter" line={c7.mentor.hero} width={374} flip={!isRtl} />
                 </div>
             </div>
 

@@ -138,6 +138,7 @@ export const contextWindow = {
 
     // -- Mentor lines --
     mentor: {
+        hero: 'What fits in the window is what the model sees',
         lab: 'Move the window, and the answer moves',
         lock: 'You locked in the context window',
         practical: 'This is how you keep the critical detail in the picture',

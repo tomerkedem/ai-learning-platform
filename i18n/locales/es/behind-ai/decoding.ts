@@ -208,6 +208,7 @@ export const decoding = {
 
     // -- Lineas del mentor --
     mentor: {
+        hero: 'La misma distribución, otra elección',
         lab: 'Cambia el estilo, y obtienes otro token',
         lock: 'Fijaste la idea',
         practical: 'Asi eliges un estilo segun la tarea',

@@ -135,6 +135,7 @@ export const contextWindow = {
 
     // ── Llamadas del mentor ──
     mentor: {
+        hero: 'Lo que entra en la ventana es lo que el modelo ve',
         lab: 'Mueve la ventana, y la respuesta se mueve',
         lock: 'Bloqueaste la ventana de contexto',
         practical: 'Así mantienes el dato crítico en la imagen',

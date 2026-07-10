@@ -249,8 +249,8 @@ export default function BehindTheScenesChapter9() {
                 </motion.section>
 
                 {/* מנטור הירו: מציג שאותה התפלגות יכולה להסתעף לטוקנים שונים. ממוקם בצד החיצוני לפי כיוון הקריאה. */}
-                <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[150px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="plausiblePaths" line={c9.hero.chipEdit} width={150} flip={!isRtl} />
+                <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[280px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
+                    <Mentor pose="plausiblePaths" line={c9.mentor.hero} width={280} flip={!isRtl} />
                 </div>
             </div>
 

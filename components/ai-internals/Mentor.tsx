@@ -37,7 +37,8 @@ export type MentorPose =
     | 'holographic'
     | 'holographicUi'
     | 'mapNavigator'
-    | 'meaningSpace';
+    | 'meaningSpace'
+    | 'presenter';
 
 const POSE_SRC: Record<MentorPose, string> = {
     hero: '/assets/mentor-hero.png',
@@ -84,6 +85,9 @@ const POSE_SRC: Record<MentorPose, string> = {
     // פוזת הירו של פרק 4 (Embeddings): המנטור מציג מרחב משמעות תלת-ממדי שאליו נכנס
     // משפט והופך לנקודה זוהרת ליד נקודות קרובות ורחוקות. בשימוש בהירו של פרק 4 בלבד.
     meaningSpace: '/assets/mentor-embeddings-meaning-space.png',
+    // פוזת מציג (presenter) של פרק 7: דמות גוף-מלא שמציגה את הרעיון לצד כרטיס הירו.
+    // נכס ייעודי לפרק. בשימוש בהירו של פרק 7 בלבד.
+    presenter: '/assets/mentor-presenter.png',
 };
 
 // נרמול גודל: פוזות "גוף מלא" (600px) מצולמות רחוק יותר מהבוסטים (~315px), ולכן הפנים

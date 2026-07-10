@@ -202,6 +202,7 @@ export const logitsSoftmax = {
 
     // ── Llamadas del mentor ──
     mentor: {
+        hero: 'Aquí las puntuaciones se vuelven porcentajes',
         lab: 'Cambia un dato, y los porcentajes se mueven',
         lock: 'Bloqueaste la idea',
         practical: 'Así se orienta la distribución',

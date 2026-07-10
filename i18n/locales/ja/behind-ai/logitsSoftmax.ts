@@ -204,6 +204,7 @@ export const logitsSoftmax = {
 
     // ── メンターのひとこと ──
     mentor: {
+        hero: 'ここでスコアが割合に変わります',
         lab: '手がかりを変えると、割合が動きます',
         lock: '中心となる考えをつかみました',
         practical: 'こうやって、分布を導きます',

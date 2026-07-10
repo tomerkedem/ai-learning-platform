@@ -131,6 +131,7 @@ export const attention = {
 
     // -- Mentor lines --
     mentor: {
+        hero: 'The model picks which words to focus on',
         lab: 'Change a word, and the weight moves',
         lock: 'You locked in attention',
         practical: 'This is how you write a prompt that attention understands',

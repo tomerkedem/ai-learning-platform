@@ -235,8 +235,8 @@ export default function BehindTheScenesChapter14() {
                 </motion.section>
 
                 {/* המנטור: שיפור אמיתי הוא תהליך, לא קסם. ממוקם בצד החיצוני לפי כיוון הקריאה. */}
-                <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[248px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="headsup" line={c14.mentor.hero} width={248} flip={!isRtl} />
+                <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[280px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
+                    <Mentor pose="headsup" line={c14.mentor.hero} width={280} flip={!isRtl} />
                 </div>
             </div>
 
