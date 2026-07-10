@@ -249,7 +249,7 @@ export default function BehindTheScenesChapter6() {
                     בלי היפוך תמונה (העדפת מיקום-צד על פני שיקוף). מוצג רק מ-xl ומעלה. */}
                 <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[170px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
                     <motion.img
-                        src="/assets/chapter-08-attention-mentor-hero-alpha.png"
+                        src="/assets/chapter-06-attention-mentor-hero-alpha.png"
                         alt={c6.hero.mentorAlt}
                         initial={reduce ? false : { opacity: 0, scale: 0.94 }}
                         animate={reduce ? { opacity: 1 } : { opacity: 1, y: [0, -10, 0] }}
