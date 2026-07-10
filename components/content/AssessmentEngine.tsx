@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import {
   Check, X, Lightbulb,
   Trophy, ChevronRight, ChevronLeft,
-  Timer, Eye, Flame, Volume2, VolumeX, Play, ArrowLeft, ArrowRight, RotateCcw,
+  Timer, Eye, Flame, Play, ArrowLeft, ArrowRight, RotateCcw,
   ListChecks
 } from "lucide-react";
 import confetti from 'canvas-confetti';
@@ -77,7 +77,7 @@ interface AssessmentProps {
     completedTitle?: string;
     /** האם להציג טיימר וזמן מומלץ. ברירת מחדל: true (תאימות לאחור). */
     showTimer?: boolean;
-    /** האם להפעיל אפקטי סאונד חיצוניים. ברירת מחדל: true (תאימות לאחור). */
+    /** לא בשימוש. נשמר לתאימות לאחור בלבד; אפקטי הסאונד החיצוניים הוסרו. */
     soundEnabled?: boolean;
     /** האם להציג את המנטור במסכי הפתיחה והתוצאות. ברירת מחדל: true. */
     showMentor?: boolean;
@@ -128,7 +128,6 @@ export const AssessmentEngine = ({
     submitLabel,
     completedTitle,
     showTimer = true,
-    soundEnabled = true,
     showMentor = true,
     mentorAccent,
     conceptDisplayMap,
@@ -165,7 +164,6 @@ export const AssessmentEngine = ({
     const [isReviewMode, setIsReviewMode] = useState(false);
     const [direction, setDirection] = useState(0);
     const [streak, setStreak] = useState(0);
-    const [isMuted, setIsMuted] = useState(false);
     const [seconds, setSeconds] = useState(0);
     const [isActive, setIsActive] = useState(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -176,19 +174,19 @@ export const AssessmentEngine = ({
     // גוון accent בפורמט של GuessButton (פסיקים במקום רווחים), נגזר מגוון המנטור.
     const accentRgb = accent.shadow.replace(/\s+/g, ',');
 
-    // פונקציית סאונד מעודכנת
-    const playSound = useCallback((type: 'correct' | 'wrong' | 'click' | 'complete') => {
-        if (isMuted || !soundEnabled) return;
-        const sounds = {
-            correct: 'https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3',
-            wrong: 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3',
-            click: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3',
-            complete: 'https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'
-        };
-        const audio = new Audio(sounds[type]);
-        audio.volume = 0.2;
-        audio.play().catch(() => {});
-    }, [isMuted, soundEnabled]);
+    // העדפת תנועה מופחתת. נקראת ישירות מ-media query (לא framer useReducedMotion) כדי לא
+    // לפלוט אזהרת dev של framer, וכדי לשמור על ריהדרציה ראשונה זהה ל-SSR (reduce=false)
+    // ולמנוע אי-התאמת hydration. מסונכרן להעדפת המערכת אחרי mount ומתעדכן בשינוי חי.
+    const [reduce, setReduce] = useState(false);
+    useEffect(() => {
+        if (typeof window === 'undefined' || !window.matchMedia) return;
+        const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- סנכרון חד-פעמי של העדפת מערכת אחרי mount (בטיחות SSR/hydration)
+        setReduce(mq.matches);
+        const onChange = () => setReduce(mq.matches);
+        mq.addEventListener('change', onChange);
+        return () => mq.removeEventListener('change', onChange);
+    }, []);
 
     // אבחון מבוסס מושגים: בונה את תוצאת הניסיון, כולל מושגים חזקים (כל השאלות של
     // המושג נענו נכון) ומושגים חלשים (לפחות שאלה אחת של המושג נענתה שגוי).
@@ -249,7 +247,6 @@ export const AssessmentEngine = ({
     const progress = ((currentIndex + 1) / questions.length) * 100;
 
     const handleStart = () => {
-        playSound('click');
         // בונים סדר תצוגה מעורבב פעם אחת עם תחילת הניסיון. יציב לכל אורך הניסיון
         // (render/ניווט/סקירה) ומתאפס רק בהתחלה מחדש או בניסיון חוזר.
         setOptionOrder(buildOptionOrder(questions));
@@ -262,16 +259,13 @@ export const AssessmentEngine = ({
         const isCorrect = oIdx === currentQuestion.correctAnswer;
         if (isCorrect) {
             setStreak(prev => prev + 1);
-            playSound('correct');
         } else {
             setStreak(0);
-            playSound('wrong');
         }
         setAnswers(prev => ({ ...prev, [currentQuestion.id]: oIdx }));
-    }, [currentQuestion, isAnswered, isReviewMode, playSound]);
+    }, [currentQuestion, isAnswered, isReviewMode]);
 
     const handleNext = useCallback(() => {
-        playSound('click');
         if (currentIndex < questions.length - 1) {
             setDirection(1);
             setCurrentIndex(prev => prev + 1);
@@ -285,9 +279,9 @@ export const AssessmentEngine = ({
             setIsActive(false);
             const result = buildResult();
             try {
-                if (result.passed) {
+                // קונפטי הוא קישוט בלבד: מדולג כשתנועה מופחתת פעילה.
+                if (result.passed && !reduce) {
                     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                    playSound('complete');
                 }
                 // התמדה: כל סיום נספר כניסיון. onComplete אחראי לשמירה ב-localStorage.
                 onComplete?.(result);
@@ -295,22 +289,21 @@ export const AssessmentEngine = ({
                 console.error('[AssessmentEngine] finish side-effects failed', err);
             }
         }
-    }, [currentIndex, questions, isReviewMode, buildResult, playSound, onComplete]);
+    }, [currentIndex, questions, isReviewMode, buildResult, reduce, onComplete]);
 
     const handleBack = useCallback(() => {
         if (currentIndex > 0) {
-            playSound('click');
             setDirection(-1);
             setCurrentIndex(prev => prev - 1);
         }
-    }, [currentIndex, playSound]);
+    }, [currentIndex]);
 
     // 1. מסך פתיחה - Start Screen
     if (!isStarted) {
         return (
             <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+                initial={reduce ? false : { opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 22 }}
                 className="relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 text-center shadow-2xl"
                 dir={dir}
             >
@@ -387,8 +380,8 @@ export const AssessmentEngine = ({
 
         return (
             <motion.div
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 220, damping: 24 }}
+                initial={reduce ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 24 }}
                 className="relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 text-center shadow-2xl"
                 dir={dir}
                 role="status"
@@ -428,16 +421,16 @@ export const AssessmentEngine = ({
                                 className={feedback.color}
                                 stroke="currentColor" strokeWidth="9" strokeLinecap="round"
                                 strokeDasharray={ring}
-                                initial={{ strokeDashoffset: ring }}
+                                initial={reduce ? false : { strokeDashoffset: ring }}
                                 animate={{ strokeDashoffset: ring * (1 - scoreValue / 100) }}
-                                transition={{ duration: 1.2, ease: 'easeOut', delay: 0.15 }}
+                                transition={reduce ? { duration: 0 } : { duration: 1.2, ease: 'easeOut', delay: 0.15 }}
                                 style={{ filter: 'drop-shadow(0 0 6px currentColor)' }}
                             />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
                             <motion.div
-                                initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.3, type: 'spring', stiffness: 240, damping: 16 }}
+                                initial={reduce ? false : { opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }}
+                                transition={reduce ? { duration: 0 } : { delay: 0.3, type: 'spring', stiffness: 240, damping: 16 }}
                                 className={`text-5xl font-black tabular-nums leading-none ${feedback.color}`}
                             >
                                 {scoreValue}%
@@ -525,7 +518,6 @@ export const AssessmentEngine = ({
                                             key={link.href}
                                             type="button"
                                             onClick={(e) => {
-                                                playSound('click');
                                                 if (typeof window === 'undefined') return;
                                                 const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
                                                 const behavior: ScrollBehavior = reduced ? 'auto' : 'smooth';
@@ -614,7 +606,7 @@ export const AssessmentEngine = ({
                 {/* הילה אדפטיבית לפי מצב (ויזואלי בלבד): ציאן רגוע, אמרלד נכון, ענבר תיקון, אפור בסקירה */}
                 <div
                     aria-hidden
-                    className="pointer-events-none absolute -top-28 left-1/2 h-56 w-72 -translate-x-1/2 rounded-full blur-3xl transition-colors duration-500"
+                    className={`pointer-events-none absolute -top-28 left-1/2 h-56 w-72 -translate-x-1/2 rounded-full blur-3xl ${reduce ? '' : 'transition-colors duration-500'}`}
                     style={{ background: stateGlow }}
                 />
 
@@ -638,15 +630,6 @@ export const AssessmentEngine = ({
                                     <span className="text-[13px] font-bold">{a.streak(streak)}</span>
                                 </span>
                             )}
-                            {soundEnabled && (
-                                <button
-                                    onClick={() => setIsMuted(!isMuted)}
-                                    aria-label={isMuted ? a.unmute : a.mute}
-                                    className="rounded-lg border border-white/10 bg-white/[0.04] p-2 text-slate-500 transition-colors hover:text-white"
-                                >
-                                    {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-                                </button>
-                            )}
                         </div>
                     </div>
 
@@ -659,18 +642,20 @@ export const AssessmentEngine = ({
                         <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-white/10">
                             <motion.div
                                 animate={{ width: `${progress}%` }}
-                                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                                transition={reduce ? { duration: 0 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                                 className="relative h-full overflow-hidden rounded-full"
                                 style={{ background: `linear-gradient(90deg, rgba(${accentRgb},0.75), rgba(16,185,129,0.9))` }}
                             >
-                                <motion.span
-                                    key={currentIndex}
-                                    aria-hidden
-                                    className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/50 to-transparent"
-                                    initial={{ x: '-120%' }}
-                                    animate={{ x: '360%' }}
-                                    transition={{ duration: 0.8, ease: 'easeInOut' }}
-                                />
+                                {!reduce && (
+                                    <motion.span
+                                        key={currentIndex}
+                                        aria-hidden
+                                        className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                                        initial={{ x: '-120%' }}
+                                        animate={{ x: '360%' }}
+                                        transition={{ duration: 0.8, ease: 'easeInOut' }}
+                                    />
+                                )}
                             </motion.div>
                         </div>
                     </div>
@@ -682,10 +667,10 @@ export const AssessmentEngine = ({
                         <motion.div
                             key={currentIndex}
                             className="[grid-area:1/1]"
-                            initial={{ opacity: 0, x: (direction < 0 ? -1 : 1) * (isRTL ? -18 : 18) }}
+                            initial={reduce ? false : { opacity: 0, x: (direction < 0 ? -1 : 1) * (isRTL ? -18 : 18) }}
                             animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: (direction < 0 ? 1 : -1) * (isRTL ? -18 : 18) }}
-                            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                            exit={reduce ? { opacity: 0 } : { opacity: 0, x: (direction < 0 ? 1 : -1) * (isRTL ? -18 : 18) }}
+                            transition={reduce ? { duration: 0 } : { duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
                         >
                             {/* שורת השאלה: prompt חזק + הקראה (אח, לא מקונן) */}
                             <div className="mb-6 flex items-start justify-between gap-3">
@@ -733,7 +718,7 @@ export const AssessmentEngine = ({
                                             <button
                                                 disabled={showResult && !isReviewMode}
                                                 onClick={() => handleAnswer(oIdx)}
-                                                className={`group relative flex w-full items-center gap-3.5 overflow-hidden rounded-2xl border py-3.5 pe-12 ps-2.5 text-start transition-all duration-200 ${rowCls} ${showResult ? '' : 'hover:-translate-y-px active:scale-[0.99]'}`}
+                                                className={`group relative flex w-full items-center gap-3.5 overflow-hidden rounded-2xl border py-3.5 pe-12 ps-2.5 text-start transition-all duration-200 ${rowCls} ${showResult || reduce ? '' : 'hover:-translate-y-px active:scale-[0.99]'}`}
                                             >
                                                 <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-[13px] font-black transition-colors ${chipCls}`}>
                                                     {displayPos + 1}
@@ -741,8 +726,8 @@ export const AssessmentEngine = ({
                                                 <span className={`flex-1 break-words text-[15px] font-semibold leading-snug ${textCls}`}>{opt}</span>
                                                 {showResult && isCorrect && <Check size={18} className="shrink-0 text-emerald-300 stroke-[3px]" />}
                                                 {showResult && isSelected && !isCorrect && <X size={18} className="shrink-0 text-amber-300 stroke-[3px]" />}
-                                                {/* הדגשת-אישור חד-פעמית לשורה הנכונה (לא בסקירה) */}
-                                                {showResult && isCorrect && !isReviewMode && (
+                                                {/* הדגשת-אישור חד-פעמית לשורה הנכונה (לא בסקירה). קישוט: מדולג בתנועה מופחתת. */}
+                                                {showResult && isCorrect && !isReviewMode && !reduce && (
                                                     <motion.span
                                                         aria-hidden
                                                         className="pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-emerald-400/60"
@@ -758,8 +743,8 @@ export const AssessmentEngine = ({
                                 })}
 
                                 {/* Decision scan: סריקת אור עדינה חד-פעמית אחרי הבחירה. משוב ממשק על ההחלטה,
-                                    לא הצגת "חשיבת מודל". */}
-                                {isAnswered && !isReviewMode && (
+                                    לא הצגת "חשיבת מודל". קישוט: מדולג בתנועה מופחתת. */}
+                                {isAnswered && !isReviewMode && !reduce && (
                                     <motion.div
                                         aria-hidden
                                         className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-14 bg-gradient-to-b from-transparent via-cyan-400/15 to-transparent"
@@ -775,10 +760,10 @@ export const AssessmentEngine = ({
                             <AnimatePresence>
                                 {(isAnswered || isReviewMode) && (
                                     <motion.div
-                                        initial={{ opacity: 0, y: 10, filter: 'blur(6px)' }}
+                                        initial={reduce ? false : { opacity: 0, y: 10, filter: 'blur(6px)' }}
                                         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                                         exit={{ opacity: 0 }}
-                                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                                        transition={reduce ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                                         className="mt-5"
                                         role="status"
                                         aria-live="polite"
@@ -786,9 +771,9 @@ export const AssessmentEngine = ({
                                         <div className={`relative overflow-hidden rounded-2xl border border-white/10 border-s-2 bg-gradient-to-b to-slate-950/40 p-4 ${answeredWrong ? 'border-s-amber-400/70 from-amber-500/[0.09]' : 'border-s-emerald-400/70 from-emerald-500/[0.09]'}`}>
                                             <div className="flex items-start gap-3">
                                                 <motion.span
-                                                    initial={{ scale: 0.6, opacity: 0 }}
+                                                    initial={reduce ? false : { scale: 0.6, opacity: 0 }}
                                                     animate={{ scale: 1, opacity: 1 }}
-                                                    transition={{ type: 'spring', stiffness: 300, damping: 16 }}
+                                                    transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 16 }}
                                                     className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-lg ${answeredWrong ? 'bg-amber-400/15 text-amber-300' : 'bg-emerald-400/15 text-emerald-300'}`}
                                                 >
                                                     <Lightbulb size={14} />
