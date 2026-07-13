@@ -15,11 +15,9 @@ import {
     getScenario,
     idForWord,
     shiftForWord,
-    SIMILAR_PAIR,
     type EngineScenario,
     type EngineStep,
     type ShiftEntry,
-    type SimilarPair,
     type DimKey,
 } from './embeddingEngine';
 
@@ -29,7 +27,6 @@ export interface WordLabDataset {
     scenarios: EngineScenario[];
     tokenId: (w: string) => number | null;
     shift: (w: string) => ShiftEntry[];
-    similar: SimilarPair;
 }
 
 /** הנתיב העברי: ישירות מהמנוע (ללא שינוי). */
@@ -37,7 +34,6 @@ export const HE_WORD_DATASET: WordLabDataset = {
     scenarios: SCENARIOS,
     tokenId: idForWord,
     shift: shiftForWord,
-    similar: SIMILAR_PAIR,
 };
 
 /* ── שכבת נתונים אנגלית מקבילה (משתמשת מחדש בפרופילים המספריים של המנוע) ── */
@@ -188,25 +184,10 @@ const EN_SCENARIOS: EngineScenario[] = [
     ]),
 ];
 
-const EN_SIMILAR: SimilarPair = {
-    left: {
-        prompt: 'The package did not arrive',
-        tokens: ['The', 'package', 'did', 'not', 'arrive'],
-        profile: SIMILAR_PAIR.left.profile,
-    },
-    right: {
-        prompt: 'The delivery was not handed over',
-        tokens: ['The', 'delivery', 'was', 'not', 'handed', 'over'],
-        profile: SIMILAR_PAIR.right.profile,
-    },
-    sharedDims: SIMILAR_PAIR.sharedDims,
-};
-
 export const EN_WORD_DATASET: WordLabDataset = {
     scenarios: EN_SCENARIOS,
     tokenId: enTokenId,
     shift: enShift,
-    similar: EN_SIMILAR,
 };
 
 /* ── שכבת נתונים ספרדית מקבילה (משתמשת מחדש בפרופילים המספריים של המנוע) ── */
@@ -340,25 +321,10 @@ const ES_SCENARIOS: EngineScenario[] = [
     ]),
 ];
 
-const ES_SIMILAR: SimilarPair = {
-    left: {
-        prompt: 'El paquete no llegó',
-        tokens: ['El', 'paquete', 'no', 'llegó'],
-        profile: SIMILAR_PAIR.left.profile,
-    },
-    right: {
-        prompt: 'El envío no fue entregado',
-        tokens: ['El', 'envío', 'no', 'fue', 'entregado'],
-        profile: SIMILAR_PAIR.right.profile,
-    },
-    sharedDims: SIMILAR_PAIR.sharedDims,
-};
-
 export const ES_WORD_DATASET: WordLabDataset = {
     scenarios: ES_SCENARIOS,
     tokenId: esTokenId,
     shift: esShift,
-    similar: ES_SIMILAR,
 };
 
 /* ── Параллельный русский слой данных (повторно использует числовые профили движка) ── */
@@ -494,25 +460,10 @@ const RU_SCENARIOS: EngineScenario[] = [
     ]),
 ];
 
-const RU_SIMILAR: SimilarPair = {
-    left: {
-        prompt: 'Посылка не пришла',
-        tokens: ['Посылка', 'не', 'пришла'],
-        profile: SIMILAR_PAIR.left.profile,
-    },
-    right: {
-        prompt: 'Доставка не выполнена',
-        tokens: ['Доставка', 'не', 'выполнена'],
-        profile: SIMILAR_PAIR.right.profile,
-    },
-    sharedDims: SIMILAR_PAIR.sharedDims,
-};
-
 export const RU_WORD_DATASET: WordLabDataset = {
     scenarios: RU_SCENARIOS,
     tokenId: ruTokenId,
     shift: ruShift,
-    similar: RU_SIMILAR,
 };
 
 /* ── طبقة بيانات عربية موازية (تعيد استخدام الملفات الرقمية للمحرّك) ── */
@@ -646,25 +597,10 @@ const AR_SCENARIOS: EngineScenario[] = [
     ]),
 ];
 
-const AR_SIMILAR: SimilarPair = {
-    left: {
-        prompt: 'الطرد لم يصل',
-        tokens: ['الطرد', 'لم', 'يصل'],
-        profile: SIMILAR_PAIR.left.profile,
-    },
-    right: {
-        prompt: 'الشحنة لم تُسلَّم',
-        tokens: ['الشحنة', 'لم', 'تُسلَّم'],
-        profile: SIMILAR_PAIR.right.profile,
-    },
-    sharedDims: SIMILAR_PAIR.sharedDims,
-};
-
 export const AR_WORD_DATASET: WordLabDataset = {
     scenarios: AR_SCENARIOS,
     tokenId: arTokenId,
     shift: arShift,
-    similar: AR_SIMILAR,
 };
 
 /* ── 並行する日本語データ層（エンジンの数値プロファイルを再利用） ── */
@@ -800,25 +736,10 @@ const JA_SCENARIOS: EngineScenario[] = [
     ]),
 ];
 
-const JA_SIMILAR: SimilarPair = {
-    left: {
-        prompt: '荷物が届かなかった',
-        tokens: ['荷物', 'が', '届か', 'なかった'],
-        profile: SIMILAR_PAIR.left.profile,
-    },
-    right: {
-        prompt: '配送が完了しなかった',
-        tokens: ['配送', 'が', '完了し', 'なかった'],
-        profile: SIMILAR_PAIR.right.profile,
-    },
-    sharedDims: SIMILAR_PAIR.sharedDims,
-};
-
 export const JA_WORD_DATASET: WordLabDataset = {
     scenarios: JA_SCENARIOS,
     tokenId: jaTokenId,
     shift: jaShift,
-    similar: JA_SIMILAR,
 };
 
 export function getWordDataset(locale: Locale): WordLabDataset {
@@ -859,22 +780,15 @@ export interface WordLabText {
         addressNote: string;
         selectHint: string;
     };
-    table: {
-        title: string;
-        sub: string;
-        colWord: string;
-        colId: string;
-        note: string;
-        /** גשר: ה-ID הוא מספר השורה, ותוכן השורה הוא הווקטור. מקשר בין הטבלה לבין הווקטור החי. */
-        rowIsVector: string;
-        fallbackTokens: string[];
-    };
-    vector: { title: string; sub: string; note: string; trainingNote: string };
+    /** לוח התרגום (מילה -> Token ID) הוסר: הוא שכפל את רצף ה-IDs. נשאר רק הגשר אל הווקטור:
+     *  ה-ID הוא מספר השורה, ותוכן השורה הוא הווקטור. */
+    table: { rowIsVector: string };
+    /** תצוגת המשמעות: תצוגה לימודית, לא ייצוג אמיתי. eduBadge/eduNote הם ההבהרה הראשית
+     *  (מוצגת מעל הפסים, לא כהערת שוליים). */
+    vector: { title: string; sub: string; eduBadge: string; eduNote: string; note: string };
     shift: { title: string; sub: string; idleHint: string; pushesUp: string; tiny: string; note: string };
     dirLabels: Record<ShiftEntry['dir'], string>;
-    similar: { title: string; sub: string; aligns: string; overlap: (pct: number) => string; note: string };
     agent: { needsApproval: string; note: string };
-    disclaimer: { lead: string; idIsAddress: string; idTail: string; dimsReadable: string; dimsTail: string };
     /** תוויות ממד מקומיות. אם חסר, נופלים ל-DIM_INFO (he/en) של המנוע. שפות שאינן he/en
      *  מספקות כאן את תוויות הממד שלהן (DIM_INFO מוגן ואינו משתנה). */
     dimLabel?: Partial<Record<DimKey, string>>;
@@ -909,19 +823,14 @@ export const HE_WORD_TEXT: WordLabText = {
             'לחצו על מילה כדי לראות לאיזה Token ID היא מצביעה. ה-ID הוא כתובת במילון, כמו ברקוד שאינו הטעם של המוצר.',
     },
     table: {
-        title: 'לוח תרגום',
-        sub: 'Human text to Model IDs',
-        colWord: 'מילה / Token',
-        colId: 'Token ID',
-        note: 'כל מילה מצביעה על כתובת קבועה במילון. ה-ID הוא מזהה, לא משמעות.',
         rowIsVector: 'ה-ID הוא מספר השורה בטבלת ה-embedding. תוכן השורה הוא הווקטור שמשמאל. כך כתובת אחת הופכת לרשימת המספרים שמייצגת משמעות.',
-        fallbackTokens: ['החבילה', 'לא', 'הגיעה'],
     },
     vector: {
-        title: 'וקטור המשמעות החי',
-        sub: 'Meaning Vector Live',
-        note: 'ערכים מנורמלים בין 0 ל-1. שימו לב איך המילה "לא" מקפיצה את הכשל ואת הדחיפות. זהו פרופיל המשמעות, נפרד מנוסחת הסכימה הלימודית.',
-        trainingNote: 'הערכים האלה נלמדו באימון. בשיחה המודל שולף אותם ומעבד בהקשר, הוא לא מחשב וקטור חדש מאפס.',
+        title: 'תצוגת משמעות לימודית',
+        sub: 'Teaching Visualization',
+        eduBadge: 'תצוגה לימודית',
+        eduNote: 'השמות של הצירים כאן, משלוח, כשל, דחיפות, נבחרו על ידינו כדי שתוכלו לראות מה קורה. בייצוג אמיתי יש מאות ממדים, ולרובם אין שם שאדם יכול לקרוא. מה שהתצוגה כן מראה נכון: כמה מספרים יחד יכולים להחזיק דפוס.',
+        note: 'הערכים כאן נעים בין 0 ל-1.',
     },
     shift: {
         title: 'השפעת המילה',
@@ -932,24 +841,9 @@ export const HE_WORD_TEXT: WordLabText = {
         note: 'כיוון השפעה, לא אריתמטיקה מדויקת. כל מילה תורמת משהו לפרופיל המספרי.',
     },
     dirLabels: { 'up-strong': 'עלייה חזקה', up: 'עלייה', 'up-slight': 'עלייה קלה' },
-    similar: {
-        title: 'כיוון דומה',
-        sub: 'Similar Meaning Preview',
-        aligns: 'Token IDs שונים, Meaning Vector מתיישר',
-        overlap: (pct) => `~${pct}% direction overlap`,
-        note: 'שני המשפטים לא חולקים אף Token ID (1042,17,883 מול 1057,17,904), אבל הם מצביעים לאותו כיוון משמעות. זו טעימה ויזואלית בלבד. את הגיאומטריה של הכיוון הזה נפתח בפרק הבא, ואת חישוב הדמיון המלא בפרק 8.',
-    },
     agent: {
         needsApproval: 'Needs approval',
         note: 'אותו פרופיל מספרי מבדיל בין חקירה בטוחה לבין פעולה מסוכנת מול לקוח. ייצוג המשמעות לא רק עונה, הוא משפיע על החלטות פעולה.',
-    },
-    disclaimer: {
-        lead: 'שתי הבהרות:',
-        idIsAddress: 'Token ID הוא כתובת במילון, לא משמעות',
-        idTail: '- המספר 1042 מצביע על המילה "החבילה", הוא לא "אומר" חבילה.',
-        dimsReadable: "ממדי המשמעות (Delivery, Failure וכו') הם צירים קריאים שבחרנו ללמידה",
-        dimsTail:
-            '- בייצוגים אמיתיים הממדים אינם תוויות אנושיות אלא מאות או אלפי ממדים נלמדים שאינם קריאים לאדם. עדיין לא מחשבים כאן דמיון או הסתברות, רק בונים פרופיל שאפשר יהיה להשוות בפרקים הבאים.',
     },
 };
 
@@ -982,19 +876,14 @@ export const EN_WORD_TEXT: WordLabText = {
             'Click a word to see which Token ID it points to. The ID is an address in the vocabulary, like a barcode that is not the taste of the product.',
     },
     table: {
-        title: 'Translation table',
-        sub: 'Human text to Model IDs',
-        colWord: 'Word / Token',
-        colId: 'Token ID',
-        note: 'Every word points to a fixed address in the vocabulary. The ID is an identifier, not meaning.',
         rowIsVector: 'The ID is the row number in the embedding table. The contents of that row are the vector on the left. That is how one address becomes the list of numbers that represents meaning.',
-        fallbackTokens: ['The', 'package', 'did', 'not', 'arrive'],
     },
     vector: {
-        title: 'The live meaning vector',
-        sub: 'Meaning Vector Live',
-        note: 'Values normalized between 0 and 1. Notice how the word "not" spikes Failure and Urgency. This is the meaning profile, separate from the teaching sum formula.',
-        trainingNote: 'These values were learned during training. In a chat the model looks them up and processes them in context, it does not compute a new vector from scratch.',
+        title: 'Teaching visualization of meaning',
+        sub: 'Teaching Visualization',
+        eduBadge: 'Teaching visualization',
+        eduNote: 'The axis names here, Delivery, Failure, Urgency, were chosen by us so you can see what is happening. A real representation has hundreds of dimensions, and most of them have no name a person can read. What this view does show correctly: several numbers together can hold a pattern.',
+        note: 'The values here run between 0 and 1.',
     },
     shift: {
         title: 'Word impact',
@@ -1005,24 +894,9 @@ export const EN_WORD_TEXT: WordLabText = {
         note: 'Direction of influence, not exact arithmetic. Every word contributes something to the numeric profile.',
     },
     dirLabels: { 'up-strong': 'Strong rise', up: 'Rise', 'up-slight': 'Slight rise' },
-    similar: {
-        title: 'Similar direction',
-        sub: 'Similar Meaning Preview',
-        aligns: 'Different Token IDs, the Meaning Vector aligns',
-        overlap: (pct) => `~${pct}% direction overlap`,
-        note: 'The two sentences share almost no Token IDs (204,1042,320,17,883 vs 204,1057,61,17,904,210), yet they point to the same meaning direction. This is a visual taste only. We open the geometry of this direction in the next chapter, and the full similarity computation in chapter 8.',
-    },
     agent: {
         needsApproval: 'Needs approval',
         note: 'The same numeric profile separates a safe investigation from a risky customer action. The meaning representation does not only answer, it shapes action decisions.',
-    },
-    disclaimer: {
-        lead: 'Two clarifications:',
-        idIsAddress: 'A Token ID is an address in the vocabulary, not meaning',
-        idTail: '- the number 1042 points to the word "package", it does not "say" package.',
-        dimsReadable: 'The meaning dimensions (Delivery, Failure, etc.) are readable axes we chose for learning',
-        dimsTail:
-            '- in real representations the dimensions are not human labels but hundreds or thousands of learned dimensions that are not human-readable. We are not computing similarity or probability here yet, just building a profile we can compare in later chapters.',
     },
 };
 
@@ -1055,19 +929,14 @@ export const ES_WORD_TEXT: WordLabText = {
             'Pulsa una palabra para ver a qué Token ID apunta. El ID es una dirección en el vocabulario, como un código de barras que no es el sabor del producto.',
     },
     table: {
-        title: 'Tabla de traducción',
-        sub: 'Texto humano a IDs del modelo',
-        colWord: 'Palabra / Token',
-        colId: 'Token ID',
-        note: 'Cada palabra apunta a una dirección fija en el vocabulario. El ID es un identificador, no significado.',
         rowIsVector: 'El ID es el número de fila en la tabla de embeddings. El contenido de esa fila es el vector de la izquierda. Así una dirección se convierte en la lista de números que representa significado.',
-        fallbackTokens: ['El', 'paquete', 'no', 'llegó'],
     },
     vector: {
-        title: 'El vector de significado en vivo',
-        sub: 'Vector de significado en vivo',
-        note: 'Valores normalizados entre 0 y 1. Fíjate cómo la palabra "no" dispara Fallo y Urgencia. Este es el perfil de significado, separado de la fórmula de suma didáctica.',
-        trainingNote: 'Estos valores se aprendieron durante el entrenamiento. En un chat el modelo los consulta y los procesa en contexto, no calcula un vector nuevo desde cero.',
+        title: 'Visualización didáctica del significado',
+        sub: 'Visualización didáctica',
+        eduBadge: 'Visualización didáctica',
+        eduNote: 'Los nombres de los ejes de aquí, Entrega, Fallo, Urgencia, los elegimos nosotros para que puedas ver lo que ocurre. Una representación real tiene cientos de dimensiones, y la mayoría no tiene un nombre que una persona pueda leer. Lo que esta vista sí muestra bien: varios números juntos pueden sostener un patrón.',
+        note: 'Los valores aquí van entre 0 y 1.',
     },
     shift: {
         title: 'Impacto de la palabra',
@@ -1078,24 +947,9 @@ export const ES_WORD_TEXT: WordLabText = {
         note: 'Dirección de influencia, no aritmética exacta. Cada palabra aporta algo al perfil numérico.',
     },
     dirLabels: { 'up-strong': 'Subida fuerte', up: 'Subida', 'up-slight': 'Subida leve' },
-    similar: {
-        title: 'Dirección similar',
-        sub: 'Vista previa de significado similar',
-        aligns: 'Token IDs distintos, el vector de significado se alinea',
-        overlap: (pct) => `~${pct}% de solapamiento de dirección`,
-        note: 'Las dos frases casi no comparten Token IDs (204,1042,17,883 vs 204,1057,17,61,904), pero apuntan a la misma dirección de significado. Esto es solo una muestra visual. Abrimos la geometría de esta dirección en el próximo capítulo, y el cálculo completo de similitud en el capítulo 8.',
-    },
     agent: {
         needsApproval: 'Requiere aprobación',
         note: 'El mismo perfil numérico separa una investigación segura de una acción arriesgada hacia el cliente. La representación de significado no solo responde, también moldea decisiones de acción.',
-    },
-    disclaimer: {
-        lead: 'Dos aclaraciones:',
-        idIsAddress: 'Un Token ID es una dirección en el vocabulario, no significado',
-        idTail: '- el número 1042 apunta a la palabra "paquete", no "dice" paquete.',
-        dimsReadable: 'Las dimensiones de significado (Entrega, Fallo, etc.) son ejes legibles que elegimos para aprender',
-        dimsTail:
-            '- en representaciones reales las dimensiones no son etiquetas humanas sino cientos o miles de dimensiones aprendidas que no son legibles para una persona. Aún no calculamos similitud ni probabilidad aquí, solo construimos un perfil que podremos comparar en capítulos posteriores.',
     },
     dimLabel: {
         delivery: 'Entrega',
@@ -1140,19 +994,14 @@ export const RU_WORD_TEXT: WordLabText = {
             'Нажмите на слово, чтобы увидеть, на какой Token ID оно указывает. ID - это адрес в словаре, как штрихкод, который не является вкусом продукта.',
     },
     table: {
-        title: 'Таблица перевода',
-        sub: 'Человеческий текст в ID модели',
-        colWord: 'Слово / Token',
-        colId: 'Token ID',
-        note: 'Каждое слово указывает на постоянный адрес в словаре. ID - это идентификатор, а не смысл.',
         rowIsVector: 'ID это номер строки в таблице embedding. Содержимое этой строки и есть вектор слева. Так один адрес превращается в список чисел, представляющий смысл.',
-        fallbackTokens: ['Посылка', 'не', 'пришла'],
     },
     vector: {
-        title: 'Живой вектор смысла',
-        sub: 'Живой вектор смысла',
-        note: 'Значения нормализованы от 0 до 1. Обратите внимание, как слово "не" поднимает Сбой и Срочность. Это профиль смысла, отдельный от учебной формулы суммы.',
-        trainingNote: 'Эти значения были выучены во время обучения. В чате модель берёт их и обрабатывает в контексте, она не вычисляет новый вектор с нуля.',
+        title: 'Учебная визуализация смысла',
+        sub: 'Учебная визуализация',
+        eduBadge: 'Учебная визуализация',
+        eduNote: 'Названия осей здесь, Доставка, Сбой, Срочность, выбрали мы сами, чтобы вы могли увидеть, что происходит. В настоящем представлении сотни измерений, и у большинства нет названия, которое человек мог бы прочитать. Что эта визуализация показывает верно: несколько чисел вместе могут удерживать целый узор.',
+        note: 'Значения здесь лежат между 0 и 1.',
     },
     shift: {
         title: 'Влияние слова',
@@ -1163,24 +1012,9 @@ export const RU_WORD_TEXT: WordLabText = {
         note: 'Направление влияния, не точная арифметика. Каждое слово что-то вносит в числовой профиль.',
     },
     dirLabels: { 'up-strong': 'Сильный рост', up: 'Рост', 'up-slight': 'Лёгкий рост' },
-    similar: {
-        title: 'Похожее направление',
-        sub: 'Просмотр похожего смысла',
-        aligns: 'Разные Token IDs, вектор смысла выравнивается',
-        overlap: (pct) => `~${pct}% совпадения направления`,
-        note: 'Две фразы почти не делят Token IDs (1042,17,883 против 1057,17,904), но указывают в одно и то же направление смысла. Это только визуальная проба. Геометрию этого направления мы откроем в следующей главе, а полное вычисление похожести в главе 8.',
-    },
     agent: {
         needsApproval: 'Нужно одобрение',
         note: 'Тот же числовой профиль отличает безопасное расследование от рискованного действия с клиентом. Представление смысла не только отвечает, оно влияет на решения о действиях.',
-    },
-    disclaimer: {
-        lead: 'Два уточнения:',
-        idIsAddress: 'Token ID - это адрес в словаре, а не смысл',
-        idTail: '- число 1042 указывает на слово "Посылка", но не "означает" посылку.',
-        dimsReadable: 'Измерения смысла (Доставка, Сбой и т.д.) это читаемые оси, которые мы выбрали для обучения',
-        dimsTail:
-            '- в реальных представлениях измерения это не человеческие метки, а сотни или тысячи выученных измерений, не читаемых человеком. Здесь мы пока не вычисляем похожесть или вероятность, лишь строим профиль, который сможем сравнить в следующих главах.',
     },
     dimLabel: {
         delivery: 'Доставка',
@@ -1225,19 +1059,14 @@ export const AR_WORD_TEXT: WordLabText = {
             'اضغط على كلمة لترى إلى أي Token ID تشير. الـ ID عنوان في القاموس، كباركود ليس هو طعم المنتج.',
     },
     table: {
-        title: 'جدول الترجمة',
-        sub: 'نص بشري إلى IDs النموذج',
-        colWord: 'كلمة / Token',
-        colId: 'Token ID',
-        note: 'كل كلمة تشير إلى عنوان ثابت في القاموس. الـ ID معرّف، لا معنى.',
         rowIsVector: 'الـ ID هو رقم الصف في جدول الـ embedding. محتوى ذلك الصف هو المتجه على اليسار. هكذا يتحوّل عنوان واحد إلى قائمة الأرقام التي تمثّل المعنى.',
-        fallbackTokens: ['الطرد', 'لم', 'يصل'],
     },
     vector: {
-        title: 'متجه المعنى الحي',
-        sub: 'متجه المعنى الحي',
-        note: 'قيم مُسوّاة بين 0 و1. لاحظ كيف ترفع كلمة "لم" الفشل والإلحاح. هذا ملف المعنى، منفصل عن صيغة الجمع التعليمية.',
-        trainingNote: 'هذه القيم تعلّمها النموذج أثناء التدريب. في المحادثة يستدعيها ويعالجها ضمن السياق، ولا يحسب متجهًا جديدًا من الصفر.',
+        title: 'عرض تعليمي للمعنى',
+        sub: 'عرض تعليمي',
+        eduBadge: 'عرض تعليمي',
+        eduNote: 'أسماء المحاور هنا، تسليم وفشل وإلحاح، اخترناها نحن كي ترى ما يجري. التمثيل الحقيقي فيه مئات الأبعاد، ومعظمها بلا اسم يستطيع الإنسان قراءته. أما ما يعرضه هذا العرض بصدق فهو: عدة أرقام معًا قادرة على حمل نمط.',
+        note: 'القيم هنا تتراوح بين 0 و1.',
     },
     shift: {
         title: 'تأثير الكلمة',
@@ -1248,24 +1077,9 @@ export const AR_WORD_TEXT: WordLabText = {
         note: 'اتجاه التأثير، لا حساب دقيق. كل كلمة تسهم بشيء في الملف الرقمي.',
     },
     dirLabels: { 'up-strong': 'ارتفاع قوي', up: 'ارتفاع', 'up-slight': 'ارتفاع خفيف' },
-    similar: {
-        title: 'اتجاه متشابه',
-        sub: 'معاينة المعنى المتشابه',
-        aligns: 'Token IDs مختلفة، متجه المعنى يتراصف',
-        overlap: (pct) => `~${pct}% تطابق في الاتجاه`,
-        note: 'الجملتان لا تتشاركان أي Token IDs تقريبًا (1042,17,883 مقابل 1057,17,904)، لكنهما تشيران إلى اتجاه المعنى نفسه. هذه مجرد لمحة بصرية. سنفتح هندسة هذا الاتجاه في الفصل التالي، والحساب الكامل للتشابه في الفصل 8.',
-    },
     agent: {
         needsApproval: 'يلزم موافقة',
         note: 'الملف الرقمي نفسه يميّز بين تحقيق آمن وإجراء محفوف بالمخاطر تجاه العميل. تمثيل المعنى لا يجيب فقط، بل يؤثّر على قرارات الإجراء.',
-    },
-    disclaimer: {
-        lead: 'توضيحان:',
-        idIsAddress: 'Token ID عنوان في القاموس، لا معنى',
-        idTail: '- الرقم 1042 يشير إلى كلمة "الطرد"، لا "يعني" الطرد.',
-        dimsReadable: 'أبعاد المعنى (تسليم، فشل، إلخ) محاور قابلة للقراءة اخترناها للتعلّم',
-        dimsTail:
-            '- في التمثيلات الحقيقية الأبعاد ليست تسميات بشرية بل مئات أو آلاف الأبعاد المتعلَّمة غير القابلة للقراءة البشرية. هنا لا نحسب بعد التشابه أو الاحتمال، بل نبني ملفًا سنتمكّن من مقارنته في الفصول التالية.',
     },
     dimLabel: {
         delivery: 'تسليم',
@@ -1310,19 +1124,14 @@ export const JA_WORD_TEXT: WordLabText = {
             '単語を押すと、それがどの Token ID を指すか分かります。ID は辞書内のアドレスで、商品の味ではないバーコードのようなものです。',
     },
     table: {
-        title: '変換テーブル',
-        sub: '人間のテキストからモデルの IDs へ',
-        colWord: '単語 / Token',
-        colId: 'Token ID',
-        note: 'どの単語も辞書内の固定アドレスを指します。ID は識別子で、意味ではありません。',
         rowIsVector: 'ID は embedding テーブルの行番号です。その行の中身が左のベクトルです。こうして一つのアドレスが、意味を表す数値の並びになります。',
-        fallbackTokens: ['荷物', 'が', '届か', 'なかった'],
     },
     vector: {
-        title: '意味ベクトル（ライブ）',
-        sub: '意味ベクトル（ライブ）',
-        note: '値は0から1に正規化されています。「なかった」が失敗と緊急度をどう跳ね上げるかに注目。これは意味のプロファイルで、学習用の合計式とは別物です。',
-        trainingNote: 'これらの値は学習時に学ばれたものです。会話ではモデルはそれを参照し、文脈の中で処理します。新しいベクトルをゼロから計算するわけではありません。',
+        title: '意味の学習用ビジュアル',
+        sub: '学習用ビジュアル',
+        eduBadge: '学習用ビジュアル',
+        eduNote: 'ここでの軸の名前（配送、失敗、緊急度）は、何が起きているかを見てもらうために私たちが選んだものです。実際の表現には数百の次元があり、その多くには人間が読める名前はありません。このビジュアルが正しく示しているのは、複数の数値がまとまって一つのパターンを保てる、ということです。',
+        note: 'ここでの値は0から1の範囲です。',
     },
     shift: {
         title: '単語の影響',
@@ -1333,24 +1142,9 @@ export const JA_WORD_TEXT: WordLabText = {
         note: '影響の方向で、正確な算術ではありません。どの単語も数値プロファイルに何かを加えます。',
     },
     dirLabels: { 'up-strong': '大きく上昇', up: '上昇', 'up-slight': 'わずかに上昇' },
-    similar: {
-        title: '似た方向',
-        sub: '類似した意味のプレビュー',
-        aligns: 'Token IDs は違っても、意味ベクトルが揃う',
-        overlap: (pct) => `方向の一致 ~${pct}%`,
-        note: '二つの文は Token IDs をほとんど共有しません（1042,883,17 と 1057,904,17）が、同じ意味の方向を指します。これは視覚的な味見にすぎません。この方向の幾何は次の章で、完全な類似度の計算は第8章で開きます。',
-    },
     agent: {
         needsApproval: '承認が必要',
         note: '同じ数値プロファイルが、安全な調査と顧客へのリスクの高い行動を区別します。意味の表現は答えるだけでなく、行動の判断にも影響します。',
-    },
-    disclaimer: {
-        lead: '二つの注意：',
-        idIsAddress: 'Token ID は辞書内のアドレスで、意味ではない',
-        idTail: '数値1042は単語「荷物」を指しますが、「荷物」を意味するわけではありません。',
-        dimsReadable: '意味の次元（配送、失敗など）は、学習のために選んだ読みやすい軸です',
-        dimsTail:
-            '実際の表現では、次元は人間のラベルではなく、人間には読めない数百から数千の学習された次元です。ここではまだ類似度や確率を計算せず、後の章で比較できるプロファイルを作っているだけです。',
     },
     dimLabel: {
         delivery: '配送',

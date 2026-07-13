@@ -397,27 +397,6 @@ export interface SimilarItem {
     profile: Profile;
 }
 
-export interface SimilarPair {
-    left: SimilarItem;
-    right: SimilarItem;
-    /** הממדים המשותפים שמודגשים בהשוואה. */
-    sharedDims: DimKey[];
-}
-
-export const SIMILAR_PAIR: SimilarPair = {
-    left: {
-        prompt: 'החבילה לא הגיעה',
-        tokens: ['החבילה', 'לא', 'הגיעה'],
-        profile: { delivery: 0.95, failure: 0.85, system: 0.20, urgency: 0.40, address: 0.10, payment: 0.05 },
-    },
-    right: {
-        prompt: 'המשלוח לא נמסר',
-        tokens: ['המשלוח', 'לא', 'נמסר'],
-        profile: { delivery: 0.90, failure: 0.80, system: 0.15, urgency: 0.38, address: 0.10, payment: 0.05 },
-    },
-    sharedDims: ['delivery', 'failure', 'system'],
-};
-
 /**
  * חיווי קרבה ויזואלי בלבד (0..1) על בסיס הממדים המשותפים.
  * זו אינה נוסחת הדמיון של פרק 8 - רק עזר תצוגה לטיזר.
@@ -576,7 +555,7 @@ export interface SentenceStruct {
 
 /**
  * רישום משפטים מבני קטן לשימוש עתידי. המספרים נגזרים מנתוני המנוע הקיימים
- * (SCENARIOS ו-SIMILAR_PAIR) כדי לשמור עקביות, פלוס משפט "זר" אחד רחוק להשוואה.
+ * (SCENARIOS) כדי לשמור עקביות, פלוס משפט "זר" אחד רחוק להשוואה.
  * ה-id יציב ואינו מתורגם. הטקסט המקומי יצורף לפי id בקומיט נפרד.
  */
 export const SENTENCE_STRUCTS: SentenceStruct[] = [

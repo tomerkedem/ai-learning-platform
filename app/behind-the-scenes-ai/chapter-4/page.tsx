@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Sparkles, MousePointerClick, ArrowLeftRight, Lock, ArrowLeft, ArrowRight, CheckCircle2, Info, Hash, TrendingUp, HelpCircle, FlaskConical, Table2, GraduationCap } from 'lucide-react';
+import { Sparkles, MousePointerClick, ArrowLeftRight, Lock, ArrowLeft, ArrowRight, CheckCircle2, Info, Hash, TrendingUp, HelpCircle, Table2, GraduationCap } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -18,6 +18,7 @@ import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
 import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import { EmbeddingLookupLab } from './components/EmbeddingLookupLab';
+import { SentenceBridge } from './components/SentenceBridge';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
 import { getWordText } from './wordLabContent';
 import { useT } from '@/i18n/useT';
@@ -206,20 +207,32 @@ export default function BehindTheScenesChapter4() {
     const sLookup: ReadAloudSegment = { id: 'lookup', label: el.title, text: `${el.title}. ${el.intro}` };
     const sLookupLearned: ReadAloudSegment = { id: 'lookup-learned', label: el.vectorTitle, text: `${el.vectorNote} ${el.learnedNote}` };
     const sLookupView: ReadAloudSegment = { id: 'lookup-view', label: el.viewNumbers, text: el.viewNote };
-    const sTable: ReadAloudSegment = { id: 'embedding-table', label: c4.embeddingTable.title, text: `${c4.embeddingTable.title}. ${c4.embeddingTable.body}` };
+    const sTable: ReadAloudSegment = { id: 'embedding-table', label: c4.embeddingTable.title, text: `${c4.embeddingTable.title} ${c4.embeddingTable.lines.join(' ')} ${c4.embeddingTable.note}` };
     const sRowIsVector: ReadAloudSegment = { id: 'row-is-vector', label: c4.embeddingTable.title, text: wl.table.rowIsVector };
+    // הגשר מטוקנים למשפט: נקרא לפי סדר התצוגה (כותרת, מבוא, שלושת השלבים, ואז ההבהרה).
+    const sSequence: ReadAloudSegment = {
+        id: 'sequence',
+        label: c4.sequence.title,
+        text: [
+            c4.sequence.title,
+            c4.sequence.intro,
+            ...c4.sequence.steps.map((st, i) => `${i + 1}. ${st.title}. ${st.body}`),
+            c4.sequence.clarify,
+        ].join(' '),
+    };
     const sVector: ReadAloudSegment = { id: 'vector', label: wl.vector.title, text: wl.vector.note };
-    const sVectorTraining: ReadAloudSegment = { id: 'vector-training', label: wl.vector.title, text: wl.vector.trainingNote };
+    const sVectorEdu: ReadAloudSegment = { id: 'vector-edu', label: wl.vector.eduBadge, text: wl.vector.eduNote };
     const sTraining: ReadAloudSegment = { id: 'training', label: c4.trainingInference.title, text: `${c4.trainingInference.title}. ${c4.trainingInference.body}` };
-    const sSimilar: ReadAloudSegment = { id: 'similar', label: wl.similar.title, text: wl.similar.note };
+    // סיכום מעבדה 2: סגירה קצרה בלבד, בלי ההשוואה שהוסרה
+    const sLabConclusion: ReadAloudSegment = { id: 'lab-conclusion', label: c4.labConclusion.title, text: `${c4.labConclusion.title} ${c4.labConclusion.body}` };
     const sPracticalFull: ReadAloudSegment = { id: 'practical', label: c4.practical.title, text: `${c4.practical.title}. ${c4.practical.lead} ${c4.practical.uses.join('. ')}` };
     const sCaveat: ReadAloudSegment = { id: 'caveat', label: c4.practical.title, text: c4.practical.caveat };
     const sBridge: ReadAloudSegment = { id: 'bridge', label: c4.bridge, text: c4.bridge };
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
-        short: [sTitle, sPlain, sTable, sTraining, sBridge],
-        regular: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sTable, sVector, sTraining, sPracticalFull, sBridge],
-        full: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sLookupView, sTable, sRowIsVector, sVector, sVectorTraining, sTraining, sSimilar, sPracticalFull, sCaveat, sBridge],
+        short: [sTitle, sPlain, sTable, sSequence, sLabConclusion, sTraining, sBridge],
+        regular: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sTable, sSequence, sVectorEdu, sVector, sLabConclusion, sTraining, sPracticalFull, sBridge],
+        full: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sLookupView, sTable, sRowIsVector, sSequence, sVectorEdu, sVector, sLabConclusion, sTraining, sPracticalFull, sCaveat, sBridge],
     };
 
     // מבדק הפרק: המנגנון המשותף (onComplete, getReviewLinks, nextHref...) נשמר מ-quizData,
@@ -337,10 +350,36 @@ export default function BehindTheScenesChapter4() {
                 </div>
             </section>
 
+            {/* ══════════ מהי טבלת ה-embedding: הסבר המונח לפני שהלומד רואה טבלה במעבדה 1 ══════════ */}
+            <section className="mt-12 text-start" dir={dir}>
+                <div className="rounded-[2rem] border border-cyan-500/25 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
+                    <div className="flex items-start justify-between gap-2.5">
+                        <div className="flex items-center gap-2.5">
+                            <Table2 size={20} className="shrink-0 text-cyan-300" />
+                            <h3 className="text-xl font-black text-white md:text-2xl">{c4.embeddingTable.title}</h3>
+                        </div>
+                        <SpeakButton text={`${c4.embeddingTable.title} ${c4.embeddingTable.lines.join(' ')} ${c4.embeddingTable.note}`} className="mt-0.5" />
+                    </div>
+                    <ul className="mt-4 space-y-3">
+                        {c4.embeddingTable.lines.map((line) => (
+                            <li key={line} className="flex items-start gap-3">
+                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
+                                <span className="text-[15px] leading-relaxed text-slate-200">{line}</span>
+                            </li>
+                        ))}
+                    </ul>
+                    {/* הפישוט הלימודי: לא הערת שוליים, אלא חלק מההסבר */}
+                    <p className="mt-4 flex items-start gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[15px] leading-relaxed text-slate-300">
+                        <Info size={17} className="mt-0.5 shrink-0 text-cyan-300" />
+                        {c4.embeddingTable.note}
+                    </p>
+                </div>
+            </section>
+
             {/* ══════════ See + Touch: המעבדה המרכזית, ממילה למספרים ══════════ */}
             <section id="embedding-see" className="relative mt-12 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
                 <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="meaningSpace" line={c4.mentor.hero} width={150} flip={!isRtl} />
+                    <Mentor pose="meaningSpace" line={c4.mentor.lab} width={150} flip={!isRtl} />
                 </div>
                 <ExpandableLab title={c4.embeddingLookup.title}>
                     <EmbeddingLookupLab dir={dir} labNumber={1} />
@@ -349,28 +388,19 @@ export default function BehindTheScenesChapter4() {
 
             {/* ══════════ Reveal: המסלול המלא של משפט (טוקניזציה -> Token IDs -> וקטור) ══════════ */}
             <section id="word-lab" className="mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
-                <div className="flex items-center gap-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-sm font-black text-slate-200">2</span>
-                    <FlaskConical size={24} className="text-violet-400" />
-                    <div>
-                        <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">{c4.hood.eyebrow}</div>
-                        <h3 className="text-2xl font-bold text-white">{c4.embeddingTable.title}</h3>
-                    </div>
-                </div>
+                {/* מקטע מעבר (לא מעבדה, בלי מספר): מטוקנים למשפט. מכין למעבדה 2. */}
+                <SentenceBridge />
 
-                {/* הסבר טבלת ה-embedding: כתובת -> שורה -> וקטור */}
-                <div className="flex items-start gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5">
-                    <Table2 size={18} className="mt-0.5 shrink-0 text-cyan-300" />
-                    <p className="text-[15px] leading-relaxed text-slate-300">{c4.embeddingTable.body}</p>
-                    <SpeakButton text={`${c4.embeddingTable.title}. ${c4.embeddingTable.body}`} className="mt-0.5" />
-                </div>
-
-                <ExpandableLab title={c4.embeddingTable.title}>
+                {/* מעבדה 2: המספר 2 והכותרת יושבים בתוך הרכיב, בתחילת האינטראקציה האמיתית.
+                    כל השלבים והסיכום נמצאים בתוך גבול אחד של המעבדה. */}
+                <ExpandableLab title={`${c4.lab2.eyebrow}: ${c4.lab2.title}`}>
                     <WordToNumberLab />
                 </ExpandableLab>
 
-                {/* אימון מול הרצה: הערכים נלמדו פעם אחת, נשלפים בכל שיחה */}
-                <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-900/10 p-5">
+                {/* ── סוף מעבדה 2. מכאן חוזרים לנרטיב הפרק. ── */}
+
+                {/* תוכן פרק: נלמד פעם אחת באימון, נשלף בכל שיחה. לא שלב במעבדה. */}
+                <div className="mt-10 flex items-start gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-900/10 p-5">
                     <GraduationCap size={18} className="mt-0.5 shrink-0 text-emerald-300" />
                     <div className="flex-1">
                         <div className="mb-1 text-sm font-bold text-emerald-100">{c4.trainingInference.title}</div>

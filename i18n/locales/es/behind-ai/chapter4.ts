@@ -19,16 +19,17 @@ export const chapter4 = {
     // Hero
     hero: {
         badge: 'Behind the Scenes · 04',
-        titleLead: 'Cómo se convierte el texto',
-        titleHighlight: 'en un número con significado?',
-        lede: 'El motor no ve palabras. Cada palabra se convierte en un token, cada token recibe un número identificador, y el número apunta a una fila en una tabla enorme. Esa fila es un vector, una lista de números que el modelo aprendió para representar el significado. Eso es el embedding.',
-        chipObject: 'Sigue una palabra mientras se convierte en un número',
-        chipMeaning: 'Mira cómo se construye el vector de significado',
+        titleLead: 'Cómo lleva un Token ID',
+        titleHighlight: 'a una representación numérica aprendida?',
+        lede: 'En el capítulo anterior vimos cómo el texto se divide en tokens. Ahora seguimos lo que ocurre después. Cada token tiene un Token ID, y ese ID funciona como una dirección en la tabla de embeddings. La dirección lleva a una fila de números que se aprendió durante el entrenamiento. Esa fila es el vector del token, y representa patrones y relaciones que el modelo aprendió de los datos.',
+        chipObject: 'Sigue un token desde su Token ID hasta su vector',
+        chipMeaning: 'Mira cómo se recupera el vector aprendido del token',
     },
 
     // Burbujas del mentor (solo texto; la pose y la ubicación son estructurales en la página)
     mentor: {
         hero: 'El motor ve números, no palabras',
+        lab: 'Fíjate en la fila que se enciende en la tabla',
         lock: 'Aprendido en el entrenamiento, consultado en un chat',
         practical: 'El texto se volvió número, ahora podemos calcular',
     },
@@ -73,7 +74,7 @@ export const chapter4 = {
         eyebrow: 'En palabras simples',
         title: '¿Entonces qué es de verdad un embedding?',
         lines: [
-            'Cada token recibe un número identificador, y el número apunta a una fila fija en una tabla.',
+            'Cada token ya tiene un número identificador, y ese número apunta a una fila fija en una tabla.',
             'La fila es un vector: una lista de números, no un solo número.',
             'Estos números se aprendieron en el entrenamiento, para que el vector represente el significado del token. Un vector así se llama embedding.',
             'Todo embedding es un vector, pero no todo vector es un embedding. Un embedding es un vector que el modelo aprendió para representar significado.',
@@ -96,11 +97,65 @@ export const chapter4 = {
 
     // De una tabla a un vector: el puente explícito del Token ID (dirección) al vector (contenido de la fila)
     embeddingTable: {
-        title: 'De una tabla a un vector',
-        body: 'La tabla de embeddings es una lista enorme de filas, una fila por cada token del vocabulario. El Token ID es el número de fila. El modelo va a esa fila, y su contenido es el vector. Así una dirección se convierte en una lista de números que representa significado.',
+        title: '¿Qué es la tabla de embeddings?',
+        lines: [
+            'La tabla de embeddings es una tabla grande de filas de números que se aprendieron durante el entrenamiento. No es un diccionario: no contiene definiciones escritas y no se puede leer como un texto.',
+            'El Token ID es el número de fila, una dirección y nada más. Él mismo no contiene el significado.',
+            'La fila a la que lleva la dirección contiene el vector del token: la lista de números aprendidos para él.',
+            'Los valores se aprendieron una vez, en el entrenamiento. Durante el uso el modelo consulta la fila correspondiente, no la vuelve a aprender.',
+        ],
+        note: 'La mayoría de los números de una fila no tienen un nombre que una persona pueda leer. La tabla que se muestra aquí es una ilustración pequeña, con pocas filas y pocos valores. Una tabla real tiene muchos más tokens y muchas más dimensiones.',
     },
 
     // Entrenamiento vs inferencia: los valores se aprendieron una vez y se consultan en cada chat
+    sequence: {
+        eyebrow: 'De los tokens a la frase',
+        title: '¿Y qué pasa con una frase entera?',
+        intro: 'Ahora vamos a unir los vectores en una imagen más amplia de la frase.',
+        steps: [
+            {
+                title: 'Cada token recibe un vector',
+                body: 'Cada token apunta a su propia fila en la tabla y toma de ahí su vector.',
+            },
+            {
+                title: 'El modelo los procesa juntos',
+                body: 'El modelo mira la secuencia como un todo, y cada representación cambia según las palabras que la rodean.',
+            },
+            {
+                title: 'Al final verás una representación didáctica',
+                body: 'Resume el patrón que se forma una vez que todos los tokens se han procesado juntos y en contexto.',
+            },
+        ],
+        clarify: 'Una frase entera no tiene un Token ID propio ni una fila adicional en la tabla de embeddings. La representación que verás al final es una ilustración didáctica de la secuencia ya procesada.',
+    },
+
+    lab2: {
+        eyebrow: 'Laboratorio 2',
+        title: 'Del token a su representación',
+        goal: 'La frase ya llega como una secuencia de tokens. Aquí sigues un solo token: desde su Token ID hasta la fila aprendida a la que apunta.',
+        stepLabel: 'Paso',
+        steps: [
+            {
+                title: 'Elige una frase y ejecútala',
+                hint: 'Elige un escenario y pulsa "Reprodúcelo". La frase llega ya dividida en tokens, lista para inspeccionar.',
+            },
+            {
+                title: 'Elige un token y sigue su representación',
+                hint: 'Pulsa un token para ver su Token ID. El ID es una dirección, y apunta a una fila de la tabla de embeddings.',
+            },
+            {
+                title: 'Observa cómo cambia el patrón',
+                hint: 'Sigue las barras y pulsa un token para ver hacia dónde las empuja.',
+            },
+        ],
+        conclusionLabel: 'Conclusión del laboratorio',
+    },
+
+    labConclusion: {
+        title: '¿Qué hemos visto?',
+        body: 'La frase ya llegó como una secuencia de tokens. Cada token tiene un Token ID que apunta a una fila de la tabla de embeddings, y esa fila contiene el vector aprendido para él. Lo que viste es una visualización didáctica de una sola idea: al cambiar la entrada, cambia también la representación numérica. Cómo se mide la cercanía entre representaciones es el próximo capítulo.',
+    },
+
     trainingInference: {
         title: 'Aprendido una vez, consultado en cada chat',
         body: 'Los valores del vector se aprendieron una vez, durante el entrenamiento. En un chat el modelo no entrena un vector nuevo desde cero. Solo consulta el vector que ya aprendió, y luego las capas del modelo lo procesan según el contexto de la frase.',

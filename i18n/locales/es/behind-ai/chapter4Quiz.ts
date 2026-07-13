@@ -45,46 +45,46 @@ export const chapter4Quiz = {
         },
         3: {
             question:
-                '"El paquete no llegó" y "El envío no fue entregado" reciben Token IDs completamente distintos, pero un vector de significado casi idéntico. ¿Qué nos enseña esto?',
+                'Un token ya tiene un Token ID. ¿Qué ocurre después?',
             options: [
-                'Que el modelo debe ver exactamente las mismas palabras para reconocer la intención',
-                'Que el modelo detecta una dirección de significado similar incluso con palabras distintas',
-                'Que un Token ID es en realidad el significado de la palabra',
-                'Que las dos frases son en realidad la misma frase',
+                'El ID apunta a una fila de la tabla de embeddings, que contiene el vector aprendido del token',
+                'El ID en sí ya contiene el significado del token, y no hace falta otro paso',
+                'El modelo construye un vector nuevo desde cero para el token en cada conversación',
+                'El tamaño del ID decide qué tan importante es el token en la frase',
             ],
             explanation:
-                'Este es el momento sorprendente del capítulo. A pesar de IDs completamente distintos, el vector de significado es casi idéntico. El modelo no necesita las mismas palabras para detectar una dirección similar, porque trabaja sobre el significado, no sobre las palabras en sí.',
+                'Un Token ID es una dirección, no significado. Apunta a una fila fija de la tabla de embeddings, y el contenido de esa fila es el vector aprendido durante el entrenamiento. El modelo lo consulta al usarlo, no lo recalcula en cada conversación, y el tamaño del ID no dice nada sobre la importancia del token.',
         },
         4: {
-            question: '¿Qué es el vector de significado (Meaning Vector) que vimos en este capítulo?',
+            question: 'En el laboratorio viste barras con nombres como "Entrega", "Fallo" y "Urgencia". ¿Qué dice eso sobre las dimensiones de un vector real?',
             options: [
-                'Una sola palabra que resume la frase',
-                'Una lista de números que describe hacia dónde apunta la frase',
-                'Una única dirección en el vocabulario',
-                'El porcentaje de confianza del motor en su respuesta',
+                'Los nombres se eligieron para la visualización. Una representación real tiene muchas más dimensiones y casi ninguna tiene un nombre legible',
+                'Son las dimensiones reales del modelo, y se pueden leer exactamente así',
+                'Cada dimensión tiene un nombre claro, pero solo los ingenieros pueden verlo',
+                'Las dimensiones se renombran en cada conversación, según el tema',
             ],
             explanation:
-                'Un vector es una lista de números que representa significado, un perfil que describe hacia dónde apunta la frase. Es la forma central de representación en todo modelo de IA, no un único Token ID ni una palabra.',
+                'Los nombres que ves en la visualización se eligieron para ilustrar. Una representación real tiene cientos de dimensiones o más, y la mayoría no tiene un nombre que una persona pueda leer, tampoco los ingenieros. La estructura de la representación se aprende durante el entrenamiento y no recibe nombres nuevos en cada conversación. Los valores, en cambio, sí pueden cambiar según la entrada y el contexto.',
         },
         5: {
             question:
-                'En el modo Agent vimos que el mismo perfil numérico separa una investigación segura de una acción arriesgada hacia un cliente. ¿Qué suposición es errónea aquí?',
+                'En el laboratorio cambiamos la fila de una palabra del modo "aprendido" al modo "aleatorio". Se sigue mostrando una lista de números. ¿Qué es cierto?',
             options: [
-                'Que el vector también afecta a las decisiones de acción, no solo a las respuestas',
-                'Que la misma representación numérica puede llevar a distintos niveles de riesgo',
-                'Que los números describen significado, no solo la identidad de las palabras',
-                'Que el vector es solo decoración visual, sin efecto real en la decisión',
+                'Es un vector aleatorio, no un embedding. Sus valores nunca se aprendieron en el entrenamiento',
+                'Sigue siendo un embedding, porque cualquier lista de números que representa una palabra lo es',
+                'Es un embedding nuevo que el modelo entrena ahora mismo, solo para esta conversación',
+                'Ya no es un vector, porque solo los valores aprendidos pueden formar un vector',
             ],
             explanation:
-                'El vector no es decoración. El mismo perfil numérico no solo responde, también moldea decisiones de acción y separa una investigación segura de una acción arriesgada que requiere aprobación. Las demás afirmaciones son correctas.',
+                'Las dos filas son vectores, pero solo una es un embedding. Lo que convierte un vector en embedding no es que contenga números, sino que sus valores se aprendieron durante el entrenamiento para representar significado. Los números aleatorios siguen siendo una lista de números sin significado aprendido. Y además: el modelo no entrena un vector nuevo en cada chat, consulta los valores que ya aprendió y los procesa en contexto.',
         },
     } satisfies Record<Chapter4QuizId, Chapter4QuizText>,
 
     conceptLabels: {
         'המנוע רואה מספרים': 'El motor ve números',
         'Token ID ככתובת': 'Token ID como dirección',
-        'כיוון משמעות משותף': 'Dirección de significado compartida',
-        'וקטור משמעות': 'Vector de significado',
-        'וקטור והחלטות': 'Vectores y decisiones',
+        'מכתובת לווקטור': 'De la dirección al vector',
+        'ממדים אינם קריאים': 'Las dimensiones no son legibles',
+        'נלמד מול אקראי': 'Aprendido frente a aleatorio',
     } as Record<string, string>,
 };

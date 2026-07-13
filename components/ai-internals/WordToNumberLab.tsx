@@ -4,18 +4,18 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
     Sparkles, Info, Compass, ChevronDown, ChevronUp, Table2,
-    Play, RotateCcw, Keyboard, ArrowLeftRight, ShieldAlert,
-    ShieldCheck, MousePointerClick, Binary,
+    Play, RotateCcw, Keyboard,
+    MousePointerClick, Binary, FlaskConical,
 } from 'lucide-react';
 
 import { ACCENTS } from './accents';
+import { SpeakButton } from './SpeakButton';
 import { useT } from '@/i18n/useT';
 
 import {
     activeStepIndex,
     dimsForMode,
     dimValue,
-    visualCloseness,
     DIM_INFO,
     DIM_STYLE,
     type EngineMode,
@@ -27,7 +27,6 @@ import {
 import {
     getWordDataset,
     getWordText,
-    type WordLabDataset,
     type WordLabText,
 } from '@/app/behind-the-scenes-ai/chapter-4/wordLabContent';
 
@@ -41,10 +40,12 @@ import {
  * האנגלי משתמש בשכבת הנתונים והמחרוזות מ-wordLabContent. embeddingEngine לא משתנה.
  */
 export const WordToNumberLab: React.FC = () => {
-    const { locale, dir } = useT();
+    const { t, locale, dir } = useT();
     const isHe = locale === 'he';
     const data = getWordDataset(locale);
     const tx = getWordText(locale);
+    const lab = t.behindAi.chapter4.lab2;
+    const cc = t.behindAi.chapter4.labConclusion;
 
     const reduce = useReducedMotion();
 
@@ -127,126 +128,165 @@ export const WordToNumberLab: React.FC = () => {
     const selectToken = (w: string) => setSelected((cur) => (cur === w ? null : w));
 
     return (
-        <div className="space-y-4">
-            {/* בקרות המעבדה (בחירת תרחיש + נגן) נשארות דביקות בראש בזמן גלילה, כדי שאפשר
-                יהיה להחליף דוגמה ולראות את התוצאה למטה בלי לגלול חזרה למעלה. */}
-            <div
-                className="sticky z-20 space-y-3 rounded-2xl bg-slate-950/80 p-2 backdrop-blur-md"
-                style={{ top: 'var(--bts-sticky-top, 88px)' }}
-                dir={dir}
-            >
-            {/* ── בחירת תרחיש (משפט לדוגמה) ──────────────────────────────────── */}
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4" dir={dir}>
-                <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-bold text-slate-400">{tx.scenarioLabel}</span>
-                    {modeScenarios.map((s) => {
-                        const active = s.id === scenario.id;
-                        const sa = ACCENTS[s.accent];
-                        return (
-                            <button
-                                key={s.id}
-                                type="button"
-                                onClick={() => resetTo(s.id)}
-                                aria-pressed={active}
-                                className={`rounded-xl border px-3 py-1.5 text-start leading-tight transition-colors ${
-                                    active ? `${sa.border} ${sa.bgSoft}` : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-600'
-                                }`}
-                            >
-                                <span className={`block text-xs font-bold ${active ? sa.text : 'text-slate-300'}`}>{isHe ? s.labelHe : s.labelEn}</span>
-                                {isHe && <span className="block text-[9px] uppercase tracking-wider text-slate-500" dir="ltr">{s.labelEn}</span>}
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* ── שדה ההקלדה ─────────────────────────────────────────────── */}
-            <TypingField
-                text={text}
-                prompt={scenario.prompt}
-                accent={scenario.accent}
-                autoTyping={autoTyping}
-                onAutoType={handleAutoType}
-                onReset={handleReset}
-                dir={dir}
-                tx={tx}
-            />
-            </div>
-
-            {/* ── שורת "מה השתנה" ────────────────────────────────────────── */}
-            <AnimatePresence mode="wait">
-                {step && (
-                    <motion.div
-                        key={`${scenario.id}-${stepIndex}`}
-                        initial={reduce ? false : { opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={reduce ? undefined : { opacity: 0, y: -6 }}
-                        transition={reduce ? { duration: 0 } : { duration: 0.25 }}
-                        className={`flex items-start gap-2 rounded-xl border ${a.border} ${a.bgSoft} p-3 text-start`}
-                        dir={dir}
-                    >
-                        <Sparkles size={15} className={`mt-0.5 shrink-0 ${a.text}`} />
-                        <span className="text-sm leading-relaxed text-slate-200">
-                            <span className={`font-bold ${a.text}`}>{tx.mainChangeLabel}</span>
-                            {step.mainChangeHe}
+        // גבול חיצוני אחד למעבדה 2. כל מה שבתוכו הוא שלב של אותה מעבדה, ולא מעבדה נוספת.
+        <section
+            dir={dir}
+            aria-labelledby="lab2-title"
+            className="rounded-[2rem] border border-violet-500/30 bg-slate-900/50 p-5 backdrop-blur-xl md:p-7"
+        >
+            {/* ── כותרת המעבדה: המספר 2 מופיע כאן, בתחילת האינטראקציה האמיתית ── */}
+            <div className="flex items-start justify-between gap-2.5">
+                <div className="flex items-start gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-violet-500/40 bg-violet-500/15 font-mono text-base font-black text-violet-200">
+                        2
+                    </span>
+                    <div>
+                        <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-300">
+                            <FlaskConical size={14} /> {lab.eyebrow}
                         </span>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* ── רכיב 2: ID Sequence Viewer (רוחב מלא, ה-wow הראשון) ─────── */}
-            <IdSequenceViewer
-                tokens={displayTokens}
-                idView={idView}
-                selected={selected}
-                accent={scenario.accent}
-                onToggle={setIdView}
-                onSelect={selectToken}
-                reduce={!!reduce}
-                dir={dir}
-                tx={tx}
-                tokenId={data.tokenId}
-            />
-
-            {/* גשר מפורש: ה-ID הוא מספר השורה בטבלה, ותוכן השורה הוא הווקטור */}
-            <div className="flex items-start gap-2 rounded-2xl border border-violet-500/25 bg-violet-900/10 p-3 text-start" dir={dir}>
-                <Table2 size={14} className="mt-0.5 shrink-0 text-violet-300" />
-                <span className="text-[13px] leading-relaxed text-slate-200">{tx.table.rowIsVector}</span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                {/* רכיב 3: Meaning Vector Live */}
-                <MeaningVectorLive step={step} prevStep={prevStep} dims={dims} reduce={!!reduce} dir={dir} tx={tx} isHe={isHe} />
-
-                <div className="space-y-4">
-                    {/* רכיב 1: Token ID Table */}
-                    <TokenIdTable tokens={displayTokens} selected={selected} accent={scenario.accent} onSelect={selectToken} dir={dir} tx={tx} tokenId={data.tokenId} />
-                    {/* רכיב 4: Vector Shift by Word */}
-                    <VectorShiftCard word={selected} accent={scenario.accent} reduce={!!reduce} dir={dir} tx={tx} isHe={isHe} shift={data.shift} />
+                        <h3 id="lab2-title" className="text-xl font-black text-white md:text-2xl">{lab.title}</h3>
+                    </div>
                 </div>
+                <SpeakButton text={`${lab.eyebrow}. ${lab.title}. ${lab.goal}`} className="mt-0.5" />
             </div>
+            <p className="mt-2 text-[15px] leading-relaxed text-slate-300">{lab.goal}</p>
 
-            {/* היגיון / החלטת Agent (רק במצב Agent) */}
-            <AnimatePresence>
-                {mode === 'agent' && step?.agent && (
-                    <AgentOutcomeCard key={`agent-${scenario.id}-${stepIndex}`} agent={step.agent} reduce={!!reduce} dir={dir} tx={tx} />
-                )}
-            </AnimatePresence>
+            {/* ── שלושת השלבים: פעולה, תצפית, שינוי. המסקנה אינה שלב, היא הסיכום שלמטה.
+                בדסקטופ שלבים 2 ו-3 יושבים זה לצד זה כזוג סיבה ותוצאה (בחירת טוקן -> השפעה
+                על הדפוס). במובייל הם נערמים, וסדר ה-DOM נשאר 1, 2, 3. ── */}
+            <ol className="mt-5 grid list-none grid-cols-1 gap-5 lg:grid-cols-2">
+                {/* שלב 1: בחרו משפט והריצו אותו (רוחב מלא: הוא מזין את שני השלבים הבאים) */}
+                <li className="lg:col-span-2">
+                    <StepHeader n={1} step={lab.steps[0]} stepLabel={lab.stepLabel} />
+                    {/* הפקדים אינם דביקים: ב-390px הם כיסו את התוצאה, והם רלוונטיים רק לשלב הזה.
+                        החלפת תרחיש מאפסת את ההרצה, ולכן עדיף שתהיה פעולה מודעת בראש המעבדה. */}
+                    <div className="space-y-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs font-bold text-slate-400">{tx.scenarioLabel}</span>
+                            {modeScenarios.map((s) => {
+                                const active = s.id === scenario.id;
+                                const sa = ACCENTS[s.accent];
+                                return (
+                                    <button
+                                        key={s.id}
+                                        type="button"
+                                        onClick={() => resetTo(s.id)}
+                                        aria-pressed={active}
+                                        className={`rounded-xl border px-3 py-1.5 text-start leading-tight transition-colors ${
+                                            active ? `${sa.border} ${sa.bgSoft}` : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-600'
+                                        }`}
+                                    >
+                                        <span className={`block text-xs font-bold ${active ? sa.text : 'text-slate-300'}`}>{isHe ? s.labelHe : s.labelEn}</span>
+                                        {isHe && <span className="block text-[9px] uppercase tracking-wider text-slate-500" dir="ltr">{s.labelEn}</span>}
+                                    </button>
+                                );
+                            })}
+                        </div>
 
-            {/* רכיב 5: Similar Meaning Preview (רוחב מלא, הפאנץ' של הפרק) */}
-            <SimilarMeaningPreview reduce={!!reduce} dir={dir} tx={tx} similar={data.similar} tokenId={data.tokenId} />
+                        <TypingField
+                            text={text}
+                            prompt={scenario.prompt}
+                            accent={scenario.accent}
+                            autoTyping={autoTyping}
+                            onAutoType={handleAutoType}
+                            onReset={handleReset}
+                            dir={dir}
+                            tx={tx}
+                        />
+                    </div>
 
-            {/* disclaimer: ממדי המשמעות הם צירים קריאים שנבחרו ללמידה */}
-            <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500" dir={dir}>
-                <Info size={14} className="mt-0.5 shrink-0" />
-                <span>
-                    {tx.disclaimer.lead} <span className="font-bold text-slate-400">{tx.disclaimer.idIsAddress}</span> {tx.disclaimer.idTail}{' '}
-                    <span className="font-bold text-slate-400">{tx.disclaimer.dimsReadable}</span> {tx.disclaimer.dimsTail}
-                </span>
+                    {/* שורת "מה השתנה": התוצאה של ההרצה */}
+                    <AnimatePresence mode="wait">
+                        {step && (
+                            <motion.div
+                                key={`${scenario.id}-${stepIndex}`}
+                                initial={reduce ? false : { opacity: 0, y: 6 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={reduce ? undefined : { opacity: 0, y: -6 }}
+                                transition={reduce ? { duration: 0 } : { duration: 0.25 }}
+                                className={`mt-3 flex items-start gap-2 rounded-xl border ${a.border} ${a.bgSoft} p-3 text-start`}
+                            >
+                                <Sparkles size={15} className={`mt-0.5 shrink-0 ${a.text}`} />
+                                <span className="text-[15px] leading-relaxed text-slate-200">
+                                    <span className={`font-bold ${a.text}`}>{tx.mainChangeLabel}</span>
+                                    {step.mainChangeHe}
+                                </span>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </li>
+
+                {/* שלב 2: עקבו אחרי הטוקנים. תצוגה אחת של מילה -> Token ID (לוח התרגום הוסר:
+                    הוא הציג בדיוק את אותו מיפוי בפורמט שני). פרטי הכתובת בשורת הפירוט שבתוכה. */}
+                <li>
+                    <StepHeader n={2} step={lab.steps[1]} stepLabel={lab.stepLabel} />
+                    <div className="space-y-2.5">
+                        <IdSequenceViewer
+                            tokens={displayTokens}
+                            idView={idView}
+                            selected={selected}
+                            accent={scenario.accent}
+                            onToggle={setIdView}
+                            onSelect={selectToken}
+                            reduce={!!reduce}
+                            dir={dir}
+                            tx={tx}
+                            tokenId={data.tokenId}
+                        />
+                        {/* ה-ID הוא מספר השורה, ותוכן השורה הוא הווקטור. הגשר לשלב 3. */}
+                        <div className="flex items-start gap-2 rounded-xl bg-violet-500/10 p-3">
+                            <Table2 size={15} className="mt-0.5 shrink-0 text-violet-300" />
+                            <span className="text-[15px] leading-relaxed text-slate-200">{tx.table.rowIsVector}</span>
+                        </div>
+                    </div>
+                </li>
+
+                {/* שלב 3: ראו איך הדפוס משתנה (התוצאה של בחירת הטוקן בשלב 2) */}
+                <li>
+                    <StepHeader n={3} step={lab.steps[2]} stepLabel={lab.stepLabel} />
+                    <div className="space-y-3">
+                        <MeaningVectorLive step={step} prevStep={prevStep} dims={dims} reduce={!!reduce} dir={dir} tx={tx} isHe={isHe} />
+                        <VectorShiftCard word={selected} accent={scenario.accent} reduce={!!reduce} dir={dir} tx={tx} isHe={isHe} shift={data.shift} />
+                    </div>
+                </li>
+            </ol>
+
+            {/* ── סיכום המעבדה: סגירה קצרה על מה שנצפה בשלבים 1 עד 3. בלי דוגמה חדשה, בלי
+                השוואה, בלי אחוזים ובלי ויזואליזציה נוספת. ── */}
+            <div className="mt-6 border-t border-violet-500/30 pt-4">
+                <div className="flex items-start justify-between gap-2.5">
+                    <div className="flex items-start gap-2.5">
+                        <Sparkles size={17} className="mt-0.5 shrink-0 text-violet-300" />
+                        <div>
+                            <span className="block text-[11px] font-bold uppercase tracking-[0.2em] text-violet-300">{lab.conclusionLabel}</span>
+                            <h4 className="mt-0.5 text-base font-bold text-white">{cc.title}</h4>
+                        </div>
+                    </div>
+                    <SpeakButton text={`${lab.conclusionLabel}. ${cc.title}. ${cc.body}`} className="mt-0.5" />
+                </div>
+                <p className="mt-2 text-[15px] leading-relaxed text-slate-200">{cc.body}</p>
             </div>
-        </div>
+        </section>
     );
 };
+
+/* ═══════════════════════ כותרת שלב פנימי במעבדה 2 ════════════════════════ */
+
+// שלב, לא מעבדה: מספור "שלב N", כותרת, והוראה קצרה צמודה לפעולה שמתחתיה.
+const StepHeader: React.FC<{ n: number; stepLabel: string; step: { title: string; hint: string } }> = ({ n, stepLabel, step }) => (
+    <div className="mb-3">
+        <div className="flex items-center gap-2.5">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-slate-600/60 bg-slate-800/60 font-mono text-[12px] font-black text-slate-200">
+                {n}
+            </span>
+            <h4 className="text-base font-bold leading-tight text-white">
+                <span className="text-slate-400">{stepLabel} {n}: </span>
+                {step.title}
+            </h4>
+        </div>
+        <p className="mt-1.5 ps-[2.125rem] text-[15px] leading-relaxed text-slate-400">{step.hint}</p>
+    </div>
+);
 
 /* ═══════════════════════════ שדה ההקלדה ══════════════════════════════════ */
 
@@ -268,7 +308,7 @@ const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyp
     const a = ACCENTS[accent];
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-4 text-start" dir={dir}>
+        <div className="rounded-xl bg-slate-950/40 p-4 text-start" dir={dir}>
             <div className="mb-3 flex items-center gap-2 text-xs text-slate-400">
                 <Keyboard size={14} className={a.text} />
                 {tx.typing.suggested}
@@ -330,7 +370,7 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
     const a = ACCENTS[accent];
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-xl bg-slate-950/30 p-4 text-start" dir={dir}>
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                     <Binary size={16} className={a.text} />
@@ -454,67 +494,6 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
     );
 };
 
-/* ═══════════════════════ רכיב 1: Token ID Table ══════════════════════════ */
-
-interface TokenIdTableProps {
-    tokens: string[];
-    selected: string | null;
-    accent: keyof typeof ACCENTS;
-    onSelect: (w: string) => void;
-    dir: 'rtl' | 'ltr';
-    tx: WordLabText;
-    tokenId: (w: string) => number | null;
-}
-
-const TokenIdTable: React.FC<TokenIdTableProps> = ({ tokens, selected, accent, onSelect, dir, tx, tokenId }) => {
-    const a = ACCENTS[accent];
-    // מציגים את המילים הייחודיות של המשפט הנוכחי; אם אין, דוגמה מהמילון.
-    const rows = useMemo(() => {
-        const base = tokens.length > 0 ? tokens : tx.table.fallbackTokens;
-        return Array.from(new Set(base));
-    }, [tokens, tx]);
-    const muted = tokens.length === 0;
-
-    return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
-            <div className="mb-3 flex items-center gap-2">
-                <Table2 size={16} className={a.text} />
-                <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">{tx.table.title}</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{tx.table.sub}</div>
-                </div>
-            </div>
-
-            <div className="overflow-hidden rounded-xl border border-slate-700/50">
-                <div className="grid grid-cols-[1fr_auto_1fr] bg-slate-800/40 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                    <span className="px-3 py-2">{tx.table.colWord}</span>
-                    <span className="px-2 py-2 text-center">→</span>
-                    <span className="px-3 py-2 text-end" dir="ltr">{tx.table.colId}</span>
-                </div>
-                {rows.map((w) => {
-                    const id = tokenId(w);
-                    const isSel = selected === w;
-                    return (
-                        <button
-                            key={w}
-                            type="button"
-                            onClick={() => onSelect(w)}
-                            className={`grid w-full grid-cols-[1fr_auto_1fr] items-center border-t border-slate-700/40 text-start transition-colors ${
-                                isSel ? a.bgSoft : 'hover:bg-slate-800/30'
-                            } ${muted ? 'opacity-50' : ''}`}
-                        >
-                            <span className={`px-3 py-2 text-sm font-bold ${isSel ? a.text : 'text-slate-200'}`}>{w}</span>
-                            <span className="px-2 py-2 text-center text-slate-600">→</span>
-                            <span className={`px-3 py-2 text-end font-mono text-sm ${isSel ? a.text : 'text-slate-300'}`} dir="ltr">{id ?? '-'}</span>
-                        </button>
-                    );
-                })}
-            </div>
-            <p className="mt-3 text-[11px] leading-relaxed text-slate-500">{tx.table.note}</p>
-        </div>
-    );
-};
-
 /* ═══════════════════════ רכיב 3: Meaning Vector Live ═════════════════════ */
 
 interface MeaningVectorLiveProps {
@@ -534,16 +513,25 @@ const MeaningVectorLive: React.FC<MeaningVectorLiveProps> = ({ step, prevStep, d
     const prev: Profile = prevStep ? prevStep.profile : {};
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
-            <div className="mb-4 flex items-center gap-2">
+        <div className="rounded-xl bg-slate-950/30 p-4 text-start" dir={dir}>
+            <div className="mb-2.5 flex flex-wrap items-center gap-2">
                 <Compass size={16} className="text-violet-300" />
                 <div className="leading-tight">
                     <div className="text-sm font-bold text-slate-200">{tx.vector.title}</div>
                     <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{tx.vector.sub}</div>
                 </div>
+                <span className="ms-auto inline-flex items-center gap-1 rounded-lg border border-amber-500/40 bg-amber-500/15 px-2 py-1 text-[13px] font-bold text-amber-100">
+                    <Info size={13} className="shrink-0" /> {tx.vector.eduBadge}
+                </span>
             </div>
 
-            <div className="space-y-2.5">
+            {/* ההבהרה הראשית על הפישוט הלימודי: מעל הפסים, לא כהערת שוליים. הלומד קורא אותה
+                לפני שהוא מפרש את שמות הצירים, כדי שלא יסיק שלממדים אמיתיים יש שמות קריאים. */}
+            <p className="mb-3 rounded-xl border border-amber-500/30 bg-amber-900/15 p-3 text-[15px] leading-relaxed text-amber-50">
+                {tx.vector.eduNote}
+            </p>
+
+            <div className="space-y-2">
                 {dims.map((key) => {
                     const value = dimValue(profile, key);
                     const before = dimValue(prev, key);
@@ -592,8 +580,7 @@ const MeaningVectorLive: React.FC<MeaningVectorLiveProps> = ({ step, prevStep, d
                 })}
             </div>
 
-            <p className="mt-4 text-[11px] leading-relaxed text-slate-500">{tx.vector.note}</p>
-            <p className="mt-2 text-[11px] font-semibold leading-relaxed text-violet-200/90">{tx.vector.trainingNote}</p>
+            <p className="mt-3 text-[13px] leading-relaxed text-slate-400">{tx.vector.note}</p>
         </div>
     );
 };
@@ -621,7 +608,7 @@ const VectorShiftCard: React.FC<VectorShiftCardProps> = ({ word, accent, reduce,
     const entries = word ? shift(word) : [];
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-xl bg-slate-950/30 p-4 text-start" dir={dir}>
             <div className="mb-3 flex items-center gap-2">
                 <ChevronUp size={16} className={a.text} />
                 <div className="leading-tight">
@@ -682,129 +669,5 @@ const VectorShiftCard: React.FC<VectorShiftCardProps> = ({ word, accent, reduce,
                 </AnimatePresence>
             )}
         </div>
-    );
-};
-
-/* ═══════════════════════ רכיב 5: Similar Meaning Preview ═════════════════ */
-
-interface SimilarItemData {
-    prompt: string;
-    tokens: string[];
-    profile: Profile;
-}
-
-const SimilarColumn: React.FC<{ item: SimilarItemData; dims: DimKey[]; reduce: boolean; dir: 'rtl' | 'ltr'; tokenId: (w: string) => number | null; dimLabel?: WordLabText['dimLabel'] }> = ({ item, dims, reduce, dir, tokenId, dimLabel }) => (
-    <div className="flex-1 rounded-xl border border-slate-700/50 bg-slate-950/40 p-4">
-        <div className="mb-3 text-sm font-bold text-slate-100">&quot;{item.prompt}&quot;</div>
-        <div className="mb-3 flex flex-wrap gap-1.5" dir={dir}>
-            {item.tokens.map((t, i) => (
-                <span key={`${t}-${i}`} className="flex flex-col items-center rounded-lg border border-slate-700/50 bg-slate-800/40 px-2 py-1 leading-none">
-                    <span className="text-xs font-bold text-slate-200">{t}</span>
-                    <span className="mt-0.5 font-mono text-[10px] text-slate-400" dir="ltr">{tokenId(t) ?? '-'}</span>
-                </span>
-            ))}
-        </div>
-        <div className="space-y-1.5">
-            {dims.map((key) => {
-                const value = dimValue(item.profile, key);
-                const s = DIM_STYLE[key];
-                return (
-                    <div key={key} className="flex items-center gap-2">
-                        <span className={`w-14 shrink-0 text-[10px] font-bold ${s.text}`} dir="ltr">{dimLabel?.[key] ?? DIM_INFO[key].en}</span>
-                        <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-800/80">
-                            <motion.div
-                                initial={reduce ? false : { width: 0 }}
-                                animate={{ width: `${value * 100}%` }}
-                                transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 120, damping: 18 }}
-                                className={`h-full rounded-full ${s.bar}`}
-                            />
-                        </div>
-                        <span className="w-9 shrink-0 text-end font-mono text-[10px] text-slate-400" dir="ltr">{fmt(value)}</span>
-                    </div>
-                );
-            })}
-        </div>
-    </div>
-);
-
-const SimilarMeaningPreview: React.FC<{
-    reduce: boolean;
-    dir: 'rtl' | 'ltr';
-    tx: WordLabText;
-    similar: WordLabDataset['similar'];
-    tokenId: (w: string) => number | null;
-}> = ({ reduce, dir, tx, similar, tokenId }) => {
-    const { left, right, sharedDims } = similar;
-    const closeness = visualCloseness(left.profile, right.profile, sharedDims);
-    const pct = Math.round(closeness * 100);
-
-    return (
-        <div className="rounded-2xl border border-violet-500/30 bg-violet-900/10 p-5 text-start" dir={dir}>
-            <div className="mb-4 flex items-center gap-2">
-                <ArrowLeftRight size={16} className="text-violet-300" />
-                <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">{tx.similar.title}</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{tx.similar.sub}</div>
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-3 md:flex-row">
-                <SimilarColumn item={left} dims={sharedDims} reduce={reduce} dir={dir} tokenId={tokenId} dimLabel={tx.dimLabel} />
-                <SimilarColumn item={right} dims={sharedDims} reduce={reduce} dir={dir} tokenId={tokenId} dimLabel={tx.dimLabel} />
-            </div>
-
-            {/* חיווי התיישרות */}
-            <div className="mt-4 rounded-xl border border-violet-500/30 bg-slate-950/40 p-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-sm font-bold text-violet-200">{tx.similar.aligns}</span>
-                    <span className="font-mono text-xs text-violet-300" dir="ltr">{tx.similar.overlap(pct)}</span>
-                </div>
-                <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-slate-800/80">
-                    <motion.div
-                        initial={reduce ? false : { width: 0 }}
-                        animate={{ width: `${pct}%` }}
-                        transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 110, damping: 20, delay: 0.2 }}
-                        className="h-full rounded-full bg-gradient-to-l from-violet-400 to-fuchsia-500"
-                    />
-                </div>
-                <p className="mt-3 text-[11px] leading-relaxed text-slate-500">{tx.similar.note}</p>
-            </div>
-        </div>
-    );
-};
-
-/* ═══════════════════════ Agent Outcome Card ══════════════════════════════ */
-
-const AgentOutcomeCard: React.FC<{ agent: NonNullable<EngineStep['agent']>; reduce: boolean; dir: 'rtl' | 'ltr'; tx: WordLabText }> = ({ agent, reduce, dir, tx }) => {
-    const approval = agent.status === 'approval';
-    const tone = approval
-        ? { border: 'border-rose-500/40', bg: 'bg-rose-900/15', text: 'text-rose-300', icon: <ShieldAlert size={18} className="text-rose-300" /> }
-        : { border: 'border-emerald-500/40', bg: 'bg-emerald-900/15', text: 'text-emerald-300', icon: <ShieldCheck size={18} className="text-emerald-300" /> };
-
-    return (
-        <motion.div
-            initial={reduce ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduce ? undefined : { opacity: 0, y: -8 }}
-            transition={reduce ? { duration: 0 } : { duration: 0.3 }}
-            className={`rounded-2xl border ${tone.border} ${tone.bg} p-5 text-start`}
-            dir={dir}
-        >
-            <div className="flex items-start gap-3">
-                <span className="mt-0.5 shrink-0">{tone.icon}</span>
-                <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className={`text-sm font-bold ${tone.text}`}>{agent.headlineHe}</span>
-                        {approval && (
-                            <span className="rounded-md border border-rose-500/40 bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-200" dir="ltr">
-                                {tx.agent.needsApproval}
-                            </span>
-                        )}
-                    </div>
-                    <p className="mt-1.5 text-sm leading-relaxed text-slate-300">{agent.detailHe}</p>
-                    <p className="mt-2 text-[11px] leading-relaxed text-slate-500">{tx.agent.note}</p>
-                </div>
-            </div>
-        </motion.div>
     );
 };

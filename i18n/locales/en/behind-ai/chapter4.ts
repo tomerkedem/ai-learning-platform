@@ -21,16 +21,17 @@ export const chapter4 = {
     // Hero
     hero: {
         badge: 'Behind the Scenes · 04',
-        titleLead: 'How does text become',
-        titleHighlight: 'a number that carries meaning?',
-        lede: 'The engine does not see words. Every word becomes a token, every token gets an ID number, and the number points to a row in a big table. That row is a vector, a list of numbers the model learned in order to represent meaning. That is the embedding.',
-        chipObject: 'Follow a word as it turns into a number',
-        chipMeaning: 'See how the meaning vector is built',
+        titleLead: 'How does a Token ID lead',
+        titleHighlight: 'to a learned numeric representation?',
+        lede: 'In the previous chapter we saw how text is split into tokens. Now we follow what happens next. Every token has a Token ID, and that ID works as an address in the embedding table. The address leads to a row of numbers that was learned during training. That row is the token vector, and it represents patterns and relationships the model learned from data.',
+        chipObject: 'Follow a token from its Token ID to its vector',
+        chipMeaning: 'See the learned vector being looked up for a token',
     },
 
     // Mentor speech bubbles (text only; pose and placement are structural in the page)
     mentor: {
         hero: 'The engine sees numbers, not words',
+        lab: 'Watch the row that lights up in the table',
         lock: 'Learned in training, looked up in a chat',
         practical: 'Text became a number, now we can compute',
     },
@@ -75,7 +76,7 @@ export const chapter4 = {
         eyebrow: 'In plain words',
         title: 'So what is an embedding, really?',
         lines: [
-            'Every token gets an ID number, and the number points to a fixed row in a table.',
+            'Every token already has an ID number, and that number points to a fixed row in a table.',
             'The row is a vector: a list of numbers, not a single number.',
             'These numbers were learned in training, so the vector represents the meaning of the token. A vector like that is called an embedding.',
             'Every embedding is a vector, but not every vector is an embedding. An embedding is a vector the model learned to represent meaning with.',
@@ -98,11 +99,65 @@ export const chapter4 = {
 
     // From a table to a vector: the explicit bridge from Token ID (address) to the vector (row contents)
     embeddingTable: {
-        title: 'From a table to a vector',
-        body: 'The embedding table is a huge list of rows, one row per token in the vocabulary. The Token ID is the row number. The model goes to that row, and its contents are the vector. That is how one address becomes a list of numbers that represents meaning.',
+        title: 'What is the embedding table?',
+        lines: [
+            'The embedding table is a large table of number rows that were learned during training. It is not a dictionary: it holds no written definitions, and you cannot read it like text.',
+            'The Token ID is the row number, an address and nothing more. It does not carry the meaning itself.',
+            'The row that the address leads to holds the token vector: the list of numbers learned for it.',
+            'The values were learned once, in training. During use the model looks up the matching row, it does not learn it again.',
+        ],
+        note: 'Most numbers in a row have no name a person can read. The table shown here is a small illustration, with few rows and few values. A real table has far more tokens and far more dimensions.',
     },
 
     // Training vs inference: the values were learned once in training and looked up every chat
+    sequence: {
+        eyebrow: 'From tokens to a sentence',
+        title: 'So what happens to a whole sentence?',
+        intro: 'Now let us pull the vectors together into a wider picture of the sentence.',
+        steps: [
+            {
+                title: 'Every token gets a vector',
+                body: 'Each token points to its own row in the table and takes its vector from there.',
+            },
+            {
+                title: 'The model processes them together',
+                body: 'The model looks at the sequence as a whole, and each representation shifts according to the words around it.',
+            },
+            {
+                title: 'At the end you see one teaching representation',
+                body: 'It sums up the pattern that forms once all the tokens have been processed together and in context.',
+            },
+        ],
+        clarify: 'A whole sentence has no Token ID of its own, and no extra row in the embedding table. The representation you see at the end is a teaching illustration of the processed sequence.',
+    },
+
+    lab2: {
+        eyebrow: 'Laboratory 2',
+        title: 'From a token to its representation',
+        goal: 'The sentence already arrives as a sequence of tokens. Here you follow a single token: from its Token ID to the learned row it points to.',
+        stepLabel: 'Step',
+        steps: [
+            {
+                title: 'Pick a sentence and run it',
+                hint: 'Choose a scenario and press "Play it". The sentence arrives already split into tokens, ready to inspect.',
+            },
+            {
+                title: 'Pick a token and follow its representation',
+                hint: 'Click a token to see its Token ID. The ID is an address, and it points to a row in the embedding table.',
+            },
+            {
+                title: 'Watch the pattern change',
+                hint: 'Follow the bars, and click a token to see where it pushes them.',
+            },
+        ],
+        conclusionLabel: 'Laboratory conclusion',
+    },
+
+    labConclusion: {
+        title: 'What did we see?',
+        body: 'The sentence already arrived as a sequence of tokens. Every token has a Token ID that points to a row in the embedding table, and that row holds the vector learned for it. What you saw is a teaching visualization of one thing: changing the input changes the numeric representation too. How closeness between representations is measured is the next chapter.',
+    },
+
     trainingInference: {
         title: 'Learned once, looked up every chat',
         body: 'The values in the vector were learned once, during training. In a chat the model does not train a new vector from scratch. It just looks up the vector it already learned, and then the model layers process it based on the context of the sentence.',
