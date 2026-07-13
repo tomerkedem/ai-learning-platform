@@ -17,6 +17,12 @@ import { SpeakButton } from '../ai-internals/SpeakButton';
 import { speakJoin } from '../ai-internals/GuessVerdict';
 import { useT } from '@/i18n/useT';
 
+// שכבת הקונפטי חייבת לצוף מעל מצב "מסך מלא" של ExpandableLab, שהוא Portal אטום
+// ב-document.body עם z-index 9999. ברירת המחדל של canvas-confetti היא z-index 100,
+// ולכן במסך מלא הקונפטי נורה אבל נשאר מוסתר מאחורי הכיסוי. הקנבס הוא pointer-events:none
+// ולכן הרמת ה-z-index אינה חוסמת כפתורים, קישורים או ניווט מקלדת.
+const CONFETTI_Z_INDEX = 10000;
+
 interface Question {
     id: number;
     question: string;
@@ -281,7 +287,7 @@ export const AssessmentEngine = ({
             try {
                 // קונפטי הוא קישוט בלבד: מדולג כשתנועה מופחתת פעילה.
                 if (result.passed && !reduce) {
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, zIndex: CONFETTI_Z_INDEX });
                 }
                 // התמדה: כל סיום נספר כניסיון. onComplete אחראי לשמירה ב-localStorage.
                 onComplete?.(result);
