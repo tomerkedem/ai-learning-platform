@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useContext, useRef } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,6 +11,7 @@ import {
   ListChecks
 } from "lucide-react";
 import confetti from 'canvas-confetti';
+import { ExpandableLabExitContext } from '../ai-internals/ExpandableLab';
 import { Mentor, type MentorAccent } from '../ai-internals/Mentor';
 import { GuessButton } from '../ai-internals/GuessButton';
 import { SpeakButton } from '../ai-internals/SpeakButton';
@@ -156,6 +157,10 @@ export const AssessmentEngine = ({
 
     // הנתיב הנוכחי, כדי לזהות קישור חזרה שמצביע על הפרק שכבר נמצאים בו.
     const pathname = usePathname();
+
+    // קיים רק כשהמבדק מוצג במסך מלא (ExpandableLab). אז קישור "חזרה לפרק" חייב קודם לסגור
+    // את התצוגה המוגדלת, אחרת הכיסוי נשאר מעל תוכן הפרק והגלילה מתבצעת בתוך ה-Portal.
+    const exitFullscreen = useContext(ExpandableLabExitContext);
 
     // States
     const [isStarted, setIsStarted] = useState(false);
@@ -525,6 +530,11 @@ export const AssessmentEngine = ({
                                             type="button"
                                             onClick={(e) => {
                                                 if (typeof window === 'undefined') return;
+                                                // במסך מלא: סוגרים את התצוגה המוגדלת וחוזרים לראש הפרק.
+                                                if (exitFullscreen) {
+                                                    exitFullscreen();
+                                                    return;
+                                                }
                                                 const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
                                                 const behavior: ScrollBehavior = reduced ? 'auto' : 'smooth';
                                                 // ChapterLayout גולל בתוך מיכל פנימי (overflow-y-auto), לא ב-window.
