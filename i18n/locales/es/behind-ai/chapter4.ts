@@ -29,8 +29,6 @@ export const chapter4 = {
     // Burbujas del mentor (solo texto; la pose y la ubicación son estructurales en la página)
     mentor: {
         hero: 'El motor ve números, no palabras',
-        lab: 'Fíjate en la fila que se enciende en la tabla',
-        lock: 'Aprendido en el entrenamiento, consultado en un chat',
         practical: 'El texto se volvió número, ahora podemos calcular',
     },
 
@@ -42,7 +40,7 @@ export const chapter4 = {
         title: 'La palabra "no" recibe el número 17. ¿Qué es ese número?',
         subtitle: 'Adivina por lo que ya sabes sobre tokens.',
         prompt: '"no" → 17',
-        invite: 'Piensa un segundo: ¿ese número ya es el significado, o solo una dirección?',
+        invite: 'Párate un momento: ¿qué crees que representa este número dentro del modelo?',
         options: {
             address: {
                 title: 'Una dirección en el vocabulario',
@@ -169,7 +167,7 @@ export const chapter4 = {
     embeddingLookup: {
         eyebrow: 'Laboratorio: de una palabra a números',
         title: 'La máquina de Embedding',
-        intro: 'Elige una palabra y síguela mientras se convierte en un número identificador y luego en una fila de números en una tabla. Eso es lo que el motor recibe de verdad.',
+        intro: 'Elige una palabra, mira su Token ID y sigue la fila que se resalta en la tabla de embedding. Eso es lo que el motor recibe de verdad.',
         pickWord: 'Elige una palabra',
         idNote: 'una dirección, no significado',
         tableTitle: 'La tabla de embeddings',

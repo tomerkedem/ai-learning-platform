@@ -31,8 +31,6 @@ export const chapter4 = {
     // Mentor speech bubbles (text only; pose and placement are structural in the page)
     mentor: {
         hero: 'The engine sees numbers, not words',
-        lab: 'Watch the row that lights up in the table',
-        lock: 'Learned in training, looked up in a chat',
         practical: 'Text became a number, now we can compute',
     },
 
@@ -44,7 +42,7 @@ export const chapter4 = {
         title: 'The word "not" gets the number 17. What is that number?',
         subtitle: 'Guess from what you already know about tokens.',
         prompt: '"not" → 17',
-        invite: 'Think for a second: is this number already the meaning, or just an address?',
+        invite: 'Pause for a second: what do you think this number represents inside the model?',
         options: {
             address: {
                 title: 'An address in the vocabulary',
@@ -171,7 +169,7 @@ export const chapter4 = {
     embeddingLookup: {
         eyebrow: 'Lab: from a word to numbers',
         title: 'The Embedding machine',
-        intro: 'Pick a word and follow it as it turns into an ID number and then into a row of numbers in a table. That is what the engine actually receives.',
+        intro: 'Pick a word, look at its Token ID, and follow the row highlighted in the embedding table. That is what the engine actually receives.',
         pickWord: 'Pick a word',
         idNote: 'an address, not meaning',
         tableTitle: 'The embedding table',

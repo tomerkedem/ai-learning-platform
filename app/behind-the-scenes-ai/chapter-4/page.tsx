@@ -10,7 +10,7 @@ import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { GuessButton } from '@/components/ai-internals/GuessButton';
-import { GuessInvite, GuessVerdict } from '@/components/ai-internals/GuessVerdict';
+import { GuessVerdict } from '@/components/ai-internals/GuessVerdict';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import { WordToNumberLab } from '@/components/ai-internals/WordToNumberLab';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
@@ -75,10 +75,16 @@ const MeaningGuess: React.FC = () => {
                     <p className="mx-auto mb-6 max-w-xl rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-sm font-bold text-slate-200" dir="ltr">{g.prompt}</p>
                 </div>
 
-                {/* מצב לפני בחירה: מנטור מהורהר מזמין + כרטיסים */}
+                {/* מצב לפני בחירה: מנטור מהורהר מזמין + כרטיסים.
+                    ההזמנה מקומית לפרק (ולא GuessInvite המשותף) משתי סיבות: המנטור כאן הוא רמז
+                    ולא דמות פתיחה, ולכן הוא קטן משמעותית מההירו, והטקסט נקרא ב-13px ולא ב-12px.
+                    הנראות זהה למקור: מוסתר מתחת ל-sm, בדיוק כמו GuessInvite. */}
                 {!answered && (
                     <>
-                        <GuessInvite pose="think" line={g.invite} width={156} />
+                        <div className="mb-5 hidden flex-col items-center sm:flex">
+                            <Mentor pose="think" width={110} glow={false} />
+                            <p className="mt-1.5 max-w-xs text-center text-[13px] font-medium leading-snug text-slate-400">{g.invite}</p>
+                        </div>
 
                         <div className="mx-auto grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
                             {GUESS_CARD_META.map((meta) => {
@@ -376,10 +382,9 @@ export default function BehindTheScenesChapter4() {
             </section>
 
             {/* ══════════ See + Touch: המעבדה המרכזית, ממילה למספרים ══════════ */}
-            <section id="embedding-see" className="relative mt-12 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="meaningSpace" line={c4.mentor.lab} width={150} flip={!isRtl} />
-                </div>
+            {/* ההנחיה של המעבדה יושבת בתוך EmbeddingLookupLab (c.intro), ליד בורר המילים,
+                ולכן היא נשארת גלויה גם בתצוגה רגילה וגם במסך מלא. */}
+            <section id="embedding-see" className="mt-12 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
                 <ExpandableLab title={c4.embeddingLookup.title}>
                     <EmbeddingLookupLab dir={dir} labNumber={1} />
                 </ExpandableLab>
@@ -410,10 +415,8 @@ export default function BehindTheScenesChapter4() {
             </section>
 
             {/* ══════════ נעילת הבנה ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="happy" line={c4.mentor.lock} width={160} flip={!isRtl} />
-                </div>
+            {/* בלי מנטור: כל רמז מושגי כאן מסגיר את התשובה. נעילת ההבנה נשארת בדיקה עצמאית. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center gap-2">
                         <Lock size={20} className="text-violet-300" />
