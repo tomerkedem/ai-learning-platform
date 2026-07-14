@@ -98,6 +98,7 @@ export const conceptLabels: Record<string, string> = {
     "נלמד מול אקראי": "Aprendido frente a aleatorio",
     "וקטור כנקודה וחץ": "Vector como punto y flecha",
     "ממדים אינם קריאים": "Las dimensiones no son legibles",
+    "לכל טוקן שורה משלו": "Cada token tiene su propia fila",
     "זיהוי אינו אישור": "Reconocer no es permiso",
     "זיהוי עמימות": "Detectar la ambigüedad",
     "טוקן מול מילה": "Token frente a palabra",

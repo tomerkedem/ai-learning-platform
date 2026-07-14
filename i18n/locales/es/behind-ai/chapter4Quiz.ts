@@ -22,15 +22,15 @@ export const chapter4Quiz = {
 
     byId: {
         1: {
-            question: "¿Qué 've' realmente el motor cuando recibe palabras?",
+            question: '¿Qué es cierto sobre la frase "el paquete no llegó" en la etapa del embedding?',
             options: [
-                'Las palabras exactamente como las leemos',
-                'Números, porque no puede trabajar con palabras directamente',
-                'Imágenes de las letras',
-                'El sonido de las palabras',
+                'La frase se divide en tokens, y cada token tiene su propio Token ID y su propia fila en la tabla',
+                'La frase entera recibe un solo Token ID, y con él se saca una sola fila de la tabla',
+                'Solo el primer token recibe una fila en la tabla, y esa fila representa toda la frase',
+                'Todos los Token ID se fusionan en un único ID fijo, y con ese ID se accede a la tabla',
             ],
             explanation:
-                'El motor no puede trabajar con las palabras como las leemos. Para calcular y comparar significado, primero convierte el texto en números. Nosotros vemos palabras, él ve números.',
+                'La frase no entra en la tabla como una sola unidad. Se divide en tokens, cada token tiene su propio Token ID, y cada Token ID apunta a su propia fila en la tabla de embeddings. No hay una fila para una frase entera, ni un único ID que represente toda la frase. Lo que se saca en esta etapa es una secuencia de filas, una por token.',
         },
         2: {
             question: '¿Qué es un Token ID?',
@@ -81,7 +81,7 @@ export const chapter4Quiz = {
     } satisfies Record<Chapter4QuizId, Chapter4QuizText>,
 
     conceptLabels: {
-        'המנוע רואה מספרים': 'El motor ve números',
+        'לכל טוקן שורה משלו': 'Cada token tiene su propia fila',
         'Token ID ככתובת': 'Token ID como dirección',
         'מכתובת לווקטור': 'De la dirección al vector',
         'ממדים אינם קריאים': 'Las dimensiones no son legibles',

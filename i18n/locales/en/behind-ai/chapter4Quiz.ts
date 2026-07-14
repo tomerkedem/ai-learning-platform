@@ -22,15 +22,15 @@ export const chapter4Quiz = {
 
     byId: {
         1: {
-            question: "What does the engine actually 'see' when it receives words?",
+            question: 'What is true about the sentence "the package did not arrive" at the embedding stage?',
             options: [
-                'The words exactly as we read them',
-                'Numbers, because it cannot work with words directly',
-                'Pictures of the letters',
-                'The sound of the words',
+                'The sentence is split into tokens, and each token has its own Token ID and row in the table',
+                'The whole sentence gets one Token ID, and it pulls one row out of the table',
+                'Only the first token gets a row in the table, and that row stands for the whole sentence',
+                'All the token IDs merge into one fixed ID, and that ID is used to reach the table',
             ],
             explanation:
-                'The engine cannot work with words the way we read them. To compute and compare meaning, it first turns the text into numbers. We see words, it sees numbers.',
+                'The sentence does not enter the table as a single unit. It is split into tokens, each token has its own Token ID, and each Token ID points to its own row in the embedding table. There is no row for a whole sentence, and no single ID that stands for the whole sentence. What is pulled out at this stage is a sequence of rows, one per token.',
         },
         2: {
             question: 'What is a Token ID?',
@@ -81,7 +81,7 @@ export const chapter4Quiz = {
     } satisfies Record<Chapter4QuizId, Chapter4QuizText>,
 
     conceptLabels: {
-        'המנוע רואה מספרים': 'The engine sees numbers',
+        'לכל טוקן שורה משלו': 'Each token has its own row',
         'Token ID ככתובת': 'Token ID as an address',
         'מכתובת לווקטור': 'From address to vector',
         'ממדים אינם קריאים': 'Dimensions are not readable',

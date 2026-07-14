@@ -98,6 +98,7 @@ export const conceptLabels: Record<string, string> = {
     "נלמד מול אקראי": "Learned vs random",
     "וקטור כנקודה וחץ": "Vector as point and arrow",
     "ממדים אינם קריאים": "Dimensions are not readable",
+    "לכל טוקן שורה משלו": "Each token has its own row",
     "זיהוי אינו אישור": "Recognizing is not permission",
     "זיהוי עמימות": "Spotting ambiguity",
     "טוקן מול מילה": "Token vs word",
