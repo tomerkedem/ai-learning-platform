@@ -151,6 +151,10 @@ export const chapter4 = {
             },
         ],
         conclusionLabel: 'Laboratory conclusion',
+        waiting: {
+            step2: 'Start with Step 1 and press "Play it". Then you can pick a token and follow it from its Token ID to its representation.',
+            step3: 'This view updates once the sentence has been run and a token is picked.',
+        },
     },
 
     labConclusion: {

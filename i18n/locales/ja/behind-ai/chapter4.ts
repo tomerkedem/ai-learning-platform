@@ -148,6 +148,10 @@ export const chapter4 = {
             },
         ],
         conclusionLabel: 'ラボのまとめ',
+        waiting: {
+            step2: 'まずステップ1で「再生」を押してください。そのあとトークンを選び、Token ID から表現まで追えます。',
+            step3: 'この表示は、文を再生してトークンを選んだあとに更新されます。',
+        },
     },
 
     labConclusion: {

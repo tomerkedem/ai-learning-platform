@@ -149,6 +149,10 @@ export const chapter4 = {
             },
         ],
         conclusionLabel: 'Conclusión del laboratorio',
+        waiting: {
+            step2: 'Empieza por el Paso 1 y pulsa "Reprodúcelo". Después podrás elegir un token y seguirlo desde su Token ID hasta su representación.',
+            step3: 'Esta vista se actualiza cuando la frase se ha ejecutado y eliges un token.',
+        },
     },
 
     labConclusion: {

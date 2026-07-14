@@ -127,6 +127,25 @@ export const WordToNumberLab: React.FC = () => {
     const displayTokens = step ? step.tokens : [];
     const selectToken = (w: string) => setSelected((cur) => (cur === w ? null : w));
 
+    // מצב המתנה מכוון: לפני "נגן וצפו" אין טוקנים, ולכן שלבים 2 ו-3 לא מציגים ממשק ריק
+    // (פסים על 0.00, והוראה "לחצו על טוקן" כשאין טוקנים). במקום זה, הודעת המתנה קצרה.
+    const started = displayTokens.length > 0;
+
+    // הכרזה לקורא מסך: המקבילה הטקסטואלית לתוצאה שנראית בעין, ולא הערכים הגולמיים של
+    // ששת הפסים. שתי הכרזות אפשריות בלבד:
+    //   1. בסיום ההרצה  -> תמצית "השינוי המוביל" של השלב האחרון.
+    //   2. בבחירת טוקן  -> הטוקן, ה-Token ID שלו, ואותה תמצית.
+    // בזמן ההקלדה (autoTyping) ההכרזה מושתקת: אחרת כל מעבר שלב היה מכריז בנפרד, ובהרצה
+    // אחת נשמעו שלוש הודעות רצופות. ב-reduced-motion אין הקלדה, ולכן ההכרזה קורית פעם אחת.
+    const selectedId = selected ? data.tokenId(selected) : null;
+    const changeSummary = step ? `${tx.mainChangeLabel}${step.mainChangeHe}` : '';
+    const liveMessage =
+        !started || autoTyping
+            ? ''
+            : selected && selectedId !== null
+              ? `${selected}, Token ID ${selectedId}. ${changeSummary}`
+              : changeSummary;
+
     return (
         // גבול חיצוני אחד למעבדה 2. כל מה שבתוכו הוא שלב של אותה מעבדה, ולא מעבדה נוספת.
         <section
@@ -172,7 +191,7 @@ export const WordToNumberLab: React.FC = () => {
                                         type="button"
                                         onClick={() => resetTo(s.id)}
                                         aria-pressed={active}
-                                        className={`rounded-xl border px-3 py-1.5 text-start leading-tight transition-colors ${
+                                        className={`flex min-h-[44px] flex-col justify-center rounded-xl border px-3 py-1.5 text-start leading-tight transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
                                             active ? `${sa.border} ${sa.bgSoft}` : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-600'
                                         }`}
                                     >
@@ -219,37 +238,50 @@ export const WordToNumberLab: React.FC = () => {
                 {/* שלב 2: עקבו אחרי הטוקנים. תצוגה אחת של מילה -> Token ID (לוח התרגום הוסר:
                     הוא הציג בדיוק את אותו מיפוי בפורמט שני). פרטי הכתובת בשורת הפירוט שבתוכה. */}
                 <li>
-                    <StepHeader n={2} step={lab.steps[1]} stepLabel={lab.stepLabel} />
-                    <div className="space-y-2.5">
-                        <IdSequenceViewer
-                            tokens={displayTokens}
-                            idView={idView}
-                            selected={selected}
-                            accent={scenario.accent}
-                            onToggle={setIdView}
-                            onSelect={selectToken}
-                            reduce={!!reduce}
-                            dir={dir}
-                            tx={tx}
-                            tokenId={data.tokenId}
-                        />
-                        {/* ה-ID הוא מספר השורה, ותוכן השורה הוא הווקטור. הגשר לשלב 3. */}
-                        <div className="flex items-start gap-2 rounded-xl bg-violet-500/10 p-3">
-                            <Table2 size={15} className="mt-0.5 shrink-0 text-violet-300" />
-                            <span className="text-[15px] leading-relaxed text-slate-200">{tx.table.rowIsVector}</span>
+                    <StepHeader n={2} step={lab.steps[1]} stepLabel={lab.stepLabel} showHint={started} />
+                    {started ? (
+                        <div className="space-y-2.5">
+                            <IdSequenceViewer
+                                tokens={displayTokens}
+                                idView={idView}
+                                selected={selected}
+                                accent={scenario.accent}
+                                onToggle={setIdView}
+                                onSelect={selectToken}
+                                reduce={!!reduce}
+                                dir={dir}
+                                tx={tx}
+                                tokenId={data.tokenId}
+                            />
+                            {/* ה-ID הוא מספר השורה, ותוכן השורה הוא הווקטור. הגשר לשלב 3. */}
+                            <div className="flex items-start gap-2 rounded-xl bg-violet-500/10 p-3">
+                                <Table2 size={15} className="mt-0.5 shrink-0 text-violet-300" />
+                                <span className="text-[15px] leading-relaxed text-slate-200">{tx.table.rowIsVector}</span>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <WaitingNote text={lab.waiting.step2} />
+                    )}
                 </li>
 
                 {/* שלב 3: ראו איך הדפוס משתנה (התוצאה של בחירת הטוקן בשלב 2) */}
                 <li>
-                    <StepHeader n={3} step={lab.steps[2]} stepLabel={lab.stepLabel} />
-                    <div className="space-y-3">
-                        <MeaningVectorLive step={step} prevStep={prevStep} dims={dims} reduce={!!reduce} dir={dir} tx={tx} isHe={isHe} />
-                        <VectorShiftCard word={selected} accent={scenario.accent} reduce={!!reduce} dir={dir} tx={tx} isHe={isHe} shift={data.shift} />
-                    </div>
+                    <StepHeader n={3} step={lab.steps[2]} stepLabel={lab.stepLabel} showHint={started} />
+                    {started ? (
+                        <div className="space-y-3">
+                            <MeaningVectorLive step={step} prevStep={prevStep} dims={dims} reduce={!!reduce} dir={dir} tx={tx} isHe={isHe} />
+                            <VectorShiftCard word={selected} accent={scenario.accent} reduce={!!reduce} dir={dir} tx={tx} isHe={isHe} shift={data.shift} />
+                        </div>
+                    ) : (
+                        <WaitingNote text={lab.waiting.step3} />
+                    )}
                 </li>
             </ol>
+
+            {/* הכרזה לקורא מסך. אין הזזת פוקוס, אין אודיו. עובד גם ב-reduced-motion. */}
+            <div aria-live="polite" aria-atomic="true" className="sr-only">
+                {liveMessage}
+            </div>
 
             {/* ── סיכום המעבדה: סגירה קצרה על מה שנצפה בשלבים 1 עד 3. בלי דוגמה חדשה, בלי
                 השוואה, בלי אחוזים ובלי ויזואליזציה נוספת. ── */}
@@ -273,7 +305,14 @@ export const WordToNumberLab: React.FC = () => {
 /* ═══════════════════════ כותרת שלב פנימי במעבדה 2 ════════════════════════ */
 
 // שלב, לא מעבדה: מספור "שלב N", כותרת, והוראה קצרה צמודה לפעולה שמתחתיה.
-const StepHeader: React.FC<{ n: number; stepLabel: string; step: { title: string; hint: string } }> = ({ n, stepLabel, step }) => (
+// showHint=false לפני שהמעבדה הורצה: אז ההוראה ("לחצו על טוקן") אינה ניתנת לביצוע,
+// ובמקומה מוצגת הודעת ההמתנה שמתחת לכותרת.
+const StepHeader: React.FC<{ n: number; stepLabel: string; step: { title: string; hint: string }; showHint?: boolean }> = ({
+    n,
+    stepLabel,
+    step,
+    showHint = true,
+}) => (
     <div className="mb-3">
         <div className="flex items-center gap-2.5">
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-slate-600/60 bg-slate-800/60 font-mono text-[12px] font-black text-slate-200">
@@ -284,7 +323,18 @@ const StepHeader: React.FC<{ n: number; stepLabel: string; step: { title: string
                 {step.title}
             </h4>
         </div>
-        <p className="mt-1.5 ps-[2.125rem] text-[15px] leading-relaxed text-slate-400">{step.hint}</p>
+        {showHint && <p className="mt-1.5 ps-[2.125rem] text-[15px] leading-relaxed text-slate-400">{step.hint}</p>}
+    </div>
+);
+
+/* ═══════════════════ מצב המתנה מכוון (לפני "נגן וצפו") ═══════════════════ */
+
+// לא "מושבת" ולא "שבור": הודעה קצרה שמסבירה מה יקרה, ומפנה לשלב 1. בלי איור ריק
+// ובלי ערימת כרטיסים. משטח שקט אחד, בגודל גוף רגיל.
+const WaitingNote: React.FC<{ text: string }> = ({ text }) => (
+    <div className="flex items-start gap-2.5 rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
+        <MousePointerClick size={17} className="mt-0.5 shrink-0 text-slate-500" />
+        <p className="text-[15px] leading-relaxed text-slate-400">{text}</p>
     </div>
 );
 
@@ -333,7 +383,7 @@ const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyp
                 <button
                     type="button"
                     onClick={onAutoType}
-                    className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${a.border} ${a.bgSoft} ${a.text} hover:brightness-110`}
+                    className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${a.border} ${a.bgSoft} ${a.text} hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950`}
                 >
                     <Play size={14} /> {tx.typing.autoType}
                     <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.autoTypeLatin}</span>
@@ -341,7 +391,7 @@ const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyp
                 <button
                     type="button"
                     onClick={onReset}
-                    className="inline-flex items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-800/40 px-3 py-2 text-sm font-bold text-slate-400 transition-colors hover:text-slate-200"
+                    className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-800/40 px-3 py-2 text-sm font-bold text-slate-400 transition-colors hover:text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                 >
                     <RotateCcw size={14} /> {tx.typing.reset}
                     <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.resetLatin}</span>
@@ -389,7 +439,7 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                                 type="button"
                                 onClick={() => onToggle(key === 'ids')}
                                 aria-pressed={active}
-                                className={`rounded-lg px-3 py-1 text-xs font-bold transition-colors ${
+                                className={`min-h-[44px] min-w-[44px] rounded-lg px-3.5 py-1 text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
                                     active ? `${a.solid} ${a.solidText}` : 'text-slate-400 hover:text-slate-200'
                                 }`}
                             >
@@ -412,7 +462,7 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                                 key={`${tok}-${i}`}
                                 type="button"
                                 onClick={() => onSelect(tok)}
-                                className="flex flex-col items-center gap-1.5 outline-none"
+                                className="flex flex-col items-center gap-1.5 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                             >
                                 {/* פאה מתחלפת: מילה <-> ID */}
                                 <span

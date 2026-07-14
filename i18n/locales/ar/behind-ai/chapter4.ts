@@ -148,6 +148,10 @@ export const chapter4 = {
             },
         ],
         conclusionLabel: 'خلاصة المختبر',
+        waiting: {
+            step2: 'ابدأ بالخطوة 1 واضغط "شغّله". بعد ذلك يمكنك اختيار token ومتابعته من Token ID إلى تمثيله.',
+            step3: 'يتحدّث هذا العرض بعد تشغيل الجملة واختيار token.',
+        },
     },
 
     labConclusion: {
