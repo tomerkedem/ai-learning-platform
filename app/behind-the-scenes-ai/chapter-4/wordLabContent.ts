@@ -663,9 +663,6 @@ export interface WordLabText {
         addressNote: string;
         selectHint: string;
     };
-    /** לוח התרגום (מילה -> Token ID) הוסר: הוא שכפל את רצף ה-IDs. נשאר רק הגשר אל הווקטור:
-     *  ה-ID הוא מספר השורה, ותוכן השורה הוא הווקטור. */
-    table: { rowIsVector: string };
     /** תצוגת המשמעות: תצוגה לימודית, לא ייצוג אמיתי. eduBadge/eduNote הם ההבהרה הראשית
      *  (מוצגת מעל הפסים, לא כהערת שוליים). */
     vector: { title: string; sub: string; eduBadge: string; eduNote: string; note: string };
@@ -702,9 +699,6 @@ export const HE_WORD_TEXT: WordLabText = {
         addressNote: '(כתובת במילון, לא משמעות)',
         selectHint:
             'לחצו על מילה כדי לראות לאיזה Token ID היא מצביעה. ה-ID הוא כתובת במילון, כמו ברקוד שאינו הטעם של המוצר.',
-    },
-    table: {
-        rowIsVector: 'ה-ID הוא מספר השורה בטבלת ה-embedding. תוכן השורה הוא הווקטור שמשמאל. כך כתובת אחת הופכת לרשימת המספרים שמייצגת משמעות.',
     },
     vector: {
         title: 'תצוגת משמעות לימודית',
@@ -747,9 +741,6 @@ export const EN_WORD_TEXT: WordLabText = {
         selectHint:
             'Click a word to see which Token ID it points to. The ID is an address in the vocabulary, like a barcode that is not the taste of the product.',
     },
-    table: {
-        rowIsVector: 'The ID is the row number in the embedding table. The contents of that row are the vector on the left. That is how one address becomes the list of numbers that represents meaning.',
-    },
     vector: {
         title: 'Teaching visualization of meaning',
         sub: 'Teaching Visualization',
@@ -790,9 +781,6 @@ export const ES_WORD_TEXT: WordLabText = {
         addressNote: '(una dirección en el vocabulario, no significado)',
         selectHint:
             'Pulsa una palabra para ver a qué Token ID apunta. El ID es una dirección en el vocabulario, como un código de barras que no es el sabor del producto.',
-    },
-    table: {
-        rowIsVector: 'El ID es el número de fila en la tabla de embeddings. El contenido de esa fila es el vector de la izquierda. Así una dirección se convierte en la lista de números que representa significado.',
     },
     vector: {
         title: 'Visualización didáctica del significado',
@@ -847,9 +835,6 @@ export const RU_WORD_TEXT: WordLabText = {
         selectHint:
             'Нажмите на слово, чтобы увидеть, на какой Token ID оно указывает. ID - это адрес в словаре, как штрихкод, который не является вкусом продукта.',
     },
-    table: {
-        rowIsVector: 'ID это номер строки в таблице embedding. Содержимое этой строки и есть вектор слева. Так один адрес превращается в список чисел, представляющий смысл.',
-    },
     vector: {
         title: 'Учебная визуализация смысла',
         sub: 'Учебная визуализация',
@@ -903,9 +888,6 @@ export const AR_WORD_TEXT: WordLabText = {
         selectHint:
             'اضغط على كلمة لترى إلى أي Token ID تشير. الـ ID عنوان في القاموس، كباركود ليس هو طعم المنتج.',
     },
-    table: {
-        rowIsVector: 'الـ ID هو رقم الصف في جدول الـ embedding. محتوى ذلك الصف هو المتجه على اليسار. هكذا يتحوّل عنوان واحد إلى قائمة الأرقام التي تمثّل المعنى.',
-    },
     vector: {
         title: 'عرض تعليمي للمعنى',
         sub: 'عرض تعليمي',
@@ -958,9 +940,6 @@ export const JA_WORD_TEXT: WordLabText = {
         addressNote: '（辞書内のアドレス、意味ではない）',
         selectHint:
             '単語を押すと、それがどの Token ID を指すか分かります。ID は辞書内のアドレスで、商品の味ではないバーコードのようなものです。',
-    },
-    table: {
-        rowIsVector: 'ID は embedding テーブルの行番号です。その行の中身が左のベクトルです。こうして一つのアドレスが、意味を表す数値の並びになります。',
     },
     vector: {
         title: '意味の学習用ビジュアル',

@@ -208,7 +208,6 @@ export default function BehindTheScenesChapter4() {
     const sLookupLearned: ReadAloudSegment = { id: 'lookup-learned', label: el.vectorTitle, text: `${el.vectorNote} ${el.learnedNote}` };
     const sLookupView: ReadAloudSegment = { id: 'lookup-view', label: el.viewNumbers, text: el.viewNote };
     const sTable: ReadAloudSegment = { id: 'embedding-table', label: c4.embeddingTable.title, text: `${c4.embeddingTable.title} ${c4.embeddingTable.lines.join(' ')} ${c4.embeddingTable.note}` };
-    const sRowIsVector: ReadAloudSegment = { id: 'row-is-vector', label: c4.embeddingTable.title, text: wl.table.rowIsVector };
     // הגשר מטוקנים למשפט: נקרא לפי סדר התצוגה (כותרת, מבוא, שלושת השלבים, ואז ההבהרה).
     const sSequence: ReadAloudSegment = {
         id: 'sequence',
@@ -232,7 +231,7 @@ export default function BehindTheScenesChapter4() {
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
         short: [sTitle, sPlain, sTable, sSequence, sLabConclusion, sTraining, sBridge],
         regular: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sTable, sSequence, sVectorEdu, sVector, sLabConclusion, sTraining, sPracticalFull, sBridge],
-        full: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sLookupView, sTable, sRowIsVector, sSequence, sVectorEdu, sVector, sLabConclusion, sTraining, sPracticalFull, sCaveat, sBridge],
+        full: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sLookupView, sTable, sSequence, sVectorEdu, sVector, sLabConclusion, sTraining, sPracticalFull, sCaveat, sBridge],
     };
 
     // מבדק הפרק: המנגנון המשותף (onComplete, getReviewLinks, nextHref...) נשמר מ-quizData,

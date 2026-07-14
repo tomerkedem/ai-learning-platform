@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
-    Sparkles, Info, Compass, ChevronDown, ChevronUp, Table2,
+    Sparkles, Info, Compass, ChevronDown, ChevronUp,
     Play, RotateCcw, Keyboard,
     MousePointerClick, Binary, FlaskConical,
 } from 'lucide-react';
@@ -170,11 +170,11 @@ export const WordToNumberLab: React.FC = () => {
             <p className="mt-2 text-[15px] leading-relaxed text-slate-300">{lab.goal}</p>
 
             {/* ── שלושת השלבים: פעולה, תצפית, שינוי. המסקנה אינה שלב, היא הסיכום שלמטה.
-                בדסקטופ שלבים 2 ו-3 יושבים זה לצד זה כזוג סיבה ותוצאה (בחירת טוקן -> השפעה
-                על הדפוס). במובייל הם נערמים, וסדר ה-DOM נשאר 1, 2, 3. ── */}
-            <ol className="mt-5 grid list-none grid-cols-1 gap-5 lg:grid-cols-2">
-                {/* שלב 1: בחרו משפט והריצו אותו (רוחב מלא: הוא מזין את שני השלבים הבאים) */}
-                <li className="lg:col-span-2">
+                כל שלב תופס את מלוא הרוחב, כדי ששלב 3 יוכל לפרוש את ששת הפסים בשתי עמודות
+                בדסקטופ (בחצי רוחב לא נשאר מקום לפס עצמו). סדר ה-DOM נשאר 1, 2, 3. ── */}
+            <ol className="mt-5 grid list-none grid-cols-1 gap-5">
+                {/* שלב 1: בחרו משפט והריצו אותו */}
+                <li>
                     <StepHeader n={1} step={lab.steps[0]} stepLabel={lab.stepLabel} />
                     {/* הפקדים אינם דביקים: ב-390px הם כיסו את התוצאה, והם רלוונטיים רק לשלב הזה.
                         החלפת תרחיש מאפסת את ההרצה, ולכן עדיף שתהיה פעולה מודעת בראש המעבדה. */}
@@ -239,7 +239,7 @@ export const WordToNumberLab: React.FC = () => {
                 <li>
                     <StepHeader n={2} step={lab.steps[1]} stepLabel={lab.stepLabel} showHint={started} />
                     {started ? (
-                        <div className="space-y-2.5">
+                        <div>
                             <IdSequenceViewer
                                 tokens={displayTokens}
                                 idView={idView}
@@ -252,11 +252,6 @@ export const WordToNumberLab: React.FC = () => {
                                 tx={tx}
                                 tokenId={data.tokenId}
                             />
-                            {/* ה-ID הוא מספר השורה, ותוכן השורה הוא הווקטור. הגשר לשלב 3. */}
-                            <div className="flex items-start gap-2 rounded-xl bg-violet-500/10 p-3">
-                                <Table2 size={15} className="mt-0.5 shrink-0 text-violet-300" />
-                                <span className="text-[15px] leading-relaxed text-slate-200">{tx.table.rowIsVector}</span>
-                            </div>
                         </div>
                     ) : (
                         <WaitingNote text={lab.waiting.step2} />
@@ -577,7 +572,7 @@ const MeaningVectorLive: React.FC<MeaningVectorLiveProps> = ({ step, prevStep, d
                 {tx.vector.eduNote}
             </p>
 
-            <div className="space-y-2">
+            <div className="grid gap-x-8 gap-y-2 lg:grid-flow-col lg:grid-rows-3">
                 {dims.map((key) => {
                     const value = dimValue(profile, key);
                     const before = dimValue(prev, key);
