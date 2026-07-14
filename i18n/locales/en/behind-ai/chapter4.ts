@@ -21,9 +21,9 @@ export const chapter4 = {
     // Hero
     hero: {
         badge: 'Behind the Scenes · 04',
-        titleLead: 'How does a Token ID lead',
-        titleHighlight: 'to a learned numeric representation?',
-        lede: 'In the previous chapter we saw how text is split into tokens. Now we follow what happens next. Every token has a Token ID, and that ID works as an address in the embedding table. The address leads to a row of numbers that was learned during training. That row is the token vector, and it represents patterns and relationships the model learned from data.',
+        titleLead: 'Where do the numbers',
+        titleHighlight: 'that represent each token come from?',
+        lede: 'Every token has a Token ID, and that ID points to a row in the embedding table. That row holds the vector learned during training, and it represents patterns and relationships the model learned from data.',
         chipObject: 'Follow a token from its Token ID to its vector',
         chipMeaning: 'See the learned vector being looked up for a token',
     },

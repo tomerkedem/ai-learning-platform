@@ -18,9 +18,9 @@ export const chapter4 = {
     // Hero
     hero: {
         badge: 'Behind the Scenes · 04',
-        titleLead: 'Token ID はどうやって',
-        titleHighlight: '学習された数値表現へつながるのか？',
-        lede: '前の章では、テキストがトークンに分けられる様子を見ました。ここではその先を追います。各トークンには Token ID があり、これが embedding テーブルのアドレスとして働きます。アドレスは、学習時に学ばれた数値の行へとつながります。この行がそのトークンのベクトルであり、モデルがデータから学んだパターンや関係を表しています。',
+        titleLead: '各トークンを表す数値は',
+        titleHighlight: 'どこから来るのか？',
+        lede: '各トークンには Token ID があり、この ID が embedding テーブルの行を指します。その行には、学習時に学ばれたベクトルが入っています。この数値はモデルがデータから学んだパターンや関係を表しています。',
         chipObject: 'Token ID からベクトルまで、トークンを追う',
         chipMeaning: 'トークンの学習済みベクトルが参照される様子を見る',
     },
