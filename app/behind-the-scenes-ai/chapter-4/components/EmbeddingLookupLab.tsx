@@ -15,7 +15,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Hash, Table2, ArrowLeft, ArrowRight, Sparkles, Shuffle, GraduationCap, Eye } from 'lucide-react';
+import { Hash, Table2, ArrowLeft, ArrowRight, Sparkles, Shuffle, GraduationCap, Eye, MousePointerClick } from 'lucide-react';
 
 import { useT } from '@/i18n/useT';
 
@@ -182,7 +182,8 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                             <span className="text-[13px] font-bold text-slate-100">{c.vectorTitle}</span>
                             <span className="font-mono text-[11px] text-slate-500" dir="ltr">#{active.tokenId}</span>
                         </div>
-                        {/* מתג נלמד / אקראי */}
+                        {/* מתג נלמד / אקראי: זה הרגע המרכזי של המעבדה, ולכן יעד מגע מלא (44px)
+                            וטקסט בגודל קריא. המצב הפעיל מסומן גם בטקסט (aria-pressed) ולא בצבע בלבד. */}
                         <div className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-slate-900/80 p-1">
                             {([['learned', c.learnedLabel, GraduationCap], ['random', c.randomLabel, Shuffle]] as const).map(([key, lbl, Icon]) => {
                                 const on = (key === 'learned') === learned;
@@ -192,16 +193,23 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                                         type="button"
                                         onClick={() => setLearned(key === 'learned')}
                                         aria-pressed={on}
-                                        className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition-colors ${
+                                        className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
                                             on ? (key === 'learned' ? 'bg-emerald-500/25 text-emerald-100' : 'bg-slate-600/40 text-slate-100') : 'text-slate-400 hover:text-slate-200'
                                         }`}
                                     >
-                                        <Icon size={12} /> {lbl}
+                                        <Icon size={14} /> {lbl}
                                     </button>
                                 );
                             })}
                         </div>
                     </div>
+
+                    {/* ההזמנה להשוות: בלי זה המתג נקרא כתג משני, והלומד עלול לסיים את המעבדה
+                        בלי לגעת ברעיון המרכזי שלה. הוראה אחת, צמודה למתג. */}
+                    <p className="mb-3 flex items-start gap-1.5 text-[15px] leading-relaxed text-slate-300">
+                        <MousePointerClick size={15} className="mt-0.5 shrink-0 text-violet-300" />
+                        {c.switchHint}
+                    </p>
 
                     {/* שורת המספרים: 12 תאים. מתחלפת בהחלפת מילה או מצב. */}
                     <AnimatePresence mode="wait">
@@ -231,9 +239,13 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                         <Eye size={13} className="shrink-0" /> {c.viewNote}
                     </p>
 
-                    {/* הערת נלמד / אקראי: הלב של "כל embedding הוא וקטור, לא כל וקטור הוא embedding" */}
+                    {/* הערת נלמד / אקראי: הלב של "כל embedding הוא וקטור, לא כל וקטור הוא embedding".
+                        aria-live מכריז את משמעות המצב הפעיל בכל החלפה מכוונת (הודעה אחת, לא כל תא
+                        בווקטור). אין הזזת פוקוס ואין אודיו. */}
                     <div
-                        className={`mt-3 rounded-xl border p-3 text-[13px] font-semibold leading-relaxed ${
+                        aria-live="polite"
+                        aria-atomic="true"
+                        className={`mt-3 rounded-xl border p-3 text-[15px] font-semibold leading-relaxed ${
                             learned ? 'border-emerald-500/30 bg-emerald-900/15 text-emerald-100' : 'border-amber-500/30 bg-amber-900/15 text-amber-100'
                         }`}
                     >
