@@ -147,7 +147,7 @@ export const chapter4 = {
             },
             {
                 title: 'Watch the pattern change',
-                hint: 'Follow the bars, and click a token to see where it pushes them.',
+                hint: 'Pick a token and watch the numeric view change. The bars and axis names are a teaching illustration only.',
             },
         ],
         conclusionLabel: 'Laboratory conclusion',

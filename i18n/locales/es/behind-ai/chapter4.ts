@@ -145,7 +145,7 @@ export const chapter4 = {
             },
             {
                 title: 'Observa cómo cambia el patrón',
-                hint: 'Sigue las barras y pulsa un token para ver hacia dónde las empuja.',
+                hint: 'Elige un token y observa cómo cambia la vista numérica. Las barras y los nombres de los ejes son solo una ilustración didáctica.',
             },
         ],
         conclusionLabel: 'Conclusión del laboratorio',

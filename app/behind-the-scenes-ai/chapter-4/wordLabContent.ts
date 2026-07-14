@@ -14,10 +14,8 @@ import {
     SCENARIOS,
     getScenario,
     idForWord,
-    shiftForWord,
     type EngineScenario,
     type EngineStep,
-    type ShiftEntry,
     type DimKey,
 } from './embeddingEngine';
 
@@ -26,14 +24,12 @@ import {
 export interface WordLabDataset {
     scenarios: EngineScenario[];
     tokenId: (w: string) => number | null;
-    shift: (w: string) => ShiftEntry[];
 }
 
 /** הנתיב העברי: ישירות מהמנוע (ללא שינוי). */
 export const HE_WORD_DATASET: WordLabDataset = {
     scenarios: SCENARIOS,
     tokenId: idForWord,
-    shift: shiftForWord,
 };
 
 /* ── שכבת נתונים אנגלית מקבילה (משתמשת מחדש בפרופילים המספריים של המנוע) ── */
@@ -49,31 +45,6 @@ const EN_TOKEN_DICTIONARY: Record<string, number> = {
 
 function enTokenId(word: string): number | null {
     return word in EN_TOKEN_DICTIONARY ? EN_TOKEN_DICTIONARY[word] : null;
-}
-
-// כיווני דחיפה אנגליים, מקבילים ל-VECTOR_SHIFTS של המנוע. he מוגדר שווה ל-en כי הנתיב
-// האנגלי מציג רק את שדה ה-en. dim שומר על צבע הממד.
-const en = (label: string, dir: ShiftEntry['dir'], dim?: ShiftEntry['dim']): ShiftEntry =>
-    dim ? { he: label, en: label, dir, dim } : { he: label, en: label, dir };
-
-const EN_VECTOR_SHIFTS: Record<string, ShiftEntry[]> = {
-    package: [en('Delivery', 'up-strong', 'delivery')],
-    not: [en('Failure', 'up', 'failure'), en('Negation', 'up'), en('Delivery', 'up-slight', 'delivery')],
-    arrive: [en('Delivery', 'up', 'delivery'), en('Arrival', 'up')],
-    delivery: [en('Delivery', 'up-strong', 'delivery')],
-    handed: [en('Delivery', 'up', 'delivery'), en('Delivery state', 'up')],
-    system: [en('System', 'up-strong', 'system')],
-    showing: [en('System', 'up', 'system'), en('Display', 'up')],
-    Check: [en('Action', 'up-strong', 'action'), en('Investigation', 'up')],
-    why: [en('Reason seeking', 'up')],
-    Send: [en('Action', 'up-strong', 'action'), en('Risk', 'up', 'risk'), en('Approval', 'up', 'permission')],
-    message: [en('Message', 'up'), en('Customer', 'up-slight', 'customer')],
-    customer: [en('Customer', 'up-strong', 'customer'), en('Risk', 'up', 'risk'), en('Approval', 'up', 'permission')],
-    lost: [en('Failure', 'up', 'failure'), en('Risk', 'up', 'risk')],
-};
-
-function enShift(word: string): ShiftEntry[] {
-    return EN_VECTOR_SHIFTS[word] ?? [];
 }
 
 // בונה שלב אנגלי שמשתמש מחדש בפרופיל/lead/negation/agent.status של שלב המנוע המקביל,
@@ -187,7 +158,6 @@ const EN_SCENARIOS: EngineScenario[] = [
 export const EN_WORD_DATASET: WordLabDataset = {
     scenarios: EN_SCENARIOS,
     tokenId: enTokenId,
-    shift: enShift,
 };
 
 /* ── שכבת נתונים ספרדית מקבילה (משתמשת מחדש בפרופילים המספריים של המנוע) ── */
@@ -202,26 +172,6 @@ const ES_TOKEN_DICTIONARY: Record<string, number> = {
 
 function esTokenId(word: string): number | null {
     return word in ES_TOKEN_DICTIONARY ? ES_TOKEN_DICTIONARY[word] : null;
-}
-
-const ES_VECTOR_SHIFTS: Record<string, ShiftEntry[]> = {
-    paquete: [en('Entrega', 'up-strong', 'delivery')],
-    no: [en('Fallo', 'up', 'failure'), en('Negación', 'up'), en('Entrega', 'up-slight', 'delivery')],
-    llegó: [en('Entrega', 'up', 'delivery'), en('Llegada', 'up')],
-    envío: [en('Entrega', 'up-strong', 'delivery')],
-    entregado: [en('Entrega', 'up', 'delivery'), en('Estado de entrega', 'up')],
-    sistema: [en('Sistema', 'up-strong', 'system')],
-    muestra: [en('Sistema', 'up', 'system'), en('Visualización', 'up')],
-    Revisa: [en('Acción', 'up-strong', 'action'), en('Investigación', 'up')],
-    qué: [en('Búsqueda de causa', 'up')],
-    Envía: [en('Acción', 'up-strong', 'action'), en('Riesgo', 'up', 'risk'), en('Aprobación', 'up', 'permission')],
-    mensaje: [en('Mensaje', 'up'), en('Cliente', 'up-slight', 'customer')],
-    cliente: [en('Cliente', 'up-strong', 'customer'), en('Riesgo', 'up', 'risk'), en('Aprobación', 'up', 'permission')],
-    perdió: [en('Fallo', 'up', 'failure'), en('Riesgo', 'up', 'risk')],
-};
-
-function esShift(word: string): ShiftEntry[] {
-    return ES_VECTOR_SHIFTS[word] ?? [];
 }
 
 const esScenario = (id: string, prompt: string, steps: EngineStep[]): EngineScenario => ({
@@ -324,7 +274,6 @@ const ES_SCENARIOS: EngineScenario[] = [
 export const ES_WORD_DATASET: WordLabDataset = {
     scenarios: ES_SCENARIOS,
     tokenId: esTokenId,
-    shift: esShift,
 };
 
 /* ── Параллельный русский слой данных (повторно использует числовые профили движка) ── */
@@ -339,28 +288,6 @@ const RU_TOKEN_DICTIONARY: Record<string, number> = {
 
 function ruTokenId(word: string): number | null {
     return word in RU_TOKEN_DICTIONARY ? RU_TOKEN_DICTIONARY[word] : null;
-}
-
-const RU_VECTOR_SHIFTS: Record<string, ShiftEntry[]> = {
-    Посылка: [en('Доставка', 'up-strong', 'delivery')],
-    посылка: [en('Доставка', 'up-strong', 'delivery')],
-    посылку: [en('Доставка', 'up-strong', 'delivery')],
-    не: [en('Сбой', 'up', 'failure'), en('Отрицание', 'up'), en('Доставка', 'up-slight', 'delivery')],
-    пришла: [en('Доставка', 'up', 'delivery'), en('Прибытие', 'up')],
-    Доставка: [en('Доставка', 'up-strong', 'delivery')],
-    выполнена: [en('Доставка', 'up', 'delivery'), en('Состояние доставки', 'up')],
-    Система: [en('Система', 'up-strong', 'system')],
-    показывает: [en('Система', 'up', 'system'), en('Отображение', 'up')],
-    Проверь: [en('Действие', 'up-strong', 'action'), en('Расследование', 'up')],
-    почему: [en('Поиск причины', 'up')],
-    Отправь: [en('Действие', 'up-strong', 'action'), en('Риск', 'up', 'risk'), en('Одобрение', 'up', 'permission')],
-    сообщение: [en('Сообщение', 'up'), en('Клиент', 'up-slight', 'customer')],
-    клиенту: [en('Клиент', 'up-strong', 'customer'), en('Риск', 'up', 'risk'), en('Одобрение', 'up', 'permission')],
-    потеряна: [en('Сбой', 'up', 'failure'), en('Риск', 'up', 'risk')],
-};
-
-function ruShift(word: string): ShiftEntry[] {
-    return RU_VECTOR_SHIFTS[word] ?? [];
 }
 
 const RU_SCENARIO_LABEL: Record<string, string> = {
@@ -463,7 +390,6 @@ const RU_SCENARIOS: EngineScenario[] = [
 export const RU_WORD_DATASET: WordLabDataset = {
     scenarios: RU_SCENARIOS,
     tokenId: ruTokenId,
-    shift: ruShift,
 };
 
 /* ── طبقة بيانات عربية موازية (تعيد استخدام الملفات الرقمية للمحرّك) ── */
@@ -477,27 +403,6 @@ const AR_TOKEN_DICTIONARY: Record<string, number> = {
 
 function arTokenId(word: string): number | null {
     return word in AR_TOKEN_DICTIONARY ? AR_TOKEN_DICTIONARY[word] : null;
-}
-
-const AR_VECTOR_SHIFTS: Record<string, ShiftEntry[]> = {
-    الطرد: [en('تسليم', 'up-strong', 'delivery')],
-    لم: [en('فشل', 'up', 'failure'), en('نفي', 'up'), en('تسليم', 'up-slight', 'delivery')],
-    لا: [en('فشل', 'up', 'failure'), en('نفي', 'up')],
-    يصل: [en('تسليم', 'up', 'delivery'), en('وصول', 'up')],
-    الشحنة: [en('تسليم', 'up-strong', 'delivery')],
-    'تُسلَّم': [en('تسليم', 'up', 'delivery'), en('حالة التسليم', 'up')],
-    النظام: [en('نظام', 'up-strong', 'system')],
-    يعرض: [en('نظام', 'up', 'system'), en('عرض', 'up')],
-    تحقّق: [en('إجراء', 'up-strong', 'action'), en('تحقيق', 'up')],
-    لماذا: [en('البحث عن سبب', 'up')],
-    أرسل: [en('إجراء', 'up-strong', 'action'), en('مخاطرة', 'up', 'risk'), en('موافقة', 'up', 'permission')],
-    رسالة: [en('رسالة', 'up'), en('عميل', 'up-slight', 'customer')],
-    للعميل: [en('عميل', 'up-strong', 'customer'), en('مخاطرة', 'up', 'risk'), en('موافقة', 'up', 'permission')],
-    ضاع: [en('فشل', 'up', 'failure'), en('مخاطرة', 'up', 'risk')],
-};
-
-function arShift(word: string): ShiftEntry[] {
-    return AR_VECTOR_SHIFTS[word] ?? [];
 }
 
 const AR_SCENARIO_LABEL: Record<string, string> = {
@@ -600,7 +505,6 @@ const AR_SCENARIOS: EngineScenario[] = [
 export const AR_WORD_DATASET: WordLabDataset = {
     scenarios: AR_SCENARIOS,
     tokenId: arTokenId,
-    shift: arShift,
 };
 
 /* ── 並行する日本語データ層（エンジンの数値プロファイルを再利用） ── */
@@ -617,26 +521,6 @@ const JA_TOKEN_DICTIONARY: Record<string, number> = {
 
 function jaTokenId(word: string): number | null {
     return word in JA_TOKEN_DICTIONARY ? JA_TOKEN_DICTIONARY[word] : null;
-}
-
-const JA_VECTOR_SHIFTS: Record<string, ShiftEntry[]> = {
-    荷物: [en('配送', 'up-strong', 'delivery')],
-    届か: [en('配送', 'up', 'delivery'), en('到着', 'up')],
-    なかった: [en('失敗', 'up', 'failure'), en('否定', 'up'), en('配送', 'up-slight', 'delivery')],
-    配送: [en('配送', 'up-strong', 'delivery')],
-    完了し: [en('配送', 'up', 'delivery'), en('完了状態', 'up')],
-    システム: [en('システム', 'up-strong', 'system')],
-    表示し: [en('システム', 'up', 'system'), en('表示', 'up')],
-    ない: [en('失敗', 'up', 'failure'), en('否定', 'up')],
-    調べて: [en('行動', 'up-strong', 'action'), en('調査', 'up')],
-    なぜ: [en('理由の探索', 'up')],
-    連絡して: [en('行動', 'up-strong', 'action'), en('リスク', 'up', 'risk'), en('承認', 'up', 'permission')],
-    顧客: [en('顧客', 'up-strong', 'customer'), en('リスク', 'up', 'risk'), en('承認', 'up', 'permission')],
-    紛失し: [en('失敗', 'up', 'failure'), en('リスク', 'up', 'risk')],
-};
-
-function jaShift(word: string): ShiftEntry[] {
-    return JA_VECTOR_SHIFTS[word] ?? [];
 }
 
 const JA_SCENARIO_LABEL: Record<string, string> = {
@@ -739,7 +623,6 @@ const JA_SCENARIOS: EngineScenario[] = [
 export const JA_WORD_DATASET: WordLabDataset = {
     scenarios: JA_SCENARIOS,
     tokenId: jaTokenId,
-    shift: jaShift,
 };
 
 export function getWordDataset(locale: Locale): WordLabDataset {
@@ -786,8 +669,6 @@ export interface WordLabText {
     /** תצוגת המשמעות: תצוגה לימודית, לא ייצוג אמיתי. eduBadge/eduNote הם ההבהרה הראשית
      *  (מוצגת מעל הפסים, לא כהערת שוליים). */
     vector: { title: string; sub: string; eduBadge: string; eduNote: string; note: string };
-    shift: { title: string; sub: string; idleHint: string; pushesUp: string; tiny: string; note: string };
-    dirLabels: Record<ShiftEntry['dir'], string>;
     agent: { needsApproval: string; note: string };
     /** תוויות ממד מקומיות. אם חסר, נופלים ל-DIM_INFO (he/en) של המנוע. שפות שאינן he/en
      *  מספקות כאן את תוויות הממד שלהן (DIM_INFO מוגן ואינו משתנה). */
@@ -832,15 +713,6 @@ export const HE_WORD_TEXT: WordLabText = {
         eduNote: 'השמות של הצירים כאן, משלוח, כשל, דחיפות, נבחרו על ידינו כדי שתוכלו לראות מה קורה. בייצוג אמיתי יש מאות ממדים, ולרובם אין שם שאדם יכול לקרוא. מה שהתצוגה כן מראה נכון: כמה מספרים יחד יכולים להחזיק דפוס.',
         note: 'הערכים כאן נעים בין 0 ל-1.',
     },
-    shift: {
-        title: 'השפעת המילה',
-        sub: 'Vector Shift by Word',
-        idleHint: 'לחצו על מילה כדי לראות לאן היא דוחפת את הפרופיל.',
-        pushesUp: 'דוחפת מעלה את הממדים:',
-        tiny: 'תורמת מעט מאוד לפרופיל. עדיין הופכת ל-Token ID ונכנסת לחישוב.',
-        note: 'כיוון השפעה, לא אריתמטיקה מדויקת. כל מילה תורמת משהו לפרופיל המספרי.',
-    },
-    dirLabels: { 'up-strong': 'עלייה חזקה', up: 'עלייה', 'up-slight': 'עלייה קלה' },
     agent: {
         needsApproval: 'Needs approval',
         note: 'אותו פרופיל מספרי מבדיל בין חקירה בטוחה לבין פעולה מסוכנת מול לקוח. ייצוג המשמעות לא רק עונה, הוא משפיע על החלטות פעולה.',
@@ -885,15 +757,6 @@ export const EN_WORD_TEXT: WordLabText = {
         eduNote: 'The axis names here, Delivery, Failure, Urgency, were chosen by us so you can see what is happening. A real representation has hundreds of dimensions, and most of them have no name a person can read. What this view does show correctly: several numbers together can hold a pattern.',
         note: 'The values here run between 0 and 1.',
     },
-    shift: {
-        title: 'Word impact',
-        sub: 'Vector Shift by Word',
-        idleHint: 'Click a word to see where it pushes the profile.',
-        pushesUp: 'pushes these dimensions up:',
-        tiny: 'Contributes very little to the profile. It still becomes a Token ID and enters the computation.',
-        note: 'Direction of influence, not exact arithmetic. Every word contributes something to the numeric profile.',
-    },
-    dirLabels: { 'up-strong': 'Strong rise', up: 'Rise', 'up-slight': 'Slight rise' },
     agent: {
         needsApproval: 'Needs approval',
         note: 'The same numeric profile separates a safe investigation from a risky customer action. The meaning representation does not only answer, it shapes action decisions.',
@@ -938,15 +801,6 @@ export const ES_WORD_TEXT: WordLabText = {
         eduNote: 'Los nombres de los ejes de aquí, Entrega, Fallo, Urgencia, los elegimos nosotros para que puedas ver lo que ocurre. Una representación real tiene cientos de dimensiones, y la mayoría no tiene un nombre que una persona pueda leer. Lo que esta vista sí muestra bien: varios números juntos pueden sostener un patrón.',
         note: 'Los valores aquí van entre 0 y 1.',
     },
-    shift: {
-        title: 'Impacto de la palabra',
-        sub: 'Cambio del vector por palabra',
-        idleHint: 'Pulsa una palabra para ver hacia dónde empuja el perfil.',
-        pushesUp: 'empuja hacia arriba estas dimensiones:',
-        tiny: 'Aporta muy poco al perfil. Aun así se convierte en un Token ID y entra en el cálculo.',
-        note: 'Dirección de influencia, no aritmética exacta. Cada palabra aporta algo al perfil numérico.',
-    },
-    dirLabels: { 'up-strong': 'Subida fuerte', up: 'Subida', 'up-slight': 'Subida leve' },
     agent: {
         needsApproval: 'Requiere aprobación',
         note: 'El mismo perfil numérico separa una investigación segura de una acción arriesgada hacia el cliente. La representación de significado no solo responde, también moldea decisiones de acción.',
@@ -1003,15 +857,6 @@ export const RU_WORD_TEXT: WordLabText = {
         eduNote: 'Названия осей здесь, Доставка, Сбой, Срочность, выбрали мы сами, чтобы вы могли увидеть, что происходит. В настоящем представлении сотни измерений, и у большинства нет названия, которое человек мог бы прочитать. Что эта визуализация показывает верно: несколько чисел вместе могут удерживать целый узор.',
         note: 'Значения здесь лежат между 0 и 1.',
     },
-    shift: {
-        title: 'Влияние слова',
-        sub: 'Сдвиг вектора по слову',
-        idleHint: 'Нажмите на слово, чтобы увидеть, куда оно толкает профиль.',
-        pushesUp: 'поднимает эти измерения:',
-        tiny: 'Вносит очень мало в профиль. Всё равно превращается в Token ID и входит в вычисление.',
-        note: 'Направление влияния, не точная арифметика. Каждое слово что-то вносит в числовой профиль.',
-    },
-    dirLabels: { 'up-strong': 'Сильный рост', up: 'Рост', 'up-slight': 'Лёгкий рост' },
     agent: {
         needsApproval: 'Нужно одобрение',
         note: 'Тот же числовой профиль отличает безопасное расследование от рискованного действия с клиентом. Представление смысла не только отвечает, оно влияет на решения о действиях.',
@@ -1068,15 +913,6 @@ export const AR_WORD_TEXT: WordLabText = {
         eduNote: 'أسماء المحاور هنا، تسليم وفشل وإلحاح، اخترناها نحن كي ترى ما يجري. التمثيل الحقيقي فيه مئات الأبعاد، ومعظمها بلا اسم يستطيع الإنسان قراءته. أما ما يعرضه هذا العرض بصدق فهو: عدة أرقام معًا قادرة على حمل نمط.',
         note: 'القيم هنا تتراوح بين 0 و1.',
     },
-    shift: {
-        title: 'تأثير الكلمة',
-        sub: 'انزياح المتجه حسب الكلمة',
-        idleHint: 'اضغط على كلمة لترى إلى أين تدفع الملف.',
-        pushesUp: 'ترفع هذه الأبعاد:',
-        tiny: 'تسهم قليلًا جدًا في الملف. ومع ذلك تتحوّل إلى Token ID وتدخل في الحساب.',
-        note: 'اتجاه التأثير، لا حساب دقيق. كل كلمة تسهم بشيء في الملف الرقمي.',
-    },
-    dirLabels: { 'up-strong': 'ارتفاع قوي', up: 'ارتفاع', 'up-slight': 'ارتفاع خفيف' },
     agent: {
         needsApproval: 'يلزم موافقة',
         note: 'الملف الرقمي نفسه يميّز بين تحقيق آمن وإجراء محفوف بالمخاطر تجاه العميل. تمثيل المعنى لا يجيب فقط، بل يؤثّر على قرارات الإجراء.',
@@ -1133,15 +969,6 @@ export const JA_WORD_TEXT: WordLabText = {
         eduNote: 'ここでの軸の名前（配送、失敗、緊急度）は、何が起きているかを見てもらうために私たちが選んだものです。実際の表現には数百の次元があり、その多くには人間が読める名前はありません。このビジュアルが正しく示しているのは、複数の数値がまとまって一つのパターンを保てる、ということです。',
         note: 'ここでの値は0から1の範囲です。',
     },
-    shift: {
-        title: '単語の影響',
-        sub: '単語ごとのベクトル変化',
-        idleHint: '単語を押すと、プロファイルをどちらへ押すかが分かります。',
-        pushesUp: '次の次元を押し上げます：',
-        tiny: 'プロファイルへの寄与はごくわずか。それでも Token ID になり、計算に入ります。',
-        note: '影響の方向で、正確な算術ではありません。どの単語も数値プロファイルに何かを加えます。',
-    },
-    dirLabels: { 'up-strong': '大きく上昇', up: '上昇', 'up-slight': 'わずかに上昇' },
     agent: {
         needsApproval: '承認が必要',
         note: '同じ数値プロファイルが、安全な調査と顧客へのリスクの高い行動を区別します。意味の表現は答えるだけでなく、行動の判断にも影響します。',

@@ -22,7 +22,6 @@ import {
     type EngineStep,
     type DimKey,
     type Profile,
-    type ShiftEntry,
 } from '@/app/behind-the-scenes-ai/chapter-4/embeddingEngine';
 import {
     getWordDataset,
@@ -268,10 +267,7 @@ export const WordToNumberLab: React.FC = () => {
                 <li>
                     <StepHeader n={3} step={lab.steps[2]} stepLabel={lab.stepLabel} showHint={started} />
                     {started ? (
-                        <div className="space-y-3">
-                            <MeaningVectorLive step={step} prevStep={prevStep} dims={dims} reduce={!!reduce} dir={dir} tx={tx} isHe={isHe} />
-                            <VectorShiftCard word={selected} accent={scenario.accent} reduce={!!reduce} dir={dir} tx={tx} isHe={isHe} shift={data.shift} />
-                        </div>
+                        <MeaningVectorLive step={step} prevStep={prevStep} dims={dims} reduce={!!reduce} dir={dir} tx={tx} isHe={isHe} />
                     ) : (
                         <WaitingNote text={lab.waiting.step3} />
                     )}
@@ -631,93 +627,6 @@ const MeaningVectorLive: React.FC<MeaningVectorLiveProps> = ({ step, prevStep, d
             </div>
 
             <p className="mt-3 text-[13px] leading-relaxed text-slate-400">{tx.vector.note}</p>
-        </div>
-    );
-};
-
-/* ═══════════════════════ רכיב 4: Vector Shift by Word ════════════════════ */
-
-const DIR_META: Record<ShiftEntry['dir'], { chevrons: number; strong: boolean }> = {
-    'up-strong': { chevrons: 2, strong: true },
-    'up': { chevrons: 1, strong: true },
-    'up-slight': { chevrons: 1, strong: false },
-};
-
-interface VectorShiftCardProps {
-    word: string | null;
-    accent: keyof typeof ACCENTS;
-    reduce: boolean;
-    dir: 'rtl' | 'ltr';
-    tx: WordLabText;
-    isHe: boolean;
-    shift: (w: string) => ShiftEntry[];
-}
-
-const VectorShiftCard: React.FC<VectorShiftCardProps> = ({ word, accent, reduce, dir, tx, isHe, shift }) => {
-    const a = ACCENTS[accent];
-    const entries = word ? shift(word) : [];
-
-    return (
-        <div className="rounded-xl bg-slate-950/30 p-4 text-start" dir={dir}>
-            <div className="mb-3 flex items-center gap-2">
-                <ChevronUp size={16} className={a.text} />
-                <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">{tx.shift.title}</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{tx.shift.sub}</div>
-                </div>
-            </div>
-
-            {!word ? (
-                <p className="flex items-center gap-2 text-xs leading-relaxed text-slate-500">
-                    <MousePointerClick size={14} /> {tx.shift.idleHint}
-                </p>
-            ) : (
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={word}
-                        initial={reduce ? false : { opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={reduce ? undefined : { opacity: 0, y: -6 }}
-                        transition={reduce ? { duration: 0 } : { duration: 0.22 }}
-                    >
-                        <div className="mb-3 flex items-center gap-2">
-                            <span className="rounded-md bg-slate-800/70 px-2 py-0.5 text-sm font-bold text-slate-100">{word}</span>
-                            <span className="text-[11px] text-slate-500">{tx.shift.pushesUp}</span>
-                        </div>
-
-                        {entries.length === 0 ? (
-                            <p className="text-xs leading-relaxed text-slate-500">{tx.shift.tiny}</p>
-                        ) : (
-                            <div className="space-y-2">
-                                {entries.map((e) => {
-                                    const dimStyle = e.dim ? DIM_STYLE[e.dim] : null;
-                                    const meta = DIR_META[e.dir];
-                                    const dirLabel = tx.dirLabels[e.dir];
-                                    return (
-                                        <div
-                                            key={`${e.en}-${e.dir}`}
-                                            className={`flex items-center justify-between rounded-xl border px-3 py-2 ${
-                                                dimStyle ? `${dimStyle.border} ${dimStyle.soft}` : 'border-slate-700/50 bg-slate-950/40'
-                                            }`}
-                                        >
-                                            <span className="leading-tight">
-                                                <span className={`block text-sm font-bold ${dimStyle ? dimStyle.text : 'text-slate-200'}`}>{isHe ? e.he : e.en}</span>
-                                                {isHe && <span className="block text-[9px] uppercase tracking-wider text-slate-500" dir="ltr">{e.en}</span>}
-                                            </span>
-                                            <span className={`inline-flex items-center gap-0.5 ${dimStyle ? dimStyle.text : 'text-slate-300'}`} title={dirLabel}>
-                                                {Array.from({ length: meta.chevrons }).map((_, k) => (
-                                                    <ChevronUp key={k} size={15} strokeWidth={meta.strong ? 3 : 2} className={meta.strong ? '' : 'opacity-60'} />
-                                                ))}
-                                            </span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-                        <p className="mt-3 text-[11px] leading-relaxed text-slate-500">{tx.shift.note}</p>
-                    </motion.div>
-                </AnimatePresence>
-            )}
         </div>
     );
 };
