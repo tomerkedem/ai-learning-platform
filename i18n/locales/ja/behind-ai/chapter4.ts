@@ -175,6 +175,7 @@ export const chapter4 = {
         tableHint: 'トークンごとに1行。Token ID は行番号です。',
         vectorTitle: 'ベクトル',
         vectorNote: '数値の並びです。これが単語の embedding で、エンジンはこれを計算します。',
+        rowShown: 'その学習済みの行が表示されています。',
         switchHint: '「学習済み」と「ランダム」を切り替えて、なぜ数値の並びなら何でも embedding になるわけではないのかを確かめてください。',
         learnedLabel: '学習済み',
         randomLabel: 'ランダム',

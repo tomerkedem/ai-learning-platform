@@ -175,6 +175,7 @@ export const chapter4 = {
         tableHint: 'صف لكل token. الـ Token ID هو رقم الصف.',
         vectorTitle: 'المتجه',
         vectorNote: 'قائمة أرقام. هذا هو embedding الكلمة، وعليه يحسب المحرّك.',
+        rowShown: 'يُعرض الآن صفّه المتعلَّم.',
         switchHint: 'بدّل بين "متعلَّم" و"عشوائي" وانظر لماذا ليست كل قائمة أرقام embedding.',
         learnedLabel: 'متعلَّم',
         randomLabel: 'عشوائي',

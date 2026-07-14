@@ -188,6 +188,7 @@ export const chapter4 = {
         tableHint: 'שורה לכל טוקן. ה-Token ID הוא מספר השורה.',
         vectorTitle: 'הווקטור',
         vectorNote: 'רשימת מספרים. זה ה-embedding של המילה, וזה מה שהמנוע מחשב עליו.',
+        rowShown: 'השורה הנלמדת שלה מוצגת עכשיו.',
         switchHint: 'עברו בין "נלמד" ל"אקראי" ובדקו למה לא כל רשימת מספרים היא embedding.',
         learnedLabel: 'נלמד',
         randomLabel: 'אקראי',

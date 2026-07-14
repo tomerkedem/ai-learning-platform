@@ -176,6 +176,7 @@ export const chapter4 = {
         tableHint: 'По строке на токен. Token ID это номер строки.',
         vectorTitle: 'Вектор',
         vectorNote: 'Список чисел. Это embedding слова, и именно на нём считает движок.',
+        rowShown: 'Теперь показана её выученная строка.',
         switchHint: 'Переключайтесь между "Выучено" и "Случайно" и посмотрите, почему не всякий список чисел это embedding.',
         learnedLabel: 'Выучено',
         randomLabel: 'Случайно',

@@ -176,6 +176,7 @@ export const chapter4 = {
         tableHint: 'Una fila por token. El Token ID es el número de fila.',
         vectorTitle: 'El vector',
         vectorNote: 'Una lista de números. Este es el embedding de la palabra, y sobre esto calcula el motor.',
+        rowShown: 'Ahora se muestra su fila aprendida.',
         switchHint: 'Cambia entre "Aprendido" y "Aleatorio" y descubre por qué no toda lista de números es un embedding.',
         learnedLabel: 'Aprendido',
         randomLabel: 'Aleatorio',

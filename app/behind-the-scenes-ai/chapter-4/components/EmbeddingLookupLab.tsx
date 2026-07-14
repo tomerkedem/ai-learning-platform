@@ -103,8 +103,12 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                                 type="button"
                                 onClick={() => setWordId(w.id)}
                                 aria-pressed={isActive}
-                                className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition-colors ${
-                                    isActive ? 'border-cyan-400/60 bg-cyan-900/25 text-cyan-100' : 'border-slate-700/50 bg-slate-800/30 text-slate-300 hover:border-slate-600'
+                                // יעד מגע מלא (44px) וטקסט קריא. המצב הנבחר מועבר גם במשקל הגופן
+                                // ובמסגרת, ולא בצבע בלבד, בנוסף ל-aria-pressed.
+                                className={`inline-flex min-h-[44px] items-center rounded-xl border px-3.5 py-2 text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
+                                    isActive
+                                        ? 'border-cyan-400 bg-cyan-900/25 font-black text-cyan-100'
+                                        : 'border-slate-700/50 bg-slate-800/30 font-medium text-slate-300 hover:border-slate-600'
                                 }`}
                             >
                                 {label(w.id)}
@@ -112,6 +116,13 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                         );
                     })}
                 </div>
+            </div>
+
+            {/* בחירת מילה משנה את ה-Token ID ואת הווקטור. בלי הכרזה, משתמש קורא מסך לוחץ
+                ולא שומע דבר. הודעה אחת תמציתית: המילה, הכתובת שלה, ושהשורה הנלמדת מוצגת.
+                לא מוקראים ערכי התאים. אין הזזת פוקוס. */}
+            <div aria-live="polite" aria-atomic="true" className="sr-only">
+                {`${label(active.id)}, Token ID ${active.tokenId}. ${c.rowShown}`}
             </div>
 
             <div className="grid gap-5 lg:grid-cols-2">
@@ -154,7 +165,10 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                                         key={w.id}
                                         type="button"
                                         onClick={() => setWordId(w.id)}
-                                        className={`grid w-full grid-cols-[4.25rem_1fr] items-center gap-3 rounded-lg border px-2.5 py-1.5 text-start transition-colors ${
+                                        // שורות הטבלה הן בורר מילה שני לאותו מצב, ולכן הן חושפות
+                                        // גם הן aria-pressed. יעד מגע מלא וטבעת פוקוס נראית.
+                                        aria-pressed={isActive}
+                                        className={`grid min-h-[44px] w-full grid-cols-[4.25rem_1fr] items-center gap-3 rounded-lg border px-2.5 py-1.5 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
                                             isActive ? 'border-cyan-400/50 bg-cyan-900/15' : 'border-slate-700/40 bg-slate-900/30 hover:border-slate-600 opacity-70'
                                         }`}
                                     >

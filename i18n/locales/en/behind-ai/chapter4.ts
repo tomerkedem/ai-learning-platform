@@ -178,6 +178,7 @@ export const chapter4 = {
         tableHint: 'One row per token. The Token ID is the row number.',
         vectorTitle: 'The vector',
         vectorNote: 'A list of numbers. This is the word embedding, and this is what the engine computes on.',
+        rowShown: 'Its learned row is now shown.',
         switchHint: 'Switch between "Learned" and "Random" and see why not every list of numbers is an embedding.',
         learnedLabel: 'Learned',
         randomLabel: 'Random',
