@@ -592,7 +592,8 @@ const MeaningVectorLive: React.FC<MeaningVectorLiveProps> = ({ step, prevStep, d
                     return (
                         <div key={key} className="flex items-center gap-3">
                             <span className="flex w-20 shrink-0 items-center gap-1.5 leading-tight">
-                                <span className={`h-2 w-2 shrink-0 rounded-full ${s.dot}`} />
+                                {/* הממד המוביל מסומן גם בגודל ובטבעת נייטרלית (לא בצבע בלבד) */}
+                                <span className={`shrink-0 rounded-full ${s.dot} ${isLead ? 'h-2.5 w-2.5 ring-2 ring-white/40' : 'h-2 w-2'}`} />
                                 <span>
                                     <span className={`block text-xs font-bold ${isLead ? s.text : 'text-slate-300'}`}>{isHe ? info.he : (tx.dimLabel?.[key] ?? info.en)}</span>
                                     {isHe && <span className="block text-[8px] uppercase tracking-[0.12em] text-slate-500" dir="ltr">{info.en}</span>}

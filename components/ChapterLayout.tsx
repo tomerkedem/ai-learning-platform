@@ -248,7 +248,9 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                     ></div>
                  </div>
 
-                 <div className={`absolute top-[-20%] ${isRTL ? 'right-[-10%]' : 'left-[-10%]'} w-150 h-150 bg-${themeColorName}-500/20 blur-[120px] rounded-full mix-blend-screen animate-pulse`}></div>
+                 {/* motion-reduce:animate-none - ההילה הסביבתית פועמת ברציפות; מכובה כשהמשתמש
+                     ביקש הפחתת תנועה. וריאנט CSS בלבד, בלי JS ובלי סיכון hydration. */}
+                 <div className={`absolute top-[-20%] ${isRTL ? 'right-[-10%]' : 'left-[-10%]'} w-150 h-150 bg-${themeColorName}-500/20 blur-[120px] rounded-full mix-blend-screen animate-pulse motion-reduce:animate-none`}></div>
                  <div className={`absolute bottom-[-20%] ${isRTL ? 'left-[-10%]' : 'right-[-10%]'} w-125 h-125 bg-${themeColorName}-600/10 blur-[100px] rounded-full mix-blend-screen`}></div>
                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050B14_120%)]"></div>
             </div>

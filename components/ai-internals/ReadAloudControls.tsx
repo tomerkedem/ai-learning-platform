@@ -121,12 +121,14 @@ export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, r
     const PrevIcon = isRtl ? ChevronRight : ChevronLeft;
     const NextIcon = isRtl ? ChevronLeft : ChevronRight;
 
+    const focusRing = 'focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950';
+
     const iconBtn =
-        'inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-200 transition-colors hover:border-cyan-400/40 hover:text-white disabled:opacity-40 disabled:hover:border-white/10 disabled:hover:text-slate-200';
+        `inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-200 transition-colors hover:border-cyan-400/40 hover:text-white disabled:opacity-40 disabled:hover:border-white/10 disabled:hover:text-slate-200 ${focusRing}`;
 
     // צ׳יפ נבחר/לא-נבחר למקטעי בקרה (מצב היקף, מהירות).
     const chip = (selected: boolean) =>
-        `rounded-lg px-2.5 py-1 text-xs font-bold transition-colors ${
+        `rounded-lg px-2.5 py-1 text-xs font-bold transition-colors ${focusRing} ${
             selected
                 ? 'bg-cyan-500 text-slate-950'
                 : 'border border-white/10 bg-white/5 text-slate-300 hover:border-cyan-400/40 hover:text-white'
@@ -145,7 +147,7 @@ export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, r
                         onClick={() => ra.start(0)}
                         aria-label={labels.play}
                         title={labels.play}
-                        className="group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-bold text-slate-200 transition-colors hover:border-cyan-400/40 hover:text-white active:scale-95"
+                        className={`group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-bold text-slate-200 transition-colors hover:border-cyan-400/40 hover:text-white active:scale-95 ${focusRing}`}
                     >
                         <Headphones size={16} className="text-cyan-300 transition-transform group-hover:scale-110" aria-hidden />
                         <span className={compact ? 'max-sm:hidden' : undefined}>{labels.dock}</span>
@@ -271,7 +273,7 @@ export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, r
                                         type="button"
                                         onClick={() => { ra.start(i); setShowSections(false); }}
                                         aria-current={isCur ? 'true' : undefined}
-                                        className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-start text-xs transition-colors ${isCur ? 'bg-cyan-500/15 font-bold text-cyan-100' : 'text-slate-300 hover:bg-white/5'}`}
+                                        className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-start text-xs transition-colors ${focusRing} ${isCur ? 'bg-cyan-500/15 font-bold text-cyan-100' : 'text-slate-300 hover:bg-white/5'}`}
                                     >
                                         <span className="w-5 shrink-0 font-mono text-[10px] tabular-nums text-slate-500">{i + 1}</span>
                                         <span className="truncate">{s.label}</span>

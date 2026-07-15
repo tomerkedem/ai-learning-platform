@@ -736,7 +736,7 @@ export const AssessmentEngine = ({
                                             <button
                                                 disabled={showResult && !isReviewMode}
                                                 onClick={() => handleAnswer(oIdx)}
-                                                className={`group relative flex w-full items-center gap-3.5 overflow-hidden rounded-2xl border py-3.5 pe-12 ps-2.5 text-start transition-all duration-200 ${rowCls} ${showResult || reduce ? '' : 'hover:-translate-y-px active:scale-[0.99]'}`}
+                                                className={`group relative flex w-full items-center gap-3.5 overflow-hidden rounded-2xl border py-3.5 pe-12 ps-2.5 text-start transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${rowCls} ${showResult || reduce ? '' : 'hover:-translate-y-px active:scale-[0.99]'}`}
                                             >
                                                 <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-[13px] font-black transition-colors ${chipCls}`}>
                                                     {displayPos + 1}

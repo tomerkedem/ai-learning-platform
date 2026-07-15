@@ -167,10 +167,11 @@ const LockQuestion: React.FC = () => {
                             key={opt}
                             type="button"
                             onClick={() => setChoice(i)}
-                            className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-start text-sm font-bold transition-colors ${cls}`}
+                            className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-start text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${cls}`}
                         >
                             <span>{opt}</span>
-                            {answered && isChosen && isCorrect && <CheckCircle2 size={16} className="shrink-0 text-emerald-300" />}
+                            {/* התשובה הנכונה מקבלת סימן ✓ גם כשלא נבחרה, כדי ש"מה נכון" לא יימסר בצבע בלבד */}
+                            {answered && isCorrect && <CheckCircle2 size={16} className="shrink-0 text-emerald-300" />}
                             {answered && isChosen && !isCorrect && <Info size={16} className="shrink-0 text-amber-300" />}
                         </button>
                     );
