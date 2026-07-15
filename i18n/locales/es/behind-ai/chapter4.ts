@@ -19,7 +19,7 @@ export const chapter4 = {
     // Hero
     hero: {
         badge: 'Behind the Scenes · 04',
-        titleLead: 'De dónde salen los números',
+        titleLead: '¿De dónde salen los números',
         titleHighlight: 'que representan cada token?',
         lede: 'Cada token tiene un Token ID, y ese ID apunta a una fila de la tabla de embeddings. Esa fila contiene el vector aprendido durante el entrenamiento, y representa patrones y relaciones que el modelo aprendió de los datos.',
         chipObject: 'Sigue un token desde su Token ID hasta su vector',

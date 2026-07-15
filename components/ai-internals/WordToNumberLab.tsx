@@ -210,6 +210,7 @@ export const WordToNumberLab: React.FC = () => {
                             onReset={handleReset}
                             dir={dir}
                             tx={tx}
+                            isHe={isHe}
                         />
                     </div>
 
@@ -251,6 +252,7 @@ export const WordToNumberLab: React.FC = () => {
                                 dir={dir}
                                 tx={tx}
                                 tokenId={data.tokenId}
+                                isHe={isHe}
                             />
                         </div>
                     ) : (
@@ -340,11 +342,12 @@ interface TypingFieldProps {
     onReset: () => void;
     dir: 'rtl' | 'ltr';
     tx: WordLabText;
+    isHe: boolean;
 }
 
 // זהו נגן, לא שדה קלט: המעבדה מדגימה משפטים מוכנים מראש (אין טוקנייזר חי), ולכן במקום
 // להזמין הקלדה שלא עושה כלום, לוחצים "נגן" והמשפט נבנה טוקן אחר טוקן מול העיניים.
-const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyping, onAutoType, onReset, dir, tx }) => {
+const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyping, onAutoType, onReset, dir, tx, isHe }) => {
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
 
@@ -377,7 +380,9 @@ const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyp
                     className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${a.border} ${a.bgSoft} ${a.text} hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950`}
                 >
                     <Play size={14} /> {tx.typing.autoType}
-                    <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.autoTypeLatin}</span>
+                    {/* המילה הלטינית (PLAY) היא סיוע לקורא העברית בלבד; בשאר השפות תווית הכפתור
+                        כבר בשפת המשתמש, וה"לטיני" תורגם בטעות לאותה מילה (ריק ריק). מציגים רק בעברית. */}
+                    {isHe && <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.autoTypeLatin}</span>}
                 </button>
                 <button
                     type="button"
@@ -385,7 +390,7 @@ const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyp
                     className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-800/40 px-3 py-2 text-sm font-bold text-slate-400 transition-colors hover:text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                 >
                     <RotateCcw size={14} /> {tx.typing.reset}
-                    <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.resetLatin}</span>
+                    {isHe && <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.resetLatin}</span>}
                 </button>
             </div>
         </div>
@@ -405,9 +410,10 @@ interface IdSequenceViewerProps {
     dir: 'rtl' | 'ltr';
     tx: WordLabText;
     tokenId: (w: string) => number | null;
+    isHe: boolean;
 }
 
-const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, selected, accent, onToggle, onSelect, reduce, dir, tx, tokenId }) => {
+const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, selected, accent, onToggle, onSelect, reduce, dir, tx, tokenId, isHe }) => {
     const a = ACCENTS[accent];
 
     return (
@@ -417,7 +423,8 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                     <Binary size={16} className={a.text} />
                     <div className="leading-tight">
                         <div className="text-sm font-bold text-slate-200">{tx.idSeq.title}</div>
-                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{tx.idSeq.sub}</div>
+                        {/* כותרת-משנה לטינית: סיוע לקורא העברית; בשאר השפות היא רק חוזרת על הכותרת */}
+                        {isHe && <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{tx.idSeq.sub}</div>}
                     </div>
                 </div>
                 {/* מתג מילים / מספרים */}
@@ -559,7 +566,8 @@ const MeaningVectorLive: React.FC<MeaningVectorLiveProps> = ({ step, prevStep, d
                 <Compass size={16} className="text-violet-300" />
                 <div className="leading-tight">
                     <div className="text-sm font-bold text-slate-200">{tx.vector.title}</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{tx.vector.sub}</div>
+                    {/* כותרת-משנה לטינית: סיוע לקורא העברית; בשאר השפות היא רק חוזרת על הכותרת */}
+                    {isHe && <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{tx.vector.sub}</div>}
                 </div>
                 <span className="ms-auto inline-flex items-center gap-1 rounded-lg border border-amber-500/40 bg-amber-500/15 px-2 py-1 text-[13px] font-bold text-amber-100">
                     <Info size={13} className="shrink-0" /> {tx.vector.eduBadge}
