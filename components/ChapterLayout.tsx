@@ -19,6 +19,35 @@ import { EdgeRail, EdgePeekItem } from "@/components/ai-internals/EdgePeek";
 // ברירת המחדל false, כך שצרכנים מחוץ לפריסה מקבלים ערך בטוח.
 export const FocusModeContext = React.createContext(false);
 
+// מפת צבעי-מבטא סטטית לפי שם הצבע של הפרק (נגזר מ-colorFrom, למשל "from-violet-400" -> "violet").
+// חובה שהמחלקות יהיו מחרוזות literal: Tailwind v4 סורק את קוד המקור ויוצר רק מחלקות שהוא רואה
+// כטקסט. מחלקות שנבנו בזמן ריצה (bg-${color}-600/10) לא נמצאות בסריקה ולכן לא נוצרות ב-CSS,
+// וכך ההילה התחתונה וגרדיאנט הריחוף של כרטיס הפרק הבא רונדרו שקופים. המפה מחזירה את אותן
+// המחלקות המדויקות, אך כטקסט קבוע שהסורק מזהה. כל 18 הצבעים שמופיעים ב-courseData (colorFrom).
+const CHAPTER_ACCENT: Record<string, { glowTop: string; glowBottom: string; card: string; grad: string; label: string; kbd: string }> = {
+    amber: { glowTop: "bg-amber-500/20", glowBottom: "bg-amber-600/10", card: "border-amber-500/30 bg-amber-900/10 hover:bg-amber-900/20 hover:border-amber-500/50", grad: "via-amber-500/5 to-amber-500/10", label: "text-amber-400 group-hover:text-amber-300", kbd: "border-amber-500/40 bg-amber-900/20 text-amber-300" },
+    blue: { glowTop: "bg-blue-500/20", glowBottom: "bg-blue-600/10", card: "border-blue-500/30 bg-blue-900/10 hover:bg-blue-900/20 hover:border-blue-500/50", grad: "via-blue-500/5 to-blue-500/10", label: "text-blue-400 group-hover:text-blue-300", kbd: "border-blue-500/40 bg-blue-900/20 text-blue-300" },
+    cyan: { glowTop: "bg-cyan-500/20", glowBottom: "bg-cyan-600/10", card: "border-cyan-500/30 bg-cyan-900/10 hover:bg-cyan-900/20 hover:border-cyan-500/50", grad: "via-cyan-500/5 to-cyan-500/10", label: "text-cyan-400 group-hover:text-cyan-300", kbd: "border-cyan-500/40 bg-cyan-900/20 text-cyan-300" },
+    emerald: { glowTop: "bg-emerald-500/20", glowBottom: "bg-emerald-600/10", card: "border-emerald-500/30 bg-emerald-900/10 hover:bg-emerald-900/20 hover:border-emerald-500/50", grad: "via-emerald-500/5 to-emerald-500/10", label: "text-emerald-400 group-hover:text-emerald-300", kbd: "border-emerald-500/40 bg-emerald-900/20 text-emerald-300" },
+    fuchsia: { glowTop: "bg-fuchsia-500/20", glowBottom: "bg-fuchsia-600/10", card: "border-fuchsia-500/30 bg-fuchsia-900/10 hover:bg-fuchsia-900/20 hover:border-fuchsia-500/50", grad: "via-fuchsia-500/5 to-fuchsia-500/10", label: "text-fuchsia-400 group-hover:text-fuchsia-300", kbd: "border-fuchsia-500/40 bg-fuchsia-900/20 text-fuchsia-300" },
+    green: { glowTop: "bg-green-500/20", glowBottom: "bg-green-600/10", card: "border-green-500/30 bg-green-900/10 hover:bg-green-900/20 hover:border-green-500/50", grad: "via-green-500/5 to-green-500/10", label: "text-green-400 group-hover:text-green-300", kbd: "border-green-500/40 bg-green-900/20 text-green-300" },
+    indigo: { glowTop: "bg-indigo-500/20", glowBottom: "bg-indigo-600/10", card: "border-indigo-500/30 bg-indigo-900/10 hover:bg-indigo-900/20 hover:border-indigo-500/50", grad: "via-indigo-500/5 to-indigo-500/10", label: "text-indigo-400 group-hover:text-indigo-300", kbd: "border-indigo-500/40 bg-indigo-900/20 text-indigo-300" },
+    lime: { glowTop: "bg-lime-500/20", glowBottom: "bg-lime-600/10", card: "border-lime-500/30 bg-lime-900/10 hover:bg-lime-900/20 hover:border-lime-500/50", grad: "via-lime-500/5 to-lime-500/10", label: "text-lime-400 group-hover:text-lime-300", kbd: "border-lime-500/40 bg-lime-900/20 text-lime-300" },
+    orange: { glowTop: "bg-orange-500/20", glowBottom: "bg-orange-600/10", card: "border-orange-500/30 bg-orange-900/10 hover:bg-orange-900/20 hover:border-orange-500/50", grad: "via-orange-500/5 to-orange-500/10", label: "text-orange-400 group-hover:text-orange-300", kbd: "border-orange-500/40 bg-orange-900/20 text-orange-300" },
+    pink: { glowTop: "bg-pink-500/20", glowBottom: "bg-pink-600/10", card: "border-pink-500/30 bg-pink-900/10 hover:bg-pink-900/20 hover:border-pink-500/50", grad: "via-pink-500/5 to-pink-500/10", label: "text-pink-400 group-hover:text-pink-300", kbd: "border-pink-500/40 bg-pink-900/20 text-pink-300" },
+    purple: { glowTop: "bg-purple-500/20", glowBottom: "bg-purple-600/10", card: "border-purple-500/30 bg-purple-900/10 hover:bg-purple-900/20 hover:border-purple-500/50", grad: "via-purple-500/5 to-purple-500/10", label: "text-purple-400 group-hover:text-purple-300", kbd: "border-purple-500/40 bg-purple-900/20 text-purple-300" },
+    red: { glowTop: "bg-red-500/20", glowBottom: "bg-red-600/10", card: "border-red-500/30 bg-red-900/10 hover:bg-red-900/20 hover:border-red-500/50", grad: "via-red-500/5 to-red-500/10", label: "text-red-400 group-hover:text-red-300", kbd: "border-red-500/40 bg-red-900/20 text-red-300" },
+    rose: { glowTop: "bg-rose-500/20", glowBottom: "bg-rose-600/10", card: "border-rose-500/30 bg-rose-900/10 hover:bg-rose-900/20 hover:border-rose-500/50", grad: "via-rose-500/5 to-rose-500/10", label: "text-rose-400 group-hover:text-rose-300", kbd: "border-rose-500/40 bg-rose-900/20 text-rose-300" },
+    sky: { glowTop: "bg-sky-500/20", glowBottom: "bg-sky-600/10", card: "border-sky-500/30 bg-sky-900/10 hover:bg-sky-900/20 hover:border-sky-500/50", grad: "via-sky-500/5 to-sky-500/10", label: "text-sky-400 group-hover:text-sky-300", kbd: "border-sky-500/40 bg-sky-900/20 text-sky-300" },
+    slate: { glowTop: "bg-slate-500/20", glowBottom: "bg-slate-600/10", card: "border-slate-500/30 bg-slate-900/10 hover:bg-slate-900/20 hover:border-slate-500/50", grad: "via-slate-500/5 to-slate-500/10", label: "text-slate-400 group-hover:text-slate-300", kbd: "border-slate-500/40 bg-slate-900/20 text-slate-300" },
+    teal: { glowTop: "bg-teal-500/20", glowBottom: "bg-teal-600/10", card: "border-teal-500/30 bg-teal-900/10 hover:bg-teal-900/20 hover:border-teal-500/50", grad: "via-teal-500/5 to-teal-500/10", label: "text-teal-400 group-hover:text-teal-300", kbd: "border-teal-500/40 bg-teal-900/20 text-teal-300" },
+    violet: { glowTop: "bg-violet-500/20", glowBottom: "bg-violet-600/10", card: "border-violet-500/30 bg-violet-900/10 hover:bg-violet-900/20 hover:border-violet-500/50", grad: "via-violet-500/5 to-violet-500/10", label: "text-violet-400 group-hover:text-violet-300", kbd: "border-violet-500/40 bg-violet-900/20 text-violet-300" },
+    yellow: { glowTop: "bg-yellow-500/20", glowBottom: "bg-yellow-600/10", card: "border-yellow-500/30 bg-yellow-900/10 hover:bg-yellow-900/20 hover:border-yellow-500/50", grad: "via-yellow-500/5 to-yellow-500/10", label: "text-yellow-400 group-hover:text-yellow-300", kbd: "border-yellow-500/40 bg-yellow-900/20 text-yellow-300" },
+};
+
+// שם צבע -> ערכת מבטא. נופל ל-slate אם הצבע לא מוכר (זהה לברירת המחדל של activeChapter).
+const accentFor = (colorName: string) => CHAPTER_ACCENT[colorName] ?? CHAPTER_ACCENT.slate;
+
 interface ChapterLayoutProps {
     children: ReactNode;
     courseId: string;
@@ -219,7 +248,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
         return fullClass.replace('from-', '').split('-')[0];
     };
     
-    const themeColorName = extractColorName(activeChapter.colorFrom); 
+    const themeAccent = accentFor(extractColorName(activeChapter.colorFrom));
 
     return (
         <div
@@ -249,9 +278,10 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                  </div>
 
                  {/* motion-reduce:animate-none - ההילה הסביבתית פועמת ברציפות; מכובה כשהמשתמש
-                     ביקש הפחתת תנועה. וריאנט CSS בלבד, בלי JS ובלי סיכון hydration. */}
-                 <div className={`absolute top-[-20%] ${isRTL ? 'right-[-10%]' : 'left-[-10%]'} w-150 h-150 bg-${themeColorName}-500/20 blur-[120px] rounded-full mix-blend-screen animate-pulse motion-reduce:animate-none`}></div>
-                 <div className={`absolute bottom-[-20%] ${isRTL ? 'left-[-10%]' : 'right-[-10%]'} w-125 h-125 bg-${themeColorName}-600/10 blur-[100px] rounded-full mix-blend-screen`}></div>
+                     ביקש הפחתת תנועה. וריאנט CSS בלבד, בלי JS ובלי סיכון hydration.
+                     צבע ההילה מגיע מהמפה הסטטית (themeAccent), לא מאינטרפולציה. */}
+                 <div className={`absolute top-[-20%] ${isRTL ? 'right-[-10%]' : 'left-[-10%]'} w-150 h-150 ${themeAccent.glowTop} blur-[120px] rounded-full mix-blend-screen animate-pulse motion-reduce:animate-none`}></div>
+                 <div className={`absolute bottom-[-20%] ${isRTL ? 'left-[-10%]' : 'right-[-10%]'} w-125 h-125 ${themeAccent.glowBottom} blur-[100px] rounded-full mix-blend-screen`}></div>
                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050B14_120%)]"></div>
             </div>
 
@@ -391,16 +421,16 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                             {/* קדימה */}
                             {nextChapter ? (
                                 (() => {
-                                    const nextColor = extractColorName(nextChapter.colorFrom);
+                                    const nextAccent = accentFor(extractColorName(nextChapter.colorFrom));
                                     return (
-                                        <Link href={nextChapter.href || "#"} className={`group relative overflow-hidden rounded-2xl border border-${nextColor}-500/30 bg-${nextColor}-900/10 p-6 transition-all hover:bg-${nextColor}-900/20 hover:border-${nextColor}-500/50 text-start`}>
-                                            <div className={`absolute inset-0 bg-linear-to-r from-transparent via-${nextColor}-500/5 to-${nextColor}-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
-                                            
+                                        <Link href={nextChapter.href || "#"} className={`group relative overflow-hidden rounded-2xl border ${nextAccent.card} p-6 transition-all text-start`}>
+                                            <div className={`absolute inset-0 bg-linear-to-r from-transparent ${nextAccent.grad} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+
                                             <div className={`flex flex-col ${isRTL ? 'items-start' : 'items-end'} gap-2 relative z-10`}>
-                                                <span className={`text-xs font-mono font-bold text-${nextColor}-400 group-hover:text-${nextColor}-300 transition-colors flex items-center gap-2`}>
+                                                <span className={`text-xs font-mono font-bold ${nextAccent.label} transition-colors flex items-center gap-2`}>
                                                     {formatNextChapterLabel(locale, nextChapter.id)}
                                                     {isRTL ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-                                                    <kbd className={`rounded border border-${nextColor}-500/40 bg-${nextColor}-900/20 px-1.5 py-0.5 text-[10px] leading-none text-${nextColor}-300`}>{isRTL ? '←' : '→'}</kbd>
+                                                    <kbd className={`rounded border ${nextAccent.kbd} px-1.5 py-0.5 text-[10px] leading-none`}>{isRTL ? '←' : '→'}</kbd>
                                                 </span>
                                                 <div className={`font-bold text-xl text-white group-hover:scale-[1.02] transition-transform ${isRTL ? 'origin-right' : 'origin-left'}`}>
                                                     {tField(nextChapter.title, locale)}
