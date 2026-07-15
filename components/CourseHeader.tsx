@@ -101,7 +101,10 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
                         )}
                     </div>
 
-                    <h1 className={`font-black text-white leading-tight transition-all duration-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] ${isScrolled ? 'text-2xl' : 'text-3xl md:text-4xl'}`}>
+                    {/* גודל הכותרת קטן במובייל: כותרת פרק ארוכה (ספרדית, אנגלית) נשברה שם לשש
+                        שורות וניפחה את הכותרת ל-329px, כלומר 39% ממסך של 844px. מ-sm ומעלה
+                        הגדלים נשארים כשהיו. */}
+                    <h1 className={`font-black text-white leading-tight transition-all duration-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] ${isScrolled ? 'text-lg sm:text-2xl' : 'text-xl sm:text-3xl md:text-4xl'}`}>
                         {title}
                     </h1>
                 </div>

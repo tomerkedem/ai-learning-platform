@@ -39,6 +39,9 @@ export const chrome: typeof heChrome = {
     },
 
     assessment: {
+        // Anuncio para lectores de pantalla: el resultado solo se transmite por icono y color.
+        verdictCorrect: 'Respuesta correcta.',
+        verdictWrong: 'Respuesta incorrecta.',
         start: 'Empezar el test',
         mentorStart: '¿Listo? Veamos qué quedó',
         questionsLabel: 'Preguntas',

@@ -137,6 +137,14 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({ text, className = '', 
     const active = phase === 'ready' && speaking;
     const label = active ? labels.stop : labels.play;
 
+    // יעד מגע 44px בלי לשנות את הגודל הנראה: הכפתור יושב inline ליד כותרות בעשרות מקומות,
+    // והגדלת הריבוע עצמו הייתה מזיזה פריסות. לכן שטח ההקשה מורחב בפסאודו שקוף (28+8+8=44).
+    // הפסאודו זקוק לאב מוצב. חלק מהקוראים כבר מציבים את הכפתור בעצמם (absolute end-2 top-2),
+    // ואסור לדרוס אותם: ב-Tailwind המחלקה relative נוצרת *אחרי* absolute ולכן הייתה מנצחת.
+    // לכן relative נוסף רק כשהקורא לא הציב את הכפתור בעצמו.
+    const callerPositions = /\b(absolute|fixed|sticky)\b/.test(className);
+    const hitArea = `${callerPositions ? '' : 'relative '}after:absolute after:-inset-2 after:content-['']`;
+
     return (
         <button
             type="button"
@@ -146,7 +154,7 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({ text, className = '', 
             aria-pressed={active}
             tabIndex={phase === 'ready' ? 0 : -1}
             aria-hidden={phase === 'boot' || undefined}
-            className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${
+            className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${hitArea} ${
                 active
                     ? 'border-cyan-400/60 bg-cyan-500/15 text-cyan-300'
                     : 'border-white/10 bg-slate-950/60 text-slate-400 hover:border-cyan-400/40 hover:text-cyan-200'

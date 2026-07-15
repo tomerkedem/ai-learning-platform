@@ -39,6 +39,9 @@ export const chrome: typeof heChrome = {
     },
 
     assessment: {
+        // إعلان لقارئات الشاشة: النتيجة تُنقل بصريًا بالأيقونة واللون فقط.
+        verdictCorrect: 'إجابة صحيحة.',
+        verdictWrong: 'إجابة خاطئة.',
         start: 'ابدأ الاختبار',
         mentorStart: 'مستعد؟ لنرَ ما الذي ترسّخ',
         questionsLabel: 'الأسئلة',

@@ -39,6 +39,9 @@ export const chrome: typeof heChrome = {
     },
 
     assessment: {
+        // スクリーンリーダー向けの読み上げ。正誤はアイコンと色でしか伝わっていないため。
+        verdictCorrect: '正解です。',
+        verdictWrong: '不正解です。',
         start: 'テストを始める',
         mentorStart: '準備はいい？どれだけ身についたか見てみよう',
         questionsLabel: '問題数',

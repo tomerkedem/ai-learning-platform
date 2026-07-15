@@ -39,6 +39,9 @@ export const chrome: typeof heChrome = {
     },
 
     assessment: {
+        // Объявление для скринридеров: иначе результат передаётся только значком и цветом.
+        verdictCorrect: 'Правильный ответ.',
+        verdictWrong: 'Неправильный ответ.',
         start: 'Начать тест',
         mentorStart: 'Готовы? Посмотрим, что усвоилось',
         questionsLabel: 'Вопросы',

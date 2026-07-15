@@ -784,6 +784,11 @@ export const AssessmentEngine = ({
                                         role="status"
                                         aria-live="polite"
                                     >
+                                        {/* פסק הדין נאמר קודם. חזותית הוא מועבר באייקון, בצבע המסגרת ובתג,
+                                            ולכן בלי השורה הזאת קורא מסך שומע רק את ההסבר ולא יודע אם צדק. */}
+                                        {isAnswered && (
+                                            <span className="sr-only">{answeredWrong ? a.verdictWrong : a.verdictCorrect}</span>
+                                        )}
                                         <div className={`relative overflow-hidden rounded-2xl border border-white/10 border-s-2 bg-gradient-to-b to-slate-950/40 p-4 ${answeredWrong ? 'border-s-amber-400/70 from-amber-500/[0.09]' : 'border-s-emerald-400/70 from-emerald-500/[0.09]'}`}>
                                             <div className="flex items-start gap-3">
                                                 <motion.span

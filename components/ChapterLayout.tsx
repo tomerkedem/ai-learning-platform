@@ -51,12 +51,22 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     // וחושפים אותו כמשתנה CSS שיורש לכל העץ, במקום offset קשיח של 88px.
     const headerRef = useRef<HTMLDivElement>(null);
     const [headerHeight, setHeaderHeight] = useState<number | null>(null);
+    // הריפוד העליון של התוכן נגזר מגובה הכותרת *במנוחה*, ולא מהגובה הנוכחי: הכותרת
+    // מתכווצת בגלילה, ולכן ריפוד שעוקב אחרי הגובה החי היה מקפיץ את התוכן באמצע הגלילה.
+    // headerHeight (הדינמי) נשאר לפסים דביקים ול-scroll-mt, שדווקא צריכים את הגובה הנוכחי.
+    const [headerRestHeight, setHeaderRestHeight] = useState<number | null>(null);
+    const isScrolledRef = useRef(false);
     const router = useRouter();
 
     useEffect(() => {
         const el = headerRef.current;
         if (!el || typeof ResizeObserver === 'undefined') return;
-        const update = () => setHeaderHeight(el.offsetHeight);
+        const update = () => {
+            const h = el.offsetHeight;
+            setHeaderHeight(h);
+            // רק במנוחה: זהו הגובה המלא שהתוכן צריך להתפנות מפניו.
+            if (!isScrolledRef.current) setHeaderRestHeight(h);
+        };
         update();
         const ro = new ResizeObserver(update);
         ro.observe(el);
@@ -154,8 +164,15 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
         const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
         
         // עדכון מצב Scrolled לצורך עיצוב ה-Header
-        if (!isScrolled && scrollTop > 50) setIsScrolled(true);
-        else if (isScrolled && scrollTop < 30) setIsScrolled(false);
+        if (!isScrolled && scrollTop > 50) {
+            isScrolledRef.current = true;
+            setIsScrolled(true);
+        } else if (isScrolled && scrollTop < 30) {
+            // חזרנו למנוחה. אין למדוד כאן: הכותרת עדיין מכווצת בפריים הזה. ה-ResizeObserver
+            // יירה כשהיא תתרחב, ואז isScrolledRef כבר false ו-headerRestHeight יתעדכן נכון.
+            isScrolledRef.current = false;
+            setIsScrolled(false);
+        }
 
         // חישוב התקדמות גלילה
         const totalScroll = scrollHeight - clientHeight;
@@ -208,9 +225,16 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
         <div
             className="flex min-h-screen bg-[#050B14] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-hidden relative"
             dir={dir}
-            // נקודת העגינה לפסים הדביקים: גובה הכותרת בפועל + מרווח קטן. עד שנמדד
-            // (SSR / לפני mount) נופלים חזרה ל-88px דרך ה-fallback שב-StickyContextBar.
-            style={headerHeight != null ? ({ ['--bts-sticky-top']: `${headerHeight + 8}px` } as React.CSSProperties) : undefined}
+            // --bts-sticky-top: נקודת העגינה לפסים הדביקים - גובה הכותרת *הנוכחי* + מרווח קטן.
+            // --bts-content-top: הריפוד העליון של התוכן - גובה הכותרת *במנוחה* + מרווח קטן, כדי
+            // שהתוכן לא יתחיל מתחת לכותרת האטומה. נפרד מהראשון כי הכותרת מתכווצת בגלילה.
+            // עד שנמדדו (SSR / לפני mount) נופלים חזרה ל-fallback שבצרכן.
+            style={
+                {
+                    ...(headerHeight != null ? { ['--bts-sticky-top']: `${headerHeight + 8}px` } : {}),
+                    ...(headerRestHeight != null ? { ['--bts-content-top']: `${headerRestHeight + 8}px` } : {}),
+                } as React.CSSProperties
+            }
         >
             {/* --- רקע גלובלי --- */}
             <div className="fixed inset-0 z-0 pointer-events-none">
@@ -330,7 +354,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                 >
                     <main className={`mx-auto px-8 md:px-12 pb-32 space-y-24 transition-[max-width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
                         ${isFocusMode ? 'max-w-5xl' : 'max-w-4xl'}
-                        ${isIntro ? 'pt-12' : 'pt-52 py-12'}
+                        ${isIntro ? 'pt-12' : 'pt-[var(--bts-content-top,13rem)] py-12'}
                     `}>
                         
                         <div className="min-h-[50vh]">

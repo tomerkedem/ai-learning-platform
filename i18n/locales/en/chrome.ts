@@ -39,6 +39,9 @@ export const chrome: typeof heChrome = {
     },
 
     assessment: {
+        // Screen-reader announcement: the verdict is otherwise conveyed by icon and colour only.
+        verdictCorrect: 'Correct answer.',
+        verdictWrong: 'Wrong answer.',
         start: 'Start the quiz',
         mentorStart: 'Ready? Let us see what stuck',
         questionsLabel: 'Questions',
