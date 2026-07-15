@@ -241,7 +241,9 @@ export const Mentor: React.FC<MentorProps> = ({
             <div className="relative" style={flip ? { transform: 'scaleX(-1)' } : undefined}>
                 <motion.img
                     src={POSE_SRC[pose]}
-                    alt="המנטור של הלומדה"
+                    // alt="" - המנטור דקורטיבי: טקסט הבועה נקרא בנפרד, ואין מידע ייחודי בתמונה.
+                    // גם מונע alt בעברית קשיחה במסלולים en/es/ru/ar/ja.
+                    alt=""
                     animate={doFloat ? { y: [0, -10, 0] } : undefined}
                     transition={doFloat ? { repeat: Infinity, duration: 4, ease: 'easeInOut' } : undefined}
                     className="relative mx-auto block h-auto w-full object-contain"

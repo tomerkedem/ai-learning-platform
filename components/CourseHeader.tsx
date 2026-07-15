@@ -15,10 +15,14 @@ interface CourseHeaderProps {
     colorFrom?: string; // מצפה למחלקה מלאה: "from-indigo-500"
     colorTo?: string;   // מצפה למחלקה מלאה: "to-purple-600"
     labelColor?: string; // הצבע המדויק לטקסט (נלקח מ-courseData)
+    // האם כותרת הסרגל היא הכותרת הראשית של המסמך (h1). ברירת מחדל true, כדי לשמר
+    // לומדות שבהן הסרגל הוא הכותרת היחידה (למשל math, שמשתמשת במקטעים ממוספרים h2 בלי hero).
+    // לומדות עם hero משלהן (behind-the-scenes-ai) מעבירות false, כדי שה-hero יהיה ה-h1 היחיד.
+    titleAsHeading?: boolean;
 }
 
-export const CourseHeader: React.FC<CourseHeaderProps> = ({ 
-    chapterLable, 
+export const CourseHeader: React.FC<CourseHeaderProps> = ({
+    chapterLable,
     chapterNum,
     title,
     readTime = "10 דקות",
@@ -26,8 +30,10 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
     scrollProgress,
     colorFrom = "from-indigo-500", // ברירת מחדל
     colorTo = "to-purple-600",     // ברירת מחדל
-    labelColor
+    labelColor,
+    titleAsHeading = true
 }) => {
+    const TitleTag = titleAsHeading ? 'h1' : 'p';
     const { t } = useT();
 
     const safeProgress = (typeof scrollProgress === 'number' && Number.isFinite(scrollProgress))
@@ -101,12 +107,14 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
                         )}
                     </div>
 
-                    {/* גודל הכותרת קטן במובייל: כותרת פרק ארוכה (ספרדית, אנגלית) נשברה שם לשש
-                        שורות וניפחה את הכותרת ל-329px, כלומר 39% ממסך של 844px. מ-sm ומעלה
-                        הגדלים נשארים כשהיו. */}
-                    <h1 className={`font-black text-white leading-tight transition-all duration-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] ${isScrolled ? 'text-lg sm:text-2xl' : 'text-xl sm:text-3xl md:text-4xl'}`}>
+                    {/* TitleTag: h1 כברירת מחדל, אך p כאשר ללומדה יש hero משלה (titleAsHeading=false).
+                        הסרגל הקבוע הוא chrome מתמשך; כשקיים hero, הוא ולא הסרגל הוא ה-h1 של המסמך,
+                        אחרת נוצרים שני h1 בכל פרק.
+                        גודל הכותרת קטן במובייל: כותרת פרק ארוכה (ספרדית, אנגלית) נשברה שם לשש
+                        שורות וניפחה את הסרגל ל-329px. מ-sm ומעלה הגדלים נשארים כשהיו. */}
+                    <TitleTag className={`font-black text-white leading-tight transition-all duration-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] ${isScrolled ? 'text-lg sm:text-2xl' : 'text-xl sm:text-3xl md:text-4xl'}`}>
                         {title}
-                    </h1>
+                    </TitleTag>
                 </div>
 
                 {/* צד שמאל: נתונים */}

@@ -223,7 +223,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
 
     return (
         <div
-            className="flex min-h-screen bg-[#050B14] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-hidden relative"
+            className="flex min-h-[100dvh] bg-[#050B14] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-hidden relative"
             dir={dir}
             // --bts-sticky-top: נקודת העגינה לפסים הדביקים - גובה הכותרת *הנוכחי* + מרווח קטן.
             // --bts-content-top: הריפוד העליון של התוכן - גובה הכותרת *במנוחה* + מרווח קטן, כדי
@@ -327,7 +327,9 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                 </AnimatePresence>
             </div>
 
-            <div className="flex-1 relative h-screen flex flex-col z-10">
+            {/* h-[100dvh] ולא h-screen: במובייל 100vh כולל את שטח סרגל הכתובת, ולכן תחתית
+                מיכל הגלילה (והניווט הדביק של המבדק) נחתכה מתחתיו. dvh עוקב אחרי הגובה הגלוי. */}
+            <div className="flex-1 relative h-[100dvh] flex flex-col z-10">
                 
                 {/* Header */}
                 <div ref={headerRef} className="absolute top-0 left-0 right-0 z-30 pointer-events-none">
@@ -340,8 +342,11 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                             readTime={formatReadTime(locale, parseReadTimeMinutes(activeChapter.readTime))}
                             isScrolled={isScrolled}
                             scrollProgress={scrollProgress}
-                            colorFrom={activeChapter.colorFrom} 
+                            colorFrom={activeChapter.colorFrom}
                             colorTo={activeChapter.colorTo}
+                            // ב-behind-the-scenes-ai ה-hero של הפרק הוא ה-h1; לומדות אחרות (math)
+                            // נשענות על כותרת הסרגל ככותרת הראשית, ולכן שם היא נשארת h1.
+                            titleAsHeading={courseId !== 'behind-the-scenes-ai'}
                         />
                     </div>
                 </div>

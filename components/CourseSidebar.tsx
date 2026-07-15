@@ -68,9 +68,14 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
       switch(currentCourseId) {
           case 'python': return 'text-yellow-400';
           case 'probability': return 'text-pink-400';
-          default: return 'text-sky-400'; 
+          default: return 'text-sky-400';
       }
   };
+
+  // שם הלומדה בסרגל הוא ניווט/chrome. בלומדות עם hero משלהן (behind-the-scenes-ai) אסור
+  // שיהיה h1, אחרת נוצר h1 שני לצד ה-hero. בלומדות אחרות (math) אין hero, ולכן הוא נשאר
+  // הכותרת הראשית של המסמך.
+  const SidebarTitleTag = currentCourseId === 'behind-the-scenes-ai' ? 'p' : 'h1';
 
   const sidebarContent = (
       <div className="flex flex-col h-full bg-[#0f172a]">
@@ -91,9 +96,9 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                     <span className={getCourseColor()}>{getCourseIcon()}</span>
                 </div>
                 <div className="flex flex-col min-w-0">
-                    <h1 className="font-bold text-white text-base truncate leading-tight">
+                    <SidebarTitleTag className="font-bold text-white text-base truncate leading-tight">
                         {tField(course.title, locale)}
-                    </h1>
+                    </SidebarTitleTag>
                     <span className="text-gray-500 text-[10px] mt-0.5 truncate">
                         {tField(course.description, locale)}
                     </span>

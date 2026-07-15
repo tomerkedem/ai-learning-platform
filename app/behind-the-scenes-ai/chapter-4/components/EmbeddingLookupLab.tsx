@@ -93,7 +93,7 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
 
             {/* בורר מילה: הצ'יפים תמיד מילים, כדי שהתווית "בחרו מילה" תהיה תמיד נכונה */}
             <div className="mb-5">
-                <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">{c.pickWord}</div>
+                <div className="mb-2 text-[13px] font-bold uppercase tracking-wide text-slate-400">{c.pickWord}</div>
                 <div className="flex flex-wrap gap-2">
                     {WORDS.map((w) => {
                         const isActive = w.id === wordId;
@@ -131,16 +131,16 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                     {/* מילה -> Token ID */}
                     <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4">
                         <div className="text-center">
-                            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{c.pickWord}</div>
+                            <div className="text-[13px] font-bold uppercase tracking-wide text-slate-500">{c.pickWord}</div>
                             <div className="mt-1 text-lg font-black text-white">{label(active.id)}</div>
                         </div>
                         {dir === 'rtl' ? <ArrowLeft size={20} className="shrink-0 text-slate-500" /> : <ArrowRight size={20} className="shrink-0 text-slate-500" />}
                         <div className="text-center">
-                            <div className="flex items-center justify-center gap-1 text-[10px] font-bold uppercase tracking-wider text-cyan-400">
+                            <div className="flex items-center justify-center gap-1 text-[13px] font-bold uppercase tracking-wide text-cyan-400">
                                 <Hash size={11} /> Token ID
                             </div>
                             <div className="mt-1 font-mono text-2xl font-black text-cyan-200" dir="ltr">{active.tokenId}</div>
-                            <div className="mt-0.5 text-[10px] text-slate-500">{c.idNote}</div>
+                            <div className="mt-0.5 text-[13px] text-slate-500">{c.idNote}</div>
                         </div>
                     </div>
 
@@ -150,10 +150,11 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                             <Table2 size={15} className="text-cyan-300" />
                             <span className="text-[13px] font-bold text-slate-100">{c.tableTitle}</span>
                         </div>
-                        <p className="mb-3 text-[11px] leading-relaxed text-slate-500">{c.tableHint}</p>
-                        {/* כותרות עמודות: מבהירות שהמספר הבודד הוא ה-Token ID (כתובת השורה), והשאר הם הווקטור */}
-                        <div className="mb-2 grid grid-cols-[4.25rem_1fr] items-center gap-3 px-2.5 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">
-                            <span className="inline-flex items-center gap-1" dir="ltr"><Hash size={10} /> Token ID</span>
+                        <p className="mb-3 text-[13px] leading-relaxed text-slate-500">{c.tableHint}</p>
+                        {/* כותרות עמודות: מבהירות שהמספר הבודד הוא ה-Token ID (כתובת השורה), והשאר הם הווקטור.
+                            13px (רצפת הגופן להקרנה) עם tracking צר יותר, כדי ש-Token ID עדיין נכנס בעמודה. */}
+                        <div className="mb-2 grid grid-cols-[4.75rem_1fr] items-center gap-3 px-2.5 text-[13px] font-bold uppercase tracking-wide text-slate-500">
+                            <span className="inline-flex items-center gap-1" dir="ltr"><Hash size={11} /> Token ID</span>
                             <span>{c.vectorTitle}</span>
                         </div>
                         <div className="space-y-1.5">
@@ -168,14 +169,14 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                                         // שורות הטבלה הן בורר מילה שני לאותו מצב, ולכן הן חושפות
                                         // גם הן aria-pressed. יעד מגע מלא וטבעת פוקוס נראית.
                                         aria-pressed={isActive}
-                                        className={`grid min-h-[44px] w-full grid-cols-[4.25rem_1fr] items-center gap-3 rounded-lg border px-2.5 py-1.5 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
+                                        className={`grid min-h-[44px] w-full grid-cols-[4.75rem_1fr] items-center gap-3 rounded-lg border px-2.5 py-1.5 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
                                             isActive ? 'border-cyan-400/50 bg-cyan-900/15' : 'border-slate-700/40 bg-slate-900/30 hover:border-slate-600 opacity-70'
                                         }`}
                                     >
                                         <span className={`inline-flex items-center gap-0.5 font-mono text-sm font-black ${isActive ? 'text-cyan-200' : 'text-slate-400'}`} dir="ltr">
                                             <Hash size={11} className="opacity-60" />{w.tokenId}
                                         </span>
-                                        <span className="flex flex-wrap gap-1 font-mono text-[10px]" dir="ltr">
+                                        <span className="flex flex-wrap gap-x-1.5 gap-y-0.5 font-mono text-[13px]" dir="ltr">
                                             {preview.map((n, i) => (
                                                 <span key={i} className={isActive ? 'text-slate-200' : 'text-slate-600'}>{fmt(n)}</span>
                                             ))}
@@ -194,7 +195,7 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                         <div className="flex items-center gap-2">
                             <Sparkles size={15} className="text-violet-300" />
                             <span className="text-[13px] font-bold text-slate-100">{c.vectorTitle}</span>
-                            <span className="font-mono text-[11px] text-slate-500" dir="ltr">#{active.tokenId}</span>
+                            <span className="font-mono text-[13px] text-slate-500" dir="ltr">#{active.tokenId}</span>
                         </div>
                         {/* מתג נלמד / אקראי: זה הרגע המרכזי של המעבדה, ולכן יעד מגע מלא (44px)
                             וטקסט בגודל קריא. המצב הפעיל מסומן גם בטקסט (aria-pressed) ולא בצבע בלבד. */}

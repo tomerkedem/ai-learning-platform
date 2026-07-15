@@ -630,7 +630,8 @@ export const AssessmentEngine = ({
                 <div className="relative border-b border-white/10 px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
                     <div className="mb-4 flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <h1 className="truncate text-[15px] font-black leading-tight text-white sm:text-base">{title}</h1>
+                            {/* h2, לא h1: כותרת המבדק היא מקטע בתוך העמוד. ה-h1 היחיד הוא ה-hero. */}
+                            <h2 className="truncate text-[15px] font-black leading-tight text-white sm:text-base">{title}</h2>
                             <p className="mt-0.5 hidden truncate text-[13px] font-medium text-slate-500 sm:block">{subtitle}</p>
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
@@ -690,9 +691,10 @@ export const AssessmentEngine = ({
                         >
                             {/* שורת השאלה: prompt חזק + הקראה (אח, לא מקונן) */}
                             <div className="mb-6 flex items-start justify-between gap-3">
-                                <h4 className="text-xl font-bold leading-relaxed text-white sm:text-2xl">
+                                {/* h3: השאלה יושבת תחת כותרת המבדק (h2), בלי לדלג רמה. */}
+                                <h3 className="text-xl font-bold leading-relaxed text-white sm:text-2xl">
                                     {currentQuestion.question}
-                                </h4>
+                                </h3>
                                 <SpeakButton text={currentQuestion.question} className="mt-1 shrink-0" />
                             </div>
 

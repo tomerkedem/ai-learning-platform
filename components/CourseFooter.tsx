@@ -38,9 +38,10 @@ export function CourseFooter() {
         <footer className="relative w-full bg-slate-950 pt-64 border-t border-slate-800/50 group">
                         {/* רקע תמונה (חלק עליון) - גובה h-48 נשאר כפי שצוין */}
             <div className="absolute top-0 left-0 w-full h-48 overflow-hidden"> 
-                <Image 
-                    src={IMAGE_TWO_PATH} 
-                    alt="נוף דיגיטלי המייצג מרחב נתונים וקטורי" 
+                <Image
+                    src={IMAGE_TWO_PATH}
+                    // alt="" - תמונת רקע דקורטיבית. מונע גם alt בעברית קשיחה במסלולים לא-עבריים.
+                    alt=""
                     // קלאסים חדשים לאפקט מעבר העכבר:
                     // 1. transition-all duration-700: הופך את המעבר לחלק.
                     // 2. group-hover:grayscale-0: מבטל את הגוון האפור במעבר עכבר על הפוטר כולו.
