@@ -143,21 +143,16 @@ export const chapter4 = {
                 title: 'Pick a token and follow its representation',
                 hint: 'Click a token to see its Token ID. The ID is an address, and it points to a row in the embedding table.',
             },
-            {
-                title: 'Watch the pattern change',
-                hint: 'Pick a token and watch the numeric view change. The bars and axis names are a teaching illustration only.',
-            },
         ],
         conclusionLabel: 'Laboratory conclusion',
         waiting: {
             step2: 'Start with Step 1 and press "Play it". Then you can pick a token and follow it from its Token ID to its representation.',
-            step3: 'This view updates once the sentence has been run and a token is picked.',
         },
     },
 
     labConclusion: {
         title: 'What did we see?',
-        body: 'The sentence already arrived as a sequence of tokens. Every token has a Token ID that points to a row in the embedding table, and that row holds the vector learned for it. What you saw is a teaching visualization of one thing: changing the input changes the numeric representation too. How closeness between representations is measured is the next chapter.',
+        body: 'Every token in the sentence has its own Token ID, and each Token ID points to its own row in the embedding table. So a whole sentence does not get a single row, but a sequence of vectors, one per token.',
     },
 
     trainingInference: {

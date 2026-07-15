@@ -16,7 +16,6 @@ import {
     idForWord,
     type EngineScenario,
     type EngineStep,
-    type DimKey,
 } from './embeddingEngine';
 
 /* ════════════════════════ נתונים: dataset לפי שפה ════════════════════════ */
@@ -656,7 +655,6 @@ export interface WordLabText {
         resetLatin: string;
     };
     unrecognizedHint: string;
-    mainChangeLabel: string;
     idSeq: {
         title: string;
         sub: string;
@@ -665,15 +663,14 @@ export interface WordLabText {
         empty: string;
         pointsTo: string;
         addressNote: string;
-        selectHint: string;
+        /** רמז תפעולי תלוי-מצב: מילים -> "לחצו על מילה", IDs -> "לחצו על Token ID".
+         *  קצר ותפעולי בלבד. הרעיון (כתובת, שורה בטבלה) כבר בהסבר של שלב 2 וב-addressNote. */
+        selectHintWords: string;
+        selectHintIds: string;
+        /** הכרזת בחירת טוקן לקורא מסך: יחס השורה בטבלה. משלים "טוקן, Token ID" ל-liveMessage. */
+        rowAria: string;
     };
-    /** תצוגת המשמעות: תצוגה לימודית, לא ייצוג אמיתי. eduBadge/eduNote הם ההבהרה הראשית
-     *  (מוצגת מעל הפסים, לא כהערת שוליים). */
-    vector: { title: string; sub: string; eduBadge: string; eduNote: string; note: string };
     agent: { needsApproval: string; note: string };
-    /** תוויות ממד מקומיות. אם חסר, נופלים ל-DIM_INFO (he/en) של המנוע. שפות שאינן he/en
-     *  מספקות כאן את תוויות הממד שלהן (DIM_INFO מוגן ואינו משתנה). */
-    dimLabel?: Partial<Record<DimKey, string>>;
 }
 
 export const HE_WORD_TEXT: WordLabText = {
@@ -692,7 +689,6 @@ export const HE_WORD_TEXT: WordLabText = {
     },
     unrecognizedHint:
         'המעבדה מדגימה משפטים נבחרים מראש, היא לא מנתחת כל טקסט חופשי. כדי לראות את הפירוק למספרים, הקלידו את המשפט המוצע למעלה או לחצו "הקלידו עבורי".',
-    mainChangeLabel: 'שינוי מוביל: ',
     idSeq: {
         title: 'רצף ה-IDs',
         sub: 'ID Sequence Viewer',
@@ -701,15 +697,9 @@ export const HE_WORD_TEXT: WordLabText = {
         empty: 'התחילו להקליד (או לחצו "הקלידו עבורי"), והמשפט יהפוך לרצף מספרים.',
         pointsTo: 'points to',
         addressNote: '(כתובת במילון, לא משמעות)',
-        selectHint:
-            'לחצו על מילה כדי לראות לאיזה Token ID היא מצביעה. ה-ID הוא כתובת במילון, כמו ברקוד שאינו הטעם של המוצר.',
-    },
-    vector: {
-        title: 'תצוגת משמעות לימודית',
-        sub: 'Teaching Visualization',
-        eduBadge: 'תצוגה לימודית',
-        eduNote: 'השמות של הצירים כאן, משלוח, כשל, דחיפות, נבחרו על ידינו כדי שתוכלו לראות מה קורה. בייצוג אמיתי יש מאות ממדים, ולרובם אין שם שאדם יכול לקרוא. מה שהתצוגה כן מראה נכון: כמה מספרים יחד יכולים להחזיק דפוס.',
-        note: 'הערכים כאן נעים בין 0 ל-1.',
+        selectHintWords: 'לחצו על מילה כדי לראות את ה-Token ID שלה.',
+        selectHintIds: 'לחצו על Token ID כדי לראות על איזו מילה הוא מצביע.',
+        rowAria: 'הוא מצביע על השורה המתאימה בטבלת ה-embedding.',
     },
     agent: {
         needsApproval: 'Needs approval',
@@ -733,7 +723,6 @@ export const EN_WORD_TEXT: WordLabText = {
     },
     unrecognizedHint:
         'This lab demonstrates preset sentences, it does not analyze free text. To see the breakdown into numbers, type the suggested sentence above or click "Type it for me".',
-    mainChangeLabel: 'Main change: ',
     idSeq: {
         title: 'The ID sequence',
         sub: 'ID Sequence Viewer',
@@ -742,15 +731,9 @@ export const EN_WORD_TEXT: WordLabText = {
         empty: 'Start typing (or click "Type it for me") and the sentence turns into a sequence of numbers.',
         pointsTo: 'points to',
         addressNote: '(an address in the vocabulary, not meaning)',
-        selectHint:
-            'Click a word to see which Token ID it points to. The ID is an address in the vocabulary, like a barcode that is not the taste of the product.',
-    },
-    vector: {
-        title: 'Teaching visualization of meaning',
-        sub: 'Teaching Visualization',
-        eduBadge: 'Teaching visualization',
-        eduNote: 'The axis names here, Delivery, Failure, Urgency, were chosen by us so you can see what is happening. A real representation has hundreds of dimensions, and most of them have no name a person can read. What this view does show correctly: several numbers together can hold a pattern.',
-        note: 'The values here run between 0 and 1.',
+        selectHintWords: 'Click a word to see its Token ID.',
+        selectHintIds: 'Click a Token ID to see which word it points to.',
+        rowAria: 'It points to the matching row in the embedding table.',
     },
     agent: {
         needsApproval: 'Needs approval',
@@ -774,7 +757,6 @@ export const ES_WORD_TEXT: WordLabText = {
     },
     unrecognizedHint:
         'Este laboratorio demuestra frases predefinidas, no analiza texto libre. Para ver el desglose en números, escribe la frase sugerida arriba o pulsa "Escríbelo por mí".',
-    mainChangeLabel: 'Cambio principal: ',
     idSeq: {
         title: 'La secuencia de IDs',
         sub: 'Visor de secuencia de IDs',
@@ -783,31 +765,13 @@ export const ES_WORD_TEXT: WordLabText = {
         empty: 'Empieza a escribir (o pulsa "Escríbelo por mí") y la frase se convierte en una secuencia de números.',
         pointsTo: 'apunta a',
         addressNote: '(una dirección en el vocabulario, no significado)',
-        selectHint:
-            'Pulsa una palabra para ver a qué Token ID apunta. El ID es una dirección en el vocabulario, como un código de barras que no es el sabor del producto.',
-    },
-    vector: {
-        title: 'Visualización didáctica del significado',
-        sub: 'Visualización didáctica',
-        eduBadge: 'Visualización didáctica',
-        eduNote: 'Los nombres de los ejes de aquí, Entrega, Fallo, Urgencia, los elegimos nosotros para que puedas ver lo que ocurre. Una representación real tiene cientos de dimensiones, y la mayoría no tiene un nombre que una persona pueda leer. Lo que esta vista sí muestra bien: varios números juntos pueden sostener un patrón.',
-        note: 'Los valores aquí van entre 0 y 1.',
+        selectHintWords: 'Pulsa una palabra para ver su Token ID.',
+        selectHintIds: 'Pulsa un Token ID para ver a qué palabra apunta.',
+        rowAria: 'Apunta a la fila correspondiente en la tabla de embeddings.',
     },
     agent: {
         needsApproval: 'Requiere aprobación',
         note: 'El mismo perfil numérico separa una investigación segura de una acción arriesgada hacia el cliente. La representación de significado no solo responde, también moldea decisiones de acción.',
-    },
-    dimLabel: {
-        delivery: 'Entrega',
-        system: 'Sistema',
-        address: 'Dirección',
-        payment: 'Pago',
-        urgency: 'Urgencia',
-        failure: 'Fallo',
-        action: 'Acción',
-        risk: 'Riesgo',
-        customer: 'Cliente',
-        permission: 'Aprobación',
     },
 };
 
@@ -827,7 +791,6 @@ export const RU_WORD_TEXT: WordLabText = {
     },
     unrecognizedHint:
         'Эта лаборатория показывает заранее заданные фразы, она не анализирует произвольный текст. Чтобы увидеть разбиение на числа, введите предложенную фразу выше или нажмите "Напечатать за меня".',
-    mainChangeLabel: 'Главное изменение: ',
     idSeq: {
         title: 'Последовательность ID',
         sub: 'Просмотр последовательности ID',
@@ -836,31 +799,13 @@ export const RU_WORD_TEXT: WordLabText = {
         empty: 'Начните печатать (или нажмите "Напечатать за меня"), и фраза превратится в последовательность чисел.',
         pointsTo: 'указывает на',
         addressNote: '(адрес в словаре, не смысл)',
-        selectHint:
-            'Нажмите на слово, чтобы увидеть, на какой Token ID оно указывает. ID - это адрес в словаре, как штрихкод, который не является вкусом продукта.',
-    },
-    vector: {
-        title: 'Учебная визуализация смысла',
-        sub: 'Учебная визуализация',
-        eduBadge: 'Учебная визуализация',
-        eduNote: 'Названия осей здесь, Доставка, Сбой, Срочность, выбрали мы сами, чтобы вы могли увидеть, что происходит. В настоящем представлении сотни измерений, и у большинства нет названия, которое человек мог бы прочитать. Что эта визуализация показывает верно: несколько чисел вместе могут удерживать целый узор.',
-        note: 'Значения здесь лежат между 0 и 1.',
+        selectHintWords: 'Нажмите на слово, чтобы увидеть его Token ID.',
+        selectHintIds: 'Нажмите на Token ID, чтобы увидеть, на какое слово он указывает.',
+        rowAria: 'Он указывает на соответствующую строку в таблице embedding.',
     },
     agent: {
         needsApproval: 'Нужно одобрение',
         note: 'Тот же числовой профиль отличает безопасное расследование от рискованного действия с клиентом. Представление смысла не только отвечает, оно влияет на решения о действиях.',
-    },
-    dimLabel: {
-        delivery: 'Доставка',
-        system: 'Система',
-        address: 'Адрес',
-        payment: 'Оплата',
-        urgency: 'Срочность',
-        failure: 'Сбой',
-        action: 'Действие',
-        risk: 'Риск',
-        customer: 'Клиент',
-        permission: 'Одобрение',
     },
 };
 
@@ -880,7 +825,6 @@ export const AR_WORD_TEXT: WordLabText = {
     },
     unrecognizedHint:
         'يعرض هذا المختبر جملًا محدّدة مسبقًا، ولا يحلّل نصًا حرًا. لرؤية التقسيم إلى أرقام، اكتب الجملة المقترحة أعلاه أو اضغط "اكتب نيابةً عني".',
-    mainChangeLabel: 'التغيير الرئيسي: ',
     idSeq: {
         title: 'تسلسل الـ IDs',
         sub: 'عارض تسلسل الـ IDs',
@@ -889,31 +833,13 @@ export const AR_WORD_TEXT: WordLabText = {
         empty: 'ابدأ الكتابة (أو اضغط "اكتب نيابةً عني")، وتتحوّل الجملة إلى تسلسل أرقام.',
         pointsTo: 'يشير إلى',
         addressNote: '(عنوان في القاموس، لا معنى)',
-        selectHint:
-            'اضغط على كلمة لترى إلى أي Token ID تشير. الـ ID عنوان في القاموس، كباركود ليس هو طعم المنتج.',
-    },
-    vector: {
-        title: 'عرض تعليمي للمعنى',
-        sub: 'عرض تعليمي',
-        eduBadge: 'عرض تعليمي',
-        eduNote: 'أسماء المحاور هنا، تسليم وفشل وإلحاح، اخترناها نحن كي ترى ما يجري. التمثيل الحقيقي فيه مئات الأبعاد، ومعظمها بلا اسم يستطيع الإنسان قراءته. أما ما يعرضه هذا العرض بصدق فهو: عدة أرقام معًا قادرة على حمل نمط.',
-        note: 'القيم هنا تتراوح بين 0 و1.',
+        selectHintWords: 'اضغط على كلمة لترى الـ Token ID الخاص بها.',
+        selectHintIds: 'اضغط على Token ID لترى إلى أي كلمة يشير.',
+        rowAria: 'يشير إلى الصف المقابل في جدول الـ embedding.',
     },
     agent: {
         needsApproval: 'يلزم موافقة',
         note: 'الملف الرقمي نفسه يميّز بين تحقيق آمن وإجراء محفوف بالمخاطر تجاه العميل. تمثيل المعنى لا يجيب فقط، بل يؤثّر على قرارات الإجراء.',
-    },
-    dimLabel: {
-        delivery: 'تسليم',
-        system: 'نظام',
-        address: 'عنوان',
-        payment: 'دفع',
-        urgency: 'إلحاح',
-        failure: 'فشل',
-        action: 'إجراء',
-        risk: 'مخاطرة',
-        customer: 'عميل',
-        permission: 'موافقة',
     },
 };
 
@@ -933,7 +859,6 @@ export const JA_WORD_TEXT: WordLabText = {
     },
     unrecognizedHint:
         'このラボはあらかじめ用意した文を示します。自由なテキストは解析しません。数値への分解を見るには、上の推奨の文を入力するか「自動入力」を押してください。',
-    mainChangeLabel: '主な変化：',
     idSeq: {
         title: 'IDの並び',
         sub: 'IDシーケンス表示',
@@ -942,31 +867,13 @@ export const JA_WORD_TEXT: WordLabText = {
         empty: '入力を始めると（または「自動入力」を押すと）、文が数値の並びに変わります。',
         pointsTo: 'が指す語：',
         addressNote: '（辞書内のアドレス、意味ではない）',
-        selectHint:
-            '単語を押すと、それがどの Token ID を指すか分かります。ID は辞書内のアドレスで、商品の味ではないバーコードのようなものです。',
-    },
-    vector: {
-        title: '意味の学習用ビジュアル',
-        sub: '学習用ビジュアル',
-        eduBadge: '学習用ビジュアル',
-        eduNote: 'ここでの軸の名前（配送、失敗、緊急度）は、何が起きているかを見てもらうために私たちが選んだものです。実際の表現には数百の次元があり、その多くには人間が読める名前はありません。このビジュアルが正しく示しているのは、複数の数値がまとまって一つのパターンを保てる、ということです。',
-        note: 'ここでの値は0から1の範囲です。',
+        selectHintWords: '単語を押すと、その Token ID が分かります。',
+        selectHintIds: 'Token ID を押すと、それがどの単語を指すか分かります。',
+        rowAria: 'それは embedding テーブルの該当する行を指します。',
     },
     agent: {
         needsApproval: '承認が必要',
         note: '同じ数値プロファイルが、安全な調査と顧客へのリスクの高い行動を区別します。意味の表現は答えるだけでなく、行動の判断にも影響します。',
-    },
-    dimLabel: {
-        delivery: '配送',
-        system: 'システム',
-        address: '住所',
-        payment: '支払い',
-        urgency: '緊急度',
-        failure: '失敗',
-        action: '行動',
-        risk: 'リスク',
-        customer: '顧客',
-        permission: '承認',
     },
 };
 

@@ -20,7 +20,6 @@ import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import { EmbeddingLookupLab } from './components/EmbeddingLookupLab';
 import { SentenceBridge } from './components/SentenceBridge';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
-import { getWordText } from './wordLabContent';
 import { useT } from '@/i18n/useT';
 import type { Chapter4QuizId } from '@/i18n/locales/he/behind-ai/chapter4Quiz';
 
@@ -201,7 +200,6 @@ export default function BehindTheScenesChapter4() {
     const reduce = useReducedMotion();
     const isRtl = dir === 'rtl';
     const c4 = t.behindAi.chapter4;
-    const wl = getWordText(locale);
 
     // ── דוק האזנה מודרכת: מקטעי הקראה יציבים סביב שדרת הפרק (טקסט -> טוקנים -> Token IDs
     // -> שורה בטבלה -> וקטור -> נלמד/נשלף). לא נכללים: חידון, כפתורים, צ׳יפים, מנטורים,
@@ -226,8 +224,6 @@ export default function BehindTheScenesChapter4() {
             c4.sequence.clarify,
         ].join(' '),
     };
-    const sVector: ReadAloudSegment = { id: 'vector', label: wl.vector.title, text: wl.vector.note };
-    const sVectorEdu: ReadAloudSegment = { id: 'vector-edu', label: wl.vector.eduBadge, text: wl.vector.eduNote };
     const sTraining: ReadAloudSegment = { id: 'training', label: c4.trainingInference.title, text: `${c4.trainingInference.title}. ${c4.trainingInference.body}` };
     // סיכום מעבדה 2: סגירה קצרה בלבד, בלי ההשוואה שהוסרה
     const sLabConclusion: ReadAloudSegment = { id: 'lab-conclusion', label: c4.labConclusion.title, text: `${c4.labConclusion.title} ${c4.labConclusion.body}` };
@@ -237,8 +233,8 @@ export default function BehindTheScenesChapter4() {
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
         short: [sTitle, sPlain, sTable, sSequence, sLabConclusion, sTraining, sBridge],
-        regular: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sTable, sSequence, sVectorEdu, sVector, sLabConclusion, sTraining, sPracticalFull, sBridge],
-        full: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sLookupView, sTable, sSequence, sVectorEdu, sVector, sLabConclusion, sTraining, sPracticalFull, sCaveat, sBridge],
+        regular: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sTable, sSequence, sLabConclusion, sTraining, sPracticalFull, sBridge],
+        full: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sLookupView, sTable, sSequence, sLabConclusion, sTraining, sPracticalFull, sCaveat, sBridge],
     };
 
     // מבדק הפרק: המנגנון המשותף (onComplete, getReviewLinks, nextHref...) נשמר מ-quizData,
@@ -324,8 +320,10 @@ export default function BehindTheScenesChapter4() {
                         </FloatingReadAloud>
                     </div>
                 </motion.section>
-                {/* המנטור מציג שהמנוע רואה מספרים (xl+, צד חיצוני לפי כיוון) */}
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
+                {/* המנטור מציג שהמנוע רואה מספרים (xl+, צד חיצוני לפי כיוון). נקודת העיגון
+                    האנכית מונמכת מעט (50%+56px) כדי שכל יחידת המנטור, כולל בועת-הדיבור שמעליו,
+                    תשב מתחת לאזור הכותרת ולא תזלוג אל הכותרת העליונה. הבועה והדמות זזות יחד. */}
+                <div className={`absolute top-[calc(50%+56px)] -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
                     <Mentor pose="meaningSpace" line={c4.mentor.hero} width={280} flip={!isRtl} />
                 </div>
             </div>

@@ -141,21 +141,16 @@ export const chapter4 = {
                 title: 'Elige un token y sigue su representación',
                 hint: 'Pulsa un token para ver su Token ID. El ID es una dirección, y apunta a una fila de la tabla de embeddings.',
             },
-            {
-                title: 'Observa cómo cambia el patrón',
-                hint: 'Elige un token y observa cómo cambia la vista numérica. Las barras y los nombres de los ejes son solo una ilustración didáctica.',
-            },
         ],
         conclusionLabel: 'Conclusión del laboratorio',
         waiting: {
             step2: 'Empieza por el Paso 1 y pulsa "Reprodúcelo". Después podrás elegir un token y seguirlo desde su Token ID hasta su representación.',
-            step3: 'Esta vista se actualiza cuando la frase se ha ejecutado y eliges un token.',
         },
     },
 
     labConclusion: {
         title: '¿Qué hemos visto?',
-        body: 'La frase ya llegó como una secuencia de tokens. Cada token tiene un Token ID que apunta a una fila de la tabla de embeddings, y esa fila contiene el vector aprendido para él. Lo que viste es una visualización didáctica de una sola idea: al cambiar la entrada, cambia también la representación numérica. Cómo se mide la cercanía entre representaciones es el próximo capítulo.',
+        body: 'Cada token de la frase tiene su propio Token ID, y cada Token ID apunta a su propia fila en la tabla de embeddings. Por eso una frase entera no recibe una sola fila, sino una secuencia de vectores, uno por token.',
     },
 
     trainingInference: {

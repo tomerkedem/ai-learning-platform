@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
-    Sparkles, Info, Compass, ChevronDown, ChevronUp,
+    Sparkles, ChevronDown,
     Play, RotateCcw, Keyboard,
     MousePointerClick, Binary, FlaskConical,
 } from 'lucide-react';
@@ -14,14 +14,7 @@ import { useT } from '@/i18n/useT';
 
 import {
     activeStepIndex,
-    dimsForMode,
-    dimValue,
-    DIM_INFO,
-    DIM_STYLE,
     type EngineMode,
-    type EngineStep,
-    type DimKey,
-    type Profile,
 } from '@/app/behind-the-scenes-ai/chapter-4/embeddingEngine';
 import {
     getWordDataset,
@@ -69,9 +62,6 @@ export const WordToNumberLab: React.FC = () => {
 
     const stepIndex = activeStepIndex(scenario, text);
     const step = stepIndex >= 0 ? scenario.steps[stepIndex] : null;
-    const prevStep = stepIndex >= 1 ? scenario.steps[stepIndex - 1] : null;
-
-    const dims = dimsForMode(mode);
 
     const stopAuto = () => {
         if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
@@ -126,31 +116,24 @@ export const WordToNumberLab: React.FC = () => {
     const displayTokens = step ? step.tokens : [];
     const selectToken = (w: string) => setSelected((cur) => (cur === w ? null : w));
 
-    // מצב המתנה מכוון: לפני "נגן וצפו" אין טוקנים, ולכן שלבים 2 ו-3 לא מציגים ממשק ריק
-    // (פסים על 0.00, והוראה "לחצו על טוקן" כשאין טוקנים). במקום זה, הודעת המתנה קצרה.
+    // מצב המתנה מכוון: לפני "נגן וצפו" אין טוקנים, ולכן שלב 2 לא מציג ממשק ריק
+    // (הוראה "לחצו על טוקן" כשאין טוקנים). במקום זה, הודעת המתנה קצרה.
     const started = displayTokens.length > 0;
 
-    // הכרזה לקורא מסך: המקבילה הטקסטואלית לתוצאה שנראית בעין, ולא הערכים הגולמיים של
-    // ששת הפסים. שתי הכרזות אפשריות בלבד:
-    //   1. בסיום ההרצה  -> תמצית "השינוי המוביל" של השלב האחרון.
-    //   2. בבחירת טוקן  -> הטוקן, ה-Token ID שלו, ואותה תמצית.
-    // בזמן ההקלדה (autoTyping) ההכרזה מושתקת: אחרת כל מעבר שלב היה מכריז בנפרד, ובהרצה
-    // אחת נשמעו שלוש הודעות רצופות. ב-reduced-motion אין הקלדה, ולכן ההכרזה קורית פעם אחת.
+    // הכרזה לקורא מסך: רק בבחירת טוקן, ורק את הטוקן, ה-Token ID שלו, ויחס השורה בטבלה.
+    // אין הכרזת ממדים/פסים/"שינוי מוביל" (שלב 3 הוסר). בזמן הקלדה (autoTyping) מושתק.
     const selectedId = selected ? data.tokenId(selected) : null;
-    const changeSummary = step ? `${tx.mainChangeLabel}${step.mainChangeHe}` : '';
     const liveMessage =
-        !started || autoTyping
+        !started || autoTyping || !selected || selectedId === null
             ? ''
-            : selected && selectedId !== null
-              ? `${selected}, Token ID ${selectedId}. ${changeSummary}`
-              : changeSummary;
+            : `${selected}, Token ID ${selectedId}. ${tx.idSeq.rowAria}`;
 
     return (
         // גבול חיצוני אחד למעבדה 2. כל מה שבתוכו הוא שלב של אותה מעבדה, ולא מעבדה נוספת.
         <section
             dir={dir}
             aria-labelledby="lab2-title"
-            className="rounded-[2rem] border border-violet-500/30 bg-slate-900/50 p-5 backdrop-blur-xl md:p-7"
+            className="rounded-[2rem] border border-violet-500/30 bg-slate-900/50 p-4 backdrop-blur-xl md:p-5"
         >
             {/* ── כותרת המעבדה: המספר 2 מופיע כאן, בתחילת האינטראקציה האמיתית ── */}
             <div className="flex items-start justify-between gap-2.5">
@@ -167,18 +150,20 @@ export const WordToNumberLab: React.FC = () => {
                 </div>
                 <SpeakButton text={`${lab.eyebrow}. ${lab.title}. ${lab.goal}`} className="mt-0.5" />
             </div>
-            <p className="mt-2 text-[15px] leading-relaxed text-slate-300">{lab.goal}</p>
+            <p className="mt-1.5 text-[15px] leading-relaxed text-slate-300">{lab.goal}</p>
 
-            {/* ── שלושת השלבים: פעולה, תצפית, שינוי. המסקנה אינה שלב, היא הסיכום שלמטה.
-                כל שלב תופס את מלוא הרוחב, כדי ששלב 3 יוכל לפרוש את ששת הפסים בשתי עמודות
-                בדסקטופ (בחצי רוחב לא נשאר מקום לפס עצמו). סדר ה-DOM נשאר 1, 2, 3. ── */}
-            <ol className="mt-5 grid list-none grid-cols-1 gap-5">
+            {/* ── שני השלבים: פעולה (הרצה לטוקנים) ותצפית (טוקן -> Token ID -> שורה בטבלה).
+                המסקנה אינה שלב, היא הסיכום שלמטה. ── */}
+            <ol className="mt-4 grid list-none grid-cols-1 gap-4">
                 {/* שלב 1: בחרו משפט והריצו אותו */}
                 <li>
                     <StepHeader n={1} step={lab.steps[0]} stepLabel={lab.stepLabel} />
                     {/* הפקדים אינם דביקים: ב-390px הם כיסו את התוצאה, והם רלוונטיים רק לשלב הזה.
-                        החלפת תרחיש מאפסת את ההרצה, ולכן עדיף שתהיה פעולה מודעת בראש המעבדה. */}
-                    <div className="space-y-3">
+                        החלפת תרחיש מאפסת את ההרצה, ולכן עדיף שתהיה פעולה מודעת בראש המעבדה.
+                        בורר התרחיש ופקדי Play/Reset יושבים בשורה אחת: הבורר בצד תחילת הקריאה,
+                        וקבוצת Play/Reset נדחפת לקצה עם ms-auto (Play ראשי, Reset משני). ב-390px
+                        הקבוצה גולשת מתחת לבורר באופן טבעי (flex-wrap), בלי גלילה אופקית. */}
+                    <div className="space-y-2.5">
                         <div className="flex flex-wrap items-center gap-2">
                             <span className="text-xs font-bold text-slate-400">{tx.scenarioLabel}</span>
                             {modeScenarios.map((s) => {
@@ -199,6 +184,26 @@ export const WordToNumberLab: React.FC = () => {
                                     </button>
                                 );
                             })}
+
+                            {/* Play ראשי + Reset משני, נדחפים לקצה שורת הבורר. אותם handlers, labels ו-aria. */}
+                            <div className="ms-auto flex flex-wrap items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={handleAutoType}
+                                    className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${a.border} ${a.bgSoft} ${a.text} hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950`}
+                                >
+                                    <Play size={14} /> {tx.typing.autoType}
+                                    {isHe && <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.autoTypeLatin}</span>}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleReset}
+                                    className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-800/40 px-3 py-2 text-sm font-bold text-slate-400 transition-colors hover:text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                                >
+                                    <RotateCcw size={14} /> {tx.typing.reset}
+                                    {isHe && <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.resetLatin}</span>}
+                                </button>
+                            </div>
                         </div>
 
                         <TypingField
@@ -206,33 +211,10 @@ export const WordToNumberLab: React.FC = () => {
                             prompt={scenario.prompt}
                             accent={scenario.accent}
                             autoTyping={autoTyping}
-                            onAutoType={handleAutoType}
-                            onReset={handleReset}
                             dir={dir}
                             tx={tx}
-                            isHe={isHe}
                         />
                     </div>
-
-                    {/* שורת "מה השתנה": התוצאה של ההרצה */}
-                    <AnimatePresence mode="wait">
-                        {step && (
-                            <motion.div
-                                key={`${scenario.id}-${stepIndex}`}
-                                initial={reduce ? false : { opacity: 0, y: 6 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={reduce ? undefined : { opacity: 0, y: -6 }}
-                                transition={reduce ? { duration: 0 } : { duration: 0.25 }}
-                                className={`mt-3 flex items-start gap-2 rounded-xl border ${a.border} ${a.bgSoft} p-3 text-start`}
-                            >
-                                <Sparkles size={15} className={`mt-0.5 shrink-0 ${a.text}`} />
-                                <span className="text-[15px] leading-relaxed text-slate-200">
-                                    <span className={`font-bold ${a.text}`}>{tx.mainChangeLabel}</span>
-                                    {step.mainChangeHe}
-                                </span>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
                 </li>
 
                 {/* שלב 2: עקבו אחרי הטוקנים. תצוגה אחת של מילה -> Token ID (לוח התרגום הוסר:
@@ -259,16 +241,6 @@ export const WordToNumberLab: React.FC = () => {
                         <WaitingNote text={lab.waiting.step2} />
                     )}
                 </li>
-
-                {/* שלב 3: ראו איך הדפוס משתנה (התוצאה של בחירת הטוקן בשלב 2) */}
-                <li>
-                    <StepHeader n={3} step={lab.steps[2]} stepLabel={lab.stepLabel} showHint={started} />
-                    {started ? (
-                        <MeaningVectorLive step={step} prevStep={prevStep} dims={dims} reduce={!!reduce} dir={dir} tx={tx} isHe={isHe} />
-                    ) : (
-                        <WaitingNote text={lab.waiting.step3} />
-                    )}
-                </li>
             </ol>
 
             {/* הכרזה לקורא מסך. אין הזזת פוקוס, אין אודיו. עובד גם ב-reduced-motion. */}
@@ -276,9 +248,9 @@ export const WordToNumberLab: React.FC = () => {
                 {liveMessage}
             </div>
 
-            {/* ── סיכום המעבדה: סגירה קצרה על מה שנצפה בשלבים 1 עד 3. בלי דוגמה חדשה, בלי
+            {/* ── סיכום המעבדה: סגירה קצרה על מה שנצפה בשלבים 1 ו-2. בלי דוגמה חדשה, בלי
                 השוואה, בלי אחוזים ובלי ויזואליזציה נוספת. ── */}
-            <div className="mt-6 border-t border-violet-500/30 pt-4">
+            <div className="mt-5 border-t border-violet-500/30 pt-3">
                 <div className="flex items-start justify-between gap-2.5">
                     <div className="flex items-start gap-2.5">
                         <Sparkles size={17} className="mt-0.5 shrink-0 text-violet-300" />
@@ -306,7 +278,7 @@ const StepHeader: React.FC<{ n: number; stepLabel: string; step: { title: string
     step,
     showHint = true,
 }) => (
-    <div className="mb-3">
+    <div className="mb-2">
         <div className="flex items-center gap-2.5">
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-slate-600/60 bg-slate-800/60 font-mono text-[12px] font-black text-slate-200">
                 {n}
@@ -316,7 +288,7 @@ const StepHeader: React.FC<{ n: number; stepLabel: string; step: { title: string
                 {step.title}
             </h4>
         </div>
-        {showHint && <p className="mt-1.5 ps-[2.125rem] text-[15px] leading-relaxed text-slate-400">{step.hint}</p>}
+        {showHint && <p className="mt-1 ps-[2.125rem] text-[15px] leading-relaxed text-slate-400">{step.hint}</p>}
     </div>
 );
 
@@ -325,7 +297,7 @@ const StepHeader: React.FC<{ n: number; stepLabel: string; step: { title: string
 // לא "מושבת" ולא "שבור": הודעה קצרה שמסבירה מה יקרה, ומפנה לשלב 1. בלי איור ריק
 // ובלי ערימת כרטיסים. משטח שקט אחד, בגודל גוף רגיל.
 const WaitingNote: React.FC<{ text: string }> = ({ text }) => (
-    <div className="flex items-start gap-2.5 rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
+    <div className="flex items-start gap-2.5 rounded-xl border border-slate-700/50 bg-slate-950/30 p-3.5">
         <MousePointerClick size={17} className="mt-0.5 shrink-0 text-slate-500" />
         <p className="text-[15px] leading-relaxed text-slate-400">{text}</p>
     </div>
@@ -338,29 +310,27 @@ interface TypingFieldProps {
     prompt: string;
     accent: keyof typeof ACCENTS;
     autoTyping: boolean;
-    onAutoType: () => void;
-    onReset: () => void;
     dir: 'rtl' | 'ltr';
     tx: WordLabText;
-    isHe: boolean;
 }
 
 // זהו נגן, לא שדה קלט: המעבדה מדגימה משפטים מוכנים מראש (אין טוקנייזר חי), ולכן במקום
-// להזמין הקלדה שלא עושה כלום, לוחצים "נגן" והמשפט נבנה טוקן אחר טוקן מול העיניים.
-const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyping, onAutoType, onReset, dir, tx, isHe }) => {
+// להזמין הקלדה שלא עושה כלום, לוחצים "נגן" (בשורת הבורר למעלה) והמשפט נבנה טוקן אחר טוקן
+// מול העיניים. פקדי Play/Reset עברו לשורת הבורר, ולכן כאן נשארת רק תצוגת המשפט הנבנה.
+const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyping, dir, tx }) => {
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
 
     return (
-        <div className="rounded-xl bg-slate-950/40 p-4 text-start" dir={dir}>
-            <div className="mb-3 flex items-center gap-2 text-xs text-slate-400">
+        <div className="rounded-xl bg-slate-950/40 p-3.5 text-start" dir={dir}>
+            <div className="mb-2.5 flex items-center gap-2 text-xs text-slate-400">
                 <Keyboard size={14} className={a.text} />
                 {tx.typing.suggested}
                 <span className="rounded-md bg-slate-800/70 px-2 py-0.5 font-bold text-slate-200">&quot;{prompt}&quot;</span>
             </div>
 
             {/* תצוגת המשפט הנבנה (קריאה בלבד). ריק => מציג את המשפט המוצע מעומעם כתצוגה מקדימה */}
-            <div className="relative flex min-h-[3.25rem] items-center rounded-xl border border-slate-700/60 bg-slate-950/60 px-4 py-3">
+            <div className="relative flex min-h-[3rem] items-center rounded-xl border border-slate-700/60 bg-slate-950/60 px-4 py-2.5">
                 <span className="text-lg font-medium leading-snug text-white">
                     {text || <span className="text-slate-600">{prompt}</span>}
                 </span>
@@ -371,27 +341,6 @@ const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyp
                         className={`ms-1 inline-block h-5 w-0.5 shrink-0 ${a.solid}`}
                     />
                 )}
-            </div>
-
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-                <button
-                    type="button"
-                    onClick={onAutoType}
-                    className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${a.border} ${a.bgSoft} ${a.text} hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950`}
-                >
-                    <Play size={14} /> {tx.typing.autoType}
-                    {/* המילה הלטינית (PLAY) היא סיוע לקורא העברית בלבד; בשאר השפות תווית הכפתור
-                        כבר בשפת המשתמש, וה"לטיני" תורגם בטעות לאותה מילה (ריק ריק). מציגים רק בעברית. */}
-                    {isHe && <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.autoTypeLatin}</span>}
-                </button>
-                <button
-                    type="button"
-                    onClick={onReset}
-                    className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-800/40 px-3 py-2 text-sm font-bold text-slate-400 transition-colors hover:text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-                >
-                    <RotateCcw size={14} /> {tx.typing.reset}
-                    {isHe && <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.resetLatin}</span>}
-                </button>
             </div>
         </div>
     );
@@ -417,8 +366,8 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
     const a = ACCENTS[accent];
 
     return (
-        <div className="rounded-xl bg-slate-950/30 p-4 text-start" dir={dir}>
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="rounded-xl bg-slate-950/30 p-3.5 text-start" dir={dir}>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                     <Binary size={16} className={a.text} />
                     <div className="leading-tight">
@@ -516,7 +465,7 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
             )}
 
             {/* אכיפת ההבחנה: ID מצביע על מילה, לא אומר משמעות */}
-            <div className="mt-4">
+            <div className="mt-3">
                 <AnimatePresence mode="wait">
                     {selected && tokenId(selected) !== null ? (
                         <motion.div
@@ -534,7 +483,7 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                             <span className="text-[11px] text-slate-500" dir={dir}>{tx.idSeq.addressNote}</span>
                         </motion.div>
                     ) : (
-                        <p className="text-[11px] leading-relaxed text-slate-500" dir={dir}>{tx.idSeq.selectHint}</p>
+                        <p className="text-[11px] leading-relaxed text-slate-500" dir={dir}>{idView ? tx.idSeq.selectHintIds : tx.idSeq.selectHintWords}</p>
                     )}
                 </AnimatePresence>
             </div>
@@ -542,95 +491,7 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
     );
 };
 
-/* ═══════════════════════ רכיב 3: Meaning Vector Live ═════════════════════ */
-
-interface MeaningVectorLiveProps {
-    step: EngineStep | null;
-    prevStep: EngineStep | null;
-    dims: DimKey[];
-    reduce: boolean;
-    dir: 'rtl' | 'ltr';
-    tx: WordLabText;
-    isHe: boolean;
-}
-
-const fmt = (n: number) => n.toFixed(2);
-
-const MeaningVectorLive: React.FC<MeaningVectorLiveProps> = ({ step, prevStep, dims, reduce, dir, tx, isHe }) => {
-    const profile: Profile = step ? step.profile : {};
-    const prev: Profile = prevStep ? prevStep.profile : {};
-
-    return (
-        <div className="rounded-xl bg-slate-950/30 p-4 text-start" dir={dir}>
-            <div className="mb-2.5 flex flex-wrap items-center gap-2">
-                <Compass size={16} className="text-violet-300" />
-                <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">{tx.vector.title}</div>
-                    {/* כותרת-משנה לטינית: סיוע לקורא העברית; בשאר השפות היא רק חוזרת על הכותרת */}
-                    {isHe && <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{tx.vector.sub}</div>}
-                </div>
-                <span className="ms-auto inline-flex items-center gap-1 rounded-lg border border-amber-500/40 bg-amber-500/15 px-2 py-1 text-[13px] font-bold text-amber-100">
-                    <Info size={13} className="shrink-0" /> {tx.vector.eduBadge}
-                </span>
-            </div>
-
-            {/* ההבהרה הראשית על הפישוט הלימודי: מעל הפסים, לא כהערת שוליים. הלומד קורא אותה
-                לפני שהוא מפרש את שמות הצירים, כדי שלא יסיק שלממדים אמיתיים יש שמות קריאים. */}
-            <p className="mb-3 rounded-xl border border-amber-500/30 bg-amber-900/15 p-3 text-[15px] leading-relaxed text-amber-50">
-                {tx.vector.eduNote}
-            </p>
-
-            <div className="grid gap-x-8 gap-y-2 lg:grid-flow-col lg:grid-rows-3">
-                {dims.map((key) => {
-                    const value = dimValue(profile, key);
-                    const before = dimValue(prev, key);
-                    const delta = value - before;
-                    const bumped = !!step && delta >= 0.2;
-                    const isLead = !!step && step.lead === key;
-                    const s = DIM_STYLE[key];
-                    const info = DIM_INFO[key];
-                    return (
-                        <div key={key} className="flex items-center gap-3">
-                            <span className="flex w-20 shrink-0 items-center gap-1.5 leading-tight">
-                                {/* הממד המוביל מסומן גם בגודל ובטבעת נייטרלית (לא בצבע בלבד) */}
-                                <span className={`shrink-0 rounded-full ${s.dot} ${isLead ? 'h-2.5 w-2.5 ring-2 ring-white/40' : 'h-2 w-2'}`} />
-                                <span>
-                                    <span className={`block text-xs font-bold ${isLead ? s.text : 'text-slate-300'}`}>{isHe ? info.he : (tx.dimLabel?.[key] ?? info.en)}</span>
-                                    {isHe && <span className="block text-[8px] uppercase tracking-[0.12em] text-slate-500" dir="ltr">{info.en}</span>}
-                                </span>
-                            </span>
-
-                            <div className={`relative h-2.5 flex-1 overflow-hidden rounded-full bg-slate-800/80 ${bumped ? `ring-1 ${s.border}` : ''}`}>
-                                <motion.div
-                                    animate={{ width: `${Math.max(0, Math.min(100, value * 100))}%` }}
-                                    transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 130, damping: 18 }}
-                                    className={`h-full rounded-full ${value > 0 ? s.bar : 'bg-slate-700'}`}
-                                />
-                            </div>
-
-                            <span className="flex w-16 shrink-0 items-center justify-end gap-1">
-                                <AnimatePresence>
-                                    {bumped && (
-                                        <motion.span
-                                            key="bump"
-                                            initial={reduce ? false : { opacity: 0, scale: 0.6 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={reduce ? undefined : { opacity: 0, scale: 0.6 }}
-                                            transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 16 }}
-                                            className={`inline-flex items-center ${s.text}`}
-                                        >
-                                            <ChevronUp size={13} strokeWidth={3} />
-                                        </motion.span>
-                                    )}
-                                </AnimatePresence>
-                                <span className={`font-mono text-xs ${value > 0 ? 'text-slate-300' : 'text-slate-600'}`} dir="ltr">{fmt(value)}</span>
-                            </span>
-                        </div>
-                    );
-                })}
-            </div>
-
-            <p className="mt-3 text-[13px] leading-relaxed text-slate-400">{tx.vector.note}</p>
-        </div>
-    );
-};
+/* המחשת שלב 3 (MeaningVectorLive, ששת הפסים עם שמות ממדים) הוסרה: היא רמזה ששמות
+   הצירים הם ממדי embedding קריאים, חזרה על שיעור מעבדה 1, והוסיפה גובה. המעבדה מסתיימת
+   כעת אחרי שלב 2 עם סיכום קצר. DIM_INFO/DIM_STYLE/dimValue נשארו במנוע כי פרק 6 ומעבדות
+   אחרות צורכים אותם. */
