@@ -16,6 +16,13 @@ export const semanticSpace = {
             'Cerca significa que el modelo aprendió una relación entre las frases, y lejos significa que esa relación es débil. Pero la cercanía es solo una señal de una relación aprendida, no una prueba de que los dos significados sean idénticos.',
         ],
     },
+    // Solo las dos frases del mentor que el capítulo 5 muestra realmente: la burbuja del
+    // laboratorio y la pista previa a la respuesta en la cabecera de la tarjeta de cierre.
+    mentor: {
+        ...he.mentor,
+        lab: 'Fíjate en la distancia, no en las palabras.',
+        lock: 'Aquí hay una respuesta tentadora. Tómate un momento antes de elegir.',
+    },
     sections: {
         ...he.sections,
         dnaIntro:

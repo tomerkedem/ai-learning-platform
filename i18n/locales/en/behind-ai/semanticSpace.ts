@@ -16,6 +16,13 @@ export const semanticSpace = {
             'Close means the model learned a relation between the sentences, and far means that relation is weak. But closeness is only evidence of a learned relation, not proof that the two meanings are the same.',
         ],
     },
+    // Only the two mentor lines that Chapter 5 actually renders: the laboratory bubble
+    // and the pre-answer hint in the lock card header. The rest of `mentor` is not shown.
+    mentor: {
+        ...he.mentor,
+        lab: 'Watch the distance, not the words.',
+        lock: 'One answer here is tempting. Take a moment before you choose.',
+    },
     sections: {
         ...he.sections,
         dnaIntro:

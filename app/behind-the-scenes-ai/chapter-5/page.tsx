@@ -209,18 +209,27 @@ export default function BehindTheScenesChapter5() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={5}>
 
             {/* ══════════ HERO ══════════ */}
-            <div className="relative">
-                <motion.section
-                    initial={reduce ? false : { opacity: 0, y: 18 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={reduce ? { duration: 0 } : { duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                    className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-start"
-                    dir={dir}
-                >
-                    <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
-                    <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
+            <motion.section
+                initial={reduce ? false : { opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={reduce ? { duration: 0 } : { duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-start"
+                dir={dir}
+            >
+                <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
+                <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
 
-                    <div className="relative z-10">
+                {/* סדר הילדים קובע כיוון: המנטור ראשון ולכן הוא נוחת בצד ההתחלה (ימין ב-RTL,
+                    שמאל ב-LTR), וזה מה שגורם ל-flip={!isRtl} להפנות אותו פנימה אל הטקסט.
+                    היפוך הסדר ישבור את ההתאמה הזו. */}
+                <div className="relative z-10 xl:grid xl:grid-cols-[280px_1fr] xl:items-center xl:gap-7">
+                    {/* בכוונה בלי line: הכותרת והפתיח כבר אומרים את המשפט. mentor.hero עדיין
+                        קיים במילון אך אינו מוצג. */}
+                    <div className="hidden xl:block">
+                        <Mentor pose="holographicUi" width={280} flip={!isRtl} />
+                    </div>
+
+                    <div>
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
                             <Map size={14} className="text-violet-400" />
                             <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">{c5.hero.badge}</span>
@@ -259,12 +268,8 @@ export default function BehindTheScenesChapter5() {
                             />
                         </FloatingReadAloud>
                     </div>
-                </motion.section>
-                {/* מנטור: כל משפט מקבל מקום במפה (xl+, צד חיצוני לפי כיוון) */}
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="holographicUi" line={c5.mentor.hero} width={280} flip={!isRtl} />
                 </div>
-            </div>
+            </motion.section>
 
             {/* ══════════ במילים פשוטות ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
@@ -303,7 +308,7 @@ export default function BehindTheScenesChapter5() {
             </section>
 
             {/* ══════════ Semantic Space Lab ══════════ */}
-            <section id="semantic-lab" className="relative mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
+            <section id="semantic-lab" className="mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
                 <div className="flex items-center gap-3">
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-sm font-black text-slate-200">2</span>
                     <FlaskConical size={24} className="text-violet-400" />
@@ -311,6 +316,13 @@ export default function BehindTheScenesChapter5() {
                         <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">{c5.sections.labEyebrow}</div>
                         <h3 className="text-2xl font-bold text-white">{c5.sections.labTitle}</h3>
                     </div>
+                </div>
+
+                {/* חייב להישאר מחוץ ל-ExpandableLab: הוא מרנדר את ילדיו ל-Portal במסך מלא,
+                    ומנטור בפנים היה צץ גם מעל המעבדה המוגדלת.
+                    ה-pt שומר מקום לבועה מעל הראש כדי שלא תטפס על כותרת ה-section. */}
+                <div className="hidden justify-center pt-10 sm:flex">
+                    <Mentor pose="think" line={c5.mentor.lab} width={160} />
                 </div>
 
                 <div className="flex items-start justify-between gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
@@ -321,13 +333,6 @@ export default function BehindTheScenesChapter5() {
                 <ExpandableLab title={c5.sections.labTitle}>
                     <SemanticSpaceLab content={c5.lab} dir={dir} />
                 </ExpandableLab>
-
-                {/* מנטור: קרוב במרחב, קרוב במשמעות (xl+, צד פנימי לפי כיוון) */}
-                {/* חריג מודע לגדול x1.5 הגלובלי של think: הסלוט בשוליים החיצוניים צר, וגודל
-                    מוגדל נחתך בקצה המסך ב-xl. נשמר הגודל המקורי כדי לשמור על איכות הפריסה. */}
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="think" line={c5.mentor.lab} width={160} flip={!isRtl} />
-                </div>
             </section>
 
             {/* ══════════ מה המפה מלמדת ══════════ */}
@@ -419,24 +424,30 @@ export default function BehindTheScenesChapter5() {
             )}
 
             {/* ══════════ נעילת הבנה ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="happy" line={c5.mentor.lock} width={160} flip={!isRtl} />
-                </div>
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
-                    <div className="mb-5 flex items-center gap-2">
-                        <Lock size={20} className="text-violet-300" />
-                        <h3 className="text-xl font-bold text-white">{c5.lock.title}</h3>
+                    {/* הרמז הוא טקסט ולא בועה, כדי שישרוד גם ב-390 שבו התמונה מוסתרת.
+                        הוא נאמר לפני התשובה בכוונה, ולכן אינו זקוק ל-state של LockQuestion. */}
+                    <div className="mb-5 flex items-start justify-between gap-4">
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <Lock size={20} className="text-violet-300" />
+                                <h3 className="text-xl font-bold text-white">{c5.lock.title}</h3>
+                            </div>
+                            <p className="mt-2 text-[13px] font-semibold leading-relaxed text-violet-200">{c5.mentor.lock}</p>
+                        </div>
+                        <div className="hidden shrink-0 self-center sm:block">
+                            <Mentor pose="happy" width={104} glow={false} float={false} />
+                        </div>
                     </div>
                     <LockQuestion />
                 </div>
             </section>
 
             {/* ══════════ תובנה מעשית ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="pointdown" line={c5.mentor.practical} width={160} flip={!isRtl} />
-                </div>
+            {/* בכוונה בלי מנטור: הבועה הקודמת רק חזרה על התבליט הראשון. mentor.practical
+                עדיין קיים במילון אך אינו מוצג. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c5.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c5.practical.lead}</span>
