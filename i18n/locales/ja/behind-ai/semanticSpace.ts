@@ -20,6 +20,7 @@ export const semanticSpace = {
         ...he.sections,
         dnaIntro:
             'ここまでは、それぞれの文が空間のどこに位置するかを見てきました。次は、その文を表すベクトルをより近くで見て、値のパターンが文によってどう変わるか、そしてそのパターンが文どうしの近さにどう影響するかを見ていきます。',
+        dnaSelectorHint: '左右から文を一つずつ選び、値とつながりのパターンがどう変わるかを比べてみましょう。',
     },
     lock: {
         title: '理解を固める',
@@ -36,6 +37,10 @@ export const semanticSpace = {
     },
     lab: {
         ...he.lab,
+        map: {
+            ...he.lab.map,
+            closestNow: 'いま最も近い文は:',
+        },
         negation: {
             ...he.lab.negation,
             bridge: 'だからこそ、単語だけを見ても十分ではありません。どの単語が現れたかだけでなく、それぞれの単語が残りの意味をどう変えるかを理解する必要があります。',

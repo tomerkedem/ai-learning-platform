@@ -20,6 +20,7 @@ export const semanticSpace = {
         ...he.sections,
         dnaIntro:
             'Hasta aquí vimos dónde se ubica cada frase en el espacio. Ahora miraremos más de cerca el vector que la representa y veremos cómo su patrón de valores cambia de una frase a otra, y cómo ese patrón influye en la cercanía entre ellas.',
+        dnaSelectorHint: 'Elige una frase en cada lado y compara cómo cambia el patrón de valores y de conexiones.',
     },
     lock: {
         title: 'Consolida la idea',
@@ -36,6 +37,10 @@ export const semanticSpace = {
     },
     lab: {
         ...he.lab,
+        map: {
+            ...he.lab.map,
+            closestNow: 'La frase más cercana ahora es:',
+        },
         negation: {
             ...he.lab.negation,
             bridge: 'Por eso no basta con mirar las palabras solas. Hay que entender cómo cada palabra cambia el significado de las demás, no solo qué palabras aparecieron.',

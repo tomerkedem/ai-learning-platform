@@ -20,6 +20,7 @@ export const semanticSpace = {
         ...he.sections,
         dnaIntro:
             'So far we have seen where each sentence sits in the space. Now we will look more closely at the vector that represents it and see how its pattern of values differs from one sentence to another, and how that pattern shapes the closeness between them.',
+        dnaSelectorHint: 'Pick one sentence on each side and compare how the pattern of values and links changes.',
     },
     lock: {
         title: 'Lock in your understanding',
@@ -36,6 +37,10 @@ export const semanticSpace = {
     },
     lab: {
         ...he.lab,
+        map: {
+            ...he.lab.map,
+            closestNow: 'The closest sentence now is:',
+        },
         negation: {
             ...he.lab.negation,
             bridge: 'That is why it is not enough to look at the words alone. You need to understand how each word changes the meaning of the rest, not just which words appeared.',

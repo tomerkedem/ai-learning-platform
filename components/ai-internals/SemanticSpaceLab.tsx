@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Compass, MousePointerClick, Sparkles, Map, Info, Hand, RotateCcw, ArrowLeftRight, Check } from 'lucide-react';
 
@@ -85,7 +85,7 @@ export const SemanticSpaceLab: React.FC<{ content: SemanticSpaceLabDict; dir: Di
                                 type="button"
                                 onClick={() => setExperiment(key)}
                                 aria-pressed={active}
-                                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${
+                                className={`inline-flex min-h-[44px] items-center rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${
                                     active ? 'bg-violet-500 text-white' : 'text-slate-400 hover:text-slate-200'
                                 }`}
                             >
@@ -120,6 +120,7 @@ export const SemanticSpaceLab: React.FC<{ content: SemanticSpaceLabDict; dir: Di
 /* ═══════════════════════ ניסוי 1: שכנים במרחב ════════════════════════════ */
 
 const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }> = ({ content, dir }) => {
+    const reduce = useReducedMotion();
     const svgRef = useRef<SVGSVGElement>(null);
     const m = content.map;
 
@@ -131,6 +132,19 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
     const [selectedId, setSelectedId] = useState<PhraseId>(ANCHOR_ID);
     const [draggingId, setDraggingId] = useState<PhraseId | null>(null);
     const [everDragged, setEverDragged] = useState(false);
+    // מיקוד מקלדת נוכחי, לציור טבעת פוקוס נראית על הנקודה הממוקדת.
+    const [focusedId, setFocusedId] = useState<PhraseId | null>(null);
+    // רמז חד-פעמי: פעימה עדינה על הנקודה הנבחרת, שמראה שאפשר לבחור/לגרור. לא משנה מצב,
+    // רץ פעם אחת, מכובה לצמיתות ברגע שהלומד בוחר או גורר, ומכובד ל-reduced-motion.
+    const [hintOn, setHintOn] = useState(true);
+    const stopHint = () => setHintOn(false);
+    // כיבוי אוטומטי אחרי פרק זמן קצר. ב-reduced-motion הפעימה ממילא לא מרונדרת (גייט
+    // ברינדור), ולכן אין צורך לכבות סינכרונית כאן. setState רץ רק בתוך ה-timeout.
+    useEffect(() => {
+        if (reduce) return;
+        const id = setTimeout(() => setHintOn(false), 4500);
+        return () => clearTimeout(id);
+    }, [reduce]);
 
     const selPhrase = PHRASES.find((p) => p.id === selectedId)!;
     const selPos = positions[selectedId];
@@ -152,6 +166,17 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
         e.currentTarget.setPointerCapture(e.pointerId);
         setSelectedId(id);
         setDraggingId(id);
+        stopHint();
+    };
+
+    // בחירה במקלדת: Enter/Space בוחרים את הנקודה הממוקדת, בלי גרירה. אותו state ואותו
+    // חישוב שכנים כמו בבחירה בעכבר, כדי שהחוויה זהה למשתמשי מקלדת וטכנולוגיה מסייעת.
+    const onPointKey = (id: PhraseId) => (e: React.KeyboardEvent<SVGGElement>) => {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+            e.preventDefault();
+            setSelectedId(id);
+            stopHint();
+        }
     };
     const moveDrag = (e: React.PointerEvent<SVGGElement>) => {
         if (!draggingId) return;
@@ -189,7 +214,7 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
                             <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{m.subtitle}</div>
                         </div>
                     </div>
-                    <GuessButton variant="ghost" onClick={reset} leadingIcon={<RotateCcw size={13} />}>
+                    <GuessButton variant="ghost" onClick={reset} leadingIcon={<RotateCcw size={13} />} className="min-h-[44px] px-2">
                         {m.reset}
                     </GuessButton>
                 </div>
@@ -213,7 +238,7 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
                         viewBox={`0 0 ${MAP_SIZE} ${MAP_SIZE}`}
                         className="w-full select-none"
                         style={{ touchAction: 'none' }}
-                        role="img"
+                        role="group"
                         aria-label={m.title}
                     >
                         {/* אזורי משמעות רכים (סטטיים, מהמיקום המקורי) */}
@@ -236,22 +261,48 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
                             const c = CLUSTER_STYLE[p.cluster];
                             const isSel = selectedId === p.id;
                             const isDrag = draggingId === p.id;
+                            const isFocused = focusedId === p.id;
                             const dist = distance(selPos, positions[p.id]);
                             const near = closeness(dist);
                             const dim = !isSel ? 0.35 + 0.65 * near : 1;
                             return (
                                 <g
                                     key={p.id}
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-label={content.phrases[p.id]}
+                                    aria-pressed={isSel}
                                     onPointerDown={startDrag(p.id)}
                                     onPointerMove={moveDrag}
                                     onPointerUp={endDrag}
                                     onPointerCancel={endDrag}
-                                    style={{ cursor: isDrag ? 'grabbing' : 'grab', opacity: dim }}
+                                    onKeyDown={onPointKey(p.id)}
+                                    onFocus={() => setFocusedId(p.id)}
+                                    onBlur={() => setFocusedId((f) => (f === p.id ? null : f))}
+                                    style={{ cursor: isDrag ? 'grabbing' : 'grab', opacity: isFocused ? 1 : dim, outline: 'none' }}
                                     className={draggingId ? '' : 'transition-opacity duration-300'}
                                 >
                                     <title>{content.phrases[p.id]}</title>
+                                    {/* פעימת רמז חד-פעמית על הנקודה הנבחרת (לא משנה מצב, מכובד ל-reduced-motion) */}
+                                    {!reduce && hintOn && isSel && (
+                                        <motion.circle
+                                            cx={pos.cx}
+                                            cy={pos.cy}
+                                            fill="none"
+                                            stroke={c.hex}
+                                            strokeWidth={2}
+                                            pointerEvents="none"
+                                            initial={{ r: 10, opacity: 0.7 }}
+                                            animate={{ r: [10, 22], opacity: [0.7, 0] }}
+                                            transition={{ duration: 1.4, repeat: 2, ease: 'easeOut' }}
+                                        />
+                                    )}
                                     {isSel && <circle cx={pos.cx} cy={pos.cy} r={14} fill="none" stroke={c.hex} strokeWidth={1.5} strokeOpacity={0.6} />}
                                     <circle cx={pos.cx} cy={pos.cy} r={isSel ? 8 : 6} fill={c.hex} stroke="#0b1220" strokeWidth={isSel ? 0 : 1.5} />
+                                    {/* טבעת פוקוס מקלדת נראית, בניגודיות גבוהה, מעל הנקודה */}
+                                    {isFocused && (
+                                        <circle cx={pos.cx} cy={pos.cy} r={16} fill="none" stroke="#f8fafc" strokeWidth={2} strokeDasharray="3 3" pointerEvents="none" />
+                                    )}
                                     {/* אזור גרירה נדיב */}
                                     <circle cx={pos.cx} cy={pos.cy} r={20} fill="transparent" />
                                 </g>
@@ -310,6 +361,11 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
                         {content.phrases[selPhrase.id]}
                     </span>
                 </div>
+
+                {/* סיכום קצר להקראה: רק המשפט הקרוב ביותר כרגע, מתעדכן בכל בחירה (עכבר או מקלדת) */}
+                <p className="sr-only" aria-live="polite">
+                    {neighbors.length ? `${m.closestNow} ${content.phrases[neighbors[0].p.id]}` : ''}
+                </p>
 
                 <div className="space-y-2">
                     {neighbors.slice(0, 6).map(({ p, dist }) => {

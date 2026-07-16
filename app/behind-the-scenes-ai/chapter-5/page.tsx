@@ -359,6 +359,8 @@ export default function BehindTheScenesChapter5() {
                         {/* שני בוררים: בחרו שני משפטים וראו כמה רכיבי משמעות משותפים להם.
                             זהים כמעט (שני כשלי מסירה) => הרבה קשרים ירוקים. רחוקים (מסירה מול חיוב)
                             => כמעט בלי קשרים, הגדילים נפרדים. */}
+                        {/* הנחיית פעולה קצרה, צמודה לבוררים, כדי שברור שזו השוואת זוג ולא רק תוויות */}
+                        <p className="text-[13px] font-semibold leading-relaxed text-slate-200">{c5.sections.dnaSelectorHint}</p>
                         <div className="grid gap-4 sm:grid-cols-2">
                             <div>
                                 <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-cyan-300">{c4Lab.dna.roleActive}</div>
@@ -373,7 +375,7 @@ export default function BehindTheScenesChapter5() {
                                                 type="button"
                                                 onClick={() => setDnaAId(id)}
                                                 aria-pressed={on}
-                                                className={`rounded-lg border px-2.5 py-1 text-sm font-bold transition-colors ${
+                                                className={`inline-flex min-h-[44px] items-center rounded-lg border px-2.5 py-1 text-sm font-bold transition-colors ${
                                                     on ? 'border-cyan-400/60 bg-cyan-900/25 text-cyan-100' : 'border-slate-700/50 bg-slate-800/30 text-slate-300 hover:border-slate-600'
                                                 }`}
                                             >
@@ -396,7 +398,7 @@ export default function BehindTheScenesChapter5() {
                                                 type="button"
                                                 onClick={() => setDnaBId(id)}
                                                 aria-pressed={on}
-                                                className={`rounded-lg border px-2.5 py-1 text-sm font-bold transition-colors ${
+                                                className={`inline-flex min-h-[44px] items-center rounded-lg border px-2.5 py-1 text-sm font-bold transition-colors ${
                                                     on ? 'border-violet-400/60 bg-violet-900/25 text-violet-100' : 'border-slate-700/50 bg-slate-800/30 text-slate-300 hover:border-slate-600'
                                                 }`}
                                             >
