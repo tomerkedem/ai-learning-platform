@@ -64,7 +64,6 @@ const LockQuestion: React.FC = () => {
         <div dir={dir} className="text-start">
             <div className="mb-3 flex items-start justify-between gap-2">
                 <p className="text-sm font-bold text-slate-200">{lock.question}</p>
-                {/* בלי speechLocale בכוונה: lock מתורגם במלואו בכל שש השפות. */}
                 <SpeakButton text={lock.question} />
             </div>
 
@@ -153,47 +152,28 @@ export default function BehindTheScenesChapter5() {
         };
     });
 
-    // ── שפת ההקראה של תוכן הפרק ──
-    // פרק 5 עדיין כתוב עברית ברובו (contentLocale = 'he'), ורק חלק מהשדות תורגמו בפועל:
-    // plain, sections.dnaIntro, lock ו-lab.negation.bridge. כל השאר נופל ל-fallback עברי.
-    // לכן כל מקור הקראה שקורא שדה עברי מקבל speechLocale מפורש, ולא את שפת הממשק.
-    // מקור שקורא שדה מתורגם נשאר בשפת הממשק (ברירת המחדל של SpeakButton).
-    const speechLocale = c5.contentLocale;
-
-    // שכבת תאימות זמנית. true בעברית בלבד, ואז שפת הממשק זהה לשפת התוכן וכל מקטעי הדוק
-    // נכללים כרגיל. false בחמש השפות האחרות: הדוק מדבר בשפה אחת בלבד (ReadAloudSegment
-    // אינו נושא שפה משלו), ולכן המקטעים שכבר תורגמו מושמטים ממנו כדי שלא יוקראו בקול
-    // עברי. plain נשאר נגיש דרך ה-SpeakButton הצמוד שלו, שמדבר בשפת הממשק.
-    //
-    // זמני: למחוק כשפרק 5 יתורגם במלואו ו-contentLocale ייקבע לכל שפה. אז כל השדות יהיו
-    // בשפת הממשק, הדוק יחזור ל-locale הפעיל, וכל ה-speechLocale כאן מיותרים.
-    const speaksContentLang = locale === speechLocale;
-
     // ── דוק האזנה מודרכת: מקטעי הקראה יציבים בלבד. לא נכללים: ניחוש, מצב חי של
-    // המעבדה (בחירה, גרירה, שכנים, אחוזים), כפתורים, מנטורים וחידון. תוויות מ-aiInternals. ──
+    // המעבדה (בחירה, גרירה, שכנים, אחוזים), כפתורים, מנטורים וחידון. תוויות מ-aiInternals.
+    // פרק 5 מתורגם במלואו בשש השפות, ולכן כל המקטעים נכללים תמיד ונקראים בשפת הממשק. ──
     const ra = t.behindAi.aiInternals.readAloud;
     const sTitle: ReadAloudSegment = { id: 'title', label: c5.hero.titleLead, text: `${c5.hero.titleLead} ${c5.hero.titleHighlight}. ${c5.hero.lede}` };
     const sPlain: ReadAloudSegment = { id: 'plain', label: c5.plain.title, text: `${c5.plain.title}. ${c5.plain.paragraphs.join(' ')}` };
     const sExplainAll: ReadAloudSegment = { id: 'explain', label: c5.explain.title, text: `${c5.explain.title}. ${c5.explain.paragraphs.join(' ')}` };
     const sExplainEach: ReadAloudSegment[] = c5.explain.paragraphs.map((p, i) => ({ id: `explain-${i}`, label: c5.explain.title, text: p }));
-    // negation.explanation עברי בכל השפות, אך negation.bridge כבר תורגם. חיבור השניים
-    // היה יוצר מקטע דו-לשוני יחיד, ולכן ה-bridge נכלל רק כששפת הממשק היא שפת התוכן.
     const sNegation: ReadAloudSegment = {
         id: 'negation',
         label: c5.lab.negation.title,
-        text: speaksContentLang ? `${c5.lab.negation.explanation} ${c5.lab.negation.bridge}` : c5.lab.negation.explanation,
+        text: `${c5.lab.negation.explanation} ${c5.lab.negation.bridge}`,
     };
     const sPracticalShort: ReadAloudSegment = { id: 'practical', label: c5.practical.title, text: `${c5.practical.title}. ${c5.practical.lead}` };
     const sPracticalFull: ReadAloudSegment = { id: 'practical', label: c5.practical.title, text: `${c5.practical.title}. ${c5.practical.lead} ${c5.practical.uses.join(' ')}` };
     const sCaveat: ReadAloudSegment = { id: 'caveat', label: c5.practical.title, text: c5.practical.caveat };
     const sBridge: ReadAloudSegment = { id: 'bridge', label: c5.practical.title, text: c5.practical.bridge };
 
-    // plain הוא השדה היחיד בדוק שכבר תורגם, ולכן הוא נכלל רק כשהדוק מדבר בשפתו.
-    const dockPlain = speaksContentLang ? [sPlain] : [];
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
-        short: [sTitle, ...dockPlain, sPracticalShort, sCaveat],
-        regular: [sTitle, ...dockPlain, sExplainAll, sNegation, sPracticalFull, sCaveat],
-        full: [sTitle, ...dockPlain, ...sExplainEach, sNegation, sPracticalFull, sCaveat, sBridge],
+        short: [sTitle, sPlain, sPracticalShort, sCaveat],
+        regular: [sTitle, sPlain, sExplainAll, sNegation, sPracticalFull, sCaveat],
+        full: [sTitle, sPlain, ...sExplainEach, sNegation, sPracticalFull, sCaveat, sBridge],
     };
 
     // ── מבדק הפרק: המנגנון המשותף נשמר מ-quizData, וטקסט התצוגה ממוזג לפי מזהה. ──
@@ -269,7 +249,7 @@ export default function BehindTheScenesChapter5() {
 
                         <div className="flex items-start gap-2.5">
                             <p className="text-lg text-slate-300 leading-relaxed">{c5.hero.lede}</p>
-                            <SpeakButton text={`${c5.hero.titleLead} ${c5.hero.titleHighlight}. ${c5.hero.lede}`} speechLocale={speechLocale} className="mt-1" />
+                            <SpeakButton text={`${c5.hero.titleLead} ${c5.hero.titleHighlight}. ${c5.hero.lede}`} className="mt-1" />
                         </div>
 
                         <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
@@ -288,8 +268,8 @@ export default function BehindTheScenesChapter5() {
                                 של הלומד תשותף ביניהם. */}
                             <ReadAloudControls
                                 segmentsByMode={readAloudByMode}
-                                lang={LOCALE_SPEECH_LANG[speechLocale]}
-                                locale={speechLocale}
+                                lang={LOCALE_SPEECH_LANG[locale]}
+                                locale={locale}
                                 dir={dir}
                                 labels={ra}
                                 reduce={!!reduce}
@@ -307,8 +287,6 @@ export default function BehindTheScenesChapter5() {
                         <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
                             <Sparkles size={14} /> {c5.plain.eyebrow}
                         </span>
-                        {/* בלי speechLocale בכוונה: plain מתורגם בכל שש השפות, ולכן הוא
-                            נקרא בשפת הממשק. זה גם המקטע שמושמט מהדוק העברי. */}
                         <SpeakButton text={`${c5.plain.title} ${c5.plain.paragraphs.join(' ')}`} />
                     </div>
                     <h3 className="mb-4 text-xl font-black text-white md:text-2xl">{c5.plain.title}</h3>
@@ -322,7 +300,7 @@ export default function BehindTheScenesChapter5() {
 
             {/* ══════════ ניחוש מהיר ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <OpeningGuess content={guessContent} cards={guessCards} speechLocale={speechLocale} />
+                <OpeningGuess content={guessContent} cards={guessCards} />
             </section>
 
             {/* ══════════ חימום: קרבה פשוטה עם אובייקטים מוכרים (הובא מפרק 4) ══════════ */}
@@ -358,11 +336,11 @@ export default function BehindTheScenesChapter5() {
 
                 <div className="flex items-start justify-between gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
                     <span>{c5.sections.labIntro}</span>
-                    <SpeakButton text={`${c5.sections.labTitle}. ${c5.sections.labIntro}`} speechLocale={speechLocale} className="mt-0.5" />
+                    <SpeakButton text={`${c5.sections.labTitle}. ${c5.sections.labIntro}`} className="mt-0.5" />
                 </div>
 
                 <ExpandableLab title={c5.sections.labTitle}>
-                    <SemanticSpaceLab content={c5.lab} dir={dir} />
+                    <SemanticSpaceLab content={c5.lab} dir={dir} locale={locale} />
                 </ExpandableLab>
             </section>
 
@@ -371,7 +349,7 @@ export default function BehindTheScenesChapter5() {
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-6">
                     <div className="mb-4 flex items-start justify-between gap-2.5">
                         <h3 className="text-lg font-bold text-slate-200">{c5.explain.title}</h3>
-                        <SpeakButton text={`${c5.explain.title}. ${c5.explain.paragraphs.join(' ')}`} speechLocale={speechLocale} />
+                        <SpeakButton text={`${c5.explain.title}. ${c5.explain.paragraphs.join(' ')}`} />
                     </div>
                     <div className="space-y-3">
                         {c5.explain.paragraphs.map((p, i) => (
@@ -388,7 +366,6 @@ export default function BehindTheScenesChapter5() {
                 <section className="mt-12 text-start" dir={dir}>
                   <div className="mb-4 flex items-start justify-between gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
                     <span>{c5.sections.dnaIntro}</span>
-                    {/* בלי speechLocale בכוונה: dnaIntro מתורגם בכל שש השפות. */}
                     <SpeakButton text={c5.sections.dnaIntro} className="mt-0.5" />
                   </div>
                   <ExpandableLab title={c4Lab.dna.title}>
@@ -483,7 +460,7 @@ export default function BehindTheScenesChapter5() {
                 <InsightBox type="intuition" title={c5.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c5.practical.lead}</span>
-                        <SpeakButton text={`${c5.practical.title}. ${c5.practical.lead} ${c5.practical.uses.join(' ')} ${c5.practical.caveat}`} speechLocale={speechLocale} />
+                        <SpeakButton text={`${c5.practical.title}. ${c5.practical.lead} ${c5.practical.uses.join(' ')} ${c5.practical.caveat}`} />
                     </div>
                     <ul className="mt-3 space-y-2">
                         {c5.practical.uses.map((line) => (

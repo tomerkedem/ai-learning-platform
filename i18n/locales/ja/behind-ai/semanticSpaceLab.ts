@@ -1,0 +1,79 @@
+// i18n/locales/ja/behind-ai/semanticSpaceLab.ts
+//
+// 第5章「Semantic Space」のラボ文字列（日本語）。
+//
+// キー（フレーズ id、クラスタキー）は構造上のもので翻訳しません。値のみ翻訳します。
+// 座標は app/behind-the-scenes-ai/chapter-5/semanticSpace.ts にあります。
+//
+// 否定ペアは base='not-arrived' と opposite='arrived'。
+// 重要な言語上の注意: 日本語の否定は独立した単語を1つ足すのではなく、動詞の活用そのものを
+// 変えます（「届きました」→「届きませんでした」）。ラボは Intl.Segmenter で語を分割するため、
+// 否定の語尾だけが強調されます。したがってこの言語の文言では「単語を1つ足した」とは書かず、
+// 「語形が変わる」と正確に述べています。
+//
+// ダッシュ（em dash / en dash）は使いません。プロジェクトの文章ルールに従います。
+
+import type { SemanticSpaceLabDict } from '../../he/behind-ai/semanticSpaceLab';
+
+export const semanticSpaceLab: SemanticSpaceLabDict = {
+    selector: {
+        label: '実験を選ぶ',
+        map: '空間のご近所',
+        negation: '否定のわな',
+    },
+
+    map: {
+        title: '意味の地図',
+        subtitle: '文を選ぶか、ドラッグしてください',
+        legendTitle: '意味の領域',
+        reset: 'リセット',
+        neighborsTitle: '最も近い文',
+        neighborsSubtitle: '空間での近さ順',
+        closenessTo: '基準の文',
+        closest: '最も近い',
+        toneNear: '近い、関連する意味',
+        toneMid: '中くらいの近さ',
+        toneFar: '遠い、異なる意味',
+        closestNow: '今いちばん近い文は:',
+        selectHint: '地図の文を選ぶか、別の領域にドラッグしてみてください。最も近い文のリストがすぐに変わります。',
+        dragHint: 'ドラッグしてね',
+        draggedHint: '気づきましたか。文を別の領域に近づけるほど、近くの文が入れ替わります。空間で近いとは、意味が近いということです。',
+        note: '地図の距離が意味です。近い文とは、言葉が違ってもモデルが関連づけている文のこと。遠い文とは、その関連が弱い文のことです。',
+    },
+
+    negation: {
+        title: '言葉は近く、意味は正反対',
+        subtitle: '2つの文、ほとんど同じ言葉',
+        baseLabel: 'もとの文',
+        oppositeLabel: '否定のない形',
+        sharedChip: 'ほとんど同じ言葉',
+        oppositeChip: '正反対の意味',
+        revealButton: 'ここから分かること',
+        explanation: '2つの文はほとんど同じ言葉でできているので、近く見えます。しかし否定が意味を端から端までひっくり返します。日本語では独立した単語が1つ増えるのではなく、動詞の形そのものが「届きました」から「届きませんでした」へ変わります。一方は荷物が届いたと言い、もう一方は届かなかったと言っています。言葉が近いことは、意味が同じである保証にはなりません。',
+        bridge: 'だからこそ、言葉だけを見ていては足りません。どの言葉が現れたかではなく、それぞれの言葉が残りの意味をどう変えるかを理解する必要があります。',
+    },
+
+    clusters: {
+        complaint: '顧客からの苦情',
+        status: '配送ステータス',
+        action: 'サポートの対応',
+        unrelated: '無関係',
+    },
+
+    phrases: {
+        'not-arrived': '荷物が届きませんでした',
+        'customer-waiting': 'お客様は一週間待っています',
+        'not-received': '注文した品を受け取っていません',
+        'delayed': '配送が遅れています',
+        'status-not-updated': 'ステータスが更新されていません',
+        'courier-on-way': '配達員が向かっています',
+        'arrived': '荷物が届きました',
+        'center-checking': 'サポートが問い合わせを確認しています',
+        'agent-contacted': '担当者がお客様に連絡しました',
+        'draft-update': 'お客様への更新連絡を書いてください',
+        'recipe': 'チョコレートケーキのレシピ',
+        'weather': '明日の天気予報',
+    },
+
+    disclaimer: 'これは2次元だけの学習用の地図です。近さという考え方を示すためのもので、描かれた距離が本当の空間の正確な写しというわけではありません。',
+};

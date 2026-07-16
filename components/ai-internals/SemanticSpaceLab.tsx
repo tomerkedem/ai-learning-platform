@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Compass, MousePointerClick, Sparkles, Map, Info, Hand, RotateCcw, ArrowLeftRight, Check } from 'lucide-react';
 
-import type { Direction } from '@/i18n/config';
+import type { Direction, Locale } from '@/i18n/config';
 import { GuessButton } from './GuessButton';
 
 import {
@@ -46,6 +46,14 @@ const mapPoint = (v: Vec) => ({
     cy: MAP_SIZE / 2 - (v.y / MAP_DOMAIN) * MAP_R,
 });
 
+// רוחב משוער של תווית המשפט ב-SVG. אי אפשר להסתפק ב-length קבוע לכל תו: תווי CJK
+// (יפנית) רחבים כמעט em מלא, בעוד תווי לטינית/עברית/קירילית צרים בהרבה. ההערכה הישנה
+// (7px לכל תו) התאימה ללטינית ולעברית, אך ביפנית הטקסט גלש מהגלולה שמאחוריו.
+// fontSize של התווית הוא 11.5, ומכאן הקבועים.
+const CJK = /[　-ヿ㐀-䶿一-鿿豈-﫿＀-￯]/;
+const estimateTextWidth = (s: string) =>
+    [...s].reduce((w, ch) => w + (CJK.test(ch) ? 11.5 : 6.4), 0);
+
 /** מרכז ורדיוס לאליפסת אזור לכל אשכול, מהקואורדינטות המקוריות (סטטי). */
 const CLUSTER_REGIONS: { key: ClusterKey; cx: number; cy: number; rx: number; ry: number }[] = (
     ['complaint', 'status', 'action', 'unrelated'] as ClusterKey[]
@@ -65,7 +73,7 @@ const CLUSTER_REGIONS: { key: ClusterKey; cx: number; cy: number; rx: number; ry
     };
 });
 
-export const SemanticSpaceLab: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }> = ({ content, dir }) => {
+export const SemanticSpaceLab: React.FC<{ content: SemanticSpaceLabDict; dir: Direction; locale: Locale }> = ({ content, dir, locale }) => {
     const [experiment, setExperiment] = useState<Experiment>('map');
 
     return (
@@ -103,7 +111,7 @@ export const SemanticSpaceLab: React.FC<{ content: SemanticSpaceLabDict; dir: Di
                     </motion.div>
                 ) : (
                     <motion.div key="negation" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                        <NegationExperiment content={content} dir={dir} />
+                        <NegationExperiment content={content} dir={dir} locale={locale} />
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -312,7 +320,7 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
                         {/* תווית המשפט הנבחר בלבד, כגלולה קריאה מעל הנקודה (על גבי כל השאר) */}
                         {(() => {
                             const text = content.phrases[selectedId];
-                            const labelW = Math.min(text.length * 7 + 18, MAP_SIZE - 2 * (MAP_PAD - 12));
+                            const labelW = Math.min(estimateTextWidth(text) + 18, MAP_SIZE - 2 * (MAP_PAD - 12));
                             const lx = clamp(selScreen.cx, MAP_PAD - 12 + labelW / 2, MAP_SIZE - (MAP_PAD - 12) - labelW / 2);
                             const ly = clamp(selScreen.cy - 30, 6, MAP_SIZE - 26);
                             const selHex = CLUSTER_STYLE[selPhrase.cluster].hex;
@@ -404,7 +412,7 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
 
 /* ═══════════════════════ ניסוי 2: מלכודת השלילה ══════════════════════════ */
 
-const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }> = ({ content, dir }) => {
+const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction; locale: Locale }> = ({ content, dir, locale }) => {
     const reduce = useReducedMotion();
     const n = content.negation;
     const [revealed, setRevealed] = useState(false);
@@ -412,10 +420,43 @@ const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Directi
     const baseText = content.phrases[NEGATION_PAIR.base];
     const oppositeText = content.phrases[NEGATION_PAIR.opposite];
 
-    // פילוח מילים כללי (לשפות עם רווחים). המילה הייחודית למקור = ציר השלילה.
-    const baseWords = baseText.split(/\s+/).filter(Boolean);
-    const oppWords = oppositeText.split(/\s+/).filter(Boolean);
-    const pivotWords = baseWords.filter((w) => !oppWords.includes(w));
+    // פילוח מילים תלוי-שפה. פיצול על רווחים לבדו נכשל ביפנית, שאין בה רווחים: המשפט
+    // כולו היה חוזר כאסימון אחד, ולכן נצבע כולו כציר השלילה, כאילו כל המשפט הוא ה"לא".
+    // Intl.Segmenter הוא API מובנה בדפדפן (בלי תלות חדשה) ומפלח יפנית למילים אמיתיות,
+    // כך שרק סיומת הפועל השלילית מודגשת. בשפות עם רווחים התוצאה זהה לפיצול הקודם, כי
+    // isWordLike מסנן ממילא רווחים וסימני פיסוק.
+    const words = useMemo(() => {
+        const split = (s: string) => {
+            // try/catch ולא רק בדיקת typeof: הבנייה לא תיפול אם locale לא תקין או אם
+            // המימוש חסר. הנפילה לאחור לרווחים יציבה לשפות עם רווחים (he/en/es/ru/ar),
+            // ובטוחה ב-SSR כי אין כאן גישה ל-window או ל-document.
+            if (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function') {
+                try {
+                    const seg = new Intl.Segmenter(locale, { granularity: 'word' });
+                    // isWordLike מסנן רווחים וסימני פיסוק, כדי שלא ייווצר שבב פיסוק בודד.
+                    return [...seg.segment(s)].filter((x) => x.isWordLike).map((x) => x.segment);
+                } catch {
+                    /* נופלים לפיצול הרווחים */
+                }
+            }
+            return s.split(/\s+/).filter(Boolean);
+        };
+        return { base: split(baseText), opposite: split(oppositeText) };
+    }, [baseText, oppositeText, locale]);
+
+    const baseWords = words.base;
+    const oppWords = words.opposite;
+    // האסימונים הייחודיים למשפט המקורי הם ציר השלילה. ביפנית אלה מורפמות הפועל השליליות,
+    // ולא מילה עצמאית, ולכן טקסט המילון של יפנית אינו טוען שנוספה מילה אחת בודדת.
+    //
+    // שני מקרים שבהם אי אפשר לבודד את השלילה: אסימון יחיד (שפה בלי רווחים כשאין
+    // Intl.Segmenter), או שכל האסימונים שונים. אז לא מדגישים כלום. הדגשת המשפט כולו
+    // הייתה משקרת ללומד ומלמדת שכל המשפט הוא ה"לא", וזה גרוע מהעדר הדגשה.
+    const pivotWords = useMemo(() => {
+        if (baseWords.length <= 1) return [];
+        const uniq = baseWords.filter((w) => !oppWords.includes(w));
+        return uniq.length === baseWords.length ? [] : uniq;
+    }, [baseWords, oppWords]);
 
     return (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -429,10 +470,14 @@ const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Directi
                     </div>
                 </div>
 
-                {/* משפט מקורי, עם הדגשת מילת השלילה */}
+                {/* משפט מקורי, עם הדגשת מילת השלילה.
+                    שורת השבבים היא פילוח *חזותי* בלבד. כל שבב הוא אלמנט נפרד, ולכן ה-
+                    innerText שלה נשבר בין שבב לשבב ("荷物 / が / 届..."), וזה מה שקורא מסך
+                    מקריא ומה שהלומד מעתיק. לכן השורה מוסתרת מעץ הנגישות, והמשפט הטבעי
+                    והרציף נמסר לידה פעם אחת ב-sr-only. הפיצול נשאר לעין בלבד. */}
                 <div className="mb-3 rounded-xl border border-cyan-500/30 bg-cyan-900/10 p-3">
                     <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-cyan-300">{n.baseLabel}</div>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1.5" aria-hidden="true">
                         {baseWords.map((w, i) => {
                             const isPivot = pivotWords.includes(w);
                             return (
@@ -447,18 +492,20 @@ const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Directi
                             );
                         })}
                     </div>
+                    <span className="sr-only">{baseText}</span>
                 </div>
 
-                {/* משפט הנגד */}
+                {/* משפט הנגד. אותו עיקרון: שבבים לעין, משפט רציף לקורא מסך. */}
                 <div className="rounded-xl border border-amber-500/30 bg-amber-900/10 p-3">
                     <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-amber-300">{n.oppositeLabel}</div>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1.5" aria-hidden="true">
                         {oppWords.map((w, i) => (
                             <span key={`${w}-${i}`} className="rounded-md bg-slate-800/60 px-2 py-1 text-sm font-bold text-slate-200">
                                 {w}
                             </span>
                         ))}
                     </div>
+                    <span className="sr-only">{oppositeText}</span>
                 </div>
 
                 {/* שני צ'יפים: אותן מילים, משמעות הפוכה */}
