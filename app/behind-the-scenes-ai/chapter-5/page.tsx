@@ -350,6 +350,10 @@ export default function BehindTheScenesChapter5() {
                 אילו רכיבים משותפים, וזה מה שמקרב אותם במרחב. */}
             {dnaA && (
                 <section className="mt-12 text-start" dir={dir}>
+                  <div className="mb-4 flex items-start justify-between gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
+                    <span>{c5.sections.dnaIntro}</span>
+                    <SpeakButton text={c5.sections.dnaIntro} className="mt-0.5" />
+                  </div>
                   <ExpandableLab title={c4Lab.dna.title}>
                     <div className="space-y-4 rounded-2xl border border-violet-500/30 bg-slate-900/40 p-5 sm:p-6">
                         {/* שני בוררים: בחרו שני משפטים וראו כמה רכיבי משמעות משותפים להם.

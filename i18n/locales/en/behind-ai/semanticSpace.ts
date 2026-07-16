@@ -11,8 +11,34 @@ export const semanticSpace = {
         eyebrow: 'In simple terms',
         title: 'What a meaning space is',
         paragraphs: [
-            'Once every sentence has become a list of numbers, we can compare sentences by their numbers instead of by their words. The model measures how alike two such lists are and places the sentences so that ones sharing patterns it has learned end up closer together. That is what lets it rank sentences and find the closest ones in meaning, even when they share no words at all.',
-            'Close means the model learned a relation between the sentences, and far means that relation is weak. But closeness is only evidence of a learned relation, not proof that the two meanings are the same. And the map you see here is just a simplified two-dimensional picture of a space with far more axes, drawn so we can take it in with our eyes.',
+            'In the previous chapter, every sentence became a list of numbers that the model learned, its embedding. Each value in the vector describes the sentence position along one dimension, and all the values together decide where it sits in semantic space. In that space we can compare embeddings and check how close two representations are to each other. The map you see here is only a simplified two-dimensional projection, and a real embedding has many more dimensions.',
+            'The model arranges the sentences so that ones sharing patterns it has learned end up closer together. That is what lets it rank sentences and find the closest ones in meaning, even when they share no words at all.',
+            'Close means the model learned a relation between the sentences, and far means that relation is weak. But closeness is only evidence of a learned relation, not proof that the two meanings are the same.',
         ],
+    },
+    sections: {
+        ...he.sections,
+        dnaIntro:
+            'So far we have seen where each sentence sits in the space. Now we will look more closely at the vector that represents it and see how its pattern of values differs from one sentence to another, and how that pattern shapes the closeness between them.',
+    },
+    lock: {
+        title: 'Lock in your understanding',
+        question: 'Two sentences sit close to each other in semantic space. What can you carefully conclude from that?',
+        options: [
+            'That the two sentences have identical meaning.',
+            'That their representations are similar according to the measure being used, but not necessarily that their meaning is the same or that the information in them is correct.',
+            'That the two sentences use exactly the same words.',
+        ],
+        explanationCorrect:
+            'Closeness in the space points to similarity between the representations according to the comparison measure, but it does not prove that the meaning is the same or that the information is correct. Even a single negation word can change a sentence meaning and still leave the representations close.',
+        explanationWrong:
+            'Closeness in the space does not guarantee identical meaning and does not require using the same words. It points only to similarity between the representations according to the comparison measure.',
+    },
+    lab: {
+        ...he.lab,
+        negation: {
+            ...he.lab.negation,
+            bridge: 'That is why it is not enough to look at the words alone. You need to understand how each word changes the meaning of the rest, not just which words appeared.',
+        },
     },
 };
