@@ -309,6 +309,31 @@ export const AssessmentEngine = ({
         }
     }, [currentIndex]);
 
+    // חצים אופקיים בזמן ניסיון פעיל. ChapterLayout מאזין לחצים על window ב-bubble ומנווט
+    // בין פרקים; הוא מדלג רק כש-defaultPrevented. ניווט כזה באמצע מבדק מוחק את הניסיון,
+    // כי התשובות נשמרות רק בסיום. מאזין capture רץ לפני מאזין ה-bubble של הפריסה, ולכן
+    // preventDefault כאן לבדו מבטל את ניווט הפרקים. בלי stopPropagation: הוא היה חוסם גם
+    // את הפקדים שבתוך המבדק. פעיל רק בין ההתחלה לסיום; במסך התוצאות ובסקירה הניווט חוזר.
+    useEffect(() => {
+        if (!isStarted || isSubmitted) return;
+
+        const onArrowKey = (e: KeyboardEvent) => {
+            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+            const target = e.target as HTMLElement | null;
+            if (target) {
+                const tag = target.tagName;
+                if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable) return;
+            }
+
+            e.preventDefault();
+        };
+
+        window.addEventListener('keydown', onArrowKey, { capture: true });
+        return () => window.removeEventListener('keydown', onArrowKey, { capture: true });
+    }, [isStarted, isSubmitted]);
+
     // 1. מסך פתיחה - Start Screen
     if (!isStarted) {
         return (
