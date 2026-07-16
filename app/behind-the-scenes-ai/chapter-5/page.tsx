@@ -156,7 +156,7 @@ export default function BehindTheScenesChapter5() {
     // המעבדה (בחירה, גרירה, שכנים, אחוזים), כפתורים, מנטורים וחידון. תוויות מ-aiInternals. ──
     const ra = t.behindAi.aiInternals.readAloud;
     const sTitle: ReadAloudSegment = { id: 'title', label: c5.hero.titleLead, text: `${c5.hero.titleLead} ${c5.hero.titleHighlight}. ${c5.hero.lede}` };
-    const sPlain: ReadAloudSegment = { id: 'plain', label: c5.plain.title, text: `${c5.plain.title}. ${c5.plain.lines.join(' ')}` };
+    const sPlain: ReadAloudSegment = { id: 'plain', label: c5.plain.title, text: `${c5.plain.title}. ${c5.plain.paragraphs.join(' ')}` };
     const sExplainAll: ReadAloudSegment = { id: 'explain', label: c5.explain.title, text: `${c5.explain.title}. ${c5.explain.paragraphs.join(' ')}` };
     const sExplainEach: ReadAloudSegment[] = c5.explain.paragraphs.map((p, i) => ({ id: `explain-${i}`, label: c5.explain.title, text: p }));
     const sNegation: ReadAloudSegment = { id: 'negation', label: c5.lab.negation.title, text: `${c5.lab.negation.explanation} ${c5.lab.negation.bridge}` };
@@ -273,17 +273,14 @@ export default function BehindTheScenesChapter5() {
                         <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
                             <Sparkles size={14} /> {c5.plain.eyebrow}
                         </span>
-                        <SpeakButton text={`${c5.plain.title} ${c5.plain.lines.join(' ')}`} />
+                        <SpeakButton text={`${c5.plain.title} ${c5.plain.paragraphs.join(' ')}`} />
                     </div>
                     <h3 className="mb-4 text-xl font-black text-white md:text-2xl">{c5.plain.title}</h3>
-                    <ul className="space-y-3">
-                        {c5.plain.lines.map((line) => (
-                            <li key={line} className="flex items-start gap-3">
-                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
-                                <span className="text-[15px] leading-relaxed text-slate-200">{line}</span>
-                            </li>
+                    <div className="space-y-3">
+                        {c5.plain.paragraphs.map((p, i) => (
+                            <p key={i} className="text-[15px] leading-relaxed text-slate-200">{p}</p>
                         ))}
-                    </ul>
+                    </div>
                 </div>
             </section>
 
