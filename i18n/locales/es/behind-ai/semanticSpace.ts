@@ -59,7 +59,7 @@ export const semanticSpace: typeof he = {
         revealButton: 'Revela la idea central',
         revealTitle: '¿Y qué pasa en realidad?',
         revealCopy:
-            'El modelo no cuenta palabras compartidas. Ubica cada frase en un espacio según su significado y mide quién está cerca. "El envío viene con retraso" es lo más cercano a "El paquete no llegó", aunque casi no comparten palabras, porque el significado es parecido. "El paquete llegó" en cambio está lejos en significado, aunque las palabras sean casi idénticas.',
+            'El modelo no cuenta palabras compartidas. Ubica cada frase en un espacio según su significado y mide quién está cerca. "El envío viene con retraso" es lo más cercano a "El paquete no llegó", aunque casi no comparten palabras, porque el significado es parecido. "El paquete llegó" comparte casi las mismas palabras, pero invierte el significado, así que no es la más cercana.',
         cta: 'Vamos a verlo en el laboratorio',
         resetButton: 'Elegir de nuevo',
         exploreHint: 'También puedes elegir otra opción y leer su explicación.',

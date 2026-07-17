@@ -31,9 +31,9 @@ export const semanticSpaceLab: SemanticSpaceLabDict = {
         neighborsSubtitle: 'By closeness in the space',
         closenessTo: 'Closeness to',
         closest: 'Closest',
-        toneNear: 'Close, related meaning',
-        toneMid: 'Moderately close',
-        toneFar: 'Far, different meaning',
+        toneNear: 'Close on the map',
+        toneMid: 'Medium distance on the map',
+        toneFar: 'Far on the map',
         closestNow: 'The closest sentence now is:',
         selectHint: 'Pick a sentence on the map, or drag it to another region, and watch the list of nearest neighbours update straight away.',
         dragHint: 'Drag me',
@@ -50,7 +50,7 @@ export const semanticSpaceLab: SemanticSpaceLabDict = {
         oppositeChip: 'Opposite meaning',
         revealButton: 'What this teaches us',
         explanation: 'The two sentences share almost every word, so they look close. But one word, "not", flips the meaning end to end. One says the package arrived, the other says it did not. Closeness in words is no guarantee of the same meaning.',
-        bridge: 'That is why it is not enough to look at the words alone. You need to understand how each word changes the meaning of the rest, not just which words appeared.',
+        bridge: 'This is not a contradiction to the map rule. Closeness in the space is a learned, useful signal, but not a perfect one: sometimes almost identical wording hides an opposite meaning. So the model also has to weigh the context and the relations between the words, not just which words appeared.',
     },
 
     clusters: {

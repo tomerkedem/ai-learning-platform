@@ -60,7 +60,7 @@ export const semanticSpace: typeof he = {
         revealButton: 'Reveal the main idea',
         revealTitle: 'So what is really going on?',
         revealCopy:
-            'The model does not count shared words. It places every sentence in a space according to meaning, and measures who is close. "The delivery is running late" sits closest to "The package has not arrived", even though they share almost no words, because the meaning is similar. "The package has arrived" is actually far in meaning, even though the words are nearly identical.',
+            'The model does not count shared words. It places every sentence in a space according to meaning, and measures who is close. "The delivery is running late" sits closest to "The package has not arrived", even though they share almost no words, because the meaning is similar. "The package has arrived" shares almost the same words, but it reverses the meaning, so it is not the closest.',
         cta: 'Let us see it in the laboratory',
         resetButton: 'Choose again',
         exploreHint: 'You can pick another option too and read its explanation.',

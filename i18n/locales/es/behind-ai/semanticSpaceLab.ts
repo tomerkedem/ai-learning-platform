@@ -30,9 +30,9 @@ export const semanticSpaceLab: SemanticSpaceLabDict = {
         neighborsSubtitle: 'Por cercanía en el espacio',
         closenessTo: 'Cercanía a',
         closest: 'La más cercana',
-        toneNear: 'Cerca, significado relacionado',
-        toneMid: 'Cercanía media',
-        toneFar: 'Lejos, significado distinto',
+        toneNear: 'Cerca en el mapa',
+        toneMid: 'Distancia media en el mapa',
+        toneFar: 'Lejos en el mapa',
         closestNow: 'La frase más cercana ahora es:',
         selectHint: 'Elige una frase en el mapa, o arrástrala a otra zona, y observa cómo la lista de vecinos cercanos se actualiza de inmediato.',
         dragHint: 'Arrástrame',
@@ -49,7 +49,7 @@ export const semanticSpaceLab: SemanticSpaceLabDict = {
         oppositeChip: 'Significado opuesto',
         revealButton: 'Qué nos enseña esto',
         explanation: 'Las dos frases comparten casi todas las palabras, por eso parecen cercanas. Pero una palabra, "no", invierte el significado por completo. Una dice que el paquete llegó y la otra que no llegó. La cercanía en palabras no garantiza el mismo significado.',
-        bridge: 'Por eso no basta con mirar las palabras solas. Hay que entender cómo cada palabra cambia el significado de las demás, no solo qué palabras aparecieron.',
+        bridge: 'Esto no contradice la regla del mapa. La cercanía en el espacio es una señal aprendida y útil, pero no perfecta: a veces una redacción casi idéntica esconde un significado opuesto. Por eso el modelo también debe considerar el contexto y las relaciones entre las palabras, no solo qué palabras aparecieron.',
     },
 
     clusters: {
