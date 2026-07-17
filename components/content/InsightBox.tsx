@@ -6,11 +6,18 @@ type BoxType = 'intuition' | 'warning' | 'info' | 'math';
 interface InsightBoxProps {
     type?: BoxType;
     title: string;
+    /**
+     * דרגת כותרת סמנטית. ברירת המחדל 4 משמרת את ההתנהגות הקיימת בכל הצרכנים.
+     * פרק שבו התיבה היא מקטע עליון בפני עצמו (למשל התובנה המעשית) מעביר 2, כדי
+     * שמתאר הכותרות של העמוד לא ידלג על דרגה. העיצוב אינו משתנה.
+     */
+    headingLevel?: 2 | 3 | 4;
     children: React.ReactNode;
 }
 
-export const InsightBox: React.FC<InsightBoxProps> = ({ type = 'info', title, children }) => {
-    
+export const InsightBox: React.FC<InsightBoxProps> = ({ type = 'info', title, headingLevel = 4, children }) => {
+    const Heading = `h${headingLevel}` as const;
+
     const styles = {
         intuition: {
             border: 'border-indigo-500/30',
@@ -49,9 +56,9 @@ export const InsightBox: React.FC<InsightBoxProps> = ({ type = 'info', title, ch
                     {style.icon}
                 </div>
                 <div>
-                    <h4 className={`text-base font-bold mb-2 ${style.titleColor}`}>
+                    <Heading className={`text-base font-bold mb-2 ${style.titleColor}`}>
                         {title}
-                    </h4>
+                    </Heading>
                     <div className="text-slate-300 text-sm leading-relaxed">
                         {children}
                     </div>

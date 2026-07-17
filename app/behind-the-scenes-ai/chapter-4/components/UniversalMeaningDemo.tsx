@@ -32,9 +32,16 @@ interface UniversalMeaningDemoProps {
     dir?: 'rtl' | 'ltr';
     /** מספר המעבדה בפרק (מוצג כתג ליד הכותרת). לא מוצג אם לא הועבר. */
     labNumber?: number;
+    /**
+     * דרגת הכותרת הסמנטית של כותרת השדה. ברירת המחדל 4 משמרת את ההתנהגות הקיימת.
+     * פרק שבו הדמו הוא המקטע העליון היחיד בסקשן (ולכן כותרתו היא כותרת המקטע) מעביר 2.
+     * העיצוב אינו משתנה.
+     */
+    headingLevel?: 2 | 3 | 4;
 }
 
-export const UniversalMeaningDemo: React.FC<UniversalMeaningDemoProps> = ({ dir = 'rtl', labNumber }) => {
+export const UniversalMeaningDemo: React.FC<UniversalMeaningDemoProps> = ({ dir = 'rtl', labNumber, headingLevel = 4 }) => {
+    const Heading = `h${headingLevel}` as const;
     const lab = useChapter4Lab();
     const m = lab.map;
     const o = m.objects;
@@ -70,7 +77,7 @@ export const UniversalMeaningDemo: React.FC<UniversalMeaningDemoProps> = ({ dir 
                                 </span>
                             )}
                             <Sparkles size={18} className="text-cyan-300" />
-                            <h4 className="text-lg font-bold text-white">{m.visualTitle}</h4>
+                            <Heading className="text-lg font-bold text-white">{m.visualTitle}</Heading>
                         </div>
                         <p className="mt-1 text-[13px] leading-relaxed text-slate-400">{m.visualSubtitle}</p>
                     </div>

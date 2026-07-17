@@ -114,6 +114,14 @@ export default function BehindTheScenesChapter5() {
     const isRtl = dir === 'rtl';
     const c5 = t.behindAi.semanticSpace;
 
+    // ── כותרת ההירו: מחרוזת נגזרת אחת לתצוגה ולהקראה ──
+    // הכותרת מורכבת משני חלקים כדי לצבוע את השני בגרדיאנט. ביפנית אין רווחים בין
+    // מילים, ולכן חיבור ברווח שתל רווח מלאכותי באמצע משפט טבעי, גם ב-h1 וגם באמירת
+    // ה-TTS. המפריד נגזר מהשפה, והמחרוזת המחוברת משמשת את שני המקומות בלי לשכפל לוגיקה.
+    const heroTitleSep = locale === 'ja' ? '' : ' ';
+    const heroTitle = `${c5.hero.titleLead}${heroTitleSep}${c5.hero.titleHighlight}`;
+    const heroSpeech = `${heroTitle}. ${c5.hero.lede}`;
+
     // ── ניחוש הפתיחה: תוכן + כרטיסים ממוזגים מהמילון עם המטא-דאטה המבני ──
     const g = c5.guess;
     const guessContent: OpeningGuessContent = {
@@ -156,7 +164,7 @@ export default function BehindTheScenesChapter5() {
     // המעבדה (בחירה, גרירה, שכנים, אחוזים), כפתורים, מנטורים וחידון. תוויות מ-aiInternals.
     // פרק 5 מתורגם במלואו בשש השפות, ולכן כל המקטעים נכללים תמיד ונקראים בשפת הממשק. ──
     const ra = t.behindAi.aiInternals.readAloud;
-    const sTitle: ReadAloudSegment = { id: 'title', label: c5.hero.titleLead, text: `${c5.hero.titleLead} ${c5.hero.titleHighlight}. ${c5.hero.lede}` };
+    const sTitle: ReadAloudSegment = { id: 'title', label: c5.hero.titleLead, text: heroSpeech };
     const sPlain: ReadAloudSegment = { id: 'plain', label: c5.plain.title, text: `${c5.plain.title}. ${c5.plain.paragraphs.join(' ')}` };
     const sExplainAll: ReadAloudSegment = { id: 'explain', label: c5.explain.title, text: `${c5.explain.title}. ${c5.explain.paragraphs.join(' ')}` };
     const sExplainEach: ReadAloudSegment[] = c5.explain.paragraphs.map((p, i) => ({ id: `explain-${i}`, label: c5.explain.title, text: p }));
@@ -241,7 +249,7 @@ export default function BehindTheScenesChapter5() {
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
-                            {c5.hero.titleLead}{' '}
+                            {c5.hero.titleLead}{heroTitleSep}
                             <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent`}>
                                 {c5.hero.titleHighlight}
                             </span>
@@ -249,7 +257,7 @@ export default function BehindTheScenesChapter5() {
 
                         <div className="flex items-start gap-2.5">
                             <p className="text-lg text-slate-300 leading-relaxed">{c5.hero.lede}</p>
-                            <SpeakButton text={`${c5.hero.titleLead} ${c5.hero.titleHighlight}. ${c5.hero.lede}`} className="mt-1" />
+                            <SpeakButton text={heroSpeech} className="mt-1" />
                         </div>
 
                         <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
@@ -289,7 +297,7 @@ export default function BehindTheScenesChapter5() {
                         </span>
                         <SpeakButton text={`${c5.plain.title} ${c5.plain.paragraphs.join(' ')}`} />
                     </div>
-                    <h3 className="mb-4 text-xl font-black text-white md:text-2xl">{c5.plain.title}</h3>
+                    <h2 className="mb-4 text-xl font-black text-white md:text-2xl">{c5.plain.title}</h2>
                     <div className="space-y-3">
                         {c5.plain.paragraphs.map((p, i) => (
                             <p key={i} className="text-[15px] leading-relaxed text-slate-200">{p}</p>
@@ -300,7 +308,7 @@ export default function BehindTheScenesChapter5() {
 
             {/* ══════════ ניחוש מהיר ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <OpeningGuess content={guessContent} cards={guessCards} />
+                <OpeningGuess content={guessContent} cards={guessCards} headingLevel={2} />
             </section>
 
             {/* ══════════ חימום: קרבה פשוטה עם אובייקטים מוכרים (הובא מפרק 4) ══════════ */}
@@ -310,7 +318,8 @@ export default function BehindTheScenesChapter5() {
                 <ExpandableLab title={c4Lab.map.visualTitle}>
                     <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
                         <Chapter4LabProvider value={c4Lab}>
-                            <UniversalMeaningDemo dir={dir} labNumber={1} />
+                            {/* כותרת הדמו היא הכותרת היחידה במקטע הזה, ולכן היא כותרת המקטע (h2). */}
+                            <UniversalMeaningDemo dir={dir} labNumber={1} headingLevel={2} />
                         </Chapter4LabProvider>
                     </div>
                 </ExpandableLab>
@@ -323,7 +332,7 @@ export default function BehindTheScenesChapter5() {
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
                         <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">{c5.sections.labEyebrow}</div>
-                        <h3 className="text-2xl font-bold text-white">{c5.sections.labTitle}</h3>
+                        <h2 className="text-2xl font-bold text-white">{c5.sections.labTitle}</h2>
                     </div>
                 </div>
 
@@ -348,7 +357,7 @@ export default function BehindTheScenesChapter5() {
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-6">
                     <div className="mb-4 flex items-start justify-between gap-2.5">
-                        <h3 className="text-lg font-bold text-slate-200">{c5.explain.title}</h3>
+                        <h2 className="text-lg font-bold text-slate-200">{c5.explain.title}</h2>
                         <SpeakButton text={`${c5.explain.title}. ${c5.explain.paragraphs.join(' ')}`} />
                     </div>
                     <div className="space-y-3">
@@ -441,7 +450,7 @@ export default function BehindTheScenesChapter5() {
                         <div>
                             <div className="flex items-center gap-2">
                                 <Lock size={20} className="text-violet-300" />
-                                <h3 className="text-xl font-bold text-white">{c5.lock.title}</h3>
+                                <h2 className="text-xl font-bold text-white">{c5.lock.title}</h2>
                             </div>
                             <p className="mt-2 text-[13px] font-semibold leading-relaxed text-violet-200">{c5.mentor.lock}</p>
                         </div>
@@ -457,7 +466,7 @@ export default function BehindTheScenesChapter5() {
             {/* בכוונה בלי מנטור: הבועה הקודמת רק חזרה על התבליט הראשון. mentor.practical
                 עדיין קיים במילון אך אינו מוצג. */}
             <section className="mt-12 text-start" dir={dir}>
-                <InsightBox type="intuition" title={c5.practical.title}>
+                <InsightBox type="intuition" title={c5.practical.title} headingLevel={2}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c5.practical.lead}</span>
                         <SpeakButton text={`${c5.practical.title}. ${c5.practical.lead} ${c5.practical.uses.join(' ')} ${c5.practical.caveat}`} />

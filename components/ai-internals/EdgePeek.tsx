@@ -8,8 +8,11 @@
 // EdgeRail  - העמודה הצפה הממורכזת אנכית, תלוית-כיוון, עם slot ל-portal של הדוק (מעל)
 //             ואז ה-children (כפתור המיקוד, מתחת).
 // EdgePeekItem - מכונת ה-peek לפריט בודד: במנוחה מחליק אל הקצה ומשאיר רק את האייקון
-//             (peekRem), נפתח ב-hover / פוקוס-מקלדת / כשהוא "נעוץ". ההצצה פעילה רק
-//             במכשירי hover עדינים וללא reduced-motion; אחרת הפריט גלוי תמיד כמות שהוא.
+//             (peekRem), נפתח ב-hover / פוקוס-מקלדת / כשהוא "נעוץ". ההצצה פעילה בכל
+//             מכשיר, כולל מגע: המסילה יושבת בקצה החלון, ובמובייל אין שם שוליים פנויים,
+//             ולכן פריט שאינו מצומצם למנוחה מכסה פקדים בעמודת התוכן. במגע אין hover,
+//             ולכן הפתיחה מגיעה מ"נעוץ" (למשל הקראה פעילה). reduced-motion מבטל את
+//             ההחלקה בלבד, לא את ההצמדה.
 
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
@@ -60,8 +63,12 @@ interface EdgePeekItemProps {
  * להתנגש בטרנספורמים פנימיים (framer whileHover על כפתור פנימי).
  */
 export function EdgePeekItem({ dir, pinned = false, peekRem = 2.25, className, children }: EdgePeekItemProps) {
-    // הצצה פעילה רק בדסקטופ (hover עדין) וללא reduced-motion.
-    const [peekEnabled, setPeekEnabled] = useState(false);
+    // ההצצה פעילה בכל מכשיר. קודם היא הותנתה ב-hover, ולכן במגע הפריט נשאר פרוס תמיד
+    // ודרס את עמודת התוכן: המסילה מעוגנת לקצה החלון בהנחה שיש שוליים פנויים בינו לבין
+    // התוכן, וזה נכון רק בדסקטופ (main הוא max-w-4xl ממורכז). במובייל main ממלא את החלון
+    // ושוליו הם px-8 בלבד (32px), צרים מהפריט (60px), ולכן הוא כיסה פקדים.
+    // מכאן: תמיד מצמידים לקצה במנוחה, ורק *המעבר* מותנה בהעדפת התנועה.
+    const [reduceMotion, setReduceMotion] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [focusWithin, setFocusWithin] = useState(false);
     // מפעיל מעברים רק אחרי הצביעה הראשונה, כך שההיצמדות הראשונית לקצה מיידית (בלי החלקה).
@@ -70,16 +77,11 @@ export function EdgePeekItem({ dir, pinned = false, peekRem = 2.25, className, c
 
     // זיהוי לפני paint (layout effect), כדי שהפריט יצויר מיד במצב הנכון בלי הבהוב.
     useIsoLayoutEffect(() => {
-        const hoverMq = window.matchMedia('(hover: hover) and (pointer: fine)');
         const motionMq = window.matchMedia('(prefers-reduced-motion: reduce)');
-        const update = () => setPeekEnabled(hoverMq.matches && !motionMq.matches);
+        const update = () => setReduceMotion(motionMq.matches);
         update();
-        hoverMq.addEventListener('change', update);
         motionMq.addEventListener('change', update);
-        return () => {
-            hoverMq.removeEventListener('change', update);
-            motionMq.removeEventListener('change', update);
-        };
+        return () => motionMq.removeEventListener('change', update);
     }, []);
 
     // אחרי הפריים הראשון מפעילים מעברים, כך שרק אינטראקציית hover אמיתית מחליקה.
@@ -90,7 +92,6 @@ export function EdgePeekItem({ dir, pinned = false, peekRem = 2.25, className, c
 
     // גלילה = "הלומד קורא, זוז הצידה": מכווץ בחזרה (אלא אם נעוץ / פוקוס-מקלדת שומרים פתוח).
     useEffect(() => {
-        if (!peekEnabled) return;
         let raf = 0;
         const onScroll = () => {
             if (raf) return;
@@ -104,15 +105,17 @@ export function EdgePeekItem({ dir, pinned = false, peekRem = 2.25, className, c
             window.removeEventListener('scroll', onScroll);
             if (raf) cancelAnimationFrame(raf);
         };
-    }, [peekEnabled]);
+    }, []);
 
     useEffect(() => () => {
         if (leaveTimer.current) clearTimeout(leaveTimer.current);
     }, []);
 
     const isRtl = dir === 'rtl';
-    const expanded = !peekEnabled || hovered || focusWithin || pinned;
-    const collapsed = peekEnabled && !expanded;
+    // במגע אין hover, ולכן הפתיחה מגיעה מ-pinned: האייקון המבצבץ *הוא* כפתור ההפעלה,
+    // ולחיצה עליו מתחילה הקראה, מה שנועץ את הפריט פתוח (useReadAloudPin) עד לעצירה.
+    const expanded = hovered || focusWithin || pinned;
+    const collapsed = !expanded;
 
     // במנוחה: מחליק אל הקצה הקרוב ומשאיר ~peekRem מבצבצים (רק האייקון). תלוי-כיוון
     // ובלתי-תלוי-שפה (האייקון תמיד בצד הפונה למרכז).
@@ -151,10 +154,12 @@ export function EdgePeekItem({ dir, pinned = false, peekRem = 2.25, className, c
             style={{
                 transform,
                 opacity: collapsed ? 0.85 : 1,
-                transition: peekEnabled && animateReady
+                // ההצמדה עצמה אינה מותנית בהעדפת התנועה (אחרת הפריט היה דורס תוכן במובייל
+                // כשהיא פעילה). רק ההחלקה מבוטלת, והמעבר נעשה מיידי.
+                transition: animateReady && !reduceMotion
                     ? 'transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease'
                     : undefined,
-                willChange: peekEnabled ? 'transform' : undefined,
+                willChange: 'transform',
             }}
             className={`pointer-events-auto ${className ?? ''}`}
         >

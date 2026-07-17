@@ -89,7 +89,17 @@ function cardClasses(state: CardState, reduce: boolean): string {
 // speechLocale (אופציונלי): שפת ההקראה של כפתורי ה-SpeakButton כשהיא שונה משפת הממשק
 // (למשל contentLocale של הפרק). כשאינו מועבר, ההקראה נופלת לשפת הממשק כברירת מחדל,
 // כך שכל הצרכנים הקיימים מתנהגים בדיוק כמקודם.
-export const OpeningGuess: React.FC<{ content: OpeningGuessContent; cards: DiscoveryGuessCard[]; speechLocale?: Locale }> = ({ content, cards, speechLocale }) => {
+//
+// headingLevel (אופציונלי): דרגת הכותרת הסמנטית של שאלת הניחוש. ברירת המחדל 3 משמרת
+// את ההתנהגות הקיימת בכל הצרכנים. פרק שבו הניחוש הוא מקטע עליון מעביר 2, כדי שמתאר
+// הכותרות לא ידלג על דרגה. העיצוב אינו משתנה.
+export const OpeningGuess: React.FC<{
+    content: OpeningGuessContent;
+    cards: DiscoveryGuessCard[];
+    speechLocale?: Locale;
+    headingLevel?: 2 | 3;
+}> = ({ content, cards, speechLocale, headingLevel = 3 }) => {
+    const Heading = `h${headingLevel}` as const;
     const reduce = useReducedMotion();
     const [chosenId, setChosenId] = useState<string | null>(null);
     const [revealed, setRevealed] = useState(false);
@@ -125,7 +135,7 @@ export const OpeningGuess: React.FC<{ content: OpeningGuessContent; cards: Disco
                         <HelpCircle size={14} /> {content.eyebrow}
                     </span>
                     <div className="mb-2 flex items-center justify-center gap-2.5">
-                        <h3 className="text-xl font-black text-white md:text-3xl">{content.title}</h3>
+                        <Heading className="text-xl font-black text-white md:text-3xl">{content.title}</Heading>
                         {/* הקראה אחת לשאלה יחד עם שורת ההסבר שמתחתיה */}
                         <SpeakButton text={`${content.title} ${content.subtitle}`} speechLocale={speechLocale} />
                     </div>

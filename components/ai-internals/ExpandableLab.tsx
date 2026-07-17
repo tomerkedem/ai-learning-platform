@@ -147,8 +147,13 @@ export const ExpandableLab: React.FC<ExpandableLabProps> = ({ children, title })
 
     return (
         <div dir={dir} ref={rootRef}>
-            {/* שורה קטנה מעל המעבדה עם כפתור ההגדלה, מיושרת לקצה, בלי לדרוס תוכן */}
-            <div className="mb-2 flex justify-end">{button(true)}</div>
+            {/* שורה קטנה מעל המעבדה עם כפתור ההגדלה, מיושרת לקצה, בלי לדרוס תוכן.
+                max-md:me-5 - מסילת-הקצה הצפה (EdgeRail) יושבת בקצה החלון וממורכזת אנכית,
+                וגם במנוחה היא מבצבצת עד x=44 (left-2) או x=48 (sm:left-3). מתחת ל-md עמודת
+                התוכן מתחילה ב-32px בלבד (main px-8), ולכן כפתור ההגדלה, שמיושר לקצה, נחתך
+                תחתיה. מרווח לוגי בקצה ההתחלה מזיז אותו פנימה מעבר למסילה בשני הכיוונים.
+                מ-md ומעלה main הוא px-12 (48px), רחב מהמסילה, ולכן המרווח מיותר ומבוטל. */}
+            <div className="mb-2 flex justify-end max-md:me-5">{button(true)}</div>
             {!expanded && <ExpandableLabContext.Provider value={false}>{children}</ExpandableLabContext.Provider>}
 
             {/* מסך מלא: Portal אל body, מעל הכל */}
