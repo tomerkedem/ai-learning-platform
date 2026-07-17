@@ -420,12 +420,28 @@ const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Directi
     const baseText = content.phrases[NEGATION_PAIR.base];
     const oppositeText = content.phrases[NEGATION_PAIR.opposite];
 
+    // פילוח מפורש מהמילון, אם השפה סיפקה אותו. משמש רק כשהפילוח האוטומטי אינו מזהה נכון
+    // את השלילה (כרגע יפנית בלבד, ראו semanticSpaceLab של ja).
+    //
+    // הפילוח החזותי חייב להרכיב בחזרה בדיוק את המשפט הטבעי. אימות ה-join מונע שני
+    // כשלים: מילון שיצא מסנכרון מול phrases אחרי עריכה, ורווחים מלאכותיים שנשתלו
+    // בפילוח. אם האימות נכשל נופלים לפילוח האוטומטי במקום להציג ללומד משפט שגוי.
+    const explicit = useMemo(() => {
+        const v = content.negationVisual;
+        if (!v) return null;
+        if (v.base.join('') !== baseText || v.opposite.join('') !== oppositeText) return null;
+        // הדגשה שאינה קיימת בפילוח לא תסמן כלום, ומעידה על מילון שגוי. עדיף אוטומטי.
+        if (!v.pivot.length || !v.pivot.every((w) => v.base.includes(w))) return null;
+        return v;
+    }, [content.negationVisual, baseText, oppositeText]);
+
     // פילוח מילים תלוי-שפה. פיצול על רווחים לבדו נכשל ביפנית, שאין בה רווחים: המשפט
     // כולו היה חוזר כאסימון אחד, ולכן נצבע כולו כציר השלילה, כאילו כל המשפט הוא ה"לא".
-    // Intl.Segmenter הוא API מובנה בדפדפן (בלי תלות חדשה) ומפלח יפנית למילים אמיתיות,
-    // כך שרק סיומת הפועל השלילית מודגשת. בשפות עם רווחים התוצאה זהה לפיצול הקודם, כי
-    // isWordLike מסנן ממילא רווחים וסימני פיסוק.
+    // Intl.Segmenter הוא API מובנה בדפדפן (בלי תלות חדשה) ומפלח את השפות עם הרווחים
+    // בדיוק כמו הפיצול הקודם, כי isWordLike מסנן ממילא רווחים וסימני פיסוק. ביפנית הוא
+    // אינו מספיק (הוא קורע את גזע הפועל), ולכן יפנית עוברת דרך explicit ולא לכאן.
     const words = useMemo(() => {
+        if (explicit) return { base: explicit.base, opposite: explicit.opposite };
         const split = (s: string) => {
             // try/catch ולא רק בדיקת typeof: הבנייה לא תיפול אם locale לא תקין או אם
             // המימוש חסר. הנפילה לאחור לרווחים יציבה לשפות עם רווחים (he/en/es/ru/ar),
@@ -442,21 +458,22 @@ const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Directi
             return s.split(/\s+/).filter(Boolean);
         };
         return { base: split(baseText), opposite: split(oppositeText) };
-    }, [baseText, oppositeText, locale]);
+    }, [explicit, baseText, oppositeText, locale]);
 
     const baseWords = words.base;
     const oppWords = words.opposite;
-    // האסימונים הייחודיים למשפט המקורי הם ציר השלילה. ביפנית אלה מורפמות הפועל השליליות,
-    // ולא מילה עצמאית, ולכן טקסט המילון של יפנית אינו טוען שנוספה מילה אחת בודדת.
+    // האסימונים הייחודיים למשפט המקורי הם ציר השלילה. בערבית אלה שניים ("لم" וגם צורת
+    // הפועל שהשתנתה), וזה נכון: שניהם באמת השתנו, וטקסט המילון מסביר את שניהם.
     //
     // שני מקרים שבהם אי אפשר לבודד את השלילה: אסימון יחיד (שפה בלי רווחים כשאין
     // Intl.Segmenter), או שכל האסימונים שונים. אז לא מדגישים כלום. הדגשת המשפט כולו
     // הייתה משקרת ללומד ומלמדת שכל המשפט הוא ה"לא", וזה גרוע מהעדר הדגשה.
     const pivotWords = useMemo(() => {
+        if (explicit) return explicit.pivot;
         if (baseWords.length <= 1) return [];
         const uniq = baseWords.filter((w) => !oppWords.includes(w));
         return uniq.length === baseWords.length ? [] : uniq;
-    }, [baseWords, oppWords]);
+    }, [explicit, baseWords, oppWords]);
 
     return (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

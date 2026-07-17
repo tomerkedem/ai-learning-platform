@@ -67,7 +67,7 @@ export const semanticSpaceQuiz: typeof HeQuiz = {
         5: {
             question: 'Quieres que el modelo compare el significado entre dos frases y no solo busque palabras compartidas. ¿Qué ayuda más?',
             options: [
-                'Dar contexto y pedir explícitamente que compare el significado, no solo las palabras',
+                'Dar contexto y pedir explícitamente comparar el significado',
                 'Escribir un prompt lo más corto y general posible',
                 'Usar la mayor cantidad posible de palabras idénticas en ambas frases',
                 'Suponer que si las frases suenan parecidas, dicen lo mismo',

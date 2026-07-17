@@ -4,7 +4,7 @@
 // フォールバックは残っておらず、contentLocale は 'ja' なので、表示も読み上げも日本語です。
 //
 // 意図的にヘブライ語から継承しているフィールド:
-//   hero.badge          - ブランド行「Behind the Scenes . 05」。全言語で同一です。
+//   hero.badge          - ブランド行「Behind the Scenes · 05」。全言語で同一です。
 //   sections.labEyebrow - ラボの製品名「Semantic Space Lab」。ヘブライ語を含む全言語で
 //                         英語のまま保ちます。
 //   mentor.hero / guess / negation / practical - この章では表示されず、mentor.lab と
@@ -47,7 +47,7 @@ export const semanticSpace: typeof he = {
     },
 
     guess: {
-        eyebrow: 'かんたんな予想 . 意味の近さ',
+        eyebrow: 'かんたんな予想・意味の近さ',
         title: '「荷物が届きませんでした」に意味がいちばん近い文はどれでしょう。',
         subtitle: 'いちばん近いと思うものを選んでください。点数はつきません。モデルが近さをどう捉えるか、その方向をつかむためのものです。',
         prompt: '「荷物が届きませんでした」',

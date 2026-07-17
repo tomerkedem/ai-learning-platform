@@ -72,7 +72,7 @@ export const semanticSpaceLab: SemanticSpaceLabDict = {
         'agent-contacted': 'An agent contacted the customer',
         'draft-update': 'Draft an update note for the customer',
         'recipe': 'A recipe for chocolate cake',
-        'weather': 'Tomorrow weather forecast',
+        'weather': "Tomorrow's weather forecast",
     },
 
     disclaimer: 'A teaching map in two dimensions only. It illustrates the idea of closeness, but the distances drawn here are not an exact copy of the real space.',

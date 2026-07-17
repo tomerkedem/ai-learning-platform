@@ -5,7 +5,7 @@
 // read aloud in English.
 //
 // Two fields are inherited from the Hebrew source on purpose:
-//   hero.badge        - the brand line "Behind the Scenes . 05", identical in all locales.
+//   hero.badge        - the brand line "Behind the Scenes · 05", identical in all locales.
 //   sections.labEyebrow - the product name of the lab ("Semantic Space Lab"), kept in
 //                       English across all locales, including Hebrew.
 //   mentor.hero / guess / negation / practical - not rendered by the chapter; only
@@ -49,7 +49,7 @@ export const semanticSpace: typeof he = {
     },
 
     guess: {
-        eyebrow: 'Quick guess . closeness in meaning',
+        eyebrow: 'Quick guess · closeness in meaning',
         title: 'Which sentence is closest in meaning to "The package has not arrived"?',
         subtitle: 'Pick whichever looks closest to you. There is no score, just one direction that shows how the model sees closeness.',
         prompt: '"The package has not arrived"',

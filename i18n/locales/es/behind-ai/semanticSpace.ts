@@ -5,7 +5,7 @@
 // capítulo se muestra y se lee en voz alta en español.
 //
 // Campos heredados del hebreo a propósito:
-//   hero.badge          - la línea de marca "Behind the Scenes . 05", idéntica en todos los idiomas.
+//   hero.badge          - la línea de marca "Behind the Scenes · 05", idéntica en todos los idiomas.
 //   sections.labEyebrow - el nombre de producto del laboratorio ("Semantic Space Lab"), que
 //                         se mantiene en inglés en todos los idiomas, incluido el hebreo.
 //   mentor.hero / guess / negation / practical - el capítulo no los muestra; solo se ven
@@ -48,7 +48,7 @@ export const semanticSpace: typeof he = {
     },
 
     guess: {
-        eyebrow: 'Adivinanza rápida . cercanía en el significado',
+        eyebrow: 'Adivinanza rápida · cercanía en el significado',
         title: '¿Qué frase es la más cercana en significado a "El paquete no llegó"?',
         subtitle: 'Elige la que te parezca más cercana. No hay puntaje, solo una dirección que muestra cómo el modelo entiende la cercanía.',
         prompt: '"El paquete no llegó"',
