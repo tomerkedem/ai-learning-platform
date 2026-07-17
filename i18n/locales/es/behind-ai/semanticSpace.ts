@@ -26,7 +26,7 @@ export const semanticSpace: typeof he = {
         badge: he.hero.badge,
         titleLead: 'Cada significado',
         titleHighlight: 'tiene un lugar en el mapa',
-        lede: 'En el capítulo anterior vimos cómo una frase se convierte en un vector de significado, una lista de números. Ahora veremos dónde se ubica ese vector respecto a los demás. Cada frase es un punto en un espacio, y las frases cercanas en significado se ubican cerca una de otra. Así el modelo conecta "El paquete no llegó" con "El envío viene con retraso", aunque las palabras sean distintas.',
+        lede: '"El paquete no llegó" y "El envío viene con retraso" casi no comparten palabras y, aun así, el modelo entiende que dicen casi lo mismo. ¿Cómo consigue acercar dos frases redactadas de forma tan distinta? Para responderlo, tendremos que ver dónde se ubica cada frase y en qué espacio se mide.',
         chipMap: 'Arrastra una frase y mira quién está cerca',
         chipNeighbors: 'Descubre por qué una negación lo cambia todo',
     },
@@ -39,11 +39,11 @@ export const semanticSpace: typeof he = {
 
     plain: {
         eyebrow: 'En pocas palabras',
-        title: 'Qué es un espacio de significado',
+        title: 'Del embedding al espacio de significado',
         paragraphs: [
-            'En el capítulo anterior, cada frase se convirtió en una lista de números que el modelo aprendió, su embedding. Cada valor del vector describe la posición de la frase a lo largo de una dimensión, y todos los valores juntos deciden dónde se ubica en el espacio de significado. En ese espacio podemos comparar los embeddings y ver cuán cerca están dos representaciones entre sí. El mapa que ves aquí es solo una proyección simplificada en dos dimensiones, y un embedding real tiene muchas más dimensiones.',
-            'El modelo coloca las frases de modo que las que comparten patrones que aprendió queden más cerca unas de otras. Eso es lo que le permite ordenar las frases y encontrar las más cercanas en significado, aunque no compartan ninguna palabra.',
-            'Cerca significa que el modelo aprendió una relación entre las frases, y lejos significa que esa relación es débil. Pero la cercanía es solo una señal de una relación aprendida, no una prueba de que los dos significados sean idénticos.',
+            'En el capítulo anterior, cada frase se convirtió en un embedding: la lista de números que el modelo aprendió para ella. Puedes pensar en esa lista como una dirección. Cada número es una coordenada, y todos juntos deciden a qué punto apunta la frase.',
+            'El espacio de significado es el espacio compartido donde conviven todas esas direcciones. Allí puedes comparar los embeddings de frases distintas y ver quién está cerca de quién. Cuando el modelo coloca dos embeddings cerca, suele significar que sus representaciones son parecidas.',
+            'En pantalla dibujamos cada frase como un solo punto en un mapa plano, y eso es solo una simplificación didáctica: un embedding real tiene muchas más de dos dimensiones. El mapa ayuda a ver la idea de cercanía, pero no es el espacio en el que el modelo trabaja realmente.',
         ],
     },
 
@@ -109,9 +109,11 @@ export const semanticSpace: typeof he = {
         labTitle: 'Laboratorio del espacio de significado',
         labIntro:
             'Aquí no solo se mira, se actúa. En el primer experimento elige o arrastra una frase y observa qué vecinos son los más cercanos en significado. En el segundo revelaremos la trampa de la negación: dos frases que comparten casi las mismas palabras, pero dicen exactamente lo contrario.',
+        dnaTitle: 'Por qué dos frases aparecen cerca',
+        dnaStripTitle: 'El patrón de valores de cada frase',
         dnaIntro:
-            'Hasta aquí vimos dónde se ubica cada frase en el espacio. Ahora miraremos más de cerca el vector que la representa y veremos cómo su patrón de valores cambia de una frase a otra, y cómo ese patrón influye en la cercanía entre ellas.',
-        dnaSelectorHint: 'Elige una frase en cada lado y compara cómo cambia el patrón de valores y de conexiones.',
+            'Vimos dónde se ubica cada frase, pero ¿por qué aparecen cerca dos frases redactadas de forma tan distinta? Aquí abrimos el embedding de cada frase y comparamos su patrón de valores con el de otra. Cuando los patrones generales son parecidos, los dos embeddings reciben posiciones cercanas en el espacio, y esa es la cercanía de significado que vimos en el mapa. Las tiras aquí son una ilustración del patrón, no una lista de rasgos con un nombre fijo para cada dimensión.',
+        dnaSelectorHint: 'Elige una frase en cada lado y observa cuánto comparten del patrón de valores, y cómo eso coincide con su cercanía en el mapa.',
     },
 
     explain: {

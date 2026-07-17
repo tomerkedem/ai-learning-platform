@@ -15,10 +15,9 @@ import { Mentor } from '@/components/ai-internals/Mentor';
 import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard, type GuessTone } from '@/components/ai-internals/OpeningGuess';
 import { SemanticSpaceLab } from '@/components/ai-internals/SemanticSpaceLab';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
-// רכיבים מפרק 4 שמקומם האמיתי כאן, במרחב המשמעות: דמו האובייקטים (קרבה פשוטה) וה-DNA
-// (למה שני משפטים קרובים). התוכן מגיע ממילון פרק 4 (chapter4Lab), מתורגם ב-6 השפות.
-import { Chapter4LabProvider, getLabContent, joinSentences } from '../chapter-4/labContent';
-import { UniversalMeaningDemo } from '../chapter-4/components/UniversalMeaningDemo';
+// רכיב ה-DNA מפרק 4 שמקומו האמיתי כאן, במרחב המשמעות: הוא מראה למה שני Embeddings
+// שונים יכולים להופיע קרובים. התוכן מגיע ממילון פרק 4 (chapter4Lab), מתורגם ב-6 השפות.
+import { getLabContent, joinSentences } from '../chapter-4/labContent';
 import { MeaningDnaStrip } from '../chapter-4/components/MeaningDnaStrip';
 import type { SentenceId } from '../chapter-4/embeddingEngine';
 
@@ -222,6 +221,13 @@ export default function BehindTheScenesChapter5() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={5}>
 
             {/* ══════════ HERO ══════════ */}
+            {/* המנטור מוסתר בפרק זה בכוונה: נכס ההירו הנוכחי מכיל טקסט מוטמע לא-מתורגם
+                (טורקית: Konu / Fikirler / Topik), ולומדה בשש שפות לא יכולה להציג אותו.
+                חיתוך CSS בטוח שיסתיר את המילים היה חותך גם את היד הפתוחה ואת אשכולות
+                ההולוגרמה שהיא מחזיקה, כלומר את ההרכב עצמו, ולכן נבחר להסתיר. ההירו נשאר
+                טקסט בלבד, ברוחב מלא ומאוזן. mentor.hero עדיין קיים במילון אך אינו מוצג.
+                נכס עתידי צריך להיות נקי מטקסט מוטמע, ורצוי עם גרסה פונה-ימין וגרסה
+                פונה-שמאל כדי שהמחווה תוכל להצביע פנימה גם ב-RTL וגם ב-LTR. */}
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -232,59 +238,48 @@ export default function BehindTheScenesChapter5() {
                 <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
                 <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
 
-                {/* סדר הילדים קובע כיוון: המנטור ראשון ולכן הוא נוחת בצד ההתחלה (ימין ב-RTL,
-                    שמאל ב-LTR), וזה מה שגורם ל-flip={!isRtl} להפנות אותו פנימה אל הטקסט.
-                    היפוך הסדר ישבור את ההתאמה הזו. */}
-                <div className="relative z-10 xl:grid xl:grid-cols-[280px_1fr] xl:items-center xl:gap-7">
-                    {/* בכוונה בלי line: הכותרת והפתיח כבר אומרים את המשפט. mentor.hero עדיין
-                        קיים במילון אך אינו מוצג. */}
-                    <div className="hidden xl:block">
-                        <Mentor pose="holographicUi" width={280} flip={!isRtl} />
+                <div className="relative z-10">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
+                        <Map size={14} className="text-violet-400" />
+                        <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">{c5.hero.badge}</span>
                     </div>
 
-                    <div>
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
-                            <Map size={14} className="text-violet-400" />
-                            <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">{c5.hero.badge}</span>
-                        </div>
+                    <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
+                        {c5.hero.titleLead}{heroTitleSep}
+                        <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent`}>
+                            {c5.hero.titleHighlight}
+                        </span>
+                    </h1>
 
-                        <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
-                            {c5.hero.titleLead}{heroTitleSep}
-                            <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent`}>
-                                {c5.hero.titleHighlight}
-                            </span>
-                        </h1>
-
-                        <div className="flex items-start gap-2.5">
-                            <p className="text-lg text-slate-300 leading-relaxed">{c5.hero.lede}</p>
-                            <SpeakButton text={heroSpeech} className="mt-1" />
-                        </div>
-
-                        <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
-                            <span className="inline-flex items-center gap-1.5">
-                                <MousePointerClick size={14} className="text-violet-400" /> {c5.hero.chipMap}
-                            </span>
-                            <span className="inline-flex items-center gap-1.5">
-                                <ArrowLeftRight size={14} className="text-cyan-400" /> {c5.hero.chipNeighbors}
-                            </span>
-                        </div>
-
-                        <FloatingReadAloud dir={dir}>
-                            {/* הדוק מקריא תוכן עברי, ולכן גם lang וגם locale נגזרים משפת
-                                התוכן. locale אינו רק תווית: הוא מפתח זיכרון הקול ב-
-                                localStorage, וחייב להתאים ל-SpeakButton כדי שבחירת הקול
-                                של הלומד תשותף ביניהם. */}
-                            <ReadAloudControls
-                                segmentsByMode={readAloudByMode}
-                                lang={LOCALE_SPEECH_LANG[locale]}
-                                locale={locale}
-                                dir={dir}
-                                labels={ra}
-                                reduce={!!reduce}
-                                compact
-                            />
-                        </FloatingReadAloud>
+                    <div className="flex items-start gap-2.5">
+                        <p className="text-lg text-slate-300 leading-relaxed">{c5.hero.lede}</p>
+                        <SpeakButton text={heroSpeech} className="mt-1" />
                     </div>
+
+                    <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
+                        <span className="inline-flex items-center gap-1.5">
+                            <MousePointerClick size={14} className="text-violet-400" /> {c5.hero.chipMap}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5">
+                            <ArrowLeftRight size={14} className="text-cyan-400" /> {c5.hero.chipNeighbors}
+                        </span>
+                    </div>
+
+                    <FloatingReadAloud dir={dir}>
+                        {/* הדוק מקריא תוכן עברי, ולכן גם lang וגם locale נגזרים משפת
+                            התוכן. locale אינו רק תווית: הוא מפתח זיכרון הקול ב-
+                            localStorage, וחייב להתאים ל-SpeakButton כדי שבחירת הקול
+                            של הלומד תשותף ביניהם. */}
+                        <ReadAloudControls
+                            segmentsByMode={readAloudByMode}
+                            lang={LOCALE_SPEECH_LANG[locale]}
+                            locale={locale}
+                            dir={dir}
+                            labels={ra}
+                            reduce={!!reduce}
+                            compact
+                        />
+                    </FloatingReadAloud>
                 </div>
             </motion.section>
 
@@ -311,24 +306,10 @@ export default function BehindTheScenesChapter5() {
                 <OpeningGuess content={guessContent} cards={guessCards} headingLevel={2} />
             </section>
 
-            {/* ══════════ חימום: קרבה פשוטה עם אובייקטים מוכרים (הובא מפרק 4) ══════════ */}
-            {/* דברים דומים במשמעות יושבים קרוב. אובייקטים מוכרים (כלב, חתול, תפוח, מלפפון,
-                מחשב) הם המבוא האינטואיטיבי לפני מפת משפטי המשלוח של המעבדה. */}
-            <section className="mt-12 text-start" dir={dir}>
-                <ExpandableLab title={c4Lab.map.visualTitle}>
-                    <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
-                        <Chapter4LabProvider value={c4Lab}>
-                            {/* כותרת הדמו היא הכותרת היחידה במקטע הזה, ולכן היא כותרת המקטע (h2). */}
-                            <UniversalMeaningDemo dir={dir} labNumber={1} headingLevel={2} />
-                        </Chapter4LabProvider>
-                    </div>
-                </ExpandableLab>
-            </section>
-
             {/* ══════════ Semantic Space Lab ══════════ */}
             <section id="semantic-lab" className="mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
                 <div className="flex items-center gap-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-sm font-black text-slate-200">2</span>
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-sm font-black text-slate-200">1</span>
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
                         <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">{c5.sections.labEyebrow}</div>
@@ -368,16 +349,16 @@ export default function BehindTheScenesChapter5() {
                 </div>
             </section>
 
-            {/* ══════════ למה הם קרובים: DNA של רכיבי משמעות משותפים (הובא מפרק 4) ══════════ */}
-            {/* שני משפטי משלוח שיושבים קרוב במפה חולקים את אותם רכיבי משמעות. ה-DNA מראה
-                אילו רכיבים משותפים, וזה מה שמקרב אותם במרחב. */}
+            {/* ══════════ למה שני Embeddings מופיעים קרובים: השוואת דפוס הערכים (הובא מפרק 4) ══════════ */}
+            {/* שני משפטים שנוסחו אחרת יכולים להופיע קרובים כשדפוס הערכים הכולל שלהם דומה.
+                הפסים מראים כמה מהדפוס משותף, וזה מה שמזכה אותם במיקומים קרובים במרחב. */}
             {dnaA && (
                 <section className="mt-12 text-start" dir={dir}>
                   <div className="mb-4 flex items-start justify-between gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
                     <span>{c5.sections.dnaIntro}</span>
                     <SpeakButton text={c5.sections.dnaIntro} className="mt-0.5" />
                   </div>
-                  <ExpandableLab title={c4Lab.dna.title}>
+                  <ExpandableLab title={c5.sections.dnaTitle}>
                     <div className="space-y-4 rounded-2xl border border-violet-500/30 bg-slate-900/40 p-5 sm:p-6">
                         {/* שני בוררים: בחרו שני משפטים וראו כמה רכיבי משמעות משותפים להם.
                             זהים כמעט (שני כשלי מסירה) => הרבה קשרים ירוקים. רחוקים (מסירה מול חיוב)
@@ -434,7 +415,10 @@ export default function BehindTheScenesChapter5() {
                         </div>
 
                         <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
-                            <MeaningDnaStrip active={dnaA} compare={dnaB} geneLabels={c4Lab.genes} dna={c4Lab.dna} dir={dir} labNumber={3} />
+                            {/* דריסת המסגור של פרק 4: כותרת פרק-5 קצרה (דפוס הערכים) ובלי המבוא
+                            הפנימי, שכבר נאמר בכרטיס המסגור מעל ה-ExpandableLab. כך אין חזרה על
+                            "מה יש בתוך הווקטור" של פרק 4 ואין מבוא כפול. */}
+                        <MeaningDnaStrip active={dnaA} compare={dnaB} geneLabels={c4Lab.genes} dna={c4Lab.dna} dir={dir} labNumber={2} title={c5.sections.dnaStripTitle} showIntro={false} />
                         </div>
                     </div>
                   </ExpandableLab>

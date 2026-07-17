@@ -33,6 +33,14 @@ interface MeaningDnaStripProps {
     dir: 'rtl' | 'ltr';
     /** מספר המעבדה בפרק (מוצג כתג ליד הכותרת). לא מוצג אם לא הועבר. */
     labNumber?: number;
+    /** דריסת כותרת ה-strip. ברירת מחדל: dna.title. מאפשר לפרק אחר (למשל פרק 5) למסגר
+     *  את אותה חתימת DNA לתפקיד משלו בלי לשכפל את הרכיב או לגעת בטקסט של פרק 4. */
+    title?: string;
+    /** דריסת פסקת המבוא. ברירת מחדל: dna.intro. */
+    intro?: string;
+    /** האם להציג את פסקת המבוא. ברירת מחדל true. פרק שכבר ממסגר את המקטע מבחוץ יכול
+     *  לכבות אותה כדי למנוע מבוא כפול. */
+    showIntro?: boolean;
 }
 
 const LIT = 0.4; // סף "נדלק" לרכיב
@@ -80,7 +88,7 @@ function railPaths(phase: number, closeness: number): { a: string; b: string } {
     return { a: a.trim(), b: b.trim() };
 }
 
-export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compare, geneLabels, dna, dir, labNumber }) => {
+export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compare, geneLabels, dna, dir, labNumber, title, intro, showIntro = true }) => {
     const reduce = useReducedMotion();
 
     // פאזת הפיתול, מונעת ב-rAF. reduced-motion משאיר 0 (סולם סטטי וקריא).
@@ -186,11 +194,11 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
                         {labNumber}
                     </span>
                 )}
-                <div className="text-base font-bold text-slate-100">{dna.title}</div>
+                <div className="text-base font-bold text-slate-100">{title ?? dna.title}</div>
             </div>
 
-            {/* מסגור קבוע: למה זה DNA ומה כל חלק אומר */}
-            <p className="mb-2.5 text-[12px] leading-relaxed text-slate-400">{dna.intro}</p>
+            {/* מסגור: למה זה DNA ומה כל חלק אומר. ניתן לכיבוי/דריסה מבחוץ (showIntro/intro). */}
+            {showIntro && <p className="mb-2.5 text-[12px] leading-relaxed text-slate-400">{intro ?? dna.intro}</p>}
 
             {/* שורת הפתיחה במילים: למה קרוב או רחוק */}
             {lead && <p className="mb-2.5 text-[13px] font-semibold leading-relaxed text-slate-200">{lead}</p>}

@@ -27,7 +27,7 @@ export const semanticSpace: typeof he = {
         badge: he.hero.badge,
         titleLead: 'Every meaning',
         titleHighlight: 'has a place on the map',
-        lede: 'In the previous chapter we saw how a sentence turns into a meaning vector, a list of numbers. Now we will see where that vector sits in relation to the others. Every sentence is a point in a space, and sentences that are close in meaning sit close together. That is how the model connects "The package has not arrived" to "The delivery is running late", even when the words are different.',
+        lede: '"The package has not arrived" and "The delivery is running late" share almost no words, and yet the model understands that they say nearly the same thing. How does it bring two sentences worded so differently close together? To answer that, we need to see where each sentence sits, and in what space it is measured.',
         chipMap: 'Drag a sentence and see who is close to it',
         chipNeighbors: 'Find out why one negation changes everything',
     },
@@ -40,11 +40,11 @@ export const semanticSpace: typeof he = {
 
     plain: {
         eyebrow: 'In simple terms',
-        title: 'What a meaning space is',
+        title: 'From an embedding to semantic space',
         paragraphs: [
-            'In the previous chapter, every sentence became a list of numbers that the model learned, its embedding. Each value in the vector describes the sentence position along one dimension, and all the values together decide where it sits in semantic space. In that space we can compare embeddings and check how close two representations are to each other. The map you see here is only a simplified two-dimensional projection, and a real embedding has many more dimensions.',
-            'The model arranges the sentences so that ones sharing patterns it has learned end up closer together. That is what lets it rank sentences and find the closest ones in meaning, even when they share no words at all.',
-            'Close means the model learned a relation between the sentences, and far means that relation is weak. But closeness is only evidence of a learned relation, not proof that the two meanings are the same.',
+            'In the previous chapter, every sentence became an embedding: the list of numbers the model learned for it. You can think of that list as an address. Each number in it is one coordinate, and together they decide which point the sentence points to.',
+            'Semantic space is the shared space where all of those addresses live together. There you can compare the embeddings of different sentences and check who is close to whom. When the model places two embeddings close together, it usually means their representations are similar.',
+            'On screen we draw every sentence as a single point on a flat map, and that is only a teaching simplification: a real embedding has far more than two dimensions. The map helps you see the idea of closeness, but it is not the space the model actually works in.',
         ],
     },
 
@@ -110,9 +110,11 @@ export const semanticSpace: typeof he = {
         labTitle: 'The meaning space laboratory',
         labIntro:
             'This is not just watching, it is doing. In the first experiment, select or drag a sentence and see which neighbours are closest to it in meaning. In the second we will expose the negation trap: two sentences that share almost the same words, but say exactly the opposite.',
+        dnaTitle: 'Why two sentences appear close',
+        dnaStripTitle: 'The value pattern of each sentence',
         dnaIntro:
-            'So far we have seen where each sentence sits in the space. Now we will look more closely at the vector that represents it and see how its pattern of values differs from one sentence to another, and how that pattern shapes the closeness between them.',
-        dnaSelectorHint: 'Pick one sentence on each side and compare how the pattern of values and links changes.',
+            'We saw where each sentence sits, but why do two sentences worded so differently appear close at all? Here we open up the embedding of each sentence and compare its pattern of values with another one. When the overall patterns are similar, the two embeddings are given nearby positions in the space, and that is the semantic closeness we saw on the map. The strips here are an illustration of the pattern, not a list of features with a fixed name for each dimension.',
+        dnaSelectorHint: 'Pick one sentence on each side and see how much of the value pattern they share, and how that matches their closeness on the map.',
     },
 
     explain: {
