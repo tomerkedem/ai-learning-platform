@@ -21,7 +21,7 @@ export const chapter4Quiz = {
 
     byId: {
         1: {
-            question: '「荷物が届いていない」という文について、embedding の段階で正しいのはどれですか？',
+            question: '「荷物が届きませんでした」という文について、embedding の段階で正しいのはどれですか？',
             options: [
                 '文はトークンに分割され、各トークンが自分の Token ID と表の中の自分の行を持つ',
                 '文全体が一つの Token ID を受け取り、それで表から一つの行が取り出される',
