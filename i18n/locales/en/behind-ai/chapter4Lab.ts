@@ -15,11 +15,11 @@ import type { Chapter4LabDict } from '@/app/behind-the-scenes-ai/chapter-4/labCo
 export const chapter4Lab: Chapter4LabDict = {
     sentences: {
         'pkg-not-arrived': {
-            text: 'The package did not arrive',
-            tokens: ['The', 'package', 'did', 'not', 'arrive'],
-            ttsLine: 'The package did not arrive. A complaint about a delivery failure, high on the failure direction.',
+            text: 'The package has not arrived',
+            tokens: ['The', 'package', 'has', 'not', 'arrived'],
+            ttsLine: 'The package has not arrived. A complaint about a delivery failure, high on the failure direction.',
             swaps: {
-                'to-arrived': { label: 'arrived', from: 'did not arrive' },
+                'to-arrived': { label: 'has arrived', from: 'has not arrived' },
             },
         },
         'delivery-not-handed': {
@@ -28,9 +28,9 @@ export const chapter4Lab: Chapter4LabDict = {
             ttsLine: 'The delivery was not handed over. Completely different words, but the same direction of meaning.',
         },
         'pkg-arrived': {
-            text: 'The package arrived',
-            tokens: ['The', 'package', 'arrived'],
-            ttsLine: 'The package arrived. The same delivery domain, but without a failure, so the point moves.',
+            text: 'The package has arrived',
+            tokens: ['The', 'package', 'has', 'arrived'],
+            ttsLine: 'The package has arrived. The same delivery domain, but without a failure, so the point moves.',
         },
         'system-not-showing': {
             text: 'The system is not showing the package',

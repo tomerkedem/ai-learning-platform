@@ -15,11 +15,11 @@ import type { Chapter4LabDict } from '@/app/behind-the-scenes-ai/chapter-4/labCo
 export const chapter4Lab: Chapter4LabDict = {
     sentences: {
         'pkg-not-arrived': {
-            text: '荷物が届かなかった',
-            tokens: ['荷物', 'が', '届か', 'なかった'],
-            ttsLine: '荷物が届かなかった。配送失敗の苦情で、失敗の方向に高い。',
+            text: '荷物が届きませんでした',
+            tokens: ['荷物', 'が', '届き', 'ませんでした'],
+            ttsLine: '荷物が届きませんでした。配送失敗の苦情で、失敗の方向に高い。',
             swaps: {
-                'to-arrived': { label: '届いた', from: '届かなかった' },
+                'to-arrived': { label: '届きました', from: '届きませんでした' },
             },
         },
         'delivery-not-handed': {
@@ -28,9 +28,9 @@ export const chapter4Lab: Chapter4LabDict = {
             ttsLine: '配送が完了しなかった。まったく違う単語だが、意味の方向は同じ。',
         },
         'pkg-arrived': {
-            text: '荷物が届いた',
-            tokens: ['荷物', 'が', '届いた'],
-            ttsLine: '荷物が届いた。同じ配送の領域だが失敗はなく、だから点が動く。',
+            text: '荷物が届きました',
+            tokens: ['荷物', 'が', '届きました'],
+            ttsLine: '荷物が届きました。同じ配送の領域だが失敗はなく、だから点が動く。',
         },
         'system-not-showing': {
             text: 'システムが荷物を表示しない',
