@@ -221,13 +221,10 @@ export default function BehindTheScenesChapter5() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={5}>
 
             {/* ══════════ HERO ══════════ */}
-            {/* המנטור מוסתר בפרק זה בכוונה: נכס ההירו הנוכחי מכיל טקסט מוטמע לא-מתורגם
-                (טורקית: Konu / Fikirler / Topik), ולומדה בשש שפות לא יכולה להציג אותו.
-                חיתוך CSS בטוח שיסתיר את המילים היה חותך גם את היד הפתוחה ואת אשכולות
-                ההולוגרמה שהיא מחזיקה, כלומר את ההרכב עצמו, ולכן נבחר להסתיר. ההירו נשאר
-                טקסט בלבד, ברוחב מלא ומאוזן. mentor.hero עדיין קיים במילון אך אינו מוצג.
-                נכס עתידי צריך להיות נקי מטקסט מוטמע, ורצוי עם גרסה פונה-ימין וגרסה
-                פונה-שמאל כדי שהמחווה תוכל להצביע פנימה גם ב-RTL וגם ב-LTR. */}
+            {/* עטיפה חיצונית יחסית: מאפשרת למקם את המנטור absolute מחוץ ל-section (שהוא
+                overflow-hidden), כך שהוא אינו נחתך, אינו משתתף בזרימת הטקסט, ואינו שומר עמודת
+                grid. את הגריד הישן והמנטור הפנימי לא משחזרים. */}
+            <div className="relative">
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -282,6 +279,35 @@ export default function BehindTheScenesChapter5() {
                     </FloatingReadAloud>
                 </div>
             </motion.section>
+
+            {/* מנטור ההירו, מדורג רספונסיבית. נכס ה-holographicUi מצביע שמאלה מטבעו, ולכן ממוקם
+                בצד ימין הפיזי בכל שובר ובשתי השפות כדי שהמחווה תצביע פנימה, בלי flip ובלי
+                scaleX(-1). ממוקם absolute מחוץ ל-section, מעוגן לראש הכרטיס (top-6) כדי להישאר
+                מעל דוק ההקראה הצף. מוסתר בטלפון (מתחת ל-md). הגודל מכויל לרצועה הפנויה מימין
+                לטקסט, שנמדדה זהה בשתי השפות: ~89px ב-768-1024, 121px ב-1280, 164px ב-1366,
+                ומשם גדלה. לכן: 80px בטאבלט (md), 104px מ-1280, 132px מ-1366, 188px מ-1440,
+                232px מ-1536, 336px מ-1800. Mentor.width הוא מספר ולכן כל גודל הוא מופע נפרד,
+                אך רק אחד גלוי בכל רוחב (השאר display:none). right בפיקסלים הוא פיזי ואינו מתהפך.
+                הטקסט הטורקי המוטמע בנכס הוא נושא להחלפת נכס עתידית, לא סיבה להסתרה. */}
+            <div className="pointer-events-none absolute top-2 z-20 hidden min-[768px]:block min-[1280px]:hidden" style={{ right: '-40px' }}>
+                <Mentor pose="holographicUi" width={72} glow={false} />
+            </div>
+            <div className="pointer-events-none absolute top-2 z-20 hidden min-[1280px]:block min-[1366px]:hidden" style={{ right: '-72px' }}>
+                <Mentor pose="holographicUi" width={104} glow={false} />
+            </div>
+            <div className="pointer-events-none absolute top-2 z-20 hidden min-[1366px]:block min-[1440px]:hidden" style={{ right: '-105px' }}>
+                <Mentor pose="holographicUi" width={132} glow={false} />
+            </div>
+            <div className="pointer-events-none absolute top-2 z-20 hidden min-[1440px]:block min-[1536px]:hidden" style={{ right: '-153px' }}>
+                <Mentor pose="holographicUi" width={188} glow={false} />
+            </div>
+            <div className="pointer-events-none absolute top-2 z-20 hidden min-[1536px]:block min-[1800px]:hidden" style={{ right: '-199px' }}>
+                <Mentor pose="holographicUi" width={232} glow={false} />
+            </div>
+            <div className="pointer-events-none absolute top-2 z-20 hidden min-[1800px]:block" style={{ right: '-315px' }}>
+                <Mentor pose="holographicUi" width={336} glow={false} />
+            </div>
+            </div>
 
             {/* ══════════ במילים פשוטות ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
