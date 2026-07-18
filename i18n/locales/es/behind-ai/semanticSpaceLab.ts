@@ -23,9 +23,8 @@ export const semanticSpaceLab: SemanticSpaceLabDict = {
 
     map: {
         title: 'El mapa del significado',
-        subtitle: 'Elige o arrastra una frase',
+        subtitle: 'Elige una frase',
         legendTitle: 'Zonas de significado',
-        reset: 'Reiniciar',
         neighborsTitle: 'Los vecinos más cercanos',
         neighborsSubtitle: 'Por cercanía en el espacio',
         closenessTo: 'Cercanía a',
@@ -34,9 +33,7 @@ export const semanticSpaceLab: SemanticSpaceLabDict = {
         toneMid: 'Distancia media en el mapa',
         toneFar: 'Lejos en el mapa',
         closestNow: 'La frase más cercana ahora es:',
-        selectHint: 'Elige una frase en el mapa, o arrástrala a otra zona, y observa cómo la lista de vecinos cercanos se actualiza de inmediato.',
-        dragHint: 'Arrástrame',
-        draggedHint: '¿Lo notaste? Cuanto más acercas una frase a otra zona, más cambian sus vecinos cercanos. Cerca en el espacio significa cerca en el significado.',
+        selectHint: 'Elige una frase en el mapa y observa cómo la lista de vecinos cercanos se actualiza de inmediato.',
         note: 'La distancia en el mapa es el significado. Una frase cercana es una que el modelo considera relacionada, aunque las palabras sean distintas. Una frase lejana tiene una relación débil.',
     },
 

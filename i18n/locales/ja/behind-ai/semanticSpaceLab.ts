@@ -32,9 +32,8 @@ export const semanticSpaceLab: SemanticSpaceLabDict = {
 
     map: {
         title: '意味の地図',
-        subtitle: '文を選ぶか、ドラッグしてください',
+        subtitle: '文を選んでください',
         legendTitle: '意味の領域',
-        reset: 'リセット',
         neighborsTitle: '最も近い文',
         neighborsSubtitle: '空間での近さ順',
         closenessTo: '基準の文',
@@ -43,9 +42,7 @@ export const semanticSpaceLab: SemanticSpaceLabDict = {
         toneMid: '地図の上で中くらいの距離',
         toneFar: '地図の上で遠い',
         closestNow: '今いちばん近い文は:',
-        selectHint: '地図の文を選ぶか、別の領域にドラッグしてみてください。最も近い文のリストがすぐに変わります。',
-        dragHint: 'ドラッグしてね',
-        draggedHint: '気づきましたか。文を別の領域に近づけるほど、近くの文が入れ替わります。空間で近いとは、意味が近いということです。',
+        selectHint: '地図の文を選ぶと、最も近い文のリストがすぐに変わります。',
         note: '地図の距離が意味です。近い文とは、言葉が違ってもモデルが関連づけている文のこと。遠い文とは、その関連が弱い文のことです。',
     },
 

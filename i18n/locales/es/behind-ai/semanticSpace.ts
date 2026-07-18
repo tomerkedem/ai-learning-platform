@@ -27,7 +27,7 @@ export const semanticSpace: typeof he = {
         titleLead: 'Cada significado',
         titleHighlight: 'tiene un lugar en el mapa',
         lede: '"El paquete no llegó" y "El envío viene con retraso" casi no comparten palabras y, aun así, el modelo entiende que dicen casi lo mismo. ¿Cómo consigue acercar dos frases redactadas de forma tan distinta? Para responderlo, tendremos que ver dónde se ubica cada frase y en qué espacio se mide.',
-        chipMap: 'Arrastra una frase y mira quién está cerca',
+        chipMap: 'Elige una frase y mira quién está cerca',
         chipNeighbors: 'Descubre por qué una negación lo cambia todo',
     },
 
@@ -108,7 +108,7 @@ export const semanticSpace: typeof he = {
         labEyebrow: he.sections.labEyebrow,
         labTitle: 'Laboratorio del espacio de significado',
         labIntro:
-            'Aquí no solo se mira, se actúa. En el primer experimento elige o arrastra una frase y observa qué vecinos son los más cercanos en significado. En el segundo revelaremos la trampa de la negación: dos frases que comparten casi las mismas palabras, pero dicen exactamente lo contrario.',
+            'Aquí no solo se mira, se actúa. En el primer experimento elige una frase y observa qué vecinos son los más cercanos en significado. En el segundo revelaremos la trampa de la negación: dos frases que comparten casi las mismas palabras, pero dicen exactamente lo contrario.',
         dnaTitle: 'Por qué dos frases aparecen cerca',
         dnaStripTitle: 'El patrón de valores de cada frase',
         dnaIntro:

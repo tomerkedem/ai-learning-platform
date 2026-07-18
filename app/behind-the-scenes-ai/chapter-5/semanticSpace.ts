@@ -145,9 +145,31 @@ export function findPhrase(id: PhraseId): Phrase | undefined {
     return PHRASES.find((p) => p.id === id);
 }
 
-/** שאר המשפטים מדורגים לפי קרבה (מרחק) לנקודה נתונה, מהקרוב לרחוק. */
-export function rankByDistance(from: Vec, excludeId: PhraseId): { phrase: Phrase; dist: number }[] {
-    return PHRASES.filter((p) => p.id !== excludeId)
+/**
+ * ממיר מרחק לציון תצוגה שלם 0..100 (100 = חופפים, 0 = רחוקים מאוד).
+ * נגזר מאותו מרחק ששימש למיון, ולכן ציון, דירוג ומרחק לעולם אינם סותרים זה את זה.
+ * דטרמיניסטי, מונוטוני, חסום ל-0..100, ואינו תלוי בגודל המסך או בכיווניות: הוא פועל
+ * על קואורדינטות לוגיות בלבד.
+ */
+export function proximityScore(dist: number): number {
+    return Math.round(closeness(dist) * 100);
+}
+
+/**
+ * מדרג את שאר המשפטים לפי קרבה למשפט הפעיל, מהקרוב לרחוק, על סמך הקואורדינטות הקבועות
+ * של המשפטים (PHRASES).
+ *
+ * הנקודות אינן ניתנות להזזה, ולכן לפונקציה אין פרמטר קואורדינטות ואי אפשר להזין מיקום
+ * שנקבע ע"י המשתמש: רק הבחירה (activeId) משנה את המשפט הפעיל, לא את מיקומו. כך הדירוג
+ * תמיד נגזר מהמרחקים הלימודיים המקוריים בלבד, ואינטראקציה לא יכולה לזייף קרבה.
+ *
+ * שובר שוויון יציב לפי מזהה: כששני מרחקים זהים, הסדר נקבע לפי המזהה ולא לפי יציבות
+ * המיון של המנוע, כדי שהתוצאה תהיה דטרמיניסטית לחלוטין.
+ */
+export function rankNeighbors(activeId: PhraseId): { phrase: Phrase; dist: number }[] {
+    const from = findPhrase(activeId);
+    if (!from) return [];
+    return PHRASES.filter((p) => p.id !== activeId)
         .map((p) => ({ phrase: p, dist: distance(from, p) }))
-        .sort((a, b) => a.dist - b.dist);
+        .sort((a, b) => a.dist - b.dist || (a.phrase.id < b.phrase.id ? -1 : 1));
 }

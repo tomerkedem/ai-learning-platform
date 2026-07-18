@@ -28,7 +28,7 @@ export const semanticSpace: typeof he = {
         titleLead: 'Every meaning',
         titleHighlight: 'has a place on the map',
         lede: '"The package has not arrived" and "The delivery is running late" share almost no words, and yet the model understands that they say nearly the same thing. How does it bring two sentences worded so differently close together? To answer that, we need to see where each sentence sits, and in what space it is measured.',
-        chipMap: 'Drag a sentence and see who is close to it',
+        chipMap: 'Select a sentence and see who is close to it',
         chipNeighbors: 'Find out why one negation changes everything',
     },
 
@@ -109,7 +109,7 @@ export const semanticSpace: typeof he = {
         labEyebrow: he.sections.labEyebrow,
         labTitle: 'The meaning space laboratory',
         labIntro:
-            'This is not just watching, it is doing. In the first experiment, select or drag a sentence and see which neighbours are closest to it in meaning. In the second we will expose the negation trap: two sentences that share almost the same words, but say exactly the opposite.',
+            'This is not just watching, it is doing. In the first experiment, select a sentence and see which neighbours are closest to it in meaning. In the second we will expose the negation trap: two sentences that share almost the same words, but say exactly the opposite.',
         dnaTitle: 'Why two sentences appear close',
         dnaStripTitle: 'The value pattern of each sentence',
         dnaIntro:

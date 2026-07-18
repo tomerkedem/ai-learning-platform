@@ -24,9 +24,8 @@ export const semanticSpaceLab: SemanticSpaceLabDict = {
 
     map: {
         title: 'The meaning map',
-        subtitle: 'Select or drag a sentence',
+        subtitle: 'Select a sentence',
         legendTitle: 'Meaning regions',
-        reset: 'Reset',
         neighborsTitle: 'Nearest neighbours',
         neighborsSubtitle: 'By closeness in the space',
         closenessTo: 'Closeness to',
@@ -35,9 +34,7 @@ export const semanticSpaceLab: SemanticSpaceLabDict = {
         toneMid: 'Medium distance on the map',
         toneFar: 'Far on the map',
         closestNow: 'The closest sentence now is:',
-        selectHint: 'Pick a sentence on the map, or drag it to another region, and watch the list of nearest neighbours update straight away.',
-        dragHint: 'Drag me',
-        draggedHint: 'Notice that? The closer you move a sentence to another region, the more its nearest neighbours change. Close in the space means close in meaning.',
+        selectHint: 'Pick a sentence on the map and watch the list of nearest neighbours update straight away.',
         note: 'Distance on the map is meaning. A close sentence is one the model treats as related, even when the words differ. A far sentence is one with a weak relation.',
     },
 
