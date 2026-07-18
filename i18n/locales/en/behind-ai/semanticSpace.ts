@@ -110,11 +110,15 @@ export const semanticSpace: typeof he = {
         labTitle: 'The meaning space laboratory',
         labIntro:
             'This is not just watching, it is doing. In the first experiment, select a sentence and see which neighbours are closest to it in meaning. In the second we will expose the negation trap: two sentences that share almost the same words, but say exactly the opposite.',
-        dnaTitle: 'Why two sentences appear close',
+        dnaTitle: 'Comparing the semantic DNA of two sentences',
         dnaStripTitle: 'The value pattern of each sentence',
         dnaIntro:
             'We saw where each sentence sits, but why do two sentences worded so differently appear close at all? Here we open up the embedding of each sentence and compare its pattern of values with another one. When the overall patterns are similar, the two embeddings are given nearby positions in the space, and that is the semantic closeness we saw on the map. The strips here are an illustration of the pattern, not a list of features with a fixed name for each dimension.',
         dnaSelectorHint: 'Pick one sentence on each side and see how much of the value pattern they share, and how that matches their closeness on the map.',
+        dnaStrandNote:
+            'Each strand shows the value pattern of one sentence\'s embedding. The more alike the value patterns, the closer the two sentences\' embeddings tend to appear in semantic space.',
+        dnaDisclaimer:
+            'The DNA here is only a visual metaphor. In a real model it is a pattern of numeric values inside a vector, not a biological strand.',
     },
 
     explain: {

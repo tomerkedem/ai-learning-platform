@@ -109,11 +109,15 @@ export const semanticSpace: typeof he = {
         labTitle: 'Laboratorio del espacio de significado',
         labIntro:
             'Aquí no solo se mira, se actúa. En el primer experimento elige una frase y observa qué vecinos son los más cercanos en significado. En el segundo revelaremos la trampa de la negación: dos frases que comparten casi las mismas palabras, pero dicen exactamente lo contrario.',
-        dnaTitle: 'Por qué dos frases aparecen cerca',
+        dnaTitle: 'Comparar el ADN semántico de dos frases',
         dnaStripTitle: 'El patrón de valores de cada frase',
         dnaIntro:
             'Vimos dónde se ubica cada frase, pero ¿por qué aparecen cerca dos frases redactadas de forma tan distinta? Aquí abrimos el embedding de cada frase y comparamos su patrón de valores con el de otra. Cuando los patrones generales son parecidos, los dos embeddings reciben posiciones cercanas en el espacio, y esa es la cercanía de significado que vimos en el mapa. Las tiras aquí son una ilustración del patrón, no una lista de rasgos con un nombre fijo para cada dimensión.',
         dnaSelectorHint: 'Elige una frase en cada lado y observa cuánto comparten del patrón de valores, y cómo eso coincide con su cercanía en el mapa.',
+        dnaStrandNote:
+            'Cada hebra muestra el patrón de valores del embedding de una frase. Cuanto más parecidos son los patrones de valores, más cerca tienden a aparecer los embeddings de las dos frases en el espacio semántico.',
+        dnaDisclaimer:
+            'El ADN aquí es solo una metáfora visual. En un modelo real es un patrón de valores numéricos dentro de un vector, no una hebra biológica.',
     },
 
     explain: {

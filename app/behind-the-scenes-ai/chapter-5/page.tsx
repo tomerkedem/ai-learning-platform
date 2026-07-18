@@ -441,10 +441,21 @@ export default function BehindTheScenesChapter5() {
                         </div>
 
                         <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
+                            {/* משפט מקשר צמוד לתצוגה: מבהיר שכל גדיל הוא משפט אחד ולא קו דקורטיבי,
+                                ושדמיון הדפוסים הוא הסיבה לקרבה במרחב. נמצא ממש מעל הסולם כדי שהקישור ברור. */}
+                            <div className="mb-3 flex items-start justify-between gap-2.5">
+                                <p className="text-[13px] font-semibold leading-relaxed text-slate-200">{c5.sections.dnaStrandNote}</p>
+                                {/* ההקראה כוללת גם את הבהרת המטאפורה שמתחת לסולם, כדי שהיא נמצאת
+                                    בנתיב הקראה בלי כפתור נוסף גלוי. */}
+                                <SpeakButton text={`${c5.sections.dnaStrandNote} ${c5.sections.dnaDisclaimer}`} className="mt-0.5" />
+                            </div>
                             {/* דריסת המסגור של פרק 4: כותרת פרק-5 קצרה (דפוס הערכים) ובלי המבוא
                             הפנימי, שכבר נאמר בכרטיס המסגור מעל ה-ExpandableLab. כך אין חזרה על
                             "מה יש בתוך הווקטור" של פרק 4 ואין מבוא כפול. */}
                         <MeaningDnaStrip active={dnaA} compare={dnaB} geneLabels={c4Lab.genes} dna={c4Lab.dna} dir={dir} labNumber={2} title={c5.sections.dnaStripTitle} showIntro={false} />
+                            {/* הבהרת מטאפורה, משנית וקצרה: ה-DNA הוא המחשה, לא חוט ביולוגי. משלימה את
+                                axesNote המשותף (שמדבר על הצירים) בלי לגעת בטקסט פרק 4. */}
+                            <p className="mt-3 text-[12px] leading-relaxed text-slate-500">{c5.sections.dnaDisclaimer}</p>
                         </div>
                     </div>
                   </ExpandableLab>
