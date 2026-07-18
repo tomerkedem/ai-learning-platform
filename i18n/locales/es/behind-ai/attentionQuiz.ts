@@ -33,7 +33,7 @@ export const attentionQuiz = {
                 'Sí, siempre la última palabra de la frase',
             ],
             explanation:
-                'La importancia no es una propiedad fija de una palabra. En el laboratorio vimos que al quitar el "pero" o cambiar el estado, el foco de la atención se movió. El mismo modelo, pero el peso pasa de una palabra a otra según lo que dice la frase.',
+                'La importancia no es una propiedad fija de una palabra. En el laboratorio vimos que al quitar el "pero" o cambiar el estado, el foco de la atención se movió. Y en esa misma frase exacta, al elegir qué procesa el modelo ahora, la atención pasó de un lugar a otro. El mismo modelo, pero el peso cambia según lo que dice la frase y según lo que el modelo procesa en ese momento.',
         },
         2: {
             question: '¿Qué descripción se acerca más a lo que Attention realmente hace?',

@@ -32,6 +32,44 @@ export interface LabVariant {
     caption: string;
 }
 
+/** מצב "מוקד עיבוד" יחיד על אותו משפט בסיס. לא משנים מילה, רק מה שהמודל מעבד עכשיו. */
+export interface LabFocusState {
+    /** מזהה יציב, אינו מתורגם. */
+    id: string;
+    /** תווית הצ'יפ: מה המודל מעבד עכשיו (למשל 'את הסתירה'). */
+    label: string;
+    /** משקל קשב לכל טוקן במצב הזה. תלוי-שפה, מיושר ל-focus.tokens. */
+    weights: number[];
+    /** שני האינדקסים שמרכיבים את הקשר המרכזי במצב הזה. */
+    pair: [number, number];
+    pairStrength: number;
+    tension: LabTension;
+    /** כיתוב שמדגיש שהמשפט לא השתנה, רק מוקד העיבוד. */
+    caption: string;
+}
+
+/** תת-אינטראקציה: אותו משפט בדיוק, מוקד עיבוד אחר, קשב אחר. מבדילה מציר עריכת-הקלט. */
+export interface AttentionLabFocus {
+    title: string;
+    intro: string;
+    /** תזכורת לציר הראשון: שינוי במשפט משנה קשב. */
+    axisChangedLabel: string;
+    /** הציר החדש: אותו משפט, מוקד עיבוד אחר, קשב אחר. */
+    axisSameLabel: string;
+    /** השאלה מעל הצ'יפים. */
+    prompt: string;
+    /** תווית לפני שם המוקד הנוכחי (מציגה את הבחירה במפורש). */
+    nowFocusLabel: string;
+    /** המשפט הקבוע, זהה בשני המצבים (לתצוגה ולהקראה). */
+    sentence: string;
+    /** מילות המשפט בסדר קריאה, משותפות לשני המצבים. */
+    tokens: string[];
+    /** בדיוק שני מצבי מוקד. */
+    states: LabFocusState[];
+    /** aria-label לקבוצת הבחירה. */
+    srGroup: string;
+}
+
 export interface AttentionLabContent {
     /** כותרת הסקשן בעמוד (מעל הרכיב). */
     sectionEyebrow: string;
@@ -49,6 +87,8 @@ export interface AttentionLabContent {
     /** תוויות לקוראי מסך. */
     sr: { attention: string; percent: string; inPair: string; strength: string; group: string };
     variants: LabVariant[];
+    /** תת-אינטראקציה "מוקד עיבוד": אותו משפט, קשב אחר. */
+    focus: AttentionLabFocus;
 }
 
 export const attentionLab: AttentionLabContent = {
@@ -138,4 +178,38 @@ export const attentionLab: AttentionLabContent = {
                 'המילה "אותה" לא עומדת לבד. המודל צריך לחבר אותה חזרה ל"החבילה", אחרת לא ברור על מה הלקוח מדבר. גם זה קשב: קשר בין מילה לבין מה שהיא מחליפה.',
         },
     ],
+    focus: {
+        title: 'אותו משפט, מוקד אחר',
+        intro:
+            'עד כה שינינו את המשפט. אבל הקשב זז גם בלי לשנות אף מילה. הכול תלוי במה שהמודל מעבד ברגע הזה. אותו משפט בדיוק: בחרו מה הוא מעבד עכשיו, וראו לאן הקשב זז.',
+        axisChangedLabel: 'שינוי במשפט ⟵ קשב אחר',
+        axisSameLabel: 'אותו משפט, מוקד עיבוד אחר ⟵ קשב אחר',
+        prompt: 'מה המודל מעבד עכשיו?',
+        nowFocusLabel: 'המודל מעבד עכשיו:',
+        sentence: 'החבילה סומנה כנמסרה, אבל הלקוח אומר שלא קיבל אותה.',
+        tokens: ['החבילה', 'סומנה', 'כנמסרה', 'אבל', 'הלקוח', 'אומר', 'שלא', 'קיבל', 'אותה'],
+        srGroup: 'בחירת מוקד העיבוד הנוכחי',
+        states: [
+            {
+                id: 'contradiction',
+                label: 'את הסתירה',
+                weights: [0.55, 0.35, 0.95, 0.6, 0.3, 0.25, 0.8, 0.9, 0.3],
+                pair: [2, 7],
+                pairStrength: 0.9,
+                tension: 'high',
+                caption:
+                    'לא שינינו אף מילה. כרגע המודל מעבד את הסתירה שבלב המשפט, ולכן הקשר החזק הוא בין "כנמסרה" לבין "קיבל" עם השלילה.',
+            },
+            {
+                id: 'pronoun',
+                label: 'את המילה "אותה"',
+                weights: [0.85, 0.3, 0.5, 0.35, 0.35, 0.3, 0.4, 0.45, 0.9],
+                pair: [8, 0],
+                pairStrength: 0.85,
+                tension: 'shifted',
+                caption:
+                    'אותו משפט בדיוק. עכשיו המודל מעבד את המילה "אותה" וצריך לדעת למי היא מתייחסת, ולכן הקשר החזק עובר אל "החבילה". המילים לא זזו, רק מוקד העיבוד.',
+            },
+        ],
+    },
 };

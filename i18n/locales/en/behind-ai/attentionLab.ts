@@ -98,4 +98,38 @@ export const attentionLab: AttentionLabContent = {
                 'The word "it" does not stand alone. The model has to link it back to "package", otherwise it is not clear what the customer is talking about. This is attention too: the link between a word and what it stands for.',
         },
     ],
+    focus: {
+        title: 'Same sentence, different focus',
+        intro:
+            'Until now we changed the sentence. But attention also shifts without changing a single word. It all depends on what the model is processing at this moment. Same exact sentence: pick what it is processing now, and see where attention moves.',
+        axisChangedLabel: 'Change the sentence ⟶ different attention',
+        axisSameLabel: 'Same sentence, different focus ⟶ different attention',
+        prompt: 'What is the model processing right now?',
+        nowFocusLabel: 'The model is now processing:',
+        sentence: 'The package was marked delivered, but the customer never received it.',
+        tokens: ['The', 'package', 'was', 'marked', 'delivered', 'but', 'the', 'customer', 'never', 'received', 'it'],
+        srGroup: 'choose the current processing focus',
+        states: [
+            {
+                id: 'contradiction',
+                label: 'the contradiction',
+                weights: [0.35, 0.5, 0.3, 0.4, 0.95, 0.6, 0.3, 0.3, 0.85, 0.9, 0.35],
+                pair: [4, 9],
+                pairStrength: 0.9,
+                tension: 'high',
+                caption:
+                    'We did not change a single word. Right now the model is processing the contradiction at the heart of the sentence, so the strong link is between "delivered" and "received" with the negation.',
+            },
+            {
+                id: 'pronoun',
+                label: 'the word "it"',
+                weights: [0.85, 0.9, 0.3, 0.4, 0.5, 0.35, 0.3, 0.35, 0.4, 0.45, 0.9],
+                pair: [10, 1],
+                pairStrength: 0.85,
+                tension: 'shifted',
+                caption:
+                    'The exact same sentence. Now the model is processing the word "it" and needs to know what it refers to, so the strong link moves to "package". The words did not move, only the processing focus did.',
+            },
+        ],
+    },
 };

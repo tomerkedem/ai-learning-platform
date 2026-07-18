@@ -92,7 +92,7 @@ export const attention = {
         title: 'Cómo funciona el mecanismo de relaciones, sin fórmulas',
         sub: 'Query · Key · Value',
         body:
-            'Cada palabra lanza una especie de pregunta: ¿en qué me conviene fijarme ahora? Otras palabras muestran señales: ¿qué información contengo? El modelo calcula qué pares de pregunta y señal encajan con más fuerza, y luego mezcla la información según la intensidad de la coincidencia. Así el significado de cada palabra se actualiza según el contexto que la rodea. Esa es toda la idea, sin matemáticas.',
+            'El mecanismo le da a cada palabra tres papeles, y todos son numéricos, sin conciencia. Query, ¿qué estoy buscando ahora?: cada palabra guarda una marca de lo que le resulta relevante en este momento. Key, ¿qué señal indica que esta información podría encajar?: cada palabra ofrece una señal de coincidencia. Value, ¿qué información se transmite cuando hay coincidencia?: cuando un Query y una Key encajan con fuerza, el Value de esa palabra se transmite y se mezcla. Fíjate en que la Key es la señal de coincidencia, mientras que el Value es la información misma que se entrega. Son dos papeles distintos. Ninguna palabra pregunta de verdad. Son solo nombres de operaciones numéricas que actualizan el significado de cada palabra según el contexto que la rodea, sin matemáticas.',
     },
 
     // ── Bloqueo de comprensión ──

@@ -7,19 +7,27 @@
 // יחסים בין חלקי המשפט. הלומד עורך את המשפט (מסיר מילת ניגוד, מחליף סטטוס, הופך
 // שלילה, בוחן כינוי) ורואה איך הקשב והקשר בין החלקים משתנים מיד.
 //
-// i18n: כל הטקסט והנתונים תלויי-השפה (variants, tokens, weights, pair, captions,
-// labels) מגיעים מ-data (מילון attentionLab לפי locale). מיפוי הגוונים (tension ->
-// צבע) הוא היחיד שנשאר כאן, כי הוא מבני ואינו תלוי שפה. הכיוון (RTL/LTR) מגיע מ-dir.
+// שני צירים סיבתיים נפרדים:
+//   1. שינוי במשפט -> קשב אחר (בורר הווריאנטים).
+//   2. אותו משפט בדיוק, מוקד עיבוד אחר -> קשב אחר (תת-האינטראקציה FocusPanel).
+//
+// i18n: כל הטקסט והנתונים תלויי-השפה (variants, focus, tokens, weights, pair,
+// captions, labels) מגיעים מ-data (מילון attentionLab לפי locale). מיפוי הגוונים
+// (tension -> צבע) הוא היחיד שנשאר כאן, כי הוא מבני ואינו תלוי שפה. הכיוון (RTL/LTR)
+// מגיע מ-dir.
+//
+// TokenChips ו-RelationMeter הם עוזרים מקומיים לפרק הזה בלבד (לא הפשטה משותפת),
+// כדי שציר העריכה וציר מוקד-העיבוד יציגו את אותו ויזואל בלי כפילות.
 //
 // זו המחשה לימודית מפושטת, לא שיקוף מלא של מנגנון Attention במודל אמיתי. אין בקובץ
 // הזה מקף ארוך או מקף בינוני.
 // ────────────────────────────────────────────────────────────────────────
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Link2, Pencil, Sparkles, ArrowLeftRight } from 'lucide-react';
+import { Link2, Pencil, Sparkles, ArrowLeftRight, Crosshair } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
-import type { AttentionLabContent, LabTension } from '@/i18n/locales/he/behind-ai/attentionLab';
+import type { AttentionLabContent, LabTension, AttentionLabFocus } from '@/i18n/locales/he/behind-ai/attentionLab';
 import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
 
@@ -29,6 +37,164 @@ const TENSION_COLORS: Record<LabTension, { bar: string; text: string }> = {
     medium: { bar: 'bg-amber-400', text: 'text-amber-200' },
     low: { bar: 'bg-slate-500', text: 'text-slate-300' },
     shifted: { bar: 'bg-sky-400', text: 'text-sky-200' },
+};
+
+/** עוזר מקומי: שורת המילים עם עוצמת רקע לפי המשקל וטבעת על זוג הקשר. */
+const TokenChips: React.FC<{
+    tokens: string[];
+    weights: number[];
+    pair: [number, number];
+    dir: Direction;
+    reduce: boolean | null;
+    sr: AttentionLabContent['sr'];
+}> = ({ tokens, weights, pair, dir, reduce, sr }) => {
+    const maxW = Math.max(...weights, 0.0001);
+    const [pairA, pairB] = pair;
+    return (
+        <div className="flex flex-wrap items-stretch gap-2" dir={dir}>
+            {tokens.map((tok, j) => {
+                const inPair = j === pairA || j === pairB;
+                const intensity = weights[j] / maxW; // 0..1 ביחס למוביל
+                const pct = Math.round(weights[j] * 100);
+                const bg = `rgba(139, 92, 246, ${(0.08 + intensity * 0.55).toFixed(3)})`;
+                return (
+                    <motion.div
+                        key={tok + j}
+                        layout={!reduce}
+                        animate={reduce ? undefined : { scale: inPair ? 1.04 : 1 }}
+                        transition={reduce ? { duration: 0 } : { duration: 0.25 }}
+                        aria-label={`${tok}, ${sr.attention} ${pct} ${sr.percent}${inPair ? `, ${sr.inPair}` : ''}`}
+                        className={`relative flex flex-col items-center gap-1 rounded-xl border px-3 py-2 text-center ${inPair ? 'border-emerald-400/70 ring-1 ring-emerald-400/50' : 'border-white/10'
+                            }`}
+                        style={{ backgroundColor: bg }}
+                    >
+                        <span className="text-base font-bold leading-none text-slate-100">{tok}</span>
+                        <span className="font-mono text-[13px] leading-none text-slate-300/80" dir="ltr">{pct}%</span>
+                    </motion.div>
+                );
+            })}
+        </div>
+    );
+};
+
+/** עוזר מקומי: מד עוצמת הקשר בין שני החלקים המרכזיים. */
+const RelationMeter: React.FC<{
+    tokens: string[];
+    pair: [number, number];
+    pairStrength: number;
+    tension: LabTension;
+    data: AttentionLabContent;
+    reduce: boolean | null;
+}> = ({ tokens, pair, pairStrength, tension, data, reduce }) => {
+    const [pairA, pairB] = pair;
+    const tone = TENSION_COLORS[tension];
+    const toneLabel = data.tensionLabels[tension];
+    const pairPct = Math.round(pairStrength * 100);
+    return (
+        <div className="mt-5 rounded-xl border border-slate-700/50 bg-slate-950/30 p-3.5">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] font-bold text-slate-300">
+                    <ArrowLeftRight size={14} className="shrink-0 text-violet-300" />
+                    {data.relationLabel}
+                    <span className="text-slate-100">&quot;{tokens[pairA]}&quot;</span>
+                    <span className="text-slate-500">↔</span>
+                    <span className="text-slate-100">&quot;{tokens[pairB]}&quot;</span>
+                </span>
+                <span className={`text-[13px] font-bold ${tone.text}`}>{toneLabel}</span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-white/10" role="img" aria-label={`${data.sr.strength} ${pairPct} ${data.sr.percent}, ${toneLabel}`}>
+                <motion.div
+                    className={`h-full rounded-full ${tone.bar}`}
+                    initial={false}
+                    animate={{ width: `${pairPct}%` }}
+                    transition={reduce ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                />
+            </div>
+        </div>
+    );
+};
+
+/**
+ * תת-אינטראקציה "מוקד עיבוד": אותו משפט בדיוק, ובוחרים מה המודל מעבד עכשיו.
+ * ציר סיבתי שני, נבדל מציר עריכת-הקלט, בגוון sky כדי להבחין ויזואלית.
+ */
+const FocusPanel: React.FC<{
+    focus: AttentionLabFocus;
+    data: AttentionLabContent;
+    dir: Direction;
+    reduce: boolean | null;
+    speechLocale?: Locale;
+}> = ({ focus, data, dir, reduce, speechLocale }) => {
+    const [stateId, setStateId] = useState(focus.states[0].id);
+    const s = focus.states.find((x) => x.id === stateId) ?? focus.states[0];
+
+    return (
+        <div className="mt-5 rounded-2xl border border-sky-500/30 bg-slate-900/50 p-5 text-start" dir={dir}>
+            <div className="mb-3 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                    <Crosshair size={18} className="text-sky-300" />
+                    <div className="text-sm font-bold text-slate-100">{focus.title}</div>
+                </div>
+                <SpeakButton text={speakJoin(focus.sentence, s.caption)} speechLocale={speechLocale} />
+            </div>
+
+            <p className="text-[15px] leading-relaxed text-slate-300">{focus.intro}</p>
+
+            {/* שני הצירים הסיבתיים במפורש: תזכורת מול הציר החדש */}
+            <div className="mt-3 grid gap-1.5 sm:grid-cols-2">
+                <div className="rounded-lg border border-slate-700/50 bg-slate-950/30 px-3 py-2 text-[13px] text-slate-400">{focus.axisChangedLabel}</div>
+                <div className="rounded-lg border border-sky-500/40 bg-sky-950/20 px-3 py-2 text-[13px] font-bold text-sky-200">{focus.axisSameLabel}</div>
+            </div>
+
+            <p className="mt-4 mb-2 flex items-center gap-1.5 text-[13px] font-bold text-slate-300">
+                <Crosshair size={13} className="text-sky-400" />
+                {focus.prompt}
+            </p>
+            <div className="mb-3 flex flex-wrap gap-2" role="group" aria-label={focus.srGroup}>
+                {focus.states.map((item) => {
+                    const active = item.id === stateId;
+                    return (
+                        <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => setStateId(item.id)}
+                            aria-pressed={active}
+                            className={`rounded-xl border px-3 py-1.5 text-sm font-bold transition-colors ${active
+                                ? 'border-sky-400/60 bg-sky-900/30 text-sky-100'
+                                : 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600'
+                                }`}
+                        >
+                            {item.label}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {/* המוקד הנוכחי מוצג במפורש, גם לפני החלפה */}
+            <div className="mb-3 flex flex-wrap items-center gap-2 text-[13px] text-slate-400">
+                <span>{focus.nowFocusLabel}</span>
+                <span className="rounded-full border border-sky-500/40 bg-sky-950/30 px-2.5 py-0.5 font-bold text-sky-200">{s.label}</span>
+            </div>
+
+            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">{data.nowLabel}</div>
+            <TokenChips tokens={focus.tokens} weights={s.weights} pair={s.pair} dir={dir} reduce={reduce} sr={data.sr} />
+
+            <RelationMeter tokens={focus.tokens} pair={s.pair} pairStrength={s.pairStrength} tension={s.tension} data={data} reduce={reduce} />
+
+            <motion.p
+                key={s.id}
+                initial={reduce ? false : { opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={reduce ? { duration: 0 } : { duration: 0.25 }}
+                className="mt-4 rounded-xl border border-sky-500/30 bg-sky-950/15 p-3 text-[15px] leading-relaxed text-slate-200"
+            >
+                <span className="inline-flex items-center gap-1.5 font-bold text-sky-200">
+                    <Sparkles size={14} /> {s.label}
+                </span>{' '}
+                {s.caption}
+            </motion.p>
+        </div>
+    );
 };
 
 interface AttentionSentenceLabProps {
@@ -42,12 +208,6 @@ export const AttentionSentenceLab: React.FC<AttentionSentenceLabProps> = ({ data
     const reduce = useReducedMotion();
     const [variantId, setVariantId] = useState(data.variants[0].id);
     const v = data.variants.find((x) => x.id === variantId) ?? data.variants[0];
-
-    const maxW = useMemo(() => Math.max(...v.weights, 0.0001), [v]);
-    const [pairA, pairB] = v.pair;
-    const tone = TENSION_COLORS[v.tension];
-    const toneLabel = data.tensionLabels[v.tension];
-    const pairPct = Math.round(v.pairStrength * 100);
 
     return (
         <div className="rounded-2xl border border-violet-500/30 bg-slate-900/50 p-5 text-start" dir={dir}>
@@ -63,7 +223,7 @@ export const AttentionSentenceLab: React.FC<AttentionSentenceLabProps> = ({ data
                 <SpeakButton text={speakJoin(v.sentence, v.caption)} speechLocale={speechLocale} />
             </div>
 
-            {/* בורר עריכות */}
+            {/* ציר 1: בורר עריכות - שינוי במשפט משנה קשב */}
             <p className="mb-2 flex items-center gap-1.5 text-[13px] text-slate-400">
                 <Pencil size={13} className="text-violet-400" />
                 {data.pickHint}
@@ -90,51 +250,10 @@ export const AttentionSentenceLab: React.FC<AttentionSentenceLabProps> = ({ data
 
             {/* המשפט כמילים, עוצמת רקע לפי המשקל, טבעת על זוג הקשר */}
             <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">{data.nowLabel}</div>
-            <div className="flex flex-wrap items-stretch gap-2" dir={dir}>
-                {v.tokens.map((tok, j) => {
-                    const inPair = j === pairA || j === pairB;
-                    const intensity = v.weights[j] / maxW; // 0..1 ביחס למוביל
-                    const pct = Math.round(v.weights[j] * 100);
-                    const bg = `rgba(139, 92, 246, ${(0.08 + intensity * 0.55).toFixed(3)})`;
-                    return (
-                        <motion.div
-                            key={tok + j}
-                            layout={!reduce}
-                            animate={reduce ? undefined : { scale: inPair ? 1.04 : 1 }}
-                            transition={reduce ? { duration: 0 } : { duration: 0.25 }}
-                            aria-label={`${tok}, ${data.sr.attention} ${pct} ${data.sr.percent}${inPair ? `, ${data.sr.inPair}` : ''}`}
-                            className={`relative flex flex-col items-center gap-1 rounded-xl border px-3 py-2 text-center ${inPair ? 'border-emerald-400/70 ring-1 ring-emerald-400/50' : 'border-white/10'
-                                }`}
-                            style={{ backgroundColor: bg }}
-                        >
-                            <span className="text-base font-bold leading-none text-slate-100">{tok}</span>
-                            <span className="font-mono text-[13px] leading-none text-slate-300/80" dir="ltr">{pct}%</span>
-                        </motion.div>
-                    );
-                })}
-            </div>
+            <TokenChips tokens={v.tokens} weights={v.weights} pair={v.pair} dir={dir} reduce={reduce} sr={data.sr} />
 
             {/* מד עוצמת הקשר בין שני החלקים המרכזיים */}
-            <div className="mt-5 rounded-xl border border-slate-700/50 bg-slate-950/30 p-3.5">
-                <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
-                    <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] font-bold text-slate-300">
-                        <ArrowLeftRight size={14} className="shrink-0 text-violet-300" />
-                        {data.relationLabel}
-                        <span className="text-slate-100">&quot;{v.tokens[pairA]}&quot;</span>
-                        <span className="text-slate-500">↔</span>
-                        <span className="text-slate-100">&quot;{v.tokens[pairB]}&quot;</span>
-                    </span>
-                    <span className={`text-[13px] font-bold ${tone.text}`}>{toneLabel}</span>
-                </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-white/10" role="img" aria-label={`${data.sr.strength} ${pairPct} ${data.sr.percent}, ${toneLabel}`}>
-                    <motion.div
-                        className={`h-full rounded-full ${tone.bar}`}
-                        initial={false}
-                        animate={{ width: `${pairPct}%` }}
-                        transition={reduce ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                    />
-                </div>
-            </div>
+            <RelationMeter tokens={v.tokens} pair={v.pair} pairStrength={v.pairStrength} tension={v.tension} data={data} reduce={reduce} />
 
             {/* כיתוב דינמי למצב הנבחר */}
             <motion.p
@@ -149,6 +268,9 @@ export const AttentionSentenceLab: React.FC<AttentionSentenceLabProps> = ({ data
                 </span>{' '}
                 {v.caption}
             </motion.p>
+
+            {/* ציר 2: מוקד עיבוד - אותו משפט בדיוק, קשב אחר */}
+            <FocusPanel focus={data.focus} data={data} dir={dir} reduce={reduce} speechLocale={speechLocale} />
 
             <p className="mt-3 text-[13px] leading-relaxed text-slate-500">{data.disclaimer}</p>
         </div>

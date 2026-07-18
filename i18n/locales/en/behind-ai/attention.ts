@@ -94,7 +94,7 @@ export const attention = {
         title: 'How the relationship mechanism works, without formulas',
         sub: 'Query · Key · Value',
         body:
-            'Every word sends a kind of question: what should I be looking at right now? Other words reveal signals: what information do I hold? The model computes which pairs of question and signal match more strongly, and then mixes the information according to the strength of the match. That is how the meaning of each word updates based on the context around it. That is the whole idea, without math.',
+            'The mechanism gives every word three roles, and all of them are numerical, with no awareness. Query, what am I looking for right now: each word holds a marker of what is relevant to it at this moment. Key, what signal shows that this information may match: each word offers a matching signal. Value, what information is passed forward when a match is found: when a Query and a Key match strongly, the Value of that word is carried forward and mixed in. Note that the Key is the matching signal, while the Value is the information itself that gets delivered. These are two separate roles. No word literally asks a question. These are just names for numerical operations that update the meaning of each word according to the context around it, without math.',
     },
 
     // -- Check Your Understanding --

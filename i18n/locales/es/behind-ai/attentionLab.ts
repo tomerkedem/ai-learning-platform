@@ -100,4 +100,38 @@ export const attentionLab: AttentionLabContent = {
                 'La palabra "lo" no va sola. El modelo tiene que enlazarla de vuelta con "paquete", si no, no queda claro de qué habla el cliente. Esto también es atención: el vínculo entre una palabra y aquello a lo que sustituye.',
         },
     ],
+    focus: {
+        title: 'La misma frase, otro foco',
+        intro:
+            'Hasta ahora cambiamos la frase. Pero la atención también se mueve sin cambiar ni una palabra. Todo depende de lo que el modelo procesa en este momento. La misma frase exacta: elige qué procesa ahora y observa hacia dónde se mueve la atención.',
+        axisChangedLabel: 'Cambiar la frase ⟶ otra atención',
+        axisSameLabel: 'La misma frase, otro foco ⟶ otra atención',
+        prompt: '¿Qué está procesando el modelo ahora?',
+        nowFocusLabel: 'El modelo procesa ahora:',
+        sentence: 'El paquete figura como entregado, pero el cliente dice que nunca lo recibió.',
+        tokens: ['El', 'paquete', 'figura', 'como', 'entregado', 'pero', 'el', 'cliente', 'dice', 'que', 'nunca', 'lo', 'recibió'],
+        srGroup: 'elegir el foco de procesamiento actual',
+        states: [
+            {
+                id: 'contradiction',
+                label: 'la contradicción',
+                weights: [0.3, 0.55, 0.35, 0.3, 0.95, 0.6, 0.25, 0.3, 0.25, 0.2, 0.8, 0.35, 0.9],
+                pair: [4, 12],
+                pairStrength: 0.9,
+                tension: 'high',
+                caption:
+                    'No cambiamos ni una palabra. Ahora mismo el modelo procesa la contradicción en el centro de la frase, por eso el vínculo fuerte está entre "entregado" y "recibió" con la negación.',
+            },
+            {
+                id: 'pronoun',
+                label: 'la palabra "lo"',
+                weights: [0.3, 0.85, 0.3, 0.3, 0.5, 0.35, 0.25, 0.35, 0.3, 0.2, 0.4, 0.9, 0.45],
+                pair: [11, 1],
+                pairStrength: 0.85,
+                tension: 'shifted',
+                caption:
+                    'La misma frase exacta. Ahora el modelo procesa la palabra "lo" y necesita saber a qué se refiere, por eso el vínculo fuerte pasa a "paquete". Las palabras no se movieron, solo el foco de procesamiento.',
+            },
+        ],
+    },
 };

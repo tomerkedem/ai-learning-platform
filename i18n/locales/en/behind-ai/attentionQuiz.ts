@@ -32,7 +32,7 @@ export const attentionQuiz = {
                 'Yes, always the last word in the sentence',
             ],
             explanation:
-                'Importance is not a fixed property of a word. In the lab we saw that when you remove "but" or swap the status, the focus of attention moves. Same model, but the weight shifts from word to word depending on what the sentence says.',
+                'Importance is not a fixed property of a word. In the lab we saw that when you remove "but" or swap the status, the focus of attention moves. And in the exact same sentence, when we chose what the model is processing now, attention moved from place to place. Same model, but the weight shifts based on what the sentence says and on what the model is processing at that moment.',
         },
         2: {
             question: 'Which description is closest to what Attention actually does?',
