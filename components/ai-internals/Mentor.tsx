@@ -78,7 +78,7 @@ const POSE_SRC: Record<MentorPose, string> = {
     holographic: '/assets/mentor_holographic.png',
     // פוזת הירו של פרק 5 (המרחב הסמנטי): המנטור מחזיק אשכולות מושגים הולוגרפיים
     // ומצביע על קבוצות מילים קרובות במשמעות. נכס שקוף. בשימוש בהירו של פרק 5 בלבד.
-    holographicUi: '/assets/mentor-holographic-ui-transparent-alpha.png',
+    holographicUi: '/assets/mentor-holographic.png',
     // פוזת מבוא (מפת המנוע): המנטור מלווה את מפת התחנות מהטקסט עד התשובה ופותח אותה
     // ללומד. נכס שקוף (ללא מסכה לבנה). בשימוש במבוא בלבד.
     mapNavigator: '/assets/mentor_map_navigator.png',
