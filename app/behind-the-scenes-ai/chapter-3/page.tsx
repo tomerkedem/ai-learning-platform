@@ -220,8 +220,22 @@ export default function BehindTheScenesChapter3() {
                     </div>
                 </motion.section>
 
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="token" line={c3.mentor.hero} width={248} flip={!isRtl} />
+                {/* מנטור ההירו: מוגדל, יושב בצד הפנימי של הכרטיס (הצד של הסרגל): ב-RTL מימין,
+                    ב-LTR משמאל. ההיפוך (flip={!isRtl}) מפנה את היד הפתוחה אל הטקסט, וה-translate
+                    מקרב את הדמות אל שולי הכרטיס כך שהיד אינה מכסה את הטקסט. ה-pt מרחיק את הבועה
+                    מהראש, וה-bubbleShiftX ממרכז אותה מעל הראש (שאינו במרכז המסגרת). */}
+                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full -translate-x-[115px]' : 'right-full translate-x-[115px]'} z-20 hidden xl:block pointer-events-none`}>
+                    <Mentor
+                        pose="token"
+                        line={c3.mentor.hero}
+                        width={414}
+                        flip={!isRtl}
+                        float={false}
+                        bubbleShiftX={74}
+                        bubbleWidthClass="max-w-[17rem]"
+                        bubbleTextClass="text-[15px]"
+                        className="pt-[6px]"
+                    />
                 </div>
             </div>
 
