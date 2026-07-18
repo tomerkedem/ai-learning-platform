@@ -64,14 +64,18 @@ const DiagramContext: React.FC = () => (
     </span>
 );
 
-// שלב 3: ייצוג לימודי אחד למשפט כולו
-const DiagramSummary: React.FC = () => (
-    <span className="rounded border border-fuchsia-400/40 bg-fuchsia-500/10 px-2 py-1">
-        <VectorBars count={7} />
+// שלב 3: אין שורה אחת למשפט, יש רצף של שורות (אחת לכל טוקן)
+const DiagramSequence: React.FC = () => (
+    <span className="flex items-end gap-1">
+        {[0, 1, 2].map((i) => (
+            <span key={i} className="rounded border border-fuchsia-400/40 bg-fuchsia-500/10 px-1 py-1">
+                <VectorBars />
+            </span>
+        ))}
     </span>
 );
 
-const DIAGRAMS = [DiagramTokens, DiagramContext, DiagramSummary];
+const DIAGRAMS = [DiagramTokens, DiagramContext, DiagramSequence];
 
 /* ── מחבר בין שלבים: חץ מטה במובייל, חץ לפי כיוון הקריאה בדסקטופ. דקורטיבי בלבד. ── */
 

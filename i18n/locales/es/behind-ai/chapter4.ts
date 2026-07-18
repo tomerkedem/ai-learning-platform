@@ -21,9 +21,9 @@ export const chapter4 = {
         badge: 'Behind the Scenes · 04',
         titleLead: '¿De dónde salen los números',
         titleHighlight: 'que representan cada token?',
-        lede: 'Cada token tiene un Token ID, y ese ID apunta a una fila de la tabla de embeddings. Esa fila contiene el vector aprendido durante el entrenamiento, y representa patrones y relaciones que el modelo aprendió de los datos.',
-        chipObject: 'Sigue un token desde su Token ID hasta su vector',
-        chipMeaning: 'Mira cómo se recupera el vector aprendido del token',
+        lede: 'En el capítulo anterior vimos cómo el texto se divide en tokens, y cada token recibe un Token ID. Pero un número como el 17 por sí solo no le dice al modelo nada sobre lo que significa el token.',
+        chipObject: 'Del texto a los tokens y a los números',
+        chipMeaning: '¿Entonces de dónde viene el significado?',
     },
 
     // Burbujas del mentor (solo texto; la pose y la ubicación son estructurales en la página)
@@ -67,18 +67,6 @@ export const chapter4 = {
         retryButton: 'Inténtalo de nuevo',
     },
 
-    // En palabras simples: qué es de verdad un embedding (tras la adivinanza, antes de la demo)
-    plain: {
-        eyebrow: 'En palabras simples',
-        title: '¿Entonces qué es de verdad un embedding?',
-        lines: [
-            'Cada token ya tiene un número identificador, y ese número apunta a una fila fija en una tabla.',
-            'La fila es un vector: una lista de números, no un solo número.',
-            'Estos números se aprendieron en el entrenamiento, para que el vector represente el significado del token. Un vector así se llama embedding.',
-            'Todo embedding es un vector, pero no todo vector es un embedding. Un embedding es un vector que el modelo aprendió para representar significado.',
-        ],
-    },
-
     // Puente al capítulo 5 (Semantic Space): tenemos un vector por frase, qué pasa al juntarlos
     bridge: 'Ahora tenemos un vector para cada frase. En el próximo capítulo veremos qué pasa cuando ponemos muchos de estos vectores juntos en un mismo espacio.',
 
@@ -95,12 +83,12 @@ export const chapter4 = {
 
     // De una tabla a un vector: el puente explícito del Token ID (dirección) al vector (contenido de la fila)
     embeddingTable: {
-        title: '¿Qué es la tabla de embeddings?',
+        title: '¿Cómo se convierte un Token ID en un Embedding?',
         lines: [
-            'La tabla de embeddings es una tabla grande de filas de números que se aprendieron durante el entrenamiento. No es un diccionario: no contiene definiciones escritas y no se puede leer como un texto.',
-            'El Token ID es el número de fila, una dirección y nada más. Él mismo no contiene el significado.',
-            'La fila a la que lleva la dirección contiene el vector del token: la lista de números aprendidos para él.',
-            'Los valores se aprendieron una vez, en el entrenamiento. Durante el uso el modelo consulta la fila correspondiente, no la vuelve a aprender.',
+            'En el capítulo anterior cada token recibió un Token ID. El ID es una dirección: solo dice qué token es, no lo que significa.',
+            'El modelo contiene una tabla de embeddings, una tabla grande de filas de números aprendidas durante el entrenamiento. El Token ID es el número de fila, y selecciona una fila de la tabla.',
+            'Esa fila contiene una lista ordenada de números, el vector. Este es el embedding inicial del token. El modelo lo consulta en la tabla, no lo calcula a partir de los dígitos del ID.',
+            'Todo embedding es un vector, pero no todo vector es un embedding. Un embedding es un vector cuyos valores se aprendieron para representar significado.',
         ],
         note: 'La mayoría de los números de una fila no tienen un nombre que una persona pueda leer. La tabla que se muestra aquí es una ilustración pequeña, con pocas filas y pocos valores. Una tabla real tiene muchos más tokens y muchas más dimensiones.',
     },
@@ -109,28 +97,28 @@ export const chapter4 = {
     sequence: {
         eyebrow: 'De los tokens a la frase',
         title: '¿Y qué pasa con una frase entera?',
-        intro: 'Ahora vamos a unir los vectores en una imagen más amplia de la frase.',
+        intro: 'Una frase son varios tokens en fila, y cada token recorre el mismo camino por su cuenta.',
         steps: [
             {
-                title: 'Cada token recibe un vector',
-                body: 'Cada token apunta a su propia fila en la tabla y toma de ahí su vector.',
+                title: 'Cada token tiene su propio Token ID',
+                body: 'La frase se divide en tokens, y cada token recibe su propio Token ID.',
             },
             {
-                title: 'El modelo los procesa juntos',
-                body: 'El modelo mira la secuencia como un todo, y cada representación cambia según las palabras que la rodean.',
+                title: 'Cada Token ID consulta su propio Embedding',
+                body: 'Cada Token ID apunta a su propia fila en la tabla y consulta de ella un vector aprendido. Así la frase empieza como una secuencia de embeddings, uno por token.',
             },
             {
-                title: 'Al final verás una representación didáctica',
-                body: 'Resume el patrón que se forma una vez que todos los tokens se han procesado juntos y en contexto.',
+                title: 'No hay una sola fila para la frase',
+                body: 'No hay una sola fila en la tabla de embeddings que represente toda la frase. Hay una secuencia de filas, una por token.',
             },
         ],
-        clarify: 'Una frase entera no tiene un Token ID propio ni una fila adicional en la tabla de embeddings. La representación que verás al final es una ilustración didáctica de la secuencia ya procesada.',
+        clarify: 'El Embedding que se consulta en la tabla es el punto de partida. Después las capas del modelo actualizarán la representación según el contexto y las palabras que la rodean.',
     },
 
     lab2: {
         eyebrow: 'Laboratorio 2',
-        title: 'Del token a su representación',
-        goal: 'La frase ya llega como una secuencia de tokens. Aquí sigues un solo token: desde su Token ID hasta la fila aprendida a la que apunta.',
+        title: 'De la frase a una secuencia de Embeddings',
+        goal: 'La frase llega como una secuencia de tokens. Aquí verás que cada token recibe su propio Token ID y consulta su propio Embedding, así que la frase empieza como una secuencia de embeddings, no una sola fila.',
         stepLabel: 'Paso',
         steps: [
             {
@@ -138,19 +126,19 @@ export const chapter4 = {
                 hint: 'Elige un escenario y pulsa "Reprodúcelo". La frase llega ya dividida en tokens, lista para inspeccionar.',
             },
             {
-                title: 'Elige un token y sigue su representación',
-                hint: 'Pulsa un token para ver su Token ID. El ID es una dirección, y apunta a una fila de la tabla de embeddings.',
+                title: 'Mira la secuencia de Token IDs',
+                hint: 'Pulsa "Palabras / IDs" para ver todos los tokens como una secuencia de IDs. Cada token recibe su propio Token ID, y cada uno tiene su propia fila en la tabla. Pulsa un token para ver su dirección.',
             },
         ],
         conclusionLabel: 'Conclusión del laboratorio',
         waiting: {
-            step2: 'Empieza por el Paso 1 y pulsa "Reprodúcelo". Después podrás elegir un token y seguirlo desde su Token ID hasta su representación.',
+            step2: 'Empieza por el Paso 1 y pulsa "Reprodúcelo". Después verás todos los tokens como una secuencia, cada uno con su propio Token ID.',
         },
     },
 
     labConclusion: {
         title: '¿Qué hemos visto?',
-        body: 'Cada token de la frase tiene su propio Token ID, y cada Token ID apunta a su propia fila en la tabla de embeddings. Por eso una frase entera no recibe una sola fila, sino una secuencia de vectores, uno por token.',
+        body: 'Cada token de la frase tiene su propio Token ID, y cada Token ID consulta su propia fila en la tabla de embeddings. Viste una secuencia de Embeddings, no un solo Embedding consultado para toda la frase.',
     },
 
     trainingInference: {

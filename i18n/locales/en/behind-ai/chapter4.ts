@@ -23,9 +23,9 @@ export const chapter4 = {
         badge: 'Behind the Scenes · 04',
         titleLead: 'Where do the numbers',
         titleHighlight: 'that represent each token come from?',
-        lede: 'Every token has a Token ID, and that ID points to a row in the embedding table. That row holds the vector learned during training, and it represents patterns and relationships the model learned from data.',
-        chipObject: 'Follow a token from its Token ID to its vector',
-        chipMeaning: 'See the learned vector being looked up for a token',
+        lede: 'In the previous chapter we saw how text breaks into tokens, and each token gets a Token ID. But a number like 17 on its own tells the model nothing about what the token means.',
+        chipObject: 'From text to tokens to numbers',
+        chipMeaning: 'So where does the meaning come from?',
     },
 
     // Mentor speech bubbles (text only; pose and placement are structural in the page)
@@ -69,18 +69,6 @@ export const chapter4 = {
         retryButton: 'Try again',
     },
 
-    // Plain words: what an embedding really is (after the guess, before the demo)
-    plain: {
-        eyebrow: 'In plain words',
-        title: 'So what is an embedding, really?',
-        lines: [
-            'Every token already has an ID number, and that number points to a fixed row in a table.',
-            'The row is a vector: a list of numbers, not a single number.',
-            'These numbers were learned in training, so the vector represents the meaning of the token. A vector like that is called an embedding.',
-            'Every embedding is a vector, but not every vector is an embedding. An embedding is a vector the model learned to represent meaning with.',
-        ],
-    },
-
     // Bridge to Chapter 5 (Semantic Space): we have a vector per sentence, what happens together
     bridge: 'Now we have a vector for every sentence. In the next chapter we will see what happens when we put many of these vectors together in one space.',
 
@@ -97,12 +85,12 @@ export const chapter4 = {
 
     // From a table to a vector: the explicit bridge from Token ID (address) to the vector (row contents)
     embeddingTable: {
-        title: 'What is the embedding table?',
+        title: 'How does a Token ID become an Embedding?',
         lines: [
-            'The embedding table is a large table of number rows that were learned during training. It is not a dictionary: it holds no written definitions, and you cannot read it like text.',
-            'The Token ID is the row number, an address and nothing more. It does not carry the meaning itself.',
-            'The row that the address leads to holds the token vector: the list of numbers learned for it.',
-            'The values were learned once, in training. During use the model looks up the matching row, it does not learn it again.',
+            'In the previous chapter each token got a Token ID. The ID is an address: it only says which token this is, not what it means.',
+            'The model holds an embedding table, a large table of number rows learned during training. The Token ID is the row number, and it selects one row from the table.',
+            'That row holds an ordered list of numbers, the vector. This is the token\'s initial embedding. The model looks it up from the table, it does not calculate it from the digits of the ID.',
+            'Every embedding is a vector, but not every vector is an embedding. An embedding is a vector whose values were learned to represent meaning.',
         ],
         note: 'Most numbers in a row have no name a person can read. The table shown here is a small illustration, with few rows and few values. A real table has far more tokens and far more dimensions.',
     },
@@ -111,28 +99,28 @@ export const chapter4 = {
     sequence: {
         eyebrow: 'From tokens to a sentence',
         title: 'So what happens to a whole sentence?',
-        intro: 'Now let us pull the vectors together into a wider picture of the sentence.',
+        intro: 'A sentence is several tokens in a row, and each token goes through the same path on its own.',
         steps: [
             {
-                title: 'Every token gets a vector',
-                body: 'Each token points to its own row in the table and takes its vector from there.',
+                title: 'Every token has its own Token ID',
+                body: 'The sentence breaks into tokens, and each token gets its own Token ID.',
             },
             {
-                title: 'The model processes them together',
-                body: 'The model looks at the sequence as a whole, and each representation shifts according to the words around it.',
+                title: 'Every Token ID looks up its own Embedding',
+                body: 'Each Token ID points to its own row in the table and looks up a learned vector from it. So the sentence begins as a sequence of embeddings, one per token.',
             },
             {
-                title: 'At the end you see one teaching representation',
-                body: 'It sums up the pattern that forms once all the tokens have been processed together and in context.',
+                title: 'No single row for the sentence',
+                body: 'There is no single row in the embedding table that stands for the whole sentence. There is a sequence of rows, one per token.',
             },
         ],
-        clarify: 'A whole sentence has no Token ID of its own, and no extra row in the embedding table. The representation you see at the end is a teaching illustration of the processed sequence.',
+        clarify: 'The Embedding looked up from the table is the starting point. Later the model layers will update the representation based on the context and the words around it.',
     },
 
     lab2: {
         eyebrow: 'Laboratory 2',
-        title: 'From a token to its representation',
-        goal: 'The sentence already arrives as a sequence of tokens. Here you follow a single token: from its Token ID to the learned row it points to.',
+        title: 'From a sentence to a sequence of Embeddings',
+        goal: 'The sentence arrives as a sequence of tokens. Here you see that each token gets its own Token ID and looks up its own Embedding, so the sentence begins as a sequence of embeddings, not a single row.',
         stepLabel: 'Step',
         steps: [
             {
@@ -140,19 +128,19 @@ export const chapter4 = {
                 hint: 'Choose a scenario and press "Play it". The sentence arrives already split into tokens, ready to inspect.',
             },
             {
-                title: 'Pick a token and follow its representation',
-                hint: 'Click a token to see its Token ID. The ID is an address, and it points to a row in the embedding table.',
+                title: 'See the sequence of Token IDs',
+                hint: 'Press "Words / IDs" to see all the tokens as a sequence of IDs. Each token gets its own Token ID, and each has its own row in the table. Click a token to see its address.',
             },
         ],
         conclusionLabel: 'Laboratory conclusion',
         waiting: {
-            step2: 'Start with Step 1 and press "Play it". Then you can pick a token and follow it from its Token ID to its representation.',
+            step2: 'Start with Step 1 and press "Play it". Then you will see all the tokens as a sequence, each with its own Token ID.',
         },
     },
 
     labConclusion: {
         title: 'What did we see?',
-        body: 'Every token in the sentence has its own Token ID, and each Token ID points to its own row in the embedding table. So a whole sentence does not get a single row, but a sequence of vectors, one per token.',
+        body: 'Every token in the sentence has its own Token ID, and each Token ID looks up its own row from the embedding table. You saw a sequence of Embeddings, not a single Embedding looked up for the whole sentence.',
     },
 
     trainingInference: {

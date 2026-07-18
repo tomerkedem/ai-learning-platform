@@ -208,7 +208,6 @@ export default function BehindTheScenesChapter4() {
     const el = c4.embeddingLookup;
     const sTitle: ReadAloudSegment = { id: 'title', label: c4.hero.titleLead, text: `${c4.hero.titleLead} ${c4.hero.titleHighlight}. ${c4.hero.lede}` };
     const sGuessInsight: ReadAloudSegment = { id: 'guess-insight', label: c4.guess.successInsight, text: c4.guess.successInsight };
-    const sPlain: ReadAloudSegment = { id: 'plain', label: c4.plain.title, text: `${c4.plain.title} ${c4.plain.lines.join(' ')}` };
     const sLookup: ReadAloudSegment = { id: 'lookup', label: el.title, text: `${el.title}. ${el.intro}` };
     const sLookupLearned: ReadAloudSegment = { id: 'lookup-learned', label: el.vectorTitle, text: `${el.vectorNote} ${el.learnedNote}` };
     const sLookupView: ReadAloudSegment = { id: 'lookup-view', label: el.viewNumbers, text: el.viewNote };
@@ -232,9 +231,9 @@ export default function BehindTheScenesChapter4() {
     const sBridge: ReadAloudSegment = { id: 'bridge', label: c4.bridge, text: c4.bridge };
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
-        short: [sTitle, sPlain, sTable, sSequence, sLabConclusion, sTraining, sBridge],
-        regular: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sTable, sSequence, sLabConclusion, sTraining, sPracticalFull, sBridge],
-        full: [sTitle, sGuessInsight, sPlain, sLookup, sLookupLearned, sLookupView, sTable, sSequence, sLabConclusion, sTraining, sPracticalFull, sCaveat, sBridge],
+        short: [sTitle, sTable, sSequence, sLabConclusion, sTraining, sBridge],
+        regular: [sTitle, sGuessInsight, sLookup, sLookupLearned, sTable, sSequence, sLabConclusion, sTraining, sPracticalFull, sBridge],
+        full: [sTitle, sGuessInsight, sLookup, sLookupLearned, sLookupView, sTable, sSequence, sLabConclusion, sTraining, sPracticalFull, sCaveat, sBridge],
     };
 
     // מבדק הפרק: המנגנון המשותף (onComplete, getReviewLinks, nextHref...) נשמר מ-quizData,
@@ -333,28 +332,8 @@ export default function BehindTheScenesChapter4() {
                 <MeaningGuess />
             </section>
 
-            {/* ══════════ במילים פשוטות: מה Embedding באמת עושה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
-                <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
-                    <div className="flex items-start justify-between gap-2.5">
-                        <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
-                            <Sparkles size={14} /> {c4.plain.eyebrow}
-                        </span>
-                        <SpeakButton text={`${c4.plain.title} ${c4.plain.lines.join(' ')}`} />
-                    </div>
-                    <h3 className="mb-4 text-xl font-black text-white md:text-2xl">{c4.plain.title}</h3>
-                    <ul className="space-y-3">
-                        {c4.plain.lines.map((line) => (
-                            <li key={line} className="flex items-start gap-3">
-                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
-                                <span className="text-[15px] leading-relaxed text-slate-200">{line}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </section>
-
-            {/* ══════════ מהי טבלת ה-embedding: הסבר המונח לפני שהלומד רואה טבלה במעבדה 1 ══════════ */}
+            {/* ══════════ הכרטיס המסביר היחיד: איך Token ID הופך ל-Embedding (אחרי הניחוש, לפני מעבדה 1) ══════════ */}
+            {/* מיזוג שני כרטיסי הפתיחה לכרטיס אחד: מנגנון ה-lookup במקום אחד, בלי חזרה. */}
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-cyan-500/25 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
                     <div className="flex items-start justify-between gap-2.5">
@@ -372,6 +351,20 @@ export default function BehindTheScenesChapter4() {
                             </li>
                         ))}
                     </ul>
+                    {/* רצף קומפקטי: Token ID -> שורה בטבלה -> וקטור. מחזק את המנגנון לפני מעבדה 1. */}
+                    <div className="mt-4 flex flex-wrap items-center gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-3.5" dir={dir}>
+                        <span className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-900/15 px-2.5 py-1.5 text-sm font-bold text-cyan-200" dir="ltr">
+                            <Hash size={14} /> Token ID
+                        </span>
+                        {isRtl ? <ArrowLeft size={16} className="shrink-0 text-slate-500" /> : <ArrowRight size={16} className="shrink-0 text-slate-500" />}
+                        <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-600/40 bg-slate-800/40 px-2.5 py-1.5 text-sm font-bold text-slate-200">
+                            <Table2 size={14} className="text-cyan-300" /> {c4.embeddingLookup.tableTitle}
+                        </span>
+                        {isRtl ? <ArrowLeft size={16} className="shrink-0 text-slate-500" /> : <ArrowRight size={16} className="shrink-0 text-slate-500" />}
+                        <span className="inline-flex items-center gap-1.5 rounded-lg border border-violet-500/30 bg-violet-900/15 px-2.5 py-1.5 text-sm font-bold text-violet-200">
+                            <Sparkles size={14} /> {c4.embeddingLookup.vectorTitle}
+                        </span>
+                    </div>
                     {/* הפישוט הלימודי: לא הערת שוליים, אלא חלק מההסבר */}
                     <p className="mt-4 flex items-start gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[15px] leading-relaxed text-slate-300">
                         <Info size={17} className="mt-0.5 shrink-0 text-cyan-300" />

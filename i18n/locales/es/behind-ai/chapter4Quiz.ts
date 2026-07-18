@@ -33,15 +33,15 @@ export const chapter4Quiz = {
                 'La frase no entra en la tabla como una sola unidad. Se divide en tokens, cada token tiene su propio Token ID, y cada Token ID apunta a su propia fila en la tabla de embeddings. No hay una fila para una frase entera, ni un único ID que represente toda la frase. Lo que se saca en esta etapa es una secuencia de filas, una por token.',
         },
         2: {
-            question: '¿Qué es un Token ID?',
+            question: 'El Token ID de una palabra tiene los dígitos 4, 1, 7. ¿El modelo calcula el vector a partir de esos dígitos?',
             options: [
-                'El significado numérico de la palabra',
-                'Una dirección fija del token en el vocabulario',
-                'Una puntuación de similitud entre dos palabras',
-                'Cuántas veces aparece la palabra en el texto',
+                'No. 417 es una dirección. El vector se consulta en la fila 417 de la tabla, y los dígitos en sí no forman parte del cálculo',
+                'Sí. El modelo hace un cálculo con los dígitos 4, 1 y 7 para construir el vector',
+                'Sí. El tamaño del número 417 decide qué tan importante es la palabra en la frase',
+                'No. No hay relación entre el ID y el vector, el modelo construye un vector nuevo en cada chat',
             ],
             explanation:
-                'Un Token ID es una dirección fija en el vocabulario, no un significado. Solo marca qué token es. El significado llega en el paso siguiente, cuando se construye un vector de significado a partir de la secuencia de IDs.',
+                'Un Token ID es una dirección, no una entrada de un cálculo. El número 417 solo selecciona la fila 417 en la tabla de embeddings, y de ahí el modelo consulta el vector aprendido. Los dígitos 4, 1 y 7 no forman parte de ningún cálculo, el tamaño del número no dice nada sobre la importancia, y el modelo no construye un vector nuevo en cada chat, consulta lo que ya se aprendió.',
         },
         3: {
             question:
@@ -56,15 +56,15 @@ export const chapter4Quiz = {
                 'Un Token ID es una dirección, no significado. Apunta a una fila fija de la tabla de embeddings, y el contenido de esa fila es el vector aprendido durante el entrenamiento. El modelo lo consulta al usarlo, no lo recalcula en cada conversación, y el tamaño del ID no dice nada sobre la importancia del token.',
         },
         4: {
-            question: 'En el laboratorio viste barras con nombres como "Entrega", "Fallo" y "Urgencia". ¿Qué dice eso sobre las dimensiones de un vector real?',
+            question: 'En el laboratorio viste una fila de números sin nombre en ninguna dimensión. ¿Qué puedes concluir sobre el vector?',
             options: [
-                'Los nombres se eligieron para la visualización. Una representación real tiene muchas más dimensiones y casi ninguna tiene un nombre legible',
-                'Son las dimensiones reales del modelo, y se pueden leer exactamente así',
-                'Cada dimensión tiene un nombre claro, pero solo los ingenieros pueden verlo',
-                'Las dimensiones se renombran en cada conversación, según el tema',
+                'El significado se aprende del patrón completo de valores, y normalmente ninguna dimensión tiene una etiqueta legible fija',
+                'Cada posición del vector tiene un concepto claro y fijo que podrías nombrar',
+                'El vector es una lista aleatoria de números sin significado aprendido',
+                'Los dígitos del Token ID son los que fijan los valores del vector',
             ],
             explanation:
-                'Los nombres que ves en la visualización se eligieron para ilustrar. Una representación real tiene cientos de dimensiones o más, y la mayoría no tiene un nombre que una persona pueda leer, tampoco los ingenieros. La estructura de la representación se aprende durante el entrenamiento y no recibe nombres nuevos en cada conversación. Los valores, en cambio, sí pueden cambiar según la entrada y el contexto.',
+                'El vector contiene muchos números aprendidos, y el significado se reparte por todo el patrón, no está en un solo número. Normalmente ninguna dimensión tiene un nombre que una persona pueda leer. Los valores se aprendieron durante el entrenamiento para representar significado, no son aleatorios, y no se derivan de los dígitos del Token ID. El ID solo selecciona la fila.',
         },
         5: {
             question:

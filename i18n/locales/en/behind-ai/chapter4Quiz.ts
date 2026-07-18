@@ -33,15 +33,15 @@ export const chapter4Quiz = {
                 'The sentence does not enter the table as a single unit. It is split into tokens, each token has its own Token ID, and each Token ID points to its own row in the embedding table. There is no row for a whole sentence, and no single ID that stands for the whole sentence. What is pulled out at this stage is a sequence of rows, one per token.',
         },
         2: {
-            question: 'What is a Token ID?',
+            question: 'A word\'s Token ID has the digits 4, 1, 7. Does the model calculate the vector from these digits?',
             options: [
-                'The numeric meaning of the word',
-                'A fixed address of the token in the vocabulary',
-                'A similarity score between two words',
-                'How many times the word appears in the text',
+                'No. 417 is an address. The vector is looked up from row 417 in the table, and the digits themselves are not part of the calculation',
+                'Yes. The model runs a calculation on the digits 4, 1 and 7 to build the vector',
+                'Yes. The size of the number 417 decides how important the word is in the sentence',
+                'No. There is no link between the ID and the vector, the model builds a new vector every chat',
             ],
             explanation:
-                'A Token ID is a fixed address in the vocabulary, not a meaning. It only marks which token this is. Meaning arrives in the next step, when a meaning vector is built from the sequence of IDs.',
+                'A Token ID is an address, not an input to a calculation. The number 417 only selects row 417 in the embedding table, and from there the model looks up the learned vector. The digits 4, 1 and 7 are not part of any calculation, the size of the number says nothing about importance, and the model does not build a new vector every chat, it looks up what was already learned.',
         },
         3: {
             question:
@@ -56,15 +56,15 @@ export const chapter4Quiz = {
                 'A Token ID is an address, not meaning. It points to a fixed row in the embedding table, and the contents of that row are the vector learned during training. The model looks that vector up at use time, it does not recompute it in every conversation, and the size of the ID says nothing about how important the token is.',
         },
         4: {
-            question: 'In the lab you saw bars labelled "Delivery", "Failure" and "Urgency". What does that say about the dimensions in a real vector?',
+            question: 'In the lab you saw a row of numbers with no name on any dimension. What can you conclude about the vector?',
             options: [
-                'The names were chosen for the visualization. A real representation has far more dimensions, and most have no readable name',
-                'These are the real dimensions of the model, and they can be read exactly like this',
-                'Every dimension has a clear name, but only engineers get to see it',
-                'The dimensions are renamed in every conversation, according to the topic',
+                'The meaning is learned from the whole pattern of values, and usually no single dimension has a fixed human-readable label',
+                'Every position in the vector has a clear, fixed concept you could name',
+                'The vector is a random list of numbers with no learned meaning',
+                'The digits of the Token ID are what set the values of the vector',
             ],
             explanation:
-                'The names in the visualization were chosen for illustration. A real representation has hundreds of dimensions or more, and most of them have no name a person can read, engineers included. The structure of the representation is learned during training, and it does not get new names in every conversation. The values themselves, on the other hand, can change according to the input and the context.',
+                'The vector holds many learned numbers, and the meaning is spread across the whole pattern, not sitting in any single number. Usually no single dimension has a name a person can read. The values were learned during training to represent meaning, they are not random, and they are not derived from the digits of the Token ID. The ID only selects the row.',
         },
         5: {
             question:
