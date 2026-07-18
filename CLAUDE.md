@@ -81,6 +81,48 @@ Do not propose ordinary pages made mostly of cards, long text, and decorative an
 
 If the chapter concept is difficult, the visualization must do real teaching.
 
+## Execution modes and token efficiency
+
+Use the lightest workflow that safely fits the task.
+
+### Fast path - small local changes
+
+Use this for a clearly scoped change to one page, component, asset, copy block, or local layout.
+
+1. Read only the target file and direct dependencies needed to edit it.
+2. Do not read the full documentation set unless the change affects learning structure, shared behavior, i18n rules, or a cross-chapter standard.
+3. Do not audit the full repository.
+4. If implementation was explicitly approved, edit immediately after a brief targeted inspection.
+5. Prefer targeted search over broad scans.
+6. Keep progress messages short and do not restate the full task.
+7. Do not run Playwright or a production build before implementing.
+8. Validate with the smallest useful set:
+   - inspect the diff
+   - `npx tsc --noEmit`
+   - eslint on changed files
+   - one representative mobile viewport and one desktop viewport for layout changes
+9. Run `npm run build`, full locale checks, or broad browser matrices only when:
+   - shared code changed
+   - routing, build behavior, or locale structure changed
+   - the user explicitly requested them
+   - focused checks reveal risk
+10. Do not expand scope after the requested result is achieved.
+
+Target: reduce context, tool calls, and reporting by at least 50% compared with the full workflow while preserving correctness.
+
+### Standard path - broad or high-risk changes
+
+Use the full workflow for:
+
+- chapter redesigns or learning-flow changes
+- shared components used by multiple chapters
+- i18n structure or six-locale content changes
+- quizzes, routing, progress, TTS, accessibility infrastructure, or interaction logic
+- dependencies, security, authentication, data models, or broad refactors
+- tasks where scope or impact is uncertain
+
+When unsure, begin with the fast path and escalate only when concrete risk is found.
+
 ## Source of truth
 
 For the Behind the Scenes of AI course, do not rely on old prompts, old planning files, or previous assumptions.
@@ -101,7 +143,20 @@ Do not use removed or deprecated files such as old Master Prompt documents as pl
 
 ## Required docs by task type
 
-### Any task in the Behind the Scenes of AI course
+Read documentation just in time, not by default.
+
+### Small local UI, copy, asset, or mentor adjustment
+
+Read only the exact relevant rule file when needed:
+
+```text
+docs/behind-ai-visual-rules.md
+docs/behind-ai-mentor-rules.md
+```
+
+Do not automatically read the final chapter plan or chapter template for a local visual adjustment that does not change learning structure.
+
+### Chapter content, structure, or learning-flow work
 
 Read:
 
@@ -110,26 +165,19 @@ docs/behind-ai-final-chapter-plan.md
 docs/behind-ai-chapter-template.md
 ```
 
-### i18n or localization tasks
+### i18n or localization work
 
-Also read:
+Read:
 
 ```text
 docs/behind-ai-i18n-rules.md
 ```
 
-### UI, layout, visual polish, or mentor placement tasks
+Also read chapter or visual rules only when the task changes those areas.
 
-Also read:
+### Animation or interactive experience work
 
-```text
-docs/behind-ai-visual-rules.md
-docs/behind-ai-mentor-rules.md
-```
-
-### Animation or interactive experience tasks
-
-Also read:
+Read:
 
 ```text
 docs/behind-ai-animation-rules.md
@@ -138,36 +186,57 @@ docs/behind-ai-visual-rules.md
 
 ### Reordering chapters, routing, progress, quizzes, or implementation sequencing
 
-Also read:
+Read:
 
 ```text
 docs/behind-ai-implementation-roadmap.md
 docs/behind-ai-claude-workflow.md
 ```
 
+Do not load unrelated docs. Stop reading once enough context exists to make the requested change safely.
+
 ## Work protocol
 
-Before editing files:
+### Before editing
 
-1. Run `git status`.
-2. Run `git pull --ff-only`.
-3. Run `git log --oneline -10`.
-4. Read the relevant docs from `docs/`.
-5. Audit the relevant files.
-6. Report findings and an exact file-change plan.
-7. Wait for approval before editing, unless the user explicitly approved implementation.
+For fast-path tasks:
 
-After editing:
+1. Run `git status --short`.
+2. Inspect only the target file and direct dependencies.
+3. Confirm the smallest safe edit.
+4. If implementation is already approved, edit without a separate audit report.
+
+For standard-path tasks:
+
+1. Run `git status --short`.
+2. Check the current branch and recent relevant history only when needed.
+3. Read the relevant docs.
+4. Audit the affected files and consumers.
+5. Report a concise file-change plan.
+6. Wait for approval unless implementation was explicitly approved.
+
+Do not run `git pull` automatically when the working tree is dirty or when the user did not ask to synchronize. Use `git fetch` or read-only comparison only when ancestry matters.
+
+### After editing
+
+For fast-path tasks:
+
+1. Inspect the diff.
+2. Run `npx tsc --noEmit`.
+3. Run eslint on changed files.
+4. Perform one mobile and one desktop visual check when layout changed.
+5. Report only changed files, checks, known risk, git status, and commit/push state.
+
+For standard-path tasks:
 
 1. Run `npx tsc --noEmit`.
 2. Run eslint on changed files.
-3. Run relevant route checks.
+3. Run relevant route, locale, interaction, accessibility, or build checks.
 4. Report changed files, verification results, risks, and final git status.
-5. Do not commit or push unless explicitly instructed.
 
-If a check fails, report the exact failure and the likely cause.
+If a check fails, report the exact failure and likely cause. Do not hide failures.
 
-Do not hide verification failures.
+Do not commit or push unless explicitly instructed.
 
 ## Current course planning rule
 
@@ -495,6 +564,18 @@ Prefer questions that expose misconceptions.
 
 Do not make quizzes feel like school tests.
 
+## Concise execution and reporting
+
+- Do not repeat the user request in progress updates.
+- Do not narrate routine searches, file reads, or successful checks.
+- Use one targeted search instead of multiple overlapping searches.
+- Avoid reopening files already read unless new evidence requires it.
+- Prefer exact file paths over repository-wide exploration.
+- Keep final reports proportional to the task.
+- For small changes, use a short summary instead of a numbered audit.
+- Mention only actionable risks.
+- Do not generate large validation matrices unless requested or justified by shared impact.
+
 ## Git and delivery discipline
 
 Do not commit unless explicitly instructed.
@@ -503,13 +584,11 @@ Do not push unless explicitly instructed.
 
 Before final reporting, check final git status.
 
-Final report must include:
+Final report must include, briefly:
 
-* what changed
-* files changed
-* checks run
-* check results
-* known risks
+* what changed and files changed
+* checks and results
+* actionable known risks, if any
 * final git status
 * whether commit or push was performed
 
