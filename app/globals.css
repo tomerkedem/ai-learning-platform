@@ -196,6 +196,52 @@ html[data-locale="ar"] body {
   z-index: -1;
 }
 
+/* ───────────── Behind the Scenes of AI: קנה-מידה נזיל לכותרת ההירו ─────────────
+   כל 19 הפרקים חולקים אותה כותרת הירו: <h1 class="text-4xl md:text-5xl ...">, כלומר
+   48px קבועים מ-768px ומעלה. במקום לערוך 19 קבצים, כלל אחד ממורכז מחליף את הגודל
+   בקנה-מידה נזיל (clamp) בטווח הטאבלט/דסקטופ בלבד. מתחת ל-768px (מובייל) הכלל אינו
+   חל וה-text-4xl הקיים נשמר בדיוק. הכלל אינו בתוך @layer ולכן גובר על מחלקות Tailwind
+   (שכבתיות), בלי !important. חל רק על h1 שבתוך התוכן המסומן bts-fluid. */
+@media (min-width: 768px) {
+  .bts-fluid h1 {
+    font-size: clamp(2.1rem, 0.9rem + 2.6vw, 3rem);
+    line-height: 1.1;
+  }
+}
+
+/* ───────────── Behind the Scenes of AI: מנטור-צד רספונסיבי ─────────────
+   מנטורי-הצד ממוקמים absolute בשוליים שמחוץ לעמודת התוכן ומוסתרים מתחת ל-xl
+   (hidden xl:block / 2xl:block), ולכן נעלמו לגמרי בטאבלט ובדסקטופ קטן. במקום לערוך
+   ~90 מופעים ב-19 פרקים, כלל ממורכז אחד מזהה כל עטיפת מנטור-צד - אלמנט עם המחלקה
+   hidden שהוא הורה ישיר של שורש מנטור ([data-mentor-root]) - וממקם אותה מחדש בתוך
+   הזרימה, ממורכזת מתחת למקטע, בקנה-מידה נזיל. מעל 2xl (רוחב גדול) הכלל אינו חל
+   ומיקום-הצד המקורי נשמר. הבחירה ב-max-width (ולא width) על השורש מכבדת את רוחב
+   האינליין ורק מקטינה אותו. :not(.left-1\/2) מחריג מנטור דקורטיבי ממורכז יחיד במבוא.
+   הכלל אינו בתוך @layer ולכן גובר על מחלקות Tailwind (שכבתיות) בלי !important. */
+@media (max-width: 1535.98px) {
+  .bts-fluid .hidden:has(> [data-mentor-root]):not(.left-1\/2) {
+    position: static;
+    display: block;
+    /* Tailwind v4 ממקם היסטים דרך המאפיין translate (לא transform), אך Lightning CSS
+       מסלק את translate:none כשקיים transform:none. לכן מאפסים את משתני ה-translate של
+       Tailwind עצמם - את הביטוי translate: var(--tw-translate-x) var(--tw-translate-y)
+       שהיוטיליטי מחשב - וכך מבטלים -translate-x/-translate-y ו-translate-x-[%] של מיקום-הצד. */
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    transform: none;
+    inset: auto;
+    /* margin עליון מפנה מקום לבועת-הדיבור הצפה מעל ראש המנטור, כדי שלא תיגע בתוכן שמעל */
+    margin: clamp(3.5rem, 6vw, 5rem) auto 0;
+    width: fit-content;
+    max-width: 100%;
+    z-index: 0;
+  }
+  .bts-fluid .hidden:has(> [data-mentor-root]):not(.left-1\/2) > [data-mentor-root] {
+    max-width: min(17rem, 62vw);
+    margin-inline: auto;
+  }
+}
+
 @layer utilities {
   /* שמירה על ה-Scrollbar המקורי שלך ללא שינוי */
   .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }

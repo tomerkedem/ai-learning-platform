@@ -237,6 +237,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     const prevChapter = chapters[chapterIndex - 1];
     const nextChapter = chapters[chapterIndex + 1];
     const isIntro = currentChapterId === 0;
+    const isBtsAi = courseId === 'behind-the-scenes-ai';
 
     const isRTL = dir === 'rtl';
 
@@ -389,7 +390,14 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                     className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth"
                     onScroll={handleScroll}
                 >
-                    <main className={`mx-auto px-8 md:px-12 pb-32 space-y-24 transition-[max-width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+                    {/* קנה-מידה נזיל בדסקטופ/טאבלט: הריפוד האופקי ומרווחי המקטעים מתכווצים
+                        בהדרגה עם רוחב החלון (clamp) במקום לקפוץ בנקודות-שבירה. במובייל נשמר הריפוד
+                        הקיים (px-8). המחלקה bts-fluid מפעילה גם את קנה-המידה הנזיל של כותרת ההירו
+                        (globals.css). מוגבל ל-behind-the-scenes-ai כדי לא לגעת בלומדות אחרות. */}
+                    <main className={`mx-auto pb-32 transition-[max-width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+                        ${isBtsAi
+                            ? 'bts-fluid px-8 md:px-[clamp(1.75rem,0.3rem+2.8vw,3rem)] space-y-[clamp(3.5rem,2.2rem+3.5vw,6rem)]'
+                            : 'px-8 md:px-12 space-y-24'}
                         ${isFocusMode ? 'max-w-5xl' : 'max-w-4xl'}
                         ${isIntro ? 'pt-12' : 'pt-[var(--bts-content-top,13rem)] py-12'}
                     `}>

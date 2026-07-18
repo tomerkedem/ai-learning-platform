@@ -253,7 +253,10 @@ export default function BehindTheScenesChapter6() {
                     // עברית שומרת על נכס האמנות הייעודי (עם הצ'יפים בעברית), מנורמל כלפי מידת פרק 2
                     // ל-280px (גובה נראה תואם לירו של פרק 2). מעליו בועת-דיבור מתורגמת בסגנון בועת המנטור.
                     <div className="pointer-events-none absolute bottom-8 right-0 z-20 hidden w-[280px] translate-x-[80%] xl:block">
-                        <div className="relative">
+                        {/* data-mentor-root: מנטור ההירו של פרק 6 בעברית משתמש ב-img גולמי (לא רכיב
+                            Mentor), לכן מסמנים אותו ידנית כדי שכלל מנטור-הצד הממורכז ימקם אותו מחדש
+                            בזרימה בטאבלט/דסקטופ קטן, בדיוק כמו שאר המנטורים. */}
+                        <div className="relative" data-mentor-root>
                             <div data-mentor-bubble className="absolute left-1/2 -top-2 z-10 w-max max-w-[12rem] -translate-x-1/2 -translate-y-full">
                                 <div className="relative rounded-2xl border px-3 py-2 text-center shadow-lg backdrop-blur-sm" style={{ borderColor: 'rgb(6 182 212 / 0.4)', backgroundColor: 'rgb(15 23 42 / 0.95)' }}>
                                     <p className="text-[11px] font-bold leading-snug" style={{ color: '#a5f3fc' }}>{c6.mentor.hero}</p>

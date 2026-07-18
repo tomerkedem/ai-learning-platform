@@ -112,7 +112,9 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
                         אחרת נוצרים שני h1 בכל פרק.
                         גודל הכותרת קטן במובייל: כותרת פרק ארוכה (ספרדית, אנגלית) נשברה שם לשש
                         שורות וניפחה את הסרגל ל-329px. מ-sm ומעלה הגדלים נשארים כשהיו. */}
-                    <TitleTag className={`font-black text-white leading-tight transition-all duration-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] ${isScrolled ? 'text-lg sm:text-2xl' : 'text-xl sm:text-3xl md:text-4xl'}`}>
+                    {/* כותרת הסרגל במנוחה: קנה-מידה נזיל (clamp) מ-sm ומעלה במקום קפיצות בנקודות-שבירה,
+                        כך שהיא מתכווצת בהדרגה כשהחלון מצטמצם בדסקטופ/טאבלט. במובייל נשמר text-xl. */}
+                    <TitleTag className={`font-black text-white leading-tight transition-all duration-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] ${isScrolled ? 'text-lg sm:text-2xl' : 'text-xl sm:text-[clamp(1.7rem,1.1rem+1.6vw,2.25rem)]'}`}>
                         {title}
                     </TitleTag>
                 </div>
@@ -121,7 +123,7 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
                 <div className="flex items-center pl-2 pt-1 shrink-0">
                     <div className={`
                         relative overflow-hidden
-                        flex items-center gap-4 px-6 py-3
+                        flex items-center gap-[clamp(0.6rem,0.3rem+0.9vw,1rem)] px-[clamp(0.85rem,0.4rem+1.1vw,1.5rem)] py-3
                         rounded-xl transition-all duration-500
                         ${isScrolled 
                             ? 'bg-[#0f172a] border border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.15)]' 
