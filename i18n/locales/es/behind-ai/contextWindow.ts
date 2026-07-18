@@ -101,7 +101,7 @@ export const contextWindow = {
 
     // ── Bloqueo de comprensión ──
     lock: {
-        title: 'Bloqueo de comprensión',
+        title: 'Comprueba tu comprensión',
         trueLabel: 'Verdadero',
         trueText: 'El modelo responde según lo que hay en la ventana de contexto ahora. Un dato que salió de la ventana ya no influye, aunque se haya dicho antes.',
         falseLabel: 'Falso',
@@ -137,7 +137,7 @@ export const contextWindow = {
     mentor: {
         hero: 'Lo que entra en la ventana es lo que el modelo ve',
         lab: 'Mueve la ventana, y la respuesta se mueve',
-        lock: 'Bloqueaste la ventana de contexto',
+        lock: 'Entendiste la ventana de contexto',
         practical: 'Así mantienes el dato crítico en la imagen',
     },
 

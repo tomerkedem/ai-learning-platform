@@ -168,7 +168,7 @@ export const logitsSoftmax = {
 
     // ── 理解の固定 ──
     lock: {
-        title: '理解の固定',
+        title: '理解度チェック',
         trueLabel: '正',
         trueText: '高い確率とは、示された中で文脈に照らしていちばん自然な続きだという意味です。それが世界で正しいという証明ではありません。',
         falseLabel: '誤',

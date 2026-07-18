@@ -100,7 +100,7 @@ export const contextWindow = {
 
     // ── 理解の固定 ──
     lock: {
-        title: '理解の固定',
+        title: '理解度チェック',
         trueLabel: '正',
         trueText: 'モデルは、いま文脈ウィンドウの中にあるものにもとづいて答えます。ウィンドウから外れた事実は、前に言われていても、もう影響しません。',
         falseLabel: '誤',

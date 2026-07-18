@@ -148,7 +148,7 @@ export const grounding = {
     },
 
     lock: {
-        title: '理解を固定する',
+        title: '理解度チェック',
         question: '出典はこう言う。ステータスは遅延、配達予定は不明。出典に最もよく根拠づけられた答えはどれか？',
         options: [
             '荷物は明日届きます。',

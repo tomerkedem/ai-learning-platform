@@ -116,11 +116,11 @@ export const chapter1 = {
     },
 
     lock: {
-        eyebrow: 'Understanding lock',
+        eyebrow: 'Check Your Understanding',
         question: 'The engine shows a small gap between the top option and the next. What is the right move?',
         answerLabel: 'Answer confidently',
         askLabel: 'Stop and ask',
-        correctBody: 'You locked it in. A small gap means uncertainty, and the responsible move is to stop and ask, not to guess.',
+        correctBody: 'You got it. A small gap means uncertainty, and the responsible move is to stop and ask, not to guess.',
         wrongBody: 'Almost. A small gap actually signals uncertainty. The responsible move here is to stop and ask.',
         retry: 'Try again',
     },

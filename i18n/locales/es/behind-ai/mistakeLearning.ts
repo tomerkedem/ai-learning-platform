@@ -159,7 +159,7 @@ export const mistakeLearning = {
 
     // ── Fija la comprensión ──
     lock: {
-        title: 'Fija la comprensión',
+        title: 'Comprueba tu comprensión',
         question: 'El mismo error ("El paquete llegará mañana" sin fuente) se repite con muchos usuarios. ¿Qué es lo correcto para que mejore de verdad?',
         options: [
             'La corrección de un solo usuario ya cambió el modelo para todos los usuarios.',

@@ -155,7 +155,7 @@ export const chatToAgent = {
     },
 
     lock: {
-        title: 'Understanding lock',
+        title: 'Check Your Understanding',
         question: 'A user writes: "Check the status and send a message to the customer." The system has no tracking number. What should a good agent do first?',
         options: [
             'Invent a status to move forward.',

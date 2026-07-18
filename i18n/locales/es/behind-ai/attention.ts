@@ -97,7 +97,7 @@ export const attention = {
 
     // ── Bloqueo de comprensión ──
     lock: {
-        title: 'Bloqueo de comprensión',
+        title: 'Comprueba tu comprensión',
         trueLabel: 'Verdadero',
         trueText: 'Attention no dice que una palabra sea siempre importante. La importancia cambia según lo que esté escrito en la frase y según los vínculos dentro de ella.',
         falseLabel: 'Falso',
@@ -131,7 +131,7 @@ export const attention = {
     mentor: {
         hero: 'El modelo elige en qué palabras fijarse',
         lab: 'Cambia una palabra y el peso se mueve',
-        lock: 'Bloqueaste la atención',
+        lock: 'Entendiste la atención',
         practical: 'Así se escribe un prompt que la atención entiende',
     },
 

@@ -25,7 +25,7 @@ export const generationLoop = {
         hero: 'Each step builds the next',
         labExplain: 'Every part loops back in',
         misconception: 'No answer waits ready',
-        lock: 'You locked the idea in',
+        lock: 'The idea is clear now',
         practical: 'Steer the loop up front',
     },
 
@@ -170,7 +170,7 @@ export const generationLoop = {
     },
 
     lock: {
-        title: 'Understanding lock',
+        title: 'Check Your Understanding',
         question: 'The model just wrote the part "Check the tracking number...". What changes now, heading into the next step?',
         options: [
             'Nothing changes, the model continues from the same place',

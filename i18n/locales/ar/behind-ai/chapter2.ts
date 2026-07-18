@@ -128,7 +128,7 @@ export const chapter2 = {
 
     // تثبيت الفكرة (صواب مقابل خطأ) + سؤال التشخيص
     lock: {
-        title: 'تثبيت الفكرة',
+        title: 'تحقق من فهمك',
         truthLabel: 'صواب',
         truthText: 'النموذج يبدأ مما كُتب فعلًا.',
         mistakeLabel: 'خطأ',

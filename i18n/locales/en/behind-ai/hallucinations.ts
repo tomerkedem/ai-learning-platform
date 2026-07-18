@@ -148,7 +148,7 @@ export const hallucinations = {
     },
 
     lock: {
-        title: 'Lock in the understanding',
+        title: 'Check Your Understanding',
         question: 'The model says "the package will arrive tomorrow", but no tracking source was provided. What is the safest interpretation?',
         options: [
             'The model checked the real delivery system',

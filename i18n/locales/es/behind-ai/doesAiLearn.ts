@@ -157,7 +157,7 @@ export const doesAiLearn = {
     },
 
     lock: {
-        title: 'Fija la comprension',
+        title: 'Comprueba tu comprensión',
         question: 'Corregiste el modelo en un chat: "no escribas una fecha de llegada si no hay fuente". Luego abriste un chat nuevo. Cual es la suposicion mas segura?',
         options: [
             'El modelo base aprendio tu regla para siempre.',

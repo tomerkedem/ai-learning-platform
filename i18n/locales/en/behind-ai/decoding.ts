@@ -176,7 +176,7 @@ export const decoding = {
 
     // -- Understanding lock --
     lock: {
-        title: 'Lock in the understanding',
+        title: 'Check Your Understanding',
         trueLabel: 'True',
         trueText: 'The decoding style decides how you choose from the probabilities. An open style can also choose a less likely option.',
         falseLabel: 'False',
@@ -213,7 +213,7 @@ export const decoding = {
     mentor: {
         hero: 'Same distribution, a different choice',
         lab: 'Change the style, and you get a different token',
-        lock: 'You locked in the idea',
+        lock: 'The idea is clear now',
         practical: 'This is how you pick a style to fit the task',
     },
 

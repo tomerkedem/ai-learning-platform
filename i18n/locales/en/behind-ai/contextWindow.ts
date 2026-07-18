@@ -104,7 +104,7 @@ export const contextWindow = {
 
     // -- Understanding lock --
     lock: {
-        title: 'Lock in the understanding',
+        title: 'Check Your Understanding',
         trueLabel: 'True',
         trueText: 'The model answers based on what is in the context window now. A detail that left the window no longer has an effect, even if it was said earlier.',
         falseLabel: 'False',
@@ -140,7 +140,7 @@ export const contextWindow = {
     mentor: {
         hero: 'What fits in the window is what the model sees',
         lab: 'Move the window, and the answer moves',
-        lock: 'You locked in the context window',
+        lock: 'The context window is clear now',
         practical: 'This is how you keep the critical detail in the picture',
     },
 

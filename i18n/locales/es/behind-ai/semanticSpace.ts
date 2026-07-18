@@ -130,7 +130,7 @@ export const semanticSpace: typeof he = {
     },
 
     lock: {
-        title: 'Consolida la idea',
+        title: 'Comprueba tu comprensión',
         question: 'Dos frases están cerca una de otra en el espacio de significado. ¿Qué puedes concluir con cautela de eso?',
         options: [
             'Que las dos frases tienen un significado idéntico.',

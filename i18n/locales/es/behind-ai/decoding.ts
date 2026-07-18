@@ -173,7 +173,7 @@ export const decoding = {
 
     // -- Fijar la comprension --
     lock: {
-        title: 'Fija la comprension',
+        title: 'Comprueba tu comprensión',
         trueLabel: 'Verdadero',
         trueText: 'El estilo de decodificacion decide como se elige de las probabilidades. Un estilo abierto puede elegir tambien una opcion menos probable.',
         falseLabel: 'Falso',
@@ -210,7 +210,7 @@ export const decoding = {
     mentor: {
         hero: 'La misma distribución, otra elección',
         lab: 'Cambia el estilo, y obtienes otro token',
-        lock: 'Fijaste la idea',
+        lock: 'Captaste la idea',
         practical: 'Asi eliges un estilo segun la tarea',
     },
 

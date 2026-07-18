@@ -31,7 +31,7 @@ export const chapter3 = {
     mentor: {
         hero: 'First we split, then we understand',
         lab: 'Every token is a working unit',
-        lock: 'You locked in the idea',
+        lock: 'The idea is clear now',
         practical: 'This is how you write smarter prompts',
     },
 
@@ -107,7 +107,7 @@ export const chapter3 = {
 
     // Lock in the idea: true vs false + an active classification question
     lock: {
-        title: 'Lock in the idea',
+        title: 'Check Your Understanding',
         truthLabel: 'True',
         truthText: 'The sentence breaks into units before any deep processing.',
         mistakeLabel: 'False',

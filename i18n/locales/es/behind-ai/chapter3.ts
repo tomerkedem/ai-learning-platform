@@ -29,7 +29,7 @@ export const chapter3 = {
     mentor: {
         hero: 'Primero dividimos, luego entendemos',
         lab: 'Cada token es una unidad de trabajo',
-        lock: 'Fijaste la idea',
+        lock: 'Captaste la idea',
         practical: 'Así escribes prompts más inteligentes',
     },
 
@@ -101,7 +101,7 @@ export const chapter3 = {
     },
 
     lock: {
-        title: 'Fija la idea',
+        title: 'Comprueba tu comprensión',
         truthLabel: 'Verdadero',
         truthText: 'La frase se divide en unidades antes de cualquier procesamiento profundo.',
         mistakeLabel: 'Falso',

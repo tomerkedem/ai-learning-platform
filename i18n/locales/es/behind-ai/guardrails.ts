@@ -157,7 +157,7 @@ export const guardrails = {
     },
 
     lock: {
-        title: 'Fijar la comprension',
+        title: 'Comprueba tu comprensión',
         question: 'El agente tiene un borrador de mensaje listo y tecnicamente puede enviarlo. El usuario pidio "actualiza al cliente" pero no aprobo el envio. Que deberia hacer?',
         options: [
             'Enviar de inmediato, porque esa es la tarea.',

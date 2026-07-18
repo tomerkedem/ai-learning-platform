@@ -148,7 +148,7 @@ export const hallucinations = {
     },
 
     lock: {
-        title: '理解を固定する',
+        title: '理解度チェック',
         question: 'モデルは「荷物は明日届く」と言うが、追跡の出典は何も提供されていない。最も安全な解釈はどれか？',
         options: [
             'モデルは本当の配送システムを確認した',

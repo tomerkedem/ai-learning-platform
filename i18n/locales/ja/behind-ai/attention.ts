@@ -97,7 +97,7 @@ export const attention = {
 
     // ── 理解の固定 ──
     lock: {
-        title: '理解の固定',
+        title: '理解度チェック',
         trueLabel: '正',
         trueText: 'Attention は、ある言葉が常に重要だとは言いません。重要さは、文に書かれている内容と、その中の関係によって変わります。',
         falseLabel: '誤',

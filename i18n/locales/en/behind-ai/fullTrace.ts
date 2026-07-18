@@ -160,7 +160,7 @@ export const fullTrace = {
     },
 
     lock: {
-        title: 'Understanding lock',
+        title: 'Check Your Understanding',
         question: 'The tool result: status delayed, estimated delivery unavailable. The user asked to "draft an update for the customer, and do not send without my approval." What should the system output?',
         options: [
             '"The package will arrive tomorrow", and send it to the customer.',

@@ -157,7 +157,7 @@ export const guardrails = {
     },
 
     lock: {
-        title: 'Understanding lock',
+        title: 'Check Your Understanding',
         question: 'The agent has a ready message draft and can technically send it. The user asked to "update the customer" but did not approve sending. What should it do?',
         options: [
             'Send immediately, because that is the task.',

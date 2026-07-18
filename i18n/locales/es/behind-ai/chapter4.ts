@@ -179,7 +179,7 @@ export const chapter4 = {
 
     // Bloqueo de comprensión: de dónde vienen los números del vector (entrenamiento vs inferencia). Correcta es índice 0.
     lock: {
-        title: 'Bloqueo de comprensión',
+        title: 'Comprueba tu comprensión',
         question: 'La palabra "paquete" recibió un Token ID, y de él se consultó un vector. ¿De dónde vienen los números del vector?',
         options: [
             'Se aprendieron en el entrenamiento, y el modelo solo los consulta ahora',

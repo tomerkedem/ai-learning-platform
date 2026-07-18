@@ -154,7 +154,7 @@ export const selfCheck = {
     },
 
     lock: {
-        title: 'Fija la comprensión',
+        title: 'Comprueba tu comprensión',
         question: 'La fuente dice: estado retrasado, entrega estimada no disponible. El borrador: "El paquete está retrasado y llegará mañana." ¿Qué parte debe señalar la comprobación?',
         options: [
             '"El paquete está retrasado", porque aparece en la fuente.',

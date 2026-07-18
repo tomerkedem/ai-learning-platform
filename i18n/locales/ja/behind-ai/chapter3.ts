@@ -108,7 +108,7 @@ export const chapter3 = {
     },
 
     lock: {
-        title: '考えを定める',
+        title: '理解度チェック',
         truthLabel: '正しい',
         truthText: '深い処理の前に、文章は単位に分かれる。',
         mistakeLabel: '誤り',

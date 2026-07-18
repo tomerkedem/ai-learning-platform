@@ -156,7 +156,7 @@ export const chatToAgent = {
     },
 
     lock: {
-        title: 'Fijar la comprension',
+        title: 'Comprueba tu comprensión',
         question: 'Un usuario escribe: "Comprueba el estado y envia un mensaje al cliente." El sistema no tiene numero de seguimiento. Que deberia hacer primero un buen agente?',
         options: [
             'Inventar un estado para avanzar.',

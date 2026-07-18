@@ -23,7 +23,7 @@ export const generationLoop = {
         hero: 'Cada paso construye el siguiente',
         labExplain: 'Cada parte vuelve hacia dentro',
         misconception: 'Ninguna respuesta espera ya hecha',
-        lock: 'Has fijado la idea',
+        lock: 'Captaste la idea',
         practical: 'Orienta el bucle desde el inicio',
     },
 
@@ -168,7 +168,7 @@ export const generationLoop = {
     },
 
     lock: {
-        title: 'Fijar la comprensión',
+        title: 'Comprueba tu comprensión',
         question: 'El modelo acaba de escribir la parte «Revisa el número de seguimiento...». ¿Qué cambia ahora, de cara al siguiente paso?',
         options: [
             'No cambia nada, el modelo continúa desde el mismo lugar',

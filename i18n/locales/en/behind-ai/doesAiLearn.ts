@@ -156,7 +156,7 @@ export const doesAiLearn = {
     },
 
     lock: {
-        title: 'Lock in the understanding',
+        title: 'Check Your Understanding',
         question: 'You corrected the model in one chat: "do not write an arrival date if there is no source". Then you opened a new chat. What is the safest assumption?',
         options: [
             'The base model learned your rule forever.',

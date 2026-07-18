@@ -129,7 +129,7 @@ export const semanticSpace: typeof he = {
     },
 
     lock: {
-        title: '理解を固める',
+        title: '理解度チェック',
         question: '二つの文が意味空間で互いに近くにあります。そこから慎重に何が言えるでしょうか。',
         options: [
             '二つの文の意味が同じである。',

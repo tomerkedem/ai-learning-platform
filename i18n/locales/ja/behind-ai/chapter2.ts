@@ -128,7 +128,7 @@ export const chapter2 = {
 
     // Lock in the idea (true vs false) + the diagnosis question
     lock: {
-        title: '理解を固める',
+        title: '理解度チェック',
         truthLabel: '正',
         truthText: 'モデルは実際に書かれたものから始まる。',
         mistakeLabel: '誤',

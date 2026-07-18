@@ -128,7 +128,7 @@ export const chapter2 = {
 
     // נעילת הבנה (אמת מול טעות) + שאלת האבחון
     lock: {
-        title: 'נעילת הבנה',
+        title: 'בדיקת הבנה',
         truthLabel: 'אמת',
         truthText: 'המודל מתחיל ממה שנכתב בפועל.',
         mistakeLabel: 'טעות',

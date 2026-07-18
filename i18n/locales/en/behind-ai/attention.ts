@@ -99,7 +99,7 @@ export const attention = {
 
     // -- Understanding lock --
     lock: {
-        title: 'Lock in the understanding',
+        title: 'Check Your Understanding',
         trueLabel: 'True',
         trueText: 'Attention does not say that one word is always important. Importance changes according to what the sentence says and the links within it.',
         falseLabel: 'False',
@@ -133,7 +133,7 @@ export const attention = {
     mentor: {
         hero: 'The model picks which words to focus on',
         lab: 'Change a word, and the weight moves',
-        lock: 'You locked in attention',
+        lock: 'Attention is clear now',
         practical: 'This is how you write a prompt that attention understands',
     },
 

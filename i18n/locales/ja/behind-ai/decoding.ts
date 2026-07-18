@@ -171,7 +171,7 @@ export const decoding = {
 
     // -- 理解のロック --
     lock: {
-        title: '理解をロックする',
+        title: '理解度チェック',
         trueLabel: '正しい',
         trueText: '選び方は確率からどう選ぶかを決めます。開いたスタイルは、よりありそうでない候補も選べます。',
         falseLabel: '誤り',
@@ -208,7 +208,7 @@ export const decoding = {
     mentor: {
         hero: '同じ分布でも、選び方は変わります',
         lab: 'スタイルを変えると、別のトークンになる',
-        lock: '考えをロックできました',
+        lock: '考えをつかみました',
         practical: 'こうやって作業に合うスタイルを選びます',
     },
 

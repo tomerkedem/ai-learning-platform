@@ -116,11 +116,11 @@ export const chapter1 = {
     },
 
     lock: {
-        eyebrow: 'Fijar la comprensión',
+        eyebrow: 'Comprueba tu comprensión',
         question: 'El motor muestra una diferencia pequeña entre la opción líder y la siguiente. ¿Cuál es el paso correcto?',
         answerLabel: 'Responder con confianza',
         askLabel: 'Detenerse y preguntar',
-        correctBody: 'Lo fijaste. Una diferencia pequeña significa incertidumbre, y el paso responsable es detenerse y preguntar, no adivinar.',
+        correctBody: 'Lo captaste. Una diferencia pequeña significa incertidumbre, y el paso responsable es detenerse y preguntar, no adivinar.',
         wrongBody: 'Casi. Una diferencia pequeña en realidad señala incertidumbre. El paso responsable aquí es detenerse y preguntar.',
         retry: 'Intentar de nuevo',
     },

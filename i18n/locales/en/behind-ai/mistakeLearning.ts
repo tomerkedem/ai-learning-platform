@@ -150,7 +150,7 @@ export const mistakeLearning = {
     },
 
     lock: {
-        title: 'Lock in your understanding',
+        title: 'Check Your Understanding',
         question: 'The same mistake ("The package will arrive tomorrow" with no source) keeps recurring for many users. What is the right way to make it really improve?',
         options: [
             'One user\'s correction already changed the model for all users.',

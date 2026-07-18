@@ -149,7 +149,7 @@ export const grounding = {
     },
 
     lock: {
-        title: 'Fija la comprensión',
+        title: 'Comprueba tu comprensión',
         question: 'La fuente dice: estado retrasado, entrega estimada no disponible. ¿Qué respuesta está mejor fundamentada en la fuente?',
         options: [
             'El paquete llegará mañana.',

@@ -151,7 +151,7 @@ export const evaluation = {
     },
 
     lock: {
-        title: 'Fija la comprensión',
+        title: 'Comprueba tu comprensión',
         question: 'El modelo aprobó el ejemplo original. Luego falló cuando el cliente escribió "estoy seguro de que llega mañana", aunque la fuente decía "fecha de llegada: no disponible". ¿Qué revela este fallo?',
         options: [
             'Que el modelo nunca puede ser útil.',

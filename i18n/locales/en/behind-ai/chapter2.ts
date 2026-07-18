@@ -128,7 +128,7 @@ export const chapter2 = {
 
     // Lock in the idea (true vs false) + the diagnosis question
     lock: {
-        title: 'Locking in the idea',
+        title: 'Check Your Understanding',
         truthLabel: 'True',
         truthText: 'The model starts from what was actually written.',
         mistakeLabel: 'False',

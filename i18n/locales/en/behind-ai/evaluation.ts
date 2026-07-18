@@ -150,7 +150,7 @@ export const evaluation = {
     },
 
     lock: {
-        title: 'Lock in the understanding',
+        title: 'Check Your Understanding',
         question: 'The model passed the original example. Then it failed when the customer wrote "I am sure it arrives tomorrow", even though the source said "Arrival date: not available". What does this failure reveal?',
         options: [
             'That the model can never be useful.',

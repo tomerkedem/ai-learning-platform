@@ -154,7 +154,7 @@ export const selfCheck = {
     },
 
     lock: {
-        title: 'Lock in your understanding',
+        title: 'Check Your Understanding',
         question: 'The source says: status delayed, estimated delivery not available. The draft: "The package is delayed and will arrive tomorrow." Which part should the check flag?',
         options: [
             '"The package is delayed", because it appears in the source.',

@@ -30,7 +30,7 @@ export const chapter3 = {
     mentor: {
         hero: 'أولًا نقطّع، ثم نفهم',
         lab: 'كل توكن وحدة عمل',
-        lock: 'ثبّتّ الفكرة',
+        lock: 'أدركت الفكرة',
         practical: 'هكذا تكتب توجيهات أذكى للنموذج',
     },
 
@@ -102,7 +102,7 @@ export const chapter3 = {
     },
 
     lock: {
-        title: 'ثبّت الفكرة',
+        title: 'تحقق من فهمك',
         truthLabel: 'صحيح',
         truthText: 'تنقسم الجملة إلى وحدات قبل أي معالجة عميقة.',
         mistakeLabel: 'خطأ',

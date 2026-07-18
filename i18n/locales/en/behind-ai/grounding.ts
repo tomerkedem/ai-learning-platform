@@ -149,7 +149,7 @@ export const grounding = {
     },
 
     lock: {
-        title: 'Lock in your understanding',
+        title: 'Check Your Understanding',
         question: 'The source says: status delayed, estimated delivery not available. Which answer is best grounded in the source?',
         options: [
             'The package will arrive tomorrow.',

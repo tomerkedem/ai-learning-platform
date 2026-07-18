@@ -131,7 +131,7 @@ export const semanticSpace: typeof he = {
     },
 
     lock: {
-        title: 'Lock in your understanding',
+        title: 'Check Your Understanding',
         question: 'Two sentences sit close to each other in semantic space. What can you carefully conclude from that?',
         options: [
             'That the two sentences have identical meaning.',

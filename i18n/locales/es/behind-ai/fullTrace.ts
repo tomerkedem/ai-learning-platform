@@ -160,7 +160,7 @@ export const fullTrace = {
     },
 
     lock: {
-        title: 'Fijar la comprension',
+        title: 'Comprueba tu comprensión',
         question: 'El resultado de la herramienta: estado con retraso, fecha estimada de entrega no disponible. El usuario pidio "redacta una actualizacion para el cliente y no la envies sin mi aprobacion." Que debe producir el sistema?',
         options: [
             '"El paquete llegara manana", y enviarlo al cliente.',

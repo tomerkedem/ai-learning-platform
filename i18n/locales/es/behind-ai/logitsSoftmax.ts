@@ -166,7 +166,7 @@ export const logitsSoftmax = {
 
     // ── Bloqueo de comprensión ──
     lock: {
-        title: 'Bloqueo de comprensión',
+        title: 'Comprueba tu comprensión',
         trueLabel: 'Verdadero',
         trueText: 'Una probabilidad alta significa que la continuación es la más probable según el contexto, entre las mostradas. No es una prueba de que sea correcta en el mundo.',
         falseLabel: 'Falso',
@@ -204,7 +204,7 @@ export const logitsSoftmax = {
     mentor: {
         hero: 'Aquí las puntuaciones se vuelven porcentajes',
         lab: 'Cambia un dato, y los porcentajes se mueven',
-        lock: 'Bloqueaste la idea',
+        lock: 'Captaste la idea',
         practical: 'Así se orienta la distribución',
     },
 

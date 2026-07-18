@@ -169,7 +169,7 @@ export const logitsSoftmax = {
 
     // -- Understanding lock --
     lock: {
-        title: 'Lock in the understanding',
+        title: 'Check Your Understanding',
         trueLabel: 'True',
         trueText: 'A high probability means the continuation is the most likely per the context, among the ones shown. It is not proof that it is true in the world.',
         falseLabel: 'False',
@@ -207,7 +207,7 @@ export const logitsSoftmax = {
     mentor: {
         hero: 'Here scores turn into percentages',
         lab: 'Change a detail, and the percentages shift',
-        lock: 'You locked in the idea',
+        lock: 'The idea is clear now',
         practical: 'This is how you steer the distribution',
     },
 

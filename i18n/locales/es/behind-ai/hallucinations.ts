@@ -148,7 +148,7 @@ export const hallucinations = {
     },
 
     lock: {
-        title: 'Fija la comprensión',
+        title: 'Comprueba tu comprensión',
         question: 'El modelo dice "el paquete llegará mañana", pero no se aportó ninguna fuente de seguimiento. ¿Cuál es la interpretación más segura?',
         options: [
             'El modelo comprobó el sistema de entregas real',
