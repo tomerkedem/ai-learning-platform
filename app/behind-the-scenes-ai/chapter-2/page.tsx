@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Type, MousePointerClick, ArrowLeftRight, FlaskConical, Lightbulb, ListChecks, CheckCircle2, XCircle, Brain, FileText, MessageSquare, Filter } from 'lucide-react';
+import { Type, MousePointerClick, ArrowLeftRight, FlaskConical, Lightbulb, ListChecks, Layers, CheckCircle2, XCircle, Brain, FileText, MessageSquare, Filter } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -103,17 +103,16 @@ export default function BehindTheScenesChapter2() {
     const sGuessQ: ReadAloudSegment = { id: 'guess-q', label: c2.guess.title, text: `${c2.guess.title} ${c2.guess.subtitle}` };
     const sCards: ReadAloudSegment[] = c2.guess.cards.map((card, i) => ({ id: `guess-card-${i}`, label: card.title, text: `${card.title}. ${card.desc}` }));
     const sGuessReveal: ReadAloudSegment = { id: 'guess-reveal', label: c2.guess.revealTitle, text: `${c2.guess.revealTitle} ${c2.guess.revealCopy}` };
-    const sInsight: ReadAloudSegment = { id: 'insight', label: c2.insight.title, text: `${c2.insight.lead} ${c2.insight.body}` };
     const sLab: ReadAloudSegment = { id: 'lab', label: c2.inputLab.title, text: `${c2.inputLab.title}. ${c2.inputLab.intro}` };
+    const sFullInput: ReadAloudSegment = { id: 'full-input', label: c2.fullInput.title, text: `${c2.fullInput.title}. ${c2.fullInput.body}` };
     const sEveryday: ReadAloudSegment = { id: 'everyday', label: c2.everyday.title, text: `${c2.everyday.title}. ${c2.everyday.body}` };
-    const sMistake: ReadAloudSegment = { id: 'mistake', label: c2.mistake.rightLabel, text: `${c2.mistake.wrongLabel}: ${c2.mistake.wrongText} ${c2.mistake.rightLabel}: ${c2.mistake.rightText}` };
     const sTakeaway: ReadAloudSegment = { id: 'takeaway', label: c2.takeaway.title, text: `${c2.takeaway.title}. ${c2.takeaway.points.join(' ')}` };
     const sLock: ReadAloudSegment = { id: 'lock', label: c2.lock.title, text: `${c2.lock.title}. ${c2.lock.truthLabel}: ${c2.lock.truthText} ${c2.lock.mistakeLabel}: ${c2.lock.mistakeText}` };
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
-        short: [sTitle, sQuestion, sInsight, sTakeaway],
-        regular: [sTitle, sQuestion, sGuessQ, sGuessReveal, sInsight, sLab, sEveryday, sMistake, sTakeaway, sLock],
-        full: [sTitle, sQuestion, sGuessQ, ...sCards, sGuessReveal, sInsight, sLab, sEveryday, sMistake, sTakeaway, sLock],
+        short: [sTitle, sQuestion, sFullInput, sTakeaway],
+        regular: [sTitle, sQuestion, sGuessQ, sGuessReveal, sLab, sFullInput, sEveryday, sTakeaway, sLock],
+        full: [sTitle, sQuestion, sGuessQ, ...sCards, sGuessReveal, sLab, sFullInput, sEveryday, sTakeaway, sLock],
     };
 
     // מבדק הפרק: המנגנון המשותף (correctAnswer, onComplete, getReviewLinks, nextHref...)
@@ -252,21 +251,6 @@ export default function BehindTheScenesChapter2() {
                 <OpeningGuess content={guessContent} cards={guessCards} />
             </section>
 
-            {/* ══════════ הסבר פשוט: מה באמת קורה כאן (במקום "הנקודה המפתיעה") ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
-                <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
-                    <div className="mb-3 flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                            <Lightbulb size={18} className="text-indigo-300" />
-                            <h3 className="text-xl font-black text-white md:text-2xl">{c2.insight.title}</h3>
-                        </div>
-                        <SpeakButton text={`${c2.insight.title}. ${c2.insight.lead} ${c2.insight.body}`} />
-                    </div>
-                    <p className="mb-2.5 text-lg font-bold text-indigo-200">{c2.insight.lead}</p>
-                    <p className="text-[15px] leading-relaxed text-slate-300">{c2.insight.body}</p>
-                </div>
-            </section>
-
             {/* ══════════ מעבדת השוואת קלט ══════════ */}
             <section id="input-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
@@ -295,6 +279,29 @@ export default function BehindTheScenesChapter2() {
                 </div>
             </section>
 
+            {/* ══════════ הודעה גלויה מול הקלט המלא (סוגר את הבטחת שם הפרק) ══════════ */}
+            <section className="mt-12 text-start" dir={dir}>
+                <div className="rounded-2xl border border-cyan-500/30 bg-slate-900/40 p-5">
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <Layers size={18} className="text-cyan-300" />
+                            <h3 className="text-lg font-bold text-slate-100">{c2.fullInput.title}</h3>
+                        </div>
+                        <SpeakButton text={`${c2.fullInput.title}. ${c2.fullInput.body}`} />
+                    </div>
+                    <p className="leading-relaxed text-slate-300">{c2.fullInput.body}</p>
+
+                    {/* המחשה קומפקטית: מה שרואים + מה שהאפליקציה עשויה לצרף = הקלט למודל */}
+                    <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                        <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-3 text-sm text-slate-200">{c2.fullInput.seen}</div>
+                        <div className="rounded-xl border border-cyan-500/30 bg-cyan-950/15 p-3 text-sm text-slate-200"><span className="font-bold text-cyan-300" dir="ltr">+ </span>{c2.fullInput.added}</div>
+                        <div className="rounded-xl border border-indigo-500/40 bg-indigo-950/20 p-3 text-sm font-bold text-indigo-100"><span dir="ltr">= </span>{c2.fullInput.total}</div>
+                    </div>
+
+                    <p className="mt-3 text-[13px] leading-relaxed text-slate-400">{c2.fullInput.caveat}</p>
+                </div>
+            </section>
+
             {/* ══════════ דוגמה יומיומית ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
@@ -308,31 +315,6 @@ export default function BehindTheScenesChapter2() {
                     <p>
                         {c2.everyday.body}
                     </p>
-                </div>
-            </section>
-
-            {/* ══════════ תיקון טעות נפוצה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
-                <div className="grid gap-4 md:grid-cols-2">
-                    <div className="rounded-2xl border border-rose-500/30 bg-rose-950/10 p-5">
-                        <div className="mb-2 flex items-center gap-2 text-rose-200">
-                            <XCircle size={18} />
-                            <span className="text-sm font-bold">{c2.mistake.wrongLabel}</span>
-                        </div>
-                        <p className="leading-relaxed text-slate-300">{c2.mistake.wrongText}</p>
-                    </div>
-                    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/10 p-5">
-                        <div className="mb-2 flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2 text-emerald-200">
-                                <CheckCircle2 size={18} />
-                                <span className="text-sm font-bold">{c2.mistake.rightLabel}</span>
-                            </div>
-                            <SpeakButton text={`${c2.mistake.rightLabel}. ${c2.mistake.rightText}`} />
-                        </div>
-                        <p className="leading-relaxed text-slate-300">
-                            {c2.mistake.rightText}
-                        </p>
-                    </div>
                 </div>
             </section>
 

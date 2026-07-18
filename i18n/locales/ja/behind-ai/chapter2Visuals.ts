@@ -3,7 +3,7 @@
 // variations. Shape source: ../../he/behind-ai/chapter2Visuals (Hebrew is canonical).
 //
 // Real translation. No em dash (U+2014), no en dash (U+2013). Structural fields
-// (id, ambiguity, tendency, externalData) are kept literal; only visible text is translated.
+// (id, ambiguity) are kept literal; only visible text is translated.
 
 import type { Locale } from '@/i18n/config';
 import type { InputVariation } from '@/app/behind-the-scenes-ai/chapter-2/inputVariations';
@@ -14,7 +14,7 @@ export const chapter2Visuals = {
     // Input Comparison Lab chrome
     inputLab: {
         tokenizationHint: 'あとで扱う注記：ここでは入力に何が含まれるかだけを見ます。テキストをトークンに分けることは、あとの別の章で扱います。',
-        pickerHint: '下のボタンは同じ依頼の五つの言い回しです。一つ選ぶと、下のパネルがモデルの受け取る内容に更新されます。',
+        pickerHint: '少なくとも二つの言い回しを選んで比べましょう。何が明示されているか、何が欠けたままか、モデルが受け取った依頼で何が変わったかを確かめてください。',
         pickerAria: '比較する言い回しを選ぶ',
         ambiguityPrefix: '曖昧さ',
         outro: '同じ目的、違う言い回し。それぞれで、より深い処理が始まる前に、モデルが扱う材料が変わります。',
@@ -24,13 +24,9 @@ export const chapter2Visuals = {
             missing: '欠けていること',
             changed: '基本からの変化',
             ambiguity: '曖昧さのレベル',
-            expectation: 'モデルに期待されること',
-            external: '外部データの必要性',
-            tendency: 'どこに寄るか',
+            expectation: '依頼がモデルに求めていること',
         },
         baseComparison: 'これが比較の基準点です。',
-        externalYes: 'はい。',
-        externalNo: 'この段階では不要です。',
         noticeLabel: '注目したい点',
         // Ambiguity level labels (the chip and color are structural in the component)
         ambiguityLabels: {
@@ -38,15 +34,9 @@ export const chapter2Visuals = {
             medium: '中',
             high: '高',
         },
-        // Tendency labels (the chip and color are structural in the component)
-        tendencyLabels: {
-            chat: 'Chat 寄り',
-            'chat-agent': 'Chat と Agent の中間',
-            agent: 'Agent 寄り',
-        },
     },
 
-    // The five input variations. Structural fields (id, ambiguity, tendency, externalData)
+    // The five input variations. Structural fields (id, ambiguity)
     // mirror inputVariations.ts; only the visible text is translated, in the same order.
     inputVariations: [
         {
@@ -58,8 +48,6 @@ export const chapter2Visuals = {
             changed: '',
             ambiguity: 'medium',
             expectation: '一般的な案内をするか、本当に助けるために何が欠けているかを尋ねる',
-            externalData: false,
-            tendency: 'chat',
         },
         {
             id: 'question',
@@ -70,8 +58,6 @@ export const chapter2Visuals = {
             changed: '「どうすればいいか」が外れ、疑問符が加わりました。明確な依頼のない問いかけのまま残っています。',
             ambiguity: 'high',
             expectation: '答えをまとめる前に、実際に何が必要かを確かめる',
-            externalData: false,
-            tendency: 'chat',
         },
         {
             id: 'contradiction',
@@ -82,9 +68,6 @@ export const chapter2Visuals = {
             changed: 'ユーザーの体験と配達通知との間に矛盾が加わりました。',
             ambiguity: 'medium',
             expectation: '矛盾に気づき、状況の確認を提案するかもしれない',
-            externalData: true,
-            externalNote: '矛盾を解消するには、実際の追跡データを確認するのがよいでしょう。',
-            tendency: 'chat-agent',
         },
         {
             id: 'tracking',
@@ -95,9 +78,6 @@ export const chapter2Visuals = {
             changed: '追跡用の識別子が加わりました。これで実際の状況を確認するのに十分です。',
             ambiguity: 'low',
             expectation: '識別子を使って配送状況を確認できる',
-            externalData: true,
-            externalNote: '識別子があれば、外部の追跡システムに問い合わせられます。',
-            tendency: 'agent',
         },
         {
             id: 'correction',
@@ -108,8 +88,6 @@ export const chapter2Visuals = {
             changed: 'これは問題の説明ではなく、会話の前に言われたことの訂正です。',
             ambiguity: 'high',
             expectation: '訂正に合わせて、会話の現在の文脈を更新する',
-            externalData: false,
-            tendency: 'chat',
             note: '訂正は会話の現在の文脈を変えるものであり、モデルが学習で身につけたものを変えるわけではありません。',
         },
     ] as InputVariation[],

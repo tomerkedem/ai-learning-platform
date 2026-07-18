@@ -3,7 +3,7 @@
 // variations. Shape source: ../../he/behind-ai/chapter2Visuals (Hebrew is canonical).
 //
 // Real translation. No em dash (U+2014), no en dash (U+2013). Structural fields
-// (id, ambiguity, tendency, externalData) are kept literal; only visible text is translated.
+// (id, ambiguity) are kept literal; only visible text is translated.
 
 import type { Locale } from '@/i18n/config';
 import type { InputVariation } from '@/app/behind-the-scenes-ai/chapter-2/inputVariations';
@@ -14,7 +14,7 @@ export const chapter2Visuals = {
     // Input Comparison Lab chrome
     inputLab: {
         tokenizationHint: 'A note for later: here we only look at what the input contains. Breaking the text into tokens comes in a separate chapter later on.',
-        pickerHint: 'The buttons below are five phrasings of the same request. Pick one, and the panel below updates to what the model receives.',
+        pickerHint: 'Pick at least two phrasings and compare them. Check what is stated explicitly, what is left missing, and what changed in the request the model received.',
         pickerAria: 'Choose a phrasing to compare',
         ambiguityPrefix: 'Ambiguity',
         outro: 'Same need, different phrasings. With each one the model gets different material to work with, before any deeper processing begins.',
@@ -24,13 +24,9 @@ export const chapter2Visuals = {
             missing: 'What is missing',
             changed: 'What changed from the base',
             ambiguity: 'Ambiguity level',
-            expectation: 'What the model is expected to do',
-            external: 'External data needed',
-            tendency: 'Where it leans',
+            expectation: 'What the request asks the model to do',
         },
         baseComparison: 'This is the baseline for comparison.',
-        externalYes: 'Yes.',
-        externalNo: 'Not needed at this stage.',
         noticeLabel: 'Worth noting',
         // Ambiguity level labels (the chip and color are structural in the component)
         ambiguityLabels: {
@@ -38,16 +34,10 @@ export const chapter2Visuals = {
             medium: 'Medium',
             high: 'High',
         },
-        // Tendency labels (the chip and color are structural in the component)
-        tendencyLabels: {
-            chat: 'Leans Chat',
-            'chat-agent': 'Between Chat and Agent',
-            agent: 'Leans Agent',
-        },
     },
 
-    // The five input variations. Structural fields (id, ambiguity, tendency, externalData)
-    // mirror inputVariations.ts; only the visible text is translated, in the same order.
+    // The five input variations. Structural fields (id, ambiguity) mirror
+    // inputVariations.ts; only the visible text is translated, in the same order.
     inputVariations: [
         {
             id: 'base',
@@ -58,8 +48,6 @@ export const chapter2Visuals = {
             changed: '',
             ambiguity: 'medium',
             expectation: 'Offer general guidance, or ask what is missing in order to really help',
-            externalData: false,
-            tendency: 'chat',
         },
         {
             id: 'question',
@@ -70,8 +58,6 @@ export const chapter2Visuals = {
             changed: 'The "what to do" was removed and a question mark was added. It is left as an open question with no clear request.',
             ambiguity: 'high',
             expectation: 'Clarify what is actually needed before drafting an answer',
-            externalData: false,
-            tendency: 'chat',
         },
         {
             id: 'contradiction',
@@ -82,9 +68,6 @@ export const chapter2Visuals = {
             changed: 'A contradiction was added between what the user experienced and the delivery notice.',
             ambiguity: 'medium',
             expectation: 'Notice the contradiction, and maybe offer to check the status',
-            externalData: true,
-            externalNote: 'Resolving the contradiction calls for checking real tracking data.',
-            tendency: 'chat-agent',
         },
         {
             id: 'tracking',
@@ -95,9 +78,6 @@ export const chapter2Visuals = {
             changed: 'A tracking identifier was added. Now there is enough to check a real status.',
             ambiguity: 'low',
             expectation: 'The delivery status can be checked using the identifier',
-            externalData: true,
-            externalNote: 'The identifier makes it possible to query an external tracking system.',
-            tendency: 'agent',
         },
         {
             id: 'correction',
@@ -108,8 +88,6 @@ export const chapter2Visuals = {
             changed: 'This is not a description of a problem but a correction of something said earlier in the chat.',
             ambiguity: 'high',
             expectation: 'Update the current context of the chat according to the correction',
-            externalData: false,
-            tendency: 'chat',
             note: 'The correction changes the current context of the chat, not what the model learned in training.',
         },
     ] as InputVariation[],

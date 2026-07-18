@@ -3,7 +3,7 @@
 // variations. Shape source: ../../he/behind-ai/chapter2Visuals (Hebrew is canonical).
 //
 // Real translation. No em dash (U+2014), no en dash (U+2013). Structural fields
-// (id, ambiguity, tendency, externalData) are kept literal; only visible text is translated.
+// (id, ambiguity) are kept literal; only visible text is translated.
 
 import type { Locale } from '@/i18n/config';
 import type { InputVariation } from '@/app/behind-the-scenes-ai/chapter-2/inputVariations';
@@ -14,7 +14,7 @@ export const chapter2Visuals = {
     // Input Comparison Lab chrome
     inputLab: {
         tokenizationHint: 'Заметка на потом: здесь мы только смотрим, что содержит вход. Разбиение текста на токены будет в отдельной главе позже.',
-        pickerHint: 'Кнопки ниже - это пять формулировок одного запроса. Выберите одну, и панель ниже обновится по тому, что получает модель.',
+        pickerHint: 'Выберите хотя бы две формулировки и сравните их. Посмотрите, что сказано явно, чего не хватает и что изменилось в просьбе, которую получила модель.',
         pickerAria: 'Выбор формулировки для сравнения',
         ambiguityPrefix: 'Неоднозначность',
         outro: 'Та же потребность, разные формулировки. С каждой из них модель получает другой материал для работы, ещё до того, как начинается более глубокая обработка.',
@@ -24,13 +24,9 @@ export const chapter2Visuals = {
             missing: 'Чего не хватает',
             changed: 'Что изменилось по сравнению с базой',
             ambiguity: 'Уровень неоднозначности',
-            expectation: 'Что ожидается от модели',
-            external: 'Нужны внешние данные',
-            tendency: 'Куда это склоняется',
+            expectation: 'Что просьба требует от модели',
         },
         baseComparison: 'Это базовая точка для сравнения.',
-        externalYes: 'Да.',
-        externalNo: 'На этом этапе не требуется.',
         noticeLabel: 'Стоит отметить',
         // Ambiguity level labels (the chip and color are structural in the component)
         ambiguityLabels: {
@@ -38,15 +34,9 @@ export const chapter2Visuals = {
             medium: 'Средняя',
             high: 'Высокая',
         },
-        // Tendency labels (the chip and color are structural in the component)
-        tendencyLabels: {
-            chat: 'Склоняется к Chat',
-            'chat-agent': 'Между Chat и Agent',
-            agent: 'Склоняется к Agent',
-        },
     },
 
-    // The five input variations. Structural fields (id, ambiguity, tendency, externalData)
+    // The five input variations. Structural fields (id, ambiguity)
     // mirror inputVariations.ts; only the visible text is translated, in the same order.
     inputVariations: [
         {
@@ -58,8 +48,6 @@ export const chapter2Visuals = {
             changed: '',
             ambiguity: 'medium',
             expectation: 'Дать общую подсказку или спросить, чего не хватает, чтобы действительно помочь',
-            externalData: false,
-            tendency: 'chat',
         },
         {
             id: 'question',
@@ -70,8 +58,6 @@ export const chapter2Visuals = {
             changed: 'Убрано "что делать" и добавлен знак вопроса. Осталось недоумение без чёткой просьбы.',
             ambiguity: 'high',
             expectation: 'Выяснить, что на самом деле требуется, прежде чем составлять ответ',
-            externalData: false,
-            tendency: 'chat',
         },
         {
             id: 'contradiction',
@@ -82,9 +68,6 @@ export const chapter2Visuals = {
             changed: 'Добавлено противоречие между тем, что пережил пользователь, и уведомлением о доставке.',
             ambiguity: 'medium',
             expectation: 'Заметить противоречие и, возможно, предложить проверить статус',
-            externalData: true,
-            externalNote: 'Чтобы разрешить противоречие, стоит проверить настоящие данные отслеживания.',
-            tendency: 'chat-agent',
         },
         {
             id: 'tracking',
@@ -95,9 +78,6 @@ export const chapter2Visuals = {
             changed: 'Добавлен идентификатор отслеживания. Теперь достаточно, чтобы проверить настоящий статус.',
             ambiguity: 'low',
             expectation: 'Статус доставки можно проверить по идентификатору',
-            externalData: true,
-            externalNote: 'Идентификатор позволяет обратиться к внешней системе отслеживания.',
-            tendency: 'agent',
         },
         {
             id: 'correction',
@@ -108,8 +88,6 @@ export const chapter2Visuals = {
             changed: 'Это не описание проблемы, а исправление того, что было сказано раньше в разговоре.',
             ambiguity: 'high',
             expectation: 'Обновить текущий контекст разговора согласно исправлению',
-            externalData: false,
-            tendency: 'chat',
             note: 'Исправление меняет текущий контекст разговора, а не то, что модель усвоила при обучении.',
         },
     ] as InputVariation[],

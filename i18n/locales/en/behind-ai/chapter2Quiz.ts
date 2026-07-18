@@ -17,15 +17,15 @@ export const chapter2Quiz = {
 
     byId: {
         1: {
-            question: 'When you send a message to the chat, what does the model receive first of all?',
+            question: 'Is the message the user sees in the chat always the entire input passed to the model?',
             options: [
-                'Your intent, even before the words',
-                'The text you actually wrote, and from it the model infers',
-                'The final answer it needs to return',
-                'Only the words the system marked as important',
+                'Yes. Only the visible text can ever be passed to the model, with nothing added.',
+                'No. It is part of the input, but the application may also attach instructions, conversation history, or other context.',
+                'No. The model automatically knows whatever the user left out too.',
+                'Yes. Hidden context exists only after the text is split into tokens.',
             ],
             explanation:
-                'The model does not receive intent as direct input, nor a ready answer. The starting point is the written text: the words, the order, and the punctuation. From there it infers, and every later stage begins with this input.',
+                'The visible message is part of the input, but not necessarily all of it. An AI application may attach instructions, earlier parts of the conversation, or other context, and this varies from one application to another. The model does not automatically receive what was not written and not attached, and whatever is missing stays missing.',
         },
         2: {
             question: "A user writes 'My package didn't arrive?' with no other detail. What does this say about what the model can do?",
@@ -75,7 +75,7 @@ export const chapter2Quiz = {
     },
 
     conceptLabels: {
-        'קלט הוא טקסט': 'Input is text',
+        'הודעה גלויה אינה כל הקלט': 'The visible message is not the whole input',
         'מה שחסר משנה': 'What is missing matters',
         'ניסוח משנה משימה': 'Phrasing changes the task',
         'מזהה פותח אפשרות': 'An identifier opens an option',

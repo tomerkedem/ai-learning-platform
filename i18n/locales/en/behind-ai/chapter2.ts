@@ -15,17 +15,17 @@ export const chapter2 = {
     // Hero
     hero: {
         badge: 'Behind the Scenes · 02',
-        titleLead: 'The model does not receive your intent.',
-        titleHighlight: 'It receives what you wrote.',
-        lede: 'When we type into a chat, it is easy to assume the model simply understands what we meant. But before any understanding, what goes in is the text itself: the words, the order, the punctuation, and what went unsaid. In this chapter we will see how the very same intent, phrased differently, gives the model different material to work with.',
-        question: 'If my intent is clear to me, why does the phrasing still matter?',
+        titleLead: 'The same need, two different phrasings.',
+        titleHighlight: 'Does the model receive them the same way?',
+        lede: 'When we type into a chat, we know exactly what we want. But the same need can be phrased in more than one way. In this chapter we will compare a few phrasings of the same request and check whether the model receives all of them in exactly the same way.',
+        question: 'Try to guess before we check: what actually reaches the model when you send a message?',
         chipGuess: 'Guess what goes in first',
         chipCompare: 'Compare phrasings and see what changes',
     },
 
     // Mentor speech bubbles (text only; pose and placement are structural in the page)
     mentor: {
-        hero: 'Let us start from what was actually written',
+        hero: 'Let us compare a few phrasings and see what changes',
         lab: 'Same need, different material',
         lock: 'Pause and pick an answer. That is how you will know if you caught the chapter idea.',
     },
@@ -41,7 +41,7 @@ export const chapter2 = {
         getsRightLabel: 'What this gets right',
         revealButton: 'Reveal the core idea',
         revealTitle: 'So what really goes in?',
-        revealCopy: 'The model does not receive your intent or the answer in advance. The starting point is the text you wrote: the words, the order, the punctuation, and what went unsaid. From there it begins to infer. So the same intent, in two phrasings, can give the model different material to work with.',
+        revealCopy: 'The model does not receive your intent or the answer in advance. The starting point is the text you wrote: the words, the order, and the punctuation. What you did not write stays missing. From the text and the conversation context, the model infers the intent. So the same need, in two phrasings, can give the model different material to work with.',
         cta: 'Let us compare a few phrasings',
         resetButton: 'Choose again',
         exploreHint: 'You can also pick another option and see how it sounds.',
@@ -85,32 +85,27 @@ export const chapter2 = {
         ],
     },
 
-    // The wow moment (InsightBox)
-    insight: {
-        title: 'What does the model actually get from you?',
-        lead: 'The model does not know what you meant. It only gets the text you wrote.',
-        body: 'The words you chose, their order, the punctuation, and what you left out - that is all the model has to work with. The very same intent, phrased differently, enters the model as different raw material. So your phrasing is not decoration, it is the input itself.',
-    },
-
     // Input Comparison Lab section header (the component itself lives in chapter2Visuals)
     inputLab: {
         eyebrow: 'Input Comparison Lab',
         title: 'Comparing what reaches the model',
-        intro: 'Here is the same request in five phrasings. Pick one, and the panel shows what the model actually receives: what is explicit, what is missing, and what changed.',
+        intro: 'The same request, a few different phrasings. Each one gives the model different material to work with.',
+    },
+
+    // Visible message versus the full input (post-lab card, closes the chapter-title promise)
+    fullInput: {
+        title: 'Your message is part of the input, not necessarily all of it',
+        body: 'The message you wrote is part of the input, but not always all of it. An AI application may also attach instructions, earlier parts of the conversation, or other context. Whatever was not written and not attached stays missing.',
+        seen: 'What the user sees',
+        added: 'What the application may attach',
+        total: 'The input passed to the model',
+        caveat: 'This varies from one application to another. It is not a fixed formula.',
     },
 
     // Everyday example
     everyday: {
         title: 'A moment from real life',
         body: 'When you text a friend "it did not arrive," they already know what you mean, from the conversation, the tone, and your history together. The model starts from what is actually written to it and from the context it has in the conversation. It can infer quite a lot, but it does not receive what is in your head.',
-    },
-
-    // Correcting a common mistake (two cards)
-    mistake: {
-        wrongLabel: 'Common mistake',
-        wrongText: '"The model knows what I meant."',
-        rightLabel: 'How it really works',
-        rightText: 'The model can infer intent from the text and the context, but it does not receive the intent itself as direct input.',
     },
 
     // What to take from the chapter
@@ -121,7 +116,7 @@ export const chapter2 = {
             'Phrasing, order, and context change what the model has to work with.',
             'Missing details can force the model to guess, to ask, or to answer in general terms.',
             'Adding a tracking number turns the request into something that can be checked.',
-            'An explicit request for action raises the risk and can shift the behavior toward Agent.',
+            'The message you see is part of the input, and the application may attach more.',
             'A correction mid conversation changes the current context, not what the model learned in training.',
         ],
     },

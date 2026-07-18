@@ -3,7 +3,7 @@
 // variations. Shape source: ../../he/behind-ai/chapter2Visuals (Hebrew is canonical).
 //
 // Real translation. No em dash (U+2014), no en dash (U+2013). Structural fields
-// (id, ambiguity, tendency, externalData) are kept literal; only visible text is translated.
+// (id, ambiguity) are kept literal; only visible text is translated.
 
 import type { Locale } from '@/i18n/config';
 import type { InputVariation } from '@/app/behind-the-scenes-ai/chapter-2/inputVariations';
@@ -14,7 +14,7 @@ export const chapter2Visuals = {
     // Input Comparison Lab chrome
     inputLab: {
         tokenizationHint: 'Una nota para más adelante: aquí solo miramos qué contiene la entrada. Dividir el texto en tokens llega en un capítulo aparte más adelante.',
-        pickerHint: 'Los botones de abajo son cinco formulaciones de la misma solicitud. Elige uno y el panel de abajo se actualiza según lo que recibe el modelo.',
+        pickerHint: 'Elige al menos dos formulaciones y compáralas. Fíjate en qué se dice de forma explícita, qué queda faltando y qué cambió en la petición que recibió el modelo.',
         pickerAria: 'Elegir una formulación para comparar',
         ambiguityPrefix: 'Ambigüedad',
         outro: 'La misma necesidad, formulaciones distintas. Con cada una el modelo obtiene material distinto con el cual trabajar, antes de que comience cualquier procesamiento más profundo.',
@@ -24,13 +24,9 @@ export const chapter2Visuals = {
             missing: 'Qué falta',
             changed: 'Qué cambió respecto de la base',
             ambiguity: 'Nivel de ambigüedad',
-            expectation: 'Qué se espera del modelo',
-            external: 'Se necesita información externa',
-            tendency: 'Hacia dónde se inclina',
+            expectation: 'Qué le pide la petición al modelo',
         },
         baseComparison: 'Este es el punto base para la comparación.',
-        externalYes: 'Sí.',
-        externalNo: 'No se necesita en esta etapa.',
         noticeLabel: 'Vale la pena notar',
         // Ambiguity level labels (the chip and color are structural in the component)
         ambiguityLabels: {
@@ -38,16 +34,10 @@ export const chapter2Visuals = {
             medium: 'Media',
             high: 'Alta',
         },
-        // Tendency labels (the chip and color are structural in the component)
-        tendencyLabels: {
-            chat: 'Tiende a Chat',
-            'chat-agent': 'Entre Chat y Agent',
-            agent: 'Tiende a Agent',
-        },
     },
 
-    // The five input variations. Structural fields (id, ambiguity, tendency, externalData)
-    // mirror inputVariations.ts; only the visible text is translated, in the same order.
+    // The five input variations. Structural fields (id, ambiguity) mirror
+    // inputVariations.ts; only the visible text is translated, in the same order.
     inputVariations: [
         {
             id: 'base',
@@ -58,8 +48,6 @@ export const chapter2Visuals = {
             changed: '',
             ambiguity: 'medium',
             expectation: 'Ofrecer orientación general, o preguntar qué falta para ayudar de verdad',
-            externalData: false,
-            tendency: 'chat',
         },
         {
             id: 'question',
@@ -70,8 +58,6 @@ export const chapter2Visuals = {
             changed: 'Se quitó el "qué hacer" y se agregó un signo de interrogación. Queda como una pregunta abierta sin una petición clara.',
             ambiguity: 'high',
             expectation: 'Aclarar qué se necesita realmente antes de redactar una respuesta',
-            externalData: false,
-            tendency: 'chat',
         },
         {
             id: 'contradiction',
@@ -82,9 +68,6 @@ export const chapter2Visuals = {
             changed: 'Se agregó una contradicción entre lo que vivió el usuario y el aviso de entrega.',
             ambiguity: 'medium',
             expectation: 'Notar la contradicción, y quizás ofrecer revisar el estado',
-            externalData: true,
-            externalNote: 'Resolver la contradicción exige consultar datos de seguimiento reales.',
-            tendency: 'chat-agent',
         },
         {
             id: 'tracking',
@@ -95,9 +78,6 @@ export const chapter2Visuals = {
             changed: 'Se agregó un identificador de seguimiento. Ahora hay suficiente para verificar un estado real.',
             ambiguity: 'low',
             expectation: 'El estado del envío se puede verificar usando el identificador',
-            externalData: true,
-            externalNote: 'El identificador permite consultar un sistema de seguimiento externo.',
-            tendency: 'agent',
         },
         {
             id: 'correction',
@@ -108,8 +88,6 @@ export const chapter2Visuals = {
             changed: 'Esto no es la descripción de un problema sino la corrección de algo dicho antes en el chat.',
             ambiguity: 'high',
             expectation: 'Actualizar el contexto actual del chat según la corrección',
-            externalData: false,
-            tendency: 'chat',
             note: 'La corrección cambia el contexto actual del chat, no lo que el modelo aprendió en el entrenamiento.',
         },
     ] as InputVariation[],

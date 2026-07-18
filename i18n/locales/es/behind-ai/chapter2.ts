@@ -15,17 +15,17 @@ export const chapter2 = {
     // Hero
     hero: {
         badge: 'Behind the Scenes · 02',
-        titleLead: 'El modelo no recibe tu intención.',
-        titleHighlight: 'Recibe lo que escribiste.',
-        lede: 'Cuando escribimos en un chat, es fácil suponer que el modelo simplemente entiende lo que quisimos decir. Pero antes de cualquier comprensión, lo que entra es el texto en sí: las palabras, el orden, la puntuación y lo que quedó sin decir. En este capítulo veremos cómo una misma intención, formulada de otra manera, le da al modelo material distinto con el cual trabajar.',
-        question: 'Si mi intención me resulta clara, ¿por qué sigue importando la forma de redactarla?',
+        titleLead: 'La misma necesidad, dos formulaciones distintas.',
+        titleHighlight: '¿El modelo las recibe igual?',
+        lede: 'Cuando escribimos en un chat, sabemos exactamente qué queremos. Pero la misma necesidad se puede formular de varias maneras. En este capítulo compararemos varias formulaciones de la misma petición y veremos si el modelo las recibe todas exactamente igual.',
+        question: 'Intenta adivinar antes de comprobarlo: ¿qué llega en realidad al modelo cuando envías un mensaje?',
         chipGuess: 'Adivina qué entra primero',
         chipCompare: 'Compara formulaciones y observa qué cambia',
     },
 
     // Mentor speech bubbles (text only; pose and placement are structural in the page)
     mentor: {
-        hero: 'Empecemos por lo que realmente se escribió',
+        hero: 'Comparemos varias formulaciones y veamos qué cambia',
         lab: 'La misma necesidad, material distinto',
         lock: 'Detente y elige una respuesta. Así sabrás si captaste la idea del capítulo.',
     },
@@ -41,7 +41,7 @@ export const chapter2 = {
         getsRightLabel: 'Qué acierta esta opción',
         revealButton: 'Revela la idea central',
         revealTitle: 'Entonces, ¿qué entra realmente?',
-        revealCopy: 'El modelo no recibe tu intención ni la respuesta de antemano. El punto de partida es el texto que escribiste: las palabras, el orden, la puntuación y lo que quedó sin decir. A partir de ahí empieza a inferir. Por eso la misma intención, en dos formulaciones, puede darle al modelo material distinto con el cual trabajar.',
+        revealCopy: 'El modelo no recibe tu intención ni la respuesta de antemano. El punto de partida es el texto que escribiste: las palabras, el orden y la puntuación. Lo que no escribiste sigue faltando. A partir del texto y del contexto de la conversación, el modelo infiere la intención. Por eso la misma necesidad, en dos formulaciones, puede darle al modelo material distinto con el cual trabajar.',
         cta: 'Comparemos algunas formulaciones',
         resetButton: 'Elegir de nuevo',
         exploreHint: 'También puedes elegir otra opción y ver cómo suena.',
@@ -85,32 +85,27 @@ export const chapter2 = {
         ],
     },
 
-    // The wow moment (InsightBox)
-    insight: {
-        title: '¿Qué recibe realmente el modelo de ti?',
-        lead: 'El modelo no sabe qué quisiste decir. Solo recibe el texto que escribiste.',
-        body: 'Las palabras que elegiste, su orden, la puntuación y lo que dejaste fuera son todo lo que el modelo tiene para trabajar. La misma intención, formulada de otra manera, entra al modelo como materia prima distinta. Por eso tu formulación no es un adorno, es la entrada misma.',
-    },
-
     // Input Comparison Lab section header (the component itself lives in chapter2Visuals)
     inputLab: {
         eyebrow: 'Input Comparison Lab',
         title: 'Comparar lo que llega al modelo',
-        intro: 'Aquí está la misma solicitud en cinco formulaciones. Elige una y el panel muestra qué recibe realmente el modelo: qué es explícito, qué falta y qué cambió.',
+        intro: 'La misma petición, varias formulaciones distintas. Cada una le da al modelo material distinto para trabajar.',
+    },
+
+    // Visible message versus the full input (post-lab card, closes the chapter-title promise)
+    fullInput: {
+        title: 'Tu mensaje es parte de la entrada, no necesariamente toda',
+        body: 'El mensaje que escribiste es parte de la entrada, pero no siempre toda. Una aplicación de IA puede añadir también instrucciones, partes anteriores de la conversación u otro contexto. Lo que no se escribió ni se adjuntó sigue faltando.',
+        seen: 'Lo que ve el usuario',
+        added: 'Lo que la aplicación puede añadir',
+        total: 'La entrada que se pasa al modelo',
+        caveat: 'Esto varía de una aplicación a otra. No es una fórmula fija.',
     },
 
     // Everyday example
     everyday: {
         title: 'Un momento de la vida real',
         body: 'Cuando le escribes a un amigo "no llegó", él ya sabe de qué hablas, por la conversación, el tono y la historia que tienen juntos. El modelo parte de lo que realmente se le escribe y del contexto que tiene en la conversación. Puede inferir bastante, pero no recibe lo que tienes en la cabeza.',
-    },
-
-    // Correcting a common mistake (two cards)
-    mistake: {
-        wrongLabel: 'Error común',
-        wrongText: '"El modelo sabe lo que quise decir."',
-        rightLabel: 'Cómo funciona en realidad',
-        rightText: 'El modelo puede inferir la intención a partir del texto y el contexto, pero no recibe la intención en sí como entrada directa.',
     },
 
     // What to take from the chapter
@@ -121,7 +116,7 @@ export const chapter2 = {
             'La formulación, el orden y el contexto cambian lo que el modelo tiene para trabajar.',
             'Los detalles faltantes pueden obligar al modelo a adivinar, a preguntar o a responder en términos generales.',
             'Agregar un número de seguimiento convierte la solicitud en algo que se puede verificar.',
-            'Una solicitud explícita de acción eleva el riesgo y puede desplazar el comportamiento hacia Agent.',
+            'El mensaje que ves es parte de la entrada, y la aplicación puede añadir más.',
             'Una corrección a mitad de la conversación cambia el contexto actual, no lo que el modelo aprendió en el entrenamiento.',
         ],
     },

@@ -14,7 +14,7 @@ export const chapter2Visuals = {
     // מעבדת השוואת קלט (InputComparisonLab): כיתובי chrome
     inputLab: {
         tokenizationHint: 'הערה להמשך: כאן אנחנו רק מסתכלים מה הקלט מכיל. פירוק הטקסט לטוקנים מגיע בפרק נפרד בהמשך.',
-        pickerHint: 'הכפתורים למטה הם חמישה ניסוחים לאותה בקשה. בחרו אחד, והלוח שמתחת יתעדכן לפי מה שהמודל מקבל.',
+        pickerHint: 'בחרו לפחות שני ניסוחים והשוו ביניהם. בדקו מה נאמר במפורש, מה נשאר חסר ומה השתנה בבקשה שהמודל קיבל.',
         pickerAria: 'בחירת ניסוח להשוואה',
         ambiguityPrefix: 'עמימות',
         outro: 'אותו צורך, ניסוחים שונים. בכל ניסוח המודל מקבל חומר אחר לעבוד איתו, עוד לפני שמתחיל עיבוד עמוק יותר.',
@@ -24,13 +24,9 @@ export const chapter2Visuals = {
             missing: 'מה חסר',
             changed: 'מה השתנה לעומת הבסיס',
             ambiguity: 'רמת עמימות',
-            expectation: 'מה מצופה מהמודל',
-            external: 'דרוש מידע חיצוני',
-            tendency: 'לאן זה נוטה',
+            expectation: 'מה הבקשה מבקשת מהמודל לעשות',
         },
         baseComparison: 'זו נקודת הבסיס להשוואה.',
-        externalYes: 'כן.',
-        externalNo: 'לא נדרש בשלב הזה.',
         noticeLabel: 'שווה לשים לב',
         // תוויות רמת העמימות (הצ׳יפ והגוון מבניים ברכיב)
         ambiguityLabels: {
@@ -38,15 +34,9 @@ export const chapter2Visuals = {
             medium: 'בינונית',
             high: 'גבוהה',
         },
-        // תוויות הנטייה (הצ׳יפ והגוון מבניים ברכיב)
-        tendencyLabels: {
-            chat: 'נוטה ל-Chat',
-            'chat-agent': 'בין Chat ל-Agent',
-            agent: 'נוטה ל-Agent',
-        },
     },
 
-    // נתוני חמשת הניסוחים. השדות המבניים (id, ambiguity, tendency, externalData)
+    // נתוני חמשת הניסוחים. השדות המבניים (id, ambiguity)
     // נשארים ב-inputVariations.ts; כאן הטקסט הגלוי בלבד, באותו סדר ובאותם ערכים.
     inputVariations: [
         {
@@ -58,8 +48,6 @@ export const chapter2Visuals = {
             changed: '',
             ambiguity: 'medium',
             expectation: 'לתת הכוונה כללית, או לשאול מה חסר כדי לעזור באמת',
-            externalData: false,
-            tendency: 'chat',
         },
         {
             id: 'question',
@@ -70,8 +58,6 @@ export const chapter2Visuals = {
             changed: 'הוסר "מה לעשות" ונוסף סימן שאלה. נשארה תהייה בלי בקשה ברורה.',
             ambiguity: 'high',
             expectation: 'לברר מה בעצם נדרש לפני שמנסחים תשובה',
-            externalData: false,
-            tendency: 'chat',
         },
         {
             id: 'contradiction',
@@ -82,9 +68,6 @@ export const chapter2Visuals = {
             changed: 'נוספה סתירה בין מה שהמשתמש חווה לבין הודעת המסירה.',
             ambiguity: 'medium',
             expectation: 'לזהות את הסתירה, ואולי להציע לבדוק את הסטטוס',
-            externalData: true,
-            externalNote: 'כדי ליישב את הסתירה כדאי לבדוק נתוני מעקב אמיתיים.',
-            tendency: 'chat-agent',
         },
         {
             id: 'tracking',
@@ -95,9 +78,6 @@ export const chapter2Visuals = {
             changed: 'נוסף מזהה מעקב. עכשיו יש מספיק כדי לבדוק סטטוס אמיתי.',
             ambiguity: 'low',
             expectation: 'אפשר לבדוק את סטטוס המשלוח לפי המזהה',
-            externalData: true,
-            externalNote: 'המזהה מאפשר פנייה למערכת מעקב חיצונית.',
-            tendency: 'agent',
         },
         {
             id: 'correction',
@@ -108,8 +88,6 @@ export const chapter2Visuals = {
             changed: 'זה לא תיאור בעיה אלא תיקון של משהו שנאמר קודם בשיחה.',
             ambiguity: 'high',
             expectation: 'לעדכן את ההקשר הנוכחי של השיחה לפי התיקון',
-            externalData: false,
-            tendency: 'chat',
             note: 'התיקון משנה את ההקשר הנוכחי של השיחה, לא את מה שהמודל למד באימון.',
         },
     ] as InputVariation[],

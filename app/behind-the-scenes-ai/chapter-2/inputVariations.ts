@@ -3,10 +3,10 @@
 // חמישה ניסוחים, וכל ניסוח מכניס למודל חומר אחר לעבוד איתו.
 //
 // חשוב: הפרק הזה לא מלמד טוקניזציה לעומק. אנחנו מסתכלים רק על מה הקלט מכיל,
-// לפני שהוא מפורק לטוקנים. אין כאן מקף ארוך, מקף בינוני או נקודה-פסיק בעברית.
+// לפני שהוא מפורק לטוקנים. הפרק גם נשאר בגבול הרכב הקלט: אין כאן סיווג Chat מול
+// Agent ואין מקורות חיצוניים. אין מקף ארוך, מקף בינוני או נקודה-פסיק בעברית.
 
 export type Ambiguity = 'low' | 'medium' | 'high';
-export type Tendency = 'chat' | 'chat-agent' | 'agent';
 
 export interface InputVariation {
     id: string;
@@ -21,13 +21,8 @@ export interface InputVariation {
     /** מה השתנה לעומת ניסוח הבסיס. ריק עבור הבסיס עצמו. */
     changed: string;
     ambiguity: Ambiguity;
-    /** מה מצופה מהמודל. */
+    /** מה הבקשה מבקשת מהמודל לעשות. */
     expectation: string;
-    /** האם דרוש מידע חיצוני. */
-    externalData: boolean;
-    externalNote?: string;
-    /** לאן זה נוטה: Chat, Agent, או ביניהם. */
-    tendency: Tendency;
     /** הערת הוראה אופציונלית (למשל הקשר מול אימון). */
     note?: string;
 }

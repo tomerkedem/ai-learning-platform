@@ -17,15 +17,15 @@ export const chapter2Quiz = {
 
     byId: {
         1: {
-            question: 'Cuando envías un mensaje al chat, ¿qué recibe el modelo antes que nada?',
+            question: '¿El mensaje que el usuario ve en el chat es siempre toda la entrada que se pasa al modelo?',
             options: [
-                'Tu intención, incluso antes de las palabras',
-                'El texto que escribiste de verdad, y a partir de él el modelo deduce',
-                'La respuesta final que debe devolver',
-                'Solo las palabras que el sistema marcó como importantes',
+                'Sí. Al modelo solo se le puede pasar el texto visible, sin ningún añadido.',
+                'No. Es parte de la entrada, pero la aplicación también puede añadir instrucciones, historial de la conversación u otro contexto.',
+                'No. El modelo también conoce automáticamente lo que el usuario omitió.',
+                'Sí. El contexto oculto solo existe después de que el texto se divide en tokens.',
             ],
             explanation:
-                'El modelo no recibe la intención como entrada directa ni una respuesta ya hecha. El punto de partida es el texto escrito: las palabras, el orden y la puntuación. A partir de ahí deduce, y todas las demás etapas empiezan con esta entrada.',
+                'El mensaje visible es parte de la entrada, pero no necesariamente toda. Una aplicación de IA puede añadir instrucciones, partes anteriores de la conversación u otro contexto, y esto varía de una aplicación a otra. El modelo no recibe automáticamente lo que no se escribió ni se adjuntó, y lo que falta sigue faltando.',
         },
         2: {
             question: 'Un usuario escribe "Mi paquete no llegó?" sin ningún otro detalle. ¿Qué dice esto sobre lo que el modelo puede hacer?',
@@ -75,7 +75,7 @@ export const chapter2Quiz = {
     },
 
     conceptLabels: {
-        'קלט הוא טקסט': 'La entrada es texto',
+        'הודעה גלויה אינה כל הקלט': 'El mensaje visible no es toda la entrada',
         'מה שחסר משנה': 'Lo que falta importa',
         'ניסוח משנה משימה': 'La formulación cambia la tarea',
         'מזהה פותח אפשרות': 'Un identificador abre una opción',
