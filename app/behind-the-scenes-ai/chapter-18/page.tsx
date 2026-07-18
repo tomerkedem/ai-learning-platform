@@ -19,7 +19,7 @@ import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
     ShieldCheck, ShieldAlert, Ban, Send, MousePointerClick, Layers, FlaskConical,
-    Lock, CheckCircle2, XCircle, Sparkles, Route, ArrowLeft, ArrowRight,
+    ListChecks, CheckCircle2, XCircle, Sparkles, Route, ArrowLeft, ArrowRight,
 } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
@@ -49,7 +49,7 @@ const GUESS_CARD_META = [
     { id: 'neverTools', icon: Ban, statusTone: 'partial', mentorPose: 'think' },
 ] as const;
 
-/* ════════════════ נעילת הבנה: מה Agent טוב יעשה עם טיוטה מוכנה בלי אישור שליחה ════════════════ */
+/* ════════════════ בדיקת הבנה: מה Agent טוב יעשה עם טיוטה מוכנה בלי אישור שליחה ════════════════ */
 // התשובה הנכונה: "להכין טיוטה ולבקש אישור לפני שליחה" (אינדקס 1).
 const LOCK_CORRECT = 1;
 
@@ -404,14 +404,14 @@ export default function BehindTheScenesChapter18() {
                 </div>
             </section>
 
-            {/* ══════════ נעילת הבנה ══════════ */}
+            {/* ══════════ בדיקת הבנה ══════════ */}
             <section className="relative mt-12 text-start" dir={dir}>
                 <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
                     <Mentor pose="happy" line={c18.mentor.lock} width={160} flip={!isRtl} />
                 </div>
                 <div className="rounded-2xl border border-indigo-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center gap-2">
-                        <Lock size={20} className="text-indigo-300" />
+                        <ListChecks size={20} className="text-indigo-300" />
                         <h3 className="text-xl font-bold text-white">{c18.lock.title}</h3>
                     </div>
 

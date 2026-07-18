@@ -7,7 +7,7 @@
 //
 // This file gathers all of the chapter's translatable text: the hero, the "just before
 // the lab" primer, the wow moment, an everyday example, a common-mistake fix, the "how
-// the window works" explanation, the understanding lock, the practical insight, the
+// the window works" explanation, the Check Your Understanding step, the practical insight, the
 // mentor lines, the opening guess, and the lab (context window lab) and quiz sub-spaces.
 //
 // Structural metadata that is not translated (icons, mentor poses, tints, element ids)
@@ -24,7 +24,7 @@ export const contextWindow = {
     // flips read-aloud to English.
     contentLocale: 'en' as Locale,
 
-    // The anchor prompt, shared by the hero, the guess and the understanding lock.
+    // The anchor prompt, shared by the hero, the guess and the Check Your Understanding step.
     prompt: 'What should I reply to him?',
 
     // The critical detail said at the start of the conversation, around which the whole
@@ -102,7 +102,7 @@ export const contextWindow = {
             'Think of the window like a frame that sees part of the conversation. When new text arrives, the frame moves forward to fit it in, and what is at the far edge can slide out. The model always works with what is inside the frame right now. There is no decision or emotion here, only a limit on how much text fits in at once.',
     },
 
-    // -- Understanding lock --
+    // -- Check Your Understanding --
     lock: {
         title: 'Check Your Understanding',
         trueLabel: 'True',

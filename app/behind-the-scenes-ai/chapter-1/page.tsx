@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Terminal, ScanSearch, ArrowDown, ScanLine, X, Layers, ChevronDown, Eye, ListChecks, CircleAlert, Lock, RotateCcw } from 'lucide-react';
+import { Terminal, ScanSearch, ArrowDown, ScanLine, X, Layers, ChevronDown, Eye, ListChecks, CircleAlert, RotateCcw } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -115,7 +115,7 @@ export default function BehindTheScenesChapter1() {
     const [isTyping, setIsTyping] = useState(true);
     // הדרכת first-run: רמז עדין מאיפה להתחיל, נסגר בלחיצה כדי לא להפריע לחזרות.
     const [coachOpen, setCoachOpen] = useState(true);
-    // נעילת הבנה לפני המבדק: החלטה בינארית אחת על ליבת הפרק (פער קטן -> לעצור ולשאול).
+    // בדיקת הבנה לפני המבדק: החלטה בינארית אחת על ליבת הפרק (פער קטן -> לעצור ולשאול).
     const [lockChoice, setLockChoice] = useState<'answer' | 'ask' | null>(null);
     // חשיפה הדרגתית: שכבת העומק (קריאה חיה, חוגת ביטחון, סיבתיות, פיצול) סגורה
     // כברירת מחדל. פרק 1 נפתח נקי - התשובה והדרך שמאחוריה בלבד - והפרטים נפתחים בבחירה.
@@ -681,14 +681,14 @@ export default function BehindTheScenesChapter1() {
                 </div>
             </section>
 
-            {/* ══════════ נעילת הבנה: החלטה אחת מכרעת על ליבת הפרק, לפני המבדק ══════════ */}
-            {/* לא סיכום פסיבי אלא רגע אקטיבי: הלומד בוחר מה נכון כשהפער קטן, ונועל את */}
+            {/* ══════════ בדיקת הבנה: החלטה אחת מכרעת על ליבת הפרק, לפני המבדק ══════════ */}
+            {/* לא סיכום פסיבי אלא רגע אקטיבי: הלומד בוחר מה נכון כשהפער קטן, ומבסס את */}
             {/* הרעיון (פער קטן = חוסר ודאות -> לעצור ולשאול) לפני שהוא נבחן עליו. */}
             <section className="mt-8 text-start" dir={dir}>
                 <div className="rounded-2xl border border-cyan-500/25 bg-slate-900/50 p-6 md:p-7">
                     <div className="mb-3 flex items-start justify-between gap-2.5">
                         <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
-                            <Lock size={14} /> {c1.lock.eyebrow}
+                            <ListChecks size={14} /> {c1.lock.eyebrow}
                         </span>
                         <SpeakButton text={`${c1.lock.eyebrow}. ${c1.lock.question}`} />
                     </div>

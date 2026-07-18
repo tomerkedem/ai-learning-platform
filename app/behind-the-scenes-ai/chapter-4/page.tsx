@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Sparkles, MousePointerClick, ArrowLeftRight, Lock, ArrowLeft, ArrowRight, CheckCircle2, Info, Hash, TrendingUp, HelpCircle, Table2, GraduationCap } from 'lucide-react';
+import { Sparkles, MousePointerClick, ArrowLeftRight, ListChecks, ArrowLeft, ArrowRight, CheckCircle2, Info, Hash, TrendingUp, HelpCircle, Table2, GraduationCap } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -35,7 +35,7 @@ const GUESS_CARD_META = [
 
 type GuessId = (typeof GUESS_CARD_META)[number]['id'];
 
-/* ════════════════════ נעילת הבנה: התשובה הנכונה מבנית ════════════════════ */
+/* ════════════════════ בדיקת הבנה: התשובה הנכונה מבנית ════════════════════ */
 const LOCK_CORRECT = 0;
 
 const scrollToSee = (smooth: boolean) => {
@@ -137,7 +137,7 @@ const MeaningGuess: React.FC = () => {
     );
 };
 
-/* ════════════════════ נעילת הבנה: מאיפה הגיעו מספרי הווקטור ════════════════════ */
+/* ════════════════════ בדיקת הבנה: מאיפה הגיעו מספרי הווקטור ════════════════════ */
 
 const LockQuestion: React.FC = () => {
     const { t, dir } = useT();
@@ -406,12 +406,12 @@ export default function BehindTheScenesChapter4() {
                 </div>
             </section>
 
-            {/* ══════════ נעילת הבנה ══════════ */}
-            {/* בלי מנטור: כל רמז מושגי כאן מסגיר את התשובה. נעילת ההבנה נשארת בדיקה עצמאית. */}
+            {/* ══════════ בדיקת הבנה ══════════ */}
+            {/* בלי מנטור: כל רמז מושגי כאן מסגיר את התשובה. בדיקת ההבנה נשארת בדיקה עצמאית. */}
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center gap-2">
-                        <Lock size={20} className="text-violet-300" />
+                        <ListChecks size={20} className="text-violet-300" />
                         <h3 className="text-xl font-bold text-white">{c4.lock.title}</h3>
                     </div>
                     <LockQuestion />

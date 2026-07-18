@@ -126,7 +126,7 @@ export const chapter2 = {
         ],
     },
 
-    // Lock in the idea (true vs false) + the diagnosis question
+    // Check Your Understanding (true vs false) + the diagnosis question
     lock: {
         title: '理解度チェック',
         truthLabel: '正',

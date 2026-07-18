@@ -6,7 +6,7 @@
 //
 // This file gathers all of the chapter's translatable text: the hero, the "just before
 // the lab" primer, the lab heading, the wow moment, an everyday example, a common-mistake
-// fix, the gentle Q/K/V explanation, the understanding lock, the practical insight, the
+// fix, the gentle Q/K/V explanation, the Check Your Understanding step, the practical insight, the
 // mentor lines, the opening guess, and the sentenceLab and quiz sub-spaces.
 //
 // Structural metadata that is not translated (icons, mentor poses, tints, attention
@@ -22,7 +22,7 @@ export const attention = {
     // The language the chapter content is actually written in.
     contentLocale: 'en' as Locale,
 
-    // The anchor prompt, shared by the hero, the guess and the understanding lock.
+    // The anchor prompt, shared by the hero, the guess and the Check Your Understanding step.
     prompt: 'The package was marked delivered, but the customer says they never received it.',
 
     // -- Hero --
@@ -97,7 +97,7 @@ export const attention = {
             'Every word sends a kind of question: what should I be looking at right now? Other words reveal signals: what information do I hold? The model computes which pairs of question and signal match more strongly, and then mixes the information according to the strength of the match. That is how the meaning of each word updates based on the context around it. That is the whole idea, without math.',
     },
 
-    // -- Understanding lock --
+    // -- Check Your Understanding --
     lock: {
         title: 'Check Your Understanding',
         trueLabel: 'True',

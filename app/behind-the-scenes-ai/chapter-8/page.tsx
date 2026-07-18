@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Dices, MousePointerClick, Scale, Percent, Lightbulb, MessageSquare, Lock, CheckCircle2, XCircle, Sparkles, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Dices, MousePointerClick, Scale, Percent, Lightbulb, MessageSquare, ListChecks, CheckCircle2, XCircle, Sparkles, ArrowRight, ArrowLeft } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -32,7 +32,7 @@ const GUESS_CARD_META: { id: GuessCardId; cue: Cue; tone: StatusTone; pose: Ment
     { id: 'lost', cue: 'factcheck', tone: 'common', pose: 'reassure' },
 ];
 
-/* ════════════════════════ נעילת הבנה: מה מותר להסיק מהסתברות גבוהה ════════════════════════ */
+/* ════════════════════════ בדיקת הבנה: מה מותר להסיק מהסתברות גבוהה ════════════════════════ */
 // התשובה הנכונה מבנית: "בהינתן ההקשר הנוכחי, זה ההמשך הסביר ביותר" הוא האפשרות השלישית (אינדקס 2).
 const LOCK_CORRECT = 2;
 
@@ -400,7 +400,7 @@ export default function BehindTheScenesChapter8() {
                 </div>
             </section>
 
-            {/* ══════════ נעילת הבנה ══════════ */}
+            {/* ══════════ בדיקת הבנה ══════════ */}
             <section className="relative mt-12 text-start" dir={dir}>
                 <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
                     <Mentor pose="celebrate" line={c8.mentor.lock} width={160} flip={!isRtl} />
@@ -408,7 +408,7 @@ export default function BehindTheScenesChapter8() {
                 <div className="rounded-2xl border border-purple-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
-                            <Lock size={20} className="text-purple-300" />
+                            <ListChecks size={20} className="text-purple-300" />
                             <h3 className="text-xl font-bold text-white">{c8.lock.title}</h3>
                         </div>
                         <SpeakButton text={`${c8.lock.title}. ${c8.lock.trueLabel}: ${c8.lock.trueText} ${c8.lock.falseLabel}: ${c8.lock.falseText}`} speechLocale={speechLocale} />

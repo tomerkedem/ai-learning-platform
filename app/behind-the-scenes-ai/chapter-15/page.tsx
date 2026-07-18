@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Gauge, MousePointerClick, Scale, FlaskConical, Lock, CheckCircle2, XCircle, Sparkles, BadgeCheck, BookMarked, Ban, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Gauge, MousePointerClick, Scale, FlaskConical, ListChecks, CheckCircle2, XCircle, Sparkles, BadgeCheck, BookMarked, Ban, ArrowLeft, ArrowRight } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -31,7 +31,7 @@ const GUESS_CARD_META = [
     { id: 'noNeed', icon: Ban, statusTone: 'partial', mentorPose: 'think' },
 ] as const;
 
-/* ════════════════════════ נעילת הבנה: מה חושף כישלון בקצה ════════════════════════ */
+/* ════════════════════════ בדיקת הבנה: מה חושף כישלון בקצה ════════════════════════ */
 // התשובה הנכונה מבנית: "המודל אולי למד את הדוגמה המוכרת אך נכשל תחת לחץ" (אינדקס 1).
 const LOCK_CORRECT = 1;
 
@@ -364,14 +364,14 @@ export default function BehindTheScenesChapter15() {
                 </div>
             </section>
 
-            {/* ══════════ נעילת הבנה ══════════ */}
+            {/* ══════════ בדיקת הבנה ══════════ */}
             <section className="relative mt-12 text-start" dir={dir}>
                 <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
                     <Mentor pose="happy" line={c15.mentor.lock} width={160} flip={!isRtl} />
                 </div>
                 <div className="rounded-2xl border border-emerald-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center gap-2">
-                        <Lock size={20} className="text-emerald-300" />
+                        <ListChecks size={20} className="text-emerald-300" />
                         <h3 className="text-xl font-bold text-white">{c15.lock.title}</h3>
                     </div>
 

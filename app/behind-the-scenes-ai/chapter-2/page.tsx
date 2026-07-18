@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Type, MousePointerClick, ArrowLeftRight, FlaskConical, Lightbulb, Lock, CheckCircle2, XCircle, Brain, FileText, MessageSquare, Filter } from 'lucide-react';
+import { Type, MousePointerClick, ArrowLeftRight, FlaskConical, Lightbulb, ListChecks, CheckCircle2, XCircle, Brain, FileText, MessageSquare, Filter } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -29,7 +29,7 @@ const GUESS_CARD_META = [
     { id: 'important', icon: Filter, statusTone: 'partial', mentorPose: 'think' },
 ] as const;
 
-/* ════════════════════════ נעילת הבנה: שאלת אבחון ════════════════════════ */
+/* ════════════════════════ בדיקת הבנה: שאלת אבחון ════════════════════════ */
 // התשובה הנכונה מבנית; הטקסט (שאלה, פרומפט, אפשרויות, הסבר) מגיע מהמילון.
 const DIAG_CORRECT = 0;
 
@@ -354,7 +354,7 @@ export default function BehindTheScenesChapter2() {
                 </div>
             </section>
 
-            {/* ══════════ נעילת הבנה ══════════ */}
+            {/* ══════════ בדיקת הבנה ══════════ */}
             <section className="relative mt-12 text-start" dir={dir}>
                 <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
                     <Mentor pose="happy" line={c2.mentor.lock} width={200} flip={!isRtl} bubbleWidthClass="max-w-[14rem]" />
@@ -362,7 +362,7 @@ export default function BehindTheScenesChapter2() {
                 <div className="rounded-2xl border border-indigo-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
-                            <Lock size={20} className="text-indigo-300" />
+                            <ListChecks size={20} className="text-indigo-300" />
                             <h3 className="text-xl font-bold text-white">{c2.lock.title}</h3>
                         </div>
                         <SpeakButton text={`${c2.lock.title}. ${c2.lock.truthLabel}: ${c2.lock.truthText} ${c2.lock.mistakeLabel}: ${c2.lock.mistakeText}`} />

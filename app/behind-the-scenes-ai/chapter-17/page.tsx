@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
-    Workflow, MousePointerClick, GitBranch, FlaskConical, Lock,
+    Workflow, MousePointerClick, GitBranch, FlaskConical, ListChecks,
     CheckCircle2, XCircle, Sparkles, MessageSquare, AlignLeft, ShieldAlert,
     ShieldCheck, ArrowLeft, ArrowRight,
 } from 'lucide-react';
@@ -49,7 +49,7 @@ const GUESS_CARD_META = [
     { id: 'alwaysAutonomous', icon: ShieldAlert, statusTone: 'layer', mentorPose: 'headsup' },
 ] as const;
 
-/* ════════════════ נעילת הבנה: מה Agent טוב יעשה קודם כשחסר מספר מעקב ════════════════ */
+/* ════════════════ בדיקת הבנה: מה Agent טוב יעשה קודם כשחסר מספר מעקב ════════════════ */
 // התשובה הנכונה: "לשאול מה מספר המעקב, או לבקש את המקור" (אינדקס 1).
 const LOCK_CORRECT = 1;
 
@@ -403,14 +403,14 @@ export default function BehindTheScenesChapter17() {
                 </div>
             </section>
 
-            {/* ══════════ נעילת הבנה ══════════ */}
+            {/* ══════════ בדיקת הבנה ══════════ */}
             <section className="relative mt-12 text-start" dir={dir}>
                 <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
                     <Mentor pose="happy" line={c17.mentor.lock} width={160} flip={!isRtl} />
                 </div>
                 <div className="rounded-2xl border border-teal-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center gap-2">
-                        <Lock size={20} className="text-teal-300" />
+                        <ListChecks size={20} className="text-teal-300" />
                         <h3 className="text-xl font-bold text-white">{c17.lock.title}</h3>
                     </div>
 

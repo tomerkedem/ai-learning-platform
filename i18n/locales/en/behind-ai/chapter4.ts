@@ -179,7 +179,7 @@ export const chapter4 = {
         },
     },
 
-    // Understanding lock: where the vector numbers came from (training vs inference). Correct is index 0.
+    // Check Your Understanding: where the vector numbers came from (training vs inference). Correct is index 0.
     lock: {
         title: 'Check Your Understanding',
         question: 'The word "package" got a Token ID, and a vector was looked up from it. Where did the numbers in the vector come from?',

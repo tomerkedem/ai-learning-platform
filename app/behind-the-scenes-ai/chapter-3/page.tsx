@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
-    Scissors, MousePointerClick, SplitSquareHorizontal, FlaskConical, Lightbulb, Lock,
+    Scissors, MousePointerClick, SplitSquareHorizontal, FlaskConical, Lightbulb, ListChecks,
     CheckCircle2, Info, Type, Boxes, Brain, Filter,
 } from 'lucide-react';
 
@@ -35,7 +35,7 @@ const GUESS_CARD_META = [
     { id: 'important', icon: Filter, statusTone: 'partial', mentorPose: 'think' },
 ] as const;
 
-/* ════════════════════════ נעילת הבנה: שאלת סיווג פעילה ════════════════════════ */
+/* ════════════════════════ בדיקת הבנה: שאלת סיווג פעילה ════════════════════════ */
 // התשובה הנכונה מבנית; הטקסט (שאלה, אפשרויות, הסברים) מגיע מהמילון.
 const LOCK_CORRECT = 4;
 
@@ -272,7 +272,7 @@ export default function BehindTheScenesChapter3() {
                 </section>
             </Chapter3LabProvider>
 
-            {/* ══════════ נעילת הבנה ══════════ */}
+            {/* ══════════ בדיקת הבנה ══════════ */}
             <section className="relative mt-12 text-start" dir={dir}>
                 <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
                     <Mentor pose="happy" line={c3.mentor.lock} width={160} flip={!isRtl} />
@@ -280,7 +280,7 @@ export default function BehindTheScenesChapter3() {
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
-                            <Lock size={20} className="text-violet-300" />
+                            <ListChecks size={20} className="text-violet-300" />
                             <h3 className="text-xl font-bold text-white">{c3.lock.title}</h3>
                         </div>
                         <SpeakButton text={`${c3.lock.title}. ${c3.lock.truthLabel}: ${c3.lock.truthText} ${c3.lock.mistakeLabel}: ${c3.lock.mistakeText}`} />

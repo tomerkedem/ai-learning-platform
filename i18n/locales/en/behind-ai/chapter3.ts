@@ -105,7 +105,7 @@ export const chapter3 = {
         intro: 'Pick a quick experiment or type your own sentence, for example "My package did not arrive". Notice what changes when you add an exclamation mark, a tracking number, remove the spaces, or switch to another language. Each unit gets a color, and punctuation and numbers count as units of their own.',
     },
 
-    // Lock in the idea: true vs false + an active classification question
+    // Check Your Understanding: true vs false + an active classification question
     lock: {
         title: 'Check Your Understanding',
         truthLabel: 'True',

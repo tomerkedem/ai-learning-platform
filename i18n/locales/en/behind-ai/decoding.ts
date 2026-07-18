@@ -174,7 +174,7 @@ export const decoding = {
             'Think of temperature like a knob that sharpens or flattens the same distribution. Low temperature sharpens: the leading option stands out, and the choice leans toward it. High temperature flattens: lower options get a real chance too, and the choice is more varied. It is a knob of style, not of truth or intelligence.',
     },
 
-    // -- Understanding lock --
+    // -- Check Your Understanding --
     lock: {
         title: 'Check Your Understanding',
         trueLabel: 'True',

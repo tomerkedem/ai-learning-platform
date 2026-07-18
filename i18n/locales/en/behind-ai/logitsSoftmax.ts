@@ -167,7 +167,7 @@ export const logitsSoftmax = {
             'Think of Softmax like splitting a pie among the continuations. The higher a continuation score, the bigger the slice it gets out of the 100 percent, but together they always add up to one whole pie. A small gap in score can open a noticeable gap in percentages, which is why even a small change in context already moves the picture.',
     },
 
-    // -- Understanding lock --
+    // -- Check Your Understanding --
     lock: {
         title: 'Check Your Understanding',
         trueLabel: 'True',

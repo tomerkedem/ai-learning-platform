@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
-    Map, Sparkles, ArrowLeftRight, MousePointerClick, Lock, ArrowLeft, ArrowRight,
+    Map, Sparkles, ArrowLeftRight, MousePointerClick, ListChecks, ArrowLeft, ArrowRight,
     FlaskConical, ChefHat, Wrench, CheckCircle2, Info,
 } from 'lucide-react';
 
@@ -49,7 +49,7 @@ const GUESS_CARD_META: { id: 'arrived' | 'delayed' | 'checking' | 'recipe'; tone
     { id: 'recipe', tone: 'layer', pose: 'think', icon: ChefHat },
 ];
 
-/* ════════════════════ נעילת הבנה: התשובה הנכונה מבנית ════════════════════ */
+/* ════════════════════ בדיקת הבנה: התשובה הנכונה מבנית ════════════════════ */
 const LOCK_CORRECT = 1;
 
 const LockQuestion: React.FC = () => {
@@ -462,7 +462,7 @@ export default function BehindTheScenesChapter5() {
                 </section>
             )}
 
-            {/* ══════════ נעילת הבנה ══════════ */}
+            {/* ══════════ בדיקת הבנה ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
                     {/* הרמז הוא טקסט ולא בועה, כדי שישרוד גם ב-390 שבו התמונה מוסתרת.
@@ -470,7 +470,7 @@ export default function BehindTheScenesChapter5() {
                     <div className="mb-5 flex items-start justify-between gap-4">
                         <div>
                             <div className="flex items-center gap-2">
-                                <Lock size={20} className="text-violet-300" />
+                                <ListChecks size={20} className="text-violet-300" />
                                 <h2 className="text-xl font-bold text-white">{c5.lock.title}</h2>
                             </div>
                             <p className="mt-2 text-[13px] font-semibold leading-relaxed text-violet-200">{c5.mentor.lock}</p>

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Frame, MousePointerClick, MessageSquare, Lightbulb, ScanSearch, Lock, CheckCircle2, XCircle, Sparkles } from 'lucide-react';
+import { Frame, MousePointerClick, MessageSquare, Lightbulb, ScanSearch, ListChecks, CheckCircle2, XCircle, Sparkles } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -32,7 +32,7 @@ const GUESS_CARD_META: { id: GuessCardId; cue: Cue; tone: StatusTone; pose: Ment
     { id: 'saved-memory', cue: 'factcheck', tone: 'layer', pose: 'headsup' },
 ];
 
-/* ════════════════════════ נעילת הבנה: איזה פרומפט עומד בפני עצמו ════════════════════════ */
+/* ════════════════════════ בדיקת הבנה: איזה פרומפט עומד בפני עצמו ════════════════════════ */
 // התשובה הנכונה מבנית: הפרומפט העצמאי הוא האפשרות השלישית (אינדקס 2).
 const LOCK_CORRECT = 2;
 
@@ -376,7 +376,7 @@ export default function BehindTheScenesChapter7() {
                 </div>
             </section>
 
-            {/* ══════════ נעילת הבנה ══════════ */}
+            {/* ══════════ בדיקת הבנה ══════════ */}
             <section className="relative mt-12 text-start" dir={dir}>
                 <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
                     <Mentor pose="celebrate" line={c7.mentor.lock} width={160} flip={!isRtl} />
@@ -384,7 +384,7 @@ export default function BehindTheScenesChapter7() {
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
-                            <Lock size={20} className="text-violet-300" />
+                            <ListChecks size={20} className="text-violet-300" />
                             <h3 className="text-xl font-bold text-white">{c7.lock.title}</h3>
                         </div>
                         <SpeakButton text={`${c7.lock.title}. ${c7.lock.trueLabel}: ${c7.lock.trueText} ${c7.lock.falseLabel}: ${c7.lock.falseText}`} speechLocale={speechLocale} />
