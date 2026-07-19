@@ -61,7 +61,7 @@ export const logitsSoftmax = {
                 statusLabel: 'Suele ir por delante',
                 getsRight: 'Buena conjetura. En una formulación sin contexto, "se retrasó" de verdad suele recibir la puntuación más alta.',
                 missesLabel: 'Qué queda por ver',
-                misses: 'Es el líder por defecto, no la verdad. La diferencia entre las continuaciones no es enorme, y el modelo no comprobó el paquete.',
+                misses: 'Es el líder por defecto, no la verdad. Las puntuaciones en bruto están cerca, pero Softmax ya separa las probabilidades de forma notable, y el modelo no comprobó el paquete.',
                 bridge: 'Enseguida veremos que un solo detalle de contexto puede pasar el liderazgo a otra continuación.',
             },
             delivered: {
@@ -103,11 +103,11 @@ export const logitsSoftmax = {
         points: [
             {
                 title: 'Los Logits son puntuaciones en bruto',
-                body: 'A cada continuación posible el modelo le da una puntuación interna según el input, el contexto y los patrones que aprendió. Todavía no es un porcentaje, solo una puntuación en bruto que dice cuánto encaja la continuación.',
+                body: 'A cada continuación posible el modelo le da una puntuación interna según el input, el contexto y los patrones que aprendió. Todavía no es un porcentaje, solo una puntuación en bruto que dice cuánto encaja la continuación. Una puntuación puede ser positiva, negativa o cero, y cobra sentido sobre todo al compararla con las puntuaciones de las demás continuaciones, no por sí sola.',
             },
             {
                 title: 'Softmax convierte puntuaciones en probabilidades',
-                body: 'Softmax toma las puntuaciones en bruto y las convierte en una distribución: cada continuación recibe un porcentaje, y todo junto suma 100. Ahora se pueden comparar las continuaciones.',
+                body: 'No se pueden leer las puntuaciones en bruto directamente como probabilidades: pueden estar en cualquier rango, incluso negativas, y no suman 100. Por eso Softmax primero convierte cada puntuación en un peso positivo, y luego divide cada peso por el total. Así cada continuación recibe un porcentaje, todo junto suma 100, y se pueden comparar las continuaciones.',
             },
             {
                 title: 'Hay varias continuaciones razonables, no una mágica',
@@ -137,14 +137,14 @@ export const logitsSoftmax = {
         title: 'El punto sorprendente',
         lead: 'La continuación con el porcentaje más alto es la más probable según el texto, no la más correcta en el mundo.',
         body:
-            'Softmax solo ordena las puntuaciones en porcentajes para que se puedan comparar y elegir. No comprueba si el paquete de verdad se retrasó o se entregó. Por eso una respuesta puede sonar del todo segura y aun así errar la realidad.',
+            'Softmax solo ordena las puntuaciones en porcentajes y construye la distribución, no elige por sí mismo qué token sale. La elección real llega en el próximo capítulo. De todos modos, nadie comprobó si el paquete de verdad se retrasó o se entregó, y por eso una respuesta puede sonar del todo segura y aun así errar la realidad.',
     },
 
     // ── Ejemplo cotidiano ──
     everyday: {
         title: 'Un momento de la vida real',
         body:
-            'Cuando oyes media frase, puedes adivinar hacia dónde va. La continuación que se nos viene a la mente es la probable, pero no siempre la correcta. Con el modelo es parecido: le da una puntuación a cada continuación posible, y la continuación con la puntuación alta se siente natural, aunque nadie haya comprobado si es real.',
+            'Cuando oyes media frase, la continuación que se te viene a la mente se siente natural. Con el modelo es parecido: cada continuación recibe una puntuación, y la de puntuación alta sube al primer puesto de la distribución. Eso es lo probable según el texto, no necesariamente lo que ocurrió.',
     },
 
     // ── Corrección de un error común ──
@@ -188,7 +188,7 @@ export const logitsSoftmax = {
     practical: {
         title: 'Conclusión práctica',
         lead:
-            'La calidad del prompt influye en la distribución. Una formulación clara refuerza la dirección deseada y debilita las continuaciones no deseadas, pero incluso una continuación con probabilidad alta no es una prueba. Para tareas importantes, pídele al modelo:',
+            'Tu formulación y tu contexto fijan las puntuaciones, y las puntuaciones fijan toda la distribución. Una formulación clara refuerza la dirección deseada y debilita las continuaciones no deseadas. Y recuerda que el porcentaje es relativo, solo frente al grupo actual de continuaciones. Para tareas importantes, pídele al modelo:',
         uses: [
             'Que separe la suposición del hecho.',
             'Que diga qué le falta para responder con confianza.',
@@ -197,7 +197,7 @@ export const logitsSoftmax = {
             'Que pida datos de seguimiento o una fuente sólida cuando haga falta precisión factual.',
         ],
         caveat:
-            'Y recuerda: incluso la continuación con la probabilidad más alta no es una prueba. Softmax ordena puntuaciones, no verifica. Para verificar contra el mundo hace falta una fuente externa o una herramienta.',
+            'Y recuerda: incluso la continuación líder no es una prueba. Para verificar contra el mundo sigue haciendo falta una fuente externa o una herramienta.',
     },
 
     // ── Llamadas del mentor ──

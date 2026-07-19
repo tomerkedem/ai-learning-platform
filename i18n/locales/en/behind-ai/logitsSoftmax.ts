@@ -64,7 +64,7 @@ export const logitsSoftmax = {
                 statusLabel: 'Usually the leader',
                 getsRight: 'A good guess. With no context, "was delayed" really does usually get the highest score.',
                 missesLabel: 'What is left to see',
-                misses: 'This is the default leader, not the truth. The gap between the continuations is not huge, and the model did not check the package.',
+                misses: 'This is the default leader, not the truth. The raw scores are close, but Softmax already spreads the probabilities noticeably, and the model did not check the package.',
                 bridge: 'In a moment we will see that a single context detail can hand the lead to another continuation.',
             },
             delivered: {
@@ -106,11 +106,11 @@ export const logitsSoftmax = {
         points: [
             {
                 title: 'Logits are raw scores',
-                body: 'For every possible continuation the model gives an internal score based on the input, the context and the patterns it learned. This is not a percentage yet, only a raw score that says how well the continuation fits.',
+                body: 'For every possible continuation the model gives an internal score based on the input, the context and the patterns it learned. This is not a percentage yet, only a raw score that says how well the continuation fits. A score can be positive, negative or zero, and it gains meaning mainly by comparison with the other continuations scores, not on its own.',
             },
             {
                 title: 'Softmax turns scores into probabilities',
-                body: 'Softmax takes the raw scores and turns them into a distribution: every continuation gets a percentage, and everything together adds up to 100. Now you can compare the continuations.',
+                body: 'You cannot read raw scores directly as probabilities: they can be in any range, even negative, and they do not add up to 100. So Softmax first turns each score into a positive weight, and then divides each weight by the total. That way every continuation gets a percentage, everything together adds up to 100, and you can compare the continuations.',
             },
             {
                 title: 'There are several likely continuations, not one magic answer',
@@ -140,14 +140,14 @@ export const logitsSoftmax = {
         title: 'The surprising point',
         lead: 'The continuation with the highest percentage is the most likely per the text, not the most correct in the world.',
         body:
-            'Softmax only arranges the scores into percentages so you can compare and pick. It does not check whether the package really was delayed or delivered. That is why an answer can sound completely confident and still miss reality.',
+            'Softmax only arranges the scores into percentages and builds the distribution, it does not itself pick which token comes out. The actual choice comes in the next chapter. Either way, no one checked whether the package really was delayed or delivered, which is why an answer can sound completely confident and still miss reality.',
     },
 
     // -- Everyday example --
     everyday: {
         title: 'A moment from life',
         body:
-            'When you hear half a sentence, you can guess where it is going. The continuation that comes to mind is the likely one, but not always the correct one. With the model it is similar: it gives a score to every possible continuation, and the continuation with the high score feels natural, even if no one checked whether it is real.',
+            'When you hear half a sentence, the continuation that comes to mind feels natural. With the model it is similar: every continuation gets a score, and the one with the high score rises to the top of the distribution. That is what is likely per the text, not necessarily what happened.',
     },
 
     // -- Fixing a common mistake --
@@ -191,7 +191,7 @@ export const logitsSoftmax = {
     practical: {
         title: 'Practical insight',
         lead:
-            'The quality of the prompt affects the distribution. A clear phrasing strengthens the direction you want and weakens unwanted continuations, but even a continuation with a high probability is not proof. For important tasks, ask the model to:',
+            'Your wording and context set the scores, and the scores set the whole distribution. A clear phrasing strengthens the direction you want and weakens unwanted continuations. And remember that the percentage is relative, only against the current set of continuations. For important tasks, ask the model to:',
         uses: [
             'Separate an assumption from a fact.',
             'Say what it is missing in order to answer with confidence.',
@@ -200,7 +200,7 @@ export const logitsSoftmax = {
             'Ask for tracking data or a solid source when you need factual accuracy.',
         ],
         caveat:
-            'And remember: even the continuation with the highest probability is not proof. Softmax arranges scores, it does not verify. Verification against the world needs an external source or a tool.',
+            'And remember: even the leading continuation is not proof. Verification against the world still needs an external source or a tool.',
     },
 
     // -- Mentor lines --

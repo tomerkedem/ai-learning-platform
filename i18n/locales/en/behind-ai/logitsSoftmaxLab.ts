@@ -88,11 +88,11 @@ export const logitsSoftmaxLab: LogitsSoftmaxLabContent = {
     resetScores: 'Reset to the context scores',
     softmaxNoteTitle: 'How scores become percentages',
     softmaxNote:
-        'Softmax splits 100 percent among the continuations by their scores: a higher score gets a bigger share. A small gap in score can open a noticeable gap in percentages, which is why even a small change in context already moves the picture.',
+        'The split is not a straight proportion of the scores. Scores 4, 3, 2, 1 do not become 40, 30, 20, 10 percent, but roughly 64, 24, 9, 3. The reason: Softmax first passes each score through an exponential step (exponentiation) that turns it into a positive weight and enlarges the relative gaps, and then divides each weight by the total. So a small gap in score can open a noticeable gap in percentages, and a small change in context already moves the picture.',
     continuationNote:
         'The continuations are shown here as full phrases so they are easy to read. In practice the model ranks the next token step by step. This is an illustration of that same competition, not an exact internal trace of the model. And remember that these are only a few of many possible continuations. In a real model the computation runs over a much larger vocabulary.',
     disclaimer:
-        'The scores and percentages here are a teaching illustration, not real model output. They are meant to show how scores become probabilities, and how the context moves them. A high score means the continuation is more likely per the text, not that it is true in the world.',
+        'The scores and percentages here are a teaching illustration, not real model output. Here we limited the score to a convenient range for comparison, but a real score can be any number, including negative. They are meant to show how scores become probabilities, and how the context moves them. A high score means the continuation is more likely per the text, not that it is true in the world.',
     sr: {
         increase: 'Increase the score of',
         decrease: 'Decrease the score of',
@@ -108,7 +108,7 @@ export const logitsSoftmaxLab: LogitsSoftmaxLabContent = {
         {
             id: 'neutral',
             control: 'No extra detail',
-            note: 'With no extra detail, "was delayed" gets the highest score, but the gap between the continuations is not huge. This is still an estimate, not knowledge.',
+            note: 'With no extra detail, "was delayed" gets the highest score. The raw scores are close, but Softmax already spreads the probabilities noticeably. This is still an estimate, not knowledge.',
             scores: { delayed: 4, delivered: 3, pickup: 2, lost: 1 },
         },
         {
