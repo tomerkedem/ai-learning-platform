@@ -32,8 +32,6 @@ export interface DecodingStyle {
     id: string;
     /** תווית הכפתור המקוצרת. */
     control: string;
-    /** תיאור עוצמת הפתיחות במילים פשוטות, למשל "טמפרטורה נמוכה". */
-    tempLabel: string;
     /** משפט קצר שמסביר איך הסגנון מתנהג. מוצג מתחת לכפתור הפעיל. */
     summary: string;
     /** רמת יציבות להמחשה, 1 עד 3 (מספר משבצות מלאות). מבני, אינו מתורגם. */
@@ -80,7 +78,7 @@ export const decodingLab: DecodingLabContent = {
     sectionEyebrow: 'Decoding Lab',
     sectionTitle: 'אותה התפלגות, סגנון בחירה אחר: מי נבחר?',
     sectionIntro:
-        'ההסתברויות כאן קבועות. שנו רק את סגנון הבחירה, ולחצו "נסה בחירה נוספת", כדי לראות איך אותה התפלגות בדיוק יכולה להוביל לטוקנים שונים. סגנון שמרני נשאר על הסביר ביותר, סגנון פתוח נותן סיכוי גם לאפשרויות נמוכות יותר.',
+        'ההסתברויות כאן קבועות ולא משתנות. שנו רק את סגנון הבחירה, ולחצו "נסו בחירה נוספת". הרעיון המרכזי: אותה התפלגות בדיוק, סגנון בחירה אחר, ולכן טוקן אחר עשוי להיבחר. סגנון שמרני נשאר על הסביר ביותר, סגנון פתוח נותן סיכוי גם לאפשרויות נמוכות יותר.',
     heading: 'בחירת הטוקן הבא',
     kicker: 'Decoding Lab',
     promptBase: 'החבילה שלך...',
@@ -112,7 +110,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'conservative',
             control: 'שמרני',
-            tempLabel: 'טמפרטורה נמוכה',
             summary: 'נשאר על האפשרות הכי סבירה. פלט צפוי ויציב.',
             stability: 3,
             variety: 1,
@@ -123,7 +120,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'balanced',
             control: 'מאוזן',
-            tempLabel: 'טמפרטורה בינונית',
             summary: 'בוחר לרוב מבין האפשרויות הסבירות, עם קצת גיוון.',
             stability: 2,
             variety: 2,
@@ -134,7 +130,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'creative',
             control: 'פתוח',
-            tempLabel: 'טמפרטורה גבוהה',
             summary: 'נותן סיכוי גם לאפשרויות פחות סבירות. יותר גיוון, פחות יציבות.',
             stability: 1,
             variety: 3,

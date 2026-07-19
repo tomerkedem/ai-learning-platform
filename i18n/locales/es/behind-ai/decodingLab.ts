@@ -24,7 +24,7 @@ export const decodingLab: DecodingLabContent = {
     sectionEyebrow: 'Decoding Lab',
     sectionTitle: 'La misma distribucion, otro estilo de decodificacion: quien es elegido?',
     sectionIntro:
-        'Las probabilidades aqui son fijas. Cambia solo el estilo de decodificacion, y pulsa "Prueba otra eleccion", para ver como esta misma distribucion puede llevar a tokens distintos. Un estilo conservador se queda en la opcion mas probable, un estilo abierto da una oportunidad tambien a las opciones mas bajas.',
+        'Las probabilidades aqui son fijas y no cambian. Cambia solo el estilo de decodificacion, y pulsa "Prueba otra eleccion". La idea central: la misma distribucion, otro estilo de eleccion, y por eso puede elegirse otro token. Un estilo conservador se queda en la opcion mas probable, un estilo abierto da una oportunidad tambien a las opciones mas bajas.',
     heading: 'Elegir el siguiente token',
     kicker: 'Decoding Lab',
     promptBase: 'Tu paquete...',
@@ -56,7 +56,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'conservative',
             control: 'Conservador',
-            tempLabel: 'Temperatura baja',
             summary: 'Se queda en la opcion mas probable. Salida previsible y estable.',
             stability: 3,
             variety: 1,
@@ -67,7 +66,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'balanced',
             control: 'Equilibrado',
-            tempLabel: 'Temperatura media',
             summary: 'Suele elegir entre las opciones probables, con algo de variedad.',
             stability: 2,
             variety: 2,
@@ -78,7 +76,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'creative',
             control: 'Abierto',
-            tempLabel: 'Temperatura alta',
             summary: 'Da una oportunidad tambien a opciones mas bajas. Mas variedad, menos estabilidad.',
             stability: 1,
             variety: 3,

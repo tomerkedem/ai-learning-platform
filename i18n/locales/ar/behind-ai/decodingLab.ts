@@ -22,7 +22,7 @@ export const decodingLab: DecodingLabContent = {
     sectionEyebrow: 'Decoding Lab',
     sectionTitle: 'التوزيع نفسه، أسلوب اختيار مختلف: من يُختار؟',
     sectionIntro:
-        'الاحتمالات هنا ثابتة. غيّر أسلوب الاختيار فقط، واضغط "جرّب اختيارًا آخر"، لترى كيف يمكن لهذا التوزيع نفسه أن يقود إلى توكنات مختلفة. الأسلوب المحافظ يبقى على الخيار الأرجح، والأسلوب المنفتح يمنح فرصة أيضًا للخيارات الأدنى.',
+        'الاحتمالات هنا ثابتة ولا تتغيّر. غيّر أسلوب الاختيار فقط، واضغط "جرّب اختيارًا آخر". الفكرة الأساسية: التوزيع نفسه، وأسلوب اختيار مختلف، ولذلك قد يُختار توكن آخر. الأسلوب المحافظ يبقى على الخيار الأرجح، والأسلوب المنفتح يمنح فرصة أيضًا للخيارات الأدنى.',
     heading: 'اختيار التوكن التالي',
     kicker: 'Decoding Lab',
     promptBase: 'طردك...',
@@ -54,7 +54,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'conservative',
             control: 'محافظ',
-            tempLabel: 'حرارة منخفضة',
             summary: 'يبقى على الخيار الأرجح. ناتج متوقّع وثابت.',
             stability: 3,
             variety: 1,
@@ -65,7 +64,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'balanced',
             control: 'متوازن',
-            tempLabel: 'حرارة متوسّطة',
             summary: 'يختار غالبًا من بين الخيارات المرجّحة، مع بعض التنوّع.',
             stability: 2,
             variety: 2,
@@ -76,7 +74,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'creative',
             control: 'منفتح',
-            tempLabel: 'حرارة عالية',
             summary: 'يمنح فرصة أيضًا للخيارات الأدنى. تنوّع أكثر، ثبات أقل.',
             stability: 1,
             variety: 3,

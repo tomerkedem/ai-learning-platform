@@ -22,7 +22,7 @@ export const decodingLab: DecodingLabContent = {
     sectionEyebrow: 'Decoding Lab',
     sectionTitle: '同じ分布、違う選び方。だれが選ばれる?',
     sectionIntro:
-        'ここでは確率は固定です。選び方だけを変えて、「別の選び方を試す」を押し、この同じ分布からどう異なるトークンが出うるかを見てみましょう。保守的な選び方は最もありそうな候補にとどまり、開いた選び方は低い候補にも出番を与えます。',
+        'ここでは確率は固定で変わりません。選び方だけを変えて、「別の選び方を試す」を押しましょう。中心となる考え: 同じ分布でも、選び方が違えば、別のトークンが選ばれることがあります。保守的な選び方は最もありそうな候補にとどまり、開いた選び方は低い候補にも出番を与えます。',
     heading: '次のトークンを選ぶ',
     kicker: 'Decoding Lab',
     promptBase: 'あなたの荷物は...',
@@ -54,7 +54,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'conservative',
             control: '保守的',
-            tempLabel: '低い温度',
             summary: '最もありそうな候補にとどまる。予測しやすく安定した出力。',
             stability: 3,
             variety: 1,
@@ -65,7 +64,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'balanced',
             control: 'バランス',
-            tempLabel: '中くらいの温度',
             summary: 'たいていありそうな候補の中から選び、少し多様さがある。',
             stability: 2,
             variety: 2,
@@ -76,7 +74,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'creative',
             control: '開いた',
-            tempLabel: '高い温度',
             summary: '低い候補にも出番を与える。多様さが増え、安定は下がる。',
             stability: 1,
             variety: 3,

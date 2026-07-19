@@ -114,11 +114,11 @@ export const decoding = {
             },
             {
                 title: 'Una eleccion abierta, muestreo',
-                body: 'Un estilo abierto puede elegir a veces tambien una opcion con una probabilidad mas baja. Eso anade variedad, frases alternativas e ideas, a costa de un poco de estabilidad.',
+                body: 'Un estilo abierto puede elegir a veces tambien una opcion con una probabilidad mas baja. El muestreo no es azar uniforme: un token con mayor probabilidad sigue teniendo mas posibilidades de ser elegido. Eso anade variedad y frases alternativas, a costa de un poco de estabilidad.',
             },
             {
-                title: 'El compromiso, y como se ajusta',
-                body: 'Mas apertura puede ayudar con las ideas, pero encaja menos con tareas factuales que necesitan estabilidad. Hay maneras simples de ajustar la apertura: la temperatura, que afila o aplana la distribucion, y una idea cercana llamada top-p, que reduce la eleccion solo a las opciones lideres. Son mandos de intensidad del estilo, no mandos de verdad ni de inteligencia.',
+                title: 'El compromiso entre apertura y estabilidad',
+                body: 'Mas apertura puede ayudar con las ideas y las formulaciones, pero encaja menos con tareas factuales que necesitan estabilidad. Hay un mando aparte llamado temperatura que ajusta cuanta apertura hay en la eleccion, y lo veremos brevemente mas abajo. Es un mando de estilo, no de verdad ni de inteligencia.',
             },
             {
                 title: 'Que no es la decodificacion',
@@ -151,7 +151,7 @@ export const decoding = {
     everyday: {
         title: 'Un momento de la vida',
         body:
-            'Cuando respondes a un amigo, hay varias maneras naturales de continuar una frase. A veces eliges la segura y esperada, y a veces una formulacion mas sorprendente. En ambos casos la eleccion no comprobo ningun hecho, solo decidio como suena la continuacion. Con el modelo es parecido: la misma distribucion, y el estilo de decodificacion decide que sale.',
+            'Cuando respondes a un amigo, hay varias maneras naturales de continuar una frase. A veces eliges la segura y esperada, y a veces una formulacion mas sorprendente. La misma intencion, y el estilo de decodificacion decide como suena la continuacion. Con el modelo es parecido: la misma distribucion, y el estilo de decodificacion decide que sale.',
     },
 
     // -- Corregir un error comun --
@@ -165,10 +165,10 @@ export const decoding = {
 
     // -- Conservador vs abierto, sin terminos complicados --
     how: {
-        title: 'Conservador vs abierto, sin terminos complicados',
-        sub: 'Decoding',
+        title: 'Temperatura: afilar o aplanar la distribucion',
+        sub: 'Temperature',
         body:
-            'Piensa en la temperatura como un mando que afila o aplana la misma distribucion. Temperatura baja afila: la opcion lider destaca, y la eleccion se inclina hacia ella. Temperatura alta aplana: las opciones mas bajas reciben tambien una oportunidad real, y la eleccion es mas variada. Es un mando de estilo, no de verdad ni de inteligencia.',
+            'En el laboratorio mantuvimos esta misma distribucion y cambiamos solo el estilo de eleccion. La temperatura es un mando aparte que si cambia la forma de la distribucion misma, antes de elegir. Temperatura baja afila la distribucion: la opcion lider destaca mas, y la eleccion se inclina hacia ella. Temperatura alta la aplana: las opciones mas bajas reciben tambien una oportunidad real, y la eleccion es mas variada. La temperatura cambia las probabilidades, no la verdad ni el conocimiento del modelo.',
     },
 
     // -- Fijar la comprension --
@@ -195,7 +195,7 @@ export const decoding = {
     practical: {
         title: 'Idea practica',
         lead:
-            'El estilo de decodificacion es una herramienta en tus manos, a traves de como pides. Si quieres precision, estabilidad y una respuesta fiable, pide una respuesta enfocada, acotada y respaldada por fuentes. Si quieres ideas, alternativas o formulaciones, puedes pedir varias opciones o una redaccion mas abierta:',
+            'Hay dos maneras distintas de influir en la salida. Una es el estilo de decodificacion y la temperatura, que son controles de configuracion del modelo o del producto. La otra es como formulas la peticion, que cambia el contexto y puede cambiar la propia distribucion de probabilidad. Como usuario, la formulacion suele ser la herramienta en tus manos. Asi que si quieres precision y estabilidad, pide una respuesta enfocada, acotada y respaldada por fuentes, y si quieres ideas o alternativas, pide varias opciones o una redaccion mas abierta:',
         uses: [
             'Para una tarea factual: "No adivines. Si no hay fuente de seguimiento, di que hay que comprobar el estado."',
             'Para redaccion: "Dame tres versiones educadas de un mensaje a un cliente sobre un paquete retrasado."',

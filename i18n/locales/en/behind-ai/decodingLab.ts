@@ -24,7 +24,7 @@ export const decodingLab: DecodingLabContent = {
     sectionEyebrow: 'Decoding Lab',
     sectionTitle: 'Same distribution, a different decoding style: who gets chosen?',
     sectionIntro:
-        'The probabilities here are fixed. Change only the decoding style, and press "Try another choice", to see how this exact distribution can lead to different tokens. A conservative style stays on the most likely option, an open style gives lower options a chance too.',
+        'The probabilities here are fixed and do not change. Change only the decoding style, and press "Try another choice". The main idea: the same distribution, a different selection style, so a different token may be selected. A conservative style stays on the most likely option, an open style gives lower options a chance too.',
     heading: 'Choosing the next token',
     kicker: 'Decoding Lab',
     promptBase: 'Your package...',
@@ -56,7 +56,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'conservative',
             control: 'Conservative',
-            tempLabel: 'Low temperature',
             summary: 'Stays on the most likely option. Predictable, stable output.',
             stability: 3,
             variety: 1,
@@ -67,7 +66,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'balanced',
             control: 'Balanced',
-            tempLabel: 'Medium temperature',
             summary: 'Usually picks among the likely options, with a little variety.',
             stability: 2,
             variety: 2,
@@ -78,7 +76,6 @@ export const decodingLab: DecodingLabContent = {
         {
             id: 'creative',
             control: 'Open',
-            tempLabel: 'High temperature',
             summary: 'Gives lower options a chance too. More variety, less stability.',
             stability: 1,
             variety: 3,

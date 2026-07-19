@@ -132,9 +132,6 @@ export const DecodingLab: React.FC<DecodingLabProps> = ({ data, dir, speechLocal
                     <span className="inline-flex items-center gap-1.5 text-sm font-bold text-sky-100">
                         <Sparkles size={14} className="text-sky-300" /> {style.control}
                     </span>
-                    <span className="rounded-full border border-sky-400/40 bg-sky-900/25 px-2 py-0.5 text-[11px] font-bold text-sky-200" dir="ltr">
-                        {style.tempLabel}
-                    </span>
                 </div>
                 <p className="text-[13px] leading-relaxed text-slate-200">{style.summary}</p>
                 <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">

@@ -117,11 +117,11 @@ export const decoding = {
             },
             {
                 title: 'An open choice, sampling',
-                body: 'An open style can sometimes choose an option with a lower probability too. That adds variety, alternative phrasings and ideas, at the cost of a little stability.',
+                body: 'An open style can sometimes choose an option with a lower probability too. Sampling is not uniform randomness: a token with a higher probability still has a greater chance of being selected. That adds variety and alternative phrasings, at the cost of a little stability.',
             },
             {
-                title: 'The tradeoff, and how you tune it',
-                body: 'More openness can help with ideas, but it fits factual tasks that need stability less well. There are simple ways to tune the openness: temperature, which sharpens or flattens the distribution, and a related idea called top-p, which narrows the choice to the leading options only. These are intensity knobs for the style, not knobs of truth or intelligence.',
+                title: 'The tradeoff between openness and stability',
+                body: 'More openness can help with ideas and phrasings, but it fits factual tasks that need stability less well. There is a separate knob called temperature that tunes how open the choice is, and we will see it briefly below. It is a knob of style, not of truth or intelligence.',
             },
             {
                 title: 'What decoding is not',
@@ -154,7 +154,7 @@ export const decoding = {
     everyday: {
         title: 'A moment from life',
         body:
-            'When you reply to a friend, there are several natural ways to continue a sentence. Sometimes you pick the safe, expected one, and sometimes a more surprising phrasing. In both cases the choice checked no fact, it only decided how the continuation sounds. With the model it is similar: the same distribution, and the decoding style decides what comes out.',
+            'When you reply to a friend, there are several natural ways to continue a sentence. Sometimes you pick the safe, expected one, and sometimes a more surprising phrasing. Same intent, and the decoding style decides how the continuation sounds. With the model it is similar: the same distribution, and the decoding style decides what comes out.',
     },
 
     // -- Fixing a common mistake --
@@ -168,10 +168,10 @@ export const decoding = {
 
     // -- Conservative vs open, without complicated terms --
     how: {
-        title: 'Conservative vs open, without complicated terms',
-        sub: 'Decoding',
+        title: 'Temperature: sharpening or flattening the distribution',
+        sub: 'Temperature',
         body:
-            'Think of temperature like a knob that sharpens or flattens the same distribution. Low temperature sharpens: the leading option stands out, and the choice leans toward it. High temperature flattens: lower options get a real chance too, and the choice is more varied. It is a knob of style, not of truth or intelligence.',
+            'In the lab we kept this exact distribution and changed only the selection style. Temperature is a separate knob that does change the shape of the distribution itself, before anything is chosen. Low temperature sharpens the distribution: the leading option stands out more, and the choice leans toward it. High temperature flattens it: lower options get a real chance too, and the choice is more varied. Temperature changes the probabilities, not the truth and not the model knowledge.',
     },
 
     // -- Check Your Understanding --
@@ -198,7 +198,7 @@ export const decoding = {
     practical: {
         title: 'Practical insight',
         lead:
-            'The decoding style is a tool in your hands, through how you ask. If you want accuracy, stability and a reliable answer, ask for a focused, constrained, source-backed answer. If you want ideas, alternatives or phrasings, you can ask for several options or a more open wording:',
+            'There are two different ways to influence the output. One is the decoding style and the temperature, which are model or product configuration controls. The other is how you word the request, which changes the context and can change the probability distribution itself. As a user, the wording is usually the tool in your hands. So if you want accuracy and stability, ask for a focused, constrained, source-backed answer, and if you want ideas or alternatives, ask for several options or a more open wording:',
         uses: [
             'For a factual task: "Do not guess. If there is no tracking source, say that the status must be checked."',
             'For wording: "Give me three polite versions of a message to a customer about a delayed package."',
