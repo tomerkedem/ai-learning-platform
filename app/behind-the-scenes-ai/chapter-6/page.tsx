@@ -250,9 +250,9 @@ export default function BehindTheScenesChapter6() {
                     ללא טקסט מוטבע דרך רכיב Mentor, עם flip לפי כיוון כדי לפנות לתוך הכרטיס.
                     pointer-events-none; מוצג רק מ-xl ומעלה. */}
                 {locale === 'he' ? (
-                    // עברית שומרת על נכס האמנות הייעודי (עם הצ'יפים בעברית), מנורמל כלפי מידת פרק 2
-                    // ל-280px (גובה נראה תואם לירו של פרק 2). מעליו בועת-דיבור מתורגמת בסגנון בועת המנטור.
-                    <div className="pointer-events-none absolute bottom-8 right-0 z-20 hidden w-[280px] translate-x-[80%] xl:block">
+                    // עברית שומרת על נכס האמנות הייעודי (עם הצ'יפים בעברית), מוגדל פי 1.7 ל-476px
+                    // ומוגבה (bottom-24) כדי שיבלוט לצד הכותרת. מעליו בועת-דיבור מתורגמת בסגנון בועת המנטור.
+                    <div className="pointer-events-none absolute bottom-24 right-0 z-20 hidden w-[476px] translate-x-[80%] xl:block">
                         {/* data-mentor-root: מנטור ההירו של פרק 6 בעברית משתמש ב-img גולמי (לא רכיב
                             Mentor), לכן מסמנים אותו ידנית כדי שכלל מנטור-הצד הממורכז ימקם אותו מחדש
                             בזרימה בטאבלט/דסקטופ קטן, בדיוק כמו שאר המנטורים. */}
@@ -269,16 +269,18 @@ export default function BehindTheScenesChapter6() {
                                 initial={reduce ? false : { opacity: 0, scale: 0.94 }}
                                 animate={reduce ? { opacity: 1 } : { opacity: 1, y: [0, -10, 0] }}
                                 transition={reduce ? { duration: 0 } : { y: { repeat: Infinity, duration: 4, ease: 'easeInOut' }, opacity: { duration: 0.4 } }}
+                                /* הדמות מצוירת מימין למרכז ה-PNG, לכן מוסטת שמאלה כדי שהראש יעמוד מתחת לבועה הממורכזת */
+                                style={{ x: -95 }}
                                 className="block h-auto w-full object-contain drop-shadow-[0_15px_35px_rgba(34,211,238,0.30)]"
                                 draggable={false}
                             />
                         </div>
                     </div>
                 ) : (
-                    <div className={`pointer-events-none absolute bottom-4 z-20 hidden xl:block ${isRtl ? 'right-0 translate-x-[72%]' : 'left-0 -translate-x-[72%]'}`}>
+                    <div className={`pointer-events-none absolute bottom-20 z-20 hidden xl:block ${isRtl ? 'right-0 translate-x-[72%]' : 'left-0 -translate-x-[72%]'}`}>
                         {/* פוזה גנרית ללא טקסט עברי מוטבע (inspect – מתאימה לנושא Attention). בועת-דיבור
-                            מתורגמת דרך הרכיב. מנורמל למידת פרק 2 (248). flip לפי כיוון לפנות לתוך הכרטיס. */}
-                        <Mentor pose="inspect" line={c6.mentor.hero} width={248} flip={!isRtl} />
+                            מתורגמת דרך הרכיב. מוגדל פי 1.7 ומוגבה כמו מנטור-ההירו בעברית. flip לפי כיוון לפנות לתוך הכרטיס. */}
+                        <Mentor pose="inspect" line={c6.mentor.hero} width={422} flip={!isRtl} />
                     </div>
                 )}
             </div>

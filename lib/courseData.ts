@@ -192,7 +192,7 @@ export const courses: Record<string, CourseData> = {
     // --- לומדה 2: פייתון פרקטי ---
     python: {
         id: "python",
-        title: { he: "פייתון פרקטי למתכנתים לעידן ה-AI", en: "Practical Python for AI Era" },
+        title: { he: "פייתון פרקטי למפתחי AI לעידן ה-AI", en: "Practical Python for AI Era" },
         description: { he: "המדריך המלא להפיכת קוד פייתון למערכות AI יציבות", en: "The complete guide to turning Python code into robust AI systems" },
         chapters: [
             {

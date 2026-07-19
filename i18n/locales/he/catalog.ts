@@ -15,7 +15,7 @@ export const catalog = {
     /** כותרת ותיאור לכל כרטיס לומדה, לפי מזהה הלומדה. */
     cards: {
         python: {
-            title: 'פייתון פרקטי למתכנתים',
+            title: 'פייתון פרקטי למפתחי AI',
             description: 'מעבר מכתיבת סקריפטים להנדסת מערכות AI יציבות (Production-Ready).',
         },
         mathIntuitive: {
