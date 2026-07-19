@@ -76,7 +76,7 @@ export const contextWindowLab: ContextWindowLabContent = {
                 'Me falta información sobre la ubicación del paquete o el estado de la recogida, así que solo puedo responder de forma general. Conviene averiguar dónde está esperando el paquete antes de redactar una respuesta precisa.',
             answerTone: 'generic',
             caption:
-                'La conversación se alargó, y el mensaje con el dato crítico ya salió de la ventana de contexto. El modelo no lo ve ahora, así que se ve obligado a responder de forma genérica o a pedir la información que falta. El dato existe en el historial, pero no dentro de lo que el modelo procesa en este momento.',
+                'La conversación se alargó, y el mensaje con el dato crítico ya salió de la ventana de contexto. El mensaje antiguo quizá siga visible en la pantalla, en el hilo de la conversación, pero no necesariamente se incluye en el input que se envía al modelo en este turno. El modelo no lo ve ahora, así que se ve obligado a responder de forma genérica o a pedir la información que falta. El dato existe en el historial, pero no dentro de lo que el modelo procesa en este momento.',
         },
         {
             id: 'restored',

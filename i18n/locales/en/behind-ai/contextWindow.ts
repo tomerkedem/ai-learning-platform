@@ -48,7 +48,7 @@ export const contextWindow = {
         eyebrow: 'What is a context window',
         title: 'Just before the lab: what is a context window?',
         lead:
-            'Before we play with the conversation, let us understand one idea. At any moment, the model works with a limited amount of text, what is called the context window. It is everything the model sees while it phrases the answer right now. What is in the window has an effect. What has fallen out of it is simply not there.',
+            'Before we play with the conversation, let us understand one idea. At any moment, the model works with a limited amount of text, what is called the context window. It is everything the model sees while it phrases the answer right now. Sometimes the window also holds information you did not write directly, like system instructions or an attached source. What is in the window has an effect. What has fallen out of it is simply not there.',
         points: [
             {
                 title: 'A context window is not memory',
@@ -59,8 +59,8 @@ export const contextWindow = {
                 body: 'The longer the conversation gets, the more early details can leave the context window. It depends on the system and on how the conversation is managed, but the idea is constant: there is a limit to what fits in.',
             },
             {
-                title: 'Exists in the history, not always in use',
-                body: 'Even if a detail was said somewhere earlier, the model will not necessarily rely on it. For it to have an effect, it needs to be present, clear and relevant in the current input.',
+                title: 'Being in the window does not guarantee use',
+                body: 'The context window sets what information is even available to the model this turn, but attention, which we met in the previous chapter, sets which part of it gets more weight. A detail that left the window can no longer affect the answer now. A detail that is in the window can affect it, but simply being there does not guarantee the model will notice it, read it correctly, or use it.',
             },
             {
                 title: 'Product memory is something else',
@@ -183,7 +183,7 @@ export const contextWindow = {
                 statusLabel: 'Partly right',
                 getsRight: 'Sometimes an opening really does set the tone for the whole conversation, so the idea is understandable.',
                 missesLabel: 'What it misses',
-                misses: 'There is no guarantee the opening stays. In fact, it is the part most likely to leave the window first.',
+                misses: 'There is no guarantee the opening stays. Earlier content can leave the window too, and different systems choose differently what to keep inside.',
                 bridge: 'Importance is not set by who was said first, but by what is in the window now.',
             },
             'saved-memory': {

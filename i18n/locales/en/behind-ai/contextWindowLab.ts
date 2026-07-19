@@ -75,7 +75,7 @@ export const contextWindowLab: ContextWindowLabContent = {
                 'I am missing information about the location of the package or the pickup status, so I can only answer in general. It is worth checking where the package is waiting before writing a precise reply.',
             answerTone: 'generic',
             caption:
-                'The conversation grew longer, and the message with the critical detail has already left the context window. The model does not see it now, so it has to answer generically or ask for the missing information. The detail still exists in the history, but not in what the model is processing at this moment.',
+                'The conversation grew longer, and the message with the critical detail has already left the context window. The old message may still be visible on screen in the chat scroll, but it is not necessarily included in the input sent to the model this turn. The model does not see it now, so it has to answer generically or ask for the missing information. The detail still exists in the history, but not in what the model is processing at this moment.',
         },
         {
             id: 'restored',

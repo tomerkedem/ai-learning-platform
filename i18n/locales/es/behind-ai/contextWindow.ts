@@ -45,7 +45,7 @@ export const contextWindow = {
         eyebrow: 'Qué es la ventana de contexto',
         title: 'Justo antes del laboratorio: ¿qué es la ventana de contexto?',
         lead:
-            'Antes de jugar con la conversación, entendamos un concepto. En cada momento, el modelo trabaja con una cantidad limitada de texto, lo que se llama la ventana de contexto. Es todo lo que ve cuando redacta la respuesta ahora. Lo que está dentro de la ventana influye. Lo que se cayó de ella, simplemente no está ahí.',
+            'Antes de jugar con la conversación, entendamos un concepto. En cada momento, el modelo trabaja con una cantidad limitada de texto, lo que se llama la ventana de contexto. Es todo lo que ve cuando redacta la respuesta ahora. A veces la ventana también contiene información que no escribiste directamente, como instrucciones del sistema o una fuente adjunta. Lo que está dentro de la ventana influye. Lo que se cayó de ella, simplemente no está ahí.',
         points: [
             {
                 title: 'La ventana de contexto no es memoria',
@@ -56,8 +56,8 @@ export const contextWindow = {
                 body: 'Cuanto más se alarga la conversación, más pueden salir de la ventana de contexto los datos tempranos. Depende del sistema y de cómo se gestione la conversación, pero la idea es constante: hay un límite a lo que entra.',
             },
             {
-                title: 'Existe en el historial, no siempre en uso',
-                body: 'Aunque un dato se haya dicho en algún punto anterior, el modelo no se apoyará necesariamente en él. Para que influya, tiene que estar presente, claro y relevante en el input actual.',
+                title: 'Estar en la ventana no garantiza su uso',
+                body: 'La ventana de contexto define qué información está siquiera disponible para el modelo en este turno, pero la atención, que vimos en el capítulo anterior, define a qué parte de ella se le da más peso. Un dato que salió de la ventana ya no puede influir en la respuesta ahora. Un dato que está en la ventana sí puede influir, pero el simple hecho de estar ahí no garantiza que el modelo lo note, lo interprete bien o lo use.',
             },
             {
                 title: 'La memoria de producto es otra cosa',
@@ -180,7 +180,7 @@ export const contextWindow = {
                 statusLabel: 'Parcialmente correcto',
                 getsRight: 'A veces una apertura sí orienta toda la conversación, así que la hipótesis se entiende.',
                 missesLabel: 'Qué se le escapa',
-                misses: 'No hay garantía de que la apertura permanezca. Justamente ella puede ser la primera en salir de la ventana.',
+                misses: 'No hay garantía de que la apertura permanezca. El contenido temprano también puede salir de la ventana, y distintos sistemas eligen de otra manera qué se queda dentro.',
                 bridge: 'La importancia no se decide por quién se dijo primero, sino por lo que hay en la ventana ahora.',
             },
             'saved-memory': {
