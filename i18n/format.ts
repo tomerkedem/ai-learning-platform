@@ -82,15 +82,20 @@ export function formatNextChapterLabel(locale: Locale, n: number): string {
     return NEXT_CHAPTER_LABEL[locale](fmtNum(locale, n));
 }
 
-// ───────────── מונה צעדים (מעבדת פרק 5) ─────────────
-// פר-locale, עברית מאוכלסת. שאר השפות יתווספו ב-Phase 3, וכרגע נופלות לעברית יחד עם
-// תוכן הפרק שעדיין לא תורגם. המספרים בספרות מערביות (latn) בכל שפה, עקבי עם שאר ה-UI.
-const STEP_COUNTER: Partial<Record<Locale, (step: string, total: string) => string>> = {
-    he: (s, t) => `צעד ${s} מתוך ${t}`,
+// ───────────── מונה צעדים (מעבדת פרק 10, Generation Loop) ─────────────
+// מציג "צעד X" בלבד, בלי סך כולל, כדי לא לרמוז שאורך התשובה ידוע מראש: בייצור אמיתי
+// המודל לא יודע כמה צעדים יהיו עד שמגיע תנאי עצירה. המספרים בספרות מערביות (latn) בכל
+// שפה, עקבי עם שאר ה-UI.
+const STEP_ONLY: Record<Locale, (step: string) => string> = {
+    he: (s) => `צעד ${s}`,
+    en: (s) => `Step ${s}`,
+    es: (s) => `Paso ${s}`,
+    ru: (s) => `Шаг ${s}`,
+    ar: (s) => `الخطوة ${s}`,
+    ja: (s) => `ステップ${s}`,
 };
-export function formatStepCounter(locale: Locale, step: number, total: number): string {
-    const fn = STEP_COUNTER[locale] ?? STEP_COUNTER.he!;
-    return fn(fmtNum(locale, step), fmtNum(locale, total));
+export function formatStepOnly(locale: Locale, step: number): string {
+    return STEP_ONLY[locale](fmtNum(locale, step));
 }
 
 // ───────────── הרכבת התשובה שנבנתה (מעבדת פרק 5) ─────────────

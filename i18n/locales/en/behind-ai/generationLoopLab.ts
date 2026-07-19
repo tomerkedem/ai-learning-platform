@@ -24,6 +24,7 @@ export const generationLoopLab = {
 
     builtAnswer: 'The answer that was built',
     builtAnswerNote: 'Each part here was chosen based on what was already written before it. Change the opener, and the whole continuation will be built differently.',
+    demoEndNote: 'The demo stopped here because its scripted path is complete. A real loop stops when an end signal arrives, when a maximum length is reached, or when a stop rule or cancellation ends it.',
 
     nextStep: 'Next step',
     restart: 'Start over and pick a different opener',
@@ -40,7 +41,7 @@ export const generationLoopLab = {
 
     // ── Mode B: change the instruction (prompt variants) ──
     variants: {
-        intro: 'Same task: the model writes a reply to a customer about a delayed package. Change the instruction, and watch how it enters the context and shapes the whole answer built after it.',
+        intro: 'Same task: the model writes a reply to a customer about a delayed package. Change the instruction, and watch how it enters the context and shapes the whole answer built after it. The instruction sits in the context at every step, so it keeps influencing the next choice throughout the build.',
         pickLabel: 'Pick an instruction',
         promptLabel: 'The instruction',
         buildsLabel: 'How the answer is built, part by part',

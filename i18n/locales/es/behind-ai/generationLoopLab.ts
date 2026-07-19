@@ -23,6 +23,7 @@ export const generationLoopLab = {
 
     builtAnswer: 'La respuesta que se construyó',
     builtAnswerNote: 'Cada parte aquí se eligió a partir de lo que ya estaba escrito antes. Cambia el inicio, y toda la continuación se construirá distinta.',
+    demoEndNote: 'La demostración se detuvo aquí porque su recorrido guionizado está completo. Un bucle real se detiene cuando llega una señal de fin, cuando se alcanza una longitud máxima, o cuando una regla de parada o una cancelación lo terminan.',
 
     nextStep: 'Siguiente paso',
     restart: 'Empezar de nuevo y elegir otro inicio',
@@ -39,7 +40,7 @@ export const generationLoopLab = {
 
     // ── Modo B: cambia la instrucción (prompt variants) ──
     variants: {
-        intro: 'La misma tarea: el modelo escribe una respuesta a un cliente sobre un paquete retrasado. Cambia la instrucción y observa cómo entra en el contexto y da forma a toda la respuesta que se construye después.',
+        intro: 'La misma tarea: el modelo escribe una respuesta a un cliente sobre un paquete retrasado. Cambia la instrucción y observa cómo entra en el contexto y da forma a toda la respuesta que se construye después. La instrucción está en el contexto en cada paso, así que sigue influyendo en la siguiente elección durante toda la construcción.',
         pickLabel: 'Elige una instrucción',
         promptLabel: 'La instrucción',
         buildsLabel: 'Cómo se construye la respuesta, parte a parte',

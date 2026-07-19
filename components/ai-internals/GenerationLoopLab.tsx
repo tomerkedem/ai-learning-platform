@@ -6,7 +6,7 @@ import { Sparkles, RotateCcw, Check, ArrowLeftRight, CornerLeftDown, Repeat, Ale
 
 import { ACCENTS } from './accents';
 import { useT } from '@/i18n/useT';
-import { formatStepCounter, assembleLocalizedAnswer } from '@/i18n/format';
+import { formatStepOnly, assembleLocalizedAnswer } from '@/i18n/format';
 import {
     composeScenario,
     getBranch,
@@ -232,6 +232,9 @@ const WatchBuildMode: React.FC = () => {
                             <p className="mt-2 text-xs leading-relaxed text-slate-400">
                                 {lab.builtAnswerNote}
                             </p>
+                            <p className="mt-2 border-t border-slate-700/50 pt-2 text-xs leading-relaxed text-slate-400">
+                                {lab.demoEndNote}
+                            </p>
                         </motion.div>
                     )}
 
@@ -253,9 +256,11 @@ const WatchBuildMode: React.FC = () => {
                         >
                             <RotateCcw size={15} /> {lab.restart}
                         </button>
-                        <span className="text-xs font-bold text-slate-500">
-                            {formatStepCounter(contentLocale, stepCount, total)}
-                        </span>
+                        {!done && (
+                            <span className="text-xs font-bold text-slate-500">
+                                {formatStepOnly(contentLocale, stepCount)}
+                            </span>
+                        )}
                     </div>
                 </div>
             )}

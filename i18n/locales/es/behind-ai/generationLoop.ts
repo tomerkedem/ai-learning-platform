@@ -47,7 +47,7 @@ export const generationLoop = {
             },
             {
                 title: 'Por qué viene después del capítulo anterior',
-                body: 'El capítulo anterior mostró cómo se elige un token entre las probabilidades. Aquí esa misma elección se repite una y otra vez. Este capítulo no trata de una sola elección, sino de lo que ocurre cuando sucede decenas de veces seguidas.',
+                body: 'El capítulo anterior mostró cómo se elige un token: el modelo calculó puntuaciones (logits), Softmax las convirtió en probabilidades, y la elección fijó un token. Aquí eso ocurre una y otra vez. En cada paso el contexto actualizado vuelve a entrar, el modelo calcula nuevas probabilidades, elige una parte y la añade. Las probabilidades se recalculan después de cada elección, y pueden cambiar porque el contexto cambió. Cada paso se apoya en todo el contexto reunido hasta ahora, no solo en la última palabra.',
             },
             {
                 title: 'Cada parte elegida actualiza el contexto',
@@ -55,15 +55,15 @@ export const generationLoop = {
             },
             {
                 title: 'Por qué importan las primeras palabras',
-                body: 'Las primeras partes fijan el tono, el nivel de cautela y la estructura. Si la respuesta empezó con un tono demasiado seguro, el resto tiende a seguir demasiado seguro. Una apertura prudente invita a una continuación prudente. Un paso temprano es un marco para todo lo que sigue.',
+                body: 'Las primeras partes fijan el tono, el nivel de cautela y la estructura. Si la respuesta empezó con un tono demasiado seguro, el resto tiende a seguir demasiado seguro. Pero es una tendencia, no un destino fijo: las partes posteriores aún pueden llevar la continuación hacia otro lado. Un paso temprano orienta lo que sigue, no lo bloquea.',
             },
             {
                 title: 'Por qué la respuesta se siente continua',
                 body: 'El bucle corre muy rápido, así que desde fuera parece una sola respuesta fluida. Pero por debajo se armó parte tras parte, no apareció ya hecha.',
             },
             {
-                title: 'La fluidez no es verdad',
-                body: 'Una respuesta suave y convincente puede ser igualmente errónea. El bucle arma una continuación que encaja con el contexto y con los patrones que el modelo aprendió, no comprueba si el contenido es cierto en el mundo. Si el estado importa, hace falta una fuente o una herramienta, o decir qué falta.',
+                title: 'Cómo sabe la respuesta cuándo detenerse',
+                body: 'El bucle no corre para siempre. Se detiene cuando el modelo produce una señal de fin que marca la respuesta como completa, cuando se alcanza una longitud máxima configurada, cuando una secuencia de parada o el sistema lo terminan, o cuando se cancela la petición. Distintos sistemas se detienen de maneras distintas, y el modelo no sabe de antemano cuánto durará.',
             },
             {
                 title: 'Qué verás en el laboratorio',
@@ -76,7 +76,7 @@ export const generationLoop = {
         title: 'Del Prompt a una respuesta completa, paso a paso',
         steps: ['El Prompt', 'La parte elegida', 'La respuesta se actualiza', 'La siguiente elección', 'La respuesta completa'],
         caption:
-            'Cada parte elegida se suma a la respuesta, y la respuesta que crece se convierte en el contexto de la siguiente elección. Así avanza el bucle hasta que la respuesta está completa. Es una ilustración educativa de la generación paso a paso, no un rastro real de un modelo, y el bucle construye la continuación, no comprueba hechos.',
+            'Cada parte elegida se suma a la respuesta, y la respuesta que crece se convierte en el contexto de la siguiente elección. Así avanza el bucle hasta que la respuesta está completa. Es una ilustración educativa de la generación paso a paso, no un rastro real de un modelo.',
     },
 
     guess: {
@@ -169,15 +169,15 @@ export const generationLoop = {
 
     lock: {
         title: 'Comprueba tu comprensión',
-        question: 'El modelo acaba de escribir la parte «Revisa el número de seguimiento...». ¿Qué cambia ahora, de cara al siguiente paso?',
+        question: 'El modelo acaba de escribir la parte «Contacta con atención al cliente». ¿Qué cambia ahora, de cara al siguiente paso?',
         options: [
             'No cambia nada, el modelo continúa desde el mismo lugar',
             'Esta parte se suma al contexto y cambia las opciones para el siguiente paso',
-            'El modelo acaba de comprobar el estado del paquete en la realidad',
+            'El modelo acaba de contactar con atención al cliente de verdad',
             'El modelo empieza de nuevo solo desde la pregunta original',
         ],
         success:
-            'La parte escrita se suma al contexto de inmediato, y el contexto actualizado es lo que cambia qué continuaciones reciben más peso en el siguiente paso. Esto no es una comprobación con la realidad ni un reinicio. Construir paso a paso arma una continuación adecuada, no verifica si es correcta en el mundo.',
+            'La parte escrita se suma al contexto de inmediato, y el contexto actualizado es lo que cambia qué continuaciones reciben más peso en el siguiente paso. No es un contacto real ni un reinicio, es un paso de texto que sigue construyendo la respuesta.',
     },
 
     lab: generationLoopLab,

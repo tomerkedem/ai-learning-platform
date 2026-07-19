@@ -49,7 +49,7 @@ export const generationLoop = {
             },
             {
                 title: 'Why it comes after the previous chapter',
-                body: 'The previous chapter showed how one token is chosen from the probabilities. Here that same choice repeats again and again. This chapter is not about a single choice, but about what happens when it occurs dozens of times in a row.',
+                body: 'The previous chapter showed how one token is chosen: the model computed scores (logits), Softmax turned them into probabilities, and the choice settled on one token. Here that happens again and again. At every step the updated context goes back in, the model computes new probabilities, chooses a part, and appends it. The probabilities are recomputed after every choice, and they can change because the context changed. Each step leans on the whole context gathered so far, not only the last word.',
             },
             {
                 title: 'Each chosen part updates the context',
@@ -57,15 +57,15 @@ export const generationLoop = {
             },
             {
                 title: 'Why the first words matter',
-                body: 'The first parts set the tone, the level of caution, and the structure. If the answer opened in an over-confident voice, the rest tends to stay over-confident. A careful opening invites a careful continuation. An early step is a frame for everything that follows.',
+                body: 'The first parts set the tone, the level of caution, and the structure. If the answer opened in an over-confident voice, the rest tends to stay over-confident. But this is a tendency, not a fixed destiny: later parts can still steer the continuation another way. An early step guides what follows, it does not lock it.',
             },
             {
                 title: 'Why the answer feels continuous',
                 body: 'The loop runs very fast, so from the outside it looks like one flowing answer. But under the surface it was assembled part after part, it did not appear ready-made.',
             },
             {
-                title: 'Fluency is not truth',
-                body: 'A smooth, convincing answer can still be wrong. The loop assembles a continuation that fits the context and the patterns the model learned, it does not check whether the content is true in the world. If the status matters, you need a source or a tool, or you say what is missing.',
+                title: 'How the loop knows when to stop',
+                body: 'The loop does not run forever. It stops when the model produces an end signal that marks the answer as complete, when a configured maximum length is reached, when a stop sequence or the system ends it, or when the request is canceled. Different systems stop in different ways, and the model does not know in advance how long it will run.',
             },
             {
                 title: 'What you will see in the lab',
@@ -78,7 +78,7 @@ export const generationLoop = {
         title: 'From prompt to a full answer, step by step',
         steps: ['The prompt', 'The chosen part', 'The answer updates', 'The next choice', 'The full answer'],
         caption:
-            'Each chosen part joins the answer, and the growing answer becomes the context for the next choice. That is how the loop moves forward until the answer is complete. This is an educational illustration of step-by-step generation, not a real trace from a model, and the loop builds the continuation, it does not check facts.',
+            'Each chosen part joins the answer, and the growing answer becomes the context for the next choice. That is how the loop moves forward until the answer is complete. This is an educational illustration of step-by-step generation, not a real trace from a model.',
     },
 
     guess: {
@@ -171,15 +171,15 @@ export const generationLoop = {
 
     lock: {
         title: 'Check Your Understanding',
-        question: 'The model just wrote the part "Check the tracking number...". What changes now, heading into the next step?',
+        question: 'The model just wrote the part "Contact customer service". What changes now, heading into the next step?',
         options: [
             'Nothing changes, the model continues from the same place',
             'This part joins the context and changes the options for the next step',
-            'The model just checked the package status in the real world',
+            'The model just contacted customer service for real',
             'The model starts over from the original question only',
         ],
         success:
-            'The written part joins the context immediately, and the updated context is what changes which continuations get high weight in the next step. This is not a real-world check and not a restart. Step-by-step building assembles a fitting continuation, it does not verify whether it is correct in the world.',
+            'The written part joins the context immediately, and the updated context is what changes which continuations get high weight in the next step. This is not a real contact and not a restart, it is a text step that keeps building the answer.',
     },
 
     lab: generationLoopLab,
