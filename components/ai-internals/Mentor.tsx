@@ -153,6 +153,13 @@ export interface MentorProps {
     bubbleWidthClass?: string;
     /** מחלקת גודל-טקסט לבועת-הדיבור. ברירת מחדל text-[11px] (שומרת על המצב הקיים). */
     bubbleTextClass?: string;
+    /** הגדלה של תמונת המנטור בלבד (לא הבועה ולא ההילה). ברירת מחדל 1 = ללא שינוי.
+     *  מיושמת על עטיפת התמונה, כך שבועת-הדיבור נשארת במקומה. ההגדלה עוגנת בקצה העליון
+     *  (transform-origin עליון) כך שהתמונה גדלה כלפי מטה, והמנטור נשאר מתחת לבועה. */
+    imageScale?: number;
+    /** הזזה אופקית של תמונת המנטור בלבד (px, מרחב-מסך: שלילי = שמאלה), ללא הבועה.
+     *  ברירת מחדל 0 = ללא שינוי. */
+    imageShiftX?: number;
     className?: string;
 }
 
@@ -170,11 +177,20 @@ export const Mentor: React.FC<MentorProps> = ({
     accent = CYAN_ACCENT,
     bubbleWidthClass = 'max-w-[12rem]',
     bubbleTextClass = 'text-[11px]',
+    imageScale = 1,
+    imageShiftX = 0,
     className = '',
 }) => {
     const reduce = useReducedMotion();
     const doFloat = float && !reduce;
     const scale = POSE_SCALE[pose] ?? 1;
+
+    // טרנספורם על עטיפת התמונה בלבד (לא הבועה): הזזה במרחב-מסך ואז הגדלה, ואז ה-flip
+    // הפנימי. סדר ה-CSS מיושם מימין לשמאל, כך שה-translate פועל אחרון (במרחב-המסך)
+    // ו"שמאלה" נשאר שמאלה גם כשהדמות מהופכת. ברירות המחדל שומרות על המראה הקיים.
+    const figureTransform =
+        `${imageShiftX ? `translateX(${imageShiftX}px) ` : ''}${imageScale !== 1 ? `scale(${imageScale}) ` : ''}${flip ? 'scaleX(-1)' : ''}`.trim() ||
+        undefined;
 
     return (
         <motion.div
@@ -241,8 +257,16 @@ export const Mentor: React.FC<MentorProps> = ({
                 </div>
             )}
 
-            {/* עטיפת ה-flip סטטית (לא מונפשת) כדי לא להתנגש בטרנספורם של הריחוף */}
-            <div className="relative" style={flip ? { transform: 'scaleX(-1)' } : undefined}>
+            {/* עטיפת ה-flip סטטית (לא מונפשת) כדי לא להתנגש בטרנספורם של הריחוף.
+                מחזיקה גם את הגדלת/הזזת התמונה בלבד, כדי שהבועה מעליה לא תזוז. */}
+            <div
+                className="relative"
+                style={
+                    figureTransform
+                        ? { transform: figureTransform, transformOrigin: 'top center' }
+                        : undefined
+                }
+            >
                 <motion.img
                     src={POSE_SRC[pose]}
                     // alt="" - המנטור דקורטיבי: טקסט הבועה נקרא בנפרד, ואין מידע ייחודי בתמונה.

@@ -534,6 +534,11 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                         accent={mentorAccent}
                         bubbleWidthClass="max-w-xs"
                         bubbleTextClass="text-base leading-snug"
+                        // התמונה בלבד גדלה פי 1.6 ומוזזת כך שראש המנטור יושב מתחת לשפיץ
+                        // של בועת-הדיבור. ב-LTR הדמות מהופכת (flip), כך שהראש ממורכז לצד
+                        // הנגדי; לכן ההזזה מותאמת-כיוון וממושקפת, והבועה נשארת במקומה.
+                        imageScale={1.6}
+                        imageShiftX={dir === 'rtl' ? -125 : 125}
                     />
                 </motion.div>
             )}
