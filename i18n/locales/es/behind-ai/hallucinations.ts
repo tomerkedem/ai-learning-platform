@@ -45,7 +45,7 @@ export const hallucinations = {
             },
             {
                 title: 'Por qué ocurre',
-                body: 'El modelo continúa los patrones del prompt y del contexto. Si el dato necesario no está ahí y no hay acceso a una fuente, la continuación más plausible se escribe igual, aunque nadie la haya verificado.',
+                body: 'El modelo continúa los patrones del prompt y del contexto. La falta de información es una causa, pero no la única. Incluso cuando hay información relevante presente en el contexto o en los patrones que el modelo aprendió, puede combinar mal los detalles, confundir hechos parecidos, apoyarse en información que ya no está vigente, o continuar un patrón de lenguaje convincente sobre un fundamento débil. Que haya información relevante disponible no garantiza que el modelo la use correctamente.',
             },
             {
                 title: 'Por qué la confianza engaña',
@@ -131,7 +131,7 @@ export const hallucinations = {
 
     insight: {
         title: 'Lo que confunde aquí',
-        lead: 'La respuesta equivocada no parece rota.',
+        lead: 'La respuesta sin fundamento no parece rota.',
         body: 'Puede ser educada, clara e incluso sonar profesional. El problema no está en la redacción. El problema es que la redacción no prueba que el hecho se comprobó.',
     },
 
@@ -144,7 +144,7 @@ export const hallucinations = {
         wrongLabel: 'Error común',
         wrongQuote: '"Si la respuesta es detallada, segura y está bien escrita, probablemente es correcta."',
         rightLabel: 'Cómo funciona en realidad',
-        rightBody: 'La redacción segura viene de la fluidez del lenguaje, no de comprobar los hechos. Una respuesta puede ser completa y convincente porque el patrón de lenguaje es fuerte, no porque la información se verificó. Para hechos importantes hace falta una fuente, una herramienta o datos del sistema.',
+        rightBody: 'La redacción segura viene de la fluidez del lenguaje, no de comprobar los hechos. Una respuesta puede ser completa y convincente porque el patrón de lenguaje es fuerte, no porque la información se verificó. Para hechos importantes hace falta una fuente, una herramienta o datos del sistema. Lo contrario también vale: una redacción prudente no prueba que el contenido sea correcto, solo reduce el riesgo de presentar una suposición como un hecho. El tono por sí solo, seguro o prudente, no es prueba de verdad en ninguna dirección.',
     },
 
     lock: {

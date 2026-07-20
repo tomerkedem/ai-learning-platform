@@ -135,7 +135,7 @@ export default function BehindTheScenesChapter11() {
     const sGuess: ReadAloudSegment = { id: 'guess', label: c11.guess.eyebrow, text: `${c11.guess.title} ${c11.guess.subtitle}` };
     const sPrimer: ReadAloudSegment = { id: 'primer', label: c11.primer.title, text: primerText };
     const sSee: ReadAloudSegment = { id: 'see', label: c11.see.title, text: `${c11.see.title}. ${c11.see.steps.join(', ')}. ${c11.see.caption}` };
-    const sLab: ReadAloudSegment = { id: 'lab', label: c11.lab.sectionTitle, text: `${c11.lab.sectionTitle}. ${c11.lab.sectionIntro}` };
+    const sLab: ReadAloudSegment = { id: 'lab', label: c11.lab.sectionTitle, text: `${c11.lab.sectionTitle}. ${c11.lab.sectionIntro} ${c11.lab.evidenceNote}` };
     const sWow: ReadAloudSegment = { id: 'wow', label: c11.insight.title, text: `${c11.insight.title}. ${c11.insight.lead} ${c11.insight.body}` };
     const sEveryday: ReadAloudSegment = { id: 'everyday', label: c11.analogy.title, text: `${c11.analogy.title}. ${c11.analogy.body}` };
     const sMisconception: ReadAloudSegment = { id: 'misconception', label: c11.misconception.rightLabel, text: `${c11.misconception.rightLabel}. ${c11.misconception.rightBody}` };
@@ -317,7 +317,7 @@ export default function BehindTheScenesChapter11() {
                     <p className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
                         {c11.lab.sectionIntro}
                     </p>
-                    <SpeakButton text={`${c11.lab.sectionTitle}. ${c11.lab.sectionIntro}`} className="mt-1" speechLocale={speechLocale} />
+                    <SpeakButton text={`${c11.lab.sectionTitle}. ${c11.lab.sectionIntro} ${c11.lab.evidenceNote}`} className="mt-1" speechLocale={speechLocale} />
                 </div>
 
                 <HallucinationLab data={c11.lab} dir={dir} speechLocale={speechLocale} />

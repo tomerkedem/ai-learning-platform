@@ -72,7 +72,7 @@ export const hallucinationsQuiz = {
                 '(c) es mala, porque admite que hay cosas que no se saben',
             ],
             explanation:
-                '(a) es fluida pero inventa una fecha sin comprobar, por lo que es la arriesgada. (b) es prudente y no inventa nada. (c) marca de forma explícita qué se sabe, qué no y qué hay que comprobar. Una respuesta que marca los límites de lo que sabe supera a una suposición segura. Admitir lo que no se sabe es una fortaleza, no una debilidad.',
+                '(a) es fluida pero inventa una fecha sin comprobar, por lo que es la arriesgada. (b) es prudente y no inventa nada. (c) marca de forma explícita qué se sabe, qué no y qué hay que comprobar. Una respuesta que marca los límites de lo que sabe supera a una suposición segura. Admitir lo que no se sabe es una fortaleza, no una debilidad. Dicho esto, una redacción prudente reduce el riesgo de inventar pero no garantiza que el contenido sea correcto. Cuando el hecho importa, aún hay que comprobarlo con una fuente.',
         },
     } satisfies Record<HallucinationsQuizId, HallucinationsQuizText>,
 };

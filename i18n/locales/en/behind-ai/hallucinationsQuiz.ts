@@ -71,7 +71,7 @@ export const hallucinationsQuiz = {
                 '(c) is poor, because it admits there are things it does not know',
             ],
             explanation:
-                '(a) is fluent but invents an unchecked date, which makes it the risky one. (b) is careful and invents nothing. (c) explicitly marks what is known, what is not, and what needs checking. An answer that marks the limits of what it knows beats a confident guess. Admitting what is unknown is a strength, not a weakness.',
+                '(a) is fluent but invents an unchecked date, which makes it the risky one. (b) is careful and invents nothing. (c) explicitly marks what is known, what is not, and what needs checking. An answer that marks the limits of what it knows beats a confident guess. Admitting what is unknown is a strength, not a weakness. That said, cautious phrasing lowers the risk of inventing but does not guarantee the content is correct. When the fact matters you still need to check against a source.',
         },
     } satisfies Record<HallucinationsQuizId, HallucinationsQuizText>,
 };

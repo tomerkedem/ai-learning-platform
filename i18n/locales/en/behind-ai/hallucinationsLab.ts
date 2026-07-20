@@ -45,6 +45,8 @@ export const hallucinationsLab: HallucinationsLabContent = {
     },
     disclaimer:
         'All the answers, checks and the source here are a teaching example, not real model output. They are meant to show the difference between a fluent answer and a grounded one. An answer that sounds confident is not evidence that the fact was checked.',
+    evidenceNote:
+        'Confidence and evidence are two separate dimensions. Both "Confident but ungrounded" and "What if there was a source?" confidently say the package is delayed, but only the second has a hint from a source that backs it. Same confident tone, different grounding. What sets them apart is the evidence, not the style.',
     sr: {
         modeGroup: 'Choosing the answer style',
         checks: 'Fact check of the selected answer',

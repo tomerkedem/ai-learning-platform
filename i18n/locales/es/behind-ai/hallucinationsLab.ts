@@ -35,6 +35,8 @@ export const hallucinationsLab: HallucinationsLabContent = {
     },
     disclaimer:
         'Todas las respuestas, las verificaciones y la fuente aquí son un ejemplo didáctico, no la salida real de un modelo. Sirven para mostrar la diferencia entre una respuesta fluida y una fundamentada. Una respuesta que suena segura no es prueba de que el hecho se comprobó.',
+    evidenceNote:
+        'La confianza y la evidencia son dos dimensiones distintas. Tanto "Segura pero sin fundamento" como "¿Y si hubiera una fuente?" dicen con seguridad que el paquete está retrasado, pero solo la segunda tiene una pista de una fuente que lo respalda. El mismo tono seguro, distinto fundamento. Lo que las diferencia es la evidencia, no el estilo.',
     sr: {
         modeGroup: 'Elección del estilo de respuesta',
         checks: 'Verificación de hechos de la respuesta seleccionada',

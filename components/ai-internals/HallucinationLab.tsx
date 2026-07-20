@@ -18,7 +18,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { MessageSquare, ShieldAlert, CheckCircle2, XCircle, AlertTriangle, FileSearch, HelpCircle, Lightbulb, type LucideIcon } from 'lucide-react';
+import { MessageSquare, ShieldAlert, CheckCircle2, XCircle, AlertTriangle, FileSearch, HelpCircle, Lightbulb, Scale, type LucideIcon } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
 import type { HallucinationsLabContent, CheckState, RiskLevel } from '@/i18n/locales/he/behind-ai/hallucinationsLab';
 import { DUR } from './motionTokens';
@@ -186,6 +186,12 @@ export const HallucinationLab: React.FC<HallucinationLabProps> = ({ data, dir, s
                     <p className="text-[13px] font-bold leading-relaxed text-slate-100">{mode.takeaway}</p>
                 </div>
             </motion.div>
+
+            {/* השוואה קבועה: ביטחון וביסוס הם שני צירים נפרדים, מנוגדים לפי הראיה ולא לפי הנימה */}
+            <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-sky-500/30 bg-sky-950/15 p-3.5">
+                <Scale size={16} className="mt-0.5 shrink-0 text-sky-300" aria-hidden />
+                <p className="text-[13px] leading-relaxed text-slate-200">{data.evidenceNote}</p>
+            </div>
 
             {/* הבהרה: כל הדוגמאות לימודיות בלבד */}
             <p className="mt-4 text-[13px] leading-relaxed text-slate-500">{data.disclaimer}</p>

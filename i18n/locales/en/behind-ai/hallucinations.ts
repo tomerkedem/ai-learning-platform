@@ -45,7 +45,7 @@ export const hallucinations = {
             },
             {
                 title: 'Why it happens',
-                body: 'The model continues the patterns in the prompt and context. If the needed detail is not there and there is no access to a source, the most plausible continuation still gets written, even if no one verified it.',
+                body: 'The model continues the patterns in the prompt and context. Missing information is one cause, but not the only one. Even when relevant information is present in the context or in the patterns the model learned, it can still combine details incorrectly, confuse similar facts, lean on information that is no longer current, or continue a convincing language pattern on weak grounding. Having relevant information available does not guarantee that the model will use it correctly.',
             },
             {
                 title: 'Why confidence is misleading',
@@ -131,7 +131,7 @@ export const hallucinations = {
 
     insight: {
         title: 'What is confusing here',
-        lead: 'The wrong answer does not look broken.',
+        lead: 'The unsupported answer does not look broken.',
         body: 'It can be polite, clear and even sound professional. The problem is not in the phrasing. The problem is that the phrasing does not prove the fact was checked.',
     },
 
@@ -144,7 +144,7 @@ export const hallucinations = {
         wrongLabel: 'Common mistake',
         wrongQuote: '"If the answer is detailed, confident and well written, it is probably correct."',
         rightLabel: 'How it really works',
-        rightBody: 'Confident phrasing comes from language fluency, not from fact checking. An answer can be full and convincing because the language pattern is strong, not because the information was verified. For important facts you need a source, a tool, or system data.',
+        rightBody: 'Confident phrasing comes from language fluency, not from fact checking. An answer can be full and convincing because the language pattern is strong, not because the information was verified. For important facts you need a source, a tool, or system data. The reverse holds too: cautious phrasing does not prove the content is correct, it only lowers the risk of presenting a guess as fact. Tone alone, confident or cautious, is not evidence of truth in either direction.',
     },
 
     lock: {
