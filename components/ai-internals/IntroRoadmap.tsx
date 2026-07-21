@@ -122,11 +122,6 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                 <span className="min-w-0 flex-1">
                     <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
                         <span className="text-base font-bold leading-tight text-white">{station.title}</span>
-                        {station.term && (
-                            <code dir="ltr" className={`rounded-md border ${a.border} bg-slate-950/60 px-1.5 py-0.5 font-mono text-[11px] font-bold ${a.text}`}>
-                                {station.term}
-                            </code>
-                        )}
                         {isLoop && (
                             <span className={`inline-flex items-center gap-1 text-xs font-bold ${a.text}`}>
                                 <CornerDownLeft size={13} aria-hidden />
@@ -134,7 +129,6 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                             </span>
                         )}
                     </span>
-                    <span className="mt-1 block text-sm leading-relaxed text-slate-300">{station.explanation}</span>
                 </span>
 
                 {/* מחוון פתיחה: רמז ברור שאפשר להציץ פנימה */}
@@ -168,8 +162,12 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                                 רמז-המנטור מוצג כאן גם כטקסט מתחת ל-xl, כי שם בועת המנטור לא קיימת. */}
                             <div className="mb-2.5 flex items-start justify-between gap-2.5">
                                 {hint && <p className={`text-sm leading-relaxed ${a.text} xl:hidden`}>{hint}</p>}
+                                <div>
+                                    {station.term && <code dir="ltr" className={`rounded-md border ${a.border} bg-slate-950/60 px-1.5 py-0.5 font-mono text-[11px] font-bold ${a.text}`}>{station.term}</code>}
+                                    <p className="mt-2 text-sm leading-relaxed text-slate-300">{station.detail ?? station.explanation}</p>
+                                </div>
                                 <SpeakButton
-                                    text={speakJoin(station.title, station.term, station.explanation, hint)}
+                                    text={speakJoin(station.title, station.term, station.explanation, station.detail, hint)}
                                     className="ms-auto shrink-0"
                                 />
                             </div>
@@ -222,6 +220,14 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
     // זמן קריאה. כך גלילה מהירה רק "בוחרת יעד", ולא מדפדפת.
     const [openId, setOpenId] = useState<string | null>(null);
     const [candidateId, setCandidateId] = useState<string | null>(null);
+    const [manualOnly, setManualOnly] = useState(false);
+    useEffect(() => {
+        const query = window.matchMedia('(max-width: 767px), (pointer: coarse)');
+        const sync = () => setManualOnly(query.matches);
+        sync();
+        query.addEventListener('change', sync);
+        return () => query.removeEventListener('change', sync);
+    }, []);
     const openIdRef = useRef<string | null>(null);
     useEffect(() => { openIdRef.current = openId; }, [openId]);
     const candidateRef = useRef<string | null>(null);
@@ -296,7 +302,7 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
     useEffect(() => {
         // ב-reduced-motion אין פתיחה אוטומטית מונחית-גלילה (הכרטיסים נשארים ידניים).
         // במצב הדגמה מכובה לגמרי: המרצה שולט בצעדים, ושום דבר לא נפתח מעצמו בגלילה.
-        if (reduce || demo || typeof window === 'undefined') return;
+        if (reduce || demo || manualOnly || typeof window === 'undefined') return;
         let raf = 0;
         let dwell = 0;
         let idle = 0;
@@ -345,7 +351,7 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
             window.clearTimeout(dwell);
             window.clearTimeout(idle);
         };
-    }, [reduce, demo, commitOpen]);
+    }, [reduce, demo, manualOnly, commitOpen]);
 
     // ── מקלדת במצב הדגמה בלבד (כמו שלט מצגת) ──────────────────────────────────
     // רווח = הבא. חצים מודעי-כיוון: ב-RTL חץ שמאלה מתקדם, ימינה חוזר; ב-LTR הפוך.

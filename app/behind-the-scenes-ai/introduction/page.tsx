@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from "framer-motion";
 import {
-  ChevronLeft, ChevronRight, Info, Layers, MousePointerClick,
+  ChevronLeft, ChevronRight, Info, MousePointerClick,
 } from "lucide-react";
 import Link from 'next/link';
 import { ChapterLayout, FocusModeContext } from "@/components/ChapterLayout";
@@ -11,8 +11,6 @@ import { VizSoundToggle } from "@/components/ai-internals/IntroStationViz";
 import { ExpandableLab } from "@/components/ai-internals/ExpandableLab";
 import { EngineReveal } from "@/components/ai-internals/EngineReveal";
 import { HypothesisGuess } from "@/components/ai-internals/HypothesisGuess";
-import { NextTokenGuess } from "@/components/ai-internals/NextTokenGuess";
-import { CourseSystems } from "@/components/ai-internals/CourseSystems";
 import { AgentLoop } from "@/components/ai-internals/AgentLoop";
 import { Mentor } from "@/components/ai-internals/Mentor";
 import { ReadAloudControls, type ReadAloudMode } from "@/components/ai-internals/ReadAloudControls";
@@ -21,7 +19,7 @@ import type { ReadAloudSegment } from "@/components/ai-internals/useReadAloud";
 import { useT } from "@/i18n/useT";
 import type { Locale } from "@/i18n/config";
 import type {
-  QuickGuessContent, RoadmapZone, RoadmapStation, CourseSystem, AgentDemo, AgentStage, NextTokenContent,
+  QuickGuessContent, RoadmapZone, RoadmapStation, AgentDemo, AgentStage,
 } from "./introContent";
 
 /* ════════════════════════ מטא־דאטה מבני (לא ניתן לתרגום) ════════════════════════ */
@@ -60,24 +58,8 @@ const ROADMAP_STATION_META = [
   { id: 'loop', zone: 'D', viz: 'loop' },
 ] as const;
 
-const SYSTEM_META = [
-  { id: 'outside', chapters: ['1', '2'] },
-  { id: 'representations', chapters: ['3', '4', '5', '6', '7'] },
-  { id: 'generation', chapters: ['8', '9', '10'] },
-  { id: 'reliability', chapters: ['11', '12', '13'] },
-  { id: 'learning', chapters: ['14', '15', '16'] },
-  { id: 'agent', chapters: ['17', '18', '19'] },
-] as const;
-
 const AGENT_STAGE_META = ['in', 'task', 'tool', 'risk', 'act', 'answer'] as const;
 const CHAT_STAGE_META = ['in', 'model', 'out'] as const;
-
-// בונוס ניחוש הטוקן הבא: ההסתברויות (מבני, זהה לכל השפות). הסדר תואם למילות הטוקן
-// במילון (introduction.nextToken.rounds[i].tokens) לפי אינדקס. otherP = שאר המסה.
-const NEXT_TOKEN_META = [
-  { probs: [37, 24, 15, 9, 6], otherP: 9 },
-  { probs: [51, 17, 9, 7, 3], otherP: 13 },
-] as const;
 
 const CTA_HREF = '/behind-the-scenes-ai/chapter-1';
 
@@ -128,6 +110,7 @@ export default function BehindTheScenesIntroPage() {
   const { t, dir, locale } = useT();
   const isRtl = dir === 'rtl';
   const intro = t.behindAi.introduction;
+  const [guessNarration, setGuessNarration] = React.useState<string | null>(null);
 
   // ── פסי ההקראה לפי מצב היקף (scope). רק טקסט למידה משמעותי, מאותם מפתחות מילון
   // שכבר מרונדרים, בלי לשכפל קופי. לא נכללים כפתורים, ניווט, מונים, תוויות, באדג׳ים,
@@ -157,7 +140,8 @@ export default function BehindTheScenesIntroPage() {
     const stationSegs = ROADMAP_STATION_META.filter((m) => m.zone === zid).map((m) => {
       const s = intro.roadmap.stations[m.id];
       const hint = mentorHints[m.id];
-      return { id: `station-${m.id}`, label: s.title, text: `${s.title}. ${s.explanation}${hint ? ` ${hint}` : ''}` };
+      const stationText = 'detail' in s ? s.detail : s.explanation;
+      return { id: `station-${m.id}`, label: s.title, text: `${s.title}. ${stationText}${hint ? ` ${hint}` : ''}` };
     });
     return [zoneSeg, ...stationSegs];
   });
@@ -175,6 +159,9 @@ export default function BehindTheScenesIntroPage() {
     const h = intro.quickGuess.hypotheses[m.id];
     return { id: `hyp-${m.id}`, label: h.title, text: h.concept };
   });
+  const sGuessFeedback: ReadAloudSegment | null = guessNarration
+    ? { id: 'qg-feedback', label: intro.quickGuess.question, text: guessNarration }
+    : null;
   const sGate: ReadAloudSegment = {
     id: 'gate', label: intro.chat.gateLead,
     text: `${intro.chat.gateLead} ${intro.chat.bridge}`,
@@ -183,19 +170,17 @@ export default function BehindTheScenesIntroPage() {
   // Agent), ומשפט המעבר אל המפה, כדי שכל הטקסט סביב הכרטיס יהיה בפס ההקראה.
   const sAgent: ReadAloudSegment = {
     id: 'agent', label: intro.agent.card.agent.title,
-    text: `${intro.agent.intro} ${intro.agent.card.chat.title}. ${intro.agent.card.chat.body} ${intro.agent.card.chat.closing} ${intro.agent.card.agent.title}. ${intro.agent.card.agent.body} ${intro.agent.card.agent.closing} ${intro.agent.transition}`,
+    text: `${intro.agent.intro} ${intro.agent.card.chat.title}. ${intro.agent.card.chat.body} ${intro.agent.card.chat.closing} ${intro.agent.card.agent.title}. ${intro.agent.card.agent.body} ${intro.agent.card.agent.closing}`,
   };
-  const sSystems: ReadAloudSegment[] = SYSTEM_META.map((m) => {
-    const sx = intro.systems.items[m.id];
-    return { id: `system-${m.id}`, label: sx.title, text: `${sx.title}. ${sx.teaser} ${sx.purpose}` };
-  });
-
   const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
     short: [sTitle, sOutside, sRoadmapSubtitle, sCta],
-    regular: [sTitle, sOutside, sRoadmapHeading, ...sStations, sTruth, sCta],
+    regular: [sTitle, sOutside, sQuickGuessQ, ...sHypotheses,
+      ...(sGuessFeedback ? [sGuessFeedback] : []), sGate,
+      sRoadmapHeading, ...sStations, sTruth, sAgent, sCta],
     full: [
-      sTitle, sOutside, sQuickGuessQ, ...sHypotheses, sGate, sAgent,
-      sRoadmapHeading, ...sStations, sTruth, ...sSystems, sCta,
+      sTitle, sOutside, sQuickGuessQ, ...sHypotheses,
+      ...(sGuessFeedback ? [sGuessFeedback] : []), sGate,
+      sRoadmapHeading, ...sStations, sTruth, sAgent, sCta,
     ],
   };
 
@@ -215,24 +200,11 @@ export default function BehindTheScenesIntroPage() {
     wrongLead: intro.quickGuess.wrongLead,
     retry: intro.quickGuess.retry,
     revealCorrect: intro.quickGuess.revealCorrect,
-    bonusStart: intro.quickGuess.bonusStart,
     hypotheses: HYPOTHESIS_META.map((m) => ({
       id: m.id,
       cue: m.cue,
       correct: 'correct' in m ? m.correct : undefined,
       ...intro.quickGuess.hypotheses[m.id],
-    })),
-  };
-
-  // בונוס ניחוש הטוקן הבא: מיזוג המחרוזות מהמילון עם ההסתברויות המבניות (לפי אינדקס).
-  const nextTokenContent: NextTokenContent = {
-    ...intro.nextToken,
-    rounds: intro.nextToken.rounds.map((r, i) => ({
-      context: r.context,
-      prefix: r.prefix,
-      insight: r.insight,
-      otherP: NEXT_TOKEN_META[i].otherP,
-      options: r.tokens.map((token, j) => ({ token, p: NEXT_TOKEN_META[i].probs[j] })),
     })),
   };
 
@@ -247,19 +219,6 @@ export default function BehindTheScenesIntroPage() {
     ...('viz' in m ? { viz: m.viz } : {}),
     ...intro.roadmap.stations[m.id],
   }));
-
-  const courseSystems: CourseSystem[] = SYSTEM_META.map((m) => {
-    const sx = intro.systems.items[m.id];
-    return {
-      id: m.id,
-      title: sx.title,
-      range: sx.range,
-      teaser: sx.teaser,
-      purpose: sx.purpose,
-      stationChips: [...sx.stationChips],
-      chapters: m.chapters.map((n, i) => ({ n, label: sx.chapters[i] })),
-    };
-  });
 
   const buildStages = (
     ids: readonly string[],
@@ -303,6 +262,7 @@ export default function BehindTheScenesIntroPage() {
                   גלילה; במובייל מתכווץ לאייקון בלבד. ממומש דרך portal ל-body (FloatingReadAloud). */}
               <FloatingReadAloud dir={dir}>
                 <ReadAloudControls
+                  key={guessNarration ?? 'no-guess-feedback'}
                   segmentsByMode={readAloudByMode}
                   lang={LOCALE_SPEECH_LANG[locale]}
                   locale={locale}
@@ -353,68 +313,17 @@ export default function BehindTheScenesIntroPage() {
                 reduce={!!reduce}
                 content={quickGuess}
                 dir={dir}
-                bonus={<NextTokenGuess content={nextTokenContent} reduce={!!reduce} dir={dir} />}
+                onFeedbackNarration={setGuessNarration}
               />
             </ExpandableLab>
           </motion.section>
 
-          {/* ══════════ 3 · CHAT vs AGENT (full card, before the map) ══════════ */}
-          {/* מוקדם בכוונה: מיד אחרי הניחוש, ניגוד חזק בין Chat ל-Agent לפני שנכנסים */}
-          {/* לפירוק המודל במפה. הקופי כאן קדימה-מבט (בלי "עד עכשיו ראינו"). */}
-          {/* הכרטיס נשען כולו על AgentLoop: הכותרת/eyebrow/body עוברים פנימה לקונסולה
-              קומפקטית, וה-closing/note נוחתים ב-slot החי. גבול הכרטיס וההילה מתחלפים
-              לפי המצב (תכלת ל-Chat, סגול ל-Agent), כך שכל הכרטיס נושם עם הסצנה. */}
-          {/* משפט המסגור כשורת-פתיח מוקפדת: קו-מבטא גרדיאנט (תכלת->סגול, רמז ל-Chat->Agent),
-              טקסט גדול ומודגש, ושמות המצבים צבועים בגוון הסצנה שלהם. */}
-          <div className="mx-auto mb-7 mt-20 max-w-3xl text-center">
-            <div className="mx-auto mb-4 h-px w-20 bg-gradient-to-r from-cyan-400/70 via-slate-500/30 to-purple-400/70" />
-            <p className="text-lg font-bold leading-relaxed tracking-tight text-slate-100 md:text-2xl">
-              {intro.agent.intro.split(/(Chat|Agent)/g).map((part, i) =>
-                part === 'Chat' ? <span key={i} className="font-black text-cyan-300">Chat</span>
-                  : part === 'Agent' ? <span key={i} className="font-black text-purple-300">Agent</span>
-                    : <React.Fragment key={i}>{part}</React.Fragment>,
-              )}
-            </p>
-          </div>
-          {/* ExpandableLab עוטף את הכרטיס כולו (כולל כל רכיביו) ומאפשר הגדלה למסך מלא.
-              הכרטיס מוגבל ל-max-w-4xl כדי שגם בתצוגה הרגילה וגם במסך מלא הפרופורציות
-              יישארו נעימות (בלי כותרת שנמתחת יתר על המידה). */}
-          <motion.section
-            initial={reduce ? false : { opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.6 }}
-            className="mx-auto mt-5 max-w-5xl"
-          >
-            <ExpandableLab title={agentCard.title}>
-              <div className={`relative overflow-hidden rounded-[2rem] border bg-slate-900/60 p-4 backdrop-blur-xl md:p-6 transition-colors ${agentMode === 'agent' ? 'border-purple-500/30' : 'border-cyan-500/30'}`}>
-                <div className={`absolute -top-16 -left-10 w-56 h-56 blur-[80px] rounded-full pointer-events-none transition-colors ${agentMode === 'agent' ? 'bg-purple-500/10' : 'bg-cyan-500/10'}`} />
-                <div className="relative">
-                  <AgentLoop
-                    reduce={!!reduce}
-                    demo={agentDemo}
-                    mode={agentMode}
-                    onModeChange={setAgentMode}
-                    dir={dir}
-                    eyebrow={agentCard.eyebrow}
-                    title={agentCard.title}
-                    body={agentCard.body}
-                    closing={agentCard.closing}
-                  />
-                </div>
-              </div>
-            </ExpandableLab>
-          </motion.section>
-
-          {/* מעבר קצר אל המפה: פותחים את הקופסה האמצעית (המודל) */}
-          <p className="mt-8 text-center text-base font-bold leading-relaxed text-slate-200 md:text-lg">
-            {intro.agent.transition}
+          <p className="mt-10 text-center text-base font-bold leading-relaxed text-slate-200 md:text-lg">
+            {intro.chat.gateLead}
           </p>
 
           {/* ══════════ 4 · MAIN ROADMAP (ALWAYS VISIBLE) ══════════ */}
-          {/* מפת 14 התחנות. גלויה תמיד, עם תחנת "פירוק לטוקנים" פתוחה כברירת מחדל.
-              הניחוש זורם ישירות אל המפה: כותרת המפה ("פותחים את המנוע") נושאת את
-              רגע המעבר, בלי שער-טעימה נפרד שכפל את אזורי המפה שממש למטה. */}
+          {/* מפת 14 התחנות גלויה תמיד; הפרטים הטכניים נפתחים לפי בחירת הלומד. */}
           <section className="mt-20">
             <SectionHeading eyebrow={intro.roadmapHeading.eyebrow} title={intro.roadmapHeading.title}>
               {intro.roadmapHeading.subtitle}
@@ -444,22 +353,21 @@ export default function BehindTheScenesIntroPage() {
             </div>
           </section>
 
-          {/* ══════════ 5 · COURSE SYSTEMS (19 chapters, 6 systems) ══════════ */}
-          {/* שש מערכות שנפתחות, לא שישה פרקים. כל שער מגלה את טווח הפרקים שבתוכו. */}
+          {/* ══════════ 5 · CHAT vs AGENT TEASER ══════════ */}
           <section className="mt-20">
-            <SectionHeading eyebrow={intro.systems.heading.eyebrow} title={intro.systems.heading.title} />
-
-            {/* באנר שמבהיר: 19 פרקים, 6 מערכות */}
-            <div className="mb-3 flex justify-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/40 bg-cyan-900/20 px-4 py-2 text-sm font-black text-cyan-100">
-                <Layers size={15} aria-hidden /> {intro.systems.heading.summary}
-              </span>
+            <div className="mx-auto mb-7 max-w-3xl text-center">
+              <div className="mx-auto mb-4 h-px w-20 bg-gradient-to-r from-cyan-400/70 via-slate-500/30 to-purple-400/70" />
+              <p className="text-lg font-bold leading-relaxed tracking-tight text-slate-100 md:text-2xl">{intro.agent.intro}</p>
             </div>
-            <p className="mx-auto mb-8 max-w-2xl text-center text-base leading-relaxed text-slate-400 md:text-lg">
-              {intro.systems.heading.subtitle}
+            <ExpandableLab title={agentCard.title}>
+              <div className={`relative overflow-hidden rounded-[2rem] border bg-slate-900/60 p-4 backdrop-blur-xl md:p-6 ${agentMode === 'agent' ? 'border-purple-500/30' : 'border-cyan-500/30'}`}>
+                <AgentLoop reduce={!!reduce} demo={agentDemo} mode={agentMode} onModeChange={setAgentMode}
+                  dir={dir} eyebrow={agentCard.eyebrow} title={agentCard.title} body={agentCard.body} closing={agentCard.closing} />
+              </div>
+            </ExpandableLab>
+            <p className="mx-auto mt-8 max-w-2xl text-center text-base leading-relaxed text-slate-400 md:text-lg">
+              {intro.scopeSentence}
             </p>
-
-            <CourseSystems systems={courseSystems} labels={intro.systems.labels} reduce={!!reduce} dir={dir} />
           </section>
 
           {/* ══════════ 6 · CTA TO CHAPTER 1 ══════════ */}

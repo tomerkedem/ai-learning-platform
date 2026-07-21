@@ -44,101 +44,71 @@ export const introduction = {
         eyebrow: 'Quick guess · Four competing explanations',
         question: 'Which explanation is closest to what happens in between?',
         hint: 'Pick the explanation that feels closest to reality. There is no score here, just a choice of a mental model.',
-        correctTitle: 'Exactly right!',
-        correctLead: 'This is the more accurate picture.',
-        correctBody: 'The model works on tokens, computes context, chooses the next token, and then repeats the process.',
+        correctTitle: 'The closest explanation',
+        correctLead: 'This is the closest learning map, and it is still simplified.',
+        correctBody: 'The model works on tokens and numeric representations, computes context, then chooses or samples the next token using the distribution and decoding rules.',
         correctBridge: "That is exactly what we'll open up now, in the station map just below.",
         wrongLead: 'This is a common misconception, but it is not what actually happens.',
         retry: 'Choose again',
         revealCorrect: 'Show the accurate explanation',
-        bonusStart: 'You earned a bonus: two more guesses',
 
         /** Text of the four hypotheses, by id. Structure (cue, correct) lives in the view layer. */
         hypotheses: {
             read: {
                 title: 'Direct reading',
                 concept: 'The model reads the sentence like a person and assembles an answer.',
+                status: 'Tempting metaphor, but incomplete',
                 whyTempting: 'That is how we read, so it is natural to assume the model does it too.',
                 whyWrong: 'The model does not read letters or words like a person. It works on tokens and numbers.',
             },
             rail: {
                 title: 'A fixed track',
                 concept: 'The model always goes through the same fixed number of steps, like an assembly line.',
+                status: 'Partially correct',
                 whyTempting: 'It is appealing to think of the model as a tidy assembly line with a known number of steps.',
-                whyWrong: 'The inner stages are in fact fixed, but the number of rounds is not: the whole route runs again for every token, until the answer is complete.',
+                whyWrong: 'The architecture has a repeated computational structure, but the generated content and product flow are not one fixed, prewritten route.',
             },
             tokens: {
                 title: 'A token engine',
                 concept: 'The model breaks the text into tokens, computes context, and produces an answer token after token.',
+                status: 'Closest explanation',
+                whyTempting: 'It captures the central idea: the response is generated progressively from tokens and context.',
             },
             archive: {
                 title: 'Retrieval from a database',
                 concept: 'The model pulls a ready-made answer from a database.',
+                status: 'Wrong for the base-model explanation',
                 whyTempting: 'The answers sound finished and polished, as if they were pulled from a database.',
-                whyWrong: 'There is no database of ready-made answers. The model produces the answer token after token in real time.',
+                whyWrong: 'The base model generally does not retrieve one complete prepared answer. It generates the response progressively, although products may add external retrieval.',
             },
         },
     },
 
-    // ── Bonus: guess the next token (NextTokenGuess). Probabilities in NEXT_TOKEN_META. ──
-    nextToken: {
-        eyebrow: 'Bonus · Be the engine',
-        title: 'Guess the next token',
-        subtitle: 'The engine does not pick the truth. It picks the most likely token from what it learned. Try to think like it.',
-        guessLabel: 'Which token comes next?',
-        yourPick: 'Your guess',
-        modelTop: "Engine's pick",
-        matchTitle: 'You thought like the engine!',
-        missTitle: 'The engine preferred',
-        otherLabel: 'All the rest',
-        roundLabel: 'Round',
-        ofLabel: 'of',
-        nextRound: 'Next round',
-        restart: 'Start over',
-        closing: 'Exactly like this, token after token, every answer the engine gives is built.',
-        // Token order matches the probability order in NEXT_TOKEN_META.
-        rounds: [
-            {
-                context: 'Shipment status',
-                prefix: "The package's last status was:",
-                tokens: ['delivered', 'shipped', 'processing', 'collected', 'returned'],
-                insight: 'The engine does not know what happened to your package. It picks the most common continuation it saw in a context like this.',
-            },
-            {
-                context: 'Support call',
-                prefix: 'The package never arrived. I called, and the agent said he was so',
-                tokens: ['sorry', 'sad', 'worried', 'upset', 'glad'],
-                insight: 'We both know nobody is truly "glad" here. The context pushed the engine toward the polite, common continuation.',
-            },
-        ],
-    },
-
     // ── Station map heading and the open hint ──
     roadmapHeading: {
-        eyebrow: 'Opening the engine',
+        eyebrow: '14 stations inside response generation',
         title: 'A map of the main stations on the way from text to answer',
-        subtitle: 'Beneath the two steps you see from the outside, a full route is running. These are its main stations, from request to answer.',
+        subtitle: 'A learning map of an autoregressive language model, from assembled input to generated response.',
         hint: 'Click a station to peek inside: a short explanation and an example.',
     },
 
     // ── The honesty note below the map ──
     truthNote:
-        'This is a learning map, not a full snapshot of every computation. In a real model, many operations happen in parallel inside each station, and the exact number varies with the model, the context length, and how it is run.',
+        'This is a simplified learning map of an autoregressive language model, not a complete trace or a universal architecture for every AI product. Retrieval, memory, tools, self-checks, and guardrails are optional system capabilities, not required inner layers of every answer.',
 
 
     // ── Agent separation: the card copy and the live demo (AgentLoop) ──
     agent: {
         // Forward-looking framing (the card now appears before the map) + transition to the map.
-        intro: 'Before we open the model in depth, let us take a moment to see the difference between Chat and Agent.',
-        transition: 'Now we open the middle box: what really happens inside the model.',
+        intro: 'A look ahead: what changes when a Chat that answers becomes an Agent that can act?',
         // Card copy, switches with the Chat/Agent toggle. "Agent" stays in English.
         card: {
             chat: {
                 eyebrow: 'Basic route',
-                title: 'Chat is input, model, and one answer',
-                body: 'In Chat mode the model receives a request and returns one answer. No tools, no action in the world - just input, model, and answer.',
-                closing: 'Chat stops the moment the answer is ready. It does not run tools and does not change anything outside the conversation.',
-                note: 'This is exactly the Transformer itself: text in, text out.',
+                title: 'Basic Chat path: request, model, response',
+                body: 'In this simplified example, the request goes to the model and it returns a response without taking an external action.',
+                closing: 'Some Chat products add retrieval, memory, tools, filtering, or orchestration around the model.',
+                note: 'This is a simplified path, not a definition of every Chat product.',
             },
             agent: {
                 eyebrow: 'An extra layer',
@@ -172,8 +142,8 @@ export const introduction = {
                 in: { label: 'Input', hint: 'Your request enters the system, and the round starts here.' },
                 task: { label: 'Understands the task', hint: 'What is the real goal of the request?', intent: 'Summarize and send a reply' },
                 tool: { label: 'Chooses a tool', hint: 'Which tool can help with the task?', tool: 'Email reader' },
-                risk: { label: 'Checks risk', hint: 'Is the action sensitive or does it need approval?', risk: 'Medium: sending outside the system' },
-                act: { label: 'Runs the action', hint: 'Runs the tool and gets a result (Observation).', next: 'Running the tool' },
+                risk: { label: 'Requests approval', hint: 'An external action pauses for approval when needed.' },
+                act: { label: 'Runs the action', hint: 'Runs the tool and gets a result.', next: 'Running the tool' },
                 answer: { label: 'Returns an answer', hint: 'Summarizes, and sometimes asks for approval before sending.', next: 'Waiting for approval' },
             },
             chatStages: {
@@ -184,81 +154,14 @@ export const introduction = {
         },
     },
 
-    // ── Course structure: 19 chapters, 6 systems (CourseSystems) ──
-    systems: {
-        heading: {
-            eyebrow: 'The journey ahead',
-            title: '19 chapters that open the engine, step by step',
-            summary: '19 chapters, 6 systems, one engine that opens up gradually',
-            subtitle: 'This is not a chapter catalog. It is a journey: each act opens a different part of the engine, until the picture comes together.',
-        },
-        labels: {
-            purpose: 'What will you discover?',
-            stations: 'Key concepts',
-            chapters: 'Which chapters does this lead to?',
-            open: 'Open the gate',
-            startHere: 'Start here',
-        },
-        // The six systems, by id. Chapter numbers (n) and display order stay in the view layer,
-        // and chapter names (chapters) are a list of labels in the system's fixed order.
-        items: {
-            outside: {
-                title: 'The outside view: transparent chat and input',
-                range: 'Chapters 1-2',
-                teaser: 'Behind "request and answer" hides a full route. This is where you start to see it.',
-                purpose: 'To break the illusion that chat is just request and answer, and to see what really goes into the model.',
-                stationChips: ['The request comes in', 'Context window'],
-                chapters: ['The Transparent Chat: The Path Behind the Answer', 'Model Input: What Really Enters the Model'],
-            },
-            representations: {
-                title: 'From text to tokens and representations',
-                range: 'Chapters 3-7',
-                teaser: 'How does text become something you can compute on, and turn into meaning? This is where it happens.',
-                purpose: 'To understand how text becomes tokens, numeric representations, meaning, and the context the model works with.',
-                stationChips: ['Breaking into tokens', 'Embedding', 'Attention'],
-                chapters: ['Tokenization: When Text Breaks Into Tokens', 'Embeddings: From a Meaningless Number to Meaning', 'Semantic Space: The Model\'s Map of Meaning', 'Attention: Who Matters Now', 'Context Window: What the Model Really Sees Now'],
-            },
-            generation: {
-                title: 'How an answer is built',
-                range: 'Chapters 8-10',
-                teaser: 'Once there is a representation, how is each word of the answer chosen? This is where it happens.',
-                purpose: 'To understand how scores turn into probabilities, how the next token is chosen, and how a full answer is built in a loop.',
-                stationChips: ['Logits', 'Softmax', 'Decoding', 'Looping until an answer'],
-                chapters: ['Logits & Softmax: From Scores to Probabilities', 'Decoding: Choosing the Next Token', 'Generation Loop: How an Answer Is Built to the End'],
-            },
-            reliability: {
-                title: 'Reliability, sources, and checking',
-                range: 'Chapters 11-13',
-                teaser: 'Why can an answer sound confident and still be wrong, and what helps ground it?',
-                purpose: 'To understand why confidence is not correctness, when an external source is needed, and how a self-check improves an answer.',
-                stationChips: ['A grounded answer', 'RAG', 'Self-check'],
-                chapters: ['Hallucinations: Why a Confident Answer Can Be Wrong', 'RAG & Grounding: How to Connect AI to Sources', 'Self-Check: Checking While Answering'],
-            },
-            learning: {
-                title: 'How a model learns and improves',
-                range: 'Chapters 14-16',
-                teaser: 'How does a model improve from a mistake, and what does it really remember about you?',
-                purpose: 'To understand how a model learns from a mistake, the difference between memorizing and understanding, and what really changes when you correct it.',
-                stationChips: ['Learning from a mistake', 'Memorizing vs generalizing'],
-                chapters: ['Learning from Mistakes: How a Model Improves from an Error', 'Evaluation & Generalization: Memorized or Understood', 'Does AI Learn From Me: Does It Learn From You?'],
-            },
-            agent: {
-                title: 'From Chat to Agent',
-                range: 'Chapters 17-19',
-                teaser: 'What happens when the model not only answers, but also acts?',
-                purpose: 'To understand what changes when a system around the model chooses a tool, checks risk, asks for approval, or stops.',
-                stationChips: ['A layer around the engine', 'Guardrails'],
-                chapters: ['Chat to Agent: When a Question Becomes a Task', 'Guardrails: Risk, Permissions, Approval, and Stopping', 'Full Trace: One Prompt, Every Station'],
-            },
-        },
-    },
-
     // ── Call to action (the link target href stays in the view layer) ──
+    scopeSentence: 'During the course, we will follow the path from the request through response generation to reliability, improvement, and controlled action with tools.',
+
     cta: {
         eyebrow: 'Next step',
-        title: 'Next step: the transparent chat',
-        body: 'Write a simple request, and watch how the engine begins to interpret, rank, and decide.',
-        button: 'Start the transparent chat',
+        title: 'Now we begin with the first step',
+        body: 'You have seen the big picture. You do not need to remember every station yet. In Chapter 1, we will open the transparent chat together.',
+        button: 'Start Chapter 1',
     },
 
     // ── Read-aloud control (Web Speech API). Labels only, user-triggered. ──

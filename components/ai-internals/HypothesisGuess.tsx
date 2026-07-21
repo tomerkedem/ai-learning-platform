@@ -14,7 +14,7 @@
 // מקלדת מובנית וטבעת פוקוס גלויה. reduced-motion: בלי זוהר מונפש, רק מעבר מיידי.
 
 import React, { useContext, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { HelpCircle, Eye, Lock, Database, Check } from 'lucide-react';
 import { GuessInvite, GuessVerdict } from './GuessVerdict';
 import { SpeakButton } from './SpeakButton';
@@ -92,12 +92,16 @@ function stateClasses(state: CardState, reduce: boolean): string {
     }
 }
 
-export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessContent; dir: Direction; bonus?: React.ReactNode }> = ({ reduce, content, dir, bonus }) => {
+export const HypothesisGuess: React.FC<{
+    reduce: boolean;
+    content: QuickGuessContent;
+    dir: Direction;
+    onFeedbackNarration?: (text: string | null) => void;
+}> = ({ reduce, content, dir, onFeedbackNarration }) => {
     // במסך מלא יש רוחב: ארבע ההשערות עוברות לשורה אחת, הכרטיס מתרחב, והכותרת גדלה.
     const expanded = useContext(ExpandableLabContext);
     const [chosenId, setChosenId] = useState<string | null>(null);
     const [revealed, setRevealed] = useState(false); // נחשף ההסבר המדויק אחרי בחירה שגויה
-    const [bonusAccepted, setBonusAccepted] = useState(false); // הבונוס נפתח רק אחרי שהלומד מאשר
 
     const chosen = content.hypotheses.find((h) => h.id === chosenId) ?? null;
     const chosenCorrect = !!chosen?.correct;
@@ -110,7 +114,15 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
         return 'dim';
     };
 
-    const reset = () => { setChosenId(null); setRevealed(false); setBonusAccepted(false); };
+    const announce = (h: Hypothesis) => {
+        const correction = h.correct ? content.correctBody : h.whyWrong;
+        onFeedbackNarration?.([h.title, h.concept, h.status ?? content.wrongLead, h.whyTempting, correction]
+            .filter(Boolean).join('. '));
+    };
+    const reset = () => {
+        setChosenId(null); setRevealed(false);
+        onFeedbackNarration?.(null);
+    };
 
     return (
         <div
@@ -123,21 +135,6 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                 {/* מנטור הזמנה: משותף לכל הפרקים - דמות חושבת ממורכזת, נעלמת אחרי הבחירה. */}
                 {!chosen && <GuessInvite pose="think" width={243} />}
 
-                {/* רק אחרי שהלומד מאשר את הבונוס הוא מחליף את הניחוש הראשוני *במיקומו* (לא מתחתיו). */}
-                <AnimatePresence mode="wait" initial={false}>
-                {chosenCorrect && bonusAccepted ? (
-                    <motion.div
-                        key="bonus"
-                        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={reduce ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                        {/* הבונוס לבדו: אישור ההצלחה כבר הוצג בכרטיס עם כפתור הבונוס, בלי לחזור עליו כאן. */}
-                        {bonus}
-                    </motion.div>
-                ) : (
-                    <motion.div key="guess" initial={false} exit={{ opacity: 0 }} transition={reduce ? { duration: 0 } : { duration: 0.25 }}>
                 <div className="text-center">
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-400">
                         <HelpCircle size={14} /> {content.eyebrow}
@@ -159,7 +156,9 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                             <div key={h.id} className="relative">
                             <motion.button
                                 type="button"
-                                onClick={() => { setChosenId(h.id); setRevealed(false); setBonusAccepted(false); }}
+                                onClick={() => {
+                                    setChosenId(h.id); setRevealed(false); announce(h);
+                                }}
                                 aria-pressed={selected}
                                 aria-label={`${h.title}. ${h.concept}`}
                                 whileHover={reduce ? undefined : { scale: 1.015 }}
@@ -195,6 +194,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                                 <div>
                                     <div className="text-base font-black text-white">{h.title}</div>
                                     <p className="mt-1 text-sm leading-relaxed text-slate-300">{h.concept}</p>
+                                    {selected && <span className="mt-2 inline-flex rounded-full border border-current/30 px-2 py-0.5 text-xs font-black text-current">{h.status ?? content.wrongLead}</span>}
                                 </div>
                             </motion.button>
                             {/* הקראת הכרטיס: אח של כפתור-הכרטיס (button בתוך button אסור) */}
@@ -204,7 +204,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                     })}
                 </div>
 
-                {/* התגובה המשותפת: הצלחה חוגגת עם הזמנה לבונוס (אישור מפורש), או טעות תומכת עם חשיפה ובחירה מחדש. */}
+                {/* התגובה המשותפת: ההסבר הקרוב ביותר או משוב תומך עם חשיפה ובחירה מחדש. */}
                 {chosen && (
                     <GuessVerdict
                         key={chosenId ?? undefined}
@@ -215,8 +215,7 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                         correctLead={content.correctLead}
                         correctExplain={content.correctBody}
                         correctInsight={content.correctBridge}
-                        continueCta={chosenCorrect ? { label: content.bonusStart, onClick: () => setBonusAccepted(true) } : undefined}
-                        wrongTitle={content.wrongLead}
+                        wrongTitle={chosen.status ?? content.wrongLead}
                         wrongExplain={chosen.whyTempting ?? ''}
                         wrongExplainMore={chosen.whyWrong}
                         reveal={correctCard ? { button: content.revealCorrect, title: `${correctCard.title}: ${content.correctLead}`, body: content.correctBody, revealed, onReveal: () => setRevealed(true) } : undefined}
@@ -224,9 +223,6 @@ export const HypothesisGuess: React.FC<{ reduce: boolean; content: QuickGuessCon
                         retryLabel={content.retry}
                     />
                 )}
-                    </motion.div>
-                )}
-                </AnimatePresence>
             </div>
         </div>
     );

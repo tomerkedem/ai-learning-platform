@@ -28,9 +28,10 @@ export const introRoadmap = {
     stations: {
         // Zona A - del texto a unidades de trabajo
         request: {
-            title: 'Entra la solicitud',
+            title: 'Preparación de la entrada',
             term: 'Prompt',
             explanation: 'La persona escribe una solicitud, que entra junto con el contexto y las instrucciones del sistema.',
+            detail: 'El producto prepara la entrada actual con la solicitud, las instrucciones del sistema y el contexto seleccionado. El historial, la memoria, RAG y los resultados de herramientas son opcionales; no entra toda la información guardada.',
         },
         tokenize: {
             title: 'División en tokens',
@@ -56,17 +57,20 @@ export const introRoadmap = {
         context: {
             title: 'Ventana de contexto',
             term: 'Context Window',
+            detail: 'La ventana de contexto contiene solo lo disponible para la ejecución actual. No es necesariamente todo el historial guardado, la memoria ni la retención.',
             explanation: 'El modelo tiene en cuenta la conversación, las instrucciones y los tokens ya generados.',
         },
         // Zona C - el cálculo del contexto
         attention: {
             title: 'Atención al contexto',
             term: 'Attention',
+            detail: 'Attention calcula una relevancia dinámica que puede cambiar según la capa, la posición y el paso de generación. No es una importancia permanente de las palabras.',
             explanation: 'Los tokens revisan qué partes del contexto importan ahora.',
         },
         mix: {
             title: 'Mezcla de información',
             term: 'Feed-Forward',
+            detail: 'Una red feed-forward procesa cada posición en cada capa y desarrolla las características de su representación.',
             explanation: 'Cada token se enriquece con una red feed-forward. En los modelos grandes solo unos pocos "expertos" de entre muchos se ejecutan por token.',
         },
         layers: {
@@ -77,27 +81,32 @@ export const introRoadmap = {
         state: {
             title: 'Representación interna actualizada',
             term: 'Hidden State',
+            detail: 'Cada posición tiene una representación interna actualizada que combina contexto relevante y sigue cambiando entre capas.',
             explanation: 'Se forma un estado interno que resume el contexto en el momento actual.',
         },
         // Zona D - de la representación a la respuesta
         logits: {
             title: 'Puntuaciones en bruto',
             term: 'Logits',
+            detail: 'Los logits son puntuaciones brutas para los posibles tokens siguientes. No son probabilidades.',
             explanation: 'El modelo asigna puntuaciones en bruto a los posibles siguientes tokens.',
         },
         softmax: {
             title: 'De la puntuación a la probabilidad',
             term: 'Softmax',
+            detail: 'Softmax convierte las puntuaciones en una distribución de probabilidad. No elige el token.',
             explanation: 'Las puntuaciones se convierten en una distribución de probabilidad.',
         },
         decoding: {
             title: 'Elección del siguiente token',
             term: 'Decoding',
+            detail: 'La decodificación elige o muestrea un token usando la distribución y sus reglas. No siempre se selecciona el token de mayor probabilidad.',
             explanation: 'Las reglas de decodificación determinan qué siguiente token se elige en la práctica.',
         },
         loop: {
             title: 'Un bucle hasta la respuesta',
             term: 'Autoregression',
+            detail: 'El token elegido se añade y el proceso avanza al siguiente paso. Las implementaciones prácticas pueden reutilizar estado ya calculado.',
             explanation: 'El token elegido se suma a la respuesta, y luego todo vuelve a ejecutarse.',
         },
     },

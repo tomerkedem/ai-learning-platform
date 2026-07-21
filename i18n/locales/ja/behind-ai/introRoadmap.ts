@@ -28,9 +28,10 @@ export const introRoadmap = {
     stations: {
         // ゾーンA - テキストから処理単位へ
         request: {
-            title: 'リクエストが入る',
+            title: '入力を組み立てる',
             term: 'Prompt',
             explanation: 'ユーザーがリクエストを書き、文脈とシステム指示とともに入ってきます。',
+            detail: '製品は、ユーザーのリクエスト、システム指示、選択された現在の文脈から入力を組み立てます。履歴、メモリ、RAG、ツール結果は任意であり、保存情報のすべてがモデルに入るわけではありません。',
         },
         tokenize: {
             title: 'トークンへの分割',
@@ -56,17 +57,20 @@ export const introRoadmap = {
         context: {
             title: '文脈ウィンドウ',
             term: 'Context Window',
+            detail: '文脈窓に入るのは現在の実行で利用できる内容だけです。保存された会話履歴、メモリ、保持情報のすべてではありません。',
             explanation: 'モデルは、会話、指示、そしてすでに生成されたトークンを考慮します。',
         },
         // ゾーンC - 文脈の計算
         attention: {
             title: '文脈への注意',
             term: 'Attention',
+            detail: 'Attentionは現在の計算に対する動的な関連性を計算します。層、位置、生成ステップで変化し、単語の永続的な重要度ではありません。',
             explanation: 'トークンは、いま文脈のどの部分が重要かを確認します。',
         },
         mix: {
             title: '情報の混ぜ合わせ',
             term: 'Feed-Forward',
+            detail: 'feed-forwardネットワークが各層の各位置を処理し、その表現の特徴を発展させます。',
             explanation: '各トークンはfeed-forwardネットワークで強化されます。大きなモデルでは、多くのうち数人の「専門家」だけがトークンごとに動きます。',
         },
         layers: {
@@ -77,27 +81,32 @@ export const introRoadmap = {
         state: {
             title: '最新の内部表現',
             term: 'Hidden State',
+            detail: '各位置には、関連する文脈を組み合わせた更新済みの内部表現があり、層を進むたびに変化します。',
             explanation: '現在の時点の文脈を要約する内部状態が形づくられます。',
         },
         // ゾーンD - 表現から回答へ
         logits: {
             title: '生のスコア',
             term: 'Logits',
+            detail: 'Logitsは次のトークン候補に対する生のスコアであり、確率ではありません。',
             explanation: 'モデルは、次の候補となるトークンに生のスコアを与えます。',
         },
         softmax: {
             title: 'スコアから確率へ',
             term: 'Softmax',
+            detail: 'Softmaxはスコアを確率分布へ変換しますが、トークンを選びません。',
             explanation: 'スコアは確率分布に変わります。',
         },
         decoding: {
             title: '次のトークンの選択',
             term: 'Decoding',
+            detail: 'Decodingは分布と規則を使ってトークンを選択またはサンプリングします。最高確率の候補が常に選ばれるわけではありません。',
             explanation: 'デコーディングの規則が、実際にどの次のトークンを選ぶかを決めます。',
         },
         loop: {
             title: '回答までのループ',
             term: 'Autoregression',
+            detail: '選ばれたトークンを追加し、次のトークンのステップへ進みます。実際の実装では、以前に計算した状態を再利用することがあります。',
             explanation: '選ばれたトークンが回答に加わり、そしてすべてがもう一度動きます。',
         },
     },

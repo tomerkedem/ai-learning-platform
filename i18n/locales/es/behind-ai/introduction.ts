@@ -44,101 +44,71 @@ export const introduction = {
         eyebrow: 'Adivinanza rápida · Cuatro explicaciones que compiten',
         question: '¿Qué explicación está más cerca de lo que ocurre en el medio?',
         hint: 'Elige la explicación que te parezca más cercana a la realidad. Aquí no hay puntuación, solo la elección de un modelo mental.',
-        correctTitle: '¡Exacto!',
-        correctLead: 'Esta es la imagen más precisa.',
-        correctBody: 'El modelo trabaja con tokens, calcula el contexto, elige el siguiente token y luego repite el proceso.',
+        correctTitle: 'La explicación más cercana',
+        correctLead: 'Es el mapa de aprendizaje más cercano, aunque sigue siendo una simplificación.',
+        correctBody: 'El modelo trabaja con tokens y representaciones numéricas, calcula el contexto y luego elige o muestrea el siguiente token según la distribución y las reglas de decodificación.',
         correctBridge: 'Eso es exactamente lo que vamos a abrir ahora, en el mapa de estaciones que está justo abajo.',
         wrongLead: 'Es un error de razonamiento común, pero no es lo que ocurre en realidad.',
         retry: 'Elegir de nuevo',
         revealCorrect: 'Mostrar la explicación precisa',
-        bonusStart: 'Ganaste un extra: dos intentos más',
 
         /** Text of the four hypotheses, by id. Structure (cue, correct) lives in the view layer. */
         hypotheses: {
             read: {
                 title: 'Lectura directa',
                 concept: 'El modelo lee la frase como una persona y arma una respuesta.',
+                status: 'Metáfora tentadora, pero incompleta',
                 whyTempting: 'Así leemos nosotros, por eso es natural suponer que el modelo también lo hace.',
                 whyWrong: 'El modelo no lee letras ni palabras como una persona. Trabaja con tokens y con números.',
             },
             rail: {
                 title: 'Un recorrido fijo',
                 concept: 'El modelo siempre pasa por el mismo número fijo de pasos, como una línea de montaje.',
+                status: 'Parcialmente correcto',
                 whyTempting: 'Resulta cómodo pensar en el modelo como una línea de montaje ordenada con un número de pasos conocido.',
-                whyWrong: 'Las etapas internas sí son fijas, pero el número de vueltas no: todo el recorrido vuelve a ejecutarse por cada token, hasta completar la respuesta.',
+                whyWrong: 'La arquitectura tiene una estructura de cálculo repetida, pero el contenido generado y el flujo del producto no son una ruta fija escrita de antemano.',
             },
             tokens: {
                 title: 'Un motor de tokens',
                 concept: 'El modelo divide el texto en tokens, calcula el contexto y genera una respuesta token tras token.',
+                status: 'La explicación más cercana',
+                whyTempting: 'Capta la idea central: la respuesta se genera de forma progresiva a partir de tokens y contexto.',
             },
             archive: {
                 title: 'Búsqueda en un repositorio',
                 concept: 'El modelo extrae una respuesta ya hecha de un repositorio.',
+                status: 'Incorrecto para explicar el modelo base',
                 whyTempting: 'Las respuestas suenan terminadas y pulidas, como si se hubieran extraído de un repositorio.',
-                whyWrong: 'No hay un repositorio de respuestas ya hechas. El modelo genera la respuesta token tras token en tiempo real.',
+                whyWrong: 'El modelo base normalmente no recupera una respuesta completa ya preparada. La genera de forma progresiva, aunque un producto puede añadir recuperación externa.',
             },
         },
     },
 
-    // ── Bonus: adivina el siguiente token (NextTokenGuess). Probabilidades en NEXT_TOKEN_META. ──
-    nextToken: {
-        eyebrow: 'Bonus · Sé el motor',
-        title: 'Adivina el siguiente token',
-        subtitle: 'El motor no elige la verdad. Elige el token más probable según lo que aprendió. Intenta pensar como él.',
-        guessLabel: '¿Qué token viene ahora?',
-        yourPick: 'Tu elección',
-        modelTop: 'Elección del motor',
-        matchTitle: '¡Pensaste como el motor!',
-        missTitle: 'El motor prefirió',
-        otherLabel: 'Todo lo demás',
-        roundLabel: 'Ronda',
-        ofLabel: 'de',
-        nextRound: 'Siguiente ronda',
-        restart: 'Empezar de nuevo',
-        closing: 'Así exactamente, token tras token, se construye cada respuesta que da el motor.',
-        // El orden de los tokens coincide con el orden de probabilidades en NEXT_TOKEN_META.
-        rounds: [
-            {
-                context: 'Estado del envío',
-                prefix: 'El último estado del paquete fue:',
-                tokens: ['entregado', 'enviado', 'en clasificación', 'recogido', 'devuelto'],
-                insight: 'El motor no sabe qué pasó con tu paquete. Elige la continuación más común que vio en un contexto así.',
-            },
-            {
-                context: 'Llamada de soporte',
-                prefix: 'El paquete no llegó. Llamé, y el agente dijo que lo',
-                tokens: ['siente', 'lamenta', 'entiende', 'espera', 'celebra'],
-                insight: 'Ambos sabemos que nadie lo "celebra" de verdad. El contexto empujó al motor hacia la continuación cortés y común.',
-            },
-        ],
-    },
-
     // ── Título del mapa de estaciones y la pista de apertura ──
     roadmapHeading: {
-        eyebrow: 'Abrimos el motor',
+        eyebrow: '14 estaciones dentro de la generación de una respuesta',
         title: 'Un mapa de las estaciones principales en el camino del texto a la respuesta',
-        subtitle: 'Bajo los dos pasos que se ven desde fuera funciona un recorrido completo. Estas son sus estaciones principales, de la solicitud a la respuesta.',
+        subtitle: 'Un mapa de aprendizaje de un modelo de lenguaje autorregresivo, desde la entrada preparada hasta la respuesta generada.',
         hint: 'Haz clic en una estación para mirar dentro: una explicación breve y un ejemplo.',
     },
 
     // ── La nota de honestidad bajo el mapa ──
     truthNote:
-        'Este es un mapa de aprendizaje, no una foto completa de cada cálculo. En un modelo real, dentro de cada estación ocurren muchas operaciones en paralelo, y el número exacto varía según el modelo, la longitud del contexto y la forma en que se ejecuta.',
+        'Este es un mapa simplificado de un modelo de lenguaje autorregresivo, no un registro completo ni una arquitectura universal. La recuperación, la memoria, las herramientas, la autoverificación y los guardrails son capacidades opcionales del sistema.',
 
 
     // ── Separación del Agent: el texto de la tarjeta y la demo en vivo (AgentLoop) ──
     agent: {
         // Forward-looking framing (the card now appears before the map) + transition to the map.
-        intro: 'Antes de abrir el modelo en profundidad, veamos un momento la diferencia entre Chat y Agent.',
-        transition: 'Ahora abrimos la caja del medio: qué ocurre en realidad dentro del modelo.',
+        intro: 'Un vistazo al futuro: ¿qué cambia cuando un Chat que responde se convierte en un Agent que puede actuar?',
         // Card copy, switches with the Chat/Agent toggle. "Agent" stays in English.
         card: {
             chat: {
                 eyebrow: 'Recorrido básico',
-                title: 'El Chat es entrada, modelo y una respuesta',
-                body: 'En modo Chat el modelo recibe una solicitud y devuelve una sola respuesta. Sin herramientas, sin acción en el mundo - solo entrada, modelo y respuesta.',
-                closing: 'El Chat se detiene en el momento en que la respuesta está lista. No ejecuta herramientas ni cambia nada fuera de la conversación.',
-                note: 'Este es exactamente el Transformer en sí: entra texto, sale texto.',
+                title: 'Ruta básica de Chat: solicitud, modelo y respuesta',
+                body: 'En este ejemplo simplificado, la solicitud pasa al modelo y este devuelve una respuesta sin ejecutar una acción externa.',
+                closing: 'Algunos productos de Chat añaden recuperación, memoria, herramientas, filtros u orquestación alrededor del modelo.',
+                note: 'Es una ruta simplificada, no una definición de todo producto Chat.',
             },
             agent: {
                 eyebrow: 'Una capa adicional',
@@ -172,8 +142,8 @@ export const introduction = {
                 in: { label: 'Entrada', hint: 'Tu solicitud entra en el sistema, y aquí empieza la ronda.' },
                 task: { label: 'Entiende la tarea', hint: '¿Cuál es el objetivo real de la solicitud?', intent: 'Resumir y enviar una respuesta' },
                 tool: { label: 'Elige una herramienta', hint: '¿Qué herramienta puede ayudar con la tarea?', tool: 'Lector de correo' },
-                risk: { label: 'Revisa el riesgo', hint: '¿La acción es sensible o necesita aprobación?', risk: 'Medio: enviar fuera del sistema' },
-                act: { label: 'Ejecuta la acción', hint: 'Ejecuta la herramienta y obtiene un resultado (Observation).', next: 'Ejecutando la herramienta' },
+                risk: { label: 'Pide aprobación', hint: 'Una acción externa se pausa para pedir aprobación cuando hace falta.' },
+                act: { label: 'Ejecuta la acción', hint: 'Ejecuta la herramienta y obtiene un resultado.', next: 'Ejecutando la herramienta' },
                 answer: { label: 'Devuelve una respuesta', hint: 'Resume, y a veces pide aprobación antes de enviar.', next: 'Esperando aprobación' },
             },
             chatStages: {
@@ -184,81 +154,14 @@ export const introduction = {
         },
     },
 
-    // ── Estructura del curso: 19 capítulos, 6 sistemas (CourseSystems) ──
-    systems: {
-        heading: {
-            eyebrow: 'El camino que sigue',
-            title: '19 capítulos que abren el motor, paso a paso',
-            summary: '19 capítulos, 6 sistemas, un motor que se abre de forma gradual',
-            subtitle: 'Esto no es un catálogo de capítulos. Es un recorrido: cada acto abre una parte distinta del motor, hasta que la imagen se conecta.',
-        },
-        labels: {
-            purpose: '¿Qué vas a descubrir?',
-            stations: 'Conceptos clave',
-            chapters: '¿A qué capítulos lleva esto?',
-            open: 'Abre la puerta',
-            startHere: 'Empieza aquí',
-        },
-        // The six systems, by id. Chapter numbers (n) and display order stay in the view layer,
-        // and chapter names (chapters) are a list of labels in the system's fixed order.
-        items: {
-            outside: {
-                title: 'La vista desde fuera: chat transparente y entrada',
-                range: 'Capítulos 1-2',
-                teaser: 'Detrás de "solicitud y respuesta" se esconde un recorrido completo. Aquí empiezas a verlo.',
-                purpose: 'Romper la ilusión de que el chat es solo solicitud y respuesta, y ver qué entra realmente en el modelo.',
-                stationChips: ['Entra la solicitud', 'Ventana de contexto'],
-                chapters: ['El chat transparente: el camino detrás de la respuesta', 'Model Input: qué entra realmente en el modelo'],
-            },
-            representations: {
-                title: 'Del texto a tokens y representaciones',
-                range: 'Capítulos 3-7',
-                teaser: '¿Cómo se convierte el texto en algo sobre lo que se puede calcular, y en significado? Aquí ocurre.',
-                purpose: 'Entender cómo el texto se convierte en tokens, representaciones numéricas, significado y el contexto con el que trabaja el modelo.',
-                stationChips: ['División en tokens', 'Embedding', 'Attention'],
-                chapters: ['Tokenization: cuando el texto se divide en tokens', 'Embeddings: de un número sin significado al significado', 'Semantic Space: el mapa de significado del modelo', 'Attention: qué importa ahora', 'Context Window: qué ve realmente el modelo ahora'],
-            },
-            generation: {
-                title: 'Cómo se construye una respuesta',
-                range: 'Capítulos 8-10',
-                teaser: 'Una vez que hay una representación, ¿cómo se elige cada palabra de la respuesta? Aquí ocurre.',
-                purpose: 'Entender cómo las puntuaciones se convierten en probabilidades, cómo se elige el siguiente token y cómo se construye una respuesta completa en un bucle.',
-                stationChips: ['Logits', 'Softmax', 'Decoding', 'Un bucle hasta la respuesta'],
-                chapters: ['Logits & Softmax: de puntuaciones a probabilidades', 'Decoding: elegir el siguiente token', 'Generation Loop: cómo se construye una respuesta hasta el final'],
-            },
-            reliability: {
-                title: 'Fiabilidad, fuentes y verificación',
-                range: 'Capítulos 11-13',
-                teaser: '¿Por qué una respuesta puede sonar segura y aun así estar equivocada, y qué ayuda a fundamentarla?',
-                purpose: 'Entender por qué la seguridad no es exactitud, cuándo hace falta una fuente externa y cómo una autoverificación mejora una respuesta.',
-                stationChips: ['Una respuesta fundamentada', 'RAG', 'Autoverificación'],
-                chapters: ['Hallucinations: por qué una respuesta segura puede estar equivocada', 'RAG & Grounding: cómo conectar la AI a fuentes', 'Self-Check: verificación propia mientras responde'],
-            },
-            learning: {
-                title: 'Cómo aprende y mejora un modelo',
-                range: 'Capítulos 14-16',
-                teaser: '¿Cómo mejora un modelo a partir de un error, y qué recuerda realmente de ti?',
-                purpose: 'Entender cómo un modelo aprende de un error, la diferencia entre memorizar y comprender, y qué cambia realmente cuando lo corriges.',
-                stationChips: ['Aprender de un error', 'Memorizar frente a generalizar'],
-                chapters: ['Learning from Mistakes: cómo mejora un modelo a partir de un error', 'Evaluation & Generalization: memorizar o comprender', 'Does AI Learn From Me: ¿aprende la AI de mí?'],
-            },
-            agent: {
-                title: 'Del Chat al Agent',
-                range: 'Capítulos 17-19',
-                teaser: '¿Qué ocurre cuando el modelo no solo responde, sino que también actúa?',
-                purpose: 'Entender qué cambia cuando un sistema alrededor del modelo elige una herramienta, revisa el riesgo, pide aprobación o se detiene.',
-                stationChips: ['Una capa alrededor del motor', 'Guardrails'],
-                chapters: ['Chat to Agent: cuando una pregunta se vuelve tarea', 'Guardrails: riesgo, permisos, aprobación y detención', 'Full Trace: un prompt, todas las estaciones'],
-            },
-        },
-    },
-
     // ── Llamado a la acción (el destino del enlace href queda en la capa de vista) ──
+    scopeSentence: 'Durante el curso seguiremos el camino desde la solicitud y la generación de la respuesta hasta la fiabilidad, la mejora y la acción controlada con herramientas.',
+
     cta: {
         eyebrow: 'Siguiente paso',
-        title: 'Siguiente paso: el chat transparente',
-        body: 'Escribe una solicitud simple y observa cómo el motor empieza a interpretar, puntuar y decidir.',
-        button: 'Empieza el chat transparente',
+        title: 'Ahora empezamos por el primer paso',
+        body: 'Ya viste la imagen general. Todavía no necesitas recordar todas las estaciones. En el capítulo 1 abriremos juntos el chat transparente.',
+        button: 'Empezar el capítulo 1',
     },
 
     // ── Control de lectura en voz alta (Web Speech API). Solo etiquetas, iniciado por el usuario. ──
