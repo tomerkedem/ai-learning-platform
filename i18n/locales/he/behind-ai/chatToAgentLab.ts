@@ -20,7 +20,10 @@
 // אין מקף ארוך (U+2014), אין מקף בינוני (U+2013), אין נקודה-פסיק בעברית ואין אזכור שנה.
 
 /** סוג המצב. מבני, קובע אייקון וגוון לתג ההרשאה, אינו מתורגם. */
-export type AgentModeType = 'chat' | 'askInfo' | 'toolLookup' | 'approval';
+export type AgentModeType = 'chat' | 'askInfo' | 'toolLookup' | 'approval' | 'toolError';
+
+/** סטטוס האימות. מבני, קובע אייקון וגוון, אינו מתורגם. */
+export type VerificationStatus = 'passed' | 'pending' | 'failed';
 
 /** כרטיס כלי ותוצאה, מוצג רק במצב שבו ה-Agent משתמש בכלי. */
 export interface AgentToolCard {
@@ -34,6 +37,26 @@ export interface AgentToolCard {
     resultLabel: string;
     /** שורות התוצאה (דוגמה לימודית, לא נתון אמיתי). */
     result: string[];
+}
+
+/** בלוק ניסיון חוזר וגבול, למצב שבו כלי נכשל. מראה שהניסיונות חסומים. */
+export interface AgentRetry {
+    /** תווית הבלוק, למשל "ניסיון חוזר". */
+    attemptsLabel: string;
+    /** שורות הניסיונות (ראשון נכשל, ניסיון חוזר אחד נכשל גם). */
+    attempts: string[];
+    /** הצהרת הגבול המפורשת, למשל "ניסיון חוזר אחד בלבד". */
+    limitNote: string;
+    /** למה עוצרים אחרי הגבול. */
+    stopReason: string;
+}
+
+/** שורת אימות: האם התקבלה תוצאה נצפית שאפשר לסמוך עליה. */
+export interface AgentVerification {
+    /** סטטוס מבני: אומת, ממתין, נכשל. קובע אייקון וגוון. */
+    status: VerificationStatus;
+    /** מה אומת, או למה עוד לא ניתן לאמת. */
+    text: string;
 }
 
 /** מצב אחד של המעבדה: איך אותה בקשה נענית, ובאיזה מסלול. */
@@ -54,12 +77,16 @@ export interface AgentMode {
     steps: string[];
     /** כרטיס כלי ותוצאה, כשהמצב כולל שימוש בכלי. */
     tool?: AgentToolCard;
+    /** בלוק ניסיון חוזר וגבול, כשהמצב הוא כשל כלי. אופציונלי. */
+    retry?: AgentRetry;
     /** תווית הפלט, למשל "התשובה" או "טיוטה ללקוח". */
     outputLabel: string;
-    /** הפלט של המצב: תשובה, שאלה, ניסוח או טיוטה. */
+    /** הפלט של המצב: תשובה, שאלה, ניסוח, טיוטה או דיווח כישלון. */
     output: string;
     /** הערה נוספת, למשל למה עוצרים לאישור. אופציונלי. */
     note?: string;
+    /** שורת אימות: האם התקבלה תוצאה נצפית שאפשר לסמוך עליה. אופציונלי. */
+    verification?: AgentVerification;
     /** השורה התחתונה של המצב. */
     takeaway: string;
 }
@@ -82,6 +109,10 @@ export interface ChatToAgentLabContent {
     stepsLabel: string;
     permissionLabel: string;
     takeawayLabel: string;
+    /** תווית שורת האימות. */
+    verificationLabel: string;
+    /** מילות סטטוס האימות, לפי סטטוס מבני. */
+    verificationStatusLabels: { passed: string; pending: string; failed: string };
     /** הבהרה שהדוגמאות לימודיות בלבד. */
     disclaimer: string;
     /** תוויות לקוראי מסך. */
@@ -91,9 +122,9 @@ export interface ChatToAgentLabContent {
 
 export const chatToAgentLab: ChatToAgentLabContent = {
     sectionEyebrow: 'Chat to Agent Lab',
-    sectionTitle: 'אותה בקשה, ארבעה מצבים',
+    sectionTitle: 'אותה בקשה, חמישה מצבים',
     sectionIntro:
-        'הבקשה קבועה: "בדוק מה קורה עם החבילה ועדכן את הלקוח." עברו בין ארבעת המצבים וראו איך אותה בקשה נענית פעם כתשובה, פעם כבקשת מידע, פעם בעזרת כלי, ופעם כטיוטה שנעצרת לאישור.',
+        'הבקשה קבועה: "בדוק מה קורה עם החבילה ועדכן את הלקוח." עברו בין חמשת המצבים וראו איך אותה בקשה נענית פעם כתשובה, פעם כבקשת מידע, פעם בעזרת כלי, פעם כטיוטה שנעצרת לאישור, ופעם ככלי שנכשל וה-Agent מדווח במקום להמציא.',
     heading: 'מצ\'אט ל-Agent',
     kicker: 'Chat to Agent Lab',
     requestLabel: 'הבקשה',
@@ -102,6 +133,8 @@ export const chatToAgentLab: ChatToAgentLabContent = {
     stepsLabel: 'מסלול הצעדים',
     permissionLabel: 'הרשאה',
     takeawayLabel: 'השורה התחתונה',
+    verificationLabel: 'אימות',
+    verificationStatusLabels: { passed: 'אומת', pending: 'ממתין', failed: 'נכשל' },
     disclaimer:
         'כל הדוגמאות כאן לימודיות בלבד. אין חיבור אמיתי למערכת מעקב, אין שליחת הודעה אמיתית, ואין הצגת שרשרת חשיבה נסתרת. המטרה היא להראות את ההבדל בין תשובה לבין מסלול משימה מבוקר, לא לתאר מוצר מסוים.',
     sr: {
@@ -150,7 +183,11 @@ export const chatToAgentLab: ChatToAgentLabContent = {
             },
             outputLabel: 'ה-Agent מנסח',
             output: 'על פי נתוני המעקב, החבילה בעיכוב ואין מועד הגעה מאושר.',
-            takeaway: 'Agent משתמש בתוצאת הכלי כדי להתקדם. הוא לא מנחש את הסטטוס.',
+            verification: {
+                status: 'passed',
+                text: 'התקבלה תוצאת מעקב תקינה, אז אפשר לבסס עליה את הניסוח.',
+            },
+            takeaway: 'קריאת הכלי הצליחה, אבל זה רק צעד אחד. המשימה כוללת גם עדכון ללקוח, ולכן היא עוד לא הושלמה.',
         },
         {
             id: 'approval',
@@ -162,8 +199,42 @@ export const chatToAgentLab: ChatToAgentLabContent = {
             steps: ['ניסוח טיוטה ללקוח', 'זיהוי פעולה רגישה', 'עצירה לאישור'],
             outputLabel: 'טיוטה ללקוח (לא נשלחה)',
             output: 'שלום, בדקנו את החבילה שלך. לפי המעקב היא בעיכוב, ועדיין אין מועד הגעה מאושר. נעדכן ברגע שיהיה מידע חדש.',
-            note: 'הטיוטה מוכנה, אבל השליחה לא בוצעה. פעולה מול לקוח אמיתי ממתינה לאישור שלכם.',
+            note: 'הטיוטה מוכנה, אבל השליחה לא בוצעה. המסלול המלא הוא טיוטה, בקשת אישור, ביצוע רק אחרי אישור, ואז אימות התוצאה. אם האישור נדחה, ה-Agent עוצר ולא שולח.',
+            verification: {
+                status: 'pending',
+                text: 'אין עדיין תוצאה לאמת, כי ההודעה לא נשלחה. האימות ימתין עד לאחר האישור והשליחה.',
+            },
             takeaway: 'Agent יכול להכין פעולה, אבל פעולה אמיתית ורגישה נעצרת לאישור. יכולת אינה הרשאה.',
+        },
+        {
+            id: 'toolError',
+            modeType: 'toolError',
+            control: 'Agent · תקלת כלי',
+            badgeLabel: 'כשל כלי, לא אומת',
+            title: 'הכלי נכשל, וה-Agent לא ממציא',
+            summary: 'הכלי לבדיקת מעקב מחזיר שגיאה זמנית. Agent טוב לא מציג סטטוס שלא קיבל.',
+            steps: ['בחירת כלי מעקב', 'קריאת שגיאה', 'ניסיון חוזר אחד', 'עצירה ודיווח'],
+            tool: {
+                name: 'כלי בדיקת מעקב',
+                inputLabel: 'קלט',
+                input: 'מספר מעקב 123456789',
+                resultLabel: 'תוצאה',
+                result: ['שגיאה: שירות המעקב אינו זמין כרגע'],
+            },
+            retry: {
+                attemptsLabel: 'ניסיון חוזר וגבול',
+                attempts: ['ניסיון ראשון: שגיאה, השירות לא זמין.', 'ניסיון חוזר אחד: שוב שגיאה.'],
+                limitNote: 'גבול: ניסיון חוזר אחד בלבד, לא ניסיונות בלי סוף.',
+                stopReason: 'הגבול הושג והשגיאה נמשכת, לכן ה-Agent עוצר במקום להמשיך לנסות.',
+            },
+            outputLabel: 'ה-Agent מדווח',
+            output: 'לא הצלחתי לאמת את סטטוס החבילה כרגע, כי כלי המעקב מחזיר שגיאה. לא אמציא סטטוס. אפשר לנסות שוב מאוחר יותר, או לבדוק את מספר המעקב.',
+            note: 'זו תקלת כלי, החלטת התכנון היא לעצור, והתוצאה הסופית היא שהמשימה לא הושלמה. ה-Agent לא מתיימר שכן.',
+            verification: {
+                status: 'failed',
+                text: 'לא התקבלה תוצאת מעקב תקינה אחרי הניסיון החוזר, אז אי אפשר לאמת את הסטטוס.',
+            },
+            takeaway: 'כשל בכלי אינו כישלון של ה-Agent, אבל הוא בטוח לא הצלחה. Agent טוב מדווח שלא אומת, במקום להמציא.',
         },
     ],
 };

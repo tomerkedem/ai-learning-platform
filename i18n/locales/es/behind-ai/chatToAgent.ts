@@ -53,23 +53,27 @@ export const chatToAgent = {
             },
             {
                 title: 'Que anade un agente',
-                body: 'Un agente envuelve al modelo en un bucle de tarea: objetivo, plan, elegir una herramienta, actuar o preguntar, revisar el resultado, y decidir el siguiente paso.',
+                body: 'Un agente envuelve al modelo en un bucle de tarea: objetivo, plan, elegir una herramienta, actuar o preguntar, revisar el resultado, y decidir el siguiente paso segun lo que regreso. Puede cambiar el plan segun el resultado, no solo ejecutar una lista fija.',
             },
             {
                 title: 'Herramientas',
-                body: 'Un agente puede usar herramientas solo cuando estan disponibles y permitidas: consulta de seguimiento, busqueda en documentos, redactar un borrador, enviar un mensaje y mas. Una herramienta amplia la capacidad, no hace al modelo mas inteligente. La forma estructurada de conectar un agente con herramientas y fuentes externas se llama MCP: da acceso controlado, no permiso para hacer todo, y siguen haciendo falta permisos, aprobacion y reglas de parada. No todo agente usa MCP, y no es la unica forma de conectar herramientas.',
+                body: 'Un agente puede usar herramientas solo cuando estan disponibles y permitidas: consulta de seguimiento, busqueda en documentos, redactar un borrador, enviar un mensaje y mas. Una herramienta tiene entradas, salidas y permisos, y tambien puede fallar. Una herramienta amplia la capacidad, no hace al modelo mas inteligente. La forma estructurada de conectar un agente con herramientas externas se llama MCP, y da acceso controlado, no permiso para hacer todo. No todo agente usa MCP.',
             },
             {
                 title: 'Informacion que falta',
                 body: 'Un buen agente no finge tener lo que falta. Si falta un numero de seguimiento, un permiso o una fuente, los pide en lugar de adivinar.',
             },
             {
-                title: 'Permiso y riesgo',
-                body: 'No toda accion es igual. Comprobar un estado es distinto de enviar un mensaje o borrar datos. Una accion de alto riesgo deberia pasar por aprobacion.',
+                title: 'Estado de la tarea',
+                body: 'El estado de la tarea sigue el avance: que pasos se ejecutaron, que devolvieron las herramientas, que espera aprobacion, y que sigue abierto. Esto no es memoria duradera. El estado de la tarea no se convierte automaticamente en memoria que se guarde mas alla de la conversacion actual.',
             },
             {
-                title: 'Un agente no es autonomia sin limites',
-                body: 'Un buen agente tiene limites: permisos, reglas de parada, un registro, puertas de aprobacion y valores por defecto seguros. Poder actuar no es permiso para actuar.',
+                title: 'Reintento y limite',
+                body: 'Si una herramienta falla por un error temporal, se puede intentar de nuevo, pero con un limite. Un buen agente se detiene cuando se alcanza el limite, cuando falta informacion o permiso, cuando la herramienta devuelve un error definitivo, o cuando el resultado ya esta verificado. No reintenta sin fin.',
+            },
+            {
+                title: 'Permiso, riesgo y limite',
+                body: 'No toda accion es igual. Comprobar un estado es distinto de enviar un mensaje o borrar datos. Una accion de alto riesgo se detiene para aprobacion, y si la aprobacion se deniega el agente se detiene y no actua. Poder actuar no es permiso para actuar, y una alta confianza tampoco es permiso.',
             },
         ],
     },
@@ -81,9 +85,9 @@ export const chatToAgent = {
         chatLabel: 'Ruta de chat',
         chat: 'Conviene comprobar el estado de seguimiento y luego redactar al cliente una actualizacion adecuada.',
         agentLabel: 'Ruta de agente',
-        agent: ['Entender el objetivo', 'Comprobar la informacion que falta', 'Elegir una herramienta', 'Revisar el resultado', 'Redactar un borrador', 'Detenerse para aprobacion'],
+        agent: ['Entender el objetivo', 'Comprobar informacion y permisos', 'Decidir el siguiente paso', 'Herramienta o pregunta', 'Resultado o error', 'Actualizar el estado de la tarea', 'Verificar e informar'],
         caption:
-            'La misma entrada puede llevar a una explicacion, o a una ruta de trabajo. La diferencia no es inteligencia, es si el sistema tiene herramientas, permisos y un estado de tarea.',
+            'Los pasos no son un guion fijo. Un flujo fijo sigue una secuencia predefinida, mientras que un agente puede cambiar el siguiente paso segun el resultado, el estado de la tarea o la respuesta del usuario: continuar, reintentar dentro de un limite, pedir aprobacion, o detenerse. Usar una herramienta por si solo no convierte un sistema en agente, y una accion sensible aun se detiene para aprobacion.',
     },
 
     guess: {
@@ -145,7 +149,7 @@ export const chatToAgent = {
     insight: {
         title: 'El punto clave del capitulo',
         lead: 'La diferencia no es que el agente sea mas inteligente.',
-        body: 'La diferencia es que el sistema alrededor del modelo le da una ruta de trabajo: herramientas, permisos, una memoria de tarea y comprobaciones de parada. Sin eso, incluso una respuesta muy larga sigue siendo solo una respuesta.',
+        body: 'La diferencia es que el sistema alrededor del modelo le da una ruta de trabajo: herramientas, permisos, un estado de tarea y comprobaciones de parada. Sin eso, incluso una respuesta muy larga sigue siendo solo una respuesta.',
     },
 
     misconception: {
@@ -181,7 +185,7 @@ export const chatToAgent = {
             'Salida esperada: di en que formato quieres el resultado.',
         ],
         caveat:
-            'Un agente no actua solo sin limites. Incluso cuando tiene herramientas, una accion real y sensible necesita aprobacion y control. Una definicion clara de objetivo, limites y aprobacion es lo que hace segura una tarea para un agente.',
+            'Un agente no actua solo sin limites. Una llamada a una herramienta que funciono solo significa que un paso termino, no que toda la tarea este hecha. Si el objetivo incluye actualizar al cliente, la tarea termina solo despues de la aprobacion, el envio, y la verificacion de que el envio funciono. Si la aprobacion se deniega, el agente se detiene. Una definicion clara de objetivo, limites y aprobacion es lo que hace segura una tarea para un agente.',
     },
 
     bridge: {

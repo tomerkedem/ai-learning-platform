@@ -23,10 +23,10 @@ import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
     MessageSquare, HelpCircle, Wrench, ShieldCheck, ListChecks, Lightbulb,
-    ArrowLeft, ArrowRight, type LucideIcon,
+    ArrowLeft, ArrowRight, AlertTriangle, RotateCw, CheckCircle2, Clock, type LucideIcon,
 } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
-import type { ChatToAgentLabContent, AgentModeType } from '@/i18n/locales/he/behind-ai/chatToAgentLab';
+import type { ChatToAgentLabContent, AgentModeType, VerificationStatus } from '@/i18n/locales/he/behind-ai/chatToAgentLab';
 import { DUR } from './motionTokens';
 import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
@@ -44,6 +44,14 @@ const MODE_TONE: Record<AgentModeType, { Icon: LucideIcon; badge: string; step: 
     askInfo: { Icon: HelpCircle, badge: 'border-amber-400/50 bg-amber-950/25 text-amber-100', step: 'border-amber-500/30 bg-amber-950/15 text-amber-100', dot: 'bg-amber-400' },
     toolLookup: { Icon: Wrench, badge: 'border-teal-400/50 bg-teal-950/25 text-teal-100', step: 'border-teal-500/30 bg-teal-950/15 text-teal-100', dot: 'bg-teal-400' },
     approval: { Icon: ShieldCheck, badge: 'border-rose-400/50 bg-rose-950/25 text-rose-100', step: 'border-rose-500/30 bg-rose-950/15 text-rose-100', dot: 'bg-rose-400' },
+    toolError: { Icon: AlertTriangle, badge: 'border-orange-400/50 bg-orange-950/25 text-orange-100', step: 'border-orange-500/30 bg-orange-950/15 text-orange-100', dot: 'bg-orange-400' },
+};
+
+/** אייקון וגוון לכל סטטוס אימות. מבני, נגזר מ-VerificationStatus. */
+const VERIFY_TONE: Record<VerificationStatus, { Icon: LucideIcon; cls: string }> = {
+    passed: { Icon: CheckCircle2, cls: 'border-emerald-500/30 bg-emerald-950/15 text-emerald-100' },
+    pending: { Icon: Clock, cls: 'border-amber-500/30 bg-amber-950/15 text-amber-100' },
+    failed: { Icon: AlertTriangle, cls: 'border-rose-500/30 bg-rose-950/15 text-rose-100' },
 };
 
 export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speechLocale }) => {
@@ -56,14 +64,19 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
     const tone = MODE_TONE[active.modeType];
     const BadgeIcon = tone.Icon;
 
-    // הקראת מצב המעבדה: הבקשה, מסלול הצעדים, הכלי אם יש, הפלט, ההערה, והשורה התחתונה.
+    // הקראת מצב המעבדה: הבקשה, מסלול הצעדים, הכלי אם יש, החלטת הניסיון החוזר, הפלט,
+    // ההערה, שורת האימות, והשורה התחתונה. מכסה מטרה, פעולה, תוצאה או שגיאה, ניסיון
+    // חוזר, מצב האישור, אימות ותוצאה סופית.
+    const verify = active.verification;
     const stateSpeech = speakJoin(
         `${data.heading}. ${data.requestLabel}: ${data.request}`,
         `${active.badgeLabel}. ${active.title}. ${active.summary}`,
         `${data.stepsLabel}: ${active.steps.join(', ')}`,
         active.tool && `${active.tool.name}. ${active.tool.resultLabel}: ${active.tool.result.join(', ')}`,
+        active.retry && `${active.retry.attemptsLabel}: ${active.retry.attempts.join(' ')} ${active.retry.limitNote} ${active.retry.stopReason}`,
         `${active.outputLabel}: ${active.output}`,
         active.note,
+        verify && `${data.verificationLabel}: ${data.verificationStatusLabels[verify.status]}. ${verify.text}`,
         `${data.takeawayLabel}: ${active.takeaway}`,
     );
 
@@ -89,7 +102,7 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
 
             {/* ── בורר המצבים ── */}
             <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-slate-400">{data.modeSelectLabel}</div>
-            <div className="mb-4 grid grid-cols-2 gap-2 lg:grid-cols-4" role="group" aria-label={data.sr.modeGroup}>
+            <div className="mb-4 grid grid-cols-2 gap-2 lg:grid-cols-5" role="group" aria-label={data.sr.modeGroup}>
                 {data.modes.map((m) => {
                     const activeBtn = m.id === modeId;
                     const { Icon } = MODE_TONE[m.modeType];
@@ -176,6 +189,25 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
                     </div>
                 )}
 
+                {/* ניסיון חוזר וגבול, רק כשהכלי נכשל. מבחין בין תקלת כלי, החלטת התכנון והגבול. */}
+                {active.retry && (
+                    <div className="rounded-xl border border-orange-500/30 bg-orange-950/15 p-3">
+                        <div className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-orange-200">
+                            <RotateCw size={13} className="text-orange-300" aria-hidden /> {active.retry.attemptsLabel}
+                        </div>
+                        <ul className="space-y-1">
+                            {active.retry.attempts.map((row) => (
+                                <li key={row} className="flex items-start gap-2 text-[13px] leading-relaxed text-slate-200">
+                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-400" aria-hidden />
+                                    <span>{row}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <p className="mt-2 text-[13px] font-bold leading-relaxed text-orange-100">{active.retry.limitNote}</p>
+                        <p className="mt-1 text-[13px] leading-relaxed text-slate-300">{active.retry.stopReason}</p>
+                    </div>
+                )}
+
                 {/* הפלט של המצב */}
                 <div className={`rounded-xl border p-3 ${tone.badge}`}>
                     <div className="mb-1.5 flex items-center justify-between gap-2">
@@ -189,6 +221,22 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
                         <p className="mt-2 border-t border-white/10 pt-2 text-[13px] leading-relaxed text-slate-300">{active.note}</p>
                     )}
                 </div>
+
+                {/* שורת האימות: האם התקבלה תוצאה נצפית שאפשר לסמוך עליה. */}
+                {verify && (() => {
+                    const vTone = VERIFY_TONE[verify.status];
+                    const VIcon = vTone.Icon;
+                    return (
+                        <div className={`rounded-xl border p-3 ${vTone.cls}`}>
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider">
+                                <VIcon size={14} aria-hidden />
+                                <span dir={dir}>{data.verificationLabel}</span>
+                                <span className="font-black">{data.verificationStatusLabels[verify.status]}</span>
+                            </div>
+                            <p className="mt-1.5 text-[13px] leading-relaxed text-slate-200">{verify.text}</p>
+                        </div>
+                    );
+                })()}
 
                 {/* השורה התחתונה */}
                 <div className="rounded-xl border border-teal-500/30 bg-slate-950/40 p-3.5">

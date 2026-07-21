@@ -42,7 +42,7 @@ export const chatToAgentQuiz = {
                 'They remove the need for information from the user',
             ],
             explanation:
-                'A tool such as a tracking lookup or a document search extends what the system can do beyond writing text. But a tool works only when it is available and allowed, and it does not make the model smarter and does not guarantee the answer is correct.',
+                'A tool such as a tracking lookup or a document search extends what the system can do beyond writing text. But a tool works only when it is available and allowed, it can also fail, and it does not make the model smarter and does not guarantee the answer is correct. A tool call that succeeded is one step, not the end of the task.',
         },
         3: {
             question: 'The agent does not have the tracking number needed to check the package. What is the right step?',
@@ -64,7 +64,7 @@ export const chatToAgentQuiz = {
                 'Because it has no permission to write text',
             ],
             explanation:
-                'Preparing a draft is one thing, sending it to a real customer is another. An action that changes something in the world or reaches a customer is sensitive, and the ability to do it is not permission to do it. Stopping for approval is the responsible step.',
+                'Preparing a draft is one thing, sending it to a real customer is another. An action that changes something in the world or reaches a customer is sensitive, and the ability to do it is not permission to do it. The full pattern is draft, approval, then execute and verify the result. If approval is denied, the agent stops and does not send.',
         },
         5: {
             question: 'Which instruction is the safest to give an agent handling a package?',

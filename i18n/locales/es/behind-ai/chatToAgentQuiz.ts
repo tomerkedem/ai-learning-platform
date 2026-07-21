@@ -43,7 +43,7 @@ export const chatToAgentQuiz = {
                 'Eliminan la necesidad de informacion del usuario',
             ],
             explanation:
-                'Una herramienta como una consulta de seguimiento o una busqueda en un documento amplia lo que el sistema puede hacer mas alla de redactar texto. Pero una herramienta funciona solo cuando esta disponible y permitida, y no hace al modelo mas inteligente ni garantiza que la respuesta sea correcta.',
+                'Una herramienta como una consulta de seguimiento o una busqueda en un documento amplia lo que el sistema puede hacer mas alla de redactar texto. Pero una herramienta funciona solo cuando esta disponible y permitida, tambien puede fallar, y no hace al modelo mas inteligente ni garantiza que la respuesta sea correcta. Una llamada a una herramienta que funciono es un paso, no el final de la tarea.',
         },
         3: {
             question: 'El agente no tiene el numero de seguimiento necesario para comprobar el paquete. Cual es el paso correcto?',
@@ -65,7 +65,7 @@ export const chatToAgentQuiz = {
                 'Porque no tiene permiso para redactar texto',
             ],
             explanation:
-                'Preparar un borrador es una cosa, enviarlo a un cliente real es otra. Una accion que cambia algo en el mundo o llega a un cliente es sensible, y la capacidad de hacerlo no es permiso para hacerlo. Detenerse para aprobacion es el paso responsable.',
+                'Preparar un borrador es una cosa, enviarlo a un cliente real es otra. Una accion que cambia algo en el mundo o llega a un cliente es sensible, y la capacidad de hacerlo no es permiso para hacerlo. El patron completo es redactar, aprobacion, y luego ejecutar y verificar el resultado. Si la aprobacion se deniega, el agente se detiene y no envia.',
         },
         5: {
             question: 'Que instruccion es la mas segura para dar a un agente que gestiona un paquete?',

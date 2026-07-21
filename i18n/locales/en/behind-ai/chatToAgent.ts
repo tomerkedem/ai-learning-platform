@@ -52,23 +52,27 @@ export const chatToAgent = {
             },
             {
                 title: 'What an agent adds',
-                body: 'An agent wraps the model in a task loop: goal, plan, choose a tool, act or ask, check the result, and decide on the next step.',
+                body: 'An agent wraps the model in a task loop: goal, plan, choose a tool, act or ask, check the result, and decide on the next step based on what came back. It can change the plan according to the result, not just run a fixed list.',
             },
             {
                 title: 'Tools',
-                body: 'An agent can use tools only when they are available and allowed: tracking lookup, document search, drafting, sending a message, and more. A tool extends capability, it does not make the model smarter. The structured way to connect an agent to external tools and data sources is called MCP: it gives controlled access, not permission to do everything, and permissions, approval, and stopping rules still apply. Not every agent uses MCP, and it is not the only way to connect tools.',
+                body: 'An agent can use tools only when they are available and allowed: tracking lookup, document search, drafting, sending a message, and more. A tool has inputs, outputs, and permissions, and it can also fail. A tool extends capability, it does not make the model smarter. The structured way to connect an agent to external tools is called MCP, and it gives controlled access, not permission to do everything. Not every agent uses MCP.',
             },
             {
                 title: 'Missing information',
                 body: 'A good agent does not pretend it has what is missing. If a tracking number, permission, or source is missing, it asks for them instead of guessing.',
             },
             {
-                title: 'Permission and risk',
-                body: 'Not every action is equal. Checking a status is different from sending a message or deleting data. A high risk action should go through approval.',
+                title: 'Task state',
+                body: 'Task state tracks the progress: which steps ran, what tools returned, what is waiting for approval, and what is still open. This is not lasting memory. Task state does not automatically become memory that is kept beyond the current conversation.',
             },
             {
-                title: 'An agent is not unlimited autonomy',
-                body: 'A good agent has boundaries: permissions, stopping rules, an audit trail, approval gates, and safe defaults. Being able to act is not permission to act.',
+                title: 'Retry and limit',
+                body: 'If a tool fails because of a temporary error, you can try again, but with a limit. A good agent stops when the limit is reached, when information or permission is missing, when the tool returns a terminal error, or when the result is already verified. It does not retry forever.',
+            },
+            {
+                title: 'Permission, risk, and limit',
+                body: 'Not every action is equal. Checking a status is different from sending a message or deleting data. A high risk action stops for approval, and if approval is denied the agent stops and does not act. Being able to act is not permission to act, and high confidence is not permission either.',
             },
         ],
     },
@@ -80,9 +84,9 @@ export const chatToAgent = {
         chatLabel: 'Chat path',
         chat: 'You should check the tracking status and then write the customer a suitable update.',
         agentLabel: 'Agent path',
-        agent: ['Understand the goal', 'Check for missing info', 'Choose a tool', 'Check the result', 'Draft a message', 'Stop for approval'],
+        agent: ['Understand the goal', 'Check info and permissions', 'Decide the next step', 'Tool or question', 'Result or error', 'Update task state', 'Verify and report'],
         caption:
-            'The same input can lead to an explanation, or to a work path. The difference is not intelligence, it is whether the system has tools, permissions, and a task state.',
+            'The steps are not a fixed script. A fixed workflow follows a preset sequence, while an agent can change the next step according to the result, the task state, or the user response: continue, retry within a limit, request approval, or stop. Using a tool alone does not make a system an agent, and a sensitive action still stops for approval.',
     },
 
     guess: {
@@ -144,7 +148,7 @@ export const chatToAgent = {
     insight: {
         title: 'The key point of this chapter',
         lead: 'The difference is not that the agent is smarter.',
-        body: 'The difference is that the system around the model gives it a work path: tools, permissions, a task memory, and stopping checks. Without that, even a very long answer is still just an answer.',
+        body: 'The difference is that the system around the model gives it a work path: tools, permissions, a task state, and stopping checks. Without that, even a very long answer is still just an answer.',
     },
 
     misconception: {
@@ -180,7 +184,7 @@ export const chatToAgent = {
             'Expected output: say in what format you want the result.',
         ],
         caveat:
-            'An agent does not act alone without limits. Even when it has tools, a real and sensitive action needs approval and control. A clear definition of goal, boundaries, and approval is what makes a task for an agent safe.',
+            'An agent does not act alone without limits. A tool call that succeeded only means one step finished, not that the whole task is done. If the goal includes updating the customer, the task ends only after approval, sending, and verifying that the send succeeded. If approval is denied, the agent stops. A clear definition of goal, boundaries, and approval is what makes a task for an agent safe.',
     },
 
     bridge: {
