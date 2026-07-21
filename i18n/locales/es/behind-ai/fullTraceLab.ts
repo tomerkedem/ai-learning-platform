@@ -1,139 +1,29 @@
-// i18n/locales/es/behind-ai/fullTraceLab.ts
-//
-// Datos en espanol (es, neutro internacional, LTR) del "Full Trace Lab" del Capitulo 19
-// ("Full Trace: un prompt, todas las estaciones"), el capitulo de cierre. El hebreo es la
-// fuente de verdad y define el tipo (FullTraceLabContent).
-//
-// Idea central: un unico prompt determinista, "Revisa que pasa con el paquete 123456789,
-// redacta una actualizacion para el cliente y no la envies sin mi aprobacion", recorre
-// cinco etapas agrupadas, desde la entrada hasta un resultado controlado.
-//
-// Totalmente determinista: sin azar, sin llamada real a un modelo, sin sistema real de
-// seguimiento, sin envio real de mensajes, sin cambio real de estado y sin cadena de
-// pensamiento oculta. Full Trace es un registro didactico de etapas visibles, no una mirada
-// al razonamiento privado. Todo ejemplo es solo para ensenar.
-//
-// Esta es una primera traduccion, pendiente de revision por hablante nativo.
-//
-// Sin raya (U+2014) ni semirraya (U+2013).
-
+import { fullTraceLab as en } from '../../en/behind-ai/fullTraceLab';
 import type { FullTraceLabContent } from '../../he/behind-ai/fullTraceLab';
 
+const stageCopy: Record<string, [string, string, string, string, string]> = {
+    context: ['Ensamblaje de contexto', 'El producto reúne lo disponible ahora', 'La solicitud y el estado actual de la conversación.', 'Añade reglas relevantes y separa historial, memoria guardada y retención. La memoria es opcional; retención solo indica almacenamiento.', 'Solo entra el contexto actual ensamblado. Aquí no se recupera memoria ni existe un resultado previo.'],
+    'model-input': ['Entrada del modelo', 'Solo el paquete ensamblado llega al modelo', 'Regla del sistema, objetivo, límites y datos seleccionados.', 'El producto crea una simplificación educativa estructurada; el formato varía por producto.', 'Objetivo: revisar 123456789. Límite: no enviar. Falta: estado y fecha. Fuentes: ninguna todavía.'],
+    tokens: ['Tokens e IDs', 'El texto se convierte en tokens e identificadores', 'Un fragmento de la entrada.', 'El tokenizador separa piezas, que no siempre son palabras, y asigna un ID.', 'Los IDs son identificadores y no contienen significado por sí solos.'],
+    representations: ['Embeddings', 'Los IDs se convierten en representaciones', 'La secuencia de IDs.', 'Los IDs se mapean a vectores y las capas transforman las representaciones según el contexto.', 'Representaciones contextuales, no un mapa semántico fijo.'],
+    'attention-context': ['Attention y ventana', 'El modelo pondera relaciones en la ventana actual', 'Representaciones e información disponible ahora.', 'Attention es dinámico para este cálculo; la ventana no es todo lo almacenado.', 'Una representación actualizada para predecir el siguiente token.'],
+    generation: ['De logits a generación', 'Softmax distribuye y decoding elige', 'La representación actualizada.', 'Logits 2.0/1.0/0.0 son puntuaciones. Softmax produce 0.665/0.245/0.090; decoding elige.', 'El token se añade y el ciclo se repite hasta una condición de parada.'],
+    'grounding-choice': ['Riesgo y grounding', 'El sistema decide si necesita evidencia actual', 'Se pide el estado actual de un paquete.', 'Una respuesta plausible sin fuente no se usa aquí; una pregunta simple podría omitir herramientas.', 'Se solicita una propuesta estructurada de herramienta.'],
+    'agent-tool': ['Agent y herramienta', 'El Agent es un sistema alrededor del modelo', 'Objetivo, restricciones, estado de tarea y propuesta tracking.lookup.', 'El modelo puede proponer; la aplicación decide disponibilidad y adecuación dentro de límites.', 'Herramienta e input estructurado para 123456789.'],
+    authorization: ['Autorización', 'La aplicación comprueba autorización y política', 'Identidad, integración, recurso y acción.', 'La lectura está permitida; enviar requiere aprobación. La confianza no sustituye ninguna comprobación.', 'Lectura permitida; envío todavía no aprobado.'],
+    'tool-result': ['Ejecución de herramienta', 'El sistema externo devuelve un resultado observable', 'tracking.lookup para 123456789.', 'La integración simulada responde dentro del límite.', 'Estado: delayed. Fecha confirmada: no disponible.'],
+    'draft-check': ['Borrador y revisión', 'Un borrador grounded recibe una revisión falible', 'El resultado se añade al contexto de tarea.', 'Comprueba coincidencia, fecha inventada, falsa afirmación de envío e incertidumbre. No demuestra la verdad.', 'Borrador sobre retraso sin fecha inventada y sin afirmar envío.'],
+    approval: ['Aprobación humana', 'Enviar exige confirmación explícita', 'Borrador grounded y política approval required.', 'La simulación no envía por defecto; el alumno puede aprobar o negar.', 'Esperando aprobación. No se envió nada.'],
+    verification: ['Ejecución y verificación', 'Se verifica el resultado observable', 'Solo tras aprobación educativa: envío simulado.', 'La integración informa accepted o rejected y el producto lo compara con el objetivo.', 'Estado honesto: success, partial, waiting, blocked, denied, stopped o failed.'],
+    offline: ['Feedback y evaluación', 'La mejora ocurre después y por separado', 'El feedback puede almacenarse o revisarse.', 'No todo feedback se usa. Un cambio se evalúa con casos held-out distintos.', 'Posible actualización evaluada, no aprendizaje instantáneo.'],
+};
+
 export const fullTraceLab: FullTraceLabContent = {
-    sectionEyebrow: 'Full Trace Lab',
-    sectionTitle: 'Un prompt, cinco etapas, un resultado controlado',
-    sectionIntro:
-        'El prompt es fijo: "Revisa que pasa con el paquete 123456789, redacta una actualizacion para el cliente y no la envies sin mi aprobacion." Recorrelo etapa por etapa, desde la entrada hasta la decision, y observa como la misma solicitud se convierte en senales, un recorrido del modelo, un anclaje en una fuente, un borrador y, por ultimo, una decision controlada.',
-    heading: 'El recorrido completo',
-    kicker: 'Full Trace Lab',
-    promptLabel: 'El prompt',
-    prompt: 'Revisa que pasa con el paquete 123456789, redacta una actualizacion para el cliente y no la envies sin mi aprobacion.',
-    stageWord: 'Etapa',
-    teachingLabel: 'Que ensena esta etapa',
-    prevLabel: 'Etapa anterior',
-    nextLabel: 'Etapa siguiente',
-    disclaimer:
-        'Todos los ejemplos aqui son solo para ensenar. No hay sistema real de seguimiento, ni envio real de mensajes, ni cambio real de estado. Full Trace es un registro didactico de etapas visibles, no una mirada a la cadena de pensamiento oculta del modelo.',
-    sr: {
-        stageGroup: 'Elegir una etapa del recorrido',
-        stageDetail: 'Detalles de la etapa seleccionada en el recorrido completo',
-        prevBtn: 'Ir a la etapa anterior',
-        nextBtn: 'Ir a la etapa siguiente',
-    },
-    stages: [
-        {
-            id: 'input',
-            tone: 'input',
-            tab: 'Entrada y significado',
-            groupLabel: 'Entrada y significado',
-            title: 'Que entra y que detecta el sistema',
-            summary: 'Una sola solicitud se separa en varias senales con las que el sistema puede trabajar.',
-            panels: [
-                { kind: 'prompt', label: 'El prompt', text: 'Revisa que pasa con el paquete 123456789, redacta una actualizacion para el cliente y no la envies sin mi aprobacion.' },
-                {
-                    kind: 'signals',
-                    label: 'Senales detectadas',
-                    items: [
-                        { k: 'Id del paquete', v: '123456789' },
-                        { k: 'Tarea', v: 'Revisar estado' },
-                        { k: 'Salida solicitada', v: 'Borrador de actualizacion al cliente' },
-                        { k: 'Limite', v: 'No enviar sin aprobacion' },
-                    ],
-                },
-            ],
-            teaching: 'Un buen prompt da al sistema mas estructura util: un objetivo, datos, una salida y un limite.',
-        },
-        {
-            id: 'model',
-            tone: 'model',
-            tab: 'Recorrido del modelo',
-            groupLabel: 'Recorrido del modelo',
-            title: 'Como organiza el modelo la solicitud',
-            summary: 'El modelo separa en tokens, construye significado, ve en que enfocarse y estima el paso siguiente probable.',
-            panels: [
-                { kind: 'chips', label: 'Tokens (partes)', items: ['Revisa', 'que', 'pasa', 'con', 'el', 'paquete', '123456789', 'redacta', 'una', 'actualizacion', 'cliente', 'no', 'envies', 'sin', 'aprobacion'] },
-                { kind: 'chips', label: 'Resumen de significado (no numeros)', items: ['estado del paquete', 'actualizacion al cliente', 'limite de aprobacion'] },
-                { kind: 'chips', label: 'Foco de atencion', items: ['el id del paquete', 'actualizar al cliente', 'no enviar'] },
-                { kind: 'note', label: 'Paso siguiente probable', text: 'La tarea necesita un estado actual, asi que es razonable recurrir a una herramienta de consulta.', tone: 'neutral' },
-            ],
-            teaching: 'El modelo organiza el prompt en senales y en un paso siguiente probable. Esto todavia no es verificar hechos.',
-        },
-        {
-            id: 'grounding',
-            tone: 'grounding',
-            tab: 'Anclaje',
-            groupLabel: 'Anclaje y fuente',
-            title: 'De donde viene la informacion real',
-            summary: 'El sistema recurre a una herramienta de seguimiento y separa lo anclado en la fuente de lo que no lo esta.',
-            panels: [
-                { kind: 'note', label: 'Herramienta elegida', text: 'Consulta de seguimiento via MCP (tracking lookup)', tone: 'neutral' },
-                { kind: 'result', label: 'Resultado de la herramienta (ejemplo)', rows: ['Estado: con retraso', 'Fecha estimada de entrega: no disponible'] },
-                {
-                    kind: 'split',
-                    label: 'Que esta anclado y que no',
-                    posLabel: 'Anclado en la fuente',
-                    pos: ['El paquete esta con retraso'],
-                    negLabel: 'No anclado',
-                    neg: ['La fecha exacta de llegada'],
-                },
-            ],
-            teaching: 'El sistema no debe inventar una fecha de llegada que falta en la fuente. La fuente antes que la conclusion.',
-        },
-        {
-            id: 'draft',
-            tone: 'draft',
-            tab: 'Borrador',
-            groupLabel: 'El borrador del agente',
-            title: 'Preparar una salida, sin ejecutar una accion externa',
-            summary: 'El agente redacta un borrador con base en el resultado, pero todavia no lo envia.',
-            panels: [
-                { kind: 'result', label: 'Borrador para el cliente (no enviado)', rows: ['Hola, revisamos el paquete 123456789. Segun el seguimiento esta con retraso, y todavia no hay una fecha de llegada confirmada. Le avisaremos en cuanto tengamos informacion nueva.'] },
-                { kind: 'note', label: 'Origen del borrador', text: 'Basado en el resultado de la herramienta, sin una fecha inventada.', tone: 'good' },
-                { kind: 'note', label: 'Estado de envio', text: 'Todavia no enviado.', tone: 'warn' },
-            ],
-            teaching: 'El agente puede preparar una salida util sin ejecutar la accion externa.',
-        },
-        {
-            id: 'guardrails',
-            tone: 'guardrails',
-            tab: 'Control',
-            groupLabel: 'Control y decision',
-            title: 'Que se permite ejecutar y cual es la salida final',
-            summary: 'La capa de control ve que enviar es una accion externa, asi que se detiene para pedir aprobacion y devuelve un borrador.',
-            panels: [
-                {
-                    kind: 'signals',
-                    label: 'Chequeo de control',
-                    items: [
-                        { k: 'Accion solicitada', v: 'Enviar una actualizacion al cliente' },
-                        { k: 'Riesgo', v: 'Comunicacion externa con el cliente' },
-                        { k: 'Limite del prompt', v: 'No enviar sin aprobacion' },
-                        { k: 'Decision', v: 'Solo borrador, a la espera de aprobacion' },
-                    ],
-                },
-                { kind: 'note', label: 'Salida final', text: 'Un borrador listo, con una nota: no enviado al cliente. A la espera de aprobacion.', tone: 'warn' },
-            ],
-            teaching: 'La salida correcta no es solo un mensaje bonito. Es un resultado controlado: una respuesta, un borrador, una accion o una parada.',
-        },
-    ],
+    ...en, sectionTitle: 'Una solicitud, varias capas, un resultado verificable', sectionIntro: 'Sigue la misma solicitud por contexto, modelo, grounding, Agent, controles, ejecución simulada y verificación.', heading: 'La traza completa', promptLabel: 'Solicitud del usuario', prompt: 'Comprueba qué ocurre con el paquete 123456789, redacta una actualización para el cliente y no la envíes sin mi aprobación.',
+    disclosure: 'Simulación educativa guionizada: sin conexión real, envío real ni cadena de pensamiento oculta.', variabilityNote: 'No toda solicitud usa memoria, RAG, herramientas, Agent, aprobación, revisión o mejora offline. Puede haber saltos, repeticiones y paradas; la arquitectura varía.', layerHeading: 'Capa activa',
+    layers: { model: { label: 'Model internal', description: 'Cálculo dentro del modelo' }, product: { label: 'Application or product', description: 'Contexto, orquestación y estado' }, tool: { label: 'External system or tool', description: 'Integración externa definida' }, human: { label: 'Human control', description: 'Decisión humana explícita' }, offline: { label: 'Offline improvement process', description: 'Proceso posterior separado' } },
+    statusLabels: { required: 'ruta principal', optional: 'opcional', skipped: 'omitido aquí', repeated: 'puede repetirse', stop: 'punto de parada' }, labels: { input: 'Entrada', process: 'Transformación o decisión', output: 'Salida', details: 'Detalles', branchReason: 'Motivo de rama', stopReason: 'Motivo de parada', stage: 'Etapa', previous: 'Anterior', next: 'Siguiente', reset: 'Reiniciar traza', selectStage: 'Elige una etapa', progress: (c, t) => `Posición ${c} de ${t} con rutas opcionales` },
+    stages: en.stages.map((s) => { const c = stageCopy[s.id]; const localized = c ? { ...s, tab: c[0], title: c[1], refresher: c[3], input: c[2], process: c[3], output: c[4], facts: undefined, details: undefined, branchReason: undefined, stopReason: undefined } : s; if (s.id === 'tokens') localized.details = { label: 'Ejemplo compacto', items: ['“comprobar” → ID 4812', '“paquete” → ID 907', '123456789 puede dividirse', 'Un ID no contiene significado'] }; if (s.id === 'representations') localized.details = { label: 'Representación compacta', items: ['4812 → [0.2, −0.4, …]', '907 → [0.7, 0.1, …]', 'Las capas transforman los vectores'] }; if (s.id === 'generation') localized.details = { label: 'Único ejemplo numérico', items: ['2.0 / 1.0 / 0.0 son logits', 'Softmax: 0.665 / 0.245 / 0.090', 'Softmax no elige', 'Decoding elige y el ciclo repite'] }; if (s.id === 'grounding-choice') localized.branchReason = 'El estado cambia con el tiempo; recuperar evidencia no modifica los parámetros.'; if (s.id === 'approval') localized.stopReason = 'El usuario exigió aprobación antes del envío.'; if (s.id === 'verification') localized.branchReason = 'Sin aprobación se omite la ejecución.'; if (s.id === 'offline') localized.branchReason = 'Es una ruta offline separada.'; return localized; }),
+    branches: { ...en.branches, title: 'Explora ramas de la simulación', intro: 'La ruta puede continuar, saltar o detenerse.', missingInfo: { label: 'Falta el número', outcome: 'Preguntar en vez de inventar.' }, knowledge: { label: 'Pregunta simple', outcome: 'Puede omitir herramienta y aprobación.' }, toolNeeded: { label: 'Estado actual', outcome: 'Requiere herramienta porque cambia.' }, toolError: { label: 'Simular error', first: 'Intento 1 falló. Queda un retry.', retry: 'Retry 1 de 1 falló.', exhausted: 'Límite agotado: estado failed.' }, approval: { ...en.branches.approval, title: 'Aprobación educativa', pending: 'Esperando, no enviado', deny: 'Denegar', approve: 'Aprobar envío simulado', denied: 'Denegado: no se ejecuta.', approved: 'Aprobado solo para simulación.', accepted: 'Simular accepted', rejected: 'Simular rejected', verifyAccepted: 'Accepted verificado: success simulado.', verifyRejected: 'Rejected verificado: failed.' }, restart: 'Reiniciar rama' },
+    sr: { stageGroup: 'Elegir etapa', stageDetail: 'Detalles de la etapa activa', branchGroup: 'Elegir rama educativa' },
 };

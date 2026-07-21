@@ -82,11 +82,12 @@ export const fullTrace = {
         title: 'תחנה אחר תחנה: כל הקורס במסלול אחד',
         intro: 'לא נחזור על כל פרק בפירוט. נראה את המסלול כולו בחמש קבוצות, כדי שאפשר יהיה לעקוב אחרי הדרך במבט אחד.',
         groups: [
-            { title: 'קלט ומשמעות', stations: ['קלט', 'טוקנים', 'Embeddings', 'Semantic Space', 'הקשר'] },
-            { title: 'ייצור התשובה', stations: ['Attention', 'Logits & Softmax', 'Decoding', 'Generation Loop'] },
-            { title: 'אמינות', stations: ['סיכון הזיה', 'RAG / Grounding', 'Self-Check', 'Evaluation'] },
-            { title: 'שכבת ה-Agent', stations: ['זיהוי משימה', 'בדיקת מעקב', 'תוצאה', 'טיוטה / תכנון פעולה'] },
-            { title: 'בקרה ותוצר', stations: ['בדיקת סיכון', 'שער אישור', 'תשובה / טיוטה / עצירה'] },
+            { title: 'המוצר מרכיב קלט', stations: ['בקשת משתמש', 'כללי מערכת', 'הקשר נוכחי', 'זיכרון / RAG אופציונליים', 'קלט המודל'] },
+            { title: 'המודל מעבד ומייצר', stations: ['טוקנים ו־IDs', 'Embeddings', 'Attention וחלון הקשר', 'Logits', 'Softmax', 'Decoding ולולאת יצירה'] },
+            { title: 'איכות ועיגון', stations: ['סיכון הזיה', 'Grounding אופציונלי', 'תוצאת מקור', 'Self-Check מוגבל'] },
+            { title: 'לולאת Agent', stations: ['מטרה ומצב משימה', 'בחירת כלי', 'Authorization ו־Policy', 'ביצוע מוגבל', 'עדכון מצב'] },
+            { title: 'בקרה ותוצאה', stations: ['Approval אנושי', 'פעולה מדומה', 'אימות נצפה', 'סטטוס כן'] },
+            { title: 'מאוחר ובנפרד', stations: ['משוב', 'בחירת דוגמאות', 'עדכון אפשרי', 'Held-out Evaluation'] },
         ],
         caption:
             'מסלול אחד: מהקלט, דרך ייצור התשובה, האמינות ושכבת ה-Agent, ועד ההחלטה המבוקרת. במעבדה נעבור עליו על בקשה אחת ממשית.',

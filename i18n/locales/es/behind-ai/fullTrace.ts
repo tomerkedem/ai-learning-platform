@@ -80,11 +80,12 @@ export const fullTrace = {
         title: 'Estacion por estacion: todo el curso en un camino',
         intro: 'No repetiremos cada capitulo en detalle. Veremos todo el camino en cinco grupos, para poder seguirlo de un vistazo.',
         groups: [
-            { title: 'Entrada y significado', stations: ['Entrada', 'Tokens', 'Embeddings', 'Semantic Space', 'Contexto'] },
-            { title: 'Generar la respuesta', stations: ['Attention', 'Logits & Softmax', 'Decoding', 'Generation Loop'] },
-            { title: 'Fiabilidad', stations: ['Riesgo de alucinacion', 'RAG / Grounding', 'Self-Check', 'Evaluation'] },
-            { title: 'La capa del agente', stations: ['Deteccion de tarea', 'Consulta de seguimiento', 'Observacion', 'Borrador / plan de accion'] },
-            { title: 'Control y salida', stations: ['Chequeo de riesgo', 'Puerta de aprobacion', 'Respuesta / borrador / parada'] },
+            { title: 'El producto ensambla', stations: ['Solicitud', 'Reglas', 'Contexto actual', 'Memoria / RAG opcional', 'Entrada del modelo'] },
+            { title: 'El modelo procesa', stations: ['Tokens e IDs', 'Embeddings', 'Attention y ventana', 'Logits', 'Softmax', 'Decoding y ciclo'] },
+            { title: 'Calidad y grounding', stations: ['Riesgo', 'Grounding opcional', 'Fuente', 'Self-check falible'] },
+            { title: 'Bucle Agent', stations: ['Meta y estado', 'Herramienta', 'Authorization y policy', 'Ejecucion limitada', 'Actualizacion'] },
+            { title: 'Control y resultado', stations: ['Approval humano', 'Accion simulada', 'Verificacion', 'Estado honesto'] },
+            { title: 'Despues y separado', stations: ['Feedback', 'Seleccion', 'Actualizacion posible', 'Evaluacion held-out'] },
         ],
         caption:
             'Un camino: de la entrada, por la generacion de la respuesta, la fiabilidad y la capa del agente, hasta la decision controlada. En el laboratorio lo recorreremos sobre una solicitud real.',

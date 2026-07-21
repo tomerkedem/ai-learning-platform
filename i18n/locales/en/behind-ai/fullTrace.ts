@@ -80,11 +80,12 @@ export const fullTrace = {
         title: 'Station by station: the whole course in one route',
         intro: 'We will not repeat each chapter in full. We will see the whole route in five groups, so you can follow the path at a glance.',
         groups: [
-            { title: 'Input and meaning', stations: ['Input', 'Tokens', 'Embeddings', 'Semantic Space', 'Context'] },
-            { title: 'Generating the answer', stations: ['Attention', 'Logits & Softmax', 'Decoding', 'Generation Loop'] },
-            { title: 'Reliability', stations: ['Hallucination risk', 'RAG / Grounding', 'Self-Check', 'Evaluation'] },
-            { title: 'The agent layer', stations: ['Task detection', 'Tracking lookup', 'Observation', 'Draft / action plan'] },
-            { title: 'Control and output', stations: ['Risk check', 'Approval gate', 'Answer / draft / stop'] },
+            { title: 'Product assembles input', stations: ['User request', 'System rules', 'Current context', 'Optional memory / RAG', 'Model input'] },
+            { title: 'Model processes and generates', stations: ['Tokens and IDs', 'Embeddings', 'Attention and context window', 'Logits', 'Softmax', 'Decoding and loop'] },
+            { title: 'Quality and grounding', stations: ['Hallucination risk', 'Optional grounding', 'Source result', 'Fallible self-check'] },
+            { title: 'Agent loop', stations: ['Goal and task state', 'Tool selection', 'Authorization and policy', 'Bounded execution', 'State update'] },
+            { title: 'Control and outcome', stations: ['Human approval', 'Simulated action', 'Observable verification', 'Honest status'] },
+            { title: 'Later and separate', stations: ['Feedback', 'Example selection', 'Possible update', 'Held-out evaluation'] },
         ],
         caption:
             'One route: from input, through generating the answer, reliability, and the agent layer, to the controlled decision. In the lab we will run it on one real request.',

@@ -1,139 +1,44 @@
-// i18n/locales/en/behind-ai/fullTraceLab.ts
-//
-// English (en, LTR) data for the "Full Trace Lab" of Chapter 19 ("Full Trace: One Prompt,
-// All Stations"), the capstone chapter. Hebrew is the source of truth and defines the type
-// (FullTraceLabContent).
-//
-// Core idea: one deterministic prompt, "Check what is happening with package 123456789,
-// draft an update for the customer, and do not send without my approval", passes through
-// five grouped stages, from input to a controlled outcome.
-//
-// Fully deterministic: no randomness, no real model call, no real tracking system, no real
-// message sending, no real status change, and no hidden chain of thought. Full Trace is a
-// teaching record of visible stages, not a peek into private reasoning. Every example is
-// for teaching only. The order of stages stays fixed, as do the structural keys.
-//
-// This is a first-pass translation to be reviewed by a native speaker later.
-//
-// No em dash (U+2014), no en dash (U+2013).
+import { fullTraceLab as he, type FullTraceLabContent, type TraceStage } from '../../he/behind-ai/fullTraceLab';
 
-import type { FullTraceLabContent } from '../../he/behind-ai/fullTraceLab';
+const stages: Record<string, Partial<TraceStage>> = {
+    context: { group: 'Input and context', tab: 'Context assembly', title: 'The product assembles what is available now', refresher: 'Storage is not model input. Only selected items in the current context enter.', input: 'The user request and current conversation state.', process: 'The product adds relevant system rules and separates conversation history, saved memory, and retention. Memory may be retrieved; retention is only a storage policy.', output: 'Assembled current context. This scenario needs no saved memory and has no prior tool result.' },
+    'model-input': { group: 'Input and context', tab: 'Model input', title: 'Only the assembled package is sent to the model', refresher: 'This is a transparent teaching simplification. Product formats vary.', input: 'System rule, user goal, constraints, selected context.', process: 'The product creates a simple structured package without exposing hidden prompts.', output: 'System: use current evidence and do not send without approval. Goal: check package and draft update. Known: 123456789. Missing: status and date. Sources: none yet.' },
+    tokens: { group: 'Model processing', tab: 'Tokens and IDs', title: 'Text becomes tokens and then identifiers', refresher: 'A token may be a word, word part, or symbol. An ID is a vocabulary address, not meaning.', input: 'Excerpt: “check ... package 123456789”.', process: 'The tokenizer splits pieces and maps each piece to an ID.', output: 'A sequence of numeric IDs.', details: { label: 'Small example only', items: ['“check” → token ID 4812', '“package” → token ID 907', '“123456789” may split into several tokens', 'IDs do not contain semantic meaning by themselves'] } },
+    representations: { group: 'Model processing', tab: 'Embeddings', title: 'IDs become representations that layers transform', refresher: 'An embedding is a learned vector, not an ID or one permanent meaning coordinate.', input: 'Token IDs.', process: 'IDs map to vectors; layers transform them according to context and semantic relationships.', output: 'Contextual representations linking package, check, customer, and approval constraint.', details: { label: 'Compact representation', items: ['4812 → [0.2, −0.4, …]', '907 → [0.7, 0.1, …]', 'Representations change through layers'] } },
+    'attention-context': { group: 'Model processing', tab: 'Attention and window', title: 'The model weighs relationships in the current window', refresher: 'Attention is dynamic for the current computation, not a permanent ranking.', input: 'Representations and information currently in the context window.', process: '“Do not send” strongly relates to “approval” now; weights may differ at another step.', output: 'Updated representation for next-token prediction.', facts: [{ label: 'Context window', value: 'Information available now, not everything ever stored' }] },
+    generation: { group: 'Model processing', tab: 'Logits to generation', title: 'Scores become a distribution, then decoding chooses', refresher: 'Logits are scores. Softmax produces a distribution. Decoding makes the choice.', input: 'Updated representation.', process: 'logits: “checked” 2.0, “sent” 1.0, “tomorrow” 0.0. softmax: 0.665, 0.245, 0.090, sum 1.000. decoding selects “checked”.', output: '“checked” is appended and prediction repeats until a stop token, length limit, or system stop.', details: { label: 'The only numerical example', items: ['2.0 / 1.0 / 0.0 are logits, not probabilities', 'Softmax gives 0.665 / 0.245 / 0.090', 'Softmax does not select', 'Decoding selects and the loop repeats'] } },
+    'grounding-choice': { group: 'Quality and grounding', tab: 'Risk and grounding', title: 'The system decides whether current evidence is needed', refresher: 'Plausible text can lack evidence. Hallucination is a risk, not a guaranteed event.', input: 'The task asks for a current package fact.', process: 'The ungrounded path is not used here. A simple knowledge question might skip tools.', output: 'Request a structured tool-call proposal.', branchReason: 'Package status changes over time. Retrieval adds evidence to context and does not change model parameters.' },
+    'agent-tool': { group: 'Agent loop', tab: 'Agent and tool', title: 'An agent is a product system around the model', refresher: 'A workflow follows fixed steps; an agent may adapt within limits. Not every request uses one.', input: 'Goal, constraints, task state, and a tracking.lookup proposal.', process: 'The model may propose a structured call; the application checks availability and fit. Task state is not long-term memory.', output: 'Tool: tracking.lookup. Input: { trackingNumber: “123456789” }. Expected: status and confirmed date.', facts: [{ label: 'Bound', value: 'Initial attempt plus one retry only' }, { label: 'Possible next moves', value: 'Continue, retry, ask, request approval, or stop' }] },
+    authorization: { group: 'Agent loop', tab: 'Authorization', title: 'The application checks authorization and policy', refresher: 'Authorization is not human approval. Confidence overrides neither.', input: 'Identity, integration, resource, and requested action.', process: 'Tracking read is allowed. A later send requires approval. Human approval cannot unblock a policy-blocked action.', output: 'Tracking read allowed; sending remains unapproved.' },
+    'tool-result': { group: 'Agent loop', tab: 'Tool execution', title: 'The external tool returns an observable result', refresher: 'A successful call does not automatically complete the user goal.', input: 'tracking.lookup({ trackingNumber: “123456789” }).', process: 'The scripted integration returns within the attempt bound.', output: 'status: delayed. confirmedArrivalDate: unavailable.', facts: [{ label: 'Task-state update', value: 'Status known; date missing; draft without invention' }, { label: 'Evidence limit', value: 'External evidence can still be incomplete or wrong' }] },
+    'draft-check': { group: 'Quality and grounding', tab: 'Draft and check', title: 'A grounded draft gets a fallible self-check', refresher: 'Self-check is another visible pass, not proof and not hidden reasoning.', input: 'Tool result inserted into current task context.', process: 'Matches delayed ✓; no invented date ✓; does not claim sent ✓; uncertainty visible ✓.', output: '“We checked package 123456789. Tracking shows a delay and no confirmed arrival date yet. We will update you when information is available.”', facts: [{ label: 'Limit', value: 'The check may catch issues but cannot guarantee the source or draft is true' }] },
+    approval: { group: 'Control and action', tab: 'Human approval', title: 'Sending requires explicit confirmation', refresher: 'System authorization enables a capability; approval confirms one action.', input: 'Grounded draft; policy says approval required.', process: 'The demo defaults to no send. The learner may select an educational approve or deny branch.', output: 'Waiting for approval. Nothing was sent.', stopReason: 'The user explicitly said not to send without approval.' },
+    verification: { group: 'Control and action', tab: 'Execution and verification', title: 'After simulated execution, verify observable outcome', refresher: 'Accepted by a tool is not always task complete; the user goal must be satisfied.', input: 'Only after educational approval: sendMessage with the draft.', process: 'The scripted integration reports accepted or rejected; the product compares that result with the goal.', output: 'Honest status: success, partial, waiting, blocked, denied, stopped, or failed.', branchReason: 'Without approval this stage is skipped and status remains waiting for approval.' },
+    offline: { group: 'Later improvement', tab: 'Feedback and evaluation', title: 'Possible improvement happens later and separately', refresher: 'One conversation does not instantly retrain the model.', input: 'Feedback may be submitted, stored, or reviewed.', process: 'Not all feedback is selected. Suitable examples may update a prompt, rule, workflow, retrieval source, or model. The update is tested on separate held-out cases.', output: 'A possible evaluated update, not instant learning from this conversation.', branchReason: 'This offline path is separate from the live response.' },
+};
 
 export const fullTraceLab: FullTraceLabContent = {
-    sectionEyebrow: 'Full Trace Lab',
-    sectionTitle: 'One prompt, five stages, a controlled outcome',
-    sectionIntro:
-        'The prompt is fixed: "Check what is happening with package 123456789, draft an update for the customer, and do not send without my approval." Step through it stage by stage, from input to decision, and see how the same request becomes signals, a model path, grounding in a source, a draft, and finally a controlled decision.',
-    heading: 'The full route',
-    kicker: 'Full Trace Lab',
-    promptLabel: 'The prompt',
+    ...he,
+    sectionTitle: 'One request, many layers, a verifiable outcome',
+    sectionIntro: 'Follow the same package request through context assembly, model processing, grounding, an agent loop, controls, simulated execution, and verification.',
+    heading: 'The full trace', promptLabel: 'User request',
     prompt: 'Check what is happening with package 123456789, draft an update for the customer, and do not send without my approval.',
-    stageWord: 'Stage',
-    teachingLabel: 'What this stage teaches',
-    prevLabel: 'Previous stage',
-    nextLabel: 'Next stage',
-    disclaimer:
-        'Every example here is for teaching only. There is no real tracking system, no real message sending, and no real status change. Full Trace is a teaching record of visible stages, not a peek into the model private chain of thought.',
-    sr: {
-        stageGroup: 'Pick a stage in the route',
-        stageDetail: 'Details of the selected stage in the full route',
-        prevBtn: 'Go to the previous stage',
-        nextBtn: 'Go to the next stage',
+    disclosure: 'This is a scripted educational simulation. There is no live tracking or messaging connection, no real send, and no hidden chain of thought.',
+    variabilityNote: 'Not every request uses memory, RAG, tools, agents, approval, self-check, or offline improvement. Stages may be skipped, repeated, or stop early, and architecture varies by product.',
+    layerHeading: 'Active layer',
+    layers: {
+        model: { label: 'Model internal', description: 'Computation inside the model' }, product: { label: 'Application or product', description: 'Assembly, orchestration, and task state' },
+        tool: { label: 'External system or tool', description: 'A defined external integration' }, human: { label: 'Human control', description: 'An explicit human decision' }, offline: { label: 'Offline improvement process', description: 'A later process outside the live response' },
     },
-    stages: [
-        {
-            id: 'input',
-            tone: 'input',
-            tab: 'Input and meaning',
-            groupLabel: 'Input and meaning',
-            title: 'What comes in, and what the system detects',
-            summary: 'One request breaks into several signals the system can work with.',
-            panels: [
-                { kind: 'prompt', label: 'The prompt', text: 'Check what is happening with package 123456789, draft an update for the customer, and do not send without my approval.' },
-                {
-                    kind: 'signals',
-                    label: 'Detected signals',
-                    items: [
-                        { k: 'Package id', v: '123456789' },
-                        { k: 'Task', v: 'Check status' },
-                        { k: 'Requested output', v: 'Draft customer update' },
-                        { k: 'Boundary', v: 'Do not send without approval' },
-                    ],
-                },
-            ],
-            teaching: 'A good prompt gives the system more usable structure: a goal, data, an output, and a boundary.',
-        },
-        {
-            id: 'model',
-            tone: 'model',
-            tab: 'Model path',
-            groupLabel: 'Model path',
-            title: 'How the model organizes the request',
-            summary: 'The model splits into tokens, builds meaning, sees what to focus on, and estimates the likely next step.',
-            panels: [
-                { kind: 'chips', label: 'Tokens (parts)', items: ['Check', 'what', 'is', 'happening', 'with', 'package', '123456789', 'draft', 'an', 'update', 'for', 'the', 'customer', 'do', 'not', 'send', 'without', 'approval'] },
-                { kind: 'chips', label: 'Meaning summary (not numbers)', items: ['package status', 'customer update', 'approval boundary'] },
-                { kind: 'chips', label: 'Attention focus', items: ['the package id', 'update customer', 'do not send'] },
-                { kind: 'note', label: 'Likely next step', text: 'The task needs a current status, so it is reasonable to reach for a lookup tool.', tone: 'neutral' },
-            ],
-            teaching: 'The model organizes the prompt into signals and a likely next step. This is still not fact checking.',
-        },
-        {
-            id: 'grounding',
-            tone: 'grounding',
-            tab: 'Grounding',
-            groupLabel: 'Grounding and source',
-            title: 'Where real information comes from',
-            summary: 'The system reaches for a tracking tool and separates what is grounded in the source from what is not.',
-            panels: [
-                { kind: 'note', label: 'Selected tool', text: 'Tracking lookup via MCP', tone: 'neutral' },
-                { kind: 'result', label: 'Tool result (example)', rows: ['Status: delayed', 'Estimated delivery: unavailable'] },
-                {
-                    kind: 'split',
-                    label: 'What is grounded and what is not',
-                    posLabel: 'Grounded in the source',
-                    pos: ['The package is delayed'],
-                    negLabel: 'Not grounded',
-                    neg: ['The exact arrival date'],
-                },
-            ],
-            teaching: 'The system should not invent an arrival date that is missing from the source. Source before conclusion.',
-        },
-        {
-            id: 'draft',
-            tone: 'draft',
-            tab: 'Draft',
-            groupLabel: 'The agent draft',
-            title: 'Prepare an output, without an external action',
-            summary: 'The agent drafts a message based on the result, but does not send it yet.',
-            panels: [
-                { kind: 'result', label: 'Draft to the customer (not sent)', rows: ['Hello, we checked package 123456789. According to tracking it is delayed, and there is still no confirmed arrival date. We will update as soon as we have new information.'] },
-                { kind: 'note', label: 'Draft source', text: 'Based on the tool result, with no invented date.', tone: 'good' },
-                { kind: 'note', label: 'Send status', text: 'Not sent yet.', tone: 'warn' },
-            ],
-            teaching: 'The agent can prepare a useful output without performing the external action.',
-        },
-        {
-            id: 'guardrails',
-            tone: 'guardrails',
-            tab: 'Control',
-            groupLabel: 'Control and decision',
-            title: 'What is allowed to run, and what the final output is',
-            summary: 'The control layer sees that sending is an external action, so it stops for approval and returns a draft.',
-            panels: [
-                {
-                    kind: 'signals',
-                    label: 'Control check',
-                    items: [
-                        { k: 'Requested action', v: 'Send an update to the customer' },
-                        { k: 'Risk', v: 'External customer communication' },
-                        { k: 'Boundary from the prompt', v: 'Do not send without approval' },
-                        { k: 'Decision', v: 'Draft only, waiting for approval' },
-                    ],
-                },
-                { kind: 'note', label: 'Final output', text: 'A ready draft, with a note: not sent to the customer. Waiting for approval.', tone: 'warn' },
-            ],
-            teaching: 'The correct output is not just a nice message. It is a controlled outcome: an answer, a draft, an action, or a stop.',
-        },
-    ],
+    statusLabels: { required: 'main path', optional: 'optional', skipped: 'skipped here', repeated: 'may repeat', stop: 'stop point' },
+    labels: { input: 'Input', process: 'Transformation or decision', output: 'Output', details: 'Compact details', branchReason: 'Branch reason', stopReason: 'Stop reason', stage: 'Stage', previous: 'Previous', next: 'Next', reset: 'Reset trace', selectStage: 'Select a major stage', progress: (c, t) => `Position ${c} of ${t} in a trace with optional paths` },
+    stages: he.stages.map((stage) => ({ ...stage, ...stages[stage.id] })),
+    branches: {
+        title: 'Explore branches without leaving the main scenario', intro: 'These choices change only the simulation and explain why a path continues, skips, or stops.',
+        missingInfo: { label: 'Tracking number missing', outcome: 'Ask the user instead of inventing an ID.' }, knowledge: { label: 'Simple knowledge question', outcome: 'Tools and approval may be skipped.' }, toolNeeded: { label: 'Current package status', outcome: 'A tool is needed because status changes over time.' },
+        toolError: { label: 'Simulate tool error', first: 'Attempt 1 failed. One retry remains.', retry: 'Retry 1 of 1 failed.', exhausted: 'Limit exhausted. Stop as failed and do not claim success.' },
+        approval: { title: 'Educational approval decision', pending: 'Waiting, not sent', deny: 'Deny send', approve: 'Approve simulated send', denied: 'Approval denied. No execution; status denied.', approved: 'Approved for simulation only. Choose an integration result.', accepted: 'Simulate accepted', rejected: 'Simulate rejected', verifyAccepted: 'Integration reported accepted; verification matches the goal: simulated success.', verifyRejected: 'Integration reported rejected; verification prevents success: failed.' }, restart: 'Restart branch',
+    },
+    finalStatuses: { waiting: 'waiting for approval', denied: 'denied', failed: 'failed', success: 'success (simulated)', partial: 'partial completion' },
+    sr: { stageGroup: 'Select trace stage', stageDetail: 'Active trace stage details', branchGroup: 'Select an educational branch' },
 };

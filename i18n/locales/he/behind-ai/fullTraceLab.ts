@@ -1,202 +1,195 @@
-// i18n/locales/he/behind-ai/fullTraceLab.ts
-//
-// נתוני מעבדת ה-Full Trace של פרק 19 ("Full Trace: פרומפט אחד, כל התחנות")
-// בלומדה "מאחורי הקלעים של AI". עברית = שפת המקור, והיא מגדירה את צורת הטיפוס
-// (FullTraceLabContent) שכל שאר השפות חייבות לעמוד בה.
-//
-// הרעיון המרכזי: פרומפט אחד ודטרמיניסטי,
-//   "בדוק מה קורה עם החבילה 123456789, נסח עדכון ללקוח, ואל תשלח בלי אישור שלי."
-// עובר חמישה שלבים מקובצים, מהקלט ועד ההחלטה המבוקרת:
-//   1. קלט ומשמעות: אותות שזוהו מהבקשה.
-//   2. מסלול המודל: טוקנים, תקציר משמעות, מוקד קשב, וצעד סביר הבא.
-//   3. עיגון ומקור: כלי מעקב, תוצאה לדוגמה, ומה מעוגן מול מה שלא.
-//   4. טיוטת ה-Agent: תוצר מבוסס-מקור שעדיין לא נשלח.
-//   5. בקרה והחלטה: סיכון, גבול אישור, החלטה, ותוצר סופי.
-//
-// דטרמיניסטי לחלוטין: אין אקראיות, אין קריאת מודל אמיתית, אין חיבור אמיתי למערכת
-// מעקב, אין שליחת הודעה אמיתית, אין שינוי סטטוס אמיתי, ואין הצגת שרשרת חשיבה נסתרת
-// (chain-of-thought). ה-Full Trace הוא תיעוד חינוכי של שלבים גלויים בלבד. כל הטקסט
-// תלוי-השפה מגיע מ-data לפי locale, והכיוון (RTL/LTR) מ-dir. סדר השלבים ומזהיהם
-// קבוע, וכן מפתחות ה-tone ו-kind שהם מבניים ואינם מתורגמים.
-//
-// אין מקף ארוך (U+2014), אין מקף בינוני (U+2013), אין נקודה-פסיק בעברית ואין אזכור שנה.
+// Chapter 19 is an educational, scripted trace. It exposes observable stages, never hidden chain of thought.
+export type TraceLayer = 'model' | 'product' | 'tool' | 'human' | 'offline';
+export type TraceStageStatus = 'required' | 'optional' | 'skipped' | 'repeated' | 'stop';
 
-/** גוון השלב. מבני, קובע אייקון וגוון, אינו מתורגם. */
-export type StageTone = 'input' | 'model' | 'grounding' | 'draft' | 'guardrails';
-
-/** גוון הערה בתוך שלב. מבני, קובע גוון, אינו מתורגם. */
-export type NoteTone = 'neutral' | 'good' | 'warn' | 'stop';
-
-/** פאנל בודד בתוך שלב. discriminated union לפי kind, כדי שהרינדור יהיה בטוח. */
-export type FullTracePanel =
-    | { kind: 'prompt'; label: string; text: string }
-    | { kind: 'signals'; label: string; items: { k: string; v: string }[] }
-    | { kind: 'chips'; label: string; items: string[] }
-    | { kind: 'result'; label: string; rows: string[] }
-    | { kind: 'split'; label: string; posLabel: string; pos: string[]; negLabel: string; neg: string[] }
-    | { kind: 'note'; label: string; text: string; tone: NoteTone };
-
-/** שלב אחד במסלול המלא. */
-export interface FullTraceStage {
-    /** מזהה יציב, אינו מתורגם. */
+export interface TraceFact { label: string; value: string }
+export interface TraceStage {
     id: string;
-    /** גוון השלב. מבני, קובע אייקון וגוון. */
-    tone: StageTone;
-    /** תווית קצרה לכפתור השלב בבורר / stepper. */
+    group: string;
+    layer: TraceLayer;
+    status: TraceStageStatus;
     tab: string;
-    /** תווית הקבוצה בקורס (למשל "קלט ומשמעות"). */
-    groupLabel: string;
-    /** כותרת השלב. */
     title: string;
-    /** משפט תקציר אחד לשלב, משמש להקראה. */
-    summary: string;
-    /** הפאנלים המוצגים בשלב. */
-    panels: FullTracePanel[];
-    /** מה השלב מלמד (השורה התחתונה). */
-    teaching: string;
+    refresher: string;
+    input: string;
+    process: string;
+    output: string;
+    facts?: TraceFact[];
+    details?: { label: string; items: string[] };
+    branchReason?: string;
+    stopReason?: string;
 }
 
 export interface FullTraceLabContent {
-    /** כותרות הסקשן בעמוד (מעל הרכיב). */
     sectionEyebrow: string;
     sectionTitle: string;
     sectionIntro: string;
-    /** כותרת פנימית של הרכיב. */
     heading: string;
-    /** תת-כותרת לטינית מבנית (נשארת כמות שהיא בכל שפה). */
     kicker: string;
-    /** כרטיס הפרומפט הקבוע מעל השלבים. */
     promptLabel: string;
     prompt: string;
-    /** מילת "שלב" למונה ההתקדמות, מוצג כ "{stageWord} n/total". */
-    stageWord: string;
-    /** תווית "מה השלב מלמד" (משותפת לכל השלבים). */
-    teachingLabel: string;
-    /** תוויות ניווט בין השלבים. */
-    prevLabel: string;
-    nextLabel: string;
-    /** הבהרה שהדוגמאות לימודיות בלבד, וש-Full Trace אינו מחשבה נסתרת. */
-    disclaimer: string;
-    /** תוויות לקוראי מסך. */
-    sr: { stageGroup: string; stageDetail: string; prevBtn: string; nextBtn: string };
-    stages: FullTraceStage[];
+    disclosure: string;
+    variabilityNote: string;
+    layerHeading: string;
+    layers: Record<TraceLayer, { label: string; description: string }>;
+    statusLabels: Record<TraceStageStatus, string>;
+    labels: {
+        input: string; process: string; output: string; details: string; branchReason: string;
+        stopReason: string; stage: string; previous: string; next: string; reset: string;
+        selectStage: string; progress: (current: number, total: number) => string;
+    };
+    stages: TraceStage[];
+    branches: {
+        title: string;
+        intro: string;
+        missingInfo: { label: string; outcome: string };
+        knowledge: { label: string; outcome: string };
+        toolNeeded: { label: string; outcome: string };
+        toolError: { label: string; first: string; retry: string; exhausted: string };
+        approval: {
+            title: string; pending: string; deny: string; approve: string; denied: string;
+            approved: string; accepted: string; rejected: string; verifyAccepted: string; verifyRejected: string;
+        };
+        restart: string;
+    };
+    finalStatuses: { waiting: string; denied: string; failed: string; success: string; partial: string };
+    sr: { stageGroup: string; stageDetail: string; branchGroup: string };
 }
 
 export const fullTraceLab: FullTraceLabContent = {
     sectionEyebrow: 'Full Trace Lab',
-    sectionTitle: 'פרומפט אחד, חמישה שלבים, תוצר מבוקר',
-    sectionIntro:
-        'הפרומפט קבוע: "בדוק מה קורה עם החבילה 123456789, נסח עדכון ללקוח, ואל תשלח בלי אישור שלי." עברו שלב אחר שלב, מהקלט ועד ההחלטה, וראו איך אותה בקשה הופכת לאותות, מסלול מודל, עיגון במקור, טיוטה, ולבסוף החלטה מבוקרת.',
+    sectionTitle: 'בקשה אחת, שכבות רבות, תוצאה שניתנת לבדיקה',
+    sectionIntro: 'עקבו אחר אותה בקשת מעקב דרך הרכבת הקשר, עיבוד המודל, עיגון, לולאת Agent, בקרה, ביצוע מדומה ואימות. המסלול הראשי פשוט, ופרטים מתקדמים והסתעפויות זמינים לפי בחירה.',
     heading: 'המסלול המלא',
-    kicker: 'Full Trace Lab',
-    promptLabel: 'הפרומפט',
+    kicker: 'SCRIPTED EDUCATIONAL TRACE',
+    promptLabel: 'בקשת המשתמש',
     prompt: 'בדוק מה קורה עם החבילה 123456789, נסח עדכון ללקוח, ואל תשלח בלי אישור שלי.',
-    stageWord: 'שלב',
-    teachingLabel: 'מה השלב מלמד',
-    prevLabel: 'השלב הקודם',
-    nextLabel: 'השלב הבא',
-    disclaimer:
-        'כל הדוגמאות כאן לימודיות בלבד. אין חיבור אמיתי למערכת מעקב, אין שליחת הודעה אמיתית, ואין שינוי סטטוס אמיתי. Full Trace הוא תיעוד חינוכי של שלבים גלויים, לא הצצה לשרשרת חשיבה נסתרת של המודל.',
-    sr: {
-        stageGroup: 'בחירת שלב במסלול',
-        stageDetail: 'פרטי השלב הנבחר במסלול המלא',
-        prevBtn: 'מעבר לשלב הקודם',
-        nextBtn: 'מעבר לשלב הבא',
+    disclosure: 'זו הדמיה לימודית מתוסרטת. אין חיבור חי למעקב או להודעות, אין שליחה אמיתית, ואין חשיפה של שרשרת חשיבה נסתרת.',
+    variabilityNote: 'לא כל בקשה משתמשת בזיכרון, RAG, כלים, Agent, אישור, בדיקה עצמית או שיפור מאוחר. שלבים יכולים להידלג, לחזור או לעצור מוקדם, והארכיטקטורה משתנה בין מוצרים.',
+    layerHeading: 'השכבה הפעילה',
+    layers: {
+        model: { label: 'Model internal', description: 'חישוב בתוך המודל' },
+        product: { label: 'Application or product', description: 'הרכבה, תזמור ומצב משימה סביב המודל' },
+        tool: { label: 'External system or tool', description: 'אינטגרציה חיצונית מוגדרת' },
+        human: { label: 'Human control', description: 'החלטה מפורשת של אדם' },
+        offline: { label: 'Offline improvement process', description: 'תהליך מאוחר ונפרד מהתגובה החיה' },
+    },
+    statusLabels: { required: 'במסלול הראשי', optional: 'אופציונלי', skipped: 'דולג בתרחיש', repeated: 'עשוי לחזור', stop: 'נקודת עצירה' },
+    labels: {
+        input: 'קלט', process: 'מה משתנה או מוחלט', output: 'פלט', details: 'פרטים קומפקטיים',
+        branchReason: 'סיבת ההסתעפות', stopReason: 'סיבת העצירה', stage: 'שלב', previous: 'הקודם', next: 'הבא',
+        reset: 'איפוס המסלול', selectStage: 'בחירת שלב מרכזי', progress: (current, total) => `מיקום נוכחי ${current} מתוך ${total}, במסלול שניתן לדלג בו`,
     },
     stages: [
         {
-            id: 'input',
-            tone: 'input',
-            tab: 'קלט ומשמעות',
-            groupLabel: 'קלט ומשמעות',
-            title: 'מה נכנס, ומה המערכת מזהה',
-            summary: 'בקשה אחת מתפרקת לכמה אותות שאפשר לעבוד איתם.',
-            panels: [
-                { kind: 'prompt', label: 'הפרומפט', text: 'בדוק מה קורה עם החבילה 123456789, נסח עדכון ללקוח, ואל תשלח בלי אישור שלי.' },
-                {
-                    kind: 'signals',
-                    label: 'אותות שזוהו',
-                    items: [
-                        { k: 'מזהה חבילה', v: '123456789' },
-                        { k: 'משימה', v: 'בדיקת סטטוס' },
-                        { k: 'תוצר מבוקש', v: 'טיוטת עדכון ללקוח' },
-                        { k: 'גבול', v: 'לא לשלוח בלי אישור' },
-                    ],
-                },
+            id: 'context', group: 'קלט והקשר', layer: 'product', status: 'required', tab: 'הרכבת הקשר', title: 'המוצר מרכיב את מה שזמין עכשיו',
+            refresher: 'אחסון אינו קלט למודל. רק פריטים שנבחרו ומורכבים להקשר הנוכחי נכנסים.',
+            input: 'בקשת המשתמש והמצב הנוכחי של השיחה.', process: 'המוצר מוסיף כללי מערכת רלוונטיים ומבדיל היסטוריה, זיכרון שמור ו־retention. זיכרון יכול להישלף, retention הוא רק מדיניות שמירה.',
+            output: 'הקשר נוכחי מורכב. בתרחיש הזה אין צורך בזיכרון שמור ואין עדיין תוצאת כלי.',
+            facts: [
+                { label: 'בקשה נוכחית', value: 'בדיקת חבילה 123456789 וטיוטה בלבד' },
+                { label: 'היסטוריית שיחה', value: 'רק ההודעה הנוכחית נדרשת' },
+                { label: 'זיכרון שמור', value: 'אופציונלי, לא נשלף' },
+                { label: 'Retention', value: 'מדיניות שמירה, לא זיכרון שנכנס אוטומטית' },
+                { label: 'RAG / תוצאות קודמות', value: 'אופציונלי, עדיין אין' },
             ],
-            teaching: 'פרומפט טוב נותן למערכת יותר מבנה שאפשר לעבוד איתו: מטרה, נתון, תוצר וגבול.',
         },
         {
-            id: 'model',
-            tone: 'model',
-            tab: 'מסלול המודל',
-            groupLabel: 'מסלול המודל',
-            title: 'איך המודל מארגן את הבקשה',
-            summary: 'המודל מפרק לטוקנים, בונה משמעות, מזהה על מה להתמקד, ומעריך מה הצעד הסביר הבא.',
-            panels: [
-                { kind: 'chips', label: 'טוקנים (חלקים)', items: ['בדוק', 'מה', 'קורה', 'עם', 'החבילה', '123456789', 'נסח', 'עדכון', 'ללקוח', 'אל', 'תשלח', 'בלי', 'אישור'] },
-                { kind: 'chips', label: 'תקציר משמעות (לא מספרים)', items: ['סטטוס חבילה', 'עדכון ללקוח', 'גבול אישור'] },
-                { kind: 'chips', label: 'מוקד קשב', items: ['מזהה החבילה', 'עדכן לקוח', 'אל תשלח'] },
-                { kind: 'note', label: 'צעד סביר הבא', text: 'המשימה דורשת סטטוס עדכני, אז סביר לפנות לכלי בדיקה.', tone: 'neutral' },
-            ],
-            teaching: 'המודל מארגן את הפרומפט לאותות ולצעד הסביר הבא. זה עדיין לא אימות עובדות.',
+            id: 'model-input', group: 'קלט והקשר', layer: 'product', status: 'required', tab: 'קלט המודל', title: 'רק החבילה המורכבת נמסרת למודל',
+            refresher: 'זהו ייצוג חינוכי שקוף. פורמט ופרטי יישום משתנים בין מוצרים.',
+            input: 'כללי מערכת, מטרת המשתמש והקשר נבחר.', process: 'המוצר אורז מבנה פשוט בלי לחשוף prompt נסתר או לטעון שזה פורמט אוניברסלי.',
+            output: 'System: השתמש במקורות עדכניים ואל תבצע שליחה ללא אישור. Goal: בדוק חבילה ונסח עדכון. Constraint: לא לשלוח. Known: 123456789. Missing: סטטוס ותאריך. Sources: אין עדיין.',
         },
         {
-            id: 'grounding',
-            tone: 'grounding',
-            tab: 'עיגון',
-            groupLabel: 'עיגון ומקור',
-            title: 'מאיפה מגיע מידע אמיתי',
-            summary: 'המערכת פונה לכלי מעקב, ומפרידה בין מה שמעוגן במקור לבין מה שלא.',
-            panels: [
-                { kind: 'note', label: 'כלי נבחר', text: 'בדיקת מעקב דרך MCP (tracking lookup)', tone: 'neutral' },
-                { kind: 'result', label: 'תוצאת הכלי (דוגמה)', rows: ['סטטוס: בעיכוב', 'מועד הגעה משוער: לא זמין'] },
-                {
-                    kind: 'split',
-                    label: 'מה מעוגן ומה לא',
-                    posLabel: 'מעוגן במקור',
-                    pos: ['החבילה בעיכוב'],
-                    negLabel: 'לא מעוגן',
-                    neg: ['מועד הגעה מדויק'],
-                },
-            ],
-            teaching: 'המערכת לא צריכה להמציא מועד הגעה שחסר במקור. מקור לפני מסקנה.',
+            id: 'tokens', group: 'עיבוד המודל', layer: 'model', status: 'required', tab: 'טוקנים ו־IDs', title: 'טקסט הופך לטוקנים ואז למזהים',
+            refresher: 'טוקן יכול להיות מילה, חלק ממילה או סימן. ID הוא כתובת במילון, לא משמעות.',
+            input: 'קטע מהקלט: "בדוק ... החבילה 123456789".', process: 'הטוקנייזר מפרק חלקים וממפה כל חלק למזהה.', output: 'רצף IDs שניתן לעיבוד מספרי.',
+            details: { label: 'דוגמה קטנה בלבד', items: ['"בדוק" → token ID 4812', '"החבילה" → token ID 907', '"123456789" עשוי להתפצל לכמה טוקנים', 'המספרים הם מזהים בלבד ואינם מכילים משמעות בעצמם'] },
         },
         {
-            id: 'draft',
-            tone: 'draft',
-            tab: 'טיוטה',
-            groupLabel: 'טיוטת ה-Agent',
-            title: 'מכינים תוצר, בלי לבצע פעולה חיצונית',
-            summary: 'ה-Agent מנסח טיוטה על בסיס התוצאה, אבל עדיין לא שולח אותה.',
-            panels: [
-                { kind: 'result', label: 'טיוטה ללקוח (לא נשלחה)', rows: ['שלום, בדקנו את החבילה 123456789. לפי המעקב היא בעיכוב, ועדיין אין מועד הגעה מאושר. נעדכן ברגע שיהיה מידע חדש.'] },
-                { kind: 'note', label: 'מקור הטיוטה', text: 'מבוססת על תוצאת הכלי, בלי תאריך שהומצא.', tone: 'good' },
-                { kind: 'note', label: 'סטטוס שליחה', text: 'עוד לא נשלח.', tone: 'warn' },
-            ],
-            teaching: 'ה-Agent יכול להכין תוצר שימושי בלי לבצע את הפעולה החיצונית.',
+            id: 'representations', group: 'עיבוד המודל', layer: 'model', status: 'required', tab: 'Embeddings ומשמעות', title: 'IDs הופכים לייצוגים שניתנים לשינוי',
+            refresher: 'Embedding הוא וקטור נלמד, לא ID ולא נקודה קבועה אחת של “משמעות”.',
+            input: 'רצף token IDs.', process: 'כל ID ממופה לייצוג, ושכבות המודל משנות את הייצוגים בהתאם להקשר וליחסים סמנטיים.', output: 'ייצוגים הקשריים שמקשרים חבילה, בדיקה, לקוח וגבול אישור.',
+            details: { label: 'ייצוג מקוצר, ללא דיוק מדומה', items: ['4812 → [0.2, −0.4, …]', '907 → [0.7, 0.1, …]', 'המיקום הסמנטי משתנה דרך השכבות ואינו מפה קבועה אחת'] },
         },
         {
-            id: 'guardrails',
-            tone: 'guardrails',
-            tab: 'בקרה',
-            groupLabel: 'בקרה והחלטה',
-            title: 'מה מותר לבצע, ומה התוצר הסופי',
-            summary: 'שכבת הבקרה מזהה ששליחה היא פעולה חיצונית, אז עוצרים לאישור ומחזירים טיוטה.',
-            panels: [
-                {
-                    kind: 'signals',
-                    label: 'בדיקת בקרה',
-                    items: [
-                        { k: 'פעולה מבוקשת', v: 'שליחת עדכון ללקוח' },
-                        { k: 'סיכון', v: 'תקשורת חיצונית ללקוח' },
-                        { k: 'גבול מהפרומפט', v: 'לא לשלוח בלי אישור' },
-                        { k: 'החלטה', v: 'טיוטה בלבד, ממתין לאישור' },
-                    ],
-                },
-                { kind: 'note', label: 'תוצר סופי', text: 'טיוטה מוכנה, עם הערה: לא נשלח ללקוח. ממתין לאישור.', tone: 'warn' },
-            ],
-            teaching: 'התוצר הנכון אינו רק הודעה יפה. הוא תוצאה מבוקרת: תשובה, טיוטה, פעולה, או עצירה.',
+            id: 'attention-context', group: 'עיבוד המודל', layer: 'model', status: 'required', tab: 'Attention והחלון', title: 'המודל משקלל קשרים בתוך החלון הנוכחי',
+            refresher: 'Attention הוא משקל דינמי לחישוב הנוכחי, לא דירוג קבוע של מילים.',
+            input: 'הייצוגים וכל המידע שנכנס לחלון ההקשר כעת.', process: 'בצעד הנוכחי יש קשר חזק בין “אל תשלח” ל“אישור”; בצעד אחר המשקלים יכולים להשתנות.', output: 'ייצוג מעודכן לחיזוי הטוקן הבא.',
+            facts: [{ label: 'חלון ההקשר', value: 'המידע הזמין לתגובה הזאת עכשיו, לא כל מה שנשמר אי פעם' }],
+        },
+        {
+            id: 'generation', group: 'עיבוד המודל', layer: 'model', status: 'repeated', tab: 'Logits עד יצירה', title: 'ציונים הופכים להתפלגות, ואז decoding בוחר',
+            refresher: 'Logits הם ציונים. Softmax יוצר התפלגות. Decoding הוא שלב הבחירה.',
+            input: 'הייצוג המעודכן בצעד היצירה.', process: 'logits: “בדקנו” 2.0, “שלחנו” 1.0, “מחר” 0.0. softmax: 0.665, 0.245, 0.090, סכום 1.000. decoding בוחר “בדקנו”.',
+            output: '“בדקנו” מצורף להקשר, והלולאה חוזרת לטוקן הבא עד סימן עצירה, מגבלת אורך או עצירת מערכת.',
+            details: { label: 'הדוגמה המספרית היחידה', items: ['Logits הם 2.0 / 1.0 / 0.0, לא הסתברויות', 'Softmax מחזיר 0.665 / 0.245 / 0.090', 'Softmax אינו בוחר', 'Decoding בוחר את “בדקנו” והלולאה חוזרת'] },
+        },
+        {
+            id: 'grounding-choice', group: 'איכות ועיגון', layer: 'product', status: 'optional', tab: 'סיכון ועיגון', title: 'המערכת בוחרת אם נדרש מקור חיצוני',
+            refresher: 'טקסט יכול להישמע סביר גם בלי ראיה עדכנית. זו אפשרות להזיה, לא ודאות שתתרחש.',
+            input: 'נדרשת עובדה עדכנית על חבילה מסוימת.', process: 'נתיב ללא מקור נדחה למשימה הזאת. המערכת מעדיפה grounding בכלי; בשאלת ידע פשוטה ייתכן שהשלב יידלג.', output: 'החלטה לבקש הצעת tool call במקום לענות מהדפוסים בלבד.',
+            branchReason: 'סטטוס משלוח משתנה בזמן ודורש ראיה עדכנית. אחזור מוסיף ראיה להקשר ואינו משנה את פרמטרי המודל.',
+        },
+        {
+            id: 'agent-tool', group: 'לולאת Agent', layer: 'product', status: 'repeated', tab: 'Agent ובחירת כלי', title: 'Agent הוא מערכת סביב המודל',
+            refresher: 'Workflow קבוע עוקב אחר צעדים ידועים. Agent יכול להתאים את הצעד הבא לתוצאה, בתוך מגבלות.',
+            input: 'Goal: בדיקת סטטוס וטיוטה. State: חסר סטטוס. Constraints: אין שליחה. Proposal: tracking.lookup.', process: 'המודל עשוי להציע קריאת כלי מובנית; האפליקציה בודקת שהכלי זמין ומתאים. מצב המשימה נפרד מזיכרון ארוך טווח.',
+            output: 'Tool: tracking.lookup. Input: { trackingNumber: "123456789" }. Expected: status and confirmedArrivalDate.',
+            facts: [{ label: 'מגבלה', value: 'ניסיון ראשון ועוד retry אחד בלבד במקרה שגיאה' }, { label: 'המשך אפשרי', value: 'להמשיך, לנסות שוב, לשאול, לבקש אישור או לעצור' }],
+        },
+        {
+            id: 'authorization', group: 'לולאת Agent', layer: 'product', status: 'required', tab: 'הרשאה ומדיניות', title: 'האפליקציה בודקת הרשאה לפני הפעלת כלי',
+            refresher: 'Authorization אינו אישור אנושי. ביטחון גבוה אינו עוקף אף אחד מהם.',
+            input: 'זהות, integration, משאב ופעולה מבוקשת.', process: 'בדיקה: האם הזהות רשאית לקרוא tracking עבור המספר הזה? החלטת מדיניות: allowed לקריאה; שליחה עתידית דורשת approval. פעולה חסומה במדיניות לא נפתחת באמצעות אישור אדם.', output: 'קריאת המעקב מותרת; שליחת הודעה עדיין לא מאושרת.',
+        },
+        {
+            id: 'tool-result', group: 'לולאת Agent', layer: 'tool', status: 'optional', tab: 'ביצוע כלי', title: 'הכלי החיצוני מחזיר תוצאה נצפית',
+            refresher: 'הצלחה טכנית של קריאת כלי אינה בהכרח השלמת מטרת המשתמש.',
+            input: 'tracking.lookup({ trackingNumber: "123456789" }).', process: 'האינטגרציה המדומה מחזירה נתונים בתוך מגבלת הניסיון.', output: 'status: delayed. confirmedArrivalDate: unavailable.',
+            facts: [{ label: 'עדכון מצב משימה', value: 'סטטוס ידוע; תאריך עדיין חסר; צריך לנסח בלי להמציא' }, { label: 'אמינות מקור', value: 'גם ראיה חיצונית יכולה להיות חלקית או שגויה' }],
+        },
+        {
+            id: 'draft-check', group: 'איכות ועיגון', layer: 'product', status: 'optional', tab: 'טיוטה ובדיקה', title: 'נוצרת טיוטה מעוגנת ונערכת בדיקה עצמית',
+            refresher: 'בדיקה עצמית היא pass נוסף של המערכת, לא הוכחת אמת ולא תמליל חשיבה נסתר.',
+            input: 'תוצאת הכלי הוכנסה להקשר המשימה.', process: 'נבדק בגלוי: תואם לעיכוב ✓; לא הומצא תאריך ✓; לא נטען שנשלח ✓; אי־הוודאות גלויה ✓.',
+            output: '“שלום, בדקנו את החבילה 123456789. לפי המעקב היא בעיכוב, ועדיין אין מועד הגעה מאושר. נעדכן כשיהיה מידע חדש.”',
+            facts: [{ label: 'מגבלת הבדיקה', value: 'היא עשויה לתפוס בעיות אך אינה מבטיחה שהמקור או הטיוטה נכונים' }],
+        },
+        {
+            id: 'approval', group: 'בקרה ופעולה', layer: 'human', status: 'stop', tab: 'אישור אנושי', title: 'שליחה דורשת החלטה מפורשת',
+            refresher: 'ההרשאה המערכתית מאפשרת יכולת; approval מאשר פעולה מסוימת.',
+            input: 'טיוטה מעוגנת, policy: approval required.', process: 'ברירת המחדל בהדגמה היא לא לשלוח. הלומד יכול לבחור הסתעפות חינוכית של אישור או דחייה.', output: 'ממתין לאישור. שום הודעה לא נשלחה.',
+            stopReason: 'המשתמש ביקש במפורש לא לשלוח ללא אישור.',
+        },
+        {
+            id: 'verification', group: 'בקרה ופעולה', layer: 'product', status: 'optional', tab: 'ביצוע ואימות', title: 'אחרי פעולה מדומה בודקים תוצאה נצפית',
+            refresher: 'Tool accepted אינו תמיד “המשימה הושלמה”; היעד של המשתמש חייב להתקיים.',
+            input: 'רק אם ניתן approval חינוכי: sendMessage עם הטיוטה.', process: 'האינטגרציה המדומה מדווחת accepted או rejected; האפליקציה מאמתת את הדיווח מול מטרת המשימה.', output: 'סטטוס כן: success, partial, waiting for approval, blocked, denied, stopped או failed.',
+            branchReason: 'ללא אישור השלב מדולג והמצב נשאר waiting for approval.',
+        },
+        {
+            id: 'offline', group: 'שיפור מאוחר', layer: 'offline', status: 'optional', tab: 'משוב והערכה', title: 'שיפור אפשרי קורה מאוחר ובנפרד',
+            refresher: 'שיחה אחת אינה מאמנת מחדש את המודל מיד.',
+            input: 'משוב עשוי להישלח ולהישמר או להיבדק.', process: 'לא כל משוב נבחר. דוגמאות מתאימות עשויות לשפר prompt, כלל, workflow, מקור אחזור או מודל. לאחר מכן בודקים את העדכון על מקרי held-out נפרדים מדוגמאות השיפור.', output: 'עדכון אפשרי שהוערך לפני פריסה; אין למידה מיידית מהשיחה הזאת.',
+            branchReason: 'זהו מסלול offline נפרד, לא המשך של התגובה החיה.',
         },
     ],
+    branches: {
+        title: 'בדקו הסתעפויות בלי לעזוב את התרחיש הראשי',
+        intro: 'הבחירה משנה הדמיה בלבד ומסבירה למה המסלול ממשיך, מדלג או נעצר.',
+        missingInfo: { label: 'חסר מספר מעקב', outcome: 'שואלים את המשתמש במקום להמציא מזהה.' },
+        knowledge: { label: 'שאלת ידע פשוטה', outcome: 'כלי ו־approval עשויים להידלג כי אין צורך במידע עדכני או פעולה.' },
+        toolNeeded: { label: 'סטטוס החבילה הנוכחית', outcome: 'נדרש כלי כי הסטטוס משתנה בזמן.' },
+        toolError: { label: 'הדמיית שגיאת כלי', first: 'ניסיון 1 נכשל. נשאר retry אחד.', retry: 'Retry 1 מתוך 1 נכשל.', exhausted: 'המגבלה מוצתה. עוצרים ב־failed ולא טוענים שהמשימה הצליחה.' },
+        approval: {
+            title: 'החלטת approval חינוכית', pending: 'ממתין להחלטה, לא נשלח', deny: 'דחה שליחה', approve: 'אשר שליחה מדומה',
+            denied: 'האישור נדחה. אין ביצוע והמצב denied.', approved: 'אישור התקבל להדמיה בלבד. אפשר לדמות תשובת integration.',
+            accepted: 'הדמה accepted', rejected: 'הדמה rejected', verifyAccepted: 'ה־integration דיווח accepted והאימות תואם למטרה: success מדומה.',
+            verifyRejected: 'ה־integration דיווח rejected. האימות מונע success והמצב failed.',
+        },
+        restart: 'התחל מחדש',
+    },
+    finalStatuses: { waiting: 'waiting for approval', denied: 'denied', failed: 'failed', success: 'success (simulated)', partial: 'partial completion' },
+    sr: { stageGroup: 'בחירת שלב במסלול', stageDetail: 'פרטי השלב הפעיל', branchGroup: 'בחירת הסתעפות חינוכית' },
 };

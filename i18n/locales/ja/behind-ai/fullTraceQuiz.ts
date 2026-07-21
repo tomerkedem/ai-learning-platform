@@ -1,80 +1,8 @@
-// i18n/locales/ja/behind-ai/fullTraceQuiz.ts
-//
-// 第19章「Full Trace: 一つのプロンプト、すべての駅」の小テストの表示テキスト（日本語, ja,
-// LTR）。ヘブライ語が真実の源。
-//
-// これは表示テキストのみ。共有の仕組み（correctAnswer, difficulty, concept, onComplete,
-// getReviewLinks, nextHref）は共有の quizData.ts にある。章のページはこの表示テキストを
-// 問題IDごと（byId）に共有の骨組みに重ねるため、選択肢の順序は言語間で同一に保つ必要がある。
-//
-// これはネイティブによる後日の見直しを要する第一次翻訳。
-//
-// 全角ダッシュ（U+2014）や半角ダッシュ（U+2013）は使わない。
-
-import type { FullTraceQuizId, FullTraceQuizText } from '../../he/behind-ai/fullTraceQuiz';
-
-export const fullTraceQuiz = {
-    title: '理解チェック: 一つのプロンプト、すべての駅',
-    subtitle: 'この章で学んだことを研ぎ澄ます五つの問い',
-    startLabel: 'チェックを始める',
-    submitLabel: 'チェックを終える',
-    completedTitle: 'チェックを終えました',
-
-    byId: {
-        1: {
-            question: 'Full Trace は何を示しますか。',
-            options: [
-                '中間の段階なしの、一つの最終的な答え',
-                '入力から制御された出力まで、システムの段階の見える経路',
-                'モデルが検討して却下したすべての答えの一覧',
-                'システムが接続している外部ツールだけ',
-            ],
-            explanation:
-                'Full Trace はコースのすべての駅を一つの見える経路につなぎます。入力、意味、情報源への接地、チェック、制御層、そして出力。終わりの答えだけでなく、そこまでの道のり全体です。',
-        },
-        2: {
-            question: '友人が「Full Trace はモデルの私的な考えを見せてくれる」と言います。これは正確ですか。',
-            options: [
-                'はい、モデルの隠れた思考連鎖を直接のぞくものです',
-                'いいえ。システムの見える段階の教育的な記録であり、私的な考えではありません',
-                'はい、モデルは私たちが読む思考日記を自分で書きます',
-                'いいえ、モデルには内部の処理がまったくないからです',
-            ],
-            explanation:
-                'Full Trace は隠れた思考連鎖ではありません。入力、文脈、ツールの結果、チェック、許可の状態、出力という、システムの見える段階を示します。目的は道のりを教えることで、私的な推論を暴くことではありません。',
-        },
-        3: {
-            question: 'ツールの結果は「状況: 遅延、配達予定日: 利用不可」です。システムが到着日をでっち上げないのが正しいのはなぜですか。',
-            options: [
-                '到着日はお客様にとって決して重要でないから',
-                '結論は情報源に依るべきで、情報源にないものはでっち上げないから',
-                'モデルは日付を書けないから',
-                '妥当に聞こえるなら日付をでっち上げてよいから',
-            ],
-            explanation:
-                '結論の前に情報源を。情報源は荷物が遅延していると確認しましたが、到着日は示しませんでした。情報源になかった日付を補うのは、事実として提示された当て推量であり、接地はまさにそれを防ぐためのものです。',
-        },
-        4: {
-            question: 'プロンプトは「私の承認なしに送信しないでください」と言い、システムは優れた下書きを用意しました。最終的な行動について正しいのはどれですか。',
-            options: [
-                '下書きができているので、すぐに送信する',
-                '下書きを用意して承認のために止まる。外部への送信は承認の境界を通るから',
-                'いかなるリスクも避けるため下書きを削除する',
-                '送信してから、あとで承認を求める',
-            ],
-            explanation:
-                'プロンプトの承認の境界が最終的な行動を変えます。お客様への送信は外部の慎重を要する行動なので、システムは止まります。下書きはできていて、人の承認のあとにだけメッセージが出ます。',
-        },
-        5: {
-            question: '追跡しやすく、信頼しやすい形でエージェントに働いてほしいとき、最も良い指示はどれですか。',
-            options: [
-                '「これをよろしく。」',
-                '「荷物123456789の状況を確認して。情報源に到着日がなければ、推測しないで。お客様への短いメッセージを作成して。私の承認なしに送信しないで。最後に、何を確認し、何が分かり、何をしなかったかを書いて。」',
-                '「良さそうだと思うものをお客様に送って。」',
-                '「私に何も聞かずに、終わるまで続けて。」',
-            ],
-            explanation:
-                '追跡しやすいプロンプトは、目標、データ、情報源、前提としないこと、承認の境界、そして何をして何をしなかったかの報告を伴う出力を定めます。「これをよろしく」は曖昧すぎ、「良さそうなものを送って」は制御なしに慎重を要する行動を開き、「何も聞くな」は不足情報を尋ねるのを妨げます。明確な指示は、追跡しやすい制御された出力を生みます。',
-        },
-    } satisfies Record<FullTraceQuizId, FullTraceQuizText>,
-};
+import type { FullTraceQuizId,FullTraceQuizText } from '../../he/behind-ai/fullTraceQuiz';
+export const fullTraceQuiz={title:'確認: フルトレース',subtitle:'5つの層について5問',startLabel:'開始',submitLabel:'終了',completedTitle:'完了',byId:{
+1:{question:'実際にモデルへ入るものは？',options:['保存された全情報','選択された規則と関連情報から組み立てた現在の入力だけ','全memoryと履歴が常に入る','最後の一文だけ'],explanation:'履歴、memory、RAG、tool結果は選択時だけ入り、保存は自動入力ではありません。'},
+2:{question:'次トークン生成の正しい説明は？',options:['IDに意味がありsoftmaxが選ぶ','IDをembeddingsにし、logitsを出し、softmaxが分布を作りdecodingが選ぶ','embeddingsは確率','logitsは常に合計1'],explanation:'IDは識別、embeddingは表現、logitsはスコア、softmaxは分布、decodingは選択です。'},
+3:{question:'groundingとself-checkについて正しいものは？',options:['RAGは即座にパラメータを変える','根拠をcontextに加え、self-checkは問題を見つけても真実を証明しない','外部根拠は常に正しい','self-checkは真実を保証する'],explanation:'groundingは再学習ではなく、情報源と確認はどちらも誤る可能性があります。'},
+4:{question:'成功報告の前に必要なものは？',options:['高いconfidenceだけ','toolとauthorization、policy、必要なapproval、上限付き実行、目標の検証','任意のaccepted','policyが拒否してもapproval'],explanation:'authorizationとapprovalは別で、tool成功だけではtask完了ではありません。'},
+5:{question:'feedbackの後工程で正しいものは？',options:['即座に学習する','後で確認され、更新は別のheld-out事例で評価され得る','改善例と評価例は同一','常にmemoryになる'],explanation:'改善は別のoffline経路で、全feedbackを使わず、評価も分けます。'},
+} satisfies Record<FullTraceQuizId,FullTraceQuizText>};

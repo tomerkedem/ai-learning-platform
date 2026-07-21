@@ -79,11 +79,12 @@ export const fullTrace = {
         title: '駅ごとに: コース全体を一つの経路で',
         intro: '各章を詳しく繰り返すことはしません。経路全体を五つのグループで見て、一目で道のりをたどれるようにします。',
         groups: [
-            { title: '入力と意味', stations: ['入力', 'トークン', 'Embeddings', 'Semantic Space', '文脈'] },
-            { title: '答えの生成', stations: ['Attention', 'Logits & Softmax', 'Decoding', 'Generation Loop'] },
-            { title: '信頼性', stations: ['ハルシネーションのリスク', 'RAG / Grounding', 'Self-Check', 'Evaluation'] },
-            { title: 'エージェント層', stations: ['タスクの検出', '追跡の確認', '観測', '下書き / 行動計画'] },
-            { title: '制御と出力', stations: ['リスクの確認', '承認ゲート', '答え / 下書き / 停止'] },
+            { title: 'プロダクトが入力を組む', stations: ['ユーザー依頼', 'システム規則', '現在のcontext', '任意memory / RAG', 'モデル入力'] },
+            { title: 'モデルが処理・生成', stations: ['Tokens と IDs', 'Embeddings', 'Attention と window', 'Logits', 'Softmax', 'Decoding と loop'] },
+            { title: '品質とgrounding', stations: ['リスク', '任意grounding', '情報源の結果', '誤り得るself-check'] },
+            { title: 'Agent loop', stations: ['目標とtask state', 'Tool選択', 'Authorization と policy', '上限付き実行', '状態更新'] },
+            { title: '制御と結果', stations: ['人のapproval', '模擬実行', '観測検証', '正直なstatus'] },
+            { title: '後で別経路', stations: ['Feedback', '例の選択', '更新候補', 'Held-out評価'] },
         ],
         caption:
             '一つの経路: 入力から、答えの生成、信頼性、エージェント層を通り、制御された判断まで。ラボでは、一つの実際の依頼でそれをたどります。',

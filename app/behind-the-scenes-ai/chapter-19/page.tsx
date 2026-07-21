@@ -115,6 +115,7 @@ export default function BehindTheScenesChapter19() {
     // הממשק. הכיוון (RTL/LTR) של הפריסה מגיע מ-dir של שפת הממשק.
     const speechLocale = c19.contentLocale;
     const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
+    const [activeTraceNarration, setActiveTraceNarration] = useState('');
 
     // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
     const guessContent: OpeningGuessContent = {
@@ -153,7 +154,11 @@ export default function BehindTheScenesChapter19() {
     const sGuess: ReadAloudSegment = { id: 'guess', label: c19.guess.eyebrow, text: `${c19.guess.title} ${c19.guess.subtitle}` };
     const sPrimer: ReadAloudSegment = { id: 'primer', label: c19.primer.title, text: primerText };
     const sSee: ReadAloudSegment = { id: 'see', label: c19.see.title, text: seeText };
-    const sLab: ReadAloudSegment = { id: 'lab', label: c19.lab.sectionTitle, text: `${c19.lab.sectionTitle}. ${c19.lab.sectionIntro}` };
+    const sLab: ReadAloudSegment = {
+        id: 'lab',
+        label: c19.lab.sectionTitle,
+        text: `${c19.lab.sectionTitle}. ${c19.lab.sectionIntro}. ${activeTraceNarration}`,
+    };
     const sWow: ReadAloudSegment = { id: 'wow', label: c19.insight.title, text: `${c19.insight.title}. ${c19.insight.lead} ${c19.insight.body}` };
     const sMisconception: ReadAloudSegment = { id: 'misconception', label: c19.misconception.rightLabel, text: `${c19.misconception.rightLabel}. ${c19.misconception.rightBody}` };
     const sLock: ReadAloudSegment = { id: 'lock', label: c19.lock.title, text: c19.lock.question };
@@ -347,7 +352,12 @@ export default function BehindTheScenesChapter19() {
                     <SpeakButton text={`${c19.lab.sectionTitle}. ${c19.lab.sectionIntro}`} className="mt-1" speechLocale={speechLocale} />
                 </div>
 
-                <FullTraceLab data={c19.lab} dir={dir} speechLocale={speechLocale} />
+                <FullTraceLab
+                    data={c19.lab}
+                    dir={dir}
+                    speechLocale={speechLocale}
+                    onNarrationChange={setActiveTraceNarration}
+                />
 
                 {/* המנטור: עברו שלב אחר שלב וראו את המסלול */}
                 <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
