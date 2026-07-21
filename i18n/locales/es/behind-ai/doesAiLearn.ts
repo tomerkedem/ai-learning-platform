@@ -43,7 +43,7 @@ export const doesAiLearn = {
     primer: {
         eyebrow: 'Contexto, memoria y entrenamiento no son lo mismo',
         title: 'Antes del laboratorio: que significa que el modelo "aprende de mi"?',
-        subtitle: 'Contexto, memoria y entrenamiento no son lo mismo.',
+        subtitle: 'Usarlo ahora, el historial, la memoria, la retencion y el entrenamiento no son lo mismo.',
         lead:
             'Cuando corriges el modelo y se corrige a si mismo, es facil sentir que aprendio. Pero suele pasar algo mas sencillo: la correccion entro en el contexto que el modelo ve ahora. Separemos algunas capas que es facil confundir.',
         points: [
@@ -60,8 +60,8 @@ export const doesAiLearn = {
                 body: 'Algunos productos ofrecen memoria o preferencias guardadas. Es una funcion de producto, no lo mismo que cambiar el modelo base.',
             },
             {
-                title: 'Registros y comentarios',
-                body: 'A veces los comentarios se pueden registrar o revisar, segun el producto y la configuracion. No se afirma nada aqui sobre un producto concreto.',
+                title: 'Retencion frente a memoria frente a entrenamiento',
+                body: 'La retencion significa que el servicio guarda datos por un tiempo o con un fin. La memoria significa que cierta informacion seleccionada puede volver en conversaciones futuras. El entrenamiento significa seleccionar datos para un proceso aparte que cambia el modelo. Son cosas distintas, y dependen del producto y la configuracion.',
             },
             {
                 title: 'Entrenamiento y actualizacion',
@@ -84,7 +84,7 @@ export const doesAiLearn = {
             'La mejora duradera necesita memoria o entrenamiento',
         ],
         caption:
-            'Aqui hay varias capas distintas: contexto, memoria, registros y comentarios, y entrenamiento. Tu correccion vive en la capa de contexto, y no llega necesariamente a las capas mas profundas.',
+            'Aqui hay varias capas distintas: contexto, memoria, la retencion del servicio y entrenamiento. Tu correccion vive en la capa de contexto, y no llega necesariamente a las mas profundas. El Capitulo 14 mostro como los comentarios pueden alimentar un proceso de mejora posterior, el Capitulo 15 mostro que toda actualizacion debe evaluarse, y aqui vimos que nada de esto significa que el modelo aprendiera al instante de una sola correccion.',
     },
 
     guess: {
@@ -180,7 +180,7 @@ export const doesAiLearn = {
             'Despues de cada cambio, comprueba de nuevo que el comportamiento mejoro de verdad.',
         ],
         caveat:
-            'Distintos productos manejan los datos de forma diferente. Si un dato importa, aporta la fuente, la regla o el contexto guardado de forma explicita, y no confies en que el modelo "recuerda".',
+            'Si un dato importa, aporta la fuente, la regla o el contexto guardado de forma explicita, y no confies en que el modelo "recuerda". La memoria, el historial y la retencion son cosas distintas, y dependen del producto y la configuracion.',
     },
 
     finalExamCta: {

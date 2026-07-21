@@ -42,7 +42,7 @@ export const doesAiLearn = {
     primer: {
         eyebrow: 'Context, memory, and training are not the same',
         title: 'Before the lab: what does it mean that the model "learns from me"?',
-        subtitle: 'Context, memory, and training are not the same.',
+        subtitle: 'Using it now, history, memory, retention, and training are not the same.',
         lead:
             'When you correct the model and it corrects itself, it is easy to feel that it learned. But usually something simpler happened: the correction entered the context the model sees now. Let us separate a few layers that are easy to confuse.',
         points: [
@@ -59,8 +59,8 @@ export const doesAiLearn = {
                 body: 'Some products offer memory or saved preferences. That is a product feature, not the same thing as changing the base model.',
             },
             {
-                title: 'Logs and feedback',
-                body: 'Sometimes feedback can be logged or reviewed, depending on the product and settings. No claim is made here about a specific product.',
+                title: 'Retention vs memory vs training',
+                body: 'Retention means the service keeps data for some time or purpose. Memory means selected information may return in future conversations. Training means selecting data for a separate process that changes the model. These are separate things, and they depend on the product and settings.',
             },
             {
                 title: 'Training and update',
@@ -83,7 +83,7 @@ export const doesAiLearn = {
             'Lasting improvement needs memory or training',
         ],
         caption:
-            'There are several different layers here: context, memory, logs and feedback, and training. Your correction lives in the context layer, and does not necessarily reach the deeper layers.',
+            'There are several different layers here: context, memory, the service keeping data, and training. Your correction lives in the context layer, and does not necessarily reach the deeper ones. Chapter 14 showed how feedback can feed a later improvement process, Chapter 15 showed that any update must be evaluated, and here we saw that none of this means the model learned instantly from one correction.',
     },
 
     guess: {
@@ -179,7 +179,7 @@ export const doesAiLearn = {
             'After every change, check again that the behavior really improved.',
         ],
         caveat:
-            'Different products handle data differently. If a fact matters, provide the source, the rule, or the saved context explicitly, and do not rely on the model "remembering".',
+            'If a fact matters, provide the source, the rule, or the saved context explicitly, and do not rely on the model "remembering". Memory, history, and retention are different things, and they depend on the product and settings.',
     },
 
     finalExamCta: {
