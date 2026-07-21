@@ -47,11 +47,11 @@ export const selfCheck = {
         points: [
             {
                 title: 'What a self-check is',
-                body: 'A visible step after the draft. Instead of sending right away, the model goes over the answer and asks whether it is faithful to the question and the source.',
+                body: 'A visible step after the draft. Instead of sending right away, the model goes over the answer and asks whether it is faithful to the question and the source. This is different from "asking again": another answer is a new phrasing, not a check of the existing draft.',
             },
             {
                 title: 'What it checks',
-                body: 'Whether the answer addresses the question, whether every claim rests on the source, whether it invents missing information, whether the confidence fits, and whether it clearly says what is not known.',
+                body: 'Whether the answer addresses the question, whether it contradicts itself, whether every claim rests on the source, whether it invents missing information, whether the confidence fits, and whether it clearly says what is not known.',
             },
             {
                 title: 'Why this matters after a source',
@@ -74,9 +74,9 @@ export const selfCheck = {
 
     see: {
         title: 'How a self-check works, step by step',
-        steps: ['Draft answer', 'Extract the claims', 'Compare to the source', 'Flag an unsupported claim', 'Revised answer'],
+        steps: ['Draft answer', 'Explicit criteria', 'Spotting weaknesses', 'Internal fix', 'External check when needed'],
         caption:
-            'The answer is not accepted just because it sounds good. Every claim in it is checked against the question and the source, and the claim with no support is flagged and fixed. This is a teaching illustration, not a check of a real system.',
+            'First you write a draft, then you run it against clear criteria: did it answer the question, does it contradict itself, is anything missing, and is every claim supported. What can be fixed is fixed in place. What needs factual evidence and has no source moves to an external check, and the gap is stated explicitly. Not every problem is solved by self-check. This is a teaching illustration, not a check of a real system.',
     },
 
     guess: {
@@ -150,7 +150,7 @@ export const selfCheck = {
         wrongLabel: 'Common mistake',
         wrongQuote: '"If the model checks itself, you can trust that the answer is correct."',
         rightLabel: 'How it really works',
-        rightBody: 'A self-check compares the answer to the source and the request, not to the world. It catches a claim that has no support in the source, but it cannot verify a fact the source does not contain at all. If the source is wrong or incomplete, even an answer that passed the check can be wrong. The check is a useful control step, not a guarantee of truth.',
+        rightBody: 'A self-check compares the answer to the source and the request, not to the world. It catches a claim that has no support in the source, but it cannot verify a fact the source does not contain at all. If the source is wrong or incomplete, even an answer that passed the check can be wrong. And it is important to remember: the check itself is written by the same model, not by an independent party, so it can share the same blind spots and even repeat the same mistake it is supposed to catch. The check is a useful control step, not a guarantee of truth.',
     },
 
     lock: {
@@ -178,7 +178,7 @@ export const selfCheck = {
             'Stay visible: "Ask for a checklist and a revised answer, not hidden thoughts."',
         ],
         caveat:
-            'A self-check improves the quality of the answer, but it does not guarantee truth and does not verify facts that are not in the source. It is a useful control step: a draft, a comparison to the source, and a revised answer that is honest about what is not known.',
+            'A self-check improves the quality of the answer, but it does not guarantee truth and does not verify facts that are not in the source. It is a useful control step: a draft, a comparison to the source, and a revised answer that is honest about what is not known. A simple rule: use self-check for structure, completeness, consistency, and flagging unsupported claims. When factual correctness is critical and the evidence is missing or uncertain, turn to a reliable source, a tool, or a person. The check still helps beforehand, but it does not replace verification.',
     },
 
     lab: selfCheckLab,

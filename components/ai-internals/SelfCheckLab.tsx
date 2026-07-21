@@ -20,7 +20,7 @@ import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
     MessageSquare, FileSearch, CheckCircle2, XCircle, AlertTriangle, Lightbulb,
-    ClipboardCheck, ListChecks, PenLine, ShieldQuestion, ArrowDown, type LucideIcon,
+    ClipboardCheck, ListChecks, PenLine, ShieldQuestion, SearchCheck, ArrowDown, type LucideIcon,
 } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
 import type {
@@ -42,6 +42,7 @@ const BADGE_TONE: Record<DraftBadge, { Icon: LucideIcon; cls: string }> = {
     overclaim: { Icon: AlertTriangle, cls: 'border-rose-400/50 bg-rose-950/25 text-rose-100' },
     overcautious: { Icon: ShieldQuestion, cls: 'border-amber-400/50 bg-amber-950/25 text-amber-100' },
     checked: { Icon: CheckCircle2, cls: 'border-emerald-400/50 bg-emerald-950/25 text-emerald-100' },
+    needsSource: { Icon: SearchCheck, cls: 'border-orange-400/50 bg-orange-950/25 text-orange-100' },
 };
 
 /** אייקון וגוון לכל מצב טענה. מבני, נגזר מ-state. המשמעות מופיעה גם בטקסט ה-note. */
@@ -72,6 +73,7 @@ export const SelfCheckLab: React.FC<SelfCheckLabProps> = ({ data, dir, speechLoc
         `${data.draftLabel}: ${mode.draft}`,
         `${data.issueLabel}: ${mode.issue}`,
         `${data.revisedLabel}: ${mode.revised}`,
+        `${data.takeawayLabel}: ${mode.takeaway}`,
     );
 
     return (
@@ -115,7 +117,7 @@ export const SelfCheckLab: React.FC<SelfCheckLabProps> = ({ data, dir, speechLoc
 
             {/* בורר הטיוטה */}
             <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-slate-400">{data.draftLabel}</div>
-            <div className="mb-4 grid grid-cols-3 gap-2" role="group" aria-label={data.sr.draftGroup}>
+            <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4" role="group" aria-label={data.sr.draftGroup}>
                 {data.modes.map((m) => {
                     const active = m.id === draftId;
                     return (

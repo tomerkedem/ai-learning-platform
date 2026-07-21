@@ -47,11 +47,11 @@ export const selfCheck = {
         points: [
             {
                 title: 'Qué es la autocomprobación',
-                body: 'Un paso visible después del borrador. En lugar de enviar de inmediato, el modelo repasa la respuesta y se pregunta si es fiel a la pregunta y a la fuente.',
+                body: 'Un paso visible después del borrador. En lugar de enviar de inmediato, el modelo repasa la respuesta y se pregunta si es fiel a la pregunta y a la fuente. Esto es distinto de "volver a preguntar": otra respuesta es una nueva redacción, no una comprobación del borrador ya existente.',
             },
             {
                 title: 'Qué comprueba',
-                body: 'Si la respuesta contesta a la pregunta, si cada afirmación se apoya en la fuente, si inventa información que falta, si el nivel de confianza es adecuado, y si se dice con claridad lo que no se sabe.',
+                body: 'Si la respuesta contesta a la pregunta, si cada afirmación se apoya en la fuente, si se contradice a sí misma, si inventa información que falta, si el nivel de confianza es adecuado, y si se dice con claridad lo que no se sabe.',
             },
             {
                 title: 'Por qué esto importa después de una fuente',
@@ -74,9 +74,9 @@ export const selfCheck = {
 
     see: {
         title: 'Cómo funciona la autocomprobación, paso a paso',
-        steps: ['Borrador de respuesta', 'Extraer las afirmaciones', 'Comparar con la fuente', 'Señalar la afirmación sin respaldo', 'Respuesta corregida'],
+        steps: ['Borrador de respuesta', 'Criterios explícitos', 'Detectar debilidades', 'Corrección interna', 'Comprobación externa cuando hace falta'],
         caption:
-            'La respuesta no se acepta solo porque suene bien. Cada afirmación se comprueba frente a la pregunta y a la fuente, y la afirmación sin respaldo se señala y se corrige. Esta es una ilustración didáctica, no la comprobación de un sistema real.',
+            'Primero escribes un borrador, y luego lo pasas por criterios claros: ¿respondió a la pregunta, se contradice a sí mismo, falta algo, y cada afirmación tiene respaldo? Lo que se puede corregir se corrige en el momento. Lo que necesita evidencia de hechos y no tiene fuente pasa a una comprobación externa, y el vacío se dice de forma explícita. No todo problema se resuelve con la autocomprobación. Esta es una ilustración didáctica, no la comprobación de un sistema real.',
     },
 
     guess: {
@@ -150,7 +150,7 @@ export const selfCheck = {
         wrongLabel: 'Error común',
         wrongQuote: '"Si el modelo se comprueba a sí mismo, se puede confiar en que la respuesta es correcta."',
         rightLabel: 'Cómo funciona en realidad',
-        rightBody: 'La autocomprobación compara la respuesta con la fuente y con la petición, no con el mundo. Detecta una afirmación sin respaldo en la fuente, pero no puede verificar un hecho que la fuente ni siquiera contiene. Si la fuente está equivocada o incompleta, incluso una respuesta que pasó la comprobación puede fallar. La comprobación es un paso de control útil, no una garantía de verdad.',
+        rightBody: 'La autocomprobación compara la respuesta con la fuente y con la petición, no con el mundo. Detecta una afirmación sin respaldo en la fuente, pero no puede verificar un hecho que la fuente ni siquiera contiene. Si la fuente está equivocada o incompleta, incluso una respuesta que pasó la comprobación puede fallar. Y es importante recordar: la propia comprobación la escribe el mismo modelo, no una parte independiente, así que puede compartir los mismos puntos ciegos e incluso repetir el mismo error que se supone que debe atrapar. La comprobación es un paso de control útil, no una garantía de verdad.',
     },
 
     lock: {
@@ -178,7 +178,7 @@ export const selfCheck = {
             'Quédate en lo visible: "Pide una lista de control y una respuesta corregida, no pensamientos internos."',
         ],
         caveat:
-            'La autocomprobación mejora la calidad de la respuesta, pero no garantiza la verdad ni verifica hechos que no están en la fuente. Es un paso de control útil: un borrador, la comparación con la fuente, y una respuesta corregida que es honesta sobre lo que no se sabe.',
+            'La autocomprobación mejora la calidad de la respuesta, pero no garantiza la verdad ni verifica hechos que no están en la fuente. Es un paso de control útil: un borrador, la comparación con la fuente, y una respuesta corregida que es honesta sobre lo que no se sabe. Una regla sencilla: usa la autocomprobación para la estructura, la completitud, la coherencia y para señalar afirmaciones sin respaldo. Cuando la exactitud de los hechos es crítica y la evidencia falta o es incierta, recurre a una fuente fiable, una herramienta o una persona. La comprobación sigue ayudando antes, pero no sustituye a la verificación.',
     },
 
     lab: selfCheckLab,

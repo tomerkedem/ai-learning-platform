@@ -28,10 +28,10 @@ export const selfCheckQuiz = {
                 'Asking the model to expose its hidden thoughts',
                 'A step where the draft is checked against the question and the source before it is sent',
                 'An external tool that verifies facts on the internet',
-                'Rewording so the answer sounds more confident',
+                'Asking the model for a new answer, hoping it comes out better',
             ],
             explanation:
-                'A self-check is a visible step after the draft: each claim is compared to the question and the source, whatever is unsupported or missing is flagged, and it is fixed before the answer goes out. It is not an exposure of hidden thoughts and not an external verification.',
+                'A self-check is a visible step after the draft: each claim is compared to the question and the source, whatever is unsupported or missing is flagged, and it is fixed before the answer goes out. It is not an exposure of hidden thoughts and not an external verification, and it is also not asking for a new answer: self-check reviews the existing draft against criteria, it does not produce a different phrasing.',
         },
         2: {
             question: 'After we connected the answer to a source, why is a self-check still needed?',

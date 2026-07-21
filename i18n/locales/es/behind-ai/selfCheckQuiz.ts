@@ -28,10 +28,10 @@ export const selfCheckQuiz = {
                 'Pedirle al modelo que revele sus pensamientos internos',
                 'Un paso en el que se comprueba el borrador frente a la pregunta y la fuente antes de enviarlo',
                 'Una herramienta externa que verifica hechos en internet',
-                'Una reformulación para que la respuesta suene más segura',
+                'Pedirle al modelo una respuesta nueva, esperando que salga mejor',
             ],
             explanation:
-                'La autocomprobación es un paso visible después del borrador: se compara cada afirmación con la pregunta y la fuente, se señala lo que no tiene respaldo o falta, y se corrige antes de que la respuesta salga. No es revelar pensamientos internos ni una verificación externa.',
+                'La autocomprobación es un paso visible después del borrador: se compara cada afirmación con la pregunta y la fuente, se señala lo que no tiene respaldo o falta, y se corrige antes de que la respuesta salga. No es revelar pensamientos internos ni una verificación externa, y tampoco es pedir una respuesta nueva: la autocomprobación revisa el borrador ya existente frente a unos criterios, no produce una redacción distinta.',
         },
         2: {
             question: 'Después de conectar la respuesta a una fuente, ¿por qué sigue haciendo falta la autocomprobación?',
