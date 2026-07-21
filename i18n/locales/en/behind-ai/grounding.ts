@@ -46,11 +46,11 @@ export const grounding = {
             },
             {
                 title: 'What RAG means',
-                body: 'RAG is, in short, three steps: retrieve relevant information, add it to the model context, then write an answer based on it. Retrieve, add, answer with grounding.',
+                body: 'RAG is, in short, three steps. First a retrieval system, not the model itself, searches the available collection of sources and returns several candidate passages. Then the relevant one is chosen from the candidates and added to the current context of the model. Finally the model composes an answer based on the question and the selected evidence. Retrieve, add, grounded generation. Web search is only one possible retrieval method, not a requirement.',
             },
             {
                 title: 'Why this matters after hallucinations',
-                body: 'We saw that when a fact is missing, the model may fill it in with a plausible continuation. A source gives it something concrete to rest on, so there is less room to guess.',
+                body: 'We saw that when a fact is missing, the model may complete it with a plausible continuation. A source gives it something concrete to lean on, so there is less room to guess. Note the distinction: a hallucination is when the answer itself invents unsupported content, while a retrieval failure is when the system did not supply the right evidence in the first place. A failed retrieval increases the risk of hallucination, but they are not the same failure.',
             },
             {
                 title: 'What a source grounded answer can do',
@@ -61,17 +61,17 @@ export const grounding = {
                 body: 'It does not guarantee truth if the source itself is wrong, does not answer beyond the source, does not replace human judgment, and does not check a live status unless it is truly connected to the system.',
             },
             {
-                title: 'The boundary of this chapter',
-                body: 'Here we only introduce the idea. We will not dive deep into vector databases, embeddings, or retrieval algorithms. Those are engineering details. The simple message: retrieve, add to context, and answer with grounding.',
+                title: 'The retrieved source is not always the right one',
+                body: 'Retrieval may return several candidate passages, and the top-ranked passage is not necessarily the correct one. Sometimes a source is retrieved that exists but refers to a different package or an unrelated event. So you have to choose the evidence that truly fits the question, and not assume that every retrieved source fits.',
             },
         ],
     },
 
     see: {
         title: 'How a source enters the answer, step by step',
-        steps: ['User question', 'Retrieve source', 'Add to context', 'Answer from source', 'Answer with limits'],
+        steps: ['User question', 'Retrieve candidates', 'Select the relevant one', 'Add to context', 'Compose from the source', 'Answer with limits'],
         caption:
-            'The source becomes part of what the model can use. A good answer stays within the limits of the source, and does not go beyond what it actually says. This is a teaching illustration, not a real retrieval from a system.',
+            'The retrieval system, not the model itself, may return several candidate passages, and the system selects the relevant one. The top-ranked passage is not necessarily the correct one. The selected evidence enters the context, and a good answer stays within the bounds of the source. This is a teaching illustration, not a real retrieval from a system.',
     },
 
     guess: {
@@ -145,7 +145,7 @@ export const grounding = {
         wrongLabel: 'Common mistake',
         wrongQuote: '"If I connected a source, every answer that comes out will be correct."',
         rightLabel: 'How it really works',
-        rightBody: 'A source reduces guessing and gives the answer something to rest on, but it does not check itself. If the source is wrong, out of date, or irrelevant, even a grounded answer will be wrong. Grounding strengthens the answer, it does not guarantee truth.',
+        rightBody: 'A source reduces guessing and gives the answer something to rest on, but it does not check itself. The mere presence of a source is not enough: the source has to support exactly the claim in the answer, and sometimes it supports only part of it. If the source itself is wrong, out of date, or irrelevant, even a grounded answer will be wrong. Grounding strengthens the answer, it does not guarantee truth.',
     },
 
     lock: {
@@ -173,7 +173,7 @@ export const grounding = {
             'Remember the source is checked too: for a real status, make sure the source itself is current and reliable.',
         ],
         caveat:
-            'This is a chapter that introduces the idea, not a full engineering guide to RAG. We did not dive deep into vector databases or retrieval algorithms. The simple message: retrieve, add to context, and answer with grounding, being honest about what the source does not say.',
+            'This is a chapter that presents the idea, not a full engineering guide to RAG. The simple message: retrieve, add to context, grounded generation, with honesty about what the source does not say. And remember that a reference to a source is useful only if it points to a real source that actually supports the claim; not every mention is proof by itself.',
     },
 
     lab: groundingLab,

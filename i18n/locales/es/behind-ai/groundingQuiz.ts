@@ -64,7 +64,7 @@ export const groundingQuiz = {
                 'Ya no hace falta el juicio humano',
             ],
             explanation:
-                'El fundamento liga la respuesta a una fuente, pero no comprueba si la fuente es correcta. Una fuente equivocada, desactualizada o irrelevante lleva a una respuesta fundamentada y equivocada a la vez. Una fuente no es magia, y no sustituye al juicio.',
+                'El fundamento liga la respuesta a una fuente, pero no comprueba si la fuente es correcta. Una fuente equivocada, desactualizada, irrelevante, que no coincide con la pregunta o incompleta llevará a una respuesta fundamentada y equivocada a la vez. Una fuente no es magia, y no sustituye al juicio.',
         },
         5: {
             question: 'La fuente aportada está incompleta, o entra en conflicto con lo que dijo el cliente. ¿Cuál es la mejor respuesta?',

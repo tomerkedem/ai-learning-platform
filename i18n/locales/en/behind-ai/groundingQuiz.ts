@@ -64,7 +64,7 @@ export const groundingQuiz = {
                 'Human judgment is no longer needed',
             ],
             explanation:
-                'Grounding ties the answer to a source, but it does not check whether the source is correct. A wrong, out of date, or irrelevant source leads to an answer that is grounded and wrong at the same time. A source is not magic, and it does not replace judgment.',
+                'Grounding connects the answer to a source, but it does not check whether the source is correct. A source that is wrong, out of date, irrelevant, mismatched to the question, or incomplete will lead to an answer that is grounded and wrong at once. A source is not magic, and it does not replace judgment.',
         },
         5: {
             question: 'The provided source is incomplete, or it conflicts with what the customer said. What is the best answer?',

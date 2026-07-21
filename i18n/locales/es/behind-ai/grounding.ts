@@ -46,11 +46,11 @@ export const grounding = {
             },
             {
                 title: 'Qué significa RAG',
-                body: 'RAG es, en resumen, tres pasos: recuperar información relevante, añadirla al contexto del modelo, y luego redactar una respuesta basada en ella. Recuperar, añadir, responder con fundamento.',
+                body: 'RAG es, en resumen, tres pasos. Primero un sistema de recuperación, no el modelo en sí, busca en la colección de fuentes disponible y devuelve varios pasajes candidatos. Después se elige el relevante de entre los candidatos y se añade al contexto actual del modelo. Por último el modelo redacta una respuesta a partir de la pregunta y de la evidencia seleccionada. Recuperar, añadir, responder con fundamento. La búsqueda en la web es solo un método de recuperación posible, no un requisito.',
             },
             {
                 title: 'Por qué esto importa después de las alucinaciones',
-                body: 'Vimos que, cuando falta un hecho, el modelo puede rellenarlo con una continuación plausible. Una fuente le da algo concreto en qué apoyarse, así que queda menos espacio para adivinar.',
+                body: 'Vimos que, cuando falta un hecho, el modelo puede rellenarlo con una continuación plausible. Una fuente le da algo concreto en qué apoyarse, así que queda menos espacio para adivinar. Fíjate en la distinción: una alucinación es cuando la respuesta misma inventa contenido sin respaldo, mientras que un fallo de recuperación es cuando el sistema no aportó la evidencia adecuada desde el principio. Una recuperación fallida aumenta el riesgo de alucinación, pero no son el mismo fallo.',
             },
             {
                 title: 'Qué puede hacer una respuesta fundamentada en una fuente',
@@ -61,17 +61,17 @@ export const grounding = {
                 body: 'No garantiza la verdad si la fuente misma está equivocada, no responde más allá de la fuente, no sustituye al juicio humano, y no comprueba un estado en vivo salvo que esté de verdad conectada al sistema.',
             },
             {
-                title: 'El límite de este capítulo',
-                body: 'Aquí solo introducimos la idea. No profundizaremos en bases de datos vectoriales, embeddings ni algoritmos de recuperación. Esos son detalles de ingeniería. El mensaje simple: recuperar, añadir al contexto y responder con fundamento.',
+                title: 'La fuente recuperada no siempre es la correcta',
+                body: 'La recuperación puede devolver varios pasajes candidatos, y el pasaje mejor clasificado no es necesariamente el correcto. A veces se recupera una fuente que existe pero se refiere a otro paquete o a un suceso que no viene al caso. Por eso hay que elegir la evidencia que de verdad encaja con la pregunta, y no dar por hecho que toda fuente recuperada encaja.',
             },
         ],
     },
 
     see: {
         title: 'Cómo entra una fuente en la respuesta, paso a paso',
-        steps: ['Pregunta del usuario', 'Recuperar fuente', 'Añadir al contexto', 'Responder desde la fuente', 'Responder con límites'],
+        steps: ['Pregunta del usuario', 'Recuperar candidatos', 'Elegir el relevante', 'Añadir al contexto', 'Redactar desde la fuente', 'Responder con límites'],
         caption:
-            'La fuente pasa a formar parte de lo que el modelo puede usar. Una buena respuesta se queda dentro de los límites de la fuente, y no va más allá de lo que esta dice en realidad. Esta es una ilustración didáctica, no una recuperación real de un sistema.',
+            'El sistema de recuperación, no el modelo en sí, puede devolver varios pasajes candidatos, y el sistema selecciona el relevante. El pasaje mejor clasificado no es necesariamente el correcto. La evidencia seleccionada entra en el contexto, y una buena respuesta se queda dentro de los límites de la fuente. Esta es una ilustración didáctica, no una recuperación real de un sistema.',
     },
 
     guess: {
@@ -145,7 +145,7 @@ export const grounding = {
         wrongLabel: 'Error común',
         wrongQuote: '"Si conecté una fuente, cada respuesta que salga será correcta."',
         rightLabel: 'Cómo funciona en realidad',
-        rightBody: 'Una fuente reduce las suposiciones y le da a la respuesta algo en qué apoyarse, pero no se comprueba a sí misma. Si la fuente está equivocada, desactualizada o es irrelevante, incluso una respuesta fundamentada estará equivocada. El fundamento refuerza la respuesta, no garantiza la verdad.',
+        rightBody: 'Una fuente reduce las suposiciones y le da a la respuesta algo en qué apoyarse, pero no se comprueba a sí misma. La mera presencia de una fuente no basta: la fuente tiene que respaldar exactamente la afirmación de la respuesta, y a veces solo respalda una parte. Si la fuente misma está equivocada, desactualizada o es irrelevante, incluso una respuesta fundamentada estará equivocada. El fundamento refuerza la respuesta, no garantiza la verdad.',
     },
 
     lock: {
@@ -173,7 +173,7 @@ export const grounding = {
             'Recuerda que la fuente también se comprueba: para un estado real, asegúrate de que la fuente misma esté actualizada y sea fiable.',
         ],
         caveat:
-            'Este es un capítulo que introduce la idea, no una guía completa de ingeniería de RAG. No profundizamos en bases de datos vectoriales ni en algoritmos de recuperación. El mensaje simple: recuperar, añadir al contexto y responder con fundamento, siendo honestos sobre lo que la fuente no dice.',
+            'Este es un capítulo que presenta la idea, no una guía completa de ingeniería de RAG. El mensaje simple: recuperar, añadir al contexto y responder con fundamento, siendo honestos sobre lo que la fuente no dice. Y recuerda que una referencia a una fuente solo sirve si apunta a una fuente real que de verdad respalda la afirmación; no toda mención es prueba por sí sola.',
     },
 
     lab: groundingLab,
