@@ -180,9 +180,13 @@ export const guardrails = {
             'What to do if info is missing: "If a tracking number is missing, ask me."',
             'Which source to work from: "If there is no arrival date in the source, do not guess."',
             'What the stop condition is: "Do not mark a package as delivered without a basis in the source."',
+            'Before: check authorization, resource scope, input validation, policy, and separate human approval when required.',
+            'During: enforce retry or step limits, with isolation when appropriate.',
+            'After: verify output, record it, and honestly report success, failure, stop, or partial outcome.',
+            'For tracking, expected output form can support the next step, but validation does not guarantee semantic truth.',
         ],
         caveat:
-            'Guardrails do not say that AI is dangerous or that it must not act. They say that a good agent action is to perform the safe steps, ask when info is missing, prepare drafts for review, and stop before a sensitive or irreversible action. The control layer reduces risk, but it does not guarantee absolute safety. The quality depends on the rules, permissions, and checks that the system defines.',
+            'An authorized action can still be wrong or fail, and a blocked action need not be malicious: it may exceed identity, resource, policy, or approval boundaries. High model confidence never overrides risk, authorization, policy, or human approval. Agents can repeat actions and affect external systems at scale, so stronger autonomy needs stronger boundaries. Monitoring and logs help detect, review, and investigate, but do not prevent harm by themselves. No single guardrail is enough; several imperfect controls reduce risk together, without guaranteeing perfect safety.',
     },
 
     bridge: {

@@ -180,9 +180,13 @@ export const guardrails = {
             'Que hacer si falta informacion: "Si falta un numero de seguimiento, preguntame."',
             'De que fuente trabajar: "Si no hay fecha de llegada en la fuente, no adivines."',
             'Cual es la condicion de parada: "No marques un paquete como entregado sin un fundamento en la fuente."',
+            'Antes: comprueba autorizacion, alcance, entrada valida, politica y aprobacion humana por separado.',
+            'Durante: aplica limites de reintentos o pasos y, si corresponde, aislamiento.',
+            'Despues: verifica y registra la salida e informa con honestidad exito, fallo, parada o resultado parcial.',
+            'En el seguimiento, la forma esperada del resultado ayuda al paso siguiente, pero no garantiza la verdad semantica.',
         ],
         caveat:
-            'Los guardrails no dicen que la IA sea peligrosa ni que no deba actuar. Dicen que una buena accion de un agente es ejecutar los pasos seguros, preguntar cuando falta informacion, preparar borradores para revision, y detenerse antes de una accion sensible o irreversible. La capa de control reduce el riesgo, pero no garantiza una seguridad absoluta. La calidad depende de las reglas, los permisos y las comprobaciones que define el sistema.',
+            'Una accion autorizada aun puede ser incorrecta o fallar, y una accion bloqueada no tiene que ser maliciosa: puede superar limites de identidad, recurso, politica o aprobacion. Una confianza alta nunca anula el riesgo, la autorizacion, la politica ni la aprobacion humana. Los agentes pueden repetir acciones y afectar sistemas externos a escala, por eso mas autonomia exige limites mas fuertes. El monitoreo y los registros ayudan a detectar, revisar e investigar, pero no evitan dano por si solos. Ningun guardrail basta; varios controles imperfectos reducen juntos el riesgo sin garantizar seguridad perfecta.',
     },
 
     bridge: {

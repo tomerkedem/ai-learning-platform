@@ -27,7 +27,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import {
     HelpCircle, Search, PenLine, Send, PackageCheck,
     CheckCircle2, XCircle, AlertTriangle, ShieldAlert, Ban,
-    ListChecks, ScrollText, Lightbulb, Check, type LucideIcon,
+    ListChecks, ScrollText, Lightbulb, Check, RotateCcw, ShieldCheck, type LucideIcon,
 } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
 import type {
@@ -51,6 +51,7 @@ const ACTION_ICON: Record<GuardrailActionType, LucideIcon> = {
     draft: PenLine,
     send: Send,
     mark: PackageCheck,
+    retry: RotateCcw,
 };
 
 /** גוון תג הסיכון, נגזר מ-riskTone. */
@@ -60,6 +61,7 @@ const RISK_TONE: Record<RiskTone, string> = {
     medium: 'border-amber-400/50 bg-amber-950/25 text-amber-100',
     high: 'border-orange-400/50 bg-orange-950/25 text-orange-100',
     blocked: 'border-rose-400/50 bg-rose-950/25 text-rose-100',
+    limit: 'border-violet-400/50 bg-violet-950/25 text-violet-100',
 };
 
 /** גוון ואייקון תג ההחלטה, נגזר מ-outcomeTone. */
@@ -69,6 +71,7 @@ const OUTCOME_TONE: Record<OutcomeTone, { badge: string; Icon: LucideIcon }> = {
     draft: { badge: 'border-sky-400/50 bg-sky-950/25 text-sky-100', Icon: PenLine },
     approval: { badge: 'border-orange-400/50 bg-orange-950/25 text-orange-100', Icon: ShieldAlert },
     stop: { badge: 'border-rose-400/50 bg-rose-950/25 text-rose-100', Icon: Ban },
+    limit: { badge: 'border-violet-400/50 bg-violet-950/25 text-violet-100', Icon: Ban },
 };
 
 /** אייקון וגוון לכל מצב בדיקה, נגזר מ-state. */
@@ -98,6 +101,7 @@ export const GuardrailsLab: React.FC<GuardrailsLabProps> = ({ data, dir, speechL
         `${data.mayLabel}: ${active.mayDo}`,
         `${data.mustNotLabel}: ${active.mustNot}`,
         `${data.auditLabel}: ${active.auditNote}`,
+        `${data.verifyLabel}: ${active.verification}`,
         `${data.takeawayLabel}: ${active.takeaway}`,
     );
 
@@ -123,7 +127,7 @@ export const GuardrailsLab: React.FC<GuardrailsLabProps> = ({ data, dir, speechL
 
             {/* ── בורר הפעולות ── */}
             <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-slate-400">{data.actionSelectLabel}</div>
-            <div className="mb-4 grid grid-cols-2 gap-2 lg:grid-cols-5" role="group" aria-label={data.sr.actionGroup}>
+            <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6" role="group" aria-label={data.sr.actionGroup}>
                 {data.actions.map((a) => {
                     const activeBtn = a.id === actionId;
                     const Icon = ACTION_ICON[a.actionType];
@@ -241,6 +245,14 @@ export const GuardrailsLab: React.FC<GuardrailsLabProps> = ({ data, dir, speechL
                         <ScrollText size={13} className="text-slate-300" aria-hidden /> {data.auditLabel}
                     </div>
                     <p className="text-[13px] leading-relaxed text-slate-300">{active.auditNote}</p>
+                </div>
+
+                {/* Verification is separate from authorization and from the decision to run. */}
+                <div className="rounded-xl border border-cyan-500/30 bg-cyan-950/10 p-3">
+                    <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-cyan-200">
+                        <ShieldCheck size={13} aria-hidden /> {data.verifyLabel}
+                    </div>
+                    <p className="text-[13px] leading-relaxed text-slate-200">{active.verification}</p>
                 </div>
 
                 {/* השורה התחתונה */}

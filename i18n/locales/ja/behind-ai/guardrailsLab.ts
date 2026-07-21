@@ -19,7 +19,7 @@ import type { GuardrailsLabContent } from '../../he/behind-ai/guardrailsLab';
 
 export const guardrailsLab: GuardrailsLabContent = {
     sectionEyebrow: 'Guardrails Lab',
-    sectionTitle: '同じタスク、五つの行動、五つの決定',
+    sectionTitle: '同じタスク、六つの行動、六つの決定',
     sectionIntro:
         'タスクは固定：「荷物を確認して、顧客に連絡して。」五つの行動を切り替えて、制御の層がそれぞれについて、続けるか、尋ねるか、下書きだけを用意するか、承認のために止まるか、遮断するかをどう決めるか見よう。',
     heading: '制御の層',
@@ -34,6 +34,7 @@ export const guardrailsLab: GuardrailsLabContent = {
     mayLabel: 'エージェントがしてよいこと',
     mustNotLabel: 'エージェントがしてはいけないこと',
     auditLabel: '制御メモ',
+    verifyLabel: '結果の検証',
     takeawayLabel: '結論',
     disclaimer:
         'ここの例はすべて学習用のみ。実際の追跡システムはなく、実際のメッセージ送信もなく、実際のステータス変更もない。目的は、リスクと権限がどう結果を決めるかを示すことであって、特定の製品を説明することではない。',
@@ -59,6 +60,7 @@ export const guardrailsLab: GuardrailsLabContent = {
             mayDo: 'ユーザーに追跡番号を尋ね、それから初めて続ける。',
             mustNot: '前に進むために追跡番号やステータスをでっち上げる。',
             auditNote: 'タスクは必要な入力なしには始められない。良いエージェントは推測せずに止まり、足りないものを求める。',
+            verification: 'まだ実行していない。不足する入力を待っている。',
             takeaway: '重要な情報が足りない？止まって尋ねる、推測しない。',
         },
         {
@@ -82,6 +84,7 @@ export const guardrailsLab: GuardrailsLabContent = {
             mayDo: 'ステータスを読み、ユーザーに示す。',
             mustNot: 'ステータスを変える、または結果に現れなかったことに頼る。',
             auditNote: '読み取りの行動は世界の何も変えない。ツールが利用でき許可されているとき、追加の承認なしに続けられる。',
+            verification: '出力は期待した形式で有効な状態を返した。ただし意味的な真実までは保証しない。',
             takeaway: '情報を読むのは最も安全な行動だ。何も変えない。',
         },
         {
@@ -105,6 +108,7 @@ export const guardrailsLab: GuardrailsLabContent = {
             mayDo: '下書きを用意し、確認のために示す。',
             mustNot: '承認なしに下書きを送信する。',
             auditNote: '下書きは送信より安全だ。下書きは人の確認の準備ができており、まだ何も顧客に出ていない。',
+            verification: '下書きは存在し、送信されていない。正しさまでは証明しない。',
             takeaway: '下書きは送信より安全だ。何かが外に出る前なら直しやすい。',
         },
         {
@@ -119,11 +123,14 @@ export const guardrailsLab: GuardrailsLabContent = {
             checks: [
                 { label: '必要な情報', state: 'pass', note: '下書きの準備ができている。' },
                 { label: 'リスクレベル', state: 'fail', note: '本当の顧客に向かう外部への行動。' },
-                { label: '権限', state: 'warn', note: '実行の前に人の承認を必要とする。' },
+                { label: 'システム認可', state: 'pass', note: 'この主体はこの資源への送信を許可されている。' },
+                { label: '人の承認', state: 'warn', note: '実行前に必要。認可と承認は別である。' },
             ],
+            result: { label: '承認状態（未送信）', rows: ['送信前に実行は待機する。', '拒否、取消し、期限切れなら停止し、メッセージは送られない。'] },
             mayDo: '下書きを示し、送信の明確な承認を求める。',
             mustNot: '承認が与えられる前に送信する。',
             auditNote: '顧客に送信することは、取り消しにくい外部への行動だ。エージェントが送信できるときでさえ、承認のゲートで止まる。',
+            verification: '送信していないため保留中。承認の拒否、取消し、期限切れなら停止し、メッセージは送られない。',
             takeaway: '外部の慎重を要する行動は、承認のゲートを通る。能力は許可ではない。',
         },
         {
@@ -137,13 +144,15 @@ export const guardrailsLab: GuardrailsLabContent = {
             outcomeLabel: '遮断',
             checks: [
                 { label: '必要な情報', state: 'fail', note: '情報源は配達を裏づけておらず、ステータスは遅延だ。' },
-                { label: 'リスクレベル', state: 'fail', note: '根拠なく公式の記録を変える。' },
-                { label: '権限', state: 'fail', note: '禁じられた行動であり、承認があっても通らない。' },
+                { label: 'ポリシー', state: 'fail', note: '根拠なく公式の記録を変える行動は遮断される。' },
+                { label: '人の承認', state: 'fail', note: 'ポリシーの遮断は上書きできない。' },
             ],
             mayDo: '情報源に根拠がなければ配達済みにはできないと説明する。',
             mustNot: '公式のステータスを変える、または配達の証拠をでっち上げる。',
             auditNote: 'エージェントが説明できる行動でも、遮断されたままのものがある。根拠なく公式のステータスを変えることは、システム全体の信頼性を損なう。',
+            verification: '未実行。人の承認でもポリシーの遮断は上書きできない。',
             takeaway: 'たとえ説明できても、単に実行しない行動がある。',
         },
+        { id: 'limit', actionType: 'retry', control: '再試行上限', request: '到着日が出るまで追跡状態を更新する。', riskTone: 'limit', riskLabel: '再試行上限', outcomeTone: 'limit', outcomeLabel: '上限で停止', checks: [{ label: '入力検証', state: 'pass', note: '番号は必須で有効、対象範囲内。' }, { label: '再試行上限', state: 'fail', note: '3回中3回とも日付を返さなかった。' }, { label: 'システム認可', state: 'pass', note: '読み取りは許可されても上限は適用される。' }], result: { label: '試行の要約', rows: ['1回目: 日付なし。', '2回目: 日付なし。', '3回目: 上限到達。'] }, mayDo: '停止し、日付を検証できなかったと正直に報告する。', mustNot: '無制限に再試行したり成功と報告したりしない。', auditNote: '上限は繰り返し実行を安全に止める。', verification: '有効な検証済み結果はない。上限到達は成功ではない。', takeaway: '上限は実行を止め、理由を見えるようにする。' },
     ],
 };
