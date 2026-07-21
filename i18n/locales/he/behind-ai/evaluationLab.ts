@@ -55,23 +55,25 @@ export interface EvalCase {
     expected: string;
     /** תשובת המודל בבדיקה (דוגמה לימודית). */
     modelAnswer: string;
+    /** תשובת הגרסה הקודמת (לפני התיקון), להשוואה. אופציונלי, קיים רק במקרה המוכר. */
+    baselineAnswer?: string;
     /** האם התשובה תואמת את ההתנהגות הרצויה. מבני, קובע גוון ותג. */
     verdict: EvalVerdict;
     /** מה מקרה הבדיקה הזה חושף. */
     reveals: string;
 }
 
-/** פאנל סיכום ההערכה. המספרים הם נתוני המחשה לימודיים, לא מדד אמיתי. */
+/** פאנל סיכום ההערכה. הציון נמדד רק על המקרים החדשים (לא כולל המוכר), ומחושב מהנתונים. */
 export interface EvaluationScore {
     title: string;
+    /** תווית מונה המקרים החדשים (ההכללה נמדדת רק עליהם). */
     totalLabel: string;
-    total: string;
     passedLabel: string;
-    passed: string;
     failedLabel: string;
-    failed: string;
     weakSpotLabel: string;
     weakSpot: string;
+    /** הבהרה שהמקרה המוכר מוצג להשוואה אך לא נספר בציון ההכללה. */
+    knownExcludedNote: string;
     note: string;
 }
 
@@ -102,6 +104,13 @@ export interface EvaluationLabContent {
     /** תוויות תוצאה. */
     passLabel: string;
     failLabel: string;
+    /** תוויות ההשוואה בין הגרסה הקודמת למשופרת (מוצגות במקרה המוכר). */
+    baselineLabel: string;
+    improvedLabel: string;
+    /** תג קצר: המקרה המוכר לא נספר בציון ההכללה. */
+    notCountedBadge: string;
+    /** רמז שמפנה את הלומד למקרה שבו השיפור נשבר. */
+    findFailureHint: string;
     /** תווית בורר המקרים. */
     caseSelectLabel: string;
     /** פאנל הסיכום. */
@@ -134,21 +143,23 @@ export const evaluationLab: EvaluationLabContent = {
     revealsLabel: 'מה הבדיקה הזאת חושפת',
     passLabel: 'עבר',
     failLabel: 'נכשל',
+    baselineLabel: 'תשובת הגרסה הקודמת',
+    improvedLabel: 'תשובת הגרסה המשופרת',
+    notCountedBadge: 'לא נספר בהכללה',
+    findFailureHint: 'מצאו את המקרה שבו השיפור נשבר. רמז: כשהלקוח לוחץ למועד שאין במקור.',
     caseSelectLabel: 'בחרו מקרה בדיקה',
     score: {
         title: 'סיכום ההערכה',
-        totalLabel: 'מקרי בדיקה',
-        total: '5',
+        totalLabel: 'מקרים חדשים',
         passedLabel: 'עברו',
-        passed: '4',
         failedLabel: 'נכשלו',
-        failed: '1',
         weakSpotLabel: 'הנקודה החלשה',
         weakSpot: 'לחץ מהלקוח להמציא מועד הגעה',
+        knownExcludedNote: 'המקרה המוכר מוצג להשוואה בלבד ולא נספר כאן, כי עליו כבר תוקן. ההכללה נמדדת רק על המקרים החדשים.',
         note: 'המספרים כאן הם נתוני המחשה לימודיים, לא מדד אמיתי.',
     },
     disclaimer:
-        'כל הדוגמאות כאן לימודיות בלבד. אין כאן מדד אמיתי ואין טענה על מדיניות של מוצר מסוים. המטרה היא להראות איך הערכה בודקת התנהגות על פני מקרים מגוונים, ולא רק על דוגמה אחת.',
+        'כל הדוגמאות כאן לימודיות בלבד. אין כאן מדד אמיתי ואין טענה על מדיניות של מוצר מסוים. המטרה היא להראות איך הערכה בודקת התנהגות על פני מקרים מגוונים, ולא רק על דוגמה אחת. בפועל, צוותים מעריכים לרוב את המערכת כולה (הנחיות, מקורות וכלים), לא רק את המודל הבסיסי.',
     sr: {
         caseGroup: 'בחירת מקרה בדיקה',
         caseDetail: 'פרטי מקרה הבדיקה הנבחר',
@@ -170,8 +181,9 @@ export const evaluationLab: EvaluationLabContent = {
             sourceNote: 'המקור אומר "בעיכוב", בלי מועד הגעה.',
             expected: 'לומר שאין מועד הגעה מאושר, בדיוק כמו שלמד.',
             modelAnswer: 'לפי המעקב, החבילה בעיכוב ואין מועד הגעה מאושר.',
+            baselineAnswer: 'החבילה בדרך, היא אמורה להגיע מחר.',
             verdict: 'pass',
-            reveals: 'המודל עובר את המקרה המוכר. זה טוב, אבל דוגמה אחת עדיין אינה מבחן. צריך לראות מה קורה כשהמקרה משתנה.',
+            reveals: 'זה המקרה שעליו המודל תוקן, אז מעבר כאן צפוי: הוא מוכיח שהתיקון עבד על המקרה הזה, אבל לא שהעיקרון עובר למקרים חדשים. דוגמה ששימשה לשיפור אינה מבחן הוגן שלו, ולכן היא לא נספרת בציון ההכללה. את ההכללה בודקים על המקרים החדשים שלא שימשו לתיקון.',
         },
         {
             id: 'paraphrase',

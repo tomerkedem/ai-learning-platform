@@ -147,7 +147,7 @@ export const evaluation = {
         wrongLabel: 'Error común',
         wrongQuote: '"El modelo respondió bien en la demo, así que está listo."',
         rightLabel: 'Cómo funciona de verdad',
-        rightBody: 'Una respuesta correcta puede ser un acierto sobre un ejemplo conocido nada más. Para saber si el modelo de verdad mejoró, se prueba con varios casos: otra formulación, una fuente ausente, una contradicción y un estado diferente. Se define de antemano la respuesta deseada en cada caso, se mide cuántos aprobaron, y se mejora según lo que falló. Un acierto sobre un caso variado sugiere una mejor generalización, pero no garantiza un comportamiento perfecto.',
+        rightBody: 'Una respuesta correcta puede ser un acierto sobre un ejemplo conocido nada más. Para saber si el modelo de verdad mejoró, se prueba con varios casos: otra formulación, una fuente ausente, una contradicción y un estado diferente. Un acierto sobre un caso variado sugiere una mejor generalización, pero no garantiza un comportamiento perfecto.',
     },
 
     lock: {
@@ -171,8 +171,8 @@ export const evaluation = {
             'Prueba con varios casos: otra formulación, una fuente ausente, una contradicción, un cliente que confunde, y un estado diferente.',
             'Define de antemano la respuesta deseada en cada caso, antes de ejecutarlo.',
             'Ejecuta todos los casos, mide cuántos aprobaron y cuántos fallaron.',
-            'Mejora según los patrones que fallaron, y vuelve a probar después de cada cambio.',
-            'Para equipos que construyen sistemas: crea casos de prueba fijos, incluidos casos límite y casos donde la respuesta es "no lo sé" o "hace falta una fuente", y comprueba que un cambio no mejoró un caso y rompió otro.',
+            'Mejora según los patrones que fallaron, y vuelve a probar después de cada cambio. Pero no confíes siempre en los mismos casos: si los ajustas una y otra vez, dejan de ser una prueba justa, así que guarda algunos casos nuevos para una evaluación posterior.',
+            'Para equipos que construyen sistemas: crea casos de prueba fijos, incluidos casos límite y casos donde la respuesta es "no lo sé" o "hace falta una fuente". Comprueba que un cambio no mejoró un caso y rompió otro. Eso es una regresión: una mejora en un comportamiento que empeora otro. Acepta el cambio solo si un comportamiento importante no empeoró.',
         ],
         caveat:
             'La evaluación reduce la incertidumbre, no demuestra un comportamiento perfecto. Es tan buena como su conjunto de prueba, y puede pasar por alto casos que no se probaron. Aun así, una prueba variada es mucho mejor que confiar en una sola demo.',

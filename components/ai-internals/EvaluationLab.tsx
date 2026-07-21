@@ -22,7 +22,7 @@ import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
     BadgeCheck, Repeat, AlertTriangle, FileQuestion, PackageCheck, Target,
-    User, FileSearch, CheckCircle2, XCircle, Lightbulb, Gauge, type LucideIcon,
+    User, FileSearch, CheckCircle2, XCircle, Lightbulb, Gauge, History, type LucideIcon,
 } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
 import type {
@@ -71,14 +71,26 @@ export const EvaluationLab: React.FC<EvaluationLabProps> = ({ data, dir, speechL
     const verdict = VERDICT_TONE[active.verdict];
     const VerdictIcon = verdict.Icon;
     const verdictLabel = active.verdict === 'pass' ? data.passLabel : data.failLabel;
+    const isKnown = active.caseType === 'familiar';
+    const answerLabelForCase = active.baselineAnswer ? data.improvedLabel : data.answerLabel;
 
-    // הקראת מצב המעבדה: המטרה, הפנייה, ההתנהגות הרצויה, תשובת המודל, התוצאה, ומה נחשף.
+    // ציון ההכללה נמדד רק על המקרים החדשים (לא כולל המוכר, שעליו כבר תוקן). מחושב מהנתונים,
+    // כדי שהמונה והמכנה תמיד יתאימו למקרים בפועל ולא למספר קשיח.
+    const heldOut = data.cases.filter((c) => c.caseType !== 'familiar');
+    const heldOutTotal = heldOut.length;
+    const heldOutPassed = heldOut.filter((c) => c.verdict === 'pass').length;
+    const heldOutFailed = heldOutTotal - heldOutPassed;
+
+    // הקראת מצב המעבדה: המטרה, הפנייה, ההתנהגות הרצויה, ההשוואה (אם יש), התוצאה, מה נחשף,
+    // וסיכום ההכללה (מקרים חדשים בלבד) עם הנקודה החלשה והסתייגות.
     const stateSpeech = speakJoin(
         `${data.goalLabel}: ${data.goal}`,
         `${data.customerLabel}: ${active.customer}`,
         `${data.expectedLabel}: ${active.expected}`,
-        `${data.answerLabel}: ${active.modelAnswer}`,
+        active.baselineAnswer && `${data.baselineLabel}: ${active.baselineAnswer}`,
+        `${answerLabelForCase}: ${active.modelAnswer}`,
         `${verdictLabel}. ${data.revealsLabel}: ${active.reveals}`,
+        `${data.score.title}: ${heldOutPassed}/${heldOutTotal}. ${data.score.weakSpotLabel}: ${data.score.weakSpot}. ${data.score.note}`,
     );
 
     return (
@@ -116,6 +128,9 @@ export const EvaluationLab: React.FC<EvaluationLabProps> = ({ data, dir, speechL
 
             {/* ── בורר מקרי הבדיקה ── */}
             <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-slate-400">{data.caseSelectLabel}</div>
+            <p className="mb-2 flex items-start gap-1.5 text-[13px] leading-relaxed text-amber-200/90">
+                <AlertTriangle size={13} className="mt-0.5 shrink-0 text-amber-300" aria-hidden /> {data.findFailureHint}
+            </p>
             <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5" role="group" aria-label={data.sr.caseGroup}>
                 {data.cases.map((c) => {
                     const activeBtn = c.id === caseId;
@@ -155,8 +170,15 @@ export const EvaluationLab: React.FC<EvaluationLabProps> = ({ data, dir, speechL
                             <CaseIcon size={16} aria-hidden />
                             <span className="text-sm font-black">{active.badgeLabel}</span>
                         </span>
-                        <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-black ${verdict.badge}`}>
-                            <VerdictIcon size={12} aria-hidden /> {verdictLabel}
+                        <span className="flex items-center gap-1.5">
+                            {isKnown && (
+                                <span className="inline-flex items-center rounded-full border border-slate-500/40 bg-slate-800/50 px-2 py-0.5 text-[11px] font-bold text-slate-300">
+                                    {data.notCountedBadge}
+                                </span>
+                            )}
+                            <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-black ${verdict.badge}`}>
+                                <VerdictIcon size={12} aria-hidden /> {verdictLabel}
+                            </span>
                         </span>
                     </div>
                     <div className="mt-1.5 text-[15px] font-bold leading-snug text-slate-100">{active.title}</div>
@@ -196,13 +218,23 @@ export const EvaluationLab: React.FC<EvaluationLabProps> = ({ data, dir, speechL
                     <p className="text-[13px] leading-relaxed text-slate-200">{active.expected}</p>
                 </div>
 
+                {/* השוואת גרסה קודמת מול משופרת: אותה פנייה, אותו קריטריון. מוצג רק כשיש baseline. */}
+                {active.baselineAnswer && (
+                    <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
+                        <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                            <History size={13} aria-hidden /> {data.baselineLabel}
+                        </div>
+                        <p className="text-[14px] leading-relaxed text-slate-400">{active.baselineAnswer}</p>
+                    </div>
+                )}
+
                 {/* תשובת המודל, בגוון התוצאה */}
                 <div className={`rounded-xl border p-3 ${verdict.answer}`}>
                     <div className="mb-1.5 flex items-center justify-between gap-2">
                         <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-300">
-                            <VerdictIcon size={13} className={active.verdict === 'pass' ? 'text-emerald-300' : 'text-rose-300'} aria-hidden /> {data.answerLabel}
+                            <VerdictIcon size={13} className={active.verdict === 'pass' ? 'text-emerald-300' : 'text-rose-300'} aria-hidden /> {answerLabelForCase}
                         </span>
-                        <SpeakButton text={`${data.answerLabel}. ${active.modelAnswer}. ${verdictLabel}`} speechLocale={speechLocale} />
+                        <SpeakButton text={`${answerLabelForCase}. ${active.modelAnswer}. ${verdictLabel}`} speechLocale={speechLocale} />
                     </div>
                     <p className="text-[14px] font-bold leading-relaxed text-slate-100">{active.modelAnswer}</p>
                 </div>
@@ -223,18 +255,19 @@ export const EvaluationLab: React.FC<EvaluationLabProps> = ({ data, dir, speechL
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center">
                     <div className="rounded-lg border border-slate-700/50 bg-slate-900/50 p-2">
-                        <div className="font-mono text-xl font-black text-slate-200" dir="ltr">{data.score.total}</div>
+                        <div className="font-mono text-xl font-black text-slate-200" dir="ltr">{heldOutTotal}</div>
                         <div className="text-[11px] text-slate-500">{data.score.totalLabel}</div>
                     </div>
                     <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/15 p-2">
-                        <div className="font-mono text-xl font-black text-emerald-300" dir="ltr">{data.score.passed}</div>
+                        <div className="font-mono text-xl font-black text-emerald-300" dir="ltr">{heldOutPassed}</div>
                         <div className="text-[11px] text-emerald-200/80">{data.score.passedLabel}</div>
                     </div>
                     <div className="rounded-lg border border-rose-500/30 bg-rose-950/15 p-2">
-                        <div className="font-mono text-xl font-black text-rose-300" dir="ltr">{data.score.failed}</div>
+                        <div className="font-mono text-xl font-black text-rose-300" dir="ltr">{heldOutFailed}</div>
                         <div className="text-[11px] text-rose-200/80">{data.score.failedLabel}</div>
                     </div>
                 </div>
+                <p className="mt-2.5 text-[12px] leading-relaxed text-slate-400">{data.score.knownExcludedNote}</p>
                 <div className="mt-2.5 flex items-start gap-1.5 rounded-lg border border-amber-500/30 bg-amber-950/12 p-2.5">
                     <AlertTriangle size={13} className="mt-0.5 shrink-0 text-amber-300" aria-hidden />
                     <p className="text-[13px] leading-relaxed text-slate-200">

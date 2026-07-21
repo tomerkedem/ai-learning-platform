@@ -146,7 +146,7 @@ export const evaluation = {
         wrongLabel: 'Common mistake',
         wrongQuote: '"The model answered correctly in the demo, so it is ready."',
         rightLabel: 'How it really works',
-        rightBody: 'One correct answer can be a success on a familiar example only. To know whether the model really improved, you test it on several cases: a different wording, a missing source, a contradiction, and a different status. You define in advance the desired answer for each case, measure how many passed, and improve based on what failed. Success on a varied case hints at better generalization, but it does not guarantee perfect behavior.',
+        rightBody: 'One correct answer can be a success on a familiar example only. To know whether the model really improved, you test it on several cases: a different wording, a missing source, a contradiction, and a different status. Success on a varied case hints at better generalization, but it does not guarantee perfect behavior.',
     },
 
     lock: {
@@ -170,8 +170,8 @@ export const evaluation = {
             'Test on several cases: a different wording, a missing source, a contradiction, a misleading customer, and a different status.',
             'Define in advance the desired answer for each case, before you run it.',
             'Run all the cases, measure how many passed and how many failed.',
-            'Improve based on the patterns that failed, and test again after each change.',
-            'For teams building systems: create fixed test cases, including edge cases and cases where the answer is "I do not know" or "a source is needed", and check that a change did not improve one case and break another.',
+            'Improve based on the patterns that failed, and test again after each change. But do not rely on the same cases forever: if you keep tuning against them, they stop being a fair test, so keep some fresh cases for later evaluation.',
+            'For teams building systems: create fixed test cases, including edge cases and cases where the answer is "I do not know" or "a source is needed". Check that a change did not improve one case and break another. That is a regression: an improvement in one behavior that makes another behavior worse. Accept the change only if important behavior did not regress.',
         ],
         caveat:
             'Evaluation reduces uncertainty, it does not prove perfect behavior. It is only as good as its test set, and it can miss cases that were not tested. Still, a varied test is far better than trusting a single demo.',
