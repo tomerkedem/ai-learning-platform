@@ -45,7 +45,7 @@ export const mistakeLearningQuiz = {
                 'Using a correction inside a conversation happens in the context. Training or a permanent change to the model is a completely different process, separate and slow, that does not happen on its own from a single message.',
         },
         3: {
-            question: 'The same mistake keeps recurring for many users. How can a team improve the system without changing the base model?',
+            question: 'A team notices the model keeps inventing an arrival date with no source. How can it improve the system without changing the base model?',
             options: [
                 'Wait for the model to fix itself on its own',
                 'Change the prompt, improve the source, add a rule, and add a check',

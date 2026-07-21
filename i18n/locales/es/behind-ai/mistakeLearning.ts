@@ -54,8 +54,8 @@ export const mistakeLearning = {
                 body: 'Cuando corriges, la corrección entra en el contexto de la conversación. El modelo puede usarla para redactar una respuesta mejor ahora.',
             },
             {
-                title: 'El contexto no es entrenamiento',
-                body: 'Usar la corrección en la conversación no es lo mismo que cambiar los pesos del modelo. El contexto ayuda ahora, no cambia el modelo para siempre.',
+                title: 'El contexto y la memoria no son entrenamiento',
+                body: 'Usar la corrección en la conversación no es lo mismo que cambiar los pesos del modelo, y solo ayuda aquí y ahora. La memoria guardada, cuando un producto la admite, conserva información seleccionada para conversaciones posteriores, pero aun así no entrena el modelo en sí. La memoria guardada se trata a fondo más adelante en el curso.',
             },
             {
                 title: 'Mejora a nivel de producto',
@@ -63,11 +63,7 @@ export const mistakeLearning = {
             },
             {
                 title: 'Mejora a nivel de entrenamiento',
-                body: 'Los errores que se revisaron y corrigieron pueden entrar en un conjunto de entrenamiento o de ajuste, y aportar a una versión futura. Es un proceso aparte y lento.',
-            },
-            {
-                title: 'Por qué importan los errores que se repiten',
-                body: 'Un error se corrige en la conversación. Un error que se repite una y otra vez es un patrón, y conviene corregirlo en el sistema, no solo una vez.',
+                body: 'Los errores que se revisaron y corrigieron pueden entrar en un conjunto de entrenamiento o de ajuste y aportar a una versión futura, en un proceso aparte y lento. El feedback es una entrada, no una verdad garantizada, así que los ejemplos se revisan y el feedback confuso o incorrecto se filtra antes de usarlos.',
             },
             {
                 title: 'Qué no afirma este capítulo',
@@ -79,9 +75,9 @@ export const mistakeLearning = {
     // ── Transición See: dos ritmos de mejora ──
     see: {
         title: 'Dos ritmos de mejora',
-        steps: ['Error', 'Corrección en la conversación', 'Respuesta corregida ahora', 'Patrón recogido y revisado', 'Mejora futura en el sistema o en el modelo'],
+        steps: ['Se observa un error', 'Se da una corrección', 'La mejora puede ocurrir en varios niveles', 'La evaluación muestra si funcionó'],
         caption:
-            'La primera estación ayuda de inmediato: una corrección en el contexto arregla la respuesta ahora. Pero la mejora real empieza cuando el error que se repite se recoge como ejemplo, se revisa, se convierte en una corrección candidata, y se mide con una evaluación antes de publicarla. Es una ilustración didáctica, no la descripción de un producto concreto.',
+            'La corrección ayuda de inmediato, pero la mejora real se mide después: el error se recoge y se revisa, la corrección se hace en uno de los niveles, y solo una evaluación muestra si funcionó de verdad. Es una ilustración didáctica, no la descripción de un producto concreto.',
     },
 
     // ── Adivinanza de apertura (OpeningGuess) ──

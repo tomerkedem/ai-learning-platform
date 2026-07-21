@@ -99,7 +99,7 @@ export const mistakeLearningLab: MistakeLearningLabContent = {
             summary: '繰り返す間違いは、別の遅いプロセスを経て、将来の訓練の例になりうる。',
             steps: [
                 { id: 'training-1', label: '例を集める', text: '答えが配達日をでっち上げた事例を集める。', tone: 'wrong' },
-                { id: 'training-2', label: '確認と修正', text: '人が例を確認し、正しい答えに直す。', tone: 'training' },
+                { id: 'training-2', label: '確認と修正', text: '人が例を確認し、あいまいなフィードバックや誤ったフィードバックをふるい落とし、残りを正しい答えに直す。', tone: 'training' },
                 { id: 'training-3', label: '訓練データ', text: '直した例が、訓練やfine-tuningのデータに入る。', tone: 'training' },
                 { id: 'training-4', label: '評価', text: '新しいバージョンが本当によくなり、ほかを壊していないかを確かめる。', tone: 'eval' },
                 { id: 'training-5', label: '新しいバージョン', text: '評価を通れば、更新されたモデルのバージョンが出る。', tone: 'good' },

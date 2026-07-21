@@ -45,7 +45,7 @@ export const mistakeLearningQuiz = {
                 'Usar la corrección dentro de la conversación ocurre en el contexto. Entrenar o cambiar el modelo de forma permanente es un proceso totalmente distinto, aparte y lento, que no ocurre por sí solo a partir de un mensaje.',
         },
         3: {
-            question: 'El mismo error se repite una y otra vez con muchos usuarios. ¿Cómo puede un equipo mejorar el sistema sin cambiar el modelo base?',
+            question: 'Un equipo nota que el modelo inventa una y otra vez una fecha de entrega sin fuente. ¿Cómo puede mejorar el sistema sin cambiar el modelo base?',
             options: [
                 'Esperar a que el modelo se corrija a sí mismo solo',
                 'Cambiar la instrucción, mejorar la fuente, añadir una regla y añadir una comprobación',

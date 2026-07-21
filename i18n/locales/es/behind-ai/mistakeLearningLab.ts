@@ -108,7 +108,7 @@ export const mistakeLearningLab: MistakeLearningLabContent = {
             summary: 'Los errores repetidos pueden convertirse en ejemplos para un entrenamiento futuro, en un proceso aparte y lento.',
             steps: [
                 { id: 'training-1', label: 'Recoger ejemplos', text: 'Se recogen casos en los que la respuesta inventó una fecha de entrega.', tone: 'wrong' },
-                { id: 'training-2', label: 'Revisar y corregir', text: 'Personas revisan los ejemplos y los corrigen hasta una respuesta correcta.', tone: 'training' },
+                { id: 'training-2', label: 'Revisar y corregir', text: 'Personas revisan los ejemplos, filtran el feedback confuso o incorrecto, y corrigen el resto hasta una respuesta correcta.', tone: 'training' },
                 { id: 'training-3', label: 'Conjunto de entrenamiento', text: 'Los ejemplos corregidos entran en un conjunto de entrenamiento o de ajuste (fine-tuning).', tone: 'training' },
                 { id: 'training-4', label: 'Evaluación', text: 'Se comprueba si la versión nueva de verdad mejora, sin romper otras cosas.', tone: 'eval' },
                 { id: 'training-5', label: 'Versión nueva', text: 'Si la evaluación pasa, sale una versión actualizada del modelo.', tone: 'good' },

@@ -105,7 +105,7 @@ export const mistakeLearningLab: MistakeLearningLabContent = {
             summary: 'Recurring mistakes can become examples for future training, in a separate and slow process.',
             steps: [
                 { id: 'training-1', label: 'Collecting examples', text: 'Cases where the answer invented an arrival date are collected.', tone: 'wrong' },
-                { id: 'training-2', label: 'Review and correction', text: 'People review the examples and correct them into a right answer.', tone: 'training' },
+                { id: 'training-2', label: 'Review and correction', text: 'People review the examples, filter out unclear or wrong feedback, and correct the rest into a right answer.', tone: 'training' },
                 { id: 'training-3', label: 'A training set', text: 'The corrected examples go into a training or fine-tuning set.', tone: 'training' },
                 { id: 'training-4', label: 'Evaluation', text: 'They check whether the new version really improves, without breaking other things.', tone: 'eval' },
                 { id: 'training-5', label: 'A new version', text: 'If the evaluation passes, an updated version of the model is released.', tone: 'good' },

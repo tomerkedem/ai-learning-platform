@@ -196,7 +196,7 @@ export const mistakeLearningLab: MistakeLearningLabContent = {
             summary: 'טעויות חוזרות יכולות להפוך לדוגמאות לאימון עתידי, בתהליך נפרד ואיטי.',
             steps: [
                 { id: 'training-1', label: 'איסוף דוגמאות', text: 'אוספים מקרים שבהם התשובה המציאה מועד הגעה.', tone: 'wrong' },
-                { id: 'training-2', label: 'בדיקה ותיקון', text: 'אנשים בודקים את הדוגמאות ומתקנים אותן לתשובה נכונה.', tone: 'training' },
+                { id: 'training-2', label: 'בדיקה ותיקון', text: 'אנשים בודקים את הדוגמאות, מסננים משוב שגוי או מעורפל, ומתקנים את הנותרות לתשובה נכונה.', tone: 'training' },
                 { id: 'training-3', label: 'מאגר אימון', text: 'הדוגמאות המתוקנות נכנסות למאגר אימון או כוונון (fine-tuning).', tone: 'training' },
                 { id: 'training-4', label: 'הערכה', text: 'בודקים אם הגרסה החדשה באמת משתפרת, בלי לשבור דברים אחרים.', tone: 'eval' },
                 { id: 'training-5', label: 'גרסה חדשה', text: 'אם ההערכה עוברת, יוצאת גרסה מעודכנת של המודל.', tone: 'good' },

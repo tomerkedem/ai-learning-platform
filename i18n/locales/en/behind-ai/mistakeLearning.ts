@@ -51,8 +51,8 @@ export const mistakeLearning = {
                 body: 'When you correct, the correction enters the context of the conversation. The model can use it to write a better answer now.',
             },
             {
-                title: 'Context is not training',
-                body: 'Using a correction in a conversation is not the same as changing the weights of the model. The context helps now, it does not change the model forever.',
+                title: 'Context and memory are not training',
+                body: 'Using a correction in a conversation is not the same as changing the model weights, and it only helps here and now. Saved memory, when a product supports it, keeps selected information for later conversations, but it still does not train the model itself. Saved memory gets its own fuller treatment later in the course.',
             },
             {
                 title: 'Improvement at the product level',
@@ -60,11 +60,7 @@ export const mistakeLearning = {
             },
             {
                 title: 'Improvement at the training level',
-                body: 'Mistakes that were reviewed and corrected can go into a training or fine-tuning set, and contribute to a future version. That is a separate and slow process.',
-            },
-            {
-                title: 'Why recurring mistakes matter',
-                body: 'A single mistake is fixed in a conversation. A mistake that keeps recurring is a pattern, and it is worth fixing in the system, not just once.',
+                body: 'Mistakes that were reviewed and corrected can go into a training or fine-tuning set and contribute to a future version, in a separate and slow process. Feedback is an input, not guaranteed truth, so the examples are reviewed and unclear or wrong feedback is filtered out before they are used.',
             },
             {
                 title: 'What this chapter does not claim',
@@ -75,9 +71,9 @@ export const mistakeLearning = {
 
     see: {
         title: 'Two speeds of improvement',
-        steps: ['A mistake', 'A correction in the conversation', 'A fixed answer now', 'A pattern is collected and checked', 'A future improvement in the system or the model'],
+        steps: ['A mistake is seen', 'A correction is given', 'Improvement can happen at several levels', 'Evaluation shows whether it worked'],
         caption:
-            'The first station helps right away: a correction in the context fixes the answer now. But the real improvement begins when the recurring mistake is collected as an example, reviewed, turned into a candidate fix, and measured in an evaluation before it is released. This is a teaching illustration, not a description of a specific product.',
+            'The correction helps right away, but the real improvement is measured later: the mistake is collected and reviewed, the fix is made at one of the levels, and only an evaluation shows whether it truly worked. This is a teaching illustration, not a description of a specific product.',
     },
 
     guess: {

@@ -100,7 +100,7 @@ export const mistakeLearningLab: MistakeLearningLabContent = {
             summary: 'الأخطاء المتكرّرة يمكن أن تصبح أمثلة لتدريب مستقبلي، في عملية منفصلة وبطيئة.',
             steps: [
                 { id: 'training-1', label: 'جمع أمثلة', text: 'نجمع حالات اخترعت فيها الإجابة موعد وصول.', tone: 'wrong' },
-                { id: 'training-2', label: 'فحص وتصحيح', text: 'يفحص أشخاص الأمثلة ويصحّحونها إلى إجابة صحيحة.', tone: 'training' },
+                { id: 'training-2', label: 'فحص وتصحيح', text: 'يفحص أشخاص الأمثلة، ويصفّون التغذية الراجعة الخاطئة أو الغامضة، ويصحّحون الباقي إلى إجابة صحيحة.', tone: 'training' },
                 { id: 'training-3', label: 'مجموعة تدريب', text: 'تدخل الأمثلة المصحَّحة في مجموعة تدريب أو ضبط (fine-tuning).', tone: 'training' },
                 { id: 'training-4', label: 'تقييم', text: 'نفحص إن كانت النسخة الجديدة تتحسّن فعلًا، دون كسر أشياء أخرى.', tone: 'eval' },
                 { id: 'training-5', label: 'نسخة جديدة', text: 'إن اجتاز التقييم، تخرج نسخة محدَّثة من النموذج.', tone: 'good' },
