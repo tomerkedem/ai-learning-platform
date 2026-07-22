@@ -111,11 +111,12 @@ export default function BehindTheScenesChapter3() {
     const sLock: ReadAloudSegment = { id: 'lock', label: c3.lock.title, text: `${c3.lock.title}. ${c3.lock.truthLabel}: ${c3.lock.truthText} ${c3.lock.mistakeLabel}: ${c3.lock.mistakeText}` };
     const sPracticalShort: ReadAloudSegment = { id: 'practical', label: c3.practical.title, text: `${c3.practical.title}. ${c3.practical.intro}` };
     const sPracticalFull: ReadAloudSegment = { id: 'practical', label: c3.practical.title, text: `${c3.practical.title}. ${c3.practical.intro} ${c3.practical.points.join(' ')}` };
+    const sBridge: ReadAloudSegment = { id: 'bridge', label: t.behindAi.chapterQuiz.nextQuestionLabel, text: t.behindAi.chapterQuiz.transitions[3] };
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
         short: [sTitle, sGuessReveal, sInsight, sPracticalShort],
-        regular: [sTitle, sGuessQ, sGuessReveal, sInsight, sLab, sLock, sPracticalFull],
-        full: [sTitle, sGuessQ, ...sCards, sGuessReveal, sInsight, sLab, sLock, sPracticalFull],
+        regular: [sTitle, sGuessQ, sGuessReveal, sInsight, sLab, sLock, sPracticalFull, sBridge],
+        full: [sTitle, sGuessQ, ...sCards, sGuessReveal, sInsight, sLab, sLock, sPracticalFull, sBridge],
     };
 
     // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא-דאטה.
@@ -343,6 +344,7 @@ export default function BehindTheScenesChapter3() {
             </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
+            <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{t.behindAi.chapterQuiz.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{t.behindAi.chapterQuiz.transitions[3]}</p></section>
             <section className="mt-16 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
                     <AssessmentEngine {...localizedQuiz} conceptDisplayMap={c3.quiz.conceptLabels} />

@@ -21,6 +21,8 @@ import { chatToAgentQuiz } from './chatToAgentQuiz';
 
 export const chatToAgent = {
     contentLocale: 'es' as Locale,
+    openingRefresher: 'Hasta ahora, el modelo o el producto principalmente devolvía texto. Un Agent es un sistema alrededor del modelo que gestiona una meta en varios pasos y puede usar herramientas y estado de tarea con permisos definidos.',
+    mcpEnrichment: 'Ampliación opcional: MCP es un posible protocolo para exponer herramientas y contexto en algunos sistemas. No todo Agent lo usa y no hace falta conocerlo para entender este capítulo.',
 
     hero: {
         badge: 'Behind the Scenes · 17 · Chat to Agent',
@@ -57,7 +59,7 @@ export const chatToAgent = {
             },
             {
                 title: 'Herramientas',
-                body: 'Un agente puede usar herramientas solo cuando estan disponibles y permitidas: consulta de seguimiento, busqueda en documentos, redactar un borrador, enviar un mensaje y mas. Una herramienta tiene entradas, salidas y permisos, y tambien puede fallar. Una herramienta amplia la capacidad, no hace al modelo mas inteligente. La forma estructurada de conectar un agente con herramientas externas se llama MCP, y da acceso controlado, no permiso para hacer todo. No todo agente usa MCP.',
+            body: 'Un Agent puede usar herramientas solo cuando están disponibles y permitidas. Cada herramienta tiene entrada y salida definidas, mientras la aplicación controla el acceso y los permisos. Puede fallar y amplía la capacidad sin hacer al modelo más inteligente.',
             },
             {
                 title: 'Informacion que falta',

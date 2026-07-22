@@ -141,11 +141,12 @@ export default function BehindTheScenesChapter12() {
     const sLock: ReadAloudSegment = { id: 'lock', label: c12.lock.title, text: c12.lock.question };
     const sPractical: ReadAloudSegment = { id: 'practical', label: c12.practical.title, text: `${c12.practical.title}. ${c12.practical.lead} ${c12.practical.uses.join(' ')}` };
     const sCaveat: ReadAloudSegment = { id: 'caveat', label: c12.practical.title, text: c12.practical.caveat };
+    const sBridge: ReadAloudSegment = { id: 'bridge', label: t.behindAi.chapterQuiz.nextQuestionLabel, text: t.behindAi.chapterQuiz.transitions[12] };
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
         short: [sHero, sPrimer, sLab, sPractical, sCaveat],
-        regular: [sHero, sGuess, sPrimer, sLab, sWow, sLock, sPractical, sCaveat],
-        full: [sHero, sGuess, sPrimer, sSee, sLab, sWow, sEveryday, sMisconception, sLock, sPractical, sCaveat],
+        regular: [sHero, sGuess, sPrimer, sLab, sWow, sLock, sPractical, sCaveat, sBridge],
+        full: [sHero, sGuess, sPrimer, sSee, sLab, sWow, sEveryday, sMisconception, sLock, sPractical, sCaveat, sBridge],
     };
 
     // ── מבדק הפרק: המנגנון המשותף נשמר מ-quizData, וטקסט התצוגה ממוזג לפי מזהה.
@@ -420,6 +421,7 @@ export default function BehindTheScenesChapter12() {
             </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
+            <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{cq.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{cq.transitions[12]}</p></section>
             <section className="mt-16 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
                     <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} />

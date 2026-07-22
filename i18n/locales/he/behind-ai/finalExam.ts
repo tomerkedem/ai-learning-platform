@@ -13,6 +13,7 @@
 // אין מקף ארוך (U+2014) בקובץ הזה.
 
 export const finalExam = {
+    questionOverrides: {} as Record<13 | 17, { question: string; options: string[]; explanation: string }>,
     // כותרת העמוד (header) שמעל לוח ההתקדמות והמבחן
     backToChapter: 'חזרה לפרק 19',
     pageTitle: 'מבחן סיום הלומדה',

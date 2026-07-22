@@ -204,6 +204,7 @@ export const chapter4 = {
         ],
         caveat:
             'Pero el vector representa significado, no comprueba si algo es verdad en el mundo. Cómo comparamos vectores, y cuándo la cercanía engaña, es justo el próximo capítulo.',
+        mathOptionalLabel: 'Ampliación matemática opcional - no es necesaria para continuar el curso',
         mathLink:
             '¿Quieres las matemáticas de esta cercanía a fondo? El capítulo de Vectores, el corazón de todo modelo, en el curso de Matemática Intuitiva',
     },

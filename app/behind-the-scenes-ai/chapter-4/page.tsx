@@ -437,11 +437,12 @@ export default function BehindTheScenesChapter4() {
                         ))}
                     </ul>
                     <span className="mt-3 block text-sm text-slate-400">{c4.practical.caveat}</span>
+                    <span className="mt-4 block text-xs font-bold text-cyan-300">{c4.practical.mathOptionalLabel}</span>
                     <GuessButton
                         href="/math/mathIntuitive/chapter-5"
                         variant="ghost"
                         rgb="34,211,238"
-                        className="mt-4"
+                        className="mt-2"
                         trailingIcon={isRtl ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
                     >
                         {c4.practical.mathLink}

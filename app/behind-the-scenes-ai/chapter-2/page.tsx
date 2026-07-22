@@ -108,11 +108,12 @@ export default function BehindTheScenesChapter2() {
     const sEveryday: ReadAloudSegment = { id: 'everyday', label: c2.everyday.title, text: `${c2.everyday.title}. ${c2.everyday.body}` };
     const sTakeaway: ReadAloudSegment = { id: 'takeaway', label: c2.takeaway.title, text: `${c2.takeaway.title}. ${c2.takeaway.points.join(' ')}` };
     const sLock: ReadAloudSegment = { id: 'lock', label: c2.lock.title, text: `${c2.lock.title}. ${c2.lock.truthLabel}: ${c2.lock.truthText} ${c2.lock.mistakeLabel}: ${c2.lock.mistakeText}` };
+    const sBridge: ReadAloudSegment = { id: 'bridge', label: t.behindAi.chapterQuiz.nextQuestionLabel, text: t.behindAi.chapterQuiz.transitions[2] };
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
         short: [sTitle, sQuestion, sFullInput, sTakeaway],
-        regular: [sTitle, sQuestion, sGuessQ, sGuessReveal, sLab, sFullInput, sEveryday, sTakeaway, sLock],
-        full: [sTitle, sQuestion, sGuessQ, ...sCards, sGuessReveal, sLab, sFullInput, sEveryday, sTakeaway, sLock],
+        regular: [sTitle, sQuestion, sGuessQ, sGuessReveal, sLab, sFullInput, sEveryday, sTakeaway, sLock, sBridge],
+        full: [sTitle, sQuestion, sGuessQ, ...sCards, sGuessReveal, sLab, sFullInput, sEveryday, sTakeaway, sLock, sBridge],
     };
 
     // מבדק הפרק: המנגנון המשותף (correctAnswer, onComplete, getReviewLinks, nextHref...)
@@ -368,6 +369,7 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
+            <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{cq.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{cq.transitions[2]}</p></section>
             <section className="mt-12 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
                     <AssessmentEngine {...localizedQuiz} conceptDisplayMap={quizText.conceptLabels} />

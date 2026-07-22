@@ -23,7 +23,11 @@ export default function FinalExamPage() {
     const cq = t.behindAi.chapterQuiz;
 
     // נתונים והתנהגות בלבד מתוך quizData (בלי מחרוזות התצוגה העבריות).
-    const { questions, passScore, onComplete, getReviewLinks, soundEnabled } = behindAiFinalExam;
+    const { questions: baseQuestions, passScore, onComplete, getReviewLinks, soundEnabled } = behindAiFinalExam;
+    const questions = baseQuestions.map((question) => ({
+        ...question,
+        ...(fx.questionOverrides[question.id as 13 | 17] ?? {}),
+    }));
 
     // דרגות ציון מתורגמות: שומרים את ה-min/color המבניים מ-quizData וממזגים מעליהם
     // את ה-label/sub מהמילון לפי הסדר, בלי לשנות את quizData.

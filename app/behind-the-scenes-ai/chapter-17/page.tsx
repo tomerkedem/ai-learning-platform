@@ -143,7 +143,7 @@ export default function BehindTheScenesChapter17() {
     }));
 
     // ── טקסט "רגע לפני המעבדה" להקראה: כותרת, תת-כותרת, פתיח וכל הנקודות. מקור אחד. ──
-    const primerText = `${c17.primer.title}. ${c17.primer.subtitle}. ${c17.primer.lead} ${c17.primer.points.map((p) => `${p.title}. ${p.body}`).join(' ')}`;
+    const primerText = `${c17.openingRefresher} ${c17.primer.title}. ${c17.primer.subtitle}. ${c17.primer.lead} ${c17.primer.points.map((p) => `${p.title}. ${p.body}`).join(' ')} ${c17.mcpEnrichment}`;
 
     // ── דוק האזנה מודרכת: מקטעי הקראה יציבים בלבד (בלי מצב חי של המעבדה, כפתורים,
     // מנטורים או חידון). התוכן נקרא בשפת contentLocale. ──
@@ -277,7 +277,8 @@ export default function BehindTheScenesChapter17() {
                         <SpeakButton text={primerText} speechLocale={speechLocale} />
                     </div>
 
-                    <p className="text-[15px] leading-relaxed text-slate-300 md:text-base">{c17.primer.lead}</p>
+                        <p className="rounded-xl border border-cyan-500/25 bg-cyan-950/15 p-3 text-[15px] leading-relaxed text-cyan-100 md:text-base">{c17.openingRefresher}</p>
+                        <p className="text-[15px] leading-relaxed text-slate-300 md:text-base">{c17.primer.lead}</p>
 
                     <div className="mt-5 grid gap-3 sm:grid-cols-2">
                         {c17.primer.points.map((pt) => (
@@ -289,6 +290,7 @@ export default function BehindTheScenesChapter17() {
                                 <p className="text-[15px] leading-relaxed text-slate-300">{pt.body}</p>
                             </div>
                         ))}
+                        <p className="rounded-xl border border-slate-700/60 bg-slate-950/35 p-3 text-xs leading-relaxed text-slate-400">{c17.mcpEnrichment}</p>
                     </div>
                 </div>
             </section>

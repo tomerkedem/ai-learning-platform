@@ -206,6 +206,7 @@ export const chapter4 = {
         ],
         caveat:
             'But the vector represents meaning, it does not check whether something is true in the world. How we compare vectors, and when closeness is misleading, is exactly the next chapter.',
+        mathOptionalLabel: 'Optional math enrichment - not required to continue this course',
         mathLink:
             'Want the math of this closeness in depth? The Vectors chapter, the heart of every model, in the Intuitive Math course',
     },

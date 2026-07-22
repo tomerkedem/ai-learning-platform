@@ -148,11 +148,12 @@ export default function BehindTheScenesChapter7() {
     const sLock: ReadAloudSegment = { id: 'lock', label: c7.lock.title, text: c7.lock.question };
     const sPractical: ReadAloudSegment = { id: 'practical', label: c7.practical.title, text: `${c7.practical.title}. ${c7.practical.lead} ${c7.practical.uses.join(' ')}` };
     const sCaveat: ReadAloudSegment = { id: 'caveat', label: c7.practical.title, text: c7.practical.caveat };
+    const sBridge: ReadAloudSegment = { id: 'bridge', label: t.behindAi.chapterQuiz.nextQuestionLabel, text: t.behindAi.chapterQuiz.transitions[7] };
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
         short: [sHero, sPrimer, sPractical, sCaveat],
-        regular: [sHero, sPrimer, sLab, sWow, sMistake, sPractical, sCaveat],
-        full: [sHero, sPrimer, sLab, sWow, sEveryday, sMistake, sHow, sLock, sPractical, sCaveat],
+        regular: [sHero, sPrimer, sLab, sWow, sMistake, sPractical, sCaveat, sBridge],
+        full: [sHero, sPrimer, sLab, sWow, sEveryday, sMistake, sHow, sLock, sPractical, sCaveat, sBridge],
     };
 
     // ── מבדק הפרק: המנגנון המשותף נשמר מ-quizData, וטקסט התצוגה ממוזג לפי מזהה. ──
@@ -430,6 +431,7 @@ export default function BehindTheScenesChapter7() {
             </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
+            <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{cq.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{cq.transitions[7]}</p></section>
             <section className="mt-12 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
                     <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} />

@@ -10,6 +10,10 @@
 // No em dash (U+2014) and no en dash (U+2013) in this file.
 
 export const finalExam = {
+    questionOverrides: {
+        13: { question: '¿Qué indica una gran diferencia de probabilidad entre la continuación líder y las alternativas mostradas?', options: ['Es solo decoración', 'El modelo prefiere con fuerza la opción líder dentro de esa distribución, no que sea verdadera, esté respaldada o autorizada', 'Ralentiza el modelo', 'Sustituye la respuesta'], explanation: 'Una gran diferencia muestra una preferencia fuerte dentro de la distribución. No demuestra verdad, respaldo ni permiso para actuar. La confianza factual requiere contexto, evidencia, Grounding o verificación.' },
+        17: { question: 'Corregiste una respuesta en un chat. ¿Qué es lo más preciso sobre usar esa corrección ahora y después?', options: ['El modelo tiene una memoria corta que se llena', 'Puede influir en el contexto actual; no aparece automáticamente en un chat nuevo salvo que el producto la guarde o recupere, y eso no es entrenamiento inmediato', 'Solo aprende de otros usuarios', 'Decide ignorar tu corrección'], explanation: 'La corrección puede influir en el contexto actual. Un producto puede guardar información seleccionada sin cambiar los parámetros. También pueden mejorar prompts, reglas, workflows, fuentes o herramientas; entrenar el modelo es otro proceso. Una corrección no reentrena al instante el modelo global.' },
+    },
     backToChapter: 'Volver al capítulo 19',
     pageTitle: 'Examen final del curso',
     pageSubtitle:

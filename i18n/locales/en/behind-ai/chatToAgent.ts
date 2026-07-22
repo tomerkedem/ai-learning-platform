@@ -20,6 +20,8 @@ import { chatToAgentQuiz } from './chatToAgentQuiz';
 
 export const chatToAgent = {
     contentLocale: 'en' as Locale,
+    openingRefresher: 'Until now, the model or product mainly returned text. An Agent is a system around the model that manages a goal over several steps and may use tools and task state within defined permissions.',
+    mcpEnrichment: 'Optional enrichment: MCP is one possible protocol for exposing tools and context in some systems. Not every Agent uses it, and you do not need it to understand this chapter.',
 
     hero: {
         badge: 'Behind the Scenes · 17 · Chat to Agent',
@@ -56,7 +58,7 @@ export const chatToAgent = {
             },
             {
                 title: 'Tools',
-                body: 'An agent can use tools only when they are available and allowed: tracking lookup, document search, drafting, sending a message, and more. A tool has inputs, outputs, and permissions, and it can also fail. A tool extends capability, it does not make the model smarter. The structured way to connect an agent to external tools is called MCP, and it gives controlled access, not permission to do everything. Not every agent uses MCP.',
+            body: 'An Agent can use tools only when they are available and allowed: tracking lookup, document search, drafting, sending a message, and more. A tool has defined input and output, while the application controls access and permissions. A tool can fail, and it extends capability without making the model smarter.',
             },
             {
                 title: 'Missing information',
