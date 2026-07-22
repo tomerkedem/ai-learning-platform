@@ -1,95 +1,38 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Terminal, ScanSearch, ArrowDown, ScanLine, X, Layers, ChevronDown, Eye, ListChecks, CircleAlert, RotateCcw } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useReducedMotion } from 'framer-motion';
+import { AlertTriangle, ArrowDown, Bot, Box, CheckCircle2, ChevronLeft, ChevronRight, Eye, Package, UserRound } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
-import { behindAiChapterQuizzes } from '../quizData';
-import { InsightBox } from '@/components/content/InsightBox';
-import { useT } from '@/i18n/useT';
-import type { Chapter1QuizId } from '@/i18n/locales/he/behind-ai/chapter1Quiz';
-
-import { TransparentLabLayout } from '@/components/ai-internals/TransparentLabLayout';
-import { ChatInterfacePanel } from '@/components/ai-internals/ChatInterfacePanel';
+import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
+import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
-import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
-import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
 import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
-import type { Accent, ChatMessage, FlowMode } from '@/components/ai-internals/types';
+import { useT } from '@/i18n/useT';
+import type { Chapter1QuizId } from '@/i18n/locales/he/behind-ai/chapter1Quiz';
+import { behindAiChapterQuizzes } from '../quizData';
 
-import { runChatEngine, runAgentEngine, type Confidence } from './mockEngine';
-import { traceChatEngine, traceAgentEngine } from './engineTrace';
-import { GlassEnginePanel } from './GlassEnginePanel';
-import { HoloFrame } from './HoloFrame';
-import { ReadHeadLab } from './ReadHeadLab';
-import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
-import { PredictDecision } from './PredictDecision';
-// גשר-זיהוי: אותם צבעי 14 התחנות של מפת המבוא, כדי לקשר את המעבדה החיה למפה.
-import { STATION_PALETTE } from '@/components/ai-internals/IntroStationViz';
-
-// רגע "עצור ושאל" (שיא הפרק): פלט שבו המנוע עוצר במקום לענות בביטחון - בקשת הבהרה,
-// בקשת אישור, או ביטחון נמוך. משמש גם לסימון ההצעות וגם לזיהוי שהלומד כבר חווה זאת.
-// מוגדר במודול (יציב) כדי לא לשבור תלויות של hooks.
-const isPauseOutcome = (
-    res: { decision: { kind: string }; confidence?: Confidence },
-    m: FlowMode,
-): boolean => res.decision.kind === 'ask' || res.decision.kind === 'stop' || (m === 'chat' && res.confidence === 'Low');
+type PathStep = 'request' | 'assembly' | 'model' | 'handling' | 'response';
 
 export default function BehindTheScenesChapter1() {
     const reduce = useReducedMotion();
     const { t, dir, locale } = useT();
     const isRtl = dir === 'rtl';
-    const c1 = t.behindAi.chapter1;
-    const viz = c1.visuals;
-
-    // ── דוק האזנה מודרכת: מקטעי הקראה לפי מצב היקף, מאותם מפתחות מילון (ללא שכפול
-    // קופי). לא נכללים: חידון, כפתורים/ניווט, צ׳יפים/באדג׳ים, משפטי מנטור, קופי coach,
-    // הערות live/demo, ופלט חי של ארבע המעבדות. תוויות הדוק מ-aiInternals.readAloud.
+    const c = t.behindAi.chapter1.redesign;
     const ra = t.behindAi.aiInternals.readAloud;
-    const c1Lede = `${c1.hero.ledeLead}${c1.hero.ledeHighlight}${c1.hero.ledeRest}`;
-    const c1Deep2 = `${c1.deep.intro2Lead}Chat${c1.deep.intro2Mid}Agent${c1.deep.intro2Tail}`;
-    const sTitle: ReadAloudSegment = { id: 'title', label: c1.hero.titleLead, text: `${c1.hero.titleLead} ${c1.hero.titleHighlight}. ${c1Lede}` };
-    const sLabIntro: ReadAloudSegment = { id: 'lab-intro', label: c1.lab.title, text: `${c1.lab.title}. ${c1.lab.intro}` };
-    const sFocus: ReadAloudSegment = { id: 'focus', label: c1.lab.focusHighlight, text: `${c1.lab.focusLead}${c1.lab.focusHighlight}${c1.lab.focusRest}` };
-    const sInsight: ReadAloudSegment = { id: 'insight', label: c1.insightIdea.title, text: c1.insightIdea.body };
-    const sDeep1: ReadAloudSegment = { id: 'deep-1', label: c1.deep.intro1, text: c1.deep.intro1 };
-    const sDeep2: ReadAloudSegment = { id: 'deep-2', label: c1Deep2, text: c1Deep2 };
-    const sLabs: ReadAloudSegment[] = [c1.labs.readHead].map((lab, i) => ({ id: `lab-${i}`, label: lab.title, text: lab.title }));
-    const sUnderstand: ReadAloudSegment = { id: 'understand', label: c1.summary.understandTitle, text: c1.summary.understandBody };
-    const sRule: ReadAloudSegment = { id: 'rule', label: c1.summary.ruleTitle, text: c1.summary.ruleBody };
-    const sBq1: ReadAloudSegment = { id: 'bq-1', label: c1.beforeQuiz.point1Lead, text: `${c1.beforeQuiz.point1Lead}${c1.beforeQuiz.point1Body}` };
-    const sBq2: ReadAloudSegment = { id: 'bq-2', label: c1.beforeQuiz.point2Lead, text: `${c1.beforeQuiz.point2Lead}${c1.beforeQuiz.point2BeforeChat}Chat${c1.beforeQuiz.point2AfterChat}Agent${c1.beforeQuiz.point2AfterAgent}` };
-    const sBq3: ReadAloudSegment = { id: 'bq-3', label: c1.beforeQuiz.point3Lead, text: `${c1.beforeQuiz.point3Lead}${c1.beforeQuiz.point3Body}` };
-    // הקראת כרטיס "לפני המבדק": כותרת + שלוש הנקודות, ממקור אחד עם מקטעי הדוק.
-    const beforeQuizText = `${c1.beforeQuiz.title}. ${sBq1.text} ${sBq2.text} ${sBq3.text}`;
+    const [example, setExample] = useState(0);
+    const [activeStep, setActiveStep] = useState<PathStep>('request');
+    const [failure, setFailure] = useState(0);
 
-    const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
-        short: [sTitle, sLabIntro, sInsight, sRule],
-        regular: [sTitle, sLabIntro, sFocus, sInsight, sDeep1, ...sLabs, sUnderstand, sRule],
-        full: [sTitle, sLabIntro, sFocus, sInsight, sDeep1, sDeep2, ...sLabs, sUnderstand, sRule, sBq1, sBq2, sBq3],
-    };
-
-    // מבדק הפרק: המנגנון המשותף (correctAnswer, onComplete, getReviewLinks, nextHref...)
-    // נשמר מ-quizData, וטקסט התצוגה ממוזג מהמילון לפי מזהה השאלה. quizData.ts לא משתנה.
-    // קישורי החזרה שומרים על ה-href, ורק התווית מתורגמת מתוך t.behindAi.chapterQuiz.
-    const cq = t.behindAi.chapterQuiz;
-    const quizText = c1.quiz;
+    const quizText = t.behindAi.chapter1.quiz;
     const baseQuiz = behindAiChapterQuizzes[1];
+    const cq = t.behindAi.chapterQuiz;
     const baseGetReviewLinks = baseQuiz.getReviewLinks;
-    const getReviewLinks = baseGetReviewLinks
-        ? (weakConcepts: string[]): ReviewLink[] =>
-              baseGetReviewLinks(weakConcepts).map((link) => {
-                  const match = link.href.match(/chapter-(\d+)/);
-                  const n = match ? Number(match[1]) : null;
-                  const name = n != null ? cq.chapterNames[n] : undefined;
-                  if (n == null || !name) return link;
-                  return { ...link, label: cq.reviewLinkLabel(n, name) };
-              })
-        : undefined;
     const localizedQuiz = {
         ...baseQuiz,
         title: quizText.title,
@@ -98,652 +41,152 @@ export default function BehindTheScenesChapter1() {
         submitLabel: quizText.submitLabel,
         completedTitle: quizText.completedTitle,
         questions: baseQuiz.questions.map((q) => ({ ...q, ...quizText.byId[q.id as Chapter1QuizId] })),
-        getReviewLinks,
-    };
-
-    // קלטי-הזרע של הצ'אט מגיעים מהמילון (seed). קלט ברירת המחדל משמש לאתחול ה-state.
-    const DEFAULT_INPUT = c1.seed.defaultInput;
-    const SUGGESTIONS = c1.seed.suggestions;
-    // קלט-הזרע הקודם, לזיהוי החלפת שפה. ה-SSR מרנדר עברית, ולכן ה-state ההתחלתי עברי
-    // עד שהלקוח מחליף ל-?lang אחרי mount; אז מאפסים את קלט-ההדגמה לברירת המחדל החדשה.
-    const prevSeedRef = useRef(DEFAULT_INPUT);
-
-    const [mode, setMode] = useState<FlowMode>('chat');
-    const [inputValue, setInputValue] = useState(DEFAULT_INPUT);
-    const [conversationText, setConversationText] = useState(DEFAULT_INPUT);
-    const [sendCount, setSendCount] = useState(0);
-    const [isTyping, setIsTyping] = useState(true);
-    // הדרכת first-run: רמז עדין מאיפה להתחיל, נסגר בלחיצה כדי לא להפריע לחזרות.
-    const [coachOpen, setCoachOpen] = useState(true);
-    // בדיקת הבנה לפני המבדק: החלטה בינארית אחת על ליבת הפרק (פער קטן -> לעצור ולשאול).
-    const [lockChoice, setLockChoice] = useState<'answer' | 'ask' | null>(null);
-    // חשיפה הדרגתית: שכבת העומק (קריאה חיה, חוגת ביטחון, סיבתיות, פיצול) סגורה
-    // כברירת מחדל. פרק 1 נפתח נקי - התשובה והדרך שמאחוריה בלבד - והפרטים נפתחים בבחירה.
-    const [deepOpen, setDeepOpen] = useState(false);
-    // חישוב חי: המנוע מנתח את מה שמקלידים (debounced), לא רק את מה שנשלח.
-    const [liveText, setLiveText] = useState(DEFAULT_INPUT);
-    // קישור חי: הטוקן שמרחפים עליו (בצ'אט או במנוע), להדגשה הדדית.
-    const [hoverToken, setHoverToken] = useState<string | null>(null);
-
-    // צ'אט חי: תשובת Claude אמיתית מוזרמת מהשרת. liveReply===null => משתמשים
-    // בתשובת ה-mock הדטרמיניסטית. live = האם המנוע החי בכלל זמין (יש מפתח).
-    const [live, setLive] = useState(false);
-    const [liveReply, setLiveReply] = useState<string | null>(null);
-    // ספירת טוקנים אמיתית מ-Claude (count_tokens) עבור הטקסט הנוכחי. null => לא זמין
-    // (אין מפתח / כשל / אין טקסט). Claude לא חושף את החלוקה עצמה, רק את המספר.
-    const [liveTokens, setLiveTokens] = useState<number | null>(null);
-    const [streaming, setStreaming] = useState(false);
-    const replyAbortRef = useRef<AbortController | null>(null);
-
-    const isChat = mode === 'chat';
-    const accent: Accent = isChat ? 'cyan' : 'purple';
-
-    // המנוע הלימודי: תוצאה נגזרת מהטקסט שנשלח.
-    const chat = useMemo(() => runChatEngine(conversationText), [conversationText]);
-    const agent = useMemo(() => runAgentEngine(conversationText), [conversationText]);
-
-    // רגע "עצור ושאל": ההצעות שגורמות למנוע לעצור (בכל אחד מהמצבים) מסומנות, ואחרי
-    // ריצה בטוחה מנטור דוחף לנסות אותן. seenPause נדלק ברגע שהלומד חווה עצירה בפועל.
-    // תלוי-מצב: מסומנות ההצעות שיגרמו לעצירה במצב הנוכחי. ב-Chat זו בעיקר בקשה עמומה,
-    // ב-Agent גם פעולה רגישה ומידע חסר. הסימון "חי" ומתחלף עם המצב, ומראה שהם שונים.
-    const pauseSuggestions = useMemo(
-        () => SUGGESTIONS.filter((s) => isPauseOutcome(mode === 'chat' ? runChatEngine(s) : runAgentEngine(s), mode)),
-        [SUGGESTIONS, mode],
-    );
-    const [seenPause, setSeenPause] = useState(false);
-    const currentPause = isPauseOutcome(isChat ? chat : agent, mode);
-    // הדחיפה מופיעה רק ב-Chat (שם המנוע עונה בביטחון), ומפנה למצב Agent - שם המנוע
-    // עוצר ושואל או מבקש אישור. מעבר ל-Agent מדליק seenPause ומעלים אותה.
-    const showPauseNudge = isChat && sendCount >= 1 && !currentPause && !seenPause;
-
-    // חישוב חי (debounced): המנוע מנתח את מה שמקלידים כרגע, ובהיעדר הקלדה - את
-    // המשפט האחרון שנשלח. setState ב-setTimeout (לא סינכרוני ב-effect) לכבוד ה-lint.
-    useEffect(() => {
-        const v = inputValue.trim();
-        const id = setTimeout(() => setLiveText(v || conversationText), 220);
-        return () => clearTimeout(id);
-    }, [inputValue, conversationText]);
-
-    // איפוס קלט-ההדגמה ההתחלתי כשמילון השפה מתחלף (he בעת SSR -> השפה שנבחרה אחרי mount).
-    // מאפסים רק אם הקלט עדיין שווה לברירת המחדל הקודמת, כדי לא לדרוס הקלדה/שליחה של המשתמש.
-    // רץ רק כשברירת המחדל משתנה (deps), ולכן בלי לולאה ובלי איפוס בכל render. ה-setState
-    // ב-setTimeout (לא סינכרוני ב-effect) לכבוד ה-lint. בעברית בלבד אין שינוי (אין החלפה).
-    useEffect(() => {
-        const prev = prevSeedRef.current;
-        if (prev === DEFAULT_INPUT) return;
-        prevSeedRef.current = DEFAULT_INPUT;
-        const id = setTimeout(() => {
-            setConversationText((cur) => (cur === prev ? DEFAULT_INPUT : cur));
-            setInputValue((cur) => (cur === prev ? DEFAULT_INPUT : cur));
-            setLiveText((cur) => (cur === prev ? DEFAULT_INPUT : cur));
-        }, 0);
-        return () => clearTimeout(id);
-    }, [DEFAULT_INPUT]);
-
-    // זיהוי יכולת פעם אחת: האם הצ'אט החי זמין (יש ANTHROPIC_API_KEY בשרת).
-    useEffect(() => {
-        let cancelled = false;
-        fetch('/api/chat-reply')
-            .then((r) => (r.ok ? r.json() : { live: false }))
-            .then((d) => { if (!cancelled) setLive(!!d.live); })
-            .catch(() => { if (!cancelled) setLive(false); });
-        return () => { cancelled = true; };
-    }, []);
-
-    // מייצר את תשובת הצ'אט. במצב חי: מזרים תשובת Claude אמיתית טוקן-אחר-טוקן.
-    // אחרת (או בכשל/קטיעה): liveReply=null והתצוגה נופלת לתשובת ה-mock.
-    const generateReply = useCallback(async (text: string, m: FlowMode) => {
-        replyAbortRef.current?.abort(); // קטע זרם קודם אם עוד רץ
-
-        const t = text.trim();
-        if (!live || !t) {
-            setStreaming(false);
-            setLiveReply(null);
-            return;
-        }
-
-        const ac = new AbortController();
-        replyAbortRef.current = ac;
-        setStreaming(true);
-        setLiveReply('');
-
-        try {
-            const res = await fetch('/api/chat-reply', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                // ה-locale הפעיל נשלח לשרת כך שהמודל החי עונה בשפת הממשק הנבחרת,
-                // ולא לפי שפת הקלט של המשתמש.
-                body: JSON.stringify({ text: t, mode: m, locale }),
-                signal: ac.signal,
-            });
-            if (!res.ok || !res.body) throw new Error('chat-reply unavailable');
-
-            const reader = res.body.getReader();
-            const decoder = new TextDecoder();
-            let acc = '';
-            for (;;) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                acc += decoder.decode(value, { stream: true });
-                setLiveReply(acc);
-            }
-            setStreaming(false);
-        } catch (err) {
-            if ((err as Error).name === 'AbortError') return; // זרם הוחלף - אל תיגע במצב
-            setStreaming(false);
-            setLiveReply(null); // נפילה חיננית לתשובת ה-mock
-        }
-    }, [live, locale]);
-
-    // ספירת טוקנים אמיתית מ-Claude עבור אותו טקסט שהמנוע מציג. רק במצב חי, ו-debounced
-    // כדי לא להציף את ה-API בכל הקלדה. הספירה היא מספר אמיתי; את החלוקה עצמה Claude
-    // לא חושף, ולכן הלוח נשאר מבוסס-מילים והמספר הזה מוצג לצדו כהשוואה.
-    useEffect(() => {
-        const t = liveText.trim();
-        if (!live || !t) { setLiveTokens(null); return; }
-        let cancelled = false;
-        const ac = new AbortController();
-        const id = setTimeout(() => {
-            fetch('/api/count-tokens', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: t }),
-                signal: ac.signal,
+        getReviewLinks: baseGetReviewLinks
+            ? (weak: string[]): ReviewLink[] => baseGetReviewLinks(weak).map((link) => {
+                const match = link.href.match(/chapter-(\d+)/);
+                const n = match ? Number(match[1]) : null;
+                const name = n == null ? undefined : cq.chapterNames[n];
+                return n != null && name ? { ...link, label: cq.reviewLinkLabel(n, name) } : link;
             })
-                .then((r) => (r.ok ? r.json() : null))
-                .then((d) => { if (!cancelled && d && typeof d.tokens === 'number') setLiveTokens(d.tokens); })
-                .catch(() => { /* כשל/קטיעה: פשוט לא מציגים ספירה חיה */ });
-        }, 280);
-        return () => { cancelled = true; ac.abort(); clearTimeout(id); };
-    }, [live, liveText]);
-
-    // התחנות המרכזיות של המנוע השקוף - שיקוף כן של אותה ריצה (חיה), מקובץ למערכות.
-    const engineSteps = useMemo(
-        () => (isChat ? traceChatEngine(liveText, viz) : traceAgentEngine(liveText, viz)),
-        [isChat, liveText, viz],
-    );
-
-    // מפתח הפעלה: כל שליחה / החלפת מצב מנגנת מחדש את רצף ההידלקות.
-    const replayKey = `${mode}:${conversationText}:${sendCount}`;
-
-    // אינדיקטור הקלדה: כל שינוי מתחיל "הקלדה" (ב-handlers) שמתפוגגת אחרי רגע.
-    useEffect(() => {
-        const t = setTimeout(() => setIsTyping(false), 850);
-        return () => clearTimeout(t);
-    }, [conversationText, mode, sendCount]);
-
-    // תשובת ה-AI: התשובה החיה (אם קיימת) גוברת על תשובת ה-mock. תשובת ה-mock נפתרת
-    // מהמילון לפי מפתח התשובה שהמנוע הטהור החזיר.
-    const mockReply = isChat ? viz.mockEngine.chatReplies[chat.replyKey] : viz.mockEngine.agentReplies[agent.replyKey];
-    const replyText = liveReply !== null ? liveReply : mockReply;
-    // אינדיקטור ההקלדה: במצב חי (streaming) מציגים נקודות רק עד שמגיע הטוקן הראשון,
-    // בלי תלות בטיימר ה-850ms של ה-mock. במצב mock: לפי הטיימר הרגיל.
-    const showTyping = streaming
-        ? liveReply === ''
-        : liveReply === null
-            ? isTyping
-            : false;
-
-    // id כולל את sendCount כדי שכל שליחה חדשה תנפיש כניסה, אבל צמיחת טוקנים
-    // באותה שליחה לא תרמאונט את הבועה (הזרמה חלקה).
-    const messages = useMemo<ChatMessage[]>(() => [
-        { id: `user-${sendCount}`, role: 'user', text: conversationText },
-        { id: `ai-${sendCount}`, role: 'ai', text: replyText },
-    ], [conversationText, sendCount, replyText]);
-
-    const commit = (text: string) => {
-        const next = text.trim();
-        if (!next) return;
-        setIsTyping(true);
-        setConversationText(next);
-        setLiveText(next); // עדכון מיידי כדי שהמנוע יהיה עקבי עם השליחה, בלי המתנה ל-debounce
-        setSendCount((c) => c + 1);
-        setCoachOpen(false); // אחרי האינטראקציה הראשונה, הדרכת ה-first-run מסתיימת
-        if (isPauseOutcome(mode === 'chat' ? runChatEngine(next) : runAgentEngine(next), mode)) setSeenPause(true);
-        generateReply(next, mode); // תשובה חיה (או נפילה ל-mock)
+            : undefined,
     };
 
-    const handleSend = () => {
-        commit(inputValue);
-        setInputValue('');
+    const path = useMemo<Array<{ id: PathStep; title: string; body: string; icon: React.ReactNode }>>(() => [
+        { id: 'request', title: c.path.requestTitle, body: c.path.requestBody, icon: <UserRound size={20} /> },
+        { id: 'assembly', title: c.path.productInputTitle, body: c.path.productInputBody, icon: <Box size={20} /> },
+        { id: 'model', title: c.path.modelTitle, body: c.path.modelBody, icon: <Bot size={20} /> },
+        { id: 'handling', title: c.path.productOutputTitle, body: c.path.productOutputBody, icon: <Package size={20} /> },
+        { id: 'response', title: c.path.responseTitle, body: c.path.responseBody, icon: <Eye size={20} /> },
+    ], [c.path]);
+    const selected = c.examples[example];
+    const active = path.find((step) => step.id === activeStep) ?? path[0];
+    const currentFailure = c.failures.items[failure];
+
+    const dynamicText = `${c.interaction.selectedLabel}: ${selected.request}. ${c.interaction.resultLabel}: ${selected.response}. ${selected.evidence}`;
+    const segments = useMemo<ReadAloudSegment[]>(() => [
+        { id: 'opening', label: c.hero.title, text: `${c.hero.title}. ${c.hero.lede}` },
+        { id: 'instruction', label: c.interaction.title, text: `${c.interaction.instruction} ${dynamicText}` },
+        { id: 'path', label: c.path.title, text: `${c.path.explanation} ${path.map((s) => `${s.title}. ${s.body}`).join(' ')}` },
+        { id: 'failure', label: c.failures.title, text: `${c.failures.intro} ${currentFailure.title}. ${currentFailure.body}. ${c.failures.conclusion}` },
+        { id: 'summary', label: c.summary.title, text: `${c.summary.title}. ${c.summary.points.join(' ')}` },
+        { id: 'bridge', label: c.bridge.title, text: `${c.bridge.question} ${c.bridge.body}` },
+    ], [c, dynamicText, currentFailure, path]);
+    const segmentsByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
+        short: [segments[0], segments[4], segments[5]],
+        regular: segments,
+        full: segments,
     };
-    const handleSuggestion = (text: string) => {
-        setInputValue(text);
-        commit(text);
-    };
-    const handleModeChange = (m: FlowMode) => {
-        setIsTyping(true);
-        setMode(m);
-        if (isPauseOutcome(m === 'chat' ? runChatEngine(conversationText) : runAgentEngine(conversationText), m)) setSeenPause(true);
-        generateReply(conversationText, m); // החלפת מצב מייצרת תשובה מתאימה מחדש
-    };
-    // פתיחה/סגירה של שכבת העומק. מתג ה-Chat/Agent זמין ישירות במסך הראשי, לכן
-    // סגירת שכבת העומק אינה מאפסת את המצב שהלומד בחר.
-    const toggleDeep = () => setDeepOpen((open) => !open);
 
     return (
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={1}>
-
-            {/* ══════════ HERO ══════════ */}
-            <div className="relative">
-            <motion.section
-                initial={reduce ? false : { opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-start"
-                dir={dir}
-            >
-                <div className={`absolute -top-16 ${isRtl ? '-right-16' : '-left-16'} w-56 h-56 bg-cyan-500/10 blur-[80px] rounded-full pointer-events-none`} />
-                <div className={`absolute -bottom-20 ${isRtl ? '-left-10' : '-right-10'} w-64 h-64 bg-purple-500/10 blur-[90px] rounded-full pointer-events-none`} />
-
-                {/* ב-lg+ דוק ההאזנה מעוגן בפינה מעל הכותרת; הכותרת וה-lede מתפזרים לרוחב מלא מתחתיו */}
-                <div className="relative z-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-cyan-500/30 mb-5">
-                        <Terminal size={14} className="text-cyan-400" />
-                        <span className="font-mono text-xs tracking-widest uppercase text-cyan-300">{c1.hero.badge}</span>
+            <main dir={dir} className="mx-auto w-full min-w-0 max-w-6xl overflow-x-clip pb-16 text-start">
+                <section className="relative overflow-hidden rounded-[2rem] border border-cyan-500/25 bg-slate-950/70 p-6 md:p-10">
+                    <div className="max-w-3xl">
+                        <div className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-300">{c.hero.badge}</div>
+                        <h1 className="mt-3 break-words text-2xl font-black text-white sm:text-3xl md:text-5xl">{c.hero.title}</h1>
+                        <p className="mt-5 text-lg leading-relaxed text-slate-200">{c.hero.lede}</p>
                     </div>
-
-                    <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
-                        {c1.hero.titleLead}{' '}
-                        <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent`}>
-                            {c1.hero.titleHighlight}
-                        </span>
-                        ?
-                    </h1>
-
-                    <div className="flex items-start gap-2.5">
-                        <p className="text-lg text-slate-300 leading-relaxed">
-                            {c1.hero.ledeLead}
-                            <span className="text-white font-semibold">{c1.hero.ledeHighlight}</span>{c1.hero.ledeRest}
-                        </p>
-                        <SpeakButton text={`${c1.hero.titleLead} ${c1.hero.titleHighlight}. ${c1Lede}`} className="mt-1" />
+                    <p className="mt-5 rounded-xl border border-cyan-400/25 bg-cyan-950/20 p-4 text-sm leading-relaxed text-cyan-100 sm:hidden">{c.mentor}</p>
+                    <div className={`mt-6 hidden sm:block ${isRtl ? 'md:ms-auto' : ''} w-fit`}>
+                        <Mentor pose="peek" line={c.mentor} width={220} flip={!isRtl} />
                     </div>
+                </section>
 
-                    <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
-                        <span className="inline-flex items-center gap-1.5">
-                            <Terminal size={14} className="text-cyan-400" /> {c1.hero.chips[0]}
-                        </span>
-                        <span className="inline-flex items-center gap-1.5">
-                            <ScanSearch size={14} className="text-cyan-400" /> {c1.hero.chips[1]}
-                        </span>
-                        <span className="inline-flex items-center gap-1.5">
-                            <Layers size={14} className="text-purple-400" /> {c1.hero.chips[2]}
-                        </span>
-                    </div>
-
-                </div>
-            </motion.section>
-            {/* המנטור מזמין להציץ פנימה - צמוד לקצה החיצוני של הכרטיס (xl+), תלוי-כיוון */}
-            <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-              <Mentor pose="peek" line={c1.mentor.peek} width={263} flip={!isRtl} />
-            </div>
-            </div>
-
-            {/* דוק האזנה מודרכת צף: מצמיד לקצה החיצוני (תלוי-כיוון) ונשאר נגיש תוך כדי גלילה */}
-            <FloatingReadAloud dir={dir}>
-                <ReadAloudControls
-                    segmentsByMode={readAloudByMode}
-                    lang={LOCALE_SPEECH_LANG[locale]}
-                    locale={locale}
-                    dir={dir}
-                    labels={ra}
-                    reduce={!!reduce}
-                    compact
-                />
-            </FloatingReadAloud>
-
-            {/* ══════════ מנטור מלווה + first-run: הכוונה אופרטיבית אל המעבדה שמתחת ══════════ */}
-            <AnimatePresence>
-                {coachOpen && (
-                    <motion.div
-                        initial={reduce ? false : { opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={reduce ? undefined : { opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="mt-6 flex items-center gap-4 overflow-hidden rounded-2xl border border-emerald-500/30 bg-emerald-900/10 p-4"
+                <FloatingReadAloud dir={dir}>
+                    <ReadAloudControls
+                        key={`${locale}:${example}:${failure}`}
+                        segmentsByMode={segmentsByMode}
+                        lang={LOCALE_SPEECH_LANG[locale]}
+                        locale={locale}
                         dir={dir}
-                    >
-                        <div className="-my-2 shrink-0">
-                            <Mentor pose="think" width={138} float={false} glow={false} flip={!isRtl} />
-                        </div>
-                        <div className="flex-1 text-sm leading-relaxed text-slate-200">
-                            <span className="font-bold text-emerald-300">{c1.coach.start}</span>
-                            {c1.coach.body}
-                        </div>
-                        <ArrowDown size={18} className="hidden shrink-0 animate-bounce text-emerald-300 sm:block" aria-hidden />
-                        <button
-                            type="button"
-                            onClick={() => setCoachOpen(false)}
-                            aria-label={c1.coach.closeAria}
-                            className="shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
-                        >
-                            <X size={15} />
-                        </button>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        labels={ra}
+                        reduce={!!reduce}
+                        compact
+                    />
+                </FloatingReadAloud>
 
-            {/* ══════════ Transparent Chat Lab ══════════ */}
-            <section className="relative mt-12 space-y-5 text-start" dir={dir}>
-                <div className="flex items-center gap-3">
-                    <ScanSearch size={24} className="text-cyan-400" />
-                    <div>
-                        <h3 className="text-2xl font-bold text-white">{c1.lab.title}</h3>
-                        <div className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">{c1.lab.eyebrow}</div>
+                <section className="mt-10 rounded-3xl border border-white/10 bg-slate-900/55 p-5 md:p-8">
+                    <h2 className="text-2xl font-black text-white">{c.interaction.title}</h2>
+                    <p className="mt-2 max-w-3xl leading-relaxed text-cyan-100">{c.interaction.instruction}</p>
+                    <div className="mt-5 flex flex-wrap gap-2" role="group" aria-label={c.interaction.examplesLabel}>
+                        {c.examples.map((item, index) => (
+                            <button key={item.request} type="button" onClick={() => { setExample(index); setActiveStep('request'); }} aria-pressed={example === index}
+                                className={`rounded-xl border px-4 py-2 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 ${example === index ? 'border-cyan-300 bg-cyan-900/30 text-white' : 'border-white/15 bg-slate-950/50 text-slate-300'}`}>
+                                {item.request}
+                            </button>
+                        ))}
                     </div>
-                </div>
+                    <div className="mt-5 grid gap-4 md:grid-cols-2" aria-live="polite">
+                        <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
+                            <div className="text-xs font-bold text-slate-400">{c.interaction.visibleLabel}</div>
+                            <p className="mt-2 font-bold text-white">{selected.response}</p>
+                        </div>
+                        <div className="rounded-2xl border border-amber-400/30 bg-amber-950/15 p-4">
+                            <div className="text-xs font-bold text-amber-300">{c.interaction.evidenceLabel}</div>
+                            <p className="mt-2 text-sm leading-relaxed text-slate-200">{selected.evidence}</p>
+                        </div>
+                    </div>
+                </section>
 
-                <div className="flex items-start gap-2.5">
-                    <p className="flex items-start gap-2.5 text-base leading-relaxed text-slate-200">
-                        <Eye size={18} className="mt-0.5 shrink-0 text-cyan-400" />
-                        {c1.lab.intro}
-                    </p>
-                    <SpeakButton text={`${c1.lab.title}. ${c1.lab.intro}`} className="mt-1" />
-                </div>
-
-                {/* גשר-זיהוי אל מפת המבוא: רצועת 14 התחנות בדיוק בצבעי המפה, כדי שהלומד
-                    יזהה "אלה התחנות שראיתי, עכשיו חיות". הרצועה נושאת משמעות (המשפט), לא
-                    דקורציה בלבד. aria-hidden על הנקודות; המשמעות בטקסט. */}
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
-                    <span className="flex items-center gap-1" dir="ltr" aria-hidden>
-                        {Object.values(STATION_PALETTE).map((s, i) => (
-                            <React.Fragment key={i}>
-                                {i > 0 && <span className="h-px w-1.5 bg-white/15" />}
-                                <span className={`h-2 w-2 rounded-full ${s.solid}`} />
+                <section className="mt-10">
+                    <h2 className="text-2xl font-black text-white">{c.path.title}</h2>
+                    <p className="mt-2 max-w-3xl text-slate-300">{c.path.explanation}</p>
+                    <div className="mt-6 grid gap-3" aria-label={c.path.semanticLabel}>
+                        {path.map((step, index) => (
+                            <React.Fragment key={step.id}>
+                                <button type="button" onClick={() => setActiveStep(step.id)} aria-pressed={activeStep === step.id}
+                                    className={`grid w-full grid-cols-[auto_1fr] gap-3 rounded-2xl border p-4 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 ${activeStep === step.id ? 'border-cyan-300/70 bg-cyan-950/25' : 'border-white/10 bg-slate-900/60'}`}>
+                                    <span className="mt-0.5 text-cyan-300" aria-hidden>{step.icon}</span>
+                                    <span><span className="block font-black text-white">{step.title}</span><span className="mt-1 block text-sm leading-relaxed text-slate-300">{step.body}</span></span>
+                                </button>
+                                {index < path.length - 1 && <ArrowDown className="mx-auto text-slate-500" size={18} aria-hidden />}
                             </React.Fragment>
                         ))}
-                    </span>
-                    <span className="text-sm font-bold text-slate-200 md:text-base">{c1.lab.mapBridge}</span>
-                </div>
-
-                <div className="relative">
-                {/* aurora אמביינטי מאחורי שני החלונות - סטטי כדי להשאיר את המסך הראשי רגוע */}
-                <div
-                    aria-hidden
-                    className={`pointer-events-none absolute -top-12 ${isRtl ? 'right-1/4' : 'left-1/4'} -z-10 h-72 w-72 rounded-full bg-cyan-500/10 blur-[110px]`}
-                />
-                <div
-                    aria-hidden
-                    className={`pointer-events-none absolute -bottom-12 ${isRtl ? 'left-1/4' : 'right-1/4'} -z-10 h-72 w-72 rounded-full bg-purple-500/10 blur-[110px]`}
-                />
-                <ExpandableLab title={c1.lab.panelTitle}>
-                <TransparentLabLayout
-                    accent={accent}
-                    dir={dir}
-                    tokens={isChat ? chat.tokens : agent.tokens}
-                    chat={
-                        <HoloFrame accent={accent}>
-                            <ChatInterfacePanel
-                                title={c1.lab.panelTitle}
-                                subtitle={isChat ? c1.lab.chatSubtitle : c1.lab.agentSubtitle}
-                                mode={mode}
-                                onModeChange={handleModeChange}
-                                messages={messages}
-                                inputValue={inputValue}
-                                onInputChange={setInputValue}
-                                onSend={handleSend}
-                                showModeToggle
-                                isTyping={showTyping}
-                                streaming={streaming}
-                                live={live}
-                                suggestions={SUGGESTIONS}
-                                onSuggestion={handleSuggestion}
-                                markedSuggestions={pauseSuggestions}
-                                markLabel={viz.journey.pauseTag}
-                                accent={accent}
-                                highlightToken={hoverToken}
-                                onTokenHover={setHoverToken}
-                            />
-                        </HoloFrame>
-                    }
-                    engine={
-                        <HoloFrame accent={accent}>
-                            <GlassEnginePanel
-                                title={isChat ? c1.panels.answerEngineTitle : c1.panels.actionEngineTitle}
-                                subtitle={isChat ? c1.panels.chatEngineSubtitle : c1.panels.agentEngineSubtitle}
-                                accent={accent}
-                                replayKey={replayKey}
-                                steps={engineSteps}
-                                liveTokenCount={live ? liveTokens : null}
-                                highlightToken={hoverToken}
-                                onTokenHover={setHoverToken}
-                            />
-                        </HoloFrame>
-                    }
-                />
-                </ExpandableLab>
-                </div>
-
-                <p className="text-slate-300 text-base leading-relaxed">
-                    {c1.lab.focusLead}<span className="text-white font-semibold">{c1.lab.focusHighlight}</span>{c1.lab.focusRest}
-                </p>
-
-                <p className="text-xs leading-relaxed text-slate-500">
-                    {live ? c1.lab.liveNote : c1.lab.demoNote}
-                </p>
-                {/* מנטור פרק 1 צמוד לקצה החיצוני של כרטיס הצ'אט השקוף (2xl בלבד - רק שם יש
-                    מרווח בין הלוח לסרגל הניווט); תלוי-כיוון: חושף את המנוע מבפנים */}
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-4' : 'right-full mr-4'} z-20 hidden 2xl:block pointer-events-none`}>
-                  <Mentor pose="holographic" line={c1.mentor.holographic} width={400} fallbackSrc="/assets/mentor-inspect.png" flip={!isRtl} />
-                </div>
-            </section>
-
-            {/* ══════════ דחיפת "עצור ושאל": שיא הפרק, מאופציונלי לנחווה ══════════ */}
-            {/* אחרי ריצה בטוחה, המנטור מזמין לנסות בקשה שגורמת למנוע לעצור ולשאול או */}
-            {/* לבקש אישור. נעלם ברגע שהלומד חווה עצירה בפועל (seenPause). */}
-            <AnimatePresence>
-                {showPauseNudge && (
-                    <motion.div
-                        initial={reduce ? false : { opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={reduce ? undefined : { opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="mt-8 flex items-center gap-4 overflow-hidden rounded-2xl border border-amber-500/30 bg-amber-900/10 p-4"
-                        dir={dir}
-                    >
-                        <div className="-my-2 shrink-0">
-                            <Mentor pose="think" width={138} float={false} glow={false} flip={!isRtl} />
-                        </div>
-                        <div className="flex-1 text-sm leading-relaxed text-slate-200">
-                            <span className="font-bold text-amber-300">{viz.journey.pauseNudge.start}</span>{' '}
-                            {viz.journey.pauseNudge.body}
-                        </div>
-                        <CircleAlert size={18} className="hidden shrink-0 text-amber-300 sm:block" aria-hidden />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* ══════════ התובנה המרכזית של הפרק ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
-                <InsightBox type="intuition" title={c1.insightIdea.title}>
-                    <div className="flex items-start justify-between gap-2.5">
-                        <span className="block">{c1.insightIdea.body}</span>
-                        <SpeakButton text={`${c1.insightIdea.title}. ${c1.insightIdea.body}`} />
                     </div>
-                </InsightBox>
-            </section>
-
-            {/* ══════════ חשיפה הדרגתית: שער אל שכבת העומק ══════════ */}
-            <section className="mt-10 text-center" dir={dir}>
-                <button
-                    type="button"
-                    onClick={toggleDeep}
-                    aria-expanded={deepOpen}
-                    className="group inline-flex items-center gap-3 rounded-2xl border border-cyan-500/40 bg-cyan-900/15 px-6 py-3.5 text-base font-bold text-cyan-200 transition-colors hover:border-cyan-400/60 hover:bg-cyan-900/25"
-                >
-                    <Layers size={18} className="text-cyan-300" />
-                    {deepOpen ? c1.deep.toggleOpen : c1.deep.toggleClosed}
-                    <ChevronDown
-                        size={18}
-                        className={`text-cyan-300 transition-transform ${deepOpen ? 'rotate-180' : ''}`}
-                    />
-                </button>
-                {!deepOpen && (
-                    <p className="mt-3 text-base text-slate-300">
-                        {c1.deep.hint}
-                    </p>
-                )}
-            </section>
-
-            {/* ══════════ שכבת העומק (חשיפה הדרגתית) ══════════ */}
-            <AnimatePresence initial={false}>
-            {deepOpen && (
-            <motion.div
-                key="deep-layer"
-                initial={reduce ? false : { opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="overflow-hidden"
-            >
-            <p className="mt-8 flex items-start gap-2.5 text-lg leading-relaxed text-slate-200" dir={dir}>
-                <ScanSearch size={20} className="mt-1 shrink-0 text-cyan-400" />
-                {c1.deep.intro1}
-            </p>
-            <p className="mt-3 text-base leading-relaxed text-slate-300" dir={dir}>
-                {c1.deep.intro2Lead}<span className="text-cyan-300 font-semibold">Chat Mode</span>{c1.deep.intro2Mid}<span className="text-purple-300 font-semibold">Agent Mode</span>{c1.deep.intro2Tail}
-            </p>
-
-            {/* ══════════ המעבדה החיה · Read Head ══════════ */}
-            <section className="mt-12 space-y-5 text-start" dir={dir}>
-                <div className="flex items-center gap-3">
-                    <ScanLine size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
-                    <div>
-                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>{c1.labs.readHead.eyebrow}</div>
-                        <h3 className="text-2xl font-bold text-white">{c1.labs.readHead.title}</h3>
+                    <div role="status" aria-live="polite" className="mt-4 rounded-xl border border-cyan-500/20 bg-cyan-950/15 p-4 text-sm text-cyan-100">
+                        <strong>{active.title}:</strong> {active.body}
                     </div>
-                </div>
+                    <p className="mt-4 rounded-xl border border-indigo-400/25 bg-indigo-950/20 p-4 text-indigo-100">{c.path.envelope}</p>
+                </section>
 
-                <ExpandableLab title={viz.predict.question}>
-                    <PredictDecision key={`predict:${mode}`} mode={mode} />
-                </ExpandableLab>
-
-                <ExpandableLab>
-                    <ReadHeadLab key={`${mode}:${conversationText}`} text={conversationText} mode={mode} accent={accent} />
-                </ExpandableLab>
-            </section>
-
-            {/* ══════════ סיכום ══════════ */}
-            <section className="mt-12 space-y-4 text-start" dir={dir}>
-                <InsightBox type="intuition" title={c1.summary.understandTitle}>
-                    <div className="flex items-start justify-between gap-2.5">
-                        <span className="block">{c1.summary.understandBody}</span>
-                        <SpeakButton text={`${c1.summary.understandTitle}. ${c1.summary.understandBody}`} />
+                <section className="mt-12">
+                    <h2 className="text-2xl font-black text-white">{c.failures.title}</h2>
+                    <p className="mt-2 max-w-3xl text-slate-300">{c.failures.intro}</p>
+                    <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="group" aria-label={c.failures.groupLabel}>
+                        {c.failures.items.map((item, index) => (
+                            <button key={item.title} type="button" onClick={() => setFailure(index)} aria-pressed={failure === index}
+                                className={`flex items-start gap-3 rounded-xl border p-3 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 ${failure === index ? 'border-amber-300/70 bg-amber-950/25' : 'border-white/10 bg-slate-900/50'}`}>
+                                <AlertTriangle size={17} className="mt-0.5 shrink-0 text-amber-300" aria-hidden />
+                                <span><span className="block text-sm font-bold text-white">{item.title}</span><span className="mt-1 block text-xs leading-relaxed text-slate-400">{item.body}</span></span>
+                            </button>
+                        ))}
                     </div>
-                </InsightBox>
-                <InsightBox type="warning" title={c1.summary.ruleTitle}>
-                    <div className="flex items-start justify-between gap-2.5">
-                        <span className="block">{c1.summary.ruleBody}</span>
-                        <SpeakButton text={`${c1.summary.ruleTitle}. ${c1.summary.ruleBody}`} />
-                    </div>
-                </InsightBox>
-            </section>
-            </motion.div>
-            )}
-            </AnimatePresence>
+                    <p role="status" aria-live="polite" className="mt-4 rounded-xl border border-amber-400/25 bg-amber-950/15 p-4 text-amber-100">{currentFailure.title}: {currentFailure.body}</p>
+                    <p className="mt-4 font-bold text-white">{c.failures.conclusion}</p>
+                </section>
 
-            {/* ══════════ לפני המבדק: עיגון מושגי הליבה בזרימה הראשית ══════════ */}
-            {/* גם מי שלא פתח את שכבת העומק רואה כאן את שלושת הרעיונות שהמבדק בודק. */}
-            <section className="mt-16 text-start" dir={dir}>
-                <div className="rounded-[1.75rem] border border-cyan-500/30 bg-gradient-to-b from-slate-900/70 to-slate-950/60 p-6 md:p-7">
-                    <div className="mb-4 flex items-center justify-between gap-2.5">
-                        <div className="flex items-center gap-2.5">
-                            <ListChecks size={20} className="text-cyan-300" />
-                            <h3 className="text-xl font-bold text-white">{c1.beforeQuiz.title}</h3>
-                        </div>
-                        <SpeakButton text={beforeQuizText} />
-                    </div>
-                    <ul className="space-y-3.5">
-                        <li className="flex gap-3">
-                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 font-bold text-cyan-300">1</span>
-                            <p className="text-base leading-relaxed text-slate-200">
-                                <span className="font-bold text-white">{c1.beforeQuiz.point1Lead}</span>{c1.beforeQuiz.point1Body}
-                            </p>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 font-bold text-cyan-300">2</span>
-                            <p className="text-base leading-relaxed text-slate-200">
-                                <span className="font-bold text-white">{c1.beforeQuiz.point2Lead}</span>{c1.beforeQuiz.point2BeforeChat}<span className="font-semibold text-cyan-300">Chat</span>{c1.beforeQuiz.point2AfterChat}<span className="font-semibold text-purple-300">Agent</span>{c1.beforeQuiz.point2AfterAgent}
-                            </p>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 font-bold text-cyan-300">3</span>
-                            <p className="text-base leading-relaxed text-slate-200">
-                                <span className="font-bold text-white">{c1.beforeQuiz.point3Lead}</span>{c1.beforeQuiz.point3Body}
-                            </p>
-                        </li>
-                    </ul>
-                    {!deepOpen && (
-                        <p className="mt-4 text-sm leading-relaxed text-slate-400">
-                            {c1.beforeQuiz.footnoteLead}<span className="font-semibold text-cyan-300">{c1.beforeQuiz.footnoteHighlight}</span>{c1.beforeQuiz.footnoteTail}
-                        </p>
-                    )}
-                </div>
-            </section>
+                <section className="mt-12 rounded-3xl border border-emerald-400/25 bg-emerald-950/15 p-6 md:p-8">
+                    <h2 className="text-2xl font-black text-white">{c.summary.title}</h2>
+                    <ol className="mt-5 space-y-3">
+                        {c.summary.points.map((point, index) => <li key={point} className="flex gap-3 text-slate-200"><CheckCircle2 className="mt-0.5 shrink-0 text-emerald-300" size={19} aria-hidden /><span><span className="sr-only">{index + 1}. </span>{point}</span></li>)}
+                    </ol>
+                </section>
 
-            {/* ══════════ בדיקת הבנה: החלטה אחת מכרעת על ליבת הפרק, לפני המבדק ══════════ */}
-            {/* לא סיכום פסיבי אלא רגע אקטיבי: הלומד בוחר מה נכון כשהפער קטן, ומבסס את */}
-            {/* הרעיון (פער קטן = חוסר ודאות -> לעצור ולשאול) לפני שהוא נבחן עליו. */}
-            <section className="mt-8 text-start" dir={dir}>
-                <div className="rounded-2xl border border-cyan-500/25 bg-slate-900/50 p-6 md:p-7">
-                    <div className="mb-3 flex items-start justify-between gap-2.5">
-                        <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
-                            <ListChecks size={14} /> {c1.lock.eyebrow}
-                        </span>
-                        <SpeakButton text={`${c1.lock.eyebrow}. ${c1.lock.question}`} />
-                    </div>
-                    <h3 className="text-lg font-bold leading-relaxed text-white md:text-xl">{c1.lock.question}</h3>
+                <section className="mt-10 rounded-3xl border border-indigo-400/30 bg-gradient-to-br from-indigo-950/35 to-slate-950/60 p-6 text-center md:p-9">
+                    <h2 className="text-2xl font-black text-white">{c.bridge.title}</h2>
+                    <p className="mx-auto mt-3 max-w-2xl text-lg text-indigo-100">{c.bridge.question}</p>
+                    <p className="mx-auto mt-2 max-w-2xl text-sm text-slate-300">{c.bridge.body}</p>
+                    <Link href="/behind-the-scenes-ai/chapter-2" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-indigo-400 px-5 py-3 font-black text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+                        {c.bridge.cta} {isRtl ? <ChevronLeft size={18} aria-hidden /> : <ChevronRight size={18} aria-hidden />}
+                    </Link>
+                </section>
 
-                    {lockChoice === null ? (
-                        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                            {(['answer', 'ask'] as const).map((k) => (
-                                <button
-                                    key={k}
-                                    type="button"
-                                    onClick={() => setLockChoice(k)}
-                                    className="flex-1 rounded-xl border border-slate-700/60 bg-slate-800/40 px-5 py-3 text-base font-bold text-slate-200 transition-colors hover:border-cyan-500/50 hover:bg-cyan-900/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60"
-                                >
-                                    {k === 'answer' ? c1.lock.answerLabel : c1.lock.askLabel}
-                                </button>
-                            ))}
-                        </div>
-                    ) : (
-                        <motion.div
-                            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: reduce ? 0 : 0.35 }}
-                            className={`mt-5 flex items-start gap-4 rounded-xl border p-4 md:p-5 ${lockChoice === 'ask' ? 'border-emerald-500/40 bg-emerald-900/[0.12]' : 'border-amber-400/40 bg-amber-900/[0.12]'}`}
-                            role="status"
-                            aria-live="polite"
-                        >
-                            <div className="hidden shrink-0 self-center sm:block">
-                                <Mentor key={lockChoice} pose={lockChoice === 'ask' ? 'celebrate' : 'reassure'} width={96} float={false} glow={false} flip={!isRtl} />
-                            </div>
-                            <div className="flex-1">
-                                <p className="text-base leading-relaxed text-slate-100">
-                                    {lockChoice === 'ask' ? c1.lock.correctBody : c1.lock.wrongBody}
-                                </p>
-                                {lockChoice === 'answer' && (
-                                    <button
-                                        type="button"
-                                        onClick={() => setLockChoice(null)}
-                                        className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-amber-400/40 px-3 py-1.5 text-sm font-bold text-amber-200 transition-colors hover:bg-amber-900/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
-                                    >
-                                        <RotateCcw size={14} /> {c1.lock.retry}
-                                    </button>
-                                )}
-                            </div>
-                        </motion.div>
-                    )}
-                </div>
-            </section>
-
-            {/* ══════════ מבדק הבנה ══════════ */}
-            <section className="mt-10 mb-4" dir={dir}>
-                <ExpandableLab title={localizedQuiz.title}>
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={quizText.conceptLabels} />
-                </ExpandableLab>
-            </section>
+                <section className="mt-10">
+                    <ExpandableLab title={localizedQuiz.title}>
+                        <AssessmentEngine {...localizedQuiz} conceptDisplayMap={quizText.conceptLabels} />
+                    </ExpandableLab>
+                </section>
+            </main>
         </ChapterLayout>
     );
 }
