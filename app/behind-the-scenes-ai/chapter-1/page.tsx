@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Terminal, ScanSearch, ArrowDown, ScanLine, X, Layers, ChevronDown, ChevronLeft, ChevronRight, Eye, ListChecks, CircleAlert, RotateCcw, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Terminal, ScanSearch, ArrowDown, X, Layers, Eye, CircleAlert, CheckCircle2 } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -26,9 +25,7 @@ import { runChatEngine, runAgentEngine, type Confidence } from './mockEngine';
 import { traceChatEngine, traceAgentEngine } from './engineTrace';
 import { GlassEnginePanel } from './GlassEnginePanel';
 import { HoloFrame } from './HoloFrame';
-import { ReadHeadLab } from './ReadHeadLab';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
-import { PredictDecision } from './PredictDecision';
 // גשר-זיהוי: אותם צבעי 14 התחנות של מפת המבוא, כדי לקשר את המעבדה החיה למפה.
 import { STATION_PALETTE } from '@/components/ai-internals/IntroStationViz';
 
@@ -53,22 +50,9 @@ export default function BehindTheScenesChapter1() {
     // הערות live/demo, ופלט חי של ארבע המעבדות. תוויות הדוק מ-aiInternals.readAloud.
     const ra = t.behindAi.aiInternals.readAloud;
     const c1Lede = `${c1.hero.ledeLead}${c1.hero.ledeHighlight}${c1.hero.ledeRest}`;
-    const c1Deep2 = `${c1.deep.intro2Lead}Chat${c1.deep.intro2Mid}Agent${c1.deep.intro2Tail}`;
     const sTitle: ReadAloudSegment = { id: 'title', label: c1.hero.titleLead, text: `${c1.hero.titleLead} ${c1.hero.titleHighlight}. ${c1Lede}` };
     const sLabIntro: ReadAloudSegment = { id: 'lab-intro', label: c1.lab.title, text: `${c1.lab.title}. ${c1.lab.intro}` };
     const sFocus: ReadAloudSegment = { id: 'focus', label: c1.lab.focusHighlight, text: `${c1.lab.focusLead}${c1.lab.focusHighlight}${c1.lab.focusRest}` };
-    const sInsight: ReadAloudSegment = { id: 'insight', label: c1.insightIdea.title, text: c1.insightIdea.body };
-    const sDeep1: ReadAloudSegment = { id: 'deep-1', label: c1.deep.intro1, text: c1.deep.intro1 };
-    const sDeep2: ReadAloudSegment = { id: 'deep-2', label: c1Deep2, text: c1Deep2 };
-    const sLabs: ReadAloudSegment[] = [c1.labs.readHead].map((lab, i) => ({ id: `lab-${i}`, label: lab.title, text: lab.title }));
-    const sUnderstand: ReadAloudSegment = { id: 'understand', label: c1.summary.understandTitle, text: c1.summary.understandBody };
-    const sRule: ReadAloudSegment = { id: 'rule', label: c1.summary.ruleTitle, text: c1.summary.ruleBody };
-    const sBq1: ReadAloudSegment = { id: 'bq-1', label: c1.beforeQuiz.point1Lead, text: `${c1.beforeQuiz.point1Lead}${c1.beforeQuiz.point1Body}` };
-    const sBq2: ReadAloudSegment = { id: 'bq-2', label: c1.beforeQuiz.point2Lead, text: `${c1.beforeQuiz.point2Lead}${c1.beforeQuiz.point2BeforeChat}Chat${c1.beforeQuiz.point2AfterChat}Agent${c1.beforeQuiz.point2AfterAgent}` };
-    const sBq3: ReadAloudSegment = { id: 'bq-3', label: c1.beforeQuiz.point3Lead, text: `${c1.beforeQuiz.point3Lead}${c1.beforeQuiz.point3Body}` };
-    // הקראת כרטיס "לפני המבדק": כותרת + שלוש הנקודות, ממקור אחד עם מקטעי הדוק.
-    const beforeQuizText = `${c1.beforeQuiz.title}. ${sBq1.text} ${sBq2.text} ${sBq3.text}`;
-
     // מבדק הפרק: המנגנון המשותף (correctAnswer, onComplete, getReviewLinks, nextHref...)
     // נשמר מ-quizData, וטקסט התצוגה ממוזג מהמילון לפי מזהה השאלה. quizData.ts לא משתנה.
     // קישורי החזרה שומרים על ה-href, ורק התווית מתורגמת מתוך t.behindAi.chapterQuiz.
@@ -111,12 +95,6 @@ export default function BehindTheScenesChapter1() {
     const [isTyping, setIsTyping] = useState(true);
     // הדרכת first-run: רמז עדין מאיפה להתחיל, נסגר בלחיצה כדי לא להפריע לחזרות.
     const [coachOpen, setCoachOpen] = useState(true);
-    // בדיקת הבנה לפני המבדק: החלטה בינארית אחת על ליבת הפרק (פער קטן -> לעצור ולשאול).
-    const [lockChoice, setLockChoice] = useState<'answer' | 'ask' | null>(null);
-    // חשיפה הדרגתית: שכבת העומק (קריאה חיה, חוגת ביטחון, סיבתיות, פיצול) סגורה
-    // כברירת מחדל. פרק 1 נפתח נקי - התשובה והדרך שמאחוריה בלבד - והפרטים נפתחים בבחירה.
-    const [deepOpen, setDeepOpen] = useState(false);
-    const [failure, setFailure] = useState(0);
     // חישוב חי: המנוע מנתח את מה שמקלידים (debounced), לא רק את מה שנשלח.
     const [liveText, setLiveText] = useState(DEFAULT_INPUT);
     // קישור חי: הטוקן שמרחפים עליו (בצ'אט או במנוע), להדגשה הדדית.
@@ -288,20 +266,16 @@ export default function BehindTheScenesChapter1() {
         { id: `ai-${sendCount}`, role: 'ai', text: replyText },
     ], [conversationText, sendCount, replyText]);
 
-    const currentFailure = c.failures.items[failure];
     const sMentor: ReadAloudSegment = { id: 'mentor', label: c1.mentor.peek, text: `${c1.mentor.peek} ${c1.coach.start}${c1.coach.body}` };
     const sRequest: ReadAloudSegment = { id: 'active-request', label: c.interaction.selectedLabel, text: `${c.interaction.selectedLabel}: ${conversationText}. ${c.interaction.resultLabel}: ${replyText}` };
     const sJourney: ReadAloudSegment = { id: 'journey', label: c1.lab.mapBridge, text: engineSteps.map((step) => `${step.title}. ${step.note}`).join(' ') };
-    const sProgressive: ReadAloudSegment = { id: 'progressive-input', label: c1.labs.readHead.title, text: `${c1.labs.readHead.title}. ${viz.readHead.scriptedNote}` };
-    const sDecision: ReadAloudSegment = { id: 'score-decision', label: c1.summary.ruleTitle, text: `${c1.summary.ruleTitle}. ${c1.summary.ruleBody}` };
-    const sMode: ReadAloudSegment = { id: 'chat-agent-state', label: isChat ? c1.lab.chatSubtitle : c1.lab.agentSubtitle, text: `${c1Deep2} ${isChat ? c1.lab.chatSubtitle : c1.lab.agentSubtitle}` };
-    const sFailure: ReadAloudSegment = { id: 'failure-source', label: c.failures.title, text: `${c.failures.intro} ${currentFailure.title}. ${currentFailure.body}. ${c.failures.conclusion}` };
+    const sTakeaway: ReadAloudSegment = { id: 'takeaway', label: c1.insightIdea.title, text: c1.insightIdea.body };
     const sThreePointSummary: ReadAloudSegment = { id: 'three-point-summary', label: c.summary.title, text: `${c.summary.title}. ${c.summary.points.join(' ')}` };
-    const sBridge: ReadAloudSegment = { id: 'chapter-2-bridge', label: c.bridge.title, text: `${c.bridge.question} ${c.bridge.body}` };
+    const sQuizIntro: ReadAloudSegment = { id: 'quiz-intro', label: quizText.title, text: `${quizText.title}. ${quizText.subtitle}` };
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
-        short: [sTitle, sMentor, sRequest, sThreePointSummary, sBridge],
-        regular: [sTitle, sMentor, sLabIntro, sRequest, sJourney, sProgressive, sDecision, sMode, sFailure, sThreePointSummary, sBridge],
-        full: [sTitle, sMentor, sLabIntro, sFocus, sRequest, sJourney, sInsight, sDeep1, sDeep2, ...sLabs, sProgressive, sDecision, sMode, sUnderstand, sRule, sFailure, sThreePointSummary, sBq1, sBq2, sBq3, sBridge],
+        short: [sTitle, sMentor, sRequest, sTakeaway, sThreePointSummary, sQuizIntro],
+        regular: [sTitle, sMentor, sLabIntro, sRequest, sJourney, sTakeaway, sThreePointSummary, sQuizIntro],
+        full: [sTitle, sMentor, sLabIntro, sFocus, sRequest, sJourney, sTakeaway, sThreePointSummary, sQuizIntro],
     };
 
     const commit = (text: string) => {
@@ -330,9 +304,6 @@ export default function BehindTheScenesChapter1() {
         if (isPauseOutcome(m === 'chat' ? runChatEngine(conversationText) : runAgentEngine(conversationText), m)) setSeenPause(true);
         generateReply(conversationText, m); // החלפת מצב מייצרת תשובה מתאימה מחדש
     };
-    // פתיחה/סגירה של שכבת העומק. מתג ה-Chat/Agent זמין ישירות במסך הראשי, לכן
-    // סגירת שכבת העומק אינה מאפסת את המצב שהלומד בחר.
-    const toggleDeep = () => setDeepOpen((open) => !open);
 
     return (
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={1}>
@@ -395,7 +366,7 @@ export default function BehindTheScenesChapter1() {
             {/* דוק האזנה מודרכת צף: מצמיד לקצה החיצוני (תלוי-כיוון) ונשאר נגיש תוך כדי גלילה */}
             <FloatingReadAloud dir={dir}>
                 <ReadAloudControls
-                    key={`${locale}:${mode}:${conversationText}:${failure}:${deepOpen}`}
+                    key={`${locale}:${mode}:${conversationText}`}
                     segmentsByMode={readAloudByMode}
                     lang={LOCALE_SPEECH_LANG[locale]}
                     locale={locale}
@@ -577,119 +548,6 @@ export default function BehindTheScenesChapter1() {
                 </InsightBox>
             </section>
 
-            {/* ══════════ חשיפה הדרגתית: שער אל שכבת העומק ══════════ */}
-            <section className="mt-10 text-center" dir={dir}>
-                <button
-                    type="button"
-                    onClick={toggleDeep}
-                    aria-expanded={deepOpen}
-                    className="group inline-flex items-center gap-3 rounded-2xl border border-cyan-500/40 bg-cyan-900/15 px-6 py-3.5 text-base font-bold text-cyan-200 transition-colors hover:border-cyan-400/60 hover:bg-cyan-900/25"
-                >
-                    <Layers size={18} className="text-cyan-300" />
-                    {deepOpen ? c1.deep.toggleOpen : c1.deep.toggleClosed}
-                    <ChevronDown
-                        size={18}
-                        className={`text-cyan-300 transition-transform ${deepOpen ? 'rotate-180' : ''}`}
-                    />
-                </button>
-                {!deepOpen && (
-                    <p className="mt-3 text-base text-slate-300">
-                        {c1.deep.hint}
-                    </p>
-                )}
-            </section>
-
-            {/* ══════════ שכבת העומק (חשיפה הדרגתית) ══════════ */}
-            <AnimatePresence initial={false}>
-            {deepOpen && (
-            <motion.div
-                key="deep-layer"
-                initial={reduce ? false : { opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="overflow-hidden"
-            >
-            <p className="mt-8 flex items-start gap-2.5 text-lg leading-relaxed text-slate-200" dir={dir}>
-                <ScanSearch size={20} className="mt-1 shrink-0 text-cyan-400" />
-                {c1.deep.intro1}
-            </p>
-            <p className="mt-3 text-base leading-relaxed text-slate-300" dir={dir}>
-                {c1.deep.intro2Lead}<span className="text-cyan-300 font-semibold">Chat Mode</span>{c1.deep.intro2Mid}<span className="text-purple-300 font-semibold">Agent Mode</span>{c1.deep.intro2Tail}
-            </p>
-
-            {/* ══════════ המעבדה החיה · Read Head ══════════ */}
-            <section className="mt-12 space-y-5 text-start" dir={dir}>
-                <div className="flex items-center gap-3">
-                    <ScanLine size={24} className={isChat ? 'text-cyan-400' : 'text-purple-400'} />
-                    <div>
-                        <div className={`text-xs font-bold uppercase tracking-[0.25em] ${isChat ? 'text-cyan-400' : 'text-purple-400'}`}>{c1.labs.readHead.eyebrow}</div>
-                        <h3 className="text-2xl font-bold text-white">{c1.labs.readHead.title}</h3>
-                    </div>
-                </div>
-
-                <ExpandableLab title={viz.predict.question}>
-                    <PredictDecision key={`predict:${mode}`} mode={mode} />
-                </ExpandableLab>
-
-                <ExpandableLab>
-                    <ReadHeadLab key={`${mode}:${conversationText}`} text={conversationText} mode={mode} accent={accent} />
-                </ExpandableLab>
-            </section>
-
-            {/* ══════════ סיכום ══════════ */}
-            <section className="mt-12 space-y-4 text-start" dir={dir}>
-                <InsightBox type="intuition" title={c1.summary.understandTitle}>
-                    <div className="flex items-start justify-between gap-2.5">
-                        <span className="block">{c1.summary.understandBody}</span>
-                        <SpeakButton text={`${c1.summary.understandTitle}. ${c1.summary.understandBody}`} />
-                    </div>
-                </InsightBox>
-                <InsightBox type="warning" title={c1.summary.ruleTitle}>
-                    <div className="flex items-start justify-between gap-2.5">
-                        <span className="block">{c1.summary.ruleBody}</span>
-                        <SpeakButton text={`${c1.summary.ruleTitle}. ${c1.summary.ruleBody}`} />
-                    </div>
-                </InsightBox>
-            </section>
-            </motion.div>
-            )}
-            </AnimatePresence>
-
-            {/* ══════════ לפני המבדק: עיגון מושגי הליבה בזרימה הראשית ══════════ */}
-            {/* גם מי שלא פתח את שכבת העומק רואה כאן את שלושת הרעיונות שהמבדק בודק. */}
-            <section className="mt-12 text-start" dir={dir}>
-                <div className="rounded-2xl border border-cyan-400/25 bg-cyan-950/15 p-5">
-                    <h2 className="text-lg font-black text-cyan-100">{c.path.title}</h2>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-200">{c.path.productInputBody} {c.path.modelBody} {c.path.productOutputBody}</p>
-                    <p className="mt-3 text-sm font-bold text-cyan-200">{c.path.envelope}</p>
-                </div>
-            </section>
-
-            <section className="mt-12 text-start" dir={dir}>
-                <ExpandableLab title={c.failures.title}>
-                    <div className="p-1">
-                        <p className="max-w-3xl text-sm leading-relaxed text-slate-300">{c.failures.intro}</p>
-                        <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="group" aria-label={c.failures.groupLabel}>
-                            {c.failures.items.map((item, index) => (
-                                <button
-                                    key={item.title}
-                                    type="button"
-                                    onClick={() => setFailure(index)}
-                                    aria-pressed={failure === index}
-                                    className={`flex items-start gap-3 rounded-xl border p-3 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 ${failure === index ? 'border-amber-300/70 bg-amber-950/25' : 'border-white/10 bg-slate-900/50'}`}
-                                >
-                                    <AlertTriangle size={17} className="mt-0.5 shrink-0 text-amber-300" aria-hidden />
-                                    <span><span className="block text-sm font-bold text-white">{item.title}</span><span className="mt-1 block text-xs leading-relaxed text-slate-400">{item.body}</span></span>
-                                </button>
-                            ))}
-                        </div>
-                        <p role="status" aria-live="polite" className="mt-4 rounded-xl border border-amber-400/25 bg-amber-950/15 p-4 text-sm leading-relaxed text-amber-100">{currentFailure.title}: {currentFailure.body}</p>
-                        <p className="mt-4 font-bold text-white">{c.failures.conclusion}</p>
-                    </div>
-                </ExpandableLab>
-            </section>
-
             <section className="mt-12 rounded-3xl border border-emerald-400/25 bg-emerald-950/15 p-6 text-start md:p-8" dir={dir}>
                 <h2 className="text-2xl font-black text-white">{c.summary.title}</h2>
                 <ol className="mt-5 space-y-3">
@@ -697,109 +555,6 @@ export default function BehindTheScenesChapter1() {
                         <li key={point} className="flex gap-3 text-slate-200"><CheckCircle2 className="mt-0.5 shrink-0 text-emerald-300" size={19} aria-hidden /><span><span className="sr-only">{index + 1}. </span>{point}</span></li>
                     ))}
                 </ol>
-            </section>
-
-            <section className="mt-10 rounded-3xl border border-indigo-400/30 bg-gradient-to-br from-indigo-950/35 to-slate-950/60 p-6 text-center md:p-9" dir={dir}>
-                <h2 className="text-2xl font-black text-white">{c.bridge.title}</h2>
-                <p className="mx-auto mt-3 max-w-2xl text-lg text-indigo-100">{c.bridge.question}</p>
-                <p className="mx-auto mt-2 max-w-2xl text-sm text-slate-300">{c.bridge.body}</p>
-                <Link href="/behind-the-scenes-ai/chapter-2" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-indigo-400 px-5 py-3 font-black text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
-                    {c.bridge.cta} {isRtl ? <ChevronLeft size={18} aria-hidden /> : <ChevronRight size={18} aria-hidden />}
-                </Link>
-            </section>
-
-            <section className="mt-16 text-start" dir={dir}>
-                <div className="rounded-[1.75rem] border border-cyan-500/30 bg-gradient-to-b from-slate-900/70 to-slate-950/60 p-6 md:p-7">
-                    <div className="mb-4 flex items-center justify-between gap-2.5">
-                        <div className="flex items-center gap-2.5">
-                            <ListChecks size={20} className="text-cyan-300" />
-                            <h3 className="text-xl font-bold text-white">{c1.beforeQuiz.title}</h3>
-                        </div>
-                        <SpeakButton text={beforeQuizText} />
-                    </div>
-                    <ul className="space-y-3.5">
-                        <li className="flex gap-3">
-                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 font-bold text-cyan-300">1</span>
-                            <p className="text-base leading-relaxed text-slate-200">
-                                <span className="font-bold text-white">{c1.beforeQuiz.point1Lead}</span>{c1.beforeQuiz.point1Body}
-                            </p>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 font-bold text-cyan-300">2</span>
-                            <p className="text-base leading-relaxed text-slate-200">
-                                <span className="font-bold text-white">{c1.beforeQuiz.point2Lead}</span>{c1.beforeQuiz.point2BeforeChat}<span className="font-semibold text-cyan-300">Chat</span>{c1.beforeQuiz.point2AfterChat}<span className="font-semibold text-purple-300">Agent</span>{c1.beforeQuiz.point2AfterAgent}
-                            </p>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500/15 font-bold text-cyan-300">3</span>
-                            <p className="text-base leading-relaxed text-slate-200">
-                                <span className="font-bold text-white">{c1.beforeQuiz.point3Lead}</span>{c1.beforeQuiz.point3Body}
-                            </p>
-                        </li>
-                    </ul>
-                    {!deepOpen && (
-                        <p className="mt-4 text-sm leading-relaxed text-slate-400">
-                            {c1.beforeQuiz.footnoteLead}<span className="font-semibold text-cyan-300">{c1.beforeQuiz.footnoteHighlight}</span>{c1.beforeQuiz.footnoteTail}
-                        </p>
-                    )}
-                </div>
-            </section>
-
-            {/* ══════════ בדיקת הבנה: החלטה אחת מכרעת על ליבת הפרק, לפני המבדק ══════════ */}
-            {/* לא סיכום פסיבי אלא רגע אקטיבי: הלומד בוחר מה נכון כשהפער קטן, ומבסס את */}
-            {/* הרעיון (פער קטן = חוסר ודאות -> לעצור ולשאול) לפני שהוא נבחן עליו. */}
-            <section className="mt-8 text-start" dir={dir}>
-                <div className="rounded-2xl border border-cyan-500/25 bg-slate-900/50 p-6 md:p-7">
-                    <div className="mb-3 flex items-start justify-between gap-2.5">
-                        <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
-                            <ListChecks size={14} /> {c1.lock.eyebrow}
-                        </span>
-                        <SpeakButton text={`${c1.lock.eyebrow}. ${c1.lock.question}`} />
-                    </div>
-                    <h3 className="text-lg font-bold leading-relaxed text-white md:text-xl">{c1.lock.question}</h3>
-
-                    {lockChoice === null ? (
-                        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                            {(['answer', 'ask'] as const).map((k) => (
-                                <button
-                                    key={k}
-                                    type="button"
-                                    onClick={() => setLockChoice(k)}
-                                    className="flex-1 rounded-xl border border-slate-700/60 bg-slate-800/40 px-5 py-3 text-base font-bold text-slate-200 transition-colors hover:border-cyan-500/50 hover:bg-cyan-900/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60"
-                                >
-                                    {k === 'answer' ? c1.lock.answerLabel : c1.lock.askLabel}
-                                </button>
-                            ))}
-                        </div>
-                    ) : (
-                        <motion.div
-                            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: reduce ? 0 : 0.35 }}
-                            className={`mt-5 flex items-start gap-4 rounded-xl border p-4 md:p-5 ${lockChoice === 'ask' ? 'border-emerald-500/40 bg-emerald-900/[0.12]' : 'border-amber-400/40 bg-amber-900/[0.12]'}`}
-                            role="status"
-                            aria-live="polite"
-                        >
-                            <div className="hidden shrink-0 self-center sm:block">
-                                <Mentor key={lockChoice} pose={lockChoice === 'ask' ? 'celebrate' : 'reassure'} width={96} float={false} glow={false} flip={!isRtl} />
-                            </div>
-                            <div className="flex-1">
-                                <p className="text-base leading-relaxed text-slate-100">
-                                    {lockChoice === 'ask' ? c1.lock.correctBody : c1.lock.wrongBody}
-                                </p>
-                                {lockChoice === 'answer' && (
-                                    <button
-                                        type="button"
-                                        onClick={() => setLockChoice(null)}
-                                        className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-amber-400/40 px-3 py-1.5 text-sm font-bold text-amber-200 transition-colors hover:bg-amber-900/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
-                                    >
-                                        <RotateCcw size={14} /> {c1.lock.retry}
-                                    </button>
-                                )}
-                            </div>
-                        </motion.div>
-                    )}
-                </div>
             </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
