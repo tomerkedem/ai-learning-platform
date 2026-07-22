@@ -1,157 +1,261 @@
 // app/behind-the-scenes-ai/chapter-1/engineTrace.ts
 //
-// פירוק "המנוע השקוף" לתחנות מרכזיות מוצגות, מקובצות למערכות (acts).
-// כל שלב הוא חשיפה כנה של מה שהמנוע כבר עושה: הערכים הסופיים (הסתברויות, ביטחון,
-// החלטה) מגיעים ישירות מ-runChatEngine/runAgentEngine, והשלבים הביניים (טוקנים,
-// התאמות מילות-מפתח, ספירות, דגלים) מחושבים עם אותם קבועים/עוזרים בדיוק שמייצא
-// המנוע. אין כאן מספר חדש, אין שכפול נוסחה - רק שיקוף של הצינור הקיים.
-//
-// הטקסט המוצג (שמות מערכות, כותרות, כיתובים, תוויות) מגיע מהמילון (viz = chapter1
-// Visuals) המועבר פנימה, כדי שהתצוגה תהיה תלוית-שפה. שמות המערכות באנגלית (actEn)
-// ומזהי השלבים נשארים כאן כמבנה. אין מקף ארוך (U+2014).
+// Presentation trace for Chapter 1. The Chat trace is a projection of one canonical
+// deterministic dataset. No station recomputes unrelated values from the raw request.
 
 import type { DecisionState, IntentProbability } from '@/components/ai-internals/types';
 import type { Chapter1VisualsDict } from '@/i18n/locales/he/behind-ai/chapter1Visuals';
 
 import {
-    runChatEngine,
-    runAgentEngine,
-    vocabFor,
-    matchedWords,
+    buildCanonicalChatPipeline,
     hasBarcode,
-    type Confidence,
+    matchedWords,
+    runAgentEngine,
+    selectChatReplyKey,
+    vocabFor,
+    type AgentApprovalStatus,
+    type AgentAuthorizationStatus,
+    type AttentionSnapshot,
+    type CanonicalChatPipeline,
+    type ContextWindowState,
+    type DecodingState,
+    type FeedForwardSnapshot,
+    type GenerationStep,
+    type LayerCheckpoint,
+    type LogitCandidate,
+    type PositionAwareRepresentation,
+    type ProbabilityCandidate,
+    type ProductInputEnvelope,
+    type TokenBoundary,
+    type TokenWithId,
+    type VectorRepresentation,
 } from './mockEngine';
+
+export interface StationTeaching {
+    input: string;
+    transformation: string;
+    output: string;
+    conclusion: string;
+    limitation: string;
+}
 
 export interface TraceBase {
     id: string;
-    /** מערכה (קיבוץ-על) להצגת overview-first. */
     act: string;
     actEn: string;
     title: string;
     titleEn: string;
-    /** כיתוב כן וקצר לשלב. */
     note: string;
+    teaching: StationTeaching;
 }
 
-export type EngineTraceStep =
-    | (TraceBase & { kind: 'raw'; value: string })
-    | (TraceBase & { kind: 'normalize'; original: string; normalized: string; changed: boolean })
-    | (TraceBase & { kind: 'tokens'; tokens: string[] })
-    | (TraceBase & { kind: 'count'; value: number; unit: string })
-    | (TraceBase & { kind: 'keywords'; groups: { label: string; matched: string[]; total: number }[] })
-    | (TraceBase & { kind: 'flag'; on: boolean; onLabel: string; offLabel: string; detail?: string; triggerToken?: string })
-    | (TraceBase & { kind: 'candidates'; items: { label: string; hits: number }[] })
-    | (TraceBase & { kind: 'probabilities'; items: IntentProbability[] })
-    | (TraceBase & { kind: 'winner'; label: string; value: number })
-    | (TraceBase & { kind: 'gap'; top: number; second: number; margin: number })
-    | (TraceBase & { kind: 'confidence'; level: Confidence })
-    | (TraceBase & { kind: 'decision'; decision: DecisionState })
-    // תחנת-מסע (סצנה קולנועית תולבש בשלבים): מציגה את טוקני המשפט הנבחר כעוגן קבוע.
-    | (TraceBase & { kind: 'station'; tokens: string[] })
-    // Embedding: טוקני המשפט עפים אל מרחב-משמעות (מיקום = משמעות, המחשה).
-    | (TraceBase & { kind: 'embeddingScene'; tokens: string[] })
-    // Attention: הטוקן הממוקד (pivot, למשל שלילה) שוקל את שכניו ומעצב את המשמעות.
-    | (TraceBase & { kind: 'attentionScene'; tokens: string[]; pivot: number })
-    // תחנות-עומק על טוקני המשפט: מיקום/סדר, חלון-הקשר, feed-forward, שכבות, מצב פנימי.
-    | (TraceBase & { kind: 'positionScene'; tokens: string[] })
-    | (TraceBase & { kind: 'contextScene'; tokens: string[] })
-    | (TraceBase & { kind: 'ffScene'; tokens: string[] })
-    | (TraceBase & { kind: 'layersScene'; tokens: string[] })
-    | (TraceBase & { kind: 'stateScene'; tokens: string[] })
-    // Decoding: רגע-הבחירה. התמונה ההסתברותית הופכת להחלטה - המוביל ננעל מול החלופות.
-    | (TraceBase & { kind: 'decisionScene'; items: IntentProbability[]; margin: number; level: Confidence })
-    // Agent (שלד): צ'יפים של כלים / כלי-נבחר + תג MCP + סמן-לולאה. יולבש בסצנות בשלב 2.
-    | (TraceBase & { kind: 'agentStub'; chips: string[]; mcp?: boolean; loop?: boolean })
-    // Agent Step 2: לולאת-החשיבה, גשר-MCP, ושער-הבקרה (guardrails).
-    | (TraceBase & { kind: 'loopScene'; nodes: string[]; outcomes: string[] })
-    | (TraceBase & { kind: 'mcpScene'; agentLabel: string; mcpLabel: string; toolLabel: string; resultLabel: string })
-    | (TraceBase & { kind: 'guardrailScene'; sensitive: boolean; safe: string; ask: string; approve: string; stop: string })
-    | (TraceBase & { kind: 'reply'; text: string });
+export type EngineTraceStep = TraceBase & (
+    | { kind: 'productInput'; envelope: ProductInputEnvelope }
+    | { kind: 'tokens'; tokens: string[]; boundaries: TokenBoundary[] }
+    | { kind: 'tokenIds'; tokens: TokenWithId[]; ids: TokenWithId[]; idSequence: number[] }
+    | { kind: 'embeddingScene'; tokens: string[]; embeddings: VectorRepresentation[] }
+    | { kind: 'positionScene'; tokens: string[]; representations: PositionAwareRepresentation[] }
+    | { kind: 'contextScene'; tokens: string[]; window: ContextWindowState; modelInput: string }
+    | { kind: 'attentionScene'; tokens: string[]; snapshot: AttentionSnapshot; pivot: number }
+    | { kind: 'ffScene'; tokens: string[]; snapshot: FeedForwardSnapshot }
+    | { kind: 'layersScene'; tokens: string[]; checkpoints: LayerCheckpoint[] }
+    | { kind: 'stateScene'; tokens: string[]; representations: VectorRepresentation[]; predictionPosition: number }
+    | { kind: 'logits'; candidates: LogitCandidate[] }
+    | { kind: 'probabilities'; candidates: ProbabilityCandidate[]; items: IntentProbability[]; total: number }
+    | { kind: 'decisionScene'; candidates: ProbabilityCandidate[]; items: IntentProbability[]; decoding: DecodingState; selectedToken: string }
+    | { kind: 'generationScene'; steps: GenerationStep[]; appendedTextFragment: string; nextStepCandidates: LogitCandidate[]; finalResponse: string }
+    // Shared and Agent-only variants retained for the rich conditional teaser.
+    | { kind: 'raw'; value: string }
+    | { kind: 'normalize'; original: string; normalized: string; changed: boolean }
+    | { kind: 'count'; value: number; unit: string }
+    | { kind: 'keywords'; groups: { label: string; matched: string[]; total: number }[] }
+    | { kind: 'flag'; on: boolean; onLabel: string; offLabel: string; detail?: string; triggerToken?: string }
+    | { kind: 'candidates'; items: { label: string; hits: number }[] }
+    | { kind: 'winner'; label: string; value: number }
+    | { kind: 'gap'; top: number; second: number; margin: number }
+    | { kind: 'confidence'; level: 'High' | 'Medium' | 'Low' }
+    | { kind: 'decision'; decision: DecisionState }
+    | { kind: 'station'; tokens: string[] }
+    | { kind: 'agentStub'; chips: string[]; mcp?: boolean; loop?: boolean; optionalProtocol?: boolean }
+    | { kind: 'loopScene'; nodes: string[]; outcomes: string[] }
+    | {
+        kind: 'toolCallScene';
+        agentLabel: string;
+        toolLabel: string;
+        transport: 'direct' | 'mcp';
+        mcpLabel?: string;
+        resultLabel: string;
+    }
+    | {
+        kind: 'mcpScene';
+        agentLabel: string;
+        mcpLabel: string;
+        toolLabel: string;
+        resultLabel: string;
+    }
+    | {
+        kind: 'guardrailScene';
+        sensitive: boolean;
+        safe: string;
+        ask: string;
+        approve: string;
+        stop: string;
+        authorizationStatus: AgentAuthorizationStatus;
+        approvalStatus: AgentApprovalStatus;
+        toolCallAllowed: boolean;
+    }
+    | { kind: 'reply'; text: string }
+);
 
-/* ════════════════════════ Chat: התחנות המרכזיות ═════════════════════════ */
+type StationCopy = {
+    title: string;
+    note: string;
+    input?: string;
+    transformation?: string;
+    output?: string;
+    conclusion?: string;
+    limitation?: string;
+};
+
+function teachingFor(station: StationCopy): StationTeaching {
+    return {
+        input: station.input ?? station.note,
+        transformation: station.transformation ?? station.note,
+        output: station.output ?? station.note,
+        conclusion: station.conclusion ?? station.note,
+        limitation: station.limitation ?? station.note,
+    };
+}
+
+function base(
+    id: string,
+    act: string,
+    actEn: string,
+    titleEn: string,
+    station: StationCopy,
+): TraceBase {
+    return {
+        id,
+        act,
+        actEn,
+        title: station.title,
+        titleEn,
+        note: station.note,
+        teaching: teachingFor(station),
+    };
+}
+
+type ProductEnvelopeCopy = {
+    systemInstructionExample?: string;
+    selectedContextExample?: string;
+    omittedExample?: string;
+};
+
+/** Builds the localized canonical dataset used by Chat, station 14 and narration. */
+export function buildCanonicalPipeline(text: string, viz: Chapter1VisualsDict): CanonicalChatPipeline {
+    const replyKey = selectChatReplyKey(text);
+    const response = viz.mockEngine.chatReplies[replyKey];
+    const productCopy = (viz.enginePanel as typeof viz.enginePanel & { productEnvelope?: ProductEnvelopeCopy }).productEnvelope;
+    const stations = viz.journey.stations as typeof viz.journey.stations & Record<string, StationCopy>;
+    return buildCanonicalChatPipeline(text, {
+        scriptedResponse: response,
+        systemInstruction: productCopy?.systemInstructionExample ?? stations.s1.note,
+        selectedContext: productCopy?.selectedContextExample ?? stations.s6.note,
+        omittedContext: productCopy?.omittedExample ?? teachingFor(stations.s6).limitation,
+    });
+}
 
 export function traceChatEngine(text: string, viz: Chapter1VisualsDict): EngineTraceStep[] {
-    const r = runChatEngine(text);
-    const tokens = r.tokens;
-    const top = r.intents[0];
-    const second = r.intents[1];
-    const margin = Math.max(0, (top?.value ?? 0) - (second?.value ?? 0));
-
-    // תוויות הכוונה של mockEngine הן מזהים באנגלית. ממפים לתצוגה בשפת הלומד לפני
-    // שהן מגיעות למסך (Logits + Decoding). הערכים (ההסתברויות) לא משתנים.
-    const intentMap = viz.trace.labels.intent as Record<string, string>;
-    const intentItems: IntentProbability[] = r.intents.map((i) => ({ ...i, label: intentMap[i.label] ?? i.label }));
-
-    // ה-pivot לסצנת הקשב: טוקן השלילה אם קיים (למשל "לא" ב"החבילה לא הגיעה"),
-    // כי הוא זה שמעצב חזק את המשמעות. אחרת - טוקן שני (או ראשון) כברירת מחדל.
-    const vocab = vocabFor(text);
-    const negIdx = tokens.findIndex((tk) => vocab.negation.some((n) => tk.toLowerCase().includes(n.trim().toLowerCase())));
-    const pivot = negIdx >= 0 ? negIdx : Math.min(1, Math.max(0, tokens.length - 1));
-
-    // ── "מסע המשפט": 14 תחנות מיושרות למפת המבוא, על אותו משפט (הפרומפט) ──
-    // המחרוזות התלויות-שפה (כותרות, כיתובים, אזורים) מגיעות מ-viz.journey (מרוכזות
-    // ל-6 שפות). המונחים האנגליים (Prompt...) וסוגי הסצנה נשארים מבניים כאן. הערכים
-    // (הסתברויות, ביטחון) מגיעים מ-runChatEngine כהמחשה של העיקרון, לא כפלט אמיתי.
-    const st = viz.journey.stations;
+    const pipeline = buildCanonicalPipeline(text, viz);
+    const st = viz.journey.stations as typeof viz.journey.stations & Record<string, StationCopy>;
     const { A: ZA, B: ZB, C: ZC, D: ZD } = viz.journey.zones;
+    const surfaces = pipeline.tokenBoundaries.map((token) => token.surface);
+    const probabilityItems = pipeline.probabilities.map<IntentProbability>((candidate) => ({
+        label: candidate.token,
+        value: candidate.probability * 100,
+    }));
 
     return [
-        { id: 's1', act: ZA, actEn: 'Text to units', title: st.s1.title, titleEn: 'Prompt', note: st.s1.note, kind: 'raw', value: text || '-' },
-        { id: 's2', act: ZA, actEn: 'Text to units', title: st.s2.title, titleEn: 'Tokenization', note: st.s2.note, kind: 'tokens', tokens },
-        { id: 's3', act: ZA, actEn: 'Text to units', title: st.s3.title, titleEn: 'Token IDs', note: st.s3.note, kind: 'count', value: tokens.length, unit: viz.trace.unit },
+        { ...base('s1', ZA, 'Text to units', 'Product input', st.s1), kind: 'productInput', envelope: pipeline.productInput },
+        { ...base('s2', ZA, 'Text to units', 'Tokenization', st.s2), kind: 'tokens', tokens: surfaces, boundaries: pipeline.tokenBoundaries },
+        { ...base('s3', ZA, 'Text to units', 'Token IDs', st.s3), kind: 'tokenIds', tokens: pipeline.tokenIds, ids: pipeline.tokenIds, idSequence: pipeline.tokenIds.map((token) => token.id) },
 
-        { id: 's4', act: ZB, actEn: 'To representations', title: st.s4.title, titleEn: 'Embedding', note: st.s4.note, kind: 'embeddingScene', tokens },
-        { id: 's5', act: ZB, actEn: 'To representations', title: st.s5.title, titleEn: 'Positional Encoding', note: st.s5.note, kind: 'positionScene', tokens },
-        { id: 's6', act: ZB, actEn: 'To representations', title: st.s6.title, titleEn: 'Context Window', note: st.s6.note, kind: 'contextScene', tokens },
+        { ...base('s4', ZB, 'To representations', 'Embedding', st.s4), kind: 'embeddingScene', tokens: surfaces, embeddings: pipeline.embeddings },
+        { ...base('s5', ZB, 'To representations', 'Positional information', st.s5), kind: 'positionScene', tokens: surfaces, representations: pipeline.positionAwareRepresentations },
+        { ...base('s6', ZB, 'To representations', 'Context window', st.s6), kind: 'contextScene', tokens: surfaces, window: pipeline.contextWindow, modelInput: pipeline.productInput.serialized },
 
-        { id: 's7', act: ZC, actEn: 'Computing context', title: st.s7.title, titleEn: 'Attention', note: st.s7.note, kind: 'attentionScene', tokens, pivot },
-        { id: 's8', act: ZC, actEn: 'Computing context', title: st.s8.title, titleEn: 'Feed-Forward', note: st.s8.note, kind: 'ffScene', tokens },
-        { id: 's9', act: ZC, actEn: 'Computing context', title: st.s9.title, titleEn: 'Transformer', note: st.s9.note, kind: 'layersScene', tokens },
-        { id: 's10', act: ZC, actEn: 'Computing context', title: st.s10.title, titleEn: 'Hidden State', note: st.s10.note, kind: 'stateScene', tokens },
+        { ...base('s7', ZC, 'Computing context', 'Attention', st.s7), kind: 'attentionScene', tokens: surfaces, snapshot: pipeline.attention, pivot: pipeline.attention.destinationIndex },
+        { ...base('s8', ZC, 'Computing context', 'Feed-forward', st.s8), kind: 'ffScene', tokens: surfaces, snapshot: pipeline.feedForward },
+        { ...base('s9', ZC, 'Computing context', 'Repeated layers', st.s9), kind: 'layersScene', tokens: surfaces, checkpoints: pipeline.layerCheckpoints },
+        { ...base('s10', ZC, 'Computing context', 'Final contextual representations', st.s10), kind: 'stateScene', tokens: surfaces, representations: pipeline.finalRepresentations, predictionPosition: pipeline.predictionPosition },
 
-        { id: 's11', act: ZD, actEn: 'To the answer', title: st.s11.title, titleEn: 'Logits', note: st.s11.note, kind: 'probabilities', items: intentItems },
-        { id: 's12', act: ZD, actEn: 'To the answer', title: st.s12.title, titleEn: 'Softmax', note: st.s12.note, kind: 'gap', top: top?.value ?? 0, second: second?.value ?? 0, margin },
-        { id: 's13', act: ZD, actEn: 'To the answer', title: st.s13.title, titleEn: 'Decoding', note: st.s13.note, kind: 'decisionScene', items: intentItems, margin, level: r.confidence },
-        { id: 's14', act: ZD, actEn: 'To the answer', title: st.s14.title, titleEn: 'Output', note: st.s14.note, kind: 'reply', text: viz.mockEngine.chatReplies[r.replyKey] },
+        { ...base('s11', ZD, 'To the answer', 'Logits', st.s11), kind: 'logits', candidates: pipeline.logits },
+        { ...base('s12', ZD, 'To the answer', 'Softmax', st.s12), kind: 'probabilities', candidates: pipeline.probabilities, items: probabilityItems, total: pipeline.probabilities.reduce((sum, candidate) => sum + candidate.probability, 0) },
+        { ...base('s13', ZD, 'To the answer', 'Decoding', st.s13), kind: 'decisionScene', candidates: pipeline.probabilities, items: probabilityItems, decoding: pipeline.decoding, selectedToken: pipeline.decoding.selectedToken },
+        { ...base('s14', ZD, 'To the answer', 'Generation loop', st.s14), kind: 'generationScene', steps: pipeline.generationSteps, appendedTextFragment: pipeline.appendedTextFragment, nextStepCandidates: pipeline.nextStepCandidateUpdate, finalResponse: pipeline.finalScriptedResponse },
     ];
 }
 
-/* ════════════════════════ Agent: התחנות המרכזיות ════════════════════════ */
-
 export function traceAgentEngine(text: string, viz: Chapter1VisualsDict): EngineTraceStep[] {
-    const r = runAgentEngine(text);
-    // ── לולאת-הסוכן (Agent), שונה מ"מסע המשפט" של Chat: מטרה -> כלים (MCP) ->
-    // בקרה -> קריאת-כלי -> תצפית -> לולאה -> פעולה/עצירה. שלד: תחנות + מבנה; הסצנות
-    // הקולנועיות (בחירת-כלי, קריאת-MCP, לולאה, אישור) יולבשו בשלב 2. הערכים
-    // (מטרה, סיכון, החלטה) מ-runAgentEngine כהמחשה, לא כפעולה אמיתית בעולם.
-    const ag = viz.journey.agent;
-    const st = ag.stations;
+    const result = runAgentEngine(text);
+    const agent = viz.journey.agent;
+    const stations = agent.stations as typeof agent.stations & Record<string, StationCopy>;
     const vocab = vocabFor(text);
     const barcode = hasBarcode(text);
     const sensitive = matchedWords(text, vocab.sensitiveWords).length > 0;
-    const primaryTool = ag.toolNames[0] ?? '';
-    const { understand: ZU, tools: ZT, control: ZG, exec: ZE, output: ZO } = ag.zones;
-
-    // מזהי המשימה וההחלטה של mockEngine הם אנגלית פנימית. ממפים לתצוגה בשפת הלומד.
     const taskMap = viz.trace.labels.task as Record<string, string>;
     const decisionMap = viz.trace.labels.decision as Record<string, string>;
-    const goalText = taskMap[r.task] ?? r.task;
-    const finalDecision: DecisionState = { ...r.decision, label: decisionMap[r.decision.label] ?? r.decision.label };
+    const goalText = taskMap[result.task] ?? result.task;
+    const finalDecision: DecisionState = {
+        ...result.decision,
+        label: decisionMap[result.decision.label] ?? result.decision.label,
+    };
+    const { understand: ZU, tools: ZT, control: ZG, exec: ZE, output: ZO } = agent.zones;
+    const selectedTool = result.toolNeed.needed ? result.toolNeed.tool : '';
 
-    return [
-        { id: 'a1', act: ZU, actEn: 'Understand', title: st.a1.title, titleEn: 'Request', note: st.a1.note, kind: 'raw', value: text || '-' },
-        { id: 'a2', act: ZU, actEn: 'Understand', title: st.a2.title, titleEn: 'Goal', note: st.a2.note, kind: 'raw', value: goalText },
-
-        { id: 'a3', act: ZT, actEn: 'Tools and optional protocols', title: st.a3.title, titleEn: 'Available Tools', note: st.a3.note, kind: 'agentStub', chips: ag.toolNames, mcp: true },
-        { id: 'a4', act: ZT, actEn: 'Tools and optional protocols', title: st.a4.title, titleEn: 'Tool Selection', note: st.a4.note, kind: 'agentStub', chips: [primaryTool] },
-        { id: 'a5', act: ZT, actEn: 'Tools and optional protocols', title: st.a5.title, titleEn: 'Missing Info', note: st.a5.note, kind: 'flag', on: !barcode, onLabel: ag.missingOn, offLabel: ag.missingOff },
-
-        { id: 'a6', act: ZG, actEn: 'Guardrails', title: st.a6.title, titleEn: 'Risk & Permission', note: st.a6.note, kind: 'guardrailScene', sensitive, safe: ag.gate.safe, ask: ag.gate.ask, approve: ag.gate.approve, stop: ag.gate.stop },
-
-        { id: 'a7', act: ZE, actEn: 'Execute & loop', title: st.a7.title, titleEn: 'Tool Call', note: st.a7.note, kind: 'mcpScene', agentLabel: ag.agentNode, mcpLabel: ag.mcp, toolLabel: primaryTool, resultLabel: ag.resultLabel },
-        { id: 'a8', act: ZE, actEn: 'Execute & loop', title: st.a8.title, titleEn: 'Observation', note: st.a8.note, kind: 'raw', value: ag.observation },
-        { id: 'a9', act: ZE, actEn: 'Execute & loop', title: st.a9.title, titleEn: 'Reasoning Loop', note: st.a9.note, kind: 'loopScene', nodes: ag.loopNodes, outcomes: ag.loopOutcomes },
-
-        { id: 'a10', act: ZO, actEn: 'Action or stop', title: st.a10.title, titleEn: 'Final', note: st.a10.note, kind: 'decision', decision: finalDecision },
+    const steps: EngineTraceStep[] = [
+        { ...base('a1', ZU, 'Understand', 'Request', stations.a1), kind: 'raw', value: text || '-' },
+        { ...base('a2', ZU, 'Understand', 'Goal', stations.a2), kind: 'raw', value: goalText },
+        { ...base('a3', ZT, 'Tools and optional protocols', 'Available tools', stations.a3), kind: 'agentStub', chips: agent.toolNames, mcp: false, optionalProtocol: true },
     ];
+
+    if (result.toolNeed.needed) {
+        steps.push({ ...base('a4', ZT, 'Tools and optional protocols', 'Conditional tool selection', stations.a4), kind: 'agentStub', chips: [selectedTool], mcp: false });
+    }
+    steps.push(
+        { ...base('a5', ZT, 'Tools and optional protocols', 'Missing information', stations.a5), kind: 'flag', on: result.missingInfo !== 'None', onLabel: agent.missingOn, offLabel: agent.missingOff, detail: barcode ? undefined : result.missingInfo },
+        {
+            ...base('a6', ZG, 'Controls', 'Authorization and approval', stations.a6),
+            kind: 'guardrailScene',
+            sensitive,
+            safe: agent.gate.safe,
+            ask: agent.gate.ask,
+            approve: agent.gate.approve,
+            stop: agent.gate.stop,
+            authorizationStatus: result.authorization.status,
+            approvalStatus: result.approval.status,
+            toolCallAllowed: result.execution.toolCalled,
+        },
+    );
+
+    // Execution stages exist only when execution actually occurred. Ask/stop branches never
+    // fabricate a tool call, protocol bridge, observation or loop result.
+    if (result.execution.toolCalled && result.execution.tool && result.execution.transport) {
+        steps.push({
+            ...base('a7', ZE, 'Execute and loop', 'Conditional tool call', stations.a7),
+            kind: 'toolCallScene',
+            agentLabel: agent.agentNode,
+            toolLabel: result.execution.tool,
+            transport: result.execution.transport,
+            mcpLabel: result.execution.transport === 'mcp' ? agent.mcp : undefined,
+            resultLabel: agent.resultLabel,
+        });
+        if (result.execution.observation) {
+            steps.push({ ...base('a8', ZE, 'Execute and loop', 'Observation', stations.a8), kind: 'raw', value: agent.observation });
+            steps.push({ ...base('a9', ZE, 'Execute and loop', 'Reasoning loop', stations.a9), kind: 'loopScene', nodes: agent.loopNodes, outcomes: agent.loopOutcomes });
+        }
+    }
+
+    steps.push({ ...base('a10', ZO, 'Action or stop', 'Final', stations.a10), kind: 'decision', decision: finalDecision });
+    return steps;
 }

@@ -13,12 +13,7 @@ import { chapter1Quiz } from './chapter1Quiz';
 export const chapter1 = {
     contentLocale: 'es' as Locale,
     redesign: {
-        hero: { badge: 'Tras bambalinas · 01', title: 'El chat transparente: el camino detrás de la respuesta', lede: 'El chat muestra una solicitud y una respuesta. Entre ambas hay un camino oculto de producto y modelo, y un fallo puede comenzar en distintos lugares.' },
-        mentor: 'Vemos la respuesta. Para entenderla, revisamos el camino. Producto y modelo son capas distintas, y todavía no hace falta conocer cada mecanismo.',
-        interaction: { title: 'Qué observar en este experimento', instruction: 'Cambia la solicitud y observa qué puede cambiar: la entrada que arma el producto, la salida del modelo o la decisión del producto.', examplesLabel: 'Ejemplos de solicitud', selectedLabel: 'Solicitud elegida', resultLabel: 'Resultado visible', visibleLabel: 'Lo que muestra el chat', evidenceLabel: 'Lo que indica la evidencia' },
-        examples: [{ request: '¿Dónde está mi paquete?', response: 'Necesito un número de pedido para comprobarlo.', evidence: 'La solicitud es parcialmente clara, pero falta información antes de que el modelo pueda dar una respuesta concreta.' }, { request: 'Revisa el pedido 123456', response: 'No pude obtener el estado del envío ahora.', evidence: 'El mismo resultado puede venir de datos externos ausentes, una herramienta fallida o falta de permiso. La respuesta no prueba la causa.' }, { request: 'Encárgate de esto', response: '¿De qué quieres que me encargue?', evidence: 'La ambigüedad puede ser un problema de entrada, no necesariamente un error de generación.' }],
-        path: { title: 'El camino a alto nivel', explanation: 'Selecciona una capa para leer su función. Las etiquetas, no solo colores y flechas, describen el orden.', semanticLabel: 'Solicitud, ensamblaje del producto, modelo, tratamiento de salida, respuesta visible', requestTitle: '1. Solicitud del usuario', requestBody: 'Es el texto que el usuario ve y envía.', productInputTitle: '2. El producto arma la entrada', productInputBody: 'El producto puede añadir instrucciones o contexto seleccionado. El mensaje visible no es necesariamente toda la entrada.', modelTitle: '3. Modelo', modelBody: 'El modelo procesa la entrada actual y genera una salida. Es parte del producto, no todo el producto.', productOutputTitle: '4. El producto trata la salida', productOutputBody: 'El producto puede dar formato, comprobar, recuperar datos, usar herramientas o aplicar políticas. Son capacidades opcionales.', responseTitle: '5. Respuesta visible', responseBody: 'Es el extremo del camino que se ve en el chat.', envelope: 'Vemos que el producto arma algo antes de que el modelo lo reciba. El capítulo 2 abrirá ese sobre.' },
-        summary: { title: 'Tres ideas para recordar', points: ['La respuesta visible es el final de un camino oculto.', 'El producto y el modelo son capas distintas.', 'Un fallo puede comenzar en distintos lugares, así que revisa el camino y no solo la respuesta.'] },
+        summary: { title: 'Dos capas para recordar', points: ['Ruta del modelo: el texto se convierte en tokens y representaciones numéricas.', 'Las representaciones se convierten en puntuaciones del siguiente token y Softmax las transforma en probabilidades.', 'Decoding selecciona un token, se añade al texto y la generación se repite.', 'Envoltura del producto: el producto puede armar la entrada y tratar la salida alrededor del modelo.'] },
     },
 
     // Hero
@@ -26,113 +21,53 @@ export const chapter1 = {
         badge: 'Behind the Scenes · 01',
         titleLead: 'Lo que realmente ocurre entre',
         titleHighlight: 'la pregunta y la respuesta',
-        ledeLead: 'Escribe una sola frase. A la derecha, el chat se ve normal, igual que en cualquier app. A la izquierda se abre',
-        ledeHighlight: ' el camino detrás de la respuesta',
-        ledeRest: ': el motor muestra cómo lee la frase y llega a una decisión. Por ahora solo observa, no necesitas entender cada número. La profundidad la abriremos más adelante, paso a paso.',
+        ledeLead: 'Escribe una frase. El panel de Chat resulta familiar, como cualquier app. A su lado,',
+        ledeHighlight: ' el panel del Motor abre el camino detrás de la respuesta',
+        ledeRest: ': presenta una ilustración didáctica de la ruta desde el texto hasta el siguiente token. Por ahora observa; abriremos cada mecanismo más adelante.',
         chips: [
-            'A la derecha: la respuesta que ves',
-            'A la izquierda: el camino detrás de la respuesta',
+            'Panel de Chat: solicitud y respuesta visibles',
+            'Panel del Motor: ilustración del camino interno',
             'Más adelante: abrimos cada paso en profundidad',
         ],
     },
 
-    // Mentor speech bubbles (text only; pose and placement are structural in the page)
-    mentor: {
-        peek: 'Un primer vistazo dentro del motor',
-        holographic: 'Aquí el motor se abre desde dentro',
-    },
-
-    // Coach card (first-run guidance toward the lab)
-    coach: {
-        start: 'Empieza aquí: ',
-        body: 'Escribe tu propia frase en el laboratorio de abajo, o elige un ejemplo rápido.',
-        closeAria: 'Cerrar la guía',
+    // Standalone mentor guidance before the Transparent Chat
+    mentorGuide: {
+        title: 'Ves una respuesta. Detrás hay todo un recorrido.',
+        body: 'En el Chat Transparente verás cómo la misma solicitud cambia paso a paso hasta convertirse en una respuesta. Todavía no necesitas recordar cada número ni cada término. En cada estación, pregúntate: ¿qué entró, qué cambió y qué salió?',
     },
 
     // Transparent Chat Lab
     lab: {
         title: 'El Chat Transparente',
         eyebrow: 'Transparent Chat Lab',
-        intro: 'Aquí ves que hay un camino detrás de la respuesta: a la derecha la respuesta como siempre, y a la izquierda el camino que llevó a ella.',
+        intro: 'El panel de Chat muestra la solicitud y la respuesta. El panel del Motor abre una ilustración del camino entre ambas.',
         panelTitle: 'Transparent Chat Lab',
         // Recognition bridge to the intro map (package anchor): same stations, now live.
-        mapBridge: 'Estas son exactamente las estaciones del mapa, ahora en vivo, sobre tu consulta del paquete.',
+        mapBridge: 'Las mismas 14 estaciones del mapa operan ahora sobre la solicitud que enviaste.',
         chatSubtitle: 'Chat Mode · conversación',
         agentSubtitle: 'Agent Mode · tarea',
-        focusLead: 'Mira primero ',
-        focusHighlight: 'la decisión',
-        focusRest: ', no cada número. El motor de la izquierda muestra que hay todo un recorrido entre la pregunta y la respuesta. Los detalles completos se abrirán más adelante en el curso.',
-        liveNote: 'La respuesta del chat la escribe un modelo real (Claude) en tiempo real, palabra por palabra - exactamente el bucle autorregresivo. El tablero de la derecha sigue siendo una ilustración didáctica: la API no expone las probabilidades internas del modelo.',
-        demoNote: 'Modo demo: las respuestas del chat son guionizadas y fijas. Definir ANTHROPIC_API_KEY en el servidor activa un modelo real que escribe la respuesta en vivo, palabra por palabra.',
+        observationInstruction: 'No intentes recordar cada número. En cada estación, pregunta: ¿qué entró, qué cambió y qué salió?',
+        simulationDisclosure: 'Esta es una ilustración didáctica determinista de ideas comunes de los modelos de lenguaje, no un registro directo del cálculo oculto de un modelo.',
+        inputAriaLabel: 'Mensaje para analizar',
+        sendAriaLabel: 'Enviar solicitud',
+        activeRequestLabel: 'Solicitud seleccionada',
+        visibleResponseLabel: 'Respuesta visible',
     },
 
     // Engine panel titles (GlassEnginePanel)
     panels: {
         answerEngineTitle: 'Answer Engine',
-        actionEngineTitle: 'Action Decision Engine',
+        actionEngineTitle: 'Vista previa del sistema de tareas',
         chatEngineSubtitle: 'Elegir una respuesta · estaciones clave',
-        agentEngineSubtitle: 'Decisión de acción · estaciones clave',
+        agentEngineSubtitle: 'Sistema alrededor del modelo · vista condicional',
     },
 
     // Chapter insight
     insightIdea: {
         title: 'La idea del capítulo',
-        body: 'Una respuesta de chat es solo la punta visible de un proceso oculto. Detrás de cada respuesta corre un camino, y ese camino puede abrirse paso a paso. Eso es exactamente lo que hará este curso: enseñará el camino detrás de la respuesta, de forma gradual. Todavía no necesitas entender cada mecanismo - basta con entender que el camino existe, y que se puede abrir.',
+        body: 'La respuesta visible en el chat es solo el final de un recorrido en el que el producto arma la entrada y el modelo convierte tokens y representaciones en una respuesta, paso a paso.',
     },
-
-    // Depth-layer gate (progressive disclosure) + layer intro
-    deep: {
-        toggleOpen: 'Cerrar la capa de profundidad',
-        toggleClosed: 'Abrir el motor completo',
-        hint: 'Aquí se abre la herramienta avanzada: un cabezal de lectura en vivo que muestra cómo el motor cambia de opinión mientras lee. Puedes explorar a tu propio ritmo.',
-        intro1: 'Mira una capa de profundidad: a partir de aquí se vuelve más técnico. Tienes delante un laboratorio en vivo que revela otro ángulo del mismo camino. Explóralo a tu propio ritmo.',
-        intro2Lead: 'En ',
-        intro2Mid: ' el sistema elige una respuesta. En ',
-        intro2Tail: ' comprueba cuál es el paso correcto siguiente - responder, usar una herramienta, o detenerse y pedir información. Cambia entre ambos con el interruptor en la parte superior del chat.',
-    },
-
-    // The four lab headers (eyebrow + title)
-    labs: {
-        readHead: { eyebrow: 'Lectura en vivo', title: 'El motor cambia de opinión mientras lee' },
-        confidence: { eyebrow: 'Cuándo confiar, cuándo detenerse', title: 'El dial de confianza' },
-        causality: { eyebrow: 'Causalidad', title: 'Qué palabra decidió' },
-        fork: { eyebrow: 'Bifurcación', title: 'Misma frase, dos motores' },
-    },
-
-    // Summary (two insights inside the depth layer)
-    summary: {
-        understandTitle: 'Lo que entiendes ahora',
-        understandBody: 'La demostración clasifica candidatos y muestra su margen de puntuación. Un margen mayor solo indica más separación dentro de esta demostración sintética, no verdad factual, fiabilidad ni permiso para actuar. El decoding puede elegir o muestrear según la distribución y sus reglas.',
-        ruleTitle: 'La regla práctica',
-        ruleBody: 'Usa el margen de la demostración solo como señal de separación entre candidatos. La confianza factual requiere evidencia, y las acciones sensibles siguen sujetas a permisos y aprobación.',
-    },
-
-    // "Before the quiz" card: anchoring the three core ideas in the main flow
-    beforeQuiz: {
-        title: 'Antes del examen: tres puntos que conviene recordar',
-        point1Lead: 'Un camino, no magia.',
-        point1Body: ' Detrás de cada respuesta hay un recorrido por tokens, representaciones, puntuaciones y decoding. La vista de entrada progresiva compara ejecuciones separadas con entradas cada vez más completas; no es una lectura humana literal.',
-        point2Lead: 'Dos preguntas distintas.',
-        point2BeforeChat: ' En ',
-        point2AfterChat: ' el motor pregunta "¿Cuál es la respuesta?". En ',
-        point2AfterAgent: ' pregunta "¿Cuál es el paso correcto siguiente?" - responder, usar una herramienta, o detenerse y pedir información.',
-        point3Lead: 'La confianza se encuentra con la responsabilidad.',
-        point3Body: ' El margen mostrado es una métrica sintética de la demostración, no una probabilidad de verdad ni una autorización. Las acciones sensibles aún requieren los permisos y reglas de aprobación del producto.',
-        footnoteLead: '¿Quieres ver este recorrido en vivo? Abre arriba el ',
-        footnoteHighlight: 'motor completo',
-        footnoteTail: ' y juega con el cabezal de lectura y el laboratorio "qué palabra decidió".',
-    },
-
-    lock: {
-        eyebrow: 'Comprueba tu comprensión',
-        question: 'El motor muestra una diferencia pequeña entre la opción líder y la siguiente. ¿Cuál es el paso correcto?',
-        answerLabel: 'Responder con confianza',
-        askLabel: 'Detenerse y preguntar',
-        correctBody: 'Lo captaste. Una diferencia pequeña significa incertidumbre, y el paso responsable es detenerse y preguntar, no adivinar.',
-        wrongBody: 'Casi. Una diferencia pequeña en realidad señala incertidumbre. El paso responsable aquí es detenerse y preguntar.',
-        retry: 'Intentar de nuevo',
-    },
-
     // Chat seed inputs (default input + quick suggestions)
     // Note: these are demo inputs fed to the learning engine, coupled to the Spanish
     // detection vocabulary in chapter-1/mockEngine.ts.
@@ -149,6 +84,6 @@ export const chapter1 = {
 
     quiz: chapter1Quiz,
 
-    // Visuals and labs sub-namespace
+    // Visuals sub-namespace
     visuals: chapter1Visuals,
 };

@@ -61,9 +61,26 @@ interface ReadAloudControlsProps {
     reduce: boolean;
     /** מצב צף: כשסגור, מתכווץ לאייקון בלבד במובייל (תווית וגלגל ההגדרות מוסתרים מתחת ל-sm). */
     compact?: boolean;
+    /** חתימת איפוס נוספת למסכים שבהם התוכן הפעיל משתנה בלי שינוי locale או mode. */
+    resetSignal?: string;
+    /** מזהה מקטע שאפשר להפעיל ישירות מפעולת למידה חיצונית, למשל Replay לתחנה. */
+    playSegmentId?: string;
+    /** שינוי החתימה מפעיל את playSegmentId. יש לשנותה רק בעקבות פעולת משתמש. */
+    playSignal?: string;
 }
 
-export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, reduce, compact = false }: ReadAloudControlsProps) {
+export function ReadAloudControls({
+    segmentsByMode,
+    lang,
+    locale,
+    dir,
+    labels,
+    reduce,
+    compact = false,
+    resetSignal: externalResetSignal = '',
+    playSegmentId,
+    playSignal = '',
+}: ReadAloudControlsProps) {
     const [mode, setMode] = useState<ReadAloudMode>('regular');
     const [showSettings, setShowSettings] = useState(false);
     const [showSections, setShowSections] = useState(false);
@@ -71,8 +88,18 @@ export function ReadAloudControls({ segmentsByMode, lang, locale, dir, labels, r
 
     const segments = segmentsByMode[mode];
     // חתימת איפוס: שינוי ב-locale / שפת דיבור / מצב היקף עוצר הקראה פעילה (תיקון נכונות).
-    const resetSignal = `${locale}|${lang}|${mode}`;
+    const resetSignal = `${locale}|${lang}|${mode}|${externalResetSignal}`;
     const ra = useReadAloud({ segments, lang, locale, resetSignal });
+    const { startSingle } = ra;
+    const previousPlaySignalRef = useRef(playSignal);
+
+    useEffect(() => {
+        if (previousPlaySignalRef.current === playSignal) return;
+        previousPlaySignalRef.current = playSignal;
+        if (!playSignal) return;
+        const index = playSegmentId ? segments.findIndex((segment) => segment.id === playSegmentId) : -1;
+        if (index >= 0) startSingle(index);
+    }, [playSegmentId, playSignal, segments, startSingle]);
 
     const isActive = ra.status === 'speaking' || ra.status === 'paused';
     const current = ra.currentIndex >= 0 ? segments[ra.currentIndex] : null;

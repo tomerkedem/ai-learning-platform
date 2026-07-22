@@ -1,16 +1,173 @@
 // app/behind-the-scenes-ai/chapter-1/mockEngine.ts
 //
 // "מנוע לימודי" דטרמיניסטי לפרק 1 - לא NLP אמיתי ולא מודל.
-// הוא מדרג קלט לפי כללי מילות-מפתח פשוטים, בדיוק ברוח הספר:
-// המנוע לא "יודע" שפה, הוא מעריך מה הכי סביר מתוך מה שהוא מכיר.
+// מסלול ה-Chat הראשי הוא dataset לימודי מתוסרט וקוהרנטי: כל שלב נגזר מפלט השלב
+// שלפניו. כללי מילות-המפתח נשמרים רק לבחירת תרחיש ותשובה מתוסרטת, ולא מוצגים
+// עוד כ-logits או כפעילות פנימית של מודל שפה.
 //
-// פונקציות טהורות בלבד (אין Date/Math.random/תופעות לוואי).
+// פונקציות טהורות בלבד (אין זמן, אקראיות או תופעות לוואי).
 // לוגיקה ספציפית-לפרק - לכן יושבת ליד הפרק, לא בתוך ה-primitives הגנריים.
 
 import type { DecisionState, IntentProbability } from '@/components/ai-internals/types';
 
 export type Confidence = 'High' | 'Medium' | 'Low';
 export type Risk = 'Low' | 'Medium' | 'High';
+export type ModelInputRole = 'system' | 'context' | 'user' | 'assistant';
+export type DecodingStrategy = 'greedy' | 'sampling';
+export type AgentApprovalStatus = 'not-required' | 'pending' | 'approved' | 'denied';
+export type AgentAuthorizationStatus = 'authorized' | 'unauthorized';
+
+export type VectorExcerpt = number[];
+
+export interface ModelInputSegment {
+    role: Exclude<ModelInputRole, 'assistant'>;
+    text: string;
+}
+
+export interface ProductInputEnvelope {
+    visibleRequest: string;
+    systemInstruction: string;
+    selectedContext: string;
+    omittedContext: string;
+    segments: ModelInputSegment[];
+    /** A compact educational serialization, not a provider-specific wire format. */
+    serialized: string;
+}
+
+export interface TokenBoundary {
+    index: number;
+    surface: string;
+    display: string;
+    role: ModelInputRole;
+    start: number;
+    end: number;
+    leadingSpace: boolean;
+    special: boolean;
+}
+
+export interface TokenWithId extends TokenBoundary {
+    /** Scripted educational vocabulary address, never a provider token ID. */
+    id: number;
+}
+
+export interface VectorRepresentation {
+    tokenIndex: number;
+    tokenId: number;
+    token: string;
+    role: ModelInputRole;
+    vector: VectorExcerpt;
+    /** Row in the fixed scripted learned-vector stand-in table. */
+    embeddingRow?: number;
+}
+
+export interface PositionAwareRepresentation extends VectorRepresentation {
+    position: number;
+    positionVector: VectorExcerpt;
+    embeddingVector: VectorExcerpt;
+}
+
+export interface ContextWindowState {
+    capacity: number;
+    included: PositionAwareRepresentation[];
+    omitted: string[];
+    predictionPosition: number;
+}
+
+export interface AttentionWeight {
+    sourceIndex: number;
+    sourceToken: string;
+    weight: number;
+}
+
+export interface AttentionSnapshot {
+    layer: number;
+    head: number;
+    destinationIndex: number;
+    destinationToken: string;
+    weights: AttentionWeight[];
+    output: VectorRepresentation[];
+}
+
+export interface FeedForwardSnapshot {
+    input: VectorRepresentation[];
+    output: VectorRepresentation[];
+}
+
+export interface LayerCheckpoint {
+    label: 'input' | 'layer-1' | 'layer-2' | 'final-layer';
+    layer: number;
+    representations: VectorRepresentation[];
+}
+
+export interface LogitCandidate {
+    token: string;
+    tokenId: number;
+    logit: number;
+}
+
+export interface ProbabilityCandidate extends LogitCandidate {
+    /** Canonical probability in the 0..1 range. */
+    probability: number;
+}
+
+export interface DecodingState {
+    availableStrategies: DecodingStrategy[];
+    activeStrategy: DecodingStrategy;
+    selectedIndex: number;
+    selectedToken: string;
+    selectedTokenId: number;
+    topToken: string;
+    /** Fixed educational draw used only for deterministic sampling. */
+    samplePoint: number | null;
+}
+
+export interface GenerationStep {
+    step: 1 | 2;
+    contextBefore: string;
+    logits: LogitCandidate[];
+    probabilities: ProbabilityCandidate[];
+    decoding: DecodingState;
+    appendedFragment: string;
+    contextAfter: string;
+    stopReached: boolean;
+}
+
+export interface CanonicalChatPipeline {
+    visibleRequest: string;
+    productInput: ProductInputEnvelope;
+    tokenBoundaries: TokenBoundary[];
+    tokenIds: TokenWithId[];
+    embeddings: VectorRepresentation[];
+    positionAwareRepresentations: PositionAwareRepresentation[];
+    contextWindow: ContextWindowState;
+    attention: AttentionSnapshot;
+    feedForward: FeedForwardSnapshot;
+    layerCheckpoints: LayerCheckpoint[];
+    finalRepresentations: VectorRepresentation[];
+    predictionPosition: number;
+    logits: LogitCandidate[];
+    probabilities: ProbabilityCandidate[];
+    decoding: DecodingState;
+    generationSteps: GenerationStep[];
+    appendedTextFragment: string;
+    nextStepCandidateUpdate: LogitCandidate[];
+    finalScriptedResponse: string;
+    replyKey: ChatReplyKey;
+}
+
+export interface CanonicalPipelineOptions {
+    systemInstruction?: string;
+    selectedContext?: string;
+    omittedContext?: string;
+    scriptedResponse?: string;
+    decodingStrategy?: DecodingStrategy;
+}
+
+export interface AgentRunOptions {
+    approval?: 'pending' | 'approved' | 'denied';
+    authorized?: boolean;
+    transport?: 'direct' | 'mcp';
+}
 
 // מפתחות התשובה: המנוע נשאר טהור ומחזיר מזהה תשובה בלבד (לא טקסט). שכבת התצוגה
 // פותרת אותו לטקסט הנכון מהמילון (chapter1Visuals.mockEngine), כדי שהפלט יהיה
@@ -26,6 +183,7 @@ export interface ChatEngineResult {
     decision: DecisionState;
     output: string;
     replyKey: ChatReplyKey;
+    pipeline: CanonicalChatPipeline;
 }
 
 export interface AgentEngineResult {
@@ -38,6 +196,22 @@ export interface AgentEngineResult {
     decision: DecisionState;
     output: string;
     replyKey: AgentReplyKey;
+    authorization: {
+        required: boolean;
+        status: AgentAuthorizationStatus;
+        tool: string | null;
+    };
+    approval: {
+        required: boolean;
+        status: AgentApprovalStatus;
+    };
+    execution: {
+        attempted: boolean;
+        toolCalled: boolean;
+        tool: string | null;
+        transport: 'direct' | 'mcp' | null;
+        observation: string | null;
+    };
 }
 
 // --- עזרי טקסט ---
@@ -49,16 +223,13 @@ const isJapanese = (text: string) => /[぀-ヿ一-鿿]/.test(text);
 export function tokenize(text: string): string[] {
     const trimmed = text.trim();
     if (!trimmed) return [];
-    if (isJapanese(trimmed)) return tokenizeJa(trimmed);
-    return trimmed.split(/\s+/).filter(Boolean);
+    return scriptedBoundariesForText(trimmed, 'user', 0).map((token) => token.surface);
 }
 
-// מפת-override דטרמיניסטית לקלטי-ההדגמה היפניים של פרק 1. בחלק מהסביבות (למשל ICU
-// מצומצם) Intl.Segmenter מפצל קאנה יתר על המידה (届/き/ま/せん במקום 届き/ません), ולכן
-// לקלטים הידועים אנו קובעים חיתוך לימודי טבעי. זו טבלת-נתונים בלבד (אין מספרים/לוגיקה
-// חדשים), מצומדת לקלט-ההדגמה ב-ja/behind-ai/chapter1*.ts (seed, forkView, counterfactual,
-// confidenceDial). אם טקסט-הדגמה במילון משתנה, הקלט פשוט נופל ל-Segmenter (נפילה חיננית).
-// ההתאמה דטרמיניסטית ולכן SSR וה-hydration זהים, בלי תלות בגרסת ה-ICU של הדפדפן.
+// מפת-override דטרמיניסטית לקלטי-ההדגמה היפניים של פרק 1. לקלטים הידועים נקבע
+// חיתוך לימודי טבעי; קלט אחר נופל לחיתוך מתוסרט לפי מעבר-כתב. זו טבלת-נתונים בלבד,
+// מצומדת לקלט-ההדגמה ב-ja/behind-ai/chapter1*.ts. ההתאמה דטרמיניסטית ולכן SSR
+// וה-hydration זהים, בלי תלות בגרסת ICU של הדפדפן.
 const JA_DEMO_SEGMENTS: Record<string, string[]> = {
     '荷物が届きません': ['荷物', 'が', '届き', 'ません'],
     '私の荷物はどこですか': ['私', 'の', '荷物', 'は', 'どこ', 'です', 'か'],
@@ -75,29 +246,8 @@ const JA_DEMO_SEGMENTS: Record<string, string[]> = {
     '営業時間は何時ですか': ['営業', '時間', 'は', '何時', 'です', 'か'],
 };
 
-// פיצול יפני: קודם override דטרמיניסטי לקלטי-ההדגמה הידועים (חיתוך טבעי ולימודי); אחרת
-// Intl.Segmenter ('ja', granularity 'word'); ואם אינו זמין או החזיר מקטע יחיד, נפילה
-// לפיצול לפי מעבר-כתב (קאנג'י/היראגנה/קטקנה). בלי תלות חיצונית.
-function tokenizeJa(text: string): string[] {
-    const override = JA_DEMO_SEGMENTS[text];
-    if (override) return [...override];
-    if (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function') {
-        try {
-            const seg = new Intl.Segmenter('ja', { granularity: 'word' });
-            const out: string[] = [];
-            for (const part of seg.segment(text)) {
-                const w = part.segment.trim();
-                if (w) out.push(w);
-            }
-            if (out.length > 1) return out;
-        } catch {
-            // נפילה חיננית לפיצול לפי מעבר-כתב
-        }
-    }
-    return chunkJaByScript(text);
-}
-
-// פיצול-גיבוי לפי מעבר בין מחלקות-כתב יפניות, כשאין Intl.Segmenter.
+// פיצול מתוסרט לפי מעבר בין מחלקות-כתב יפניות. איננו תלוי בגרסת ICU בדפדפן,
+// ולכן אותם קלטים מפיקים אותם גבולות גם ב-SSR וגם ב-hydration.
 function chunkJaByScript(text: string): string[] {
     const classOf = (ch: string): string => {
         if (/\s/.test(ch)) return 'space';
@@ -125,7 +275,302 @@ function chunkJaByScript(text: string): string[] {
 // (届きません לא יישבר ל-"届き ません"); שאר השפות מחוברות ברווח כרגיל. כך פלט המנוע
 // בראש הקריאה נשאר זהה להרצה הישירה, וההתנהגות ב-he/en/es/ru/ar אינה משתנה.
 export function joinTokens(tokens: string[], text: string): string {
-    return tokens.join(isJapanese(text) ? '' : ' ');
+    // The scripted tokenizer keeps leading spaces on the following token.
+    // The Japanese fallback has no spaces, so concatenation reconstructs both forms.
+    const carriesSpacing = tokens.some((token) => /^\s/.test(token));
+    return tokens.join(carriesSpacing || isJapanese(text) ? '' : ' ');
+}
+
+const VECTOR_WIDTH = 4;
+const SPECIAL_TOKEN_IDS: Record<ModelInputRole, number> = {
+    system: 101,
+    context: 102,
+    user: 103,
+    assistant: 104,
+};
+
+const SPECIAL_TOKEN_SURFACES: Record<ModelInputRole, string> = {
+    system: '<|system|>',
+    context: '<|context|>',
+    user: '<|user|>',
+    assistant: '<|assistant|>',
+};
+
+const round = (value: number, digits = 4): number => Number(value.toFixed(digits));
+const addVectors = (a: VectorExcerpt, b: VectorExcerpt): VectorExcerpt =>
+    Array.from({ length: VECTOR_WIDTH }, (_, i) => round((a[i] ?? 0) + (b[i] ?? 0)));
+const scaleVector = (vector: VectorExcerpt, scale: number): VectorExcerpt => vector.map((value) => round(value * scale));
+const dot = (a: VectorExcerpt, b: VectorExcerpt): number => a.reduce((sum, value, i) => sum + value * (b[i] ?? 0), 0);
+
+function scriptedBoundariesForText(text: string, role: ModelInputRole, indexOffset: number): TokenBoundary[] {
+    if (!text) return [];
+
+    const pieces: { surface: string; start: number; end: number }[] = [];
+    if (isJapanese(text)) {
+        let cursor = 0;
+        const scriptedParts = JA_DEMO_SEGMENTS[text] ?? chunkJaByScript(text);
+        for (const part of scriptedParts) {
+            const found = text.indexOf(part, cursor);
+            const tokenStart = found >= 0 ? found : cursor;
+            const start = cursor;
+            const end = tokenStart + part.length;
+            pieces.push({ surface: text.slice(start, end), start, end });
+            cursor = end;
+        }
+    } else {
+        const expression = /\s*(?:[\p{L}\p{M}\p{N}]+|[^\s\p{L}\p{M}\p{N}])/gu;
+        for (const match of text.matchAll(expression)) {
+            const start = match.index ?? 0;
+            pieces.push({ surface: match[0], start, end: start + match[0].length });
+        }
+    }
+
+    return pieces.filter((piece) => piece.surface.trim().length > 0).map((piece, localIndex) => ({
+        index: indexOffset + localIndex,
+        surface: piece.surface,
+        display: piece.surface.replace(/^\s+/, (space) => '␠'.repeat(space.length)),
+        role,
+        start: piece.start,
+        end: piece.end,
+        leadingSpace: /^\s/.test(piece.surface),
+        special: false,
+    }));
+}
+
+function roleBoundary(role: ModelInputRole, index: number): TokenBoundary {
+    return {
+        index,
+        surface: SPECIAL_TOKEN_SURFACES[role],
+        display: SPECIAL_TOKEN_SURFACES[role],
+        role,
+        start: -1,
+        end: -1,
+        leadingSpace: false,
+        special: true,
+    };
+}
+
+/** Stable educational tokenizer example for the complete simplified model input. */
+export function tokenizeModelInput(envelope: ProductInputEnvelope): TokenBoundary[] {
+    const tokens: TokenBoundary[] = [];
+    for (const segment of envelope.segments) {
+        tokens.push(roleBoundary(segment.role, tokens.length));
+        tokens.push(...scriptedBoundariesForText(segment.text, segment.role, tokens.length));
+    }
+    tokens.push(roleBoundary('assistant', tokens.length));
+    return tokens;
+}
+
+/** Scripted vocabulary address. It is stable but is not an ID from any provider tokenizer. */
+export function scriptedTokenId(surface: string, role: ModelInputRole, special = false): number {
+    if (special) return SPECIAL_TOKEN_IDS[role];
+    let value = 2166136261;
+    for (const character of surface.normalize('NFC')) {
+        value ^= character.codePointAt(0) ?? 0;
+        value = Math.imul(value, 16777619) >>> 0;
+    }
+    return 1000 + (value % 50000);
+}
+
+function attachTokenIds(boundaries: TokenBoundary[]): TokenWithId[] {
+    return boundaries.map((token) => ({
+        ...token,
+        id: scriptedTokenId(token.surface, token.role, token.special),
+    }));
+}
+
+// Explicit fixed table: IDs select rows, but no coordinate is generated from a hash.
+// These are scripted excerpts standing in for rows that a real model learned in training.
+const SCRIPTED_LEARNED_ROWS: VectorExcerpt[] = [
+    [0.42, -0.18, 0.73, 0.09], [-0.61, 0.34, 0.12, 0.81], [0.07, 0.92, -0.44, 0.25],
+    [0.68, 0.11, -0.57, 0.36], [-0.24, -0.76, 0.48, 0.63], [0.83, -0.31, 0.06, -0.52],
+    [-0.15, 0.57, 0.79, -0.28], [0.31, -0.64, -0.09, 0.88], [-0.72, 0.22, 0.51, 0.14],
+    [0.55, 0.47, -0.33, -0.69], [-0.08, -0.41, 0.94, 0.27], [0.76, -0.53, 0.21, 0.05],
+    [-0.39, 0.85, -0.16, 0.43], [0.18, 0.26, 0.67, -0.74], [-0.87, -0.04, 0.35, 0.58],
+    [0.49, -0.82, 0.29, 0.17], [0.02, 0.69, -0.78, 0.46], [-0.53, 0.13, 0.84, -0.32],
+    [0.91, 0.24, -0.11, -0.37], [-0.27, -0.58, 0.62, 0.71], [0.64, -0.07, 0.39, -0.86],
+    [-0.46, 0.75, 0.03, 0.52], [0.36, 0.16, -0.92, 0.41], [-0.79, 0.45, 0.28, -0.06],
+];
+
+function learnedRowIndex(tokenId: number): number {
+    return tokenId % SCRIPTED_LEARNED_ROWS.length;
+}
+
+function learnedRowExcerpt(token: Pick<TokenWithId, 'id'>): VectorExcerpt {
+    return [...SCRIPTED_LEARNED_ROWS[learnedRowIndex(token.id)]];
+}
+
+function embeddingSequence(tokens: TokenWithId[]): VectorRepresentation[] {
+    return tokens.map((token) => ({
+        tokenIndex: token.index,
+        tokenId: token.id,
+        token: token.surface,
+        role: token.role,
+        vector: learnedRowExcerpt(token),
+        embeddingRow: learnedRowIndex(token.id),
+    }));
+}
+
+function positionalExcerpt(position: number): VectorExcerpt {
+    return [
+        round(Math.sin(position)),
+        round(Math.cos(position)),
+        round(Math.sin(position / 10)),
+        round(Math.cos(position / 10)),
+    ];
+}
+
+function addPositions(embeddings: VectorRepresentation[]): PositionAwareRepresentation[] {
+    return embeddings.map((embedding, position) => {
+        const positionVector = positionalExcerpt(position);
+        return {
+            ...embedding,
+            position,
+            embeddingVector: [...embedding.vector],
+            positionVector,
+            vector: addVectors(embedding.vector, positionVector),
+        };
+    });
+}
+
+export function softmax(logits: LogitCandidate[]): ProbabilityCandidate[] {
+    if (!logits.length) return [];
+    const maxLogit = Math.max(...logits.map((candidate) => candidate.logit));
+    const exponentials = logits.map((candidate) => Math.exp(candidate.logit - maxLogit));
+    const total = exponentials.reduce((sum, value) => sum + value, 0);
+    return logits.map((candidate, index) => ({
+        ...candidate,
+        probability: exponentials[index] / total,
+    }));
+}
+
+function contextualize(sequence: PositionAwareRepresentation[]): AttentionSnapshot {
+    const output = sequence.map<VectorRepresentation>((destination, destinationIndex) => {
+        const available = sequence.slice(0, destinationIndex + 1);
+        const rawScores = available.map((source) => dot(destination.vector, source.vector) / Math.sqrt(VECTOR_WIDTH));
+        const maxScore = Math.max(...rawScores);
+        const exponentials = rawScores.map((score) => Math.exp(score - maxScore));
+        const total = exponentials.reduce((sum, value) => sum + value, 0);
+        const weights = exponentials.map((value) => value / total);
+        const mixed = Array.from({ length: VECTOR_WIDTH }, (_, component) => round(
+            available.reduce((sum, source, sourceIndex) => sum + weights[sourceIndex] * source.vector[component], 0),
+        ));
+        return {
+            tokenIndex: destination.tokenIndex,
+            tokenId: destination.tokenId,
+            token: destination.token,
+            role: destination.role,
+            vector: addVectors(scaleVector(destination.vector, 0.7), scaleVector(mixed, 0.3)),
+        };
+    });
+
+    const destinationIndex = Math.max(0, sequence.length - 1);
+    const destination = sequence[destinationIndex];
+    const available = sequence.slice(0, destinationIndex + 1);
+    const rawScores = available.map((source) => dot(destination.vector, source.vector) / Math.sqrt(VECTOR_WIDTH));
+    const maxScore = Math.max(...rawScores);
+    const exponentials = rawScores.map((score) => Math.exp(score - maxScore));
+    const total = exponentials.reduce((sum, value) => sum + value, 0);
+    return {
+        layer: 1,
+        head: 1,
+        destinationIndex,
+        destinationToken: destination?.token ?? SPECIAL_TOKEN_SURFACES.assistant,
+        weights: available.map((source, index) => ({
+            sourceIndex: source.tokenIndex,
+            sourceToken: source.token,
+            weight: exponentials[index] / total,
+        })),
+        output,
+    };
+}
+
+function feedForward(sequence: VectorRepresentation[]): FeedForwardSnapshot {
+    const output = sequence.map<VectorRepresentation>((item) => {
+        const hidden = item.vector.map((value, index) => Math.max(0, value * (1.15 + index * 0.08) + (index - 1.5) * 0.07));
+        const transformed = hidden.map((value, index) => round(value * (0.45 + index * 0.05) - 0.08));
+        return { ...item, vector: addVectors(item.vector, transformed) };
+    });
+    return { input: sequence.map((item) => ({ ...item, vector: [...item.vector] })), output };
+}
+
+function refineLayer(sequence: VectorRepresentation[], layer: number): VectorRepresentation[] {
+    return sequence.map((item, index) => {
+        const previous = sequence[Math.max(0, index - 1)].vector;
+        const blended = item.vector.map((value, component) => (
+            value * 0.82 + previous[component] * 0.12 + (layer + 1) * (component + 1) * 0.006
+        ));
+        return { ...item, vector: blended.map((value) => round(Math.tanh(value))) };
+    });
+}
+
+function layerCheckpoints(sequence: VectorRepresentation[]): LayerCheckpoint[] {
+    const layer1 = refineLayer(sequence, 1);
+    const layer2 = refineLayer(layer1, 2);
+    const finalLayer = refineLayer(layer2, 3);
+    return [
+        { label: 'input', layer: 0, representations: sequence },
+        { label: 'layer-1', layer: 1, representations: layer1 },
+        { label: 'layer-2', layer: 2, representations: layer2 },
+        { label: 'final-layer', layer: 3, representations: finalLayer },
+    ];
+}
+
+function candidateTokens(responseTokens: TokenBoundary[], step: 0 | 1): string[] {
+    const selected = responseTokens[step]?.surface ?? (step === 0 ? 'OK' : '.');
+    const alternate = responseTokens[step + 1]?.surface ?? (step === 0 ? ' ...' : '.');
+    const punctuation = /[.!?؟。]/u.test(selected) ? ' ...' : '.';
+    return Array.from(new Set([selected, alternate, punctuation, '<stop>'])).slice(0, 4);
+}
+
+function buildLogits(
+    candidates: string[],
+    selectedToken: string,
+    strategy: DecodingStrategy,
+    predictionVector: VectorExcerpt,
+    step: 0 | 1,
+): LogitCandidate[] {
+    const ordered = strategy === 'sampling'
+        ? [candidates.find((token) => token !== selectedToken) ?? selectedToken, selectedToken, ...candidates.filter((token) => token !== selectedToken).slice(1)]
+        : [selectedToken, ...candidates.filter((token) => token !== selectedToken)];
+    const bases = strategy === 'sampling' ? [2.6, 2.2, 0.4, -1.2] : [3.1, 1.2, 0.1, -1.4];
+    return ordered.slice(0, 4).map((token, index) => {
+        const headSignal = predictionVector.reduce((sum, value, component) => sum + value * ((index + 1) * (component + 2)) * 0.004, 0);
+        return {
+            token,
+            tokenId: scriptedTokenId(token, 'assistant'),
+            logit: round((bases[index] ?? -2) + headSignal + step * (0.11 - index * 0.04)),
+        };
+    });
+}
+
+function decode(probabilities: ProbabilityCandidate[], strategy: DecodingStrategy, selectedToken: string): DecodingState {
+    const selectedIndex = Math.max(0, probabilities.findIndex((candidate) => candidate.token === selectedToken));
+    let samplePoint: number | null = null;
+    if (strategy === 'sampling') {
+        const before = probabilities.slice(0, selectedIndex).reduce((sum, item) => sum + item.probability, 0);
+        samplePoint = before + probabilities[selectedIndex].probability / 2;
+    }
+    return {
+        availableStrategies: ['greedy', 'sampling'],
+        activeStrategy: strategy,
+        selectedIndex,
+        selectedToken: probabilities[selectedIndex]?.token ?? '',
+        selectedTokenId: probabilities[selectedIndex]?.tokenId ?? 0,
+        topToken: probabilities[0]?.token ?? '',
+        samplePoint,
+    };
+}
+
+function defaultResponse(replyKey: ChatReplyKey): string {
+    const responses: Record<ChatReplyKey, string> = {
+        notDelivered: 'Check the delivery status with the tracking number.',
+        tracking: 'Please provide the tracking number so I can check the status.',
+        system: 'Refresh the product and try again.',
+        payment: 'Check the invoice and payment details.',
+        other: 'Please add a little more context.',
+    };
+    return responses[replyKey];
 }
 
 // עוזרים אלה מיוצאים (additive בלבד) כדי שטבלת ה-trace תוכל לחשוף את אותם
@@ -139,9 +584,8 @@ export const matchedWords = (text: string, words: string[]) => { const t = text.
 export const hasBarcode = (text: string) => /\d{6,}/.test(text);
 
 // ════════════════════ אוצר-מילים תלוי-שפה לזיהוי (C3/C4) ════════════════════
-// המנוע מזהה כוונה/פעולה לפי התאמת תת-מחרוזות. אוצר-המילים מצומד לקלט-ההדגמה שבמילון
-// (chapter1.seed, confidenceDial.samples, forkView.samples, counterfactual.variants),
-// ולכן הוא תלוי-שפה: כל שפה מזוהה לפי האוצר שלה.
+// המנוע מזהה כוונה/פעולה לפי התאמת תת-מחרוזות. אוצר-המילים מצומד לקלטי-ההדגמה
+// הפעילים שב-chapter1.seed, ולכן הוא תלוי-שפה: כל שפה מזוהה לפי האוצר שלה.
 //
 // בחירת האוצר נעשית לפי כתב הקלט (vocabFor): עברית / ערבית / קירילית / יפנית מזוהות
 // לפי הכתב; כל השאר (לטיני) נופל לאוצר LATIN. אנגלית וספרדית חולקות כתב לטיני ולכן
@@ -225,8 +669,8 @@ const RU_VOCAB: Vocab = {
 };
 
 // אוצר יפנית. מצומד לקלט-ההדגמה ב-ja/chapter1*.ts. זיהוי הכוונה הוא התאמת תת-מחרוזת
-// על הטקסט הגולמי, והפיצול החזותי (ראש הקריאה, רצועת הטוקנים) משתמש ב-tokenizeJa
-// (Intl.Segmenter עם נפילה לפיצול לפי מעבר-כתב), כך שהיפנית נחתכת ליחידות מרובות.
+// על הטקסט הגולמי, והפיצול החזותי משתמש בטבלת הדוגמאות ובמעברי כתב מתוסרטים,
+// כך שהיפנית נחתכת ליחידות מרובות ובאופן יציב בין סביבות.
 const JA_VOCAB: Vocab = {
     negation: ['ません', 'ない'],
     chatWords: {
@@ -297,7 +741,7 @@ function confidenceFrom(intents: IntentProbability[]): Confidence {
     return 'Low';
 }
 
-export function runChatEngine(text: string): ChatEngineResult {
+function classifyChat(text: string): Omit<ChatEngineResult, 'pipeline'> {
     const vocab = vocabFor(text);
     const tokens = tokenize(text);
     const hasNegation = includesAny(text, vocab.negation);
@@ -341,9 +785,156 @@ export function runChatEngine(text: string): ChatEngineResult {
     };
 }
 
+/** Scenario selection is separate from the educational model trace. */
+export function selectChatReplyKey(text: string): ChatReplyKey {
+    return classifyChat(text).replyKey;
+}
+
+/** Builds the single canonical educational dataset consumed by all 14 Chat stations. */
+export function buildCanonicalChatPipeline(
+    text: string,
+    options: CanonicalPipelineOptions = {},
+): CanonicalChatPipeline {
+    const classification = classifyChat(text);
+    const visibleRequest = text.trim();
+    const systemInstruction = options.systemInstruction ?? 'Answer briefly and clearly as a support assistant.';
+    const selectedContext = options.selectedContext ?? 'Selected context: delivery and account support.';
+    const omittedContext = options.omittedContext ?? 'Older conversation and product memory are not included in this example.';
+    const segments: ModelInputSegment[] = [
+        { role: 'system', text: systemInstruction },
+        { role: 'context', text: selectedContext },
+        { role: 'user', text: visibleRequest },
+    ];
+    const productInput: ProductInputEnvelope = {
+        visibleRequest,
+        systemInstruction,
+        selectedContext,
+        omittedContext,
+        segments,
+        serialized: segments.map((segment) => `<|${segment.role}|>\n${segment.text}`).join('\n'),
+    };
+
+    const tokenBoundaries = tokenizeModelInput(productInput);
+    const tokenIds = attachTokenIds(tokenBoundaries);
+    const embeddings = embeddingSequence(tokenIds);
+    const positionAwareRepresentations = addPositions(embeddings);
+    const contextCapacity = 64;
+    const windowStart = Math.max(0, positionAwareRepresentations.length - contextCapacity);
+    const includedRepresentations = positionAwareRepresentations.slice(windowStart);
+    const outsideWindow = positionAwareRepresentations
+        .slice(0, windowStart)
+        .map((item) => item.token)
+        .join('');
+    const predictionPosition = includedRepresentations[includedRepresentations.length - 1]?.tokenIndex ?? 0;
+    const contextWindow: ContextWindowState = {
+        capacity: contextCapacity,
+        included: includedRepresentations,
+        omitted: [outsideWindow, omittedContext].filter(Boolean),
+        predictionPosition,
+    };
+    const attention = contextualize(contextWindow.included);
+    const feedForwardResult = feedForward(attention.output);
+    const checkpoints = layerCheckpoints(feedForwardResult.output);
+    const finalRepresentations = checkpoints[checkpoints.length - 1].representations;
+    const predictionRepresentation = finalRepresentations[finalRepresentations.length - 1];
+
+    const finalScriptedResponse = options.scriptedResponse ?? defaultResponse(classification.replyKey);
+    const responseTokens = scriptedBoundariesForText(finalScriptedResponse, 'assistant', 0);
+    const firstSelected = responseTokens[0]?.surface ?? finalScriptedResponse;
+    const secondSelected = responseTokens[1]?.surface ?? '<stop>';
+    const strategy = options.decodingStrategy
+        ?? (scriptedTokenId(visibleRequest || '-', 'user') % 2 === 0 ? 'greedy' : 'sampling');
+
+    const firstLogits = buildLogits(
+        candidateTokens(responseTokens, 0),
+        firstSelected,
+        strategy,
+        predictionRepresentation?.vector ?? [0, 0, 0, 0],
+        0,
+    );
+    const firstProbabilities = softmax(firstLogits);
+    const firstDecoding = decode(firstProbabilities, strategy, firstSelected);
+    const firstContextBefore = `${productInput.serialized}\n${SPECIAL_TOKEN_SURFACES.assistant}`;
+    const firstContextAfter = firstContextBefore + firstDecoding.selectedToken;
+
+    const selectedEmbedding = learnedRowExcerpt({ id: firstDecoding.selectedTokenId });
+    const nextPredictionVector = addVectors(
+        scaleVector(predictionRepresentation?.vector ?? [0, 0, 0, 0], 0.72),
+        scaleVector(addVectors(selectedEmbedding, positionalExcerpt(finalRepresentations.length)), 0.28),
+    );
+    const secondLogits = buildLogits(
+        candidateTokens(responseTokens, 1),
+        secondSelected,
+        strategy,
+        nextPredictionVector,
+        1,
+    );
+    const secondProbabilities = softmax(secondLogits);
+    const secondDecoding = decode(secondProbabilities, strategy, secondSelected);
+    const secondContextAfter = firstContextAfter + secondDecoding.selectedToken;
+
+    const generationSteps: GenerationStep[] = [
+        {
+            step: 1,
+            contextBefore: firstContextBefore,
+            logits: firstLogits,
+            probabilities: firstProbabilities,
+            decoding: firstDecoding,
+            appendedFragment: firstDecoding.selectedToken,
+            contextAfter: firstContextAfter,
+            stopReached: false,
+        },
+        {
+            step: 2,
+            contextBefore: firstContextAfter,
+            logits: secondLogits,
+            probabilities: secondProbabilities,
+            decoding: secondDecoding,
+            appendedFragment: secondDecoding.selectedToken,
+            contextAfter: secondContextAfter,
+            stopReached: secondDecoding.selectedToken === '<stop>',
+        },
+    ];
+
+    return {
+        visibleRequest,
+        productInput,
+        tokenBoundaries,
+        tokenIds,
+        embeddings,
+        positionAwareRepresentations,
+        contextWindow,
+        attention,
+        feedForward: feedForwardResult,
+        layerCheckpoints: checkpoints,
+        finalRepresentations,
+        predictionPosition,
+        logits: firstLogits,
+        probabilities: firstProbabilities,
+        decoding: firstDecoding,
+        generationSteps,
+        appendedTextFragment: firstDecoding.selectedToken + secondDecoding.selectedToken,
+        nextStepCandidateUpdate: secondLogits,
+        finalScriptedResponse,
+        replyKey: classification.replyKey,
+    };
+}
+
+export function runChatEngine(
+    text: string,
+    options: CanonicalPipelineOptions | string = {},
+): ChatEngineResult {
+    const normalizedOptions = typeof options === 'string' ? { scriptedResponse: options } : options;
+    const classification = classifyChat(text);
+    return {
+        ...classification,
+        pipeline: buildCanonicalChatPipeline(text, normalizedOptions),
+    };
+}
+
 // --- Agent Mode: זיהוי משימה, מידע חסר, כלי, סיכון ---
 
-export function runAgentEngine(text: string): AgentEngineResult {
+export function runAgentEngine(text: string, options: AgentRunOptions = {}): AgentEngineResult {
     const vocab = vocabFor(text);
     const tokens = tokenize(text);
 
@@ -352,34 +943,76 @@ export function runAgentEngine(text: string): AgentEngineResult {
     const delivery = includesAny(text, vocab.deliveryWords);
     const barcode = hasBarcode(text);
     const vague = !delivery && !barcode && includesAny(text, vocab.vagueWords);
+    const authorized = options.authorized ?? true;
+    const transport = options.transport ?? 'direct';
+    const noExecution: AgentEngineResult['execution'] = {
+        attempted: false,
+        toolCalled: false,
+        tool: null,
+        transport: null,
+        observation: null,
+    };
 
     // 1. פעולה רגישה (משפיעה על לקוח/מערכת) -> עצירה לאישור
     if (sensitive) {
+        const approvalStatus: AgentApprovalStatus = options.approval ?? 'pending';
+        const mayExecute = authorized && approvalStatus === 'approved' && barcode;
         return {
             tokens,
             task: 'Send / update on customer record',
-            missingInfo: 'Evidence: not verified',
+            missingInfo: barcode ? 'None' : 'Evidence: not verified',
             toolNeed: { needed: true, tool: 'Email / CRM' },
-            canActNow: false,
+            canActNow: mayExecute,
             risk: 'High',
-            decision: { kind: 'stop', label: 'Stop for approval' },
-            output: 'Stop before action',
+            decision: mayExecute
+                ? { kind: 'tool', label: 'Use authorized customer tool' }
+                : { kind: 'stop', label: 'Stop for approval' },
+            output: mayExecute ? 'Execute approved action' : 'Stop before action',
             replyKey: 'sensitive',
+            authorization: {
+                required: true,
+                status: authorized ? 'authorized' : 'unauthorized',
+                tool: 'Email / CRM',
+            },
+            approval: { required: true, status: approvalStatus },
+            execution: mayExecute ? {
+                attempted: true,
+                toolCalled: true,
+                tool: 'Email / CRM',
+                transport,
+                observation: 'Approved action completed',
+            } : noExecution,
         };
     }
 
     // 2. בדיקת משלוח עם ברקוד -> שימוש בכלי
     if (action && (delivery || barcode) && barcode) {
+        const mayExecute = authorized;
         return {
             tokens,
             task: 'Check delivery failure',
             missingInfo: 'None',
             toolNeed: { needed: true, tool: 'Tracking API' },
-            canActNow: true,
+            canActNow: mayExecute,
             risk: 'Low',
-            decision: { kind: 'tool', label: 'Use Tracking API' },
-            output: 'Call Tracking API',
+            decision: mayExecute
+                ? { kind: 'tool', label: 'Use Tracking API' }
+                : { kind: 'stop', label: 'Tool is not authorized' },
+            output: mayExecute ? 'Call Tracking API' : 'Stop before unauthorized tool call',
             replyKey: 'tool',
+            authorization: {
+                required: true,
+                status: authorized ? 'authorized' : 'unauthorized',
+                tool: 'Tracking API',
+            },
+            approval: { required: false, status: 'not-required' },
+            execution: mayExecute ? {
+                attempted: true,
+                toolCalled: true,
+                tool: 'Tracking API',
+                transport,
+                observation: 'Tracking status received',
+            } : noExecution,
         };
     }
 
@@ -395,6 +1028,9 @@ export function runAgentEngine(text: string): AgentEngineResult {
             decision: { kind: 'ask', label: 'Ask for barcode before action' },
             output: 'Ask user for required information',
             replyKey: 'askBarcode',
+            authorization: { required: true, status: authorized ? 'authorized' : 'unauthorized', tool: 'Tracking API' },
+            approval: { required: false, status: 'not-required' },
+            execution: noExecution,
         };
     }
 
@@ -410,23 +1046,38 @@ export function runAgentEngine(text: string): AgentEngineResult {
             decision: { kind: 'ask', label: 'Ask what to handle' },
             output: 'Ask for clarification',
             replyKey: 'vague',
+            authorization: { required: false, status: 'authorized', tool: null },
+            approval: { required: false, status: 'not-required' },
+            execution: noExecution,
         };
     }
 
     // 5. תיאור בעיה בלי מילת פעולה (משלוח) -> עדיין צריך מזהה
     if (delivery) {
+        const mayExecute = barcode && authorized;
         return {
             tokens,
             task: 'Check delivery failure',
             missingInfo: barcode ? 'None' : 'Barcode: missing',
             toolNeed: { needed: true, tool: 'Tracking API' },
-            canActNow: barcode,
+            canActNow: mayExecute,
             risk: 'Medium',
-            decision: barcode
+            decision: mayExecute
                 ? { kind: 'tool', label: 'Use Tracking API' }
-                : { kind: 'ask', label: 'Ask for barcode before action' },
-            output: barcode ? 'Call Tracking API' : 'Ask user for required information',
+                : barcode
+                    ? { kind: 'stop', label: 'Tool is not authorized' }
+                    : { kind: 'ask', label: 'Ask for barcode before action' },
+            output: mayExecute ? 'Call Tracking API' : barcode ? 'Stop before unauthorized tool call' : 'Ask user for required information',
             replyKey: barcode ? 'tool' : 'askBarcode',
+            authorization: { required: true, status: authorized ? 'authorized' : 'unauthorized', tool: 'Tracking API' },
+            approval: { required: false, status: 'not-required' },
+            execution: mayExecute ? {
+                attempted: true,
+                toolCalled: true,
+                tool: 'Tracking API',
+                transport,
+                observation: 'Tracking status received',
+            } : noExecution,
         };
     }
 
@@ -441,5 +1092,8 @@ export function runAgentEngine(text: string): AgentEngineResult {
         decision: { kind: 'answer', label: 'Answer directly' },
         output: 'Generate explanation',
         replyKey: 'general',
+        authorization: { required: false, status: 'authorized', tool: null },
+        approval: { required: false, status: 'not-required' },
+        execution: noExecution,
     };
 }

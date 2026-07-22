@@ -1,31 +1,26 @@
 "use client";
 
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
-    motion, AnimatePresence, useMotionValue, useTransform, animate, useReducedMotion, type Variants,
-} from 'framer-motion';
-import {
-    Cpu, CheckCircle2, XCircle, Hash, Scan, Trophy, Sparkles, Bot,
+    Check,
+    CheckCircle2,
+    ChevronLeft,
+    ChevronRight,
+    Circle,
+    Cpu,
+    RefreshCcw,
+    RotateCcw,
+    Sparkles,
 } from 'lucide-react';
 
-import { useT } from '@/i18n/useT';
 import { ACCENTS } from '@/components/ai-internals/accents';
-import { ProbabilityBars } from '@/components/ai-internals/ProbabilityBars';
-import { ConfidenceMeter } from '@/components/ai-internals/ConfidenceMeter';
-import { DecisionCard } from '@/components/ai-internals/DecisionCard';
-import type { Accent, DecisionKind, IntentProbability } from '@/components/ai-internals/types';
-
 import { ExpandableLabContext } from '@/components/ai-internals/ExpandableLab';
-
 import { STATION_PALETTE } from '@/components/ai-internals/IntroStationViz';
-import type { EngineTraceStep } from './engineTrace';
-import type { Confidence } from './mockEngine';
-import { ProcessCheckpointNode } from './ProcessCheckpointNode';
+import type { Accent } from '@/components/ai-internals/types';
+import { useT } from '@/i18n/useT';
 
-// צבעי 14 התחנות של מפת המבוא, בסדר הצינור. ליבת כל צומת נצבעת בצבע-תחנה כדי
-// שהמנוע ילבש את אותם צבעים שהלומד ראה במפה (זיהוי). לא 1:1 לתחנה ספציפית, אלא
-// אותו רצף-צבעים של הרצועה. הטבעת/ההילה נשארות בגוון-המצב (Chat/Agent).
-const STATION_DOTS = Object.values(STATION_PALETTE).map((s) => s.solid);
+import type { EngineTraceStep } from './engineTrace';
 
 interface GlassEnginePanelProps {
     title: string;
@@ -33,998 +28,701 @@ interface GlassEnginePanelProps {
     accent: Accent;
     replayKey: string | number;
     steps: EngineTraceStep[];
-    /** ספירת טוקנים אמיתית מ-Claude (count_tokens) לקלט הנוכחי, במצב חי. null => לא זמין. */
-    liveTokenCount?: number | null;
-    /** טוקן מודגש כרגע (קישור חי בין הצ'אט למנוע). */
+    activeIndex: number;
+    onActiveIndexChange: (index: number) => void;
+    onReplayActive: () => void;
+    onResetJourney: () => void;
     highlightToken?: string | null;
-    /** דיווח על ריחוף/נגיעה בטוקן בתוך המנוע, להדגשה הדדית. */
     onTokenHover?: (token: string | null) => void;
 }
 
-// גוון גל-השיא לפי סוג ההחלטה (climax sweep).
-const CLIMAX_RGB: Record<DecisionKind, string> = {
-    answer: '52,211,153',
-    ask: '251,191,36',
-    tool: '96,165,250',
-    stop: '251,113,133',
+const STATION_DOTS = Object.values(STATION_PALETTE).map((station) => station.solid);
+
+const normalizeToken = (token: string | null | undefined) => token?.trim().normalize('NFC') ?? '';
+const formatNumber = (value: number, digits = 3) => {
+    const rounded = value.toFixed(digits);
+    return value > 0 ? `+${rounded}` : rounded;
 };
+const formatVector = (vector: number[]) => `[${vector.map((value) => formatNumber(value, 2)).join(', ')}]`;
+const tokenText = (surface: string) => surface.replace(/^\s+/, (spaces) => '␠'.repeat(spaces.length));
 
-/** האם השלב מושפע מהטוקן המודגש (לטבעת הדגשה ברמת הכרטיס). */
-function stepLinked(step: EngineTraceStep, token: string | null | undefined): boolean {
-    if (!token) return false;
-    if (step.kind === 'tokens') return step.tokens.includes(token);
-    if (step.kind === 'keywords') return step.groups.some((g) => g.matched.some((w) => w.includes(token)));
-    if (step.kind === 'flag') return step.on && step.triggerToken === token;
-    return false;
-}
-
-/* ════════════════════════ עזרים ויזואליים ════════════════════════════════ */
-
-const AnimatedNumber: React.FC<{ value: number; className?: string }> = ({ value, className }) => {
-    const reduce = useReducedMotion();
-    const mv = useMotionValue(reduce ? value : 0);
-    const rounded = useTransform(mv, (v) => Math.round(v).toString());
-    useEffect(() => {
-        if (reduce) { mv.set(value); return; }
-        const controls = animate(mv, value, { duration: 0.7, ease: 'easeOut' });
-        return () => controls.stop();
-    }, [value, mv, reduce]);
-    return <motion.span className={className} dir="ltr">{rounded}</motion.span>;
-};
-
-/**
- * רגע-ההחלטה (Decoding): התמונה ההסתברותית הופכת לבחירה. החלופות מופיעות כפסי
- * הסתברות, ואז המוביל "ננעל" (spring + זוהר + ✓) בעוד השאר מתעמעמים, והפער והביטחון
- * נכנסים. visual-first: הטקסט מינימלי, ההבנה מגיעה מהתנועה ומסיבתיות ויזואלית.
- */
-const DecisionMoment: React.FC<{ items: IntentProbability[]; margin: number; level: Confidence; accent: Accent; selectedLabel: string }> = ({ items, margin, level, accent, selectedLabel }) => {
-    const reduce = useReducedMotion();
+const TokenButton: React.FC<{
+    token: string;
+    display?: string;
+    active?: boolean;
+    accent: Accent;
+    onTokenHover?: (token: string | null) => void;
+}> = ({ token, display, active = false, accent, onTokenHover }) => {
     const a = ACCENTS[accent];
-    const [selected, setSelected] = useState(!!reduce);
-    const top = items.slice(0, 4);
+    const interactive = !!onTokenHover;
+    const classes = `rounded-lg border px-2 py-1 font-mono text-xs ${
+        active ? `${a.border} ${a.bgSoft} ${a.text} ring-1 ${a.ringSoft}` : 'border-white/10 bg-slate-900/70 text-slate-300'
+    }`;
 
-    // ה-state מאותחל ל-true כשהתנועה מצומצמת (מציג מיד את מצב-הבחירה), ול-false
-    // אחרת; הבחירה "ננעלת" אחרי שהפסים מתמלאים. הרכיב נטען מחדש בכל replay של הפאנל.
-    useEffect(() => {
-        if (reduce) return;
-        const t = setTimeout(() => setSelected(true), 250 + top.length * 130 + 450);
-        return () => clearTimeout(t);
-    }, [reduce, top.length]);
-
-    const maxV = Math.max(1, top[0]?.value ?? 1);
+    if (!interactive) return <span className={classes} dir="auto">{display ?? tokenText(token)}</span>;
 
     return (
-        <div className="space-y-1.5" dir="auto">
-            {top.map((it, i) => {
-                const win = i === 0;
-                const dim = selected && !win;
-                const wpct = Math.max(6, (it.value / maxV) * 100);
-                return (
-                    <motion.div
-                        key={it.label}
-                        initial={reduce ? false : { opacity: 0, y: 6 }}
-                        animate={{ opacity: dim ? 0.4 : 1, y: 0, scale: selected && win ? 1.04 : dim ? 0.98 : 1 }}
-                        transition={reduce ? { duration: 0 } : {
-                            opacity: { duration: 0.35, delay: selected ? 0 : 0.15 + i * 0.13 },
-                            y: { duration: 0.35, delay: 0.15 + i * 0.13 },
-                            scale: { type: 'spring', stiffness: 320, damping: 16 },
-                        }}
-                        className={`relative flex items-center gap-2 overflow-hidden rounded-lg border px-2.5 py-1.5 transition-shadow ${selected && win ? `${a.border} ${a.bgSoft} ${a.glow}` : 'border-white/10 bg-slate-900/40'}`}
-                    >
-                        <motion.span
-                            aria-hidden
-                            className={`absolute inset-y-0 start-0 ${win ? a.barGradient : 'bg-slate-600/50'}`}
-                            style={{ opacity: 0.22 }}
+        <button
+            type="button"
+            aria-pressed={active}
+            onMouseEnter={() => onTokenHover(token)}
+            onMouseLeave={() => onTokenHover(null)}
+            onFocus={() => onTokenHover(token)}
+            onBlur={() => onTokenHover(null)}
+            onClick={() => onTokenHover(active ? null : token)}
+            className={`${classes} focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80`}
+            dir="auto"
+        >
+            {display ?? tokenText(token)}
+        </button>
+    );
+};
+
+const VectorCode: React.FC<{ vector: number[] }> = ({ vector }) => (
+    <code className="whitespace-nowrap font-mono text-[11px] text-cyan-200" dir="ltr">
+        {formatVector(vector)}
+    </code>
+);
+
+const ScrollTable: React.FC<{ children: React.ReactNode; label: string }> = ({ children, label }) => (
+    <div className="max-h-80 overflow-auto rounded-xl border border-white/10" role="region" aria-label={label} tabIndex={0}>
+        <table className="w-full min-w-[34rem] border-collapse text-start text-xs">{children}</table>
+    </div>
+);
+
+const ProbabilityRows: React.FC<{
+    candidates: { token: string; tokenId: number; logit: number; probability: number }[];
+    accent: Accent;
+    reduce: boolean;
+}> = ({ candidates, accent, reduce }) => {
+    const a = ACCENTS[accent];
+    return (
+        <div className="space-y-2">
+            {candidates.map((candidate) => (
+                <div key={`${candidate.tokenId}-${candidate.token}`} className="rounded-xl border border-white/10 bg-slate-950/40 p-2.5">
+                    <div className="mb-1.5 flex items-center gap-2">
+                        <span className="min-w-0 flex-1 truncate font-mono text-xs text-slate-100" dir="auto">
+                            {tokenText(candidate.token)}
+                        </span>
+                        <span className="font-mono text-[11px] text-slate-500" dir="ltr">{formatNumber(candidate.logit, 2)}</span>
+                        <span className={`font-mono text-xs font-bold ${a.text}`} dir="ltr">
+                            {(candidate.probability * 100).toFixed(1)}%
+                        </span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+                        <motion.div
+                            className={`h-full rounded-full ${a.barGradient}`}
                             initial={reduce ? false : { width: 0 }}
-                            animate={{ width: `${wpct}%` }}
-                            transition={{ duration: reduce ? 0 : 0.6, delay: reduce ? 0 : 0.2 + i * 0.13, ease: 'easeOut' }}
+                            animate={{ width: `${candidate.probability * 100}%` }}
+                            transition={{ duration: reduce ? 0 : 0.5, ease: 'easeOut' }}
                         />
-                        <span className={`relative z-10 text-sm font-bold ${dim ? 'text-slate-400' : a.text}`}>{it.label}</span>
-                        <span className={`relative z-10 ms-auto font-mono text-xs ${dim ? 'text-slate-500' : a.text}`} dir="ltr">{it.value}%</span>
-                        <AnimatePresence>
-                            {selected && win && (
-                                <motion.span
-                                    className={`relative z-10 inline-flex shrink-0 items-center gap-1 rounded-full ${a.solid} ${a.solidText} px-1.5 py-0.5 text-xs font-black`}
-                                    initial={reduce ? false : { scale: 0, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 480, damping: 12 }}
-                                >
-                                    <CheckCircle2 size={12} /> {selectedLabel}
-                                </motion.span>
-                            )}
-                        </AnimatePresence>
-                    </motion.div>
-                );
-            })}
-            <AnimatePresence>
-                {selected && (
-                    <motion.div
-                        initial={reduce ? false : { opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: reduce ? 0 : 0.3 }}
-                        className="flex items-center justify-between gap-2 pt-0.5"
-                    >
-                        <span className={`inline-flex items-center gap-1 rounded-md ${a.bgSoft} px-2 py-0.5 font-mono text-xs ${a.text}`} dir="ltr">gap {Math.round(margin)}%</span>
-                        <ConfidenceMeter level={level} />
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    </div>
+                </div>
+            ))}
         </div>
     );
 };
 
-const container: Variants = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } },
-};
-const itemVar: Variants = {
-    hidden: { opacity: 0, y: 14, scale: 0.98, filter: 'blur(5px)' },
-    show: { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+const ProcessCard: React.FC<{ label: string; value: string; accent: Accent; marker: string }> = ({ label, value, accent, marker }) => {
+    const a = ACCENTS[accent];
+    return (
+        <div className="rounded-xl border border-white/10 bg-slate-950/45 p-3">
+            <div className={`mb-1 flex items-center gap-2 text-[11px] font-black uppercase tracking-wider ${a.text}`}>
+                <span className={`inline-flex h-5 w-5 items-center justify-center rounded-full ${a.solid} ${a.solidText}`} dir="ltr">{marker}</span>
+                {label}
+            </div>
+            <p className="text-sm leading-relaxed text-slate-200">{value}</p>
+        </div>
+    );
 };
 
-/* ════════════════════════ ויזואל לכל סוג שלב ═════════════════════════════ */
+const TeachingBlock: React.FC<{ step: EngineTraceStep; accent: Accent }> = ({ step, accent }) => {
+    const { t } = useT();
+    const ep = t.behindAi.chapter1.visuals.enginePanel;
+    const a = ACCENTS[accent];
+    return (
+        <div className="mt-4 space-y-3">
+            <div className="grid gap-2 md:grid-cols-3">
+                <ProcessCard label={ep.inputLabel} value={step.teaching.input} accent={accent} marker="1" />
+                <ProcessCard label={ep.transformationLabel} value={step.teaching.transformation} accent={accent} marker="2" />
+                <ProcessCard label={ep.outputLabel} value={step.teaching.output} accent={accent} marker="3" />
+            </div>
+            <div className="grid gap-2 md:grid-cols-2">
+                <div className="rounded-xl border border-emerald-400/25 bg-emerald-950/20 p-3">
+                    <div className="mb-1 flex items-center gap-2 text-xs font-black text-emerald-300">
+                        <CheckCircle2 size={14} /> {ep.conclusionLabel}
+                    </div>
+                    <p className="text-sm leading-relaxed text-slate-200">{step.teaching.conclusion}</p>
+                </div>
+                <div className={`rounded-xl border ${a.border} ${a.bgSoft} p-3`}>
+                    <div className={`mb-1 text-xs font-black ${a.text}`}>{ep.limitationLabel}</div>
+                    <p className="text-sm leading-relaxed text-slate-300">{step.teaching.limitation}</p>
+                </div>
+            </div>
+        </div>
+    );
+};
 
-interface StepVisualProps {
+const StepVisual: React.FC<{
     step: EngineTraceStep;
     accent: Accent;
-    reduce: boolean;
     highlightToken?: string | null;
     onTokenHover?: (token: string | null) => void;
-}
-
-const StepVisual: React.FC<StepVisualProps> = ({ step, accent, reduce, highlightToken, onTokenHover }) => {
+}> = ({ step, accent, highlightToken, onTokenHover }) => {
+    const { t } = useT();
+    const ep = t.behindAi.chapter1.visuals.enginePanel;
     const a = ACCENTS[accent];
-    const visuals = useT().t.behindAi.chapter1.visuals;
-    const ep = visuals.enginePanel;
+    const reduce = !!useReducedMotion();
+    const highlighted = normalizeToken(highlightToken);
 
     switch (step.kind) {
-        case 'raw':
+        case 'productInput': {
+            const envelope = step.envelope;
             return (
-                <div className="rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2">
-                    <span className={`font-mono text-sm ${a.text}`} dir="auto">{step.value}</span>
-                </div>
-            );
-
-        case 'normalize':
-            return step.changed ? (
-                <div className="space-y-1.5">
-                    <div className="rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2">
-                        <span className={`font-mono text-sm ${a.text}`} dir="auto">{step.normalized || '-'}</span>
+                <div className="space-y-2">
+                    <div className="rounded-xl border border-cyan-400/25 bg-cyan-950/20 p-3">
+                        <div className="text-[11px] font-black uppercase tracking-wider text-cyan-300">{ep.productEnvelope.visibleRequest}</div>
+                        <p className="mt-1 text-sm text-white" dir="auto">{envelope.visibleRequest}</p>
                     </div>
-                    <span className="text-xs text-slate-500">{ep.normalizeTrimmed}</span>
-                </div>
-            ) : (
-                <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-900/10 px-3 py-1.5 text-xs font-bold text-emerald-300">
-                    <CheckCircle2 size={14} /> {ep.inputClean}
+                    <div className="grid gap-2 md:grid-cols-2">
+                        <div className="rounded-xl border border-purple-400/20 bg-purple-950/15 p-3">
+                            <div className="text-[11px] font-black uppercase tracking-wider text-purple-300">{ep.productEnvelope.systemInstruction}</div>
+                            <p className="mt-1 text-xs leading-relaxed text-slate-200" dir="auto">{envelope.systemInstruction}</p>
+                        </div>
+                        <div className="rounded-xl border border-blue-400/20 bg-blue-950/15 p-3">
+                            <div className="text-[11px] font-black uppercase tracking-wider text-blue-300">{ep.productEnvelope.selectedContext}</div>
+                            <p className="mt-1 text-xs leading-relaxed text-slate-200" dir="auto">{envelope.selectedContext}</p>
+                        </div>
+                    </div>
+                    <div className={`rounded-xl border ${a.border} ${a.bgSoft} p-3`}>
+                        <div className={`text-[11px] font-black uppercase tracking-wider ${a.text}`}>{ep.productEnvelope.modelInput}</div>
+                        <pre className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap break-words font-mono text-[11px] leading-relaxed text-slate-200" dir="auto">
+                            {envelope.serialized}
+                        </pre>
+                    </div>
+                    <div className="rounded-xl border border-dashed border-slate-600 bg-slate-900/30 p-3">
+                        <div className="text-[11px] font-black uppercase tracking-wider text-slate-400">{ep.productEnvelope.omitted}</div>
+                        <p className="mt-1 text-xs leading-relaxed text-slate-400" dir="auto">{envelope.omittedContext}</p>
+                    </div>
                 </div>
             );
+        }
 
         case 'tokens':
-            if (!step.tokens.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
-            // חתימת החיתוך של מפת המבוא: כל טוקן מתנפץ מהמשפט ונוחת מלמעלה עם
-            // overshoot, סיבוב קל, spring והבזק-נחיתה. אותה שפה ויזואלית בדיוק,
-            // מותאמת לצפיפות המנוע. reduced-motion => הופעה מיידית בלי תנועה/הבזק.
             return (
-                <div className="flex flex-wrap gap-2" dir="auto">
-                    {step.tokens.map((token, i) => {
-                        const hl = highlightToken === token;
-                        const dropDelay = reduce ? 0 : 0.1 + i * 0.09;
-                        return (
-                            <span key={`${token}-${i}`} className="relative inline-flex">
-                                {/* הבזק-נחיתה מאחורי הטוקן ברגע שהוא מתייצב */}
-                                {!reduce && (
-                                    <motion.span
-                                        aria-hidden
-                                        className={`pointer-events-none absolute inset-0 rounded-lg ${a.solid}`}
-                                        initial={{ scale: 0.6, opacity: 0 }}
-                                        animate={{ scale: [0.6, 1.5], opacity: [0.5, 0] }}
-                                        transition={{ duration: 0.45, delay: dropDelay + 0.05, ease: 'easeOut' }}
-                                    />
-                                )}
-                                <motion.span
-                                    initial={reduce ? false : { opacity: 0, y: -14, scale: 0.6, rotate: i % 2 === 0 ? -8 : 8 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
-                                    transition={reduce ? { duration: 0 } : { delay: dropDelay, type: 'spring', stiffness: 360, damping: 15 }}
-                                    onMouseEnter={() => onTokenHover?.(token)}
-                                    onMouseLeave={() => onTokenHover?.(null)}
-                                    onClick={() => onTokenHover?.(hl ? null : token)}
-                                    className={`relative cursor-pointer rounded-lg border px-2.5 py-1 text-xs font-mono transition-colors
-                                        ${hl ? `${a.solid} ${a.solidText} ${a.glow}` : `bg-slate-900/60 ${a.border} ${a.text}`}`}
-                                >
-                                    {token}
-                                </motion.span>
-                            </span>
-                        );
-                    })}
+                <div className="flex flex-wrap gap-2" aria-label={step.boundaries.map((token) => token.display).join(' | ')}>
+                    {step.boundaries.map((token) => (
+                        <TokenButton
+                            key={`${token.index}-${token.surface}`}
+                            token={token.surface}
+                            display={token.display}
+                            active={highlighted === normalizeToken(token.surface)}
+                            accent={accent}
+                            onTokenHover={onTokenHover}
+                        />
+                    ))}
                 </div>
             );
 
-        case 'count':
+        case 'tokenIds':
             return (
-                <div className="flex items-center gap-3">
-                    <div className={`flex items-baseline gap-1 font-black ${a.text}`}>
-                        <Hash size={14} className="opacity-70" />
-                        <AnimatedNumber value={step.value} className={`text-4xl font-black tabular-nums ${a.barGradient} bg-clip-text text-transparent`} />
-                        <span className="text-xs font-medium text-slate-400">{step.unit}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                        {Array.from({ length: Math.min(step.value, 12) }).map((_, i) => (
-                            <motion.span
-                                key={i}
-                                initial={reduce ? false : { scale: 0, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                transition={{ delay: reduce ? 0 : i * 0.04, type: 'spring', stiffness: 300, damping: 20 }}
-                                className={`h-2 w-2 rounded-sm ${a.solid}`}
-                            />
+                <div className="space-y-3">
+                    <ScrollTable label={step.title}>
+                        <thead className="sticky top-0 bg-slate-950 text-slate-400">
+                            <tr><th className="p-2">{ep.matrix.token}</th><th className="p-2" dir="ltr">{ep.matrix.id}</th></tr>
+                        </thead>
+                        <tbody>
+                            {step.ids.map((token) => (
+                                <tr key={`${token.index}-${token.id}`} className="border-t border-white/5">
+                                    <td className="p-2 font-mono text-slate-100" dir="auto">{token.display}</td>
+                                    <td className="p-2 font-mono text-cyan-300" dir="ltr">{token.id}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </ScrollTable>
+                    <div className="flex flex-wrap gap-1.5 rounded-xl border border-white/10 bg-slate-950/40 p-3" dir="ltr">
+                        {step.idSequence.map((id, index) => (
+                            <React.Fragment key={`${id}-${index}`}>
+                                <code className="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-cyan-200">{id}</code>
+                                {index < step.idSequence.length - 1 && <span className="text-slate-600">→</span>}
+                            </React.Fragment>
                         ))}
                     </div>
                 </div>
             );
 
-        case 'keywords':
+        case 'embeddingScene':
             return (
-                <div className="space-y-2">
-                    {step.groups.map((g) => (
-                        <div key={g.label} className="flex flex-wrap items-center gap-1.5">
-                            <span className="text-xs font-bold text-slate-400">{g.label}</span>
-                            <span className={`rounded-md px-1.5 py-0.5 font-mono text-[11px] font-bold ${g.matched.length ? `${a.bgSoft} ${a.text}` : 'bg-slate-800/60 text-slate-500'}`} dir="ltr">
-                                {g.matched.length}/{g.total}
-                            </span>
-                            <div className="flex flex-wrap gap-1">
-                                {g.matched.length ? (
-                                    g.matched.map((w, i) => {
-                                        const hl = highlightToken != null && w.includes(highlightToken);
-                                        return (
-                                            <motion.span
-                                                key={`${w}-${i}`}
-                                                initial={reduce ? false : { scale: 0.7, opacity: 0 }}
-                                                animate={{ scale: 1, opacity: 1 }}
-                                                transition={{ delay: reduce ? 0 : i * 0.05, type: 'spring', stiffness: 320, damping: 18 }}
-                                                className={`rounded-md border px-2 py-0.5 font-mono text-xs transition-colors ${hl ? `${a.solid} ${a.solidText} ${a.glow}` : `${a.border} ${a.bgSoft} ${a.text}`}`}
-                                            >
-                                                {w}
-                                            </motion.span>
-                                        );
-                                    })
-                                ) : (
-                                    <span className="text-xs text-slate-600">{ep.noMatch}</span>
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <ScrollTable label={step.title}>
+                    <thead className="sticky top-0 bg-slate-950 text-slate-400">
+                        <tr>
+                            <th className="p-2">{ep.matrix.token}</th><th className="p-2">{ep.matrix.id}</th><th className="p-2">{ep.matrix.embedding}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {step.embeddings.map((item) => (
+                            <tr key={`${item.tokenIndex}-${item.tokenId}`} className="border-t border-white/5">
+                                <td className="p-2 font-mono text-slate-100" dir="auto">{tokenText(item.token)}</td>
+                                <td className="p-2 font-mono text-slate-400" dir="ltr">{item.tokenId} → E[{item.embeddingRow}]</td>
+                                <td className="p-2"><VectorCode vector={item.vector} /></td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </ScrollTable>
             );
 
-        case 'flag': {
-            const linked = step.on && step.triggerToken != null && highlightToken === step.triggerToken;
+        case 'positionScene':
             return (
-                <div className="flex flex-wrap items-center gap-2">
-                    <motion.span
-                        key={step.on ? 'on' : 'off'}
-                        initial={reduce ? false : { scale: 0.85, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-                        className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-bold transition-shadow
-                            ${step.on ? `${a.border} ${a.bgSoft} ${a.text}` : 'border-slate-700/60 bg-slate-800/40 text-slate-500'}
-                            ${linked ? `ring-2 ${a.ringSoft} ${a.glow}` : ''}`}
-                    >
-                        {step.on ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
-                        {step.on ? step.onLabel : step.offLabel}
-                    </motion.span>
-                    {step.detail && <span className="text-xs text-slate-500">{step.detail}</span>}
-                </div>
-            );
-        }
-
-        case 'candidates': {
-            const maxHits = step.items.reduce((m, it) => Math.max(m, it.hits), 0);
-            return (
-                <div className="flex flex-wrap gap-1.5">
-                    {step.items.map((it) => {
-                        const lead = it.hits > 0 && it.hits === maxHits;
-                        return (
-                            <span
-                                key={it.label}
-                                className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 text-xs ${lead ? `${a.border} ${a.bgSoft} ${a.text} font-bold` : 'border-white/10 bg-slate-900/50 text-slate-400'}`}
-                            >
-                                {it.label}
-                                <span className={`rounded px-1 font-mono text-[11px] ${lead ? a.solid + ' ' + a.solidText : 'bg-slate-800 text-slate-500'}`} dir="ltr">{it.hits}</span>
-                            </span>
-                        );
-                    })}
-                </div>
-            );
-        }
-
-        case 'probabilities':
-            return <ProbabilityBars items={step.items} accent={accent} />;
-
-        case 'winner':
-            return (
-                <div className={`flex items-center justify-between rounded-lg border ${a.border} ${a.bgSoft} px-3 py-2`}>
-                    <span className={`inline-flex items-center gap-2 font-bold ${a.text}`}>
-                        <Trophy size={15} /> {step.label}
-                    </span>
-                    <span className="font-mono text-2xl font-black">
-                        <AnimatedNumber value={step.value} className={`${a.barGradient} bg-clip-text text-transparent`} />
-                        <span className={a.text}>%</span>
-                    </span>
-                </div>
+                <ScrollTable label={step.title}>
+                    <thead className="sticky top-0 bg-slate-950 text-slate-400">
+                        <tr>
+                            <th className="p-2">{ep.matrix.token}</th><th className="p-2">{ep.matrix.embedding}</th><th className="p-2">{ep.matrix.position}</th><th className="p-2">{ep.matrix.positionAware}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {step.representations.map((item) => (
+                            <tr key={`${item.position}-${item.tokenId}`} className="border-t border-white/5">
+                                <td className="p-2 font-mono text-slate-100" dir="auto">{tokenText(item.token)}</td>
+                                <td className="p-2"><VectorCode vector={item.embeddingVector} /></td>
+                                <td className="p-2"><span className="me-2 font-mono text-slate-400" dir="ltr">p{item.position}</span><VectorCode vector={item.positionVector} /></td>
+                                <td className="p-2"><VectorCode vector={item.vector} /></td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </ScrollTable>
             );
 
-        case 'gap':
+        case 'contextScene':
             return (
-                <div dir="ltr" className="space-y-1.5">
-                    <div className="relative h-7 w-full overflow-hidden rounded-lg border border-slate-700/50 bg-slate-800/50">
-                        <motion.div
-                            initial={reduce ? false : { width: 0 }}
-                            animate={{ width: `${Math.max(0, Math.min(100, step.top))}%` }}
-                            transition={{ duration: 0.6, ease: 'easeOut' }}
-                            className={`absolute inset-y-0 left-0 ${a.barGradient} opacity-90`}
-                        />
-                        <div
-                            className="absolute inset-y-0 z-10 border-l-2 border-dashed border-white/60"
-                            style={{ left: `${Math.max(0, Math.min(100, step.second))}%` }}
-                        />
-                        <span className="absolute inset-y-0 left-2 flex items-center font-mono text-xs font-black text-slate-950/80">{step.top}%</span>
+                <div className="space-y-3">
+                    <div className="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+                        <div className={`mb-2 text-[11px] font-black uppercase tracking-wider ${a.text}`}>{ep.productEnvelope.modelInput}</div>
+                        <pre className="max-h-32 overflow-auto whitespace-pre-wrap break-words font-mono text-[11px] leading-relaxed text-slate-300" dir="auto">{step.modelInput}</pre>
                     </div>
-                    <div className="flex items-center justify-between font-mono text-[11px] text-slate-500">
-                        <span>second {step.second}%</span>
-                        <span className={`font-bold ${a.text}`}>gap = {step.margin}%</span>
-                    </div>
-                </div>
-            );
-
-        case 'confidence':
-            return <ConfidenceMeter level={step.level} />;
-
-        case 'decisionScene':
-            return <DecisionMoment items={step.items} margin={step.margin} level={step.level} accent={accent} selectedLabel={visuals.journey.selectedLabel} />;
-
-        case 'decision':
-            return <DecisionCard decision={step.decision} />;
-
-        case 'reply':
-            return (
-                <div className="flex items-start gap-2 rounded-2xl border border-white/10 bg-slate-800/70 px-3 py-2.5">
-                    <Bot size={14} className="mt-0.5 shrink-0 text-slate-400" />
-                    <span className="text-sm leading-relaxed text-slate-100">{step.text}</span>
-                </div>
-            );
-
-        case 'station':
-            // שלד שלב 1: עוגן טוקנים של המשפט הנבחר, לשמירת רציפות. סצנה קולנועית
-            // ייעודית תולבש כאן בשלבים הבאים (חלון-הקשר, שכבות, וכו').
-            if (!step.tokens.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
-            return (
-                <div className="flex flex-wrap gap-1.5" dir="auto">
-                    {step.tokens.map((token, i) => (
-                        <span
-                            key={`${token}-${i}`}
-                            className={`rounded-md border px-2 py-0.5 text-xs font-mono ${a.border} ${a.bgSoft} ${a.text}`}
-                        >
-                            {token}
-                        </span>
-                    ))}
-                </div>
-            );
-
-        case 'embeddingScene': {
-            // טוקני המשפט עפים מלמטה (טקסט) אל מרחב-משמעות דו-ממדי. היישות במרחב היא
-            // נקודה + וקטור מספרי (נגזר מאותו hash יציב שקובע את המיקום, המחשה); המילה
-            // מוצמדת כתווית-עזר מקווקוות ללומד. הווקטור מתגלה רגע אחרי הנחיתה - זהו
-            // רגע הלמידה: מאחורי כל תווית יש מספרים, לא המילה עצמה יושבת במרחב.
-            const toks = step.tokens;
-            if (!toks.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
-            const posOf = (tok: string, i: number) => {
-                let h = 0;
-                for (let k = 0; k < tok.length; k++) h = (h * 31 + tok.charCodeAt(k)) % 997;
-                return { x: 18 + (h % 64), y: 20 + ((h * 7 + i * 53) % 56) };
-            };
-            return (
-                <div className="relative h-40 w-full overflow-hidden rounded-xl border border-white/10 bg-slate-950/50" dir="ltr">
-                    <div className="pointer-events-none absolute inset-0 opacity-[0.07]" aria-hidden style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
-                    {toks.map((tok, i) => {
-                        const p = posOf(tok, i);
-                        const landAt = 0.15 + i * 0.12;
-                        return (
-                            <motion.div
-                                key={`${tok}-${i}`}
-                                className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5"
-                                initial={reduce ? false : { left: '50%', top: '112%', opacity: 0, scale: 0.6 }}
-                                animate={{ left: `${p.x}%`, top: `${p.y}%`, opacity: 1, scale: 1 }}
-                                transition={{ duration: reduce ? 0 : 0.7, delay: reduce ? 0 : landAt, type: 'spring', stiffness: 120, damping: 16 }}
-                            >
-                                <span aria-hidden className={`h-2 w-2 rounded-full ${a.dot} shadow-[0_0_10px_2px_rgba(255,255,255,0.18)]`} />
-                                <span
-                                    dir="auto"
-                                    className="rounded-md border border-dashed border-white/25 bg-slate-900/70 px-1.5 py-0.5 text-xs text-slate-300"
-                                >
-                                    {tok}
-                                </span>
-                                <motion.span
-                                    aria-hidden
-                                    className={`font-mono text-xs ${a.text}`}
-                                    initial={reduce ? false : { opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: reduce ? 0 : 0.3, delay: reduce ? 0 : landAt + 0.6 }}
-                                >
-                                    [{(p.x / 100).toFixed(2)}, {(p.y / 100).toFixed(2)}]
-                                </motion.span>
-                            </motion.div>
-                        );
-                    })}
-                </div>
-            );
-        }
-
-        case 'attentionScene': {
-            // עמודת-שקילה מעל כל טוקן: כמה הטוקן המודגש (pivot, למשל שלילה) שוקל
-            // אותו. השכנים גבוהים, הרחוקים נמוכים. זו שקילת-השפעה, לא ספירת מילים.
-            const toks = step.tokens;
-            if (!toks.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
-            const f = Math.min(Math.max(0, step.pivot), toks.length - 1);
-            const weightAt = (i: number) => (i === f ? 1 : Math.max(0.14, 1 - Math.abs(i - f) * 0.34));
-            return (
-                <div className="flex flex-wrap items-end justify-center gap-1.5" dir="auto">
-                    {toks.map((tok, i) => {
-                        const wi = weightAt(i);
-                        const focus = i === f;
-                        return (
-                            <div key={`${tok}-${i}`} className="flex flex-col items-center gap-1">
-                                <motion.span
-                                    aria-hidden
-                                    className={`w-6 rounded-t ${a.barGradient}`}
-                                    initial={reduce ? false : { height: 0, opacity: 0 }}
-                                    animate={{ height: 6 + wi * 34, opacity: focus ? 1 : 0.3 + wi * 0.5 }}
-                                    transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.25 + i * 0.06, ease: 'easeOut' }}
-                                />
-                                <span className={`rounded-md border px-2 py-0.5 text-xs font-mono transition-colors ${focus ? `${a.solid} ${a.solidText} ${a.glow}` : `bg-slate-900/60 ${a.border} ${a.text}`}`}>
-                                    {tok}
-                                </span>
-                            </div>
-                        );
-                    })}
-                </div>
-            );
-        }
-
-        case 'positionScene': {
-            // הסדר הוא חלק מהמשמעות: כל טוקן מקבל תג-מיקום ומופיע ברצף (#1, #2...).
-            const toks = step.tokens;
-            if (!toks.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
-            return (
-                <div className="flex flex-wrap items-start justify-center gap-2" dir="auto">
-                    {toks.map((tok, i) => (
-                        <motion.div
-                            key={`${tok}-${i}`}
-                            initial={reduce ? false : { opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={reduce ? { duration: 0 } : { delay: 0.1 + i * 0.13, type: 'spring', stiffness: 300, damping: 18 }}
-                            className="flex flex-col items-center gap-1"
-                        >
-                            <span className={`rounded-md border px-2.5 py-1 text-xs font-mono ${a.border} ${a.bgSoft} ${a.text}`}>{tok}</span>
-                            <span className={`inline-flex h-5 w-5 items-center justify-center rounded-full ${a.solid} ${a.solidText} font-mono text-xs font-black`} dir="ltr">{i + 1}</span>
-                        </motion.div>
-                    ))}
-                </div>
-            );
-        }
-
-        case 'contextScene': {
-            // מה שבחלון = מה שהמודל רואה עכשיו; מעבר לחלון עמום (לא נראה).
-            const toks = step.tokens;
-            if (!toks.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
-            return (
-                <div className="space-y-1.5" dir="auto">
-                    <div className="flex items-center gap-1.5 opacity-30" aria-hidden>
-                        <span className="h-1.5 w-1.5 rounded-full bg-slate-600" />
-                        <span className="h-2 flex-1 rounded bg-slate-700/40" />
-                    </div>
-                    <motion.div
-                        initial={reduce ? false : { opacity: 0, scale: 0.97 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: reduce ? 0 : 0.4 }}
-                        className={`relative overflow-hidden rounded-xl border-2 ${a.border} ${a.bgSoft} p-2.5 ${a.glow}`}
-                    >
+                    <div className="rounded-xl border border-emerald-400/20 bg-emerald-950/15 p-3">
+                        <div className="mb-2 text-xs font-black text-emerald-300">{ep.productEnvelope.insideWindow}</div>
                         <div className="flex flex-wrap gap-1.5">
-                            {toks.map((tok, i) => (
-                                <motion.span
-                                    key={`${tok}-${i}`}
-                                    initial={reduce ? false : { opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: reduce ? 0 : 0.3, delay: reduce ? 0 : 0.2 + i * 0.08 }}
-                                    className={`rounded-md border bg-slate-950/50 px-2 py-0.5 text-xs font-mono ${a.border} ${a.text}`}
-                                >
-                                    {tok}
-                                </motion.span>
+                            {step.window.included.map((item) => (
+                                <TokenButton key={`${item.position}-${item.tokenId}`} token={item.token} accent={accent} />
                             ))}
                         </div>
-                        {!reduce && (
-                            <motion.span
-                                aria-hidden
-                                className={`pointer-events-none absolute inset-y-0 w-10 ${a.bgSoft}`}
-                                style={{ filter: 'blur(8px)' }}
-                                initial={{ left: '-15%', opacity: 0 }}
-                                animate={{ left: '115%', opacity: [0, 0.7, 0] }}
-                                transition={{ duration: 1.1, delay: 0.5, ease: 'easeInOut' }}
-                            />
-                        )}
-                    </motion.div>
+                    </div>
+                    <div className="rounded-xl border border-dashed border-slate-600 bg-slate-900/30 p-3">
+                        <div className="mb-1 text-xs font-black text-slate-400">{ep.productEnvelope.omitted}</div>
+                        {step.window.omitted.map((item, index) => <p key={index} className="text-xs leading-relaxed text-slate-400" dir="auto">{item}</p>)}
+                    </div>
+                </div>
+            );
+
+        case 'attentionScene': {
+            const snapshot = step.snapshot;
+            const textAlternative = snapshot.weights
+                .map((weight) => `${tokenText(weight.sourceToken)} ${(weight.weight * 100).toFixed(1)}%`)
+                .join(', ');
+            return (
+                <div className="space-y-3">
+                    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/40 p-3 font-mono text-xs" dir="ltr">
+                        <span className={`rounded-lg ${a.bgSoft} px-2 py-1 ${a.text}`}>L{snapshot.layer}</span>
+                        <span className={`rounded-lg ${a.bgSoft} px-2 py-1 ${a.text}`}>H{snapshot.head}</span>
+                        <span className="text-slate-400">p{snapshot.destinationIndex}</span>
+                        <span className="text-white" dir="auto">{tokenText(snapshot.destinationToken)}</span>
+                    </div>
+                    <div className="max-h-72 space-y-2 overflow-auto rounded-xl border border-white/10 p-3" aria-label={textAlternative} tabIndex={0}>
+                        {snapshot.weights.map((weight) => (
+                            <div key={`${weight.sourceIndex}-${weight.sourceToken}`} className="grid grid-cols-[minmax(5rem,1fr)_3fr_3.5rem] items-center gap-2 text-xs">
+                                <span className="truncate font-mono text-slate-200" dir="auto">{tokenText(weight.sourceToken)}</span>
+                                <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+                                    <motion.div
+                                        className={`h-full rounded-full ${a.barGradient}`}
+                                        initial={reduce ? false : { width: 0 }}
+                                        animate={{ width: `${weight.weight * 100}%` }}
+                                        transition={{ duration: reduce ? 0 : 0.45 }}
+                                    />
+                                </div>
+                                <span className="text-end font-mono text-slate-300" dir="ltr">{(weight.weight * 100).toFixed(1)}%</span>
+                            </div>
+                        ))}
+                    </div>
+                    {snapshot.output[snapshot.destinationIndex] && (
+                        <div className={`rounded-xl border ${a.border} ${a.bgSoft} p-3`}>
+                            <span className={`me-2 text-xs font-black ${a.text}`}>{ep.matrix.attention}</span>
+                            <VectorCode vector={snapshot.output[snapshot.destinationIndex].vector} />
+                        </div>
+                    )}
                 </div>
             );
         }
 
-        case 'ffScene': {
-            // feed-forward: הטוקנים עוברים בנק מומחים (רק כמה נדלקים) ויוצאים מועשרים.
-            const toks = step.tokens;
-            if (!toks.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
-            const active = [1, 4];
+        case 'ffScene':
             return (
-                <div className="space-y-2" dir="auto">
-                    <div className="flex items-center justify-center gap-1.5">
-                        {Array.from({ length: 6 }).map((_, i) => {
-                            const on = active.includes(i);
+                <ScrollTable label={step.title}>
+                    <thead className="sticky top-0 bg-slate-950 text-slate-400"><tr><th className="p-2">{ep.matrix.position}</th><th className="p-2">{ep.inputLabel}</th><th className="p-2">{ep.matrix.feedForward}</th></tr></thead>
+                    <tbody>
+                        {step.snapshot.output.map((output, index) => (
+                            <tr key={`${output.tokenIndex}-${output.tokenId}`} className="border-t border-white/5">
+                                <td className="p-2 font-mono text-slate-300" dir="ltr">p{output.tokenIndex}</td>
+                                <td className="p-2"><VectorCode vector={step.snapshot.input[index]?.vector ?? []} /></td>
+                                <td className="p-2"><VectorCode vector={output.vector} /></td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </ScrollTable>
+            );
+
+        case 'layersScene':
+            return (
+                <div className="grid gap-2 sm:grid-cols-2">
+                    {step.checkpoints.map((checkpoint) => (
+                        <div key={checkpoint.label} className="rounded-xl border border-white/10 bg-slate-950/45 p-3">
+                            <div className={`mb-2 flex items-center justify-between gap-2 text-xs font-black ${a.text}`}>
+                                <span>{ep.matrix.checkpoint}</span><span className="font-mono" dir="ltr">{checkpoint.label}</span>
+                            </div>
+                            <div className="space-y-1 overflow-x-auto">
+                                {checkpoint.representations.slice(-4).map((item) => (
+                                    <div key={`${checkpoint.label}-${item.tokenIndex}`} className="flex min-w-max items-center gap-2">
+                                        <span className="w-8 font-mono text-[10px] text-slate-500" dir="ltr">p{item.tokenIndex}</span>
+                                        <VectorCode vector={item.vector} />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+
+        case 'stateScene':
+            return (() => {
+                const prediction = step.representations.find((item) => item.tokenIndex === step.predictionPosition);
+                return (
+                <div className="space-y-2">
+                    {step.representations.slice(-6).map((item) => {
+                        const selected = item.tokenIndex === step.predictionPosition;
+                        return (
+                            <div key={`${item.tokenIndex}-${item.tokenId}`} className={`flex min-w-0 items-center gap-2 rounded-xl border p-2.5 ${selected ? `${a.border} ${a.bgSoft} ring-1 ${a.ringSoft}` : 'border-white/10 bg-slate-950/40'}`}>
+                                <span className="w-10 shrink-0 font-mono text-xs text-slate-400" dir="ltr">p{item.tokenIndex}</span>
+                                <span className="min-w-0 flex-1 truncate font-mono text-xs text-slate-200" dir="auto">{tokenText(item.token)}</span>
+                                <span className="overflow-x-auto"><VectorCode vector={item.vector} /></span>
+                                {selected && <span className={`shrink-0 rounded-full ${a.solid} ${a.solidText} px-2 py-0.5 text-[10px] font-black`}>{ep.matrix.predictionPosition}</span>}
+                            </div>
+                        );
+                    })}
+                    {prediction && (
+                        <div className={`flex flex-wrap items-center gap-2 rounded-xl border ${a.border} ${a.bgSoft} p-3`}>
+                            <VectorCode vector={prediction.vector} />
+                            <span className={`font-bold ${a.text}`} aria-hidden>→</span>
+                            <span className="text-xs leading-relaxed text-slate-200">{step.teaching.transformation}</span>
+                        </div>
+                    )}
+                </div>
+                );
+            })();
+
+        case 'logits':
+            return (
+                <ScrollTable label={step.title}>
+                    <thead className="sticky top-0 bg-slate-950 text-slate-400"><tr><th className="p-2">{ep.scores.candidate}</th><th className="p-2">{ep.matrix.id}</th><th className="p-2">{ep.scores.logit}</th></tr></thead>
+                    <tbody>
+                        {step.candidates.map((candidate) => (
+                            <tr key={`${candidate.tokenId}-${candidate.token}`} className="border-t border-white/5">
+                                <td className="p-2 font-mono text-slate-100" dir="auto">{tokenText(candidate.token)}</td>
+                                <td className="p-2 font-mono text-slate-400" dir="ltr">{candidate.tokenId}</td>
+                                <td className={`p-2 font-mono font-bold ${candidate.logit >= 0 ? 'text-emerald-300' : 'text-rose-300'}`} dir="ltr">{formatNumber(candidate.logit)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </ScrollTable>
+            );
+
+        case 'probabilities':
+            return (
+                <div className="space-y-3">
+                    <ProbabilityRows candidates={step.candidates} accent={accent} reduce={reduce} />
+                    <div className="flex items-center justify-between rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2 text-xs">
+                        <span className="font-bold text-slate-300">{ep.scores.total}</span>
+                        <span className={`font-mono font-black ${a.text}`} dir="ltr">{step.total.toFixed(4)} ≈ 1</span>
+                    </div>
+                </div>
+            );
+
+        case 'decisionScene':
+            return (
+                <div className="space-y-3">
+                    <div className="grid gap-2 sm:grid-cols-2">
+                        {step.decoding.availableStrategies.map((strategy) => {
+                            const active = strategy === step.decoding.activeStrategy;
                             return (
-                                <motion.span
-                                    key={i}
-                                    aria-hidden
-                                    className={`h-6 w-6 rounded-md border ${on ? `${a.border} ${a.bgSoft} ${a.glow}` : 'border-white/10 bg-slate-950/50'}`}
-                                    initial={reduce ? false : { opacity: on ? 0.4 : 0.3, scale: on ? 0.8 : 1 }}
-                                    animate={on ? { opacity: 1, scale: [0.8, 1.1, 1] } : { opacity: 0.3, scale: 1 }}
-                                    transition={reduce ? { duration: 0 } : { duration: 0.4, delay: 0.2 + active.indexOf(i) * 0.15 }}
-                                />
+                                <div key={strategy} className={`rounded-xl border p-3 ${active ? `${a.border} ${a.bgSoft} ring-1 ${a.ringSoft}` : 'border-white/10 bg-slate-950/35'}`}>
+                                    <div className="flex items-center gap-2 text-sm font-black text-slate-100">
+                                        {active ? <CheckCircle2 size={15} className={a.text} /> : <Circle size={15} className="text-slate-600" />}
+                                        {strategy === 'greedy' ? ep.scores.greedy : ep.scores.sampling}
+                                    </div>
+                                </div>
                             );
                         })}
                     </div>
-                    <div className="flex flex-wrap justify-center gap-1.5">
-                        {toks.map((tok, i) => (
-                            <motion.span
-                                key={`${tok}-${i}`}
-                                initial={reduce ? false : { opacity: 0, y: 6 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={reduce ? { duration: 0 } : { delay: 0.6 + i * 0.08, type: 'spring', stiffness: 300, damping: 18 }}
-                                className={`rounded-md border px-2 py-0.5 text-xs font-mono ${a.border} ${a.bgSoft} ${a.text} ${a.glow}`}
-                            >
-                                {tok}
-                            </motion.span>
-                        ))}
+                    <ProbabilityRows candidates={step.candidates} accent={accent} reduce={reduce} />
+                    <div className={`rounded-xl border ${a.border} ${a.bgSoft} p-3`}>
+                        <div className={`text-xs font-black ${a.text}`}>{ep.scores.selectedToken}</div>
+                        <div className="mt-1 flex items-center gap-2"><Check size={16} className={a.text} /><code className="font-mono text-base font-black text-white" dir="auto">{tokenText(step.selectedToken)}</code></div>
                     </div>
                 </div>
             );
-        }
 
-        case 'layersScene': {
-            // מגדל עומק: אותו בלוק חוזר בשכבות רבות, וההבנה של המשפט מתחדדת.
-            const toks = step.tokens;
-            if (!toks.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
-            const N = 8;
+        case 'generationScene':
             return (
-                <div className="flex items-center gap-3" dir="auto">
-                    <div className="flex w-12 shrink-0 flex-col items-center">
-                        <span aria-hidden className="mb-1 text-sm font-black leading-none text-slate-600">⋮</span>
-                        <div className="flex flex-col-reverse gap-1">
-                            {Array.from({ length: N }).map((_, i) => (
-                                <motion.span
-                                    key={i}
-                                    aria-hidden
-                                    className={`h-2 w-8 rounded-sm ${a.solid}`}
-                                    initial={reduce ? false : { opacity: 0.2, scaleX: 0.6 }}
-                                    animate={{ opacity: 0.35 + (i / N) * 0.65, scaleX: 1 }}
-                                    transition={{ duration: reduce ? 0 : 0.3, delay: reduce ? 0 : i * 0.08 }}
-                                />
-                            ))}
+                <div className="space-y-3">
+                    {step.steps.map((generationStep) => (
+                        <div key={generationStep.step} className="rounded-xl border border-white/10 bg-slate-950/45 p-3">
+                            <div className={`mb-2 flex items-center justify-between gap-2 text-xs font-black ${a.text}`}>
+                                <span>{ep.generation.step}</span><span dir="ltr">{generationStep.step}/2</span>
+                            </div>
+                            <div className="grid gap-2 sm:grid-cols-2">
+                                <div className="rounded-lg bg-slate-900/70 p-2">
+                                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{ep.generation.appended}</div>
+                                    <code className="mt-1 block font-mono text-sm text-white" dir="auto">{tokenText(generationStep.appendedFragment)}</code>
+                                </div>
+                                <div className="rounded-lg bg-slate-900/70 p-2">
+                                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{ep.generation.updatedContext}</div>
+                                    <code className="mt-1 block truncate font-mono text-[11px] text-slate-300" dir="auto">{generationStep.contextAfter.slice(-120)}</code>
+                                </div>
+                            </div>
+                            <div className="mt-2">
+                                <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">{ep.generation.nextDistribution}</div>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {generationStep.probabilities.map((candidate) => (
+                                        <span key={`${generationStep.step}-${candidate.tokenId}`} className="rounded-md border border-white/10 bg-slate-900 px-2 py-1 font-mono text-[11px] text-slate-300" dir="auto">
+                                            {tokenText(candidate.token)} {(candidate.probability * 100).toFixed(1)}%
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="mt-2 text-[11px] text-slate-400">{ep.generation.stop}: {generationStep.stopReached ? '✓' : '…'}</div>
                         </div>
-                    </div>
-                    <div className="flex flex-1 flex-wrap gap-1.5">
-                        {toks.map((tok, i) => (
-                            <motion.span
-                                key={`${tok}-${i}`}
-                                initial={reduce ? false : { opacity: 0.4 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: reduce ? 0 : 0.6, delay: reduce ? 0 : 0.3 + i * 0.05 }}
-                                className={`rounded-md border px-2 py-0.5 text-xs font-mono ${a.border} ${a.bgSoft} ${a.text}`}
-                            >
-                                {tok}
-                            </motion.span>
-                        ))}
+                    ))}
+                    <div className={`rounded-xl border ${a.border} ${a.bgSoft} p-3`}>
+                        <div className={`mb-1 text-xs font-black ${a.text}`}>{ep.outputLabel}</div>
+                        <p className="text-sm font-semibold leading-relaxed text-white" dir="auto">{step.finalResponse}</p>
                     </div>
                 </div>
             );
-        }
 
-        case 'stateScene': {
-            // המשפט נדחס לייצוג פנימי אחד: הטוקנים מתכנסים אל ליבה זוהרת אחת.
-            const toks = step.tokens.slice(0, 8);
-            if (!toks.length) return <span className="text-xs text-slate-500">{ep.noTokens}</span>;
+        case 'raw':
+            return <div className={`rounded-xl border ${a.border} ${a.bgSoft} p-4 text-sm font-semibold text-white`} dir="auto">{step.value}</div>;
+
+        case 'flag':
             return (
-                <div className="relative mx-auto h-32 w-full max-w-[16rem]" dir="auto">
-                    {toks.map((tok, i) => {
-                        // מעגל למספר שלם: float ארוך יוצר אי-התאמת hydration בין SSR ללקוח.
-                        const ang = (i / toks.length) * Math.PI * 2;
-                        const x = Math.round(50 + Math.cos(ang) * 36);
-                        const y = Math.round(50 + Math.sin(ang) * 36);
-                        return (
-                            <motion.span
-                                key={`${tok}-${i}`}
-                                className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-md border bg-slate-950/60 px-1.5 py-0.5 text-xs font-mono ${a.border} ${a.text}`}
-                                initial={reduce ? { left: '50%', top: '50%', opacity: 0 } : { left: `${x}%`, top: `${y}%`, opacity: 1 }}
-                                animate={reduce ? { opacity: 0 } : { left: '50%', top: '50%', opacity: [1, 1, 0], scale: 0.4 }}
-                                transition={{ duration: reduce ? 0 : 0.85, delay: reduce ? 0 : 0.5 + i * 0.06, ease: 'easeIn' }}
-                            >
-                                {tok}
-                            </motion.span>
-                        );
-                    })}
-                    <motion.div
-                        aria-hidden
-                        className={`absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full ${a.barGradient} ${a.glow}`}
-                        initial={reduce ? false : { scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={reduce ? { duration: 0 } : { delay: 1.2, type: 'spring', stiffness: 220, damping: 16 }}
-                    />
+                <div className={`rounded-xl border p-4 ${step.on ? 'border-amber-400/30 bg-amber-950/20 text-amber-200' : 'border-emerald-400/30 bg-emerald-950/20 text-emerald-200'}`}>
+                    <div className="flex items-center gap-2">
+                        {step.on ? <Circle size={16} /> : <CheckCircle2 size={16} />}
+                        <span className="text-sm font-bold">{step.on ? step.onLabel : step.offLabel}</span>
+                    </div>
+                    {step.detail && <p className="mt-1 text-xs leading-relaxed text-slate-300" dir="auto">{step.detail}</p>}
                 </div>
             );
-        }
 
         case 'agentStub':
-            // שלד Agent (Step 1): צ'יפים (כלים/כלי-נבחר), תג MCP וסמן-לולאה. יולבש
-            // בסצנה קולנועית ייעודית בשלב 2 (בחירת-כלי, קריאת-MCP, לולאה).
             return (
-                <div className="flex flex-wrap items-center gap-1.5" dir="auto">
-                    {step.loop && (
-                        <span aria-hidden className={`inline-flex h-6 w-6 items-center justify-center rounded-md ${a.bgSoft} text-base font-black ${a.text}`}>↻</span>
-                    )}
-                    {step.chips.map((c, i) => (
-                        <span key={`${c}-${i}`} className={`rounded-md border px-2 py-0.5 text-xs font-mono ${a.border} ${a.bgSoft} ${a.text}`}>{c}</span>
-                    ))}
-                    {step.mcp && (
-                        <span className={`inline-flex items-center rounded-md ${a.solid} ${a.solidText} px-2 py-0.5 font-mono text-xs font-black`}>MCP</span>
-                    )}
+                <div className="space-y-2">
+                    <div className="flex flex-wrap gap-2">{step.chips.map((chip) => <span key={chip} className={`rounded-lg border ${a.border} ${a.bgSoft} px-2.5 py-1 text-xs font-bold ${a.text}`}>{chip}</span>)}</div>
+                    {(step.mcp || step.optionalProtocol) && <p className="text-xs leading-relaxed text-slate-400">{ep.agent.mcpOptional}</p>}
                 </div>
             );
 
-        case 'loopScene': {
-            // לולאת-הסוכן: 4 צמתים על מעגל, פולס שמסתובב = הלולאה חוזרת, ומתחת -
-            // התוצאות האפשריות (המשך / שאל / עצור / סיים). זו החתימה של סוכן מול Chat.
-            const nodes = step.nodes;
-            const posN = [{ top: '3%', left: '50%' }, { top: '50%', left: '93%' }, { top: '93%', left: '50%' }, { top: '50%', left: '7%' }];
+        case 'guardrailScene':
             return (
-                <div dir="auto">
-                    <div className="relative mx-auto h-44 w-44">
-                        <div className={`absolute inset-5 rounded-full border-2 border-dashed ${a.border}`} aria-hidden />
-                        {!reduce && (
-                            <motion.div className="absolute inset-5" aria-hidden animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 4.5, ease: 'linear' }}>
-                                <span className={`absolute -top-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rounded-full ${a.solid} ${a.glow}`} />
-                            </motion.div>
-                        )}
-                        {nodes.map((n, i) => (
-                            <motion.span
-                                key={`${n}-${i}`}
-                                initial={reduce ? false : { scale: 0, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                transition={reduce ? { duration: 0 } : { delay: 0.15 + i * 0.15, type: 'spring', stiffness: 300, damping: 18 }}
-                                style={posN[i]}
-                                className={`absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-lg border bg-slate-950/85 px-2 py-0.5 text-xs font-bold ${a.border} ${a.text}`}
-                            >
-                                {n}
-                            </motion.span>
-                        ))}
+                <div className="space-y-2">
+                    <div className="grid gap-2 sm:grid-cols-2">
+                        <div className="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+                            <div className="text-[10px] font-black uppercase tracking-wider text-slate-500">{ep.agent.authorization}</div>
+                            <div className={`mt-1 text-sm font-bold ${step.authorizationStatus === 'authorized' ? 'text-emerald-300' : 'text-rose-300'}`}>
+                                {step.authorizationStatus === 'authorized' ? ep.agent.authorized : ep.agent.unauthorized}
+                            </div>
+                        </div>
+                        <div className="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+                            <div className="text-[10px] font-black uppercase tracking-wider text-slate-500">{ep.agent.humanApproval}</div>
+                            <div className="mt-1 text-sm font-bold text-slate-200">
+                                {step.approvalStatus === 'approved'
+                                    ? ep.agent.approvalGranted
+                                    : step.approvalStatus === 'denied'
+                                        ? ep.agent.approvalDenied
+                                        : step.approvalStatus === 'pending'
+                                            ? ep.agent.approvalRequired
+                                            : step.safe}
+                            </div>
+                        </div>
                     </div>
-                    <div className="mt-1 flex flex-wrap justify-center gap-1.5">
-                        {step.outcomes.map((o, i) => (
-                            <span key={`${o}-${i}`} className={`rounded-full border border-white/12 px-2.5 py-0.5 text-xs font-bold text-slate-300`}>{o}</span>
-                        ))}
+                    <div className={`rounded-xl border p-3 text-sm font-bold ${step.toolCallAllowed ? 'border-emerald-400/30 bg-emerald-950/20 text-emerald-200' : 'border-amber-400/30 bg-amber-950/20 text-amber-200'}`}>
+                        {step.toolCallAllowed ? step.approve : ep.agent.toolNotRun}
                     </div>
                 </div>
             );
-        }
 
-        case 'mcpScene': {
-            // גשר MCP: הסוכן קורא דרך שכבת MCP אל כלי חיצוני, והתוצאה חוזרת. MCP
-            // מודגש כשכבת-החיבור. פולסים זורמים למטה (בקשה) ומעלה (תוצאה).
-            const wire = (delay: number) => (
-                <span className="relative h-4 w-0.5 overflow-hidden bg-white/15" aria-hidden>
-                    {!reduce && (
-                        <motion.span
-                            className={`absolute inset-x-0 h-1.5 ${a.solid}`}
-                            initial={{ top: '-50%', opacity: 0 }}
-                            animate={{ top: '110%', opacity: [0, 1, 0] }}
-                            transition={{ duration: 0.6, delay, repeat: Infinity, repeatDelay: 1.6, ease: 'easeIn' }}
-                        />
+        case 'toolCallScene':
+        case 'mcpScene':
+            return (
+                <div className="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/40 p-4">
+                    <span className={`rounded-lg border ${a.border} ${a.bgSoft} px-2 py-1 text-xs font-bold ${a.text}`}>{step.agentLabel}</span>
+                    <span className="text-slate-600">→</span>
+                    {'transport' in step && step.transport === 'mcp' && step.mcpLabel && (
+                        <><span className="rounded-lg border border-violet-400/25 bg-violet-950/20 px-2 py-1 text-xs font-bold text-violet-300">{step.mcpLabel}</span><span className="text-slate-600">→</span></>
                     )}
-                </span>
-            );
-            return (
-                <div className="flex flex-col items-center gap-1" dir="auto">
-                    <span className={`rounded-lg border px-3 py-1 text-xs font-bold ${a.border} ${a.bgSoft} ${a.text}`}>{step.agentLabel}</span>
-                    {wire(0.2)}
-                    <span className={`rounded-lg border-2 px-3 py-1 font-mono text-xs font-black ${a.border} ${a.solid} ${a.solidText} ${a.glow}`}>{step.mcpLabel}</span>
-                    {wire(0.5)}
-                    <span className={`rounded-lg border px-3 py-1 text-xs font-bold ${a.border} ${a.bgSoft} ${a.text}`}>{step.toolLabel}</span>
-                    <div className="mt-0.5 flex items-center gap-1.5">
-                        <span className="text-xs text-slate-500" dir="ltr">↩</span>
-                        <span className={`rounded-md border bg-slate-900/50 px-2 py-0.5 text-xs font-mono ${a.border} ${a.text}`}>{step.resultLabel}</span>
-                    </div>
+                    {'kind' in step && step.kind === 'mcpScene' && (
+                        <><span className="rounded-lg border border-violet-400/25 bg-violet-950/20 px-2 py-1 text-xs font-bold text-violet-300">{step.mcpLabel}</span><span className="text-slate-600">→</span></>
+                    )}
+                    <span className="rounded-lg border border-white/10 bg-slate-900 px-2 py-1 text-xs font-bold text-slate-200">{step.toolLabel}</span>
+                    <span className="text-slate-600">→</span>
+                    <span className="rounded-lg border border-emerald-400/25 bg-emerald-950/20 px-2 py-1 text-xs font-bold text-emerald-300">{step.resultLabel}</span>
                 </div>
             );
-        }
 
-        case 'guardrailScene': {
-            // שער-בקרה: פעולה רגישה נעצרת ודורשת אישור (אדום, רעד); בטוחה עוברת
-            // (ירוק). מתחת - ארבע התוצאות האפשריות, המתאימה מודגשת. לא אוטומטי.
-            const sensitive = step.sensitive;
-            const outcomes = [step.safe, step.ask, step.approve, step.stop];
-            const activeIdx = sensitive ? 2 : 0;
+        case 'loopScene':
             return (
-                <div className="space-y-2.5" dir="auto">
-                    <div className="flex justify-center">
-                        <motion.div
-                            className={`inline-flex items-center gap-2 rounded-xl border-2 px-4 py-2.5 text-sm font-black ${sensitive ? 'border-rose-500/60 bg-rose-900/20 text-rose-300' : 'border-emerald-500/50 bg-emerald-900/15 text-emerald-300'}`}
-                            initial={reduce ? false : { scale: 0.9, opacity: 0 }}
-                            animate={reduce ? { opacity: 1 } : { scale: sensitive ? [0.9, 1.06, 1] : 1, opacity: 1, x: sensitive ? [0, -4, 4, -2, 0] : 0 }}
-                            transition={{ delay: reduce ? 0 : 0.35, duration: 0.5 }}
-                        >
-                            {sensitive ? <XCircle size={16} /> : <CheckCircle2 size={16} />}
-                            <span>{sensitive ? step.approve : step.safe}</span>
-                        </motion.div>
+                <div className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                        {step.nodes.map((node, index) => <React.Fragment key={node}><span className={`rounded-lg border ${a.border} ${a.bgSoft} px-2 py-1 text-xs font-bold ${a.text}`}>{node}</span>{index < step.nodes.length - 1 && <span className="text-slate-600">→</span>}</React.Fragment>)}
                     </div>
-                    <div className="flex flex-wrap justify-center gap-1.5">
-                        {outcomes.map((o, i) => (
-                            <span key={`${o}-${i}`} className={`rounded-full border px-2.5 py-0.5 text-xs font-bold ${i === activeIdx ? `${a.border} ${a.bgSoft} ${a.text}` : 'border-white/10 text-slate-500'}`}>{o}</span>
-                        ))}
-                    </div>
+                    <div className="flex flex-wrap gap-2">{step.outcomes.map((outcome) => <span key={outcome} className="rounded-lg border border-white/10 bg-slate-950/40 px-2 py-1 text-xs text-slate-300">{outcome}</span>)}</div>
                 </div>
             );
-        }
+
+        case 'decision':
+            return (
+                <div className={`rounded-xl border ${a.border} ${a.bgSoft} p-4`}>
+                    <div className={`flex items-center gap-2 text-sm font-black ${a.text}`}><CheckCircle2 size={16} /> {step.decision.label}</div>
+                </div>
+            );
 
         default:
-            return null;
+            return <p className="text-sm leading-relaxed text-slate-300">{step.note}</p>;
     }
 };
 
-/* ════════════════════════ הפאנל ══════════════════════════════════════════ */
-
-export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({ title, subtitle, accent, replayKey, steps, liveTokenCount, highlightToken, onTokenHover }) => {
-    const reduce = useReducedMotion();
-    const a = ACCENTS[accent];
+export const GlassEnginePanel: React.FC<GlassEnginePanelProps> = ({
+    title,
+    subtitle,
+    accent,
+    replayKey,
+    steps,
+    activeIndex,
+    onActiveIndexChange,
+    onReplayActive,
+    onResetJourney,
+    highlightToken,
+    onTokenHover,
+}) => {
     const { t, dir } = useT();
-    const isRtl = dir === 'rtl';
-    // גדל בגובה במסך מלא כדי לנצל את המסך (מ-lg ומעלה, כמו כרטיס הצ'אט הצמוד).
+    const reduce = !!useReducedMotion();
     const expanded = useContext(ExpandableLabContext);
-    const panelHeight = expanded ? 'h-[640px] lg:h-[calc(100vh-6rem)]' : 'h-[640px]';
+    const a = ACCENTS[accent];
     const ep = t.behindAi.chapter1.visuals.enginePanel;
-    const jr = t.behindAi.chapter1.visuals.journey;
+    const safeIndex = Math.max(0, Math.min(activeIndex, Math.max(0, steps.length - 1)));
+    const activeStep = steps[safeIndex];
+    const panelHeight = expanded
+        ? 'h-auto min-h-0 lg:h-[calc(100dvh-6rem)]'
+        : 'h-auto min-h-0 lg:h-[640px]';
 
-    const actOrder = useMemo(() => {
-        const seen: string[] = [];
-        for (const s of steps) if (!seen.includes(s.act)) seen.push(s.act);
-        return seen;
-    }, [steps]);
+    if (!activeStep) return null;
 
-    // גוון גל-השיא נגזר מסוג ההחלטה הסופית.
-    const climaxRgb = useMemo(() => {
-        const d = steps.find((s) => s.kind === 'decision');
-        return d && d.kind === 'decision' ? CLIMAX_RGB[d.decision.kind] : null;
-    }, [steps]);
-
-    // הצומת ה"נוכחי" בצינור: שלב ההחלטה (השיא). אם אין שלב decision, ברירת המחדל
-    // היא הצומת האחרון. שאר הצמתים נחשבים completed (חושבו). אין מצב pending בריצה
-    // הזו - כל התחנות נגזרות יחד - אך הרכיב תומך בו לשימוש חוזר.
-    const currentIdx = useMemo(() => {
-        const d = steps.findIndex((s) => s.kind === 'decision');
-        return d >= 0 ? d : steps.length - 1;
-    }, [steps]);
-
-    // עוגן קבוע: טוקני המשפט הנבחר, שנשארים גלויים בזמן גלילה דרך כל התחנות, כדי
-    // שהלומד ירגיש שאותו משפט זורם דרך כל המנוע עד התשובה.
-    const anchorTokens = useMemo(() => {
-        const s = steps.find((x) => x.kind === 'tokens');
-        return s && s.kind === 'tokens' ? s.tokens : [];
-    }, [steps]);
-
-    // גלילה חזרה לראש "מסע המשפט" בכל בחירת משפט חדש או החלפת מצב (Chat/Agent):
-    // replayKey משתנה בשליחה ובהחלפת מצב, אז הלומד תמיד מתחיל מתחילת התחנות.
-    const scrollRef = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        if (scrollRef.current) scrollRef.current.scrollTop = 0;
-    }, [replayKey]);
+    const previousStep = safeIndex > 0 ? steps[safeIndex - 1] : null;
+    const completedAnnouncement = previousStep
+        ? `${ep.completedStationLabel}: ${previousStep.title}. ${previousStep.teaching.output}. `
+        : '';
+    const activeAnnouncement = `${completedAnnouncement}${ep.currentStationLabel}: ${safeIndex + 1}, ${activeStep.title}`;
 
     return (
         <div className={`relative flex ${panelHeight} flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/80`} dir={dir}>
-            {/* רקע גריד */}
-            <div
-                className="pointer-events-none absolute inset-0 opacity-[0.06]"
-                style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '22px 22px' }}
-            />
-            <div className={`pointer-events-none absolute -top-20 -left-20 h-56 w-56 rounded-full blur-[80px] ${a.bgSoft}`} />
+            <div className="pointer-events-none absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+            <div className={`pointer-events-none absolute -top-20 start-0 h-56 w-56 rounded-full blur-[80px] ${a.bgSoft}`} />
 
-            {/* סריקת x-ray הולוגרפית */}
-            {!reduce && (
-                <motion.div
-                    key={`scan-${replayKey}`}
-                    initial={{ y: '-20%', opacity: 0 }}
-                    animate={{ y: '120%', opacity: [0, 0.6, 0] }}
-                    transition={{ duration: 1.3, ease: 'easeInOut' }}
-                    className={`pointer-events-none absolute inset-x-0 z-10 h-28 ${a.bgSoft} blur-2xl`}
-                />
-            )}
-
-            {/* גל-שיא: כשההחלטה מתגבשת, בלום-אור רץ אחורה דרך הצינור, בגוון ההחלטה */}
-            {!reduce && climaxRgb && (
-                <motion.div
-                    key={`climax-${replayKey}`}
-                    aria-hidden
-                    className="pointer-events-none absolute inset-x-0 z-20 h-44 blur-3xl"
-                    style={{ background: `radial-gradient(ellipse at center, rgba(${climaxRgb},0.5), transparent 70%)` }}
-                    initial={{ bottom: '-25%', opacity: 0 }}
-                    animate={{ bottom: '120%', opacity: [0, 0.6, 0] }}
-                    transition={{ duration: 1.0, delay: 1.05, ease: 'easeOut' }}
-                />
-            )}
-
-            {/* כותרת: שורה עליונה (אייקון + eyebrow + תג התחנות), ואז הכותרת ברוחב
-                מלא. כך כותרת ארוכה (למשל "Action Decision Engine" ב-Agent) לא נשברת
-                לשלוש שורות צפופות ויש לה מקום. */}
-            <div className="relative border-b border-white/10 p-5 shrink-0">
-                {/* שורה עליונה: אייקון + תג התחנות. הכותרת (eyebrow + שם המנוע) יורדת
-                    מתחת ברוחב מלא, כדי שכותרת ארוכה כמו "Action Decision Engine"
-                    (Agent) לא תישבר לשלוש שורות צפופות. */}
-                <div className="flex items-center justify-between gap-3">
-                    {/* אייקון סטטי (בלי סיבוב אינסופי) - חלק מריסון התנועה המתמדת. */}
-                    <div className={`shrink-0 rounded-xl border border-white/10 bg-slate-900 p-2 ${a.text}`}>
-                        <Cpu size={18} />
+            <header className="relative shrink-0 border-b border-white/10 p-4 sm:p-5">
+                <div className="flex items-start gap-3">
+                    <div className={`shrink-0 rounded-xl border border-white/10 bg-slate-900 p-2 ${a.text}`}><Cpu size={18} /></div>
+                    <div className="min-w-0 flex-1">
+                        <div className="font-mono text-[11px] uppercase tracking-wider text-slate-500">Transparent Engine</div>
+                        <h3 className={`text-lg font-black leading-tight ${a.text}`}>{title}</h3>
+                        {subtitle && <p className="mt-0.5 text-xs leading-relaxed text-slate-400">{subtitle}</p>}
                     </div>
                     <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border ${a.border} ${a.bgSoft} px-2.5 py-1 font-mono text-xs font-bold ${a.text}`}>
-                        <Sparkles size={11} /> {ep.stations}
+                        <Sparkles size={11} /> <span dir="ltr">{safeIndex + 1}/{steps.length}</span>
                     </span>
                 </div>
-                <div className="mt-2 font-mono text-xs uppercase tracking-wide text-slate-500">Transparent Engine</div>
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={title}
-                        initial={reduce ? false : { opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={reduce ? undefined : { opacity: 0, y: -8 }}
-                        transition={{ duration: 0.25 }}
-                    >
-                        <div className={`text-xl font-black leading-tight ${a.text}`}>{title}</div>
-                        {subtitle && <div className="mt-0.5 text-xs text-slate-400">{subtitle}</div>}
-                    </motion.div>
-                </AnimatePresence>
-            </div>
+            </header>
 
-            {/* גוף הצינור */}
-            <div ref={scrollRef} className="custom-scrollbar relative flex-1 overflow-y-auto p-5">
-                {/* מסגור-אמת: התחנות הן המחשה של העקרונות האוניברסליים על המשפט האמיתי
-                    שהוזן, לא פלט-פנים אמיתי של המודל. סטטי (בלי אנימציה) לרוגע ולנגישות. */}
-                <div className="mb-4 flex items-start gap-2.5 rounded-2xl border border-white/10 bg-slate-900/40 px-3.5 py-3">
-                    <Scan size={14} className={`mt-0.5 shrink-0 ${a.text} opacity-80`} />
-                    <div className="min-w-0">
-                        <div className={`text-sm font-black ${a.text}`}>{ep.illustrationTitle}</div>
-                        <p className="mt-0.5 text-[13px] leading-relaxed text-slate-400">{ep.illustrationBody}</p>
+            <div className="custom-scrollbar relative flex-1 overflow-visible p-4 lg:min-h-0 lg:overflow-y-auto sm:p-5">
+                <div className="mb-4 rounded-2xl border border-white/10 bg-slate-900/55 p-3 backdrop-blur-sm lg:sticky lg:top-0 lg:z-30">
+                    <nav aria-label={ep.stationNavLabel}>
+                        <ol className="grid grid-cols-4 gap-1.5 sm:grid-cols-7">
+                            {steps.map((step, index) => {
+                                const current = index === safeIndex;
+                                const completed = index < safeIndex;
+                                const stateLabel = current ? ep.currentStationLabel : completed ? ep.completedStationLabel : '';
+                                return (
+                                    <li key={step.id}>
+                                        <button
+                                            type="button"
+                                            onClick={() => onActiveIndexChange(index)}
+                                            aria-current={current ? 'step' : undefined}
+                                            aria-label={`${index + 1}. ${step.title}${stateLabel ? `. ${stateLabel}` : ''}`}
+                                            title={step.title}
+                                            className={`flex min-h-9 w-full items-center justify-center gap-1 rounded-lg border px-1.5 py-1 text-xs font-black transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 ${
+                                                current ? `${a.border} ${a.bgSoft} ${a.text} ring-1 ${a.ringSoft}` : completed ? 'border-emerald-400/25 bg-emerald-950/20 text-emerald-300' : 'border-white/10 bg-slate-950/60 text-slate-500 hover:border-white/25 hover:text-slate-300'
+                                            }`}
+                                        >
+                                            <span className={`h-2 w-2 shrink-0 rounded-full ${STATION_DOTS[index % STATION_DOTS.length]}`} aria-hidden />
+                                            <span dir="ltr">{index + 1}</span>
+                                            {completed && <Check size={11} aria-hidden />}
+                                        </button>
+                                    </li>
+                                );
+                            })}
+                        </ol>
+                    </nav>
+
+                    <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+                        <button type="button" disabled={safeIndex === 0} onClick={() => onActiveIndexChange(safeIndex - 1)} className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-slate-950/60 px-2 py-1.5 text-xs font-bold text-slate-200 disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80">
+                            <ChevronLeft size={14} className={dir === 'rtl' ? 'rotate-180' : ''} aria-hidden /> {ep.previousStation}
+                        </button>
+                        <button type="button" disabled={safeIndex === steps.length - 1} onClick={() => onActiveIndexChange(safeIndex + 1)} className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-slate-950/60 px-2 py-1.5 text-xs font-bold text-slate-200 disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80">
+                            {ep.nextStation} <ChevronRight size={14} className={dir === 'rtl' ? 'rotate-180' : ''} aria-hidden />
+                        </button>
+                        <button type="button" onClick={onReplayActive} className={`inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border ${a.border} ${a.bgSoft} px-2 py-1.5 text-xs font-bold ${a.text} focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80`}>
+                            <RotateCcw size={13} aria-hidden /> {ep.replayStation}
+                        </button>
+                        <button type="button" onClick={onResetJourney} className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-slate-950/60 px-2 py-1.5 text-xs font-bold text-slate-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80">
+                            <RefreshCcw size={13} aria-hidden /> {ep.resetJourney}
+                        </button>
                     </div>
                 </div>
 
-                {/* עוגן קבוע: המשפט הנבחר כטוקנים, נדבק לראש בזמן גלילה כדי שהלומד
-                    ירגיש שאותו משפט זורם דרך כל 14 התחנות עד התשובה. */}
-                {anchorTokens.length > 0 && (
-                    <div className="sticky top-0 z-20 -mx-1 mb-3 rounded-xl border border-white/10 bg-slate-950/90 px-3 py-2 backdrop-blur-sm">
-                        <div className={`mb-1 flex items-center gap-1.5 text-[13px] font-bold ${a.text}`}>
-                            <span className={`h-1.5 w-1.5 rounded-full ${a.solid}`} aria-hidden />
-                            {jr.anchorLabel}
+                <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{activeAnnouncement}</div>
+
+                <AnimatePresence mode="wait" initial={false}>
+                    <motion.section
+                        key={`${activeStep.id}:${replayKey}`}
+                        initial={reduce ? false : { opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={reduce ? undefined : { opacity: 0, y: -6 }}
+                        transition={{ duration: reduce ? 0 : 0.24 }}
+                        aria-labelledby={`engine-station-${activeStep.id}`}
+                        className="relative"
+                    >
+                        <div className="mb-3 flex items-start gap-3">
+                            <div className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${a.solid} ${a.solidText} font-mono text-sm font-black`} dir="ltr">{safeIndex + 1}</div>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                                    <h4 id={`engine-station-${activeStep.id}`} className="text-base font-black text-white">{activeStep.title}</h4>
+                                    <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500" dir="ltr">{activeStep.titleEn}</span>
+                                </div>
+                                <p className="mt-1 text-xs leading-relaxed text-slate-400">{activeStep.note}</p>
+                            </div>
                         </div>
-                        <div className="flex flex-wrap gap-1" dir="auto">
-                            {anchorTokens.map((token, i) => (
-                                <span
-                                    key={`anchor-${token}-${i}`}
-                                    className={`rounded border bg-slate-900/60 px-1.5 py-0.5 text-xs font-mono ${a.border} ${a.text}`}
-                                >
-                                    {token}
-                                </span>
-                            ))}
+
+                        <div className="rounded-2xl border border-white/10 bg-slate-900/45 p-3.5">
+                            <StepVisual step={activeStep} accent={accent} highlightToken={highlightToken} onTokenHover={onTokenHover} />
                         </div>
-                    </div>
-                )}
-
-                <motion.div
-                    key={replayKey}
-                    variants={container}
-                    initial={reduce ? false : 'hidden'}
-                    animate="show"
-                >
-                    {steps.map((step, i) => {
-                        const showActHeader = step.act !== (i > 0 ? steps[i - 1].act : undefined);
-                        const isLast = i === steps.length - 1;
-                        return (
-                            <React.Fragment key={step.id}>
-                                {showActHeader && (
-                                    <motion.div variants={reduce ? undefined : itemVar} className={`flex items-center gap-2.5 ${i === 0 ? 'pb-3' : 'pb-3 pt-5'}`}>
-                                        <span className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-black ${a.border} ${a.bgSoft} ${a.text}`}>
-                                            <span>{ep.actLabel}</span>
-                                            <span dir="ltr">{actOrder.indexOf(step.act) + 1}/{actOrder.length}</span>
-                                        </span>
-                                        <span className={`text-sm font-black tracking-wide ${a.text}`}>{step.act}</span>
-                                        <span className="text-[11px] font-mono uppercase tracking-widest text-slate-600" dir="ltr">{step.actEn}</span>
-                                        <span className="h-px flex-1 bg-white/10" />
-                                    </motion.div>
-                                )}
-
-                                <motion.div variants={reduce ? undefined : itemVar} className="flex gap-3">
-                                    {/* צינור נקודות-ביקורת עצביות: צומת לכל שלב + spine כמוליך אנרגיה */}
-                                    <div className="relative flex shrink-0 flex-col items-center">
-                                        {/* מחבר אופקי זעיר: קו עדין מקצה הכרטיס אל הצומת, תלוי-כיוון */}
-                                        <span
-                                            aria-hidden
-                                            className={`absolute top-3.5 ${isRtl ? 'right-full' : 'left-full'} h-px w-2.5 -translate-y-1/2 ${a.text}`}
-                                            style={{ background: `linear-gradient(to ${isRtl ? 'right' : 'left'}, transparent, currentColor)`, opacity: 0.45 }}
-                                        />
-                                        <ProcessCheckpointNode
-                                            state={i === currentIdx ? 'current' : 'completed'}
-                                            accent={accent}
-                                            reduce={!!reduce}
-                                            index={i}
-                                            label={step.title}
-                                            coreClass={STATION_DOTS[i % STATION_DOTS.length]}
-                                        />
-                                        {!isLast && (
-                                            // spine: מוליך נתונים דק עם גרדיאנט; הקטע שמוביל אל הצומת הנוכחי זוהר מעט
-                                            <div
-                                                aria-hidden
-                                                className={`relative mt-1 w-0.5 flex-1 overflow-hidden rounded-full ${i + 1 === currentIdx ? a.text : ''}`}
-                                                style={{
-                                                    background: i + 1 === currentIdx
-                                                        ? 'linear-gradient(to bottom, transparent, currentColor)'
-                                                        : 'linear-gradient(to bottom, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.04))',
-                                                    opacity: i + 1 === currentIdx ? 0.5 : 1,
-                                                }}
-                                            >
-                                                {/* חבילת-נתונים זוהרת שזורמת במורד הצינור בין הצמתים, פעם אחת בכל
-                                                    ריצה (ה-key על ההורה מנגן מחדש בכל שליחה/החלפה). מפל-זרימה יחיד
-                                                    ואז הפאנל נח - במקום לולאה אינסופית שלא מרגיעה את המסך. */}
-                                                {!reduce && (
-                                                    <motion.span
-                                                        className={`absolute inset-x-0 h-4 rounded-full ${a.barGradient}`}
-                                                        style={{ filter: 'blur(0.4px)' }}
-                                                        initial={{ top: '-25%', opacity: 0 }}
-                                                        animate={{ top: '110%', opacity: [0, 0.9, 0.9, 0] }}
-                                                        transition={{ duration: 1.3, ease: 'easeIn', delay: 0.25 + i * 0.16 }}
-                                                    />
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* כרטיס השלב */}
-                                    <div className="min-w-0 flex-1 pb-4">
-                                        <div className={`group rounded-2xl border p-3.5 transition-colors
-                                            ${stepLinked(step, highlightToken) ? `${a.border} ${a.bgSoft} ring-1 ${a.ringSoft}` : 'border-white/10 bg-slate-900/40 hover:border-white/20'}`}>
-                                            <div className="mb-2 flex items-baseline justify-between gap-2">
-                                                <span className="text-sm font-bold text-white">{step.title}</span>
-                                                <span className="font-mono text-[11px] uppercase tracking-widest text-slate-500" dir="ltr">{step.titleEn}</span>
-                                            </div>
-                                            <StepVisual step={step} accent={accent} reduce={!!reduce} highlightToken={highlightToken} onTokenHover={onTokenHover} />
-                                            {step.kind === 'count' && liveTokenCount != null && (
-                                                <div className="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-emerald-500/30 bg-emerald-900/10 px-2.5 py-1.5">
-                                                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300">
-                                                        <Sparkles size={12} /> {ep.claudeTokens(liveTokenCount)}
-                                                    </span>
-                                                    <span className="text-[11px] leading-relaxed text-slate-400">
-                                                        {ep.claudeNote}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            <p className="mt-2.5 flex items-start gap-1.5 text-xs leading-relaxed text-slate-400">
-                                                <Scan size={11} className={`mt-0.5 shrink-0 ${a.text} opacity-70`} />
-                                                <span>{step.note}</span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            </React.Fragment>
-                        );
-                    })}
-                </motion.div>
+                        <TeachingBlock step={activeStep} accent={accent} />
+                    </motion.section>
+                </AnimatePresence>
             </div>
         </div>
     );

@@ -67,6 +67,8 @@ export interface UseReadAloud {
     wordRange: { start: number; end: number } | null;
     total: number;
     start: (fromIndex?: number) => void;
+    /** מקריא מקטע יחיד ועוצר בסופו, בלי להמשיך אוטומטית למקטע הבא. */
+    startSingle: (index: number) => void;
     pause: () => void;
     resume: () => void;
     stop: () => void;
@@ -112,7 +114,8 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
 
     // ref-ים לבקרת זרימה: מונעים מ-onend לקדם מקטע אחרי עצירה ידנית / החלפה.
     // העדכון נעשה ב-effect (ולא בזמן רינדור) כי הם נקראים רק בתוך handlers / onend.
-    const runRef = useRef({ stopped: false, index: -1 });
+    const runRef = useRef({ stopped: false, index: -1, id: 0 });
+    const singleSegmentRef = useRef(false);
     const segmentsRef = useRef(segments);
     const langRef = useRef(lang);
     const selectedVoiceRef = useRef<string | null>(selectedVoiceURI);
@@ -196,14 +199,16 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
             if (!('speechSynthesis' in window)) return;
             const list = segmentsRef.current;
             if (index < 0 || index >= list.length) {
+                singleSegmentRef.current = false;
                 setStatus('idle');
                 setCurrentIndex(-1);
                 return;
             }
             const synth = window.speechSynthesis;
+            const runId = runRef.current.id + 1;
             runRef.current.stopped = true; // לבטל onend של אמירה קודמת
             synth.cancel();
-            runRef.current = { stopped: false, index };
+            runRef.current = { stopped: false, index, id: runId };
 
             const text = list[index].text;
             const utt = new SpeechSynthesisUtterance(text);
@@ -216,7 +221,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
             // charLength לא תמיד נתמך - אז נופלים לסריקת המילה מנקודת ההתחלה. setState
             // בתוך handler (לא ב-effect) - מותר. מנועים שלא משדרים boundary פשוט לא יסמנו.
             utt.onboundary = (e) => {
-                if (runRef.current.stopped || runRef.current.index !== index) return;
+                if (runRef.current.stopped || runRef.current.index !== index || runRef.current.id !== runId) return;
                 if (e.name && e.name !== 'word') return;
                 const start = Math.min(Math.max(0, e.charIndex), text.length);
                 const len = e.charLength || (/\S+/.exec(text.slice(start))?.[0].length ?? 0);
@@ -224,7 +229,15 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
             };
 
             utt.onend = () => {
-                if (runRef.current.stopped || runRef.current.index !== index) return;
+                if (runRef.current.stopped || runRef.current.index !== index || runRef.current.id !== runId) return;
+                if (singleSegmentRef.current) {
+                    singleSegmentRef.current = false;
+                    setStatus('idle');
+                    setCurrentIndex(-1);
+                    setWordRange(null);
+                    runRef.current.stopped = true;
+                    return;
+                }
                 const nextIndex = index + 1;
                 if (nextIndex < segmentsRef.current.length) {
                     speakIndexRef.current(nextIndex);
@@ -236,7 +249,8 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
                 }
             };
             utt.onerror = () => {
-                if (runRef.current.stopped || runRef.current.index !== index) return;
+                if (runRef.current.stopped || runRef.current.index !== index || runRef.current.id !== runId) return;
+                singleSegmentRef.current = false;
                 setStatus('idle');
                 setCurrentIndex(-1);
                 setWordRange(null);
@@ -255,7 +269,17 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
     const start = useCallback(
         (fromIndex = 0) => {
             if (!supported) return;
+            singleSegmentRef.current = false;
             speakIndex(fromIndex);
+        },
+        [supported, speakIndex],
+    );
+
+    const startSingle = useCallback(
+        (index: number) => {
+            if (!supported) return;
+            singleSegmentRef.current = true;
+            speakIndex(index);
         },
         [supported, speakIndex],
     );
@@ -284,6 +308,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
 
     const stop = useCallback(() => {
         if (!supported) return;
+        singleSegmentRef.current = false;
         runRef.current.stopped = true;
         window.speechSynthesis.cancel();
         setStatus('idle');
@@ -322,6 +347,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
 
     const next = useCallback(() => {
         if (!supported) return;
+        singleSegmentRef.current = false;
         const target = (runRef.current.index < 0 ? 0 : runRef.current.index + 1);
         if (target < segmentsRef.current.length) speakIndex(target);
         else stop();
@@ -329,6 +355,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
 
     const prev = useCallback(() => {
         if (!supported) return;
+        singleSegmentRef.current = false;
         const target = Math.max(0, (runRef.current.index < 0 ? 0 : runRef.current.index - 1));
         speakIndex(target);
     }, [supported, speakIndex]);
@@ -347,6 +374,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
         wordRange,
         total: segments.length,
         start,
+        startSingle,
         pause,
         resume,
         stop,

@@ -1,14 +1,6 @@
 // i18n/locales/en/behind-ai/chapter1Visuals.ts
-// English Chapter 1 visuals. Shape source: ../../he/behind-ai/chapter1Visuals.
-// contentLocale = 'en' (real translation).
-//
-// Demo-input coupling: the demo inputs below (confidenceDial.samples[].input,
-// forkView.samples[].input, counterfactual.experiments.*[].variants[].text + .pivot)
-// are fed into the learning engine and must match the English detection vocabulary
-// (EN_VOCAB) in app/behind-the-scenes-ai/chapter-1/mockEngine.ts. The engine picks the
-// vocabulary by the script of the input (Hebrew letters => Hebrew, else English).
-//
-// No em dash (U+2014) and no en dash (U+2013). Mentor bubble text carries no emoji.
+// Active visual copy for the canonical Transparent Chat and its conditional task-system preview.
+// No em dash (U+2014) and no en dash (U+2013).
 
 import type { Locale } from '@/i18n/config';
 
@@ -17,16 +9,50 @@ export const chapter1Visuals = {
 
     // GlassEnginePanel: inner labels
     enginePanel: {
-        stations: 'Key stations',
-        actLabel: 'Act',
-        normalizeTrimmed: 'Extra spaces trimmed compared to the original input.',
-        inputClean: 'Input is already clean - nothing to fix',
-        noTokens: 'No tokens yet.',
-        noMatch: '- no match',
-        claudeTokens: (n: number) => `Claude (real): ${n} tokens`,
-        claudeNote: 'Above, the count is by words. The real number differs because the model splits into sub-words - and it does not reveal the split itself, only the count.',
-        illustrationTitle: 'An illustration of the principles',
-        illustrationBody: 'Every model has its own method, but they all rest on the same principles. This is exactly the path your sentence travels.',
+        stationNavLabel: 'Station navigation',
+        previousStation: 'Previous station',
+        nextStation: 'Next station',
+        replayStation: 'Replay active station',
+        resetJourney: 'Reset journey',
+        currentStationLabel: 'Current station',
+        completedStationLabel: 'Completed station',
+        inputLabel: 'Input',
+        transformationLabel: 'Transformation',
+        outputLabel: 'Output',
+        conclusionLabel: 'Teaching conclusion',
+        limitationLabel: 'Illustration limit',
+        productEnvelope: {
+            visibleRequest: 'Visible user request',
+            systemInstruction: 'Product-added system instruction',
+            selectedContext: 'Selected current context',
+            modelInput: 'Current model input',
+            insideWindow: 'Inside the current window',
+            omitted: 'Not included in the current input',
+            systemInstructionExample: 'Answer shipping-tracking questions briefly in English.',
+            selectedContextExample: 'Selected context: shipping support; no external tracking data.',
+            omittedExample: 'Unselected history, product memory, retrieval, and tools.',
+        },
+        matrix: {
+            token: 'Token', id: 'ID', embedding: 'Embedding excerpt', position: 'Position',
+            positionAware: 'Position-aware representation', attention: 'After Attention',
+            feedForward: 'After feed-forward', checkpoint: 'Checkpoint',
+            predictionPosition: 'Prediction position',
+        },
+        scores: {
+            candidate: 'Candidate token', logit: 'Raw logit',
+            total: 'Total', greedy: 'Greedy',
+            sampling: 'Sampling', selectedToken: 'Selected token',
+        },
+        generation: {
+            step: 'Generation step', appended: 'Token appended', updatedContext: 'Context updated',
+            nextDistribution: 'Next-step distribution', stop: 'Stop condition',
+        },
+        agent: {
+            authorization: 'System authorization', authorized: 'Authorized', unauthorized: 'Unauthorized',
+            humanApproval: 'Human approval', approvalRequired: 'Approval required',
+            approvalGranted: 'Approval granted', approvalDenied: 'Approval denied',
+            toolNotRun: 'No tool call was made', mcpOptional: 'MCP is one possible connection, not a requirement',
+        },
     },
 
     // "Sentence Journey" (Chat mode) strings.
@@ -37,57 +63,118 @@ export const chapter1Visuals = {
             C: 'Computing the context',
             D: 'From representation to answer',
         },
-        anchorLabel: 'Your sentence, at every station',
-        selectedLabel: 'Selected',
         pauseTag: 'Stops and asks',
-        pauseNudge: {
-            start: 'Try the other side.',
-            body: 'You saw a confident answer. Switch to Agent mode and try the marked prompts, and watch the engine stop and ask, or request approval, instead of guessing.',
-        },
         stations: {
-            s1: { title: 'The request comes in', note: 'The sentence you picked - the starting point of the journey through the engine.' },
-            s2: { title: 'Split into tokens', note: 'The same sentence is cut into work units. Now it is tokens.' },
-            s3: { title: 'An ID for each token', note: 'Each token gets a number from the vocabulary. From here on, only numbers.' },
-            s4: { title: 'Numeric representation', note: 'The sentence tokens fly into the meaning space, and position encodes meaning. The words are labels for you - behind each label is a numeric vector the model compares.' },
-            s5: { title: 'Position and order', note: 'Each token carries a position tag. Order is part of the meaning - not a bag of words.' },
-            s6: { title: 'Context window', note: 'The engine works only with what is in the window right now. That is all it sees of the sentence.' },
-            s7: { title: 'Attention to context', note: 'The engine does not count words - it weighs which tokens matter. Here the highlighted token shapes the meaning of its neighbors.' },
-            s8: { title: 'Mixing information', note: 'Each token is transformed by a feed-forward network. In some Mixture-of-Experts models, only a subset of experts is activated.' },
-            s9: { title: 'Depth layers', note: 'Attention and feed-forward repeat across dozens of layers, and the sentence understanding sharpens.' },
-            s10: { title: 'Up-to-date internal state', note: 'The whole sentence is compressed into one internal representation, before predicting the next token.' },
-            s11: { title: 'Raw scores', note: 'The engine gives a score to every next option. It ranks options by probability, it does not count keywords.' },
-            s12: { title: 'From score to probability', note: 'The scores turn into probabilities that add up to 100%. The highest one leads.' },
-            s13: { title: 'Choosing the next token', note: 'Decoding chooses or samples a token according to the distribution and decoding rules.' },
-            s14: { title: 'The answer', note: 'The selected token is appended and the next step is computed. Practical implementations may reuse previously computed state.' },
+            s1: {
+                title: 'Product assembles model input', note: 'The visible request enters the product, which adds one system instruction and selected current context.',
+                input: 'The visible user request.', transformation: 'The product adds a scripted system instruction and selected current context.',
+                output: 'A compact current-model-input envelope.', conclusion: 'What appears in chat is not necessarily everything the model receives.',
+                limitation: 'Memory, retrieval, and tools are not part of this default path.',
+            },
+            s2: {
+                title: 'Split into tokens', note: 'The complete model input is split into ordered token units, which are not necessarily words.',
+                input: 'The current model input assembled by the product.', transformation: 'A scripted tokenizer example preserves the displayed boundaries, including punctuation or leading spaces where shown.',
+                output: 'An ordered token sequence.', conclusion: 'Tokens are model work units, not necessarily words.',
+                limitation: 'The boundaries are a scripted educational example, not a live tokenizer trace.',
+            },
+            s3: {
+                title: 'An ID for each token', note: 'Each token maps to one stable integer vocabulary address.',
+                input: 'The ordered token sequence.', transformation: 'Each token maps to one Token ID.',
+                output: 'A token-to-ID table and ordered ID sequence.', conclusion: 'A Token ID is a vocabulary address, not meaning.',
+                limitation: 'Nearby IDs do not imply similar meanings, and the displayed IDs are scripted.',
+            },
+            s4: {
+                title: 'Embedding vectors', note: 'Each Token ID selects one learned-vector row; only short excerpts are shown here.',
+                input: 'The ordered Token IDs.', transformation: 'Each ID selects one row from a learned embedding matrix.',
+                output: 'Vector excerpts stacked in token order.', conclusion: 'Embeddings are numeric representations associated with vocabulary entries.',
+                limitation: 'The excerpts are scripted; any 2D view is a synthetic projection, not the full vector.',
+            },
+            s5: {
+                title: 'Position and order', note: 'Positional information is combined with each embedding so the sequence retains its order.',
+                input: 'The embedding-vector sequence.', transformation: 'Position information is combined with each token representation.',
+                output: 'A position-aware representation sequence.', conclusion: 'Token order changes the computation.',
+                limitation: 'Architectures combine positional information in different ways.',
+            },
+            s6: {
+                title: 'Context window', note: 'The window shows what is available at this step and what is absent from the input.',
+                input: 'The assembled model input and its position-aware sequence.', transformation: 'The illustration marks what fits inside the current window and what is omitted.',
+                output: 'The context available for the current generation step.', conclusion: 'The context window is the material the model can use now.',
+                limitation: 'It is not all stored history and does not imply product memory or retention.',
+            },
+            s7: {
+                title: 'Attention to context', note: 'A synthetic snapshot shows weighted influence for one layer, one head, and one destination position.',
+                input: 'The contextual position representations.', transformation: 'Normalized weights combine influence from source positions into the destination position.',
+                output: 'An updated contextual representation at the highlighted position.', conclusion: 'Weights vary with context, position, layer, and generation step.',
+                limitation: 'Attention weights alone do not fully explain model behavior.',
+            },
+            s8: {
+                title: 'Feed-forward processing', note: 'The same feed-forward network transforms each position vector independently and returns it to the sequence.',
+                input: 'The representation sequence after Attention.', transformation: 'A feed-forward network changes numeric features independently at every position.',
+                output: 'Updated feature excerpts returned to the sequence.', conclusion: 'The processing changes each position representation; it does not merge the sequence.',
+                limitation: 'Only some MoE models route tokens through selected experts; that is optional enrichment, not a universal rule.',
+            },
+            s9: {
+                title: 'Repeated layers', note: 'Attention and feed-forward repeatedly update the representation matrix.',
+                input: 'The representation sequence from the previous layer.', transformation: 'The same processing types repeat across layers, updating representations at each checkpoint.',
+                output: 'Representation matrices after Layer 1, Layer 2, and the final layer.', conclusion: 'Representations are updated and refined across layers.',
+                limitation: 'The checkpoints show selected excerpts, not every layer or feature.',
+            },
+            s10: {
+                title: 'Final contextual representations', note: 'A representation remains for each position; the prediction-position vector goes to the output head.',
+                input: 'Final contextual representations for multiple positions.', transformation: 'The prediction position is highlighted and its vector is sent to the output head.',
+                output: 'The vector used to score the next token.', conclusion: 'Multiple position representations remain, and one relevant representation feeds next-token scoring.',
+                limitation: 'Only a short excerpt of the final vector is shown.',
+            },
+            s11: {
+                title: 'Raw logits', note: 'The output head assigns positive or negative raw scores to candidate tokens.',
+                input: 'The final representation at the prediction position.', transformation: 'The output head computes one raw logit for every vocabulary token.',
+                output: 'A small next-token candidate sample in fixed order.', conclusion: 'Logits are raw scores, not percentages.',
+                limitation: 'They are not truth, factual confidence, or authorization; only a sample of a large vocabulary is shown.',
+            },
+            s12: {
+                title: 'Softmax probabilities', note: 'Softmax converts the same logits into a distribution that totals approximately 1.',
+                input: 'The displayed logits in the same candidate order.', transformation: 'Softmax exponentiates and normalizes the scores.',
+                output: 'Candidate probabilities that total approximately 1.', conclusion: 'Softmax creates a distribution; it does not select the token.',
+                limitation: 'A real model scores a much larger vocabulary; the displayed values are scripted.',
+            },
+            s13: {
+                title: 'Decoding selects a token', note: 'Greedy chooses the highest value; Sampling may draw another candidate from the distribution.',
+                input: 'The probability distribution and active Decoding strategy.', transformation: 'Greedy selects the leader, or Sampling uses a scripted deterministic draw.',
+                output: 'A selected token that can be appended to the text.', conclusion: 'Decoding determines how to choose from the distribution, not what is factually true.',
+                limitation: 'The sample draw is fixed so replay produces the same result.',
+            },
+            s14: {
+                title: 'Generation loop', note: 'A selected token is appended, context updates, and the next-step distribution changes.',
+                input: 'The selected token and current context.', transformation: 'The token is appended, context updates, new scores are computed, and another token is selected or a stop condition is reached.',
+                output: 'Two visible generation steps and the scripted response fragment shown in Chat.', conclusion: 'A response is built token by token, and scores may change after every append.',
+                limitation: 'Practical implementations may reuse computed state instead of starting from zero; this illustration is scripted.',
+            },
         },
         agent: {
             zones: {
                 understand: 'Understanding the task',
-                tools: 'Tools via MCP',
+                tools: 'Optional tools',
                 control: 'Control and approval',
                 exec: 'Execution and loop',
                 output: 'Output',
             },
             stations: {
                 a1: { title: 'The request comes in', note: 'The task you asked for - this is where the agent round begins.' },
-                a2: { title: 'Understanding the goal', note: 'The agent grasps the real goal, not just the words.' },
+                a2: { title: 'Identifying a possible task', note: 'The system infers a possible task from the current request and context; it does not directly know the user intention.' },
                 a3: { title: 'Available tools', note: 'The product may expose permitted tools such as tracking or messaging. MCP is one possible protocol, not a requirement.' },
-                a4: { title: 'Tool selection and plan', note: 'The agent picks which tool moves the goal forward right now.' },
+                a4: { title: 'Conditional plan', note: 'Only when a tool may help and required data exists does the system consider a permitted tool.' },
                 a5: { title: 'Checking for missing info', note: 'Is a detail missing to act on? The agent stops and asks, instead of guessing.' },
-                a6: { title: 'Risk and permission', note: 'An action that affects a customer (sending, updating) needs approval - it does not run on its own.' },
-                a7: { title: 'Calling the tool', note: 'The product calls a permitted tool, such as the tracking system. Some systems may use MCP for this connection.' },
-                a8: { title: 'Result from the tool', note: 'The tool returns an observation: a real status from the world.' },
-                a9: { title: 'Reasoning and loop', note: 'With the result in hand: continue, call another tool, ask, or finish.' },
-                a10: { title: 'Act or stop', note: 'The agent returns an answer, performs an action, waits for approval, or stops.' },
+                a6: { title: 'Authorization and approval', note: 'System authorization controls access; human approval is a separate gate before a sensitive external action.' },
+                a7: { title: 'Conditional tool call', note: 'The product calls a tool only after required information, authorization, and approval are present. MCP is only one possible connection.' },
+                a8: { title: 'Observation if the tool ran', note: 'An Observation appears only after a real tool call and may be a result or an error. No call means no observation.' },
+                a9: { title: 'Conditional loop', note: 'After a real observation, the system may continue, ask, stop, or finish.' },
+                a10: { title: 'Respond, act, or stop', note: 'The system returns a response, requests information or approval, performs an authorized action, or stops.' },
             },
             toolNames: ['Shipment tracking', 'Send a message to the customer'],
-            mcp: 'MCP',
-            loopLabel: 'Rethink',
-            observation: 'Status: package in sorting',
+            mcp: 'MCP (optional)',
+            observation: 'Example after a tool call: package in sorting',
             missingOn: 'Missing identifier (barcode)',
             missingOff: 'All the details are here',
-            riskOn: 'Sensitive action - approval required',
-            riskOff: 'Safe action',
             loopNodes: ['Plan', 'Tool call', 'Observation', 'Reason'],
             loopOutcomes: ['Continue', 'Ask', 'Stop', 'Finish'],
             agentNode: 'Agent',
@@ -103,15 +190,7 @@ export const chapter1Visuals = {
 
     // engineTrace: station names, titles, captions and labels
     trace: {
-        unit: 'tokens',
         labels: {
-            intent: {
-                'Package not delivered': 'Package not delivered',
-                'Tracking question': 'Tracking question',
-                'System issue': 'System issue',
-                'Payment issue': 'Payment issue',
-                'Other': 'Other',
-            },
             task: {
                 'Send / update on customer record': 'Send or update a customer record',
                 'Check delivery failure': 'Check a delivery failure',
@@ -144,241 +223,5 @@ export const chapter1Visuals = {
             vague: 'I need to understand what this refers to - which task or package should I check?',
             general: 'This sounds like a general request. It can be answered directly, without an external tool.',
         },
-    },
-
-    // ReadHeadLab
-    readHead: {
-        emptyState: 'Write a sentence in the chat so the read head can scan it.',
-        title: 'Read Head',
-        subtitle: 'The cursor that moves over the sentence word by word',
-        introHeadLabel: 'The read head',
-        introMid: ' stops after each word. At each stop the same engine recomputes the leading guess from what it has read so far, so you can watch the model ',
-        introEmph: 'update its leading guess while reading',
-        introTail: '. Pick an example and run the scanner.',
-        distinctNote: 'The map above shows the whole pipeline at once. The read head shows what it cannot: how the leading guess shifts as it reads, word by word, at your own pace.',
-        examplesLabel: 'Pick an example',
-        yourSentence: 'Your sentence',
-        play: 'Play',
-        pause: 'Pause',
-        again: 'Again',
-        back: 'Back',
-        forward: 'Forward',
-        restart: 'Restart',
-        wordCountAria: (i: number, n: number) => `Word ${i} of ${n}`,
-        scrubberAria: 'Read head position',
-        flipMarkerAria: 'The leader changed here',
-        leaderNow: 'Leading now:',
-        leaderTag: 'leader',
-        confidence: 'confidence',
-        decisionNow: 'Decision now:',
-        streamHint: 'Width = the probability. Time flows with the reading direction.',
-        readingNow: 'Still reading... the decision settles at the end of the sentence.',
-        insightTitle: 'What happened here',
-        insightChanges: (n: number) =>
-            n === 0
-                ? 'The model never switched leader across the whole sentence - it read without the leading option flipping, only growing more confident.'
-                : n === 1
-                    ? 'The model switched leader once while reading.'
-                    : `The model switched leader ${n} times while reading.`,
-        insightPivot: (w: string) => `The word that flipped the final decision: "${w}".`,
-        scriptedNote: 'Guided example: each position compares a separate run with a longer input prefix. The synthetic scores are educational, not internal output from a real model or literal human-like reading.',
-        liveNote: 'This is your sentence, run through the chapter learning engine. Notice that the probabilities move only when a keyword enters.',
-        examples: [],
-    },
-
-    // ConfidenceDial (Chat mode)
-    confidenceDial: {
-        title: 'Confidence Dial',
-        ideaLabel: 'The idea:',
-        ideaPart1: ' before the engine answers, it weighs several interpretations of the same sentence. The ',
-        ideaGap: 'gap',
-        ideaPart2: ' between the leading interpretation and the second is its level of confidence. Your question:',
-        ideaEmph: ' how much confidence to require',
-        ideaPart3: ' before letting it answer on its own, and when it is better for it to stop and ask.',
-        howTitle: 'How to use it',
-        how1: ' Pick an input (yours or an example). The marker will move to the engine confidence.',
-        how2: ' Drag the threshold along the axis, or pick a risk level.',
-        how3Lead: ' When the threshold crosses the marker, the decision flips between ',
-        how3Mid: ' and ',
-        answerAlone: 'answer alone',
-        stopAsk: 'stop and ask',
-        leadingLabel: 'Leading interpretation',
-        gapLabel: 'gap',
-        competitorLabel: 'Runner-up',
-        tryInput: 'Try an input:',
-        yourMessage: 'Your message',
-        // Demo input: coupled to EN_VOCAB in mockEngine (see header note).
-        samples: [
-            { input: "My package didn't arrive", tag: 'Clear input' },
-            { input: "Where is my order, it's not in the system", tag: 'Mixed input' },
-            { input: 'Where is my payment', tag: 'Ambiguous input' },
-        ],
-        analyzingLead: 'Analyzing: "',
-        analyzingTail: '"',
-        dragHint: 'Drag the threshold along the axis',
-        engineMarker: (margin: number) => `Engine ${margin}%`,
-        thresholdMarker: (threshold: number) => `Threshold ${threshold}%`,
-        thresholdAria: 'Required confidence threshold',
-        stakesTitle: 'What is the risk if the engine is wrong here?',
-        // he/sub/note are display; the field name 'he' is kept for shape parity.
-        stakes: {
-            low: { he: 'Low risk', sub: 'A simple information question', note: 'A mistake here is cheap. You can require low confidence and let the engine answer on its own.' },
-            mid: { he: 'Medium risk', sub: 'Partial information', note: 'A medium threshold is worth it. If the gap the engine computed is smaller than it, better to stop and ask.' },
-            high: { he: 'High risk', sub: 'An action that affects a customer', note: 'A mistake here is expensive. Require high confidence, and if there is none, stop and ask for approval.' },
-        },
-        recommendedThreshold: (rec: number) => `Recommended threshold ${rec}%`,
-        passLead: (margin: number) => `The engine confidence (gap ${margin}%) `,
-        passBold: 'is above the threshold',
-        passTail: (threshold: number) => ` you set (${threshold}%). It will answer on its own.`,
-        failLead: (threshold: number) => `The threshold you set (${threshold}%) `,
-        failBold: 'is above the confidence',
-        failTail: (margin: number) => ` of the engine (gap ${margin}%). The responsible step: stop and ask.`,
-        integrityLead: 'Drag the threshold until it crosses the engine marker - that is exactly where the decision flips. No number the engine produced changed, only ',
-        integrityBold: 'the policy you choose',
-        integrityTail: '. That is how probability becomes responsibility.',
-    },
-
-    // ConfidenceDial (Agent mode)
-    agentGate: {
-        title: 'The decision gate in Agent',
-        bodyLead: 'In Agent the gate does not rely on a gap between probabilities but on ',
-        bodyEmph: 'risk and missing information',
-        bodyTail: ': whether the task is clear, whether an identifier is missing, and whether the action is sensitive. So there is no gap dial here - the decision is set by the factors below.',
-        footerLead: 'Switch to ',
-        footerTail: ' to drag the confidence dial over the gap. In Agent, stopping for approval is not a failure - it is responsible control before an action that affects a customer.',
-    },
-
-    // CounterfactualDiff
-    counterfactual: {
-        title: 'What if',
-        whyLabel: 'Why it matters: ',
-        whyLead: 'The engine decision is never random - there is always one word that decides. Here we do two things: first we ',
-        whyFind: 'find',
-        whyMid: ' the word that caused the decision, and then we ',
-        whyProve: 'prove',
-        whyTail: ' that it is the one - we change only it and watch the decision flip.',
-        howTitle: 'How to use it',
-        how1: ' Pick a causal lever - which word to test.',
-        how2: ' See below which word decided the current decision.',
-        how3: ' Switch between the two phrasings that differ only in that word, and watch the decision flip.',
-        tryLever: 'Try a lever:',
-        noPivot: 'without the pivot word',
-        attrChose: 'The engine chose',
-        // 'the ' prefix before the bold "why"; kept in the dictionary so no text is hardcoded.
-        attrWhyPrefix: 'the ',
-        attrWhy: 'why',
-        attrWithPivotMid: ' is the word ',
-        attrWithPivotTail: '. Want to make sure it is really the one that decides? Change only it below.',
-        attrNoPivotMid1: ' is actually that what is ',
-        attrNoPivotMissing: 'missing',
-        attrNoPivotMid2: ' here is the word ',
-        attrNoPivotTail: '. The absence of a word is also a cause. Put it back below and see.',
-        flipped: 'The decision flipped:',
-        sameDecision: 'The decision stayed the same, but the word changed the leading intent and the reply that gets generated.',
-        barsTitle: 'How much the engine believes each interpretation',
-        barsLegend: 'The green or red number next to each bar = how much that interpretation rose or fell because of the word you changed.',
-        barReadWith: (word: string, before: number, after: number) => `The word "${word}" jumped the leading interpretation from ${before}% to ${after}%.`,
-        barReadWithout: (word: string, after: number) => `Without the word "${word}" no interpretation stands out - the leader reaches only ${after}%.`,
-        ghostHint: 'The dashed outline = the previous run (the ghost)',
-        replyToCreate: 'The reply that would be created',
-        beforeAfter: 'Before / after',
-        // Experiments: chip/why are display; variants[].text/pivot are coupled demo input.
-        experiments: {
-            chat: [
-                {
-                    key: 'neg',
-                    chip: 'Negation word',
-                    why: 'One negation word turns "all is well" into "there is a problem". Without it there is nothing to solve, so the leading intent and the decision change.',
-                    variants: [
-                        { text: "My package didn't arrive", pivot: "didn't" },
-                        { text: 'My package arrived', pivot: '' },
-                    ],
-                },
-                {
-                    key: 'kw',
-                    chip: 'Keyword',
-                    why: 'The exact same sentence structure, one different keyword - and the leading intent jumps to a completely different category.',
-                    variants: [
-                        { text: "There's a problem with the payment", pivot: 'payment' },
-                        { text: "There's a problem with the system", pivot: 'system' },
-                    ],
-                },
-            ],
-            agent: [
-                {
-                    key: 'barcode',
-                    chip: 'Identifier (barcode)',
-                    why: 'Without an identifier the engine cannot act: it stops and asks for the missing information. The moment the barcode comes in, it reaches for the tracking tool.',
-                    variants: [
-                        { text: 'Check package 123456789', pivot: '123456789' },
-                        { text: 'Check the package', pivot: '' },
-                    ],
-                },
-                {
-                    key: 'sensitive',
-                    chip: 'Sensitive action',
-                    why: 'The action word sets the risk: "check" is a safe call, "tell" affects a customer - so the engine stops for approval instead of acting.',
-                    variants: [
-                        { text: 'Tell the customer the package was lost', pivot: 'Tell' },
-                        { text: 'Check whether the package was lost', pivot: 'Check' },
-                    ],
-                },
-            ],
-        },
-    },
-
-    // ForkView
-    forkView: {
-        title: 'Fork: same input, two engines',
-        ideaLabel: 'The idea:',
-        ideaLead: ' the exact same input enters two engines. They do not disagree on the facts, they ',
-        ideaEmph: 'ask a different question about it',
-        ideaTail: ' - and so they reach different decisions.',
-        howTitle: 'How to use it',
-        how1: ' Pick an input (yours or an example).',
-        how2: ' See the exact same tokens enter both engines.',
-        how3: ' Compare: sometimes they agree, sometimes they split. The bar below explains why.',
-        tryInput: 'Try an input:',
-        yourMessage: 'Your message',
-        // Demo input: coupled to EN_VOCAB in mockEngine (see header note).
-        samples: [
-            { input: "My package didn't arrive", tag: 'Complaint' },
-            { input: 'Check package 123456789', tag: 'Task with an ID' },
-            { input: 'Tell the customer the package was lost', tag: 'Sensitive action' },
-            { input: 'What are your opening hours', tag: 'General question' },
-        ],
-        analyzingLead: 'Analyzing: "',
-        analyzingTail: '"',
-        sameTokens: 'The same tokens enter both engines',
-        divergeLead: 'Here they split: Chat chose "',
-        divergeMid: '", and Agent chose "',
-        divergeTail: '".',
-        agreeLead: 'Here they agree: both reached "',
-        agreeTail: '". Even when the engines ask a different question, sometimes the answer is the same.',
-        questionLabel: 'Its question:',
-        chatQuestion: 'What is the answer?',
-        agentQuestion: 'What is the safe next step?',
-        footer: 'The exact same tokens, and sometimes two decisions. The difference is not in the input but in the question each engine asks about it: Chat picks the likely answer, and Agent weighs the safe next step - answer, use a tool, or stop and ask for information.',
-    },
-
-    // PredictDecision (next-word guess)
-    predict: {
-        eyebrow: 'Quick guess · Complete the word',
-        question: 'Which word will the engine pick next?',
-        subtitle: 'Before you run the read head - guess which word is the most likely next one.',
-        sentenceLead: 'My package still hasn\'t ',
-        sentenceTail: '',
-        words: {
-            absurd: 'danced',
-            arrived: 'arrived',
-            plausible: 'shipped',
-        },
-        correctTitle: 'Exactly right!',
-        correctBody: 'Right. "arrived" is the natural continuation here, so the engine gives it the highest probability.',
-        wrongTitle: 'Almost!',
-        wrongBody: 'The engine would rank "arrived" much higher - it is by far the most likely continuation here. The other words are simply rare in this context.',
-        rankingLabel: 'How the engine ranks the words',
-        bridge: 'This is exactly the ranking the read head below shows live',
-        guessAgain: 'Guess again',
     },
 };

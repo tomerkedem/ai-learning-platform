@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useId, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Send, Bot, Sparkles, CircleAlert } from 'lucide-react';
 import { ModeToggle } from './ModeToggle';
@@ -20,6 +20,10 @@ interface ChatInterfacePanelProps {
     inputValue: string;
     onInputChange: (value: string) => void;
     onSend: () => void;
+    /** Accessible label for the message field. Callers should pass localized copy. */
+    inputLabel?: string;
+    /** Accessible label for the icon-only send button. Callers should pass localized copy. */
+    sendLabel?: string;
     /** האם להציג אינדיקטור הקלדה במקום תגובת ה-AI. */
     isTyping?: boolean;
     /** תשובת ה-AI נכתבת כרגע חי (streaming) - מוסיף סמן מהבהב לבועה. */
@@ -42,14 +46,15 @@ interface ChatInterfacePanelProps {
 
 const TypingDots: React.FC<{ accent: Accent }> = ({ accent }) => {
     const a = ACCENTS[accent];
+    const reduce = useReducedMotion();
     return (
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5" aria-hidden>
             {[0, 1, 2].map((i) => (
                 <motion.span
                     key={i}
                     className={`h-1.5 w-1.5 rounded-full ${a.dot}`}
-                    animate={{ y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
-                    transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.15, ease: 'easeInOut' }}
+                    animate={reduce ? undefined : { y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
+                    transition={reduce ? undefined : { duration: 0.9, repeat: Infinity, delay: i * 0.15, ease: 'easeInOut' }}
                 />
             ))}
         </div>
@@ -70,6 +75,8 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
     inputValue,
     onInputChange,
     onSend,
+    inputLabel,
+    sendLabel,
     isTyping = false,
     streaming = false,
     live = false,
@@ -85,12 +92,24 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
     const a = ACCENTS[accent];
     const { t, dir } = useT();
     const isRtl = dir === 'rtl';
-    // במסך מלא (ExpandableLab) הכרטיס גדל בגובה כדי לנצל את המסך; במובייל (עמודות
-    // נערמות) נשאר 640px, וההגדלה חלה מ-lg ומעלה, שם יש שורה אחת עם מקום אנכי פנוי.
+    // במובייל הכרטיס גדל לפי התוכן כדי שגלילת העמוד לא תתחרה בגלילה פנימית. בדסקטופ
+    // שני הפאנלים מקבלים אותו גובה קבוע, ובמסך מלא מנצלים את גובה ה-viewport.
     const expanded = useContext(ExpandableLabContext);
-    const panelHeight = expanded ? 'h-[640px] lg:h-[calc(100vh-6rem)]' : 'h-[640px]';
+    const panelHeight = expanded
+        ? 'h-auto min-h-[32rem] lg:h-[calc(100dvh-6rem)] lg:min-h-0'
+        : 'h-auto min-h-[32rem] lg:h-[640px] lg:min-h-0';
     const ci = t.behindAi.aiInternals.chatInterface;
     const scrollRef = useRef<HTMLDivElement>(null);
+    const inputId = useId();
+
+    // אזור חי יחיד וממוקד: בזמן יצירה מקריאים פעם אחת שה-AI מקליד, ורק כשהיצירה
+    // מסתיימת מחליפים את ההודעה בתשובה המלאה. בועת התשובה עצמה נשארת נגישה לעיון,
+    // אך אינה live region נוסף ולכן אינה מוכרזת פעמיים בכל chunk של streaming.
+    const latestAiText = useMemo(
+        () => [...messages].reverse().find((message) => message.role === 'ai')?.text ?? '',
+        [messages],
+    );
+    const responseAnnouncement = isTyping || streaming ? ci.aiTyping : latestAiText;
 
     // הודעת המשתמש מוצגת כמילים לחיצות (כשיש onTokenHover), כדי לקשר חי למנוע.
     const renderUserText = (text: string): React.ReactNode => {
@@ -99,15 +118,19 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
             if (part === '' || /^\s+$/.test(part)) return part;
             const hl = highlightToken === part;
             return (
-                <span
+                <button
+                    type="button"
                     key={i}
                     onMouseEnter={() => onTokenHover(part)}
                     onMouseLeave={() => onTokenHover(null)}
+                    onFocus={() => onTokenHover(part)}
+                    onBlur={() => onTokenHover(null)}
                     onClick={(e) => { e.stopPropagation(); onTokenHover(hl ? null : part); }}
-                    className={`cursor-pointer rounded transition-colors ${hl ? 'bg-slate-950/40 px-0.5 ring-1 ring-white/50' : 'hover:bg-slate-950/20'}`}
+                    aria-pressed={hl}
+                    className={`inline rounded border-0 bg-transparent p-0 font-[inherit] text-inherit transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 ${hl ? 'bg-slate-950/40 px-0.5 ring-1 ring-white/50' : 'hover:bg-slate-950/20'}`}
                 >
                     {part}
-                </span>
+                </button>
             );
         });
     };
@@ -160,8 +183,13 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                 {showModeToggle && <ModeToggle mode={mode} onChange={onModeChange} accent={accent} />}
             </div>
 
-            {/* הודעות */}
-            <div ref={scrollRef} className="relative z-10 flex-1 overflow-y-auto custom-scrollbar p-5 flex flex-col gap-3">
+            {/* הכרזה ממוקדת לתגובה או למצב ההקלדה. */}
+            <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+                {responseAnnouncement}
+            </div>
+
+            {/* הודעות: במובייל התוכן מרחיב את הכרטיס וגלילת העמוד נשארת היחידה. */}
+            <div ref={scrollRef} className="custom-scrollbar relative z-10 flex min-h-0 flex-1 flex-col gap-3 overflow-visible p-5 lg:overflow-y-auto">
                 <AnimatePresence initial={false} mode="popLayout">
                     {visible.map((m) => (
                         <motion.div
@@ -247,7 +275,9 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
             {/* קלט */}
             <div className="relative z-10 p-4 shrink-0">
                 <div className={`flex items-center gap-2 rounded-2xl bg-slate-900 border border-white/10 p-1.5 transition-all focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10`}>
+                    <label htmlFor={inputId} className="sr-only">{inputLabel ?? ci.inputPlaceholder}</label>
                     <input
+                        id={inputId}
                         value={inputValue}
                         onChange={(e) => onInputChange(e.target.value)}
                         onKeyDown={handleKeyDown}
@@ -255,10 +285,11 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                         className="flex-1 bg-transparent px-3 py-2 text-sm text-white outline-none"
                     />
                     <motion.button
+                        type="button"
                         onClick={onSend}
-                        aria-label="Send"
+                        aria-label={sendLabel ?? 'Send'}
                         whileHover={reduce ? undefined : { scale: 1.06 }}
-                        whileTap={{ scale: 0.92 }}
+                        whileTap={reduce ? undefined : { scale: 0.92 }}
                         className={`shrink-0 p-2.5 rounded-xl ${a.solid} ${a.solidText} ${a.glow}`}
                     >
                         <Send size={18} />

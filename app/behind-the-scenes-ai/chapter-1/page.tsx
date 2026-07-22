@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Terminal, ScanSearch, ArrowDown, X, Layers, Eye, CircleAlert, CheckCircle2 } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Terminal, ScanSearch, Layers, Eye, Lightbulb, CheckCircle2 } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
 import { behindAiChapterQuizzes } from '../quizData';
-import { InsightBox } from '@/components/content/InsightBox';
 import { useT } from '@/i18n/useT';
 import type { Chapter1QuizId } from '@/i18n/locales/he/behind-ai/chapter1Quiz';
 
@@ -45,16 +44,14 @@ export default function BehindTheScenesChapter1() {
     const c = c1.redesign;
     const viz = c1.visuals;
 
-    // ── דוק האזנה מודרכת: מקטעי הקראה לפי מצב היקף, מאותם מפתחות מילון (ללא שכפול
-    // קופי). לא נכללים: חידון, כפתורים/ניווט, צ׳יפים/באדג׳ים, משפטי מנטור, קופי coach,
-    // הערות live/demo, ופלט חי של ארבע המעבדות. תוויות הדוק מ-aiInternals.readAloud.
+    // דוק האזנה מודרכת: מקטעים מהתוכן הפעיל בלבד, עם תחנה דינמית שמתחלפת לפי הבחירה.
     const ra = t.behindAi.aiInternals.readAloud;
     const c1Lede = `${c1.hero.ledeLead}${c1.hero.ledeHighlight}${c1.hero.ledeRest}`;
     const sTitle: ReadAloudSegment = { id: 'title', label: c1.hero.titleLead, text: `${c1.hero.titleLead} ${c1.hero.titleHighlight}. ${c1Lede}` };
     const sLabIntro: ReadAloudSegment = { id: 'lab-intro', label: c1.lab.title, text: `${c1.lab.title}. ${c1.lab.intro}` };
-    const sFocus: ReadAloudSegment = { id: 'focus', label: c1.lab.focusHighlight, text: `${c1.lab.focusLead}${c1.lab.focusHighlight}${c1.lab.focusRest}` };
+    const sFocus: ReadAloudSegment = { id: 'focus', label: c1.lab.title, text: c1.lab.observationInstruction };
     // מבדק הפרק: המנגנון המשותף (correctAnswer, onComplete, getReviewLinks, nextHref...)
-    // נשמר מ-quizData, וטקסט התצוגה ממוזג מהמילון לפי מזהה השאלה. quizData.ts לא משתנה.
+    // מגיע מ-quizData, וטקסט התצוגה ממוזג מהמילון לפי מזהה השאלה.
     // קישורי החזרה שומרים על ה-href, ורק התווית מתורגמת מתוך t.behindAi.chapterQuiz.
     const cq = t.behindAi.chapterQuiz;
     const quizText = c1.quiz;
@@ -93,22 +90,12 @@ export default function BehindTheScenesChapter1() {
     const [conversationText, setConversationText] = useState(DEFAULT_INPUT);
     const [sendCount, setSendCount] = useState(0);
     const [isTyping, setIsTyping] = useState(true);
-    // הדרכת first-run: רמז עדין מאיפה להתחיל, נסגר בלחיצה כדי לא להפריע לחזרות.
-    const [coachOpen, setCoachOpen] = useState(true);
-    // חישוב חי: המנוע מנתח את מה שמקלידים (debounced), לא רק את מה שנשלח.
-    const [liveText, setLiveText] = useState(DEFAULT_INPUT);
+    const [activeStationIndex, setActiveStationIndex] = useState(0);
+    const [stationReplayCount, setStationReplayCount] = useState(0);
+    const [journeyResetCount, setJourneyResetCount] = useState(0);
+    const [stationNarrationPlayCount, setStationNarrationPlayCount] = useState(0);
     // קישור חי: הטוקן שמרחפים עליו (בצ'אט או במנוע), להדגשה הדדית.
     const [hoverToken, setHoverToken] = useState<string | null>(null);
-
-    // צ'אט חי: תשובת Claude אמיתית מוזרמת מהשרת. liveReply===null => משתמשים
-    // בתשובת ה-mock הדטרמיניסטית. live = האם המנוע החי בכלל זמין (יש מפתח).
-    const [live, setLive] = useState(false);
-    const [liveReply, setLiveReply] = useState<string | null>(null);
-    // ספירת טוקנים אמיתית מ-Claude (count_tokens) עבור הטקסט הנוכחי. null => לא זמין
-    // (אין מפתח / כשל / אין טקסט). Claude לא חושף את החלוקה עצמה, רק את המספר.
-    const [liveTokens, setLiveTokens] = useState<number | null>(null);
-    const [streaming, setStreaming] = useState(false);
-    const replyAbortRef = useRef<AbortController | null>(null);
 
     const isChat = mode === 'chat';
     const accent: Accent = isChat ? 'cyan' : 'purple';
@@ -117,27 +104,11 @@ export default function BehindTheScenesChapter1() {
     const chat = useMemo(() => runChatEngine(conversationText), [conversationText]);
     const agent = useMemo(() => runAgentEngine(conversationText), [conversationText]);
 
-    // רגע "עצור ושאל": ההצעות שגורמות למנוע לעצור (בכל אחד מהמצבים) מסומנות, ואחרי
-    // ריצה בטוחה מנטור דוחף לנסות אותן. seenPause נדלק ברגע שהלומד חווה עצירה בפועל.
-    // תלוי-מצב: מסומנות ההצעות שיגרמו לעצירה במצב הנוכחי. ב-Chat זו בעיקר בקשה עמומה,
-    // ב-Agent גם פעולה רגישה ומידע חסר. הסימון "חי" ומתחלף עם המצב, ומראה שהם שונים.
+    // ההצעות שמפעילות עצירה או בקשת הבהרה מסומנות בתוך Transparent Chat עצמו.
     const pauseSuggestions = useMemo(
         () => SUGGESTIONS.filter((s) => isPauseOutcome(mode === 'chat' ? runChatEngine(s) : runAgentEngine(s), mode)),
         [SUGGESTIONS, mode],
     );
-    const [seenPause, setSeenPause] = useState(false);
-    const currentPause = isPauseOutcome(isChat ? chat : agent, mode);
-    // הדחיפה מופיעה רק ב-Chat (שם המנוע עונה בביטחון), ומפנה למצב Agent - שם המנוע
-    // עוצר ושואל או מבקש אישור. מעבר ל-Agent מדליק seenPause ומעלים אותה.
-    const showPauseNudge = isChat && sendCount >= 1 && !currentPause && !seenPause;
-
-    // חישוב חי (debounced): המנוע מנתח את מה שמקלידים כרגע, ובהיעדר הקלדה - את
-    // המשפט האחרון שנשלח. setState ב-setTimeout (לא סינכרוני ב-effect) לכבוד ה-lint.
-    useEffect(() => {
-        const v = inputValue.trim();
-        const id = setTimeout(() => setLiveText(v || conversationText), 220);
-        return () => clearTimeout(id);
-    }, [inputValue, conversationText]);
 
     // איפוס קלט-ההדגמה ההתחלתי כשמילון השפה מתחלף (he בעת SSR -> השפה שנבחרה אחרי mount).
     // מאפסים רק אם הקלט עדיין שווה לברירת המחדל הקודמת, כדי לא לדרוס הקלדה/שליחה של המשתמש.
@@ -150,96 +121,23 @@ export default function BehindTheScenesChapter1() {
         const id = setTimeout(() => {
             setConversationText((cur) => (cur === prev ? DEFAULT_INPUT : cur));
             setInputValue((cur) => (cur === prev ? DEFAULT_INPUT : cur));
-            setLiveText((cur) => (cur === prev ? DEFAULT_INPUT : cur));
+            setActiveStationIndex(0);
+            setJourneyResetCount((count) => count + 1);
+            setHoverToken(null);
         }, 0);
         return () => clearTimeout(id);
     }, [DEFAULT_INPUT]);
 
-    // זיהוי יכולת פעם אחת: האם הצ'אט החי זמין (יש ANTHROPIC_API_KEY בשרת).
-    useEffect(() => {
-        let cancelled = false;
-        fetch('/api/chat-reply')
-            .then((r) => (r.ok ? r.json() : { live: false }))
-            .then((d) => { if (!cancelled) setLive(!!d.live); })
-            .catch(() => { if (!cancelled) setLive(false); });
-        return () => { cancelled = true; };
-    }, []);
-
-    // מייצר את תשובת הצ'אט. במצב חי: מזרים תשובת Claude אמיתית טוקן-אחר-טוקן.
-    // אחרת (או בכשל/קטיעה): liveReply=null והתצוגה נופלת לתשובת ה-mock.
-    const generateReply = useCallback(async (text: string, m: FlowMode) => {
-        replyAbortRef.current?.abort(); // קטע זרם קודם אם עוד רץ
-
-        const t = text.trim();
-        if (!live || !t) {
-            setStreaming(false);
-            setLiveReply(null);
-            return;
-        }
-
-        const ac = new AbortController();
-        replyAbortRef.current = ac;
-        setStreaming(true);
-        setLiveReply('');
-
-        try {
-            const res = await fetch('/api/chat-reply', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                // ה-locale הפעיל נשלח לשרת כך שהמודל החי עונה בשפת הממשק הנבחרת,
-                // ולא לפי שפת הקלט של המשתמש.
-                body: JSON.stringify({ text: t, mode: m, locale }),
-                signal: ac.signal,
-            });
-            if (!res.ok || !res.body) throw new Error('chat-reply unavailable');
-
-            const reader = res.body.getReader();
-            const decoder = new TextDecoder();
-            let acc = '';
-            for (;;) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                acc += decoder.decode(value, { stream: true });
-                setLiveReply(acc);
-            }
-            setStreaming(false);
-        } catch (err) {
-            if ((err as Error).name === 'AbortError') return; // זרם הוחלף - אל תיגע במצב
-            setStreaming(false);
-            setLiveReply(null); // נפילה חיננית לתשובת ה-mock
-        }
-    }, [live, locale]);
-
-    // ספירת טוקנים אמיתית מ-Claude עבור אותו טקסט שהמנוע מציג. רק במצב חי, ו-debounced
-    // כדי לא להציף את ה-API בכל הקלדה. הספירה היא מספר אמיתי; את החלוקה עצמה Claude
-    // לא חושף, ולכן הלוח נשאר מבוסס-מילים והמספר הזה מוצג לצדו כהשוואה.
-    useEffect(() => {
-        const t = liveText.trim();
-        if (!live || !t) { setLiveTokens(null); return; }
-        let cancelled = false;
-        const ac = new AbortController();
-        const id = setTimeout(() => {
-            fetch('/api/count-tokens', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: t }),
-                signal: ac.signal,
-            })
-                .then((r) => (r.ok ? r.json() : null))
-                .then((d) => { if (!cancelled && d && typeof d.tokens === 'number') setLiveTokens(d.tokens); })
-                .catch(() => { /* כשל/קטיעה: פשוט לא מציגים ספירה חיה */ });
-        }, 280);
-        return () => { cancelled = true; ac.abort(); clearTimeout(id); };
-    }, [live, liveText]);
-
-    // התחנות המרכזיות של המנוע השקוף - שיקוף כן של אותה ריצה (חיה), מקובץ למערכות.
+    // התחנות נגזרות רק מהבקשה שנשלחה. הטיוטה נשארת בשדה הקלט עד שליחה מפורשת.
     const engineSteps = useMemo(
-        () => (isChat ? traceChatEngine(liveText, viz) : traceAgentEngine(liveText, viz)),
-        [isChat, liveText, viz],
+        () => (isChat ? traceChatEngine(conversationText, viz) : traceAgentEngine(conversationText, viz)),
+        [conversationText, isChat, viz],
     );
 
-    // מפתח הפעלה: כל שליחה / החלפת מצב מנגנת מחדש את רצף ההידלקות.
-    const replayKey = `${mode}:${conversationText}:${sendCount}`;
+    const safeActiveStationIndex = Math.min(activeStationIndex, Math.max(0, engineSteps.length - 1));
+    const activeStep = engineSteps[safeActiveStationIndex];
+    const journeyKey = `${mode}:${conversationText}:${sendCount}:${journeyResetCount}`;
+    const replayKey = `${journeyKey}:${safeActiveStationIndex}:${stationReplayCount}`;
 
     // אינדיקטור הקלדה: כל שינוי מתחיל "הקלדה" (ב-handlers) שמתפוגגת אחרי רגע.
     useEffect(() => {
@@ -247,17 +145,10 @@ export default function BehindTheScenesChapter1() {
         return () => clearTimeout(t);
     }, [conversationText, mode, sendCount]);
 
-    // תשובת ה-AI: התשובה החיה (אם קיימת) גוברת על תשובת ה-mock. תשובת ה-mock נפתרת
-    // מהמילון לפי מפתח התשובה שהמנוע הטהור החזיר.
+    // הצ'אט השקוף והתחנה האחרונה משתמשים באותה תשובה מתוסרטת, כדי לשמור על עקבה עקבית.
     const mockReply = isChat ? viz.mockEngine.chatReplies[chat.replyKey] : viz.mockEngine.agentReplies[agent.replyKey];
-    const replyText = liveReply !== null ? liveReply : mockReply;
-    // אינדיקטור ההקלדה: במצב חי (streaming) מציגים נקודות רק עד שמגיע הטוקן הראשון,
-    // בלי תלות בטיימר ה-850ms של ה-mock. במצב mock: לפי הטיימר הרגיל.
-    const showTyping = streaming
-        ? liveReply === ''
-        : liveReply === null
-            ? isTyping
-            : false;
+    const replyText = mockReply;
+    const showTyping = isTyping;
 
     // id כולל את sendCount כדי שכל שליחה חדשה תנפיש כניסה, אבל צמיחת טוקנים
     // באותה שליחה לא תרמאונט את הבועה (הזרמה חלקה).
@@ -266,16 +157,24 @@ export default function BehindTheScenesChapter1() {
         { id: `ai-${sendCount}`, role: 'ai', text: replyText },
     ], [conversationText, sendCount, replyText]);
 
-    const sMentor: ReadAloudSegment = { id: 'mentor', label: c1.mentor.peek, text: `${c1.mentor.peek} ${c1.coach.start}${c1.coach.body}` };
-    const sRequest: ReadAloudSegment = { id: 'active-request', label: c.interaction.selectedLabel, text: `${c.interaction.selectedLabel}: ${conversationText}. ${c.interaction.resultLabel}: ${replyText}` };
-    const sJourney: ReadAloudSegment = { id: 'journey', label: c1.lab.mapBridge, text: engineSteps.map((step) => `${step.title}. ${step.note}`).join(' ') };
+    const sMentor: ReadAloudSegment = { id: 'mentor', label: c1.mentorGuide.title, text: `${c1.mentorGuide.title}. ${c1.mentorGuide.body}` };
+    const sDisclosure: ReadAloudSegment = { id: 'simulation-disclosure', label: c1.lab.title, text: c1.lab.simulationDisclosure };
+    const sRequest: ReadAloudSegment = { id: 'active-request', label: c1.lab.activeRequestLabel, text: `${c1.lab.activeRequestLabel}: ${conversationText}. ${c1.lab.visibleResponseLabel}: ${replyText}` };
+    const activeTeaching = activeStep?.teaching;
+    const sJourney: ReadAloudSegment = {
+        id: 'active-station',
+        label: activeStep?.title ?? c1.lab.mapBridge,
+        text: activeStep && activeTeaching
+            ? `${c1.lab.simulationDisclosure} ${activeStep.title}. ${viz.enginePanel.inputLabel}: ${activeTeaching.input}. ${viz.enginePanel.transformationLabel}: ${activeTeaching.transformation}. ${viz.enginePanel.outputLabel}: ${activeTeaching.output}. ${viz.enginePanel.conclusionLabel}: ${activeTeaching.conclusion}. ${viz.enginePanel.limitationLabel}: ${activeTeaching.limitation}.`
+            : c1.lab.simulationDisclosure,
+    };
     const sTakeaway: ReadAloudSegment = { id: 'takeaway', label: c1.insightIdea.title, text: c1.insightIdea.body };
     const sThreePointSummary: ReadAloudSegment = { id: 'three-point-summary', label: c.summary.title, text: `${c.summary.title}. ${c.summary.points.join(' ')}` };
     const sQuizIntro: ReadAloudSegment = { id: 'quiz-intro', label: quizText.title, text: `${quizText.title}. ${quizText.subtitle}` };
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
-        short: [sTitle, sMentor, sRequest, sTakeaway, sThreePointSummary, sQuizIntro],
-        regular: [sTitle, sMentor, sLabIntro, sRequest, sJourney, sTakeaway, sThreePointSummary, sQuizIntro],
-        full: [sTitle, sMentor, sLabIntro, sFocus, sRequest, sJourney, sTakeaway, sThreePointSummary, sQuizIntro],
+        short: [sTitle, sMentor, sDisclosure, sRequest, sJourney, sTakeaway, sThreePointSummary, sQuizIntro],
+        regular: [sTitle, sMentor, sLabIntro, sDisclosure, sRequest, sJourney, sTakeaway, sThreePointSummary, sQuizIntro],
+        full: [sTitle, sMentor, sLabIntro, sFocus, sDisclosure, sRequest, sJourney, sTakeaway, sThreePointSummary, sQuizIntro],
     };
 
     const commit = (text: string) => {
@@ -283,11 +182,10 @@ export default function BehindTheScenesChapter1() {
         if (!next) return;
         setIsTyping(true);
         setConversationText(next);
-        setLiveText(next); // עדכון מיידי כדי שהמנוע יהיה עקבי עם השליחה, בלי המתנה ל-debounce
         setSendCount((c) => c + 1);
-        setCoachOpen(false); // אחרי האינטראקציה הראשונה, הדרכת ה-first-run מסתיימת
-        if (isPauseOutcome(mode === 'chat' ? runChatEngine(next) : runAgentEngine(next), mode)) setSeenPause(true);
-        generateReply(next, mode); // תשובה חיה (או נפילה ל-mock)
+        setActiveStationIndex(0);
+        setJourneyResetCount((count) => count + 1);
+        setHoverToken(null);
     };
 
     const handleSend = () => {
@@ -301,16 +199,34 @@ export default function BehindTheScenesChapter1() {
     const handleModeChange = (m: FlowMode) => {
         setIsTyping(true);
         setMode(m);
-        if (isPauseOutcome(m === 'chat' ? runChatEngine(conversationText) : runAgentEngine(conversationText), m)) setSeenPause(true);
-        generateReply(conversationText, m); // החלפת מצב מייצרת תשובה מתאימה מחדש
+        setActiveStationIndex(0);
+        setJourneyResetCount((count) => count + 1);
+        setHoverToken(null);
+    };
+
+    const handleStationChange = (index: number) => {
+        setActiveStationIndex(Math.max(0, Math.min(index, engineSteps.length - 1)));
+        setHoverToken(null);
+    };
+
+    const handleReplayStation = () => {
+        setStationReplayCount((count) => count + 1);
+        setStationNarrationPlayCount((count) => count + 1);
+    };
+
+    const handleResetJourney = () => {
+        setActiveStationIndex(0);
+        setStationReplayCount((count) => count + 1);
+        setJourneyResetCount((count) => count + 1);
+        setHoverToken(null);
     };
 
     return (
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={1}>
 
             {/* ══════════ HERO ══════════ */}
-            <div className="relative">
             <motion.section
+                data-chapter1-hero
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -357,16 +273,11 @@ export default function BehindTheScenesChapter1() {
 
                 </div>
             </motion.section>
-            {/* המנטור מזמין להציץ פנימה - צמוד לקצה החיצוני של הכרטיס (xl+), תלוי-כיוון */}
-            <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-              <Mentor pose="peek" line={c1.mentor.peek} width={263} flip={!isRtl} />
-            </div>
-            </div>
 
             {/* דוק האזנה מודרכת צף: מצמיד לקצה החיצוני (תלוי-כיוון) ונשאר נגיש תוך כדי גלילה */}
             <FloatingReadAloud dir={dir}>
                 <ReadAloudControls
-                    key={`${locale}:${mode}:${conversationText}`}
+                    key={locale}
                     segmentsByMode={readAloudByMode}
                     lang={LOCALE_SPEECH_LANG[locale]}
                     locale={locale}
@@ -374,46 +285,45 @@ export default function BehindTheScenesChapter1() {
                     labels={ra}
                     reduce={!!reduce}
                     compact
+                    resetSignal={`${mode}:${conversationText}:${sendCount}:${safeActiveStationIndex}:${stationReplayCount}`}
+                    playSegmentId="active-station"
+                    playSignal={String(stationNarrationPlayCount)}
                 />
             </FloatingReadAloud>
 
-            {/* ══════════ מנטור מלווה + first-run: הכוונה אופרטיבית אל המעבדה שמתחת ══════════ */}
-            <AnimatePresence>
-                {coachOpen && (
-                    <motion.div
-                        initial={reduce ? false : { opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={reduce ? undefined : { opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="mt-6 flex items-center gap-4 overflow-hidden rounded-2xl border border-emerald-500/30 bg-emerald-900/10 p-4"
-                        dir={dir}
-                    >
-                        <div className="-my-2 shrink-0">
-                            <Mentor pose="think" width={138} float={false} glow={false} flip={!isRtl} />
+            {/* מנטור עצמאי: הכנה קצרה לפני Transparent Chat, ללא מעטפת של כרטיס לימודי. */}
+            <section
+                data-chapter1-mentor-guide
+                className="mt-8 flex items-center gap-4 text-start sm:gap-7 md:mt-10"
+                dir={dir}
+            >
+                <div className="shrink-0 sm:hidden" aria-hidden>
+                    <Mentor pose="pointdown" width={96} float={false} glow={false} />
+                </div>
+                <div className="max-sm:hidden shrink-0" aria-hidden>
+                    <Mentor pose="pointdown" width={210} float={false} />
+                </div>
+                <div className="min-w-0 max-w-3xl">
+                    <div className="flex items-start gap-2.5">
+                        <div>
+                            <h2 className="text-[22px] font-black leading-tight text-white md:text-[28px]">
+                                {c1.mentorGuide.title}
+                            </h2>
+                            <p className="mt-2 text-base leading-[1.7] text-slate-200 md:text-[18px]">
+                                {c1.mentorGuide.body}
+                            </p>
                         </div>
-                        <div className="flex-1 text-sm leading-relaxed text-slate-200">
-                            <span className="font-bold text-emerald-300">{c1.coach.start}</span>
-                            {c1.coach.body}
-                        </div>
-                        <ArrowDown size={18} className="hidden shrink-0 animate-bounce text-emerald-300 sm:block" aria-hidden />
-                        <button
-                            type="button"
-                            onClick={() => setCoachOpen(false)}
-                            aria-label={c1.coach.closeAria}
-                            className="shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
-                        >
-                            <X size={15} />
-                        </button>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        <SpeakButton text={`${c1.mentorGuide.title}. ${c1.mentorGuide.body}`} className="mt-1 shrink-0" />
+                    </div>
+                </div>
+            </section>
 
             {/* ══════════ Transparent Chat Lab ══════════ */}
-            <section className="relative mt-12 space-y-5 text-start" dir={dir}>
+            <section data-chapter1-transparent-chat className="relative mt-8 space-y-5 text-start md:mt-10" dir={dir}>
                 <div className="flex items-center gap-3">
                     <ScanSearch size={24} className="text-cyan-400" />
                     <div>
-                        <h3 className="text-2xl font-bold text-white">{c1.lab.title}</h3>
+                        <h2 className="text-2xl font-bold text-white">{c1.lab.title}</h2>
                         <div className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">{c1.lab.eyebrow}</div>
                     </div>
                 </div>
@@ -424,6 +334,15 @@ export default function BehindTheScenesChapter1() {
                         {c1.lab.intro}
                     </p>
                     <SpeakButton text={`${c1.lab.title}. ${c1.lab.intro}`} className="mt-1" />
+                </div>
+
+                <div className="grid gap-3 md:grid-cols-2">
+                    <p className="rounded-2xl border border-cyan-400/20 bg-cyan-950/15 px-4 py-3 text-base leading-[1.65] text-slate-100">
+                        {c1.lab.observationInstruction}
+                    </p>
+                    <p className="rounded-2xl border border-amber-400/20 bg-amber-950/10 px-4 py-3 text-base leading-[1.65] text-slate-200">
+                        {c1.lab.simulationDisclosure}
+                    </p>
                 </div>
 
                 {/* גשר-זיהוי אל מפת המבוא: רצועת 14 התחנות בדיוק בצבעי המפה, כדי שהלומד
@@ -467,10 +386,12 @@ export default function BehindTheScenesChapter1() {
                                 inputValue={inputValue}
                                 onInputChange={setInputValue}
                                 onSend={handleSend}
+                                inputLabel={c1.lab.inputAriaLabel}
+                                sendLabel={c1.lab.sendAriaLabel}
                                 showModeToggle
                                 isTyping={showTyping}
-                                streaming={streaming}
-                                live={live}
+                                streaming={false}
+                                live={false}
                                 suggestions={SUGGESTIONS}
                                 onSuggestion={handleSuggestion}
                                 markedSuggestions={pauseSuggestions}
@@ -484,12 +405,16 @@ export default function BehindTheScenesChapter1() {
                     engine={
                         <HoloFrame accent={accent}>
                             <GlassEnginePanel
+                                key={journeyKey}
                                 title={isChat ? c1.panels.answerEngineTitle : c1.panels.actionEngineTitle}
                                 subtitle={isChat ? c1.panels.chatEngineSubtitle : c1.panels.agentEngineSubtitle}
                                 accent={accent}
                                 replayKey={replayKey}
                                 steps={engineSteps}
-                                liveTokenCount={live ? liveTokens : null}
+                                activeIndex={safeActiveStationIndex}
+                                onActiveIndexChange={handleStationChange}
+                                onReplayActive={handleReplayStation}
+                                onResetJourney={handleResetJourney}
                                 highlightToken={hoverToken}
                                 onTokenHover={setHoverToken}
                             />
@@ -499,66 +424,39 @@ export default function BehindTheScenesChapter1() {
                 </ExpandableLab>
                 </div>
 
-                <p className="text-slate-300 text-base leading-relaxed">
-                    {c1.lab.focusLead}<span className="text-white font-semibold">{c1.lab.focusHighlight}</span>{c1.lab.focusRest}
-                </p>
+            </section>
 
-                <p className="text-xs leading-relaxed text-slate-500">
-                    {live ? c1.lab.liveNote : c1.lab.demoNote}
-                </p>
-                {/* מנטור פרק 1 צמוד לקצה החיצוני של כרטיס הצ'אט השקוף (2xl בלבד - רק שם יש
-                    מרווח בין הלוח לסרגל הניווט); תלוי-כיוון: חושף את המנוע מבפנים */}
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-4' : 'right-full mr-4'} z-20 hidden 2xl:block pointer-events-none`}>
-                  <Mentor pose="holographic" line={c1.mentor.holographic} width={400} fallbackSrc="/assets/mentor-inspect.png" flip={!isRtl} />
+            {/* ══════════ התובנה המרכזית של הפרק ══════════ */}
+            <section data-chapter1-takeaway className="mt-10 rounded-2xl border border-indigo-400/25 bg-indigo-950/15 px-5 py-5 text-start md:px-7 md:py-6" dir={dir}>
+                <div className="flex items-start gap-3">
+                    <Lightbulb className="mt-1 shrink-0 text-indigo-300" size={22} aria-hidden />
+                    <div className="min-w-0 max-w-4xl flex-1">
+                        <div className="flex items-start justify-between gap-2.5">
+                            <div>
+                                <h2 className="text-[22px] font-black leading-tight text-indigo-200 md:text-[26px]">
+                                    {c1.insightIdea.title}
+                                </h2>
+                                <p className="mt-2 text-base leading-[1.7] text-slate-100 md:text-[18px]">
+                                    {c1.insightIdea.body}
+                                </p>
+                            </div>
+                            <SpeakButton text={`${c1.insightIdea.title}. ${c1.insightIdea.body}`} className="shrink-0" />
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            {/* ══════════ דחיפת "עצור ושאל": שיא הפרק, מאופציונלי לנחווה ══════════ */}
-            {/* אחרי ריצה בטוחה, המנטור מזמין לנסות בקשה שגורמת למנוע לעצור ולשאול או */}
-            {/* לבקש אישור. נעלם ברגע שהלומד חווה עצירה בפועל (seenPause). */}
-            <AnimatePresence>
-                {showPauseNudge && (
-                    <motion.div
-                        initial={reduce ? false : { opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={reduce ? undefined : { opacity: 0, height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="mt-8 flex items-center gap-4 overflow-hidden rounded-2xl border border-amber-500/30 bg-amber-900/10 p-4"
-                        dir={dir}
-                    >
-                        <div className="-my-2 shrink-0">
-                            <Mentor pose="think" width={138} float={false} glow={false} flip={!isRtl} />
-                        </div>
-                        <div className="flex-1 text-sm leading-relaxed text-slate-200">
-                            <span className="font-bold text-amber-300">{viz.journey.pauseNudge.start}</span>{' '}
-                            {viz.journey.pauseNudge.body}
-                        </div>
-                        <CircleAlert size={18} className="hidden shrink-0 text-amber-300 sm:block" aria-hidden />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* ══════════ התובנה המרכזית של הפרק ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
-                <InsightBox type="intuition" title={c1.insightIdea.title}>
-                    <div className="flex items-start justify-between gap-2.5">
-                        <span className="block">{c1.insightIdea.body}</span>
-                        <SpeakButton text={`${c1.insightIdea.title}. ${c1.insightIdea.body}`} />
-                    </div>
-                </InsightBox>
-            </section>
-
-            <section className="mt-12 rounded-3xl border border-emerald-400/25 bg-emerald-950/15 p-6 text-start md:p-8" dir={dir}>
-                <h2 className="text-2xl font-black text-white">{c.summary.title}</h2>
-                <ol className="mt-5 space-y-3">
+            <section data-chapter1-summary className="mt-8 rounded-3xl border border-emerald-400/25 bg-emerald-950/15 p-6 text-start md:p-8" dir={dir}>
+                <h2 className="text-[22px] font-black leading-tight text-white md:text-[26px]">{c.summary.title}</h2>
+                <ol className="mt-5 max-w-4xl space-y-3 text-base leading-[1.7] text-slate-100 md:text-[17px]">
                     {c.summary.points.map((point, index) => (
-                        <li key={point} className="flex gap-3 text-slate-200"><CheckCircle2 className="mt-0.5 shrink-0 text-emerald-300" size={19} aria-hidden /><span><span className="sr-only">{index + 1}. </span>{point}</span></li>
+                        <li key={point} className="flex gap-3"><CheckCircle2 className="mt-1 shrink-0 text-emerald-300" size={19} aria-hidden /><span><span className="sr-only">{index + 1}. </span>{point}</span></li>
                     ))}
                 </ol>
             </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
-            <section className="mt-10 mb-4" dir={dir}>
+            <section data-chapter1-quiz className="mt-10 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
                     <AssessmentEngine {...localizedQuiz} conceptDisplayMap={quizText.conceptLabels} />
                 </ExpandableLab>
