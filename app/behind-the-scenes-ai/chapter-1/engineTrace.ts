@@ -142,9 +142,9 @@ export function traceAgentEngine(text: string, viz: Chapter1VisualsDict): Engine
         { id: 'a1', act: ZU, actEn: 'Understand', title: st.a1.title, titleEn: 'Request', note: st.a1.note, kind: 'raw', value: text || '-' },
         { id: 'a2', act: ZU, actEn: 'Understand', title: st.a2.title, titleEn: 'Goal', note: st.a2.note, kind: 'raw', value: goalText },
 
-        { id: 'a3', act: ZT, actEn: 'Tools via MCP', title: st.a3.title, titleEn: 'Available Tools', note: st.a3.note, kind: 'agentStub', chips: ag.toolNames, mcp: true },
-        { id: 'a4', act: ZT, actEn: 'Tools via MCP', title: st.a4.title, titleEn: 'Tool Selection', note: st.a4.note, kind: 'agentStub', chips: [primaryTool] },
-        { id: 'a5', act: ZT, actEn: 'Tools via MCP', title: st.a5.title, titleEn: 'Missing Info', note: st.a5.note, kind: 'flag', on: !barcode, onLabel: ag.missingOn, offLabel: ag.missingOff },
+        { id: 'a3', act: ZT, actEn: 'Tools and optional protocols', title: st.a3.title, titleEn: 'Available Tools', note: st.a3.note, kind: 'agentStub', chips: ag.toolNames, mcp: true },
+        { id: 'a4', act: ZT, actEn: 'Tools and optional protocols', title: st.a4.title, titleEn: 'Tool Selection', note: st.a4.note, kind: 'agentStub', chips: [primaryTool] },
+        { id: 'a5', act: ZT, actEn: 'Tools and optional protocols', title: st.a5.title, titleEn: 'Missing Info', note: st.a5.note, kind: 'flag', on: !barcode, onLabel: ag.missingOn, offLabel: ag.missingOff },
 
         { id: 'a6', act: ZG, actEn: 'Guardrails', title: st.a6.title, titleEn: 'Risk & Permission', note: st.a6.note, kind: 'guardrailScene', sensitive, safe: ag.gate.safe, ask: ag.gate.ask, approve: ag.gate.approve, stop: ag.gate.stop },
 

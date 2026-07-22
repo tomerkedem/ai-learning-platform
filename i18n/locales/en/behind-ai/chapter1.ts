@@ -104,22 +104,22 @@ export const chapter1 = {
     // Summary (two insights inside the depth layer)
     summary: {
         understandTitle: 'What you understand now',
-        understandBody: 'The AI engine does not "know" the answer - it ranks options, and decides by the gap between them. When the gap is large it answers with confidence; when the gap is small, the right step is to stop and ask, not to guess. You saw this yourself: the read head showed the leader changing while reading, and a single word can tip the whole decision.',
+        understandBody: 'The demo ranks candidates and shows their score margin. A larger margin means more separation inside this synthetic demo, not factual truth, reliability, or permission to act. Decoding may choose or sample from a distribution according to its rules.',
         ruleTitle: 'The practical rule',
-        ruleBody: 'Trust the engine when the gap is large and the risk is low. When the gap is small or the action is sensitive - stopping and asking for clarification are not a failure, they are the responsible step. This is exactly where the link between probability and responsibility begins.',
+        ruleBody: 'Use the demo margin as one signal about candidate separation only. Evidence is required for factual trust, and permissions or approval govern sensitive actions regardless of the margin.',
     },
 
     // "Before the quiz" card: anchoring the three core ideas in the main flow
     beforeQuiz: {
         title: 'Before the quiz: three points worth remembering',
         point1Lead: 'A path, not magic.',
-        point1Body: ' Behind every answer a path runs: the engine breaks the sentence into tokens, ranks options by probability, checks how confident it is, and only then decides. The estimate is built while reading, and each extra word can change the leading option.',
+        point1Body: ' Behind every answer a path runs through tokens, representations, scores and decoding. The progressive-input view compares separate runs with increasingly complete input; it is not a literal human-like reading head.',
         point2Lead: 'Two different questions.',
         point2BeforeChat: ' In ',
         point2AfterChat: ' the engine asks "What is the answer?". In ',
         point2AfterAgent: ' it asks "What is the right next step?" - answer, use a tool, or stop and ask for information.',
         point3Lead: 'Confidence meets responsibility.',
-        point3Body: ' Confidence is measured by the gap between the leading option and the next one. A large gap and low risk, you can let the engine answer. A small gap or a sensitive action, the responsible step is to stop and ask, not to guess.',
+        point3Body: ' The displayed margin is a synthetic demo metric, not a probability of truth or authorization. Sensitive actions still require the product permissions and approval rules defined for them.',
         footnoteLead: 'Want to see this path live? Open the ',
         footnoteHighlight: 'full engine',
         footnoteTail: ' above and play with the read head and the "which word decided" lab.',

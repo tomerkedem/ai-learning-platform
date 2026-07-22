@@ -104,22 +104,22 @@ export const chapter1 = {
     // Summary (two insights inside the depth layer)
     summary: {
         understandTitle: 'Lo que entiendes ahora',
-        understandBody: 'El motor de IA no "sabe" la respuesta - clasifica opciones, y decide según la diferencia entre ellas. Cuando la diferencia es grande responde con confianza; cuando la diferencia es pequeña, el paso correcto es detenerse y preguntar, no adivinar. Lo viste tú mismo: el cabezal de lectura mostró cómo el líder cambiaba mientras leía, y una sola palabra puede inclinar toda la decisión.',
+        understandBody: 'La demostración clasifica candidatos y muestra su margen de puntuación. Un margen mayor solo indica más separación dentro de esta demostración sintética, no verdad factual, fiabilidad ni permiso para actuar. El decoding puede elegir o muestrear según la distribución y sus reglas.',
         ruleTitle: 'La regla práctica',
-        ruleBody: 'Confía en el motor cuando la diferencia es grande y el riesgo es bajo. Cuando la diferencia es pequeña o la acción es sensible - detenerse y pedir una aclaración no es un fallo, es el paso responsable. Aquí es exactamente donde empieza el vínculo entre probabilidad y responsabilidad.',
+        ruleBody: 'Usa el margen de la demostración solo como señal de separación entre candidatos. La confianza factual requiere evidencia, y las acciones sensibles siguen sujetas a permisos y aprobación.',
     },
 
     // "Before the quiz" card: anchoring the three core ideas in the main flow
     beforeQuiz: {
         title: 'Antes del examen: tres puntos que conviene recordar',
         point1Lead: 'Un camino, no magia.',
-        point1Body: ' Detrás de cada respuesta corre un camino: el motor descompone la frase en tokens, clasifica opciones por probabilidad, comprueba cuánta confianza tiene, y solo entonces decide. La estimación se construye mientras lee, y cada palabra adicional puede cambiar la opción líder.',
+        point1Body: ' Detrás de cada respuesta hay un recorrido por tokens, representaciones, puntuaciones y decoding. La vista de entrada progresiva compara ejecuciones separadas con entradas cada vez más completas; no es una lectura humana literal.',
         point2Lead: 'Dos preguntas distintas.',
         point2BeforeChat: ' En ',
         point2AfterChat: ' el motor pregunta "¿Cuál es la respuesta?". En ',
         point2AfterAgent: ' pregunta "¿Cuál es el paso correcto siguiente?" - responder, usar una herramienta, o detenerse y pedir información.',
         point3Lead: 'La confianza se encuentra con la responsabilidad.',
-        point3Body: ' La confianza se mide por la diferencia entre la opción líder y la siguiente. Una diferencia grande y riesgo bajo, puedes dejar que el motor responda. Una diferencia pequeña o una acción sensible, el paso responsable es detenerse y preguntar, no adivinar.',
+        point3Body: ' El margen mostrado es una métrica sintética de la demostración, no una probabilidad de verdad ni una autorización. Las acciones sensibles aún requieren los permisos y reglas de aprobación del producto.',
         footnoteLead: '¿Quieres ver este recorrido en vivo? Abre arriba el ',
         footnoteHighlight: 'motor completo',
         footnoteTail: ' y juega con el cabezal de lectura y el laboratorio "qué palabra decidió".',
