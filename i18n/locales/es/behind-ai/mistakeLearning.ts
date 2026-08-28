@@ -66,6 +66,10 @@ export const mistakeLearning = {
                 body: 'Los errores que se revisaron y corrigieron pueden entrar en un conjunto de entrenamiento o de ajuste y aportar a una versión futura, en un proceso aparte y lento. El feedback es una entrada, no una verdad garantizada, así que los ejemplos se revisan y el feedback confuso o incorrecto se filtra antes de usarlos.',
             },
             {
+                title: 'El proceso solo ve lo que se recogió',
+                body: 'El proceso de mejora solo puede trabajar con los ejemplos que se recogieron y se revisaron. Un error que nunca se informó, o que nunca se recogió, sencillamente no llega al proceso. Así que lo que se recoge también determina qué puede intentar mejorar el sistema. Si cierto tipo de problema casi nunca se informa, puede que no se atienda en esta ronda. Eso no significa que el equipo fuera descuidado, ni que el sistema vaya a fallar necesariamente en esos casos.',
+            },
+            {
                 title: 'Qué no afirma este capítulo',
                 body: 'No toda corrección en el Chat entrena al modelo, el modelo no lo recuerda todo, y esto no describe la política de un producto concreto. Nos quedamos en lo general y en lo conceptual.',
             },

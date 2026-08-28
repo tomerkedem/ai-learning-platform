@@ -63,6 +63,10 @@ export const mistakeLearning = {
                 body: 'Mistakes that were reviewed and corrected can go into a training or fine-tuning set and contribute to a future version, in a separate and slow process. Feedback is an input, not guaranteed truth, so the examples are reviewed and unclear or wrong feedback is filtered out before they are used.',
             },
             {
+                title: 'The process only sees what was collected',
+                body: 'The improvement process can only work with the examples that were collected and reviewed. A mistake that was never reported, or never collected, simply does not reach the process. So what gets collected also shapes what the system can try to improve. If a certain kind of problem is almost never reported, it may not be handled in this round. That does not mean the team was careless, nor that the system will necessarily fail in such cases.',
+            },
+            {
                 title: 'What this chapter does not claim',
                 body: 'Not every correction in Chat trains the model, the model does not remember everything, and this is not a description of the policy of a specific product. We stay general and conceptual.',
             },
