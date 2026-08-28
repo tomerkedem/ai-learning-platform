@@ -91,6 +91,7 @@ export const chapter4 = {
             'The model holds an embedding table, a large table of number rows learned during training. The Token ID is the row number, and it selects one row from the table.',
             'That row holds an ordered list of numbers, the vector. This is the token\'s initial embedding. The model looks it up from the table, it does not calculate it from the digits of the ID.',
             'Every embedding is a vector, but not every vector is an embedding. An embedding is a vector whose values were learned to represent meaning.',
+            'And where were those values learned from? From the training data, the texts the model learned from before your conversation. What appeared there, and in which contexts, shaped what the model could learn. When a subject appeared rarely, or only in narrow contexts, the model had less information from which it could learn about it.',
         ],
         note: 'Most numbers in a row have no name a person can read. The table shown here is a small illustration, with few rows and few values. A real table has far more tokens and far more dimensions.',
     },

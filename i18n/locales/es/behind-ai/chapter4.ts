@@ -89,6 +89,7 @@ export const chapter4 = {
             'El modelo contiene una tabla de embeddings, una tabla grande de filas de números aprendidas durante el entrenamiento. El Token ID es el número de fila, y selecciona una fila de la tabla.',
             'Esa fila contiene una lista ordenada de números, el vector. Este es el embedding inicial del token. El modelo lo consulta en la tabla, no lo calcula a partir de los dígitos del ID.',
             'Todo embedding es un vector, pero no todo vector es un embedding. Un embedding es un vector cuyos valores se aprendieron para representar significado.',
+            '¿Y de dónde se aprendieron esos valores? De los datos de entrenamiento, los textos con los que el modelo aprendió antes de tu conversación. Lo que apareció allí, y en qué contextos, influyó en lo que el modelo pudo aprender. Cuando un tema apareció poco, o solo en contextos limitados, el modelo tuvo menos información de la que poder aprender sobre él.',
         ],
         note: 'La mayoría de los números de una fila no tienen un nombre que una persona pueda leer. La tabla que se muestra aquí es una ilustración pequeña, con pocas filas y pocos valores. Una tabla real tiene muchos más tokens y muchas más dimensiones.',
     },
