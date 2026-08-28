@@ -172,6 +172,7 @@ export const evaluation = {
             'Define de antemano la respuesta deseada en cada caso, antes de ejecutarlo.',
             'Ejecuta todos los casos, mide cuántos aprobaron y cuántos fallaron.',
             'Mejora según los patrones que fallaron, y vuelve a probar después de cada cambio. Pero no confíes siempre en los mismos casos: si los ajustas una y otra vez, dejan de ser una prueba justa, así que guarda algunos casos nuevos para una evaluación posterior.',
+            'Un resultado de prueba describe cómo se comportó el sistema en los casos que se probaron, en el momento en que se hizo la prueba. Al cabo de unos meses la realidad puede cambiar: nuevos tipos de consulta, nuevas formulaciones o situaciones nuevas que antes no aparecían. Por eso un sistema que aprobó una evaluación puede comportarse distinto más adelante, incluso sin que el propio sistema haya cambiado. A este fenómeno se le llama en inglés distribution shift. Por eso es importante volver a probar el sistema de vez en cuando con casos actuales.',
             'Para equipos que construyen sistemas: crea casos de prueba fijos, incluidos casos límite y casos donde la respuesta es "no lo sé" o "hace falta una fuente". Comprueba que un cambio no mejoró un caso y rompió otro. Eso es una regresión: una mejora en un comportamiento que empeora otro. Acepta el cambio solo si un comportamiento importante no empeoró.',
         ],
         caveat:

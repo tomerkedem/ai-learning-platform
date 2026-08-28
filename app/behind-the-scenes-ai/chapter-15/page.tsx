@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Gauge, MousePointerClick, Scale, FlaskConical, ListChecks, CheckCircle2, XCircle, Sparkles, BadgeCheck, BookMarked, Ban, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Gauge, MousePointerClick, Scale, FlaskConical, ListChecks, CheckCircle2, XCircle, Sparkles, BadgeCheck, BookMarked, Ban, Repeat, ArrowLeft, ArrowRight } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
@@ -11,6 +11,7 @@ import { InsightBox } from '@/components/content/InsightBox';
 
 import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
 import { EvaluationLab } from '@/components/ai-internals/EvaluationLab';
+import { ScoreBreakdownPanel } from '@/components/ai-internals/ScoreBreakdownPanel';
 import { Mentor } from '@/components/ai-internals/Mentor';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
@@ -90,6 +91,9 @@ export default function BehindTheScenesChapter15() {
     const { t, dir } = useT();
     const isRtl = dir === 'rtl';
     const c15 = t.behindAi.evaluation;
+    // הרחבת הפרק: לוח פירוק הציון וכרטיס ההטיה. מרחב שמות נפרד, כדי שמעבדת ההערכה
+    // הקיימת תישאר בדיוק כפי שהיא.
+    const c15s = t.behindAi.evaluationScore;
     const raLabels = t.behindAi.aiInternals.readAloud;
 
     // שפת ההקראה נגזרת מ-contentLocale של הפרק, כדי שההקראה תדבר בשפת התוכן ולא בשפת
@@ -134,6 +138,8 @@ export default function BehindTheScenesChapter15() {
     const sPrimer: ReadAloudSegment = { id: 'primer', label: c15.primer.title, text: primerText };
     const sSee: ReadAloudSegment = { id: 'see', label: c15.see.title, text: `${c15.see.title}. ${c15.see.steps.join(', ')}. ${c15.see.caption}` };
     const sLab: ReadAloudSegment = { id: 'lab', label: c15.lab.sectionTitle, text: `${c15.lab.sectionTitle}. ${c15.lab.sectionIntro}` };
+    const sScore: ReadAloudSegment = { id: 'score', label: c15s.panel.title, text: `${c15s.panel.title}. ${c15s.panel.intro} ${c15s.panel.insight}` };
+    const sBias: ReadAloudSegment = { id: 'bias', label: c15s.bias.title, text: `${c15s.bias.title}. ${c15s.bias.lead} ${c15s.bias.body} ${c15s.bias.ask}` };
     const sWow: ReadAloudSegment = { id: 'wow', label: c15.insight.title, text: `${c15.insight.title}. ${c15.insight.lead} ${c15.insight.body}` };
     const sMisconception: ReadAloudSegment = { id: 'misconception', label: c15.misconception.rightLabel, text: `${c15.misconception.rightLabel}. ${c15.misconception.rightBody}` };
     const sLock: ReadAloudSegment = { id: 'lock', label: c15.lock.title, text: c15.lock.question };
@@ -143,8 +149,8 @@ export default function BehindTheScenesChapter15() {
 
     const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
         short: [sHero, sPrimer, sLab, sPractical, sCaveat],
-        regular: [sHero, sGuess, sPrimer, sLab, sWow, sLock, sPractical, sCaveat, sBridge],
-        full: [sHero, sGuess, sPrimer, sSee, sLab, sWow, sMisconception, sLock, sPractical, sCaveat, sBridge],
+        regular: [sHero, sGuess, sPrimer, sLab, sScore, sBias, sWow, sLock, sPractical, sCaveat, sBridge],
+        full: [sHero, sGuess, sPrimer, sSee, sLab, sScore, sBias, sWow, sMisconception, sLock, sPractical, sCaveat, sBridge],
     };
 
     // ── מבדק הפרק: המנגנון המשותף נשמר מ-quizData, וטקסט התצוגה ממוזג לפי מזהה.
@@ -319,6 +325,31 @@ export default function BehindTheScenesChapter15() {
                 </div>
 
                 <EvaluationLab data={c15.lab} dir={dir} speechLocale={speechLocale} />
+
+                {/* צעד אחד קדימה: מקרה בודד שנכשל מול סוג מקרה שלם שנכשל, וציון כולל שמסתיר אותו */}
+                <ScoreBreakdownPanel data={c15s.panel} dir={dir} speechLocale={speechLocale} />
+
+                {/* ורק עכשיו, אחרי שהדפוס נראה על המסך, הוא מקבל שם */}
+                <div className="rounded-2xl border border-amber-500/30 bg-amber-950/10 p-5">
+                    <div className="mb-2 flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                            <Repeat size={18} className="shrink-0 text-amber-300" aria-hidden />
+                            <div className="leading-tight">
+                                <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-amber-300">{c15s.bias.eyebrow}</div>
+                                <div className="text-base font-black text-white">{c15s.bias.title}</div>
+                            </div>
+                        </div>
+                        <SpeakButton
+                            text={`${c15s.bias.title}. ${c15s.bias.lead} ${c15s.bias.body} ${c15s.bias.ask}`}
+                            speechLocale={speechLocale}
+                        />
+                    </div>
+                    <p className="text-[15px] font-bold leading-relaxed text-amber-100">{c15s.bias.lead}</p>
+                    <p className="mt-2 leading-relaxed text-slate-300">{c15s.bias.body}</p>
+                    <p className="mt-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-sm leading-relaxed text-slate-200">
+                        {c15s.bias.ask}
+                    </p>
+                </div>
 
                 {/* המנטור: שנו את המקרה, וראו אם העיקרון מחזיק */}
                 <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>

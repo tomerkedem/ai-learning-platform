@@ -171,6 +171,7 @@ export const evaluation = {
             'Define in advance the desired answer for each case, before you run it.',
             'Run all the cases, measure how many passed and how many failed.',
             'Improve based on the patterns that failed, and test again after each change. But do not rely on the same cases forever: if you keep tuning against them, they stop being a fair test, so keep some fresh cases for later evaluation.',
+            'A test result describes how the system behaved on the cases that were tested, at the time the test was run. After a few months reality can change: new kinds of requests, new wordings, or new situations that did not appear before. So a system that passed an evaluation can behave differently later, even without the system itself changing. This is called distribution shift. That is why it is important to go back and test the system from time to time with current cases.',
             'For teams building systems: create fixed test cases, including edge cases and cases where the answer is "I do not know" or "a source is needed". Check that a change did not improve one case and break another. That is a regression: an improvement in one behavior that makes another behavior worse. Accept the change only if important behavior did not regress.',
         ],
         caveat:
