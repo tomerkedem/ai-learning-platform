@@ -97,14 +97,19 @@ function cardClasses(state: CardState, reduce: boolean): string {
 // mentorMode (אופציונלי): נוכחות המנטור בניחוש. ברירת המחדל 'classic' משמרת בדיוק את
 // ההתנהגות הקיימת בכל הצרכנים. 'recovery' הוא ה-opt-in של פרקי הפיילוט: אין דמות לפני
 // הבחירה ואין דמות על תשובה נכונה, ודמות המנטור נשארת רק אחרי טעות, כליווי אנושי.
+// 'respond' הוא מודל F3 RESPOND (פיילוט M6): אין דמות לפני הבחירה, ואחרי הבחירה שתי
+// התוצאות מקבלות את אותה שורת תגובה אנושית, כך שהדמות אינה אות שגיאה.
 // אף טקסט אינו נעלם באף מצב: משפט ההזמנה עובר לטקסט גוף ונשאר גלוי גם בטלפון.
+//
+// mentorResponse (אופציונלי): משפטי התגובה הספציפיים לפרק, נדרש רק ב-'respond'.
 export const OpeningGuess: React.FC<{
     content: OpeningGuessContent;
     cards: DiscoveryGuessCard[];
     speechLocale?: Locale;
     headingLevel?: 2 | 3;
-    mentorMode?: 'classic' | 'recovery';
-}> = ({ content, cards, speechLocale, headingLevel = 3, mentorMode = 'classic' }) => {
+    mentorMode?: 'classic' | 'recovery' | 'respond';
+    mentorResponse?: { correct: string; wrong: string };
+}> = ({ content, cards, speechLocale, headingLevel = 3, mentorMode = 'classic', mentorResponse }) => {
     const Heading = `h${headingLevel}` as const;
     const reduce = useReducedMotion();
     const [chosenId, setChosenId] = useState<string | null>(null);
@@ -224,7 +229,8 @@ export const OpeningGuess: React.FC<{
                         reveal={preciseCard ? { button: content.revealButton, title: `${content.revealTitle} ${preciseCard.title}`, body: content.revealCopy, revealed, onReveal: () => setRevealed(true) } : undefined}
                         onRetry={reset}
                         retryLabel={content.resetButton}
-                        mentorMode={mentorMode === 'recovery' ? 'recovery' : 'both'}
+                        mentorMode={mentorMode === 'classic' ? 'both' : mentorMode}
+                        mentorResponse={mentorResponse}
                     />
                 )}
             </div>

@@ -19,6 +19,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { HelpCircle, Sparkles, Highlighter, Globe, Check, ArrowDown, RotateCcw } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
 import { Mentor, type MentorPose } from './Mentor';
+import { MentorResponse } from './MentorResponse';
 import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
 
@@ -72,8 +73,13 @@ interface AttentionGuessProps {
      * ההשערה הקרובה, ובלי דמות בכרטיס התובנה הנחשפת. הדמות נשארת רק כשההשערה שנבחרה
      * אינה הקרובה, כליווי אנושי אחרי טעות. אף טקסט אינו נעלם: משפט ההזמנה עובר
      * לטקסט גוף ונשאר גלוי גם בטלפון.
+     * 'respond' הוא מודל F3 RESPOND (פיילוט M6): גם בלי דמות הזמנה ובלי דמות בכרטיס
+     * התובנה, אבל פאנל המשוב מקבל שורת תגובה אנושית אחידה בשתי התוצאות. צ׳יפ הסטטוס
+     * נשאר שכבת הסטטוס העצמאית ואינו מוחלף בדמות.
      */
-    mentorMode?: 'classic' | 'recovery';
+    mentorMode?: 'classic' | 'recovery' | 'respond';
+    /** משפטי התגובה הספציפיים לפרק, נדרש רק ב-'respond'. */
+    mentorResponse?: { correct: string; wrong: string };
 }
 
 const STATUS_TONE: Record<StatusTone, string> = {
@@ -127,7 +133,7 @@ function CueIllustration({ cue }: { cue: Cue }) {
     );
 }
 
-export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, prompt, dir, speechLocale, labTargetId = 'attention-lab', mentorMode = 'classic' }) => {
+export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, prompt, dir, speechLocale, labTargetId = 'attention-lab', mentorMode = 'classic', mentorResponse }) => {
     const reduce = useReducedMotion();
     const isRtl = dir === 'rtl';
     const [chosenId, setChosenId] = useState<string | null>(null);
@@ -136,8 +142,15 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
     const chosen = cards.find((c) => c.id === chosenId) ?? null;
     const choiceMade = chosenId !== null;
     const classicMentors = mentorMode === 'classic';
+    const respond = mentorMode === 'respond';
     // ב-recovery הדמות מופיעה רק כשההשערה שנבחרה אינה הקרובה (statusTone !== 'close').
-    const showFeedbackMentor = classicMentors || (!!chosen && chosen.statusTone !== 'close');
+    // ב-respond אין דמות בעמודת הצד כלל: היא עוברת לשורת התגובה שמתחת למשוב, זהה
+    // במבנה בשתי התוצאות.
+    const showFeedbackMentor = !respond && (classicMentors || (!!chosen && chosen.statusTone !== 'close'));
+    // ההשערה הקרובה היא תוצאת ההצלחה של הניחוש הזה; כל שאר הגוונים הם תוצאת הטעות.
+    const respondLine = !respond || !chosen
+        ? undefined
+        : chosen.statusTone === 'close' ? mentorResponse?.correct : mentorResponse?.wrong;
 
     const goToLab = () => {
         const el = typeof document !== 'undefined' ? document.getElementById(labTargetId) : null;
@@ -258,6 +271,7 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                                                     `${content.getsRightLabel}: ${chosen.getsRight}`,
                                                     `${chosen.missesLabel}: ${chosen.misses}`,
                                                     chosen.bridge,
+                                                    respondLine,
                                                 )}
                                                 speechLocale={speechLocale}
                                             />
@@ -276,6 +290,8 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                                                 {chosen.bridge}
                                             </p>
                                         </div>
+
+                                        <MentorResponse line={respondLine} />
 
                                         <div className="mt-4 flex flex-wrap items-center gap-3">
                                             {!revealed && (

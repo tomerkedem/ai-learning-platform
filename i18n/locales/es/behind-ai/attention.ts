@@ -20,6 +20,19 @@ export const attention = {
     // Idioma en el que está escrito el contenido del capítulo.
     contentLocale: 'es' as Locale,
 
+    // F3 RESPOND (piloto M6): la capa de respuesta humana del capítulo. El estado sigue
+    // siendo independiente; aquí solo está lo que el mentor dice después, en ambos resultados.
+    mentorRespond: {
+        guessCorrect:
+            'Captaste la parte más difícil de ver, porque no está en una imagen sino entre imágenes. Una vez que lo ves, deja de sorprender que un cambio pequeño de redacción cambie una respuesta entera.',
+        guessWrong:
+            'Esa hipótesis no nació de la confusión. Nació de intentar fijar una sola imagen estable al proceso, que es justo la parte difícil aquí. Vale la pena releer las dos líneas de arriba teniendo presente que la imagen va cambiando.',
+        quizPass:
+            'Ya tratas el peso como una relación entre partes y no como un ranking de palabras. Eso es lo que explicará más adelante por qué un cambio pequeño de redacción cambia una respuesta entera.',
+        quizFail:
+            'Esta idea se aclara con el movimiento, no con una definición. Vuelve al laboratorio, quita una palabra de la frase y mira adónde se va el peso.',
+    },
+
     // El prompt ancla, compartido por el hero, la conjetura y el bloqueo de comprensión.
     prompt: 'El paquete figura como entregado, pero el cliente dice que nunca lo recibió.',
 

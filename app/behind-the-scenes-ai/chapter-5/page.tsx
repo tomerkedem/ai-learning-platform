@@ -299,9 +299,16 @@ export default function BehindTheScenesChapter5() {
 
             {/* ══════════ ניחוש מהיר ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                {/* M4: מנטור ההזמנה ומנטור התשובה-הנכונה הוסרו. משפט ההזמנה נשאר כטקסט גוף
-                    וגלוי גם בטלפון, והדמות נשמרת רק לכרטיס הטעות, כליווי אנושי (F3). */}
-                <OpeningGuess content={guessContent} cards={guessCards} headingLevel={2} mentorMode="recovery" />
+                {/* M7 F3 SELECTIVE RESPOND: אין מנטור לפני הבחירה (משפט ההזמנה נשאר כטקסט גוף
+                    וגלוי גם בטלפון), ואחרי הבחירה שתי התוצאות מקבלות בדיוק אותה שורת תגובה
+                    אנושית: אותה פוזה, אותו גודל, אותו מיקום. זה רגע הדמות היחיד בפרק. */}
+                <OpeningGuess
+                    content={guessContent}
+                    cards={guessCards}
+                    headingLevel={2}
+                    mentorMode="respond"
+                    mentorResponse={{ correct: c5.mentorRespond.guessCorrect, wrong: c5.mentorRespond.guessWrong }}
+                />
             </section>
 
             {/* ══════════ Semantic Space Lab ══════════ */}
@@ -489,9 +496,15 @@ export default function BehindTheScenesChapter5() {
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-16 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
-                    {/* M4: בלי מנטור בפתיחת המבדק ובלי מנטור על מעבר. הדמות נשארת רק
-                        בתוצאה שלא עברה, לצד קישורי החזרה הממוקדים. */}
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={c5.quiz.conceptLabels} mentorScope="recovery" />
+                    {/* M7 F3 SELECTIVE RESPOND: המבדק חסר-דמות לחלוטין. אייקון הסטטוס נשאר בראש
+                        כרטיס התוצאה בשתי התוצאות, ומשפט התגובה הספציפי לפרק מופיע מתחתיו
+                        כטקסט בלבד. */}
+                    <AssessmentEngine
+                        {...localizedQuiz}
+                        conceptDisplayMap={c5.quiz.conceptLabels}
+                        mentorScope="respond"
+                        mentorResponse={{ pass: c5.mentorRespond.quizPass, fail: c5.mentorRespond.quizFail }}
+                    />
                 </ExpandableLab>
             </section>
         </ChapterLayout>

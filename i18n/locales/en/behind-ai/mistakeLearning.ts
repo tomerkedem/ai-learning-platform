@@ -21,6 +21,19 @@ import { mistakeLearningQuiz } from './mistakeLearningQuiz';
 export const mistakeLearning = {
     contentLocale: 'en' as Locale,
 
+    // F3 RESPOND (M6 pilot): the chapter's human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You separated two layers that are very easy to blur: what happens inside this conversation, and what needs a whole process before it happens in the system.',
+        guessWrong:
+            'Almost everyone meeting this for the first time picks one of these options, and they all fail at the same point: they blur what happened in the conversation with what happened in the model. Read the lines above again while holding that separation in mind.',
+        quizPass:
+            'You are now separating a fix inside a conversation from an improvement in the system. That separation is what will hold up against marketing claims about AI that learns from you.',
+        quizFail:
+            'This distinction slips easily, even after you have read about it. One question is worth going back to: what exactly changed, and where. The answer in the conversation, or the model itself.',
+    },
+
     hero: {
         badge: 'Behind the Scenes · 14 · Learning from Mistakes',
         titleLead: 'The same mistake keeps coming back.',

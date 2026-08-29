@@ -22,6 +22,19 @@ export const attention = {
     // The language the chapter content is actually written in.
     contentLocale: 'en' as Locale,
 
+    // F3 RESPOND (M6 pilot): the chapter's human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You caught the part that is hardest to see, because it does not live in one picture but between pictures. Once you see it, it stops being surprising that a small change in wording changes a whole answer.',
+        guessWrong:
+            'That guess did not come from confusion. It came from trying to pin one stable picture onto the process, which is exactly the hard part here. It is worth rereading the two lines above while holding on to the idea that the picture keeps changing.',
+        quizPass:
+            'You are treating weight as a relation between parts, not as a ranking of words. That is what will explain later why a small change in wording changes a whole answer.',
+        quizFail:
+            'This idea becomes clear through movement, not through a definition. Go back to the lab, remove one word from the sentence, and watch where the weight goes.',
+    },
+
     // The anchor prompt, shared by the hero, the guess and the Check Your Understanding step.
     prompt: 'The package was marked delivered, but the customer says they never received it.',
 

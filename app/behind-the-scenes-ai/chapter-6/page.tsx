@@ -254,10 +254,19 @@ export default function BehindTheScenesChapter6() {
 
             {/* ══════════ ניחוש לפני הסבר: ארבע השערות על Attention ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                {/* M4: מנטור ההזמנה, מנטור ההשערה-הקרובה ומנטור כרטיס התובנה הוסרו. משפט
-                    ההזמנה נשאר כטקסט גוף וגלוי גם בטלפון, והדמות נשמרת רק להשערה שאינה
-                    הקרובה, כליווי אנושי (F3). */}
-                <AttentionGuess content={guessContent} cards={guessCards} prompt={c6.prompt} dir={dir} speechLocale={speechLocale} mentorMode="recovery" />
+                {/* M7 F3 SELECTIVE RESPOND: מנטור ההזמנה ומנטור כרטיס התובנה הוסרו, ומשפט
+                    ההזמנה נשאר כטקסט גוף וגלוי גם בטלפון. אחרי הבחירה כל ארבע ההשערות
+                    מקבלות בדיוק אותה שורת תגובה אנושית, וצ׳יפ הסטטוס נשאר הערוץ היחיד
+                    שאומר עד כמה ההשערה קרובה. זה רגע הדמות היחיד בפרק. */}
+                <AttentionGuess
+                    content={guessContent}
+                    cards={guessCards}
+                    prompt={c6.prompt}
+                    dir={dir}
+                    speechLocale={speechLocale}
+                    mentorMode="respond"
+                    mentorResponse={{ correct: c6.mentorRespond.guessCorrect, wrong: c6.mentorRespond.guessWrong }}
+                />
             </section>
 
             {/* ══════════ רגע לפני המעבדה: הסבר Attention ══════════ */}
@@ -431,9 +440,15 @@ export default function BehindTheScenesChapter6() {
             <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{cq.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{cq.transitions[6]}</p></section>
             <section className="mt-12 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
-                    {/* M4: בלי מנטור בפתיחת המבדק ובלי מנטור על מעבר. הדמות נשארת רק
-                        בתוצאה שלא עברה, לצד קישורי החזרה הממוקדים. */}
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} mentorScope="recovery" />
+                    {/* M7 F3 SELECTIVE RESPOND: המבדק חסר-דמות לחלוטין. אייקון הסטטוס נשאר בראש
+                        כרטיס התוצאה בשתי התוצאות, ומשפט התגובה הספציפי לפרק מופיע מתחתיו
+                        כטקסט בלבד. */}
+                    <AssessmentEngine
+                        {...localizedQuiz}
+                        conceptDisplayMap={t.behindAi.conceptLabels}
+                        mentorScope="respond"
+                        mentorResponse={{ pass: c6.mentorRespond.quizPass, fail: c6.mentorRespond.quizFail }}
+                    />
                 </ExpandableLab>
             </section>
         </ChapterLayout>

@@ -21,6 +21,19 @@ import { mistakeLearningQuiz } from './mistakeLearningQuiz';
 export const mistakeLearning = {
     contentLocale: 'es' as Locale,
 
+    // F3 RESPOND (piloto M6): la capa de respuesta humana del capítulo. El estado sigue
+    // siendo independiente; aquí solo está lo que el mentor dice después, en ambos resultados.
+    mentorRespond: {
+        guessCorrect:
+            'Separaste dos capas que se confunden con mucha facilidad: lo que pasa dentro de esta conversación y lo que necesita un proceso entero para pasar en el sistema.',
+        guessWrong:
+            'Casi todo el que se encuentra con esto por primera vez elige una de estas opciones, y todas fallan en el mismo punto: mezclan lo que pasó en la conversación con lo que pasó en el modelo. Vuelve a leer las líneas de arriba teniendo presente esa separación.',
+        quizPass:
+            'Ya separas una corrección dentro de una conversación de una mejora en el sistema. Esa separación es la que te sostendrá frente a las promesas de marketing sobre una IA que aprende de ti.',
+        quizFail:
+            'Esta distinción se escurre con facilidad, incluso después de haber leído sobre ella. Vale la pena volver a una sola pregunta: qué cambió exactamente y dónde. La respuesta en la conversación, o el modelo mismo.',
+    },
+
     // ── Hero ──
     hero: {
         badge: 'Behind the Scenes · 14 · Learning from Mistakes',

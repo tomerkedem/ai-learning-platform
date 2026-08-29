@@ -18,6 +18,19 @@ import { mistakeLearningQuiz } from './mistakeLearningQuiz';
 export const mistakeLearning = {
     contentLocale: 'ja' as Locale,
 
+    // F3 RESPOND(M6 パイロット): この章の人間的な応答レイヤー。ステータスは独立したまま
+    // で、ここにあるのはその後にメンターが言う一言だけ。成功と失敗の両方に置かれる。
+    mentorRespond: {
+        guessCorrect:
+            'とても混ざりやすい二つの層を切り分けられました。この会話の中で起きることと、システムで起きるには丸ごとの工程が要ることです。',
+        guessWrong:
+            'これに初めて出会う人のほとんどが、この選択肢のどれかを選びます。そしてどれも同じ一点でつまずきます。会話の中で起きたことと、モデルで起きたことを混ぜているのです。その切り分けを頭に置いて、上の行をもう一度読んでみてください。',
+        quizPass:
+            '会話の中の訂正と、システムの改善とを、いま切り分けられています。この切り分けが、あなたから学ぶ AI という宣伝文句の前でも効いてきます。',
+        quizFail:
+            'この切り分けは、読んだあとでもするりと抜けていきます。ひとつの問いに戻る価値があります。何が、どこで変わったのか。会話の中の答えか、モデルそのものか。',
+    },
+
     hero: {
         badge: 'Behind the Scenes · 14 · Learning from Mistakes',
         titleLead: '同じ間違いが、また繰り返される。',

@@ -22,6 +22,19 @@ import { semanticSpaceQuiz } from './semanticSpaceQuiz';
 export const semanticSpace: typeof he = {
     contentLocale: 'es' as Locale,
 
+    // F3 RESPOND (piloto M6): la capa de respuesta humana del capítulo. El estado sigue
+    // siendo independiente; aquí solo está lo que el mentor dice después, en ambos resultados.
+    mentorRespond: {
+        guessCorrect:
+            'Lo que acabas de hacer es la parte difícil: ignoraste el parecido que saltaba a la vista. Vale la pena llevarse eso, porque muchas respuestas suenan adecuadas sin estar realmente cerca.',
+        guessWrong:
+            'Casi todo el mundo lee primero las palabras, y no es un error vergonzoso. Así estamos acostumbrados a comparar. El momento en que eso cambia es cuando dejas de preguntar cómo suena la frase y empiezas a preguntar qué dice.',
+        quizPass:
+            'Ya lees el mapa por distancia y no por palabras. Guarda también el matiz: estar cerca en el espacio significa que las representaciones se parecen, no que el significado sea idéntico ni que el contenido sea cierto.',
+        quizFail:
+            'Es fácil salir de este capítulo con la sensación de haberlo entendido antes de que el entendimiento esté completo. Lo que conviene repasar no es la definición sino la medición: qué compara exactamente el modelo. Prueba en el laboratorio una frase con una negación.',
+    },
+
     hero: {
         badge: he.hero.badge,
         titleLead: 'Cada significado',

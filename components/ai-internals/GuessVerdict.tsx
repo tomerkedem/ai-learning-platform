@@ -24,6 +24,7 @@ import React from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { CheckCircle2, Lightbulb, RotateCcw, ArrowDown, Sparkles } from 'lucide-react';
 import { Mentor, type MentorPose } from './Mentor';
+import { MentorResponse } from './MentorResponse';
 import { GuessButton } from './GuessButton';
 import { SpeakButton } from './SpeakButton';
 
@@ -239,12 +240,22 @@ export interface GuessVerdictProps {
     /**
      * מתי המנטור מופיע בכרטיס ההכרעה. opt-in של פרקי הפיילוט; ברירת המחדל 'both'
      * משמרת בדיוק את ההתנהגות הקיימת בכל שאר הצרכנים.
-     *   both      - דמות בהצלחה וגם בטעות (המצב הקיים).
+     *   both      - דמות גדולה בצד, בהצלחה וגם בטעות (המצב הקיים).
      *   recovery  - דמות בטעות בלבד, כליווי אנושי אחרי טעות משמעותית.
+     *   respond   - מודל F3 SELECTIVE RESPOND (פיילוט M7): בלי הדמות הגדולה בצד,
+     *               ובמקומה שורת תגובה אנושית זהה לחלוטין בשתי התוצאות: אותה פוזה,
+     *               אותו גודל, אותו מיקום (ראו MentorResponse). הסטטוס (וי/נורה,
+     *               כותרת, הסבר) נשאר שכבה עצמאית ואינו מוחלף.
      *   none      - בלי דמות בכלל.
-     * הטקסט של הכרטיס אינו משתנה באף מצב: רק הדמות מוסתרת.
+     * הטקסט הלימודי של הכרטיס אינו משתנה באף מצב.
      */
-    mentorMode?: 'both' | 'recovery' | 'none';
+    mentorMode?: 'both' | 'recovery' | 'respond' | 'none';
+
+    /**
+     * משפטי התגובה האנושית של מצב 'respond', אחד לכל תוצאה. ספציפיים לפרק בכוונה:
+     * תגובה גנרית שחוזרת בכל פרק היא בדיוק מה שהופך מלווה אנושי לאייקון.
+     */
+    mentorResponse?: { correct: string; wrong: string };
 }
 
 /** חיבור מקטעי הקראה: מסנן ריקים ומוסיף נקודה רק כשאין סימן סיום, למניעת "..". */
@@ -277,20 +288,26 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
     correctPose = 'celebrate',
     wrongPose = 'reassure',
     mentorMode = 'both',
+    mentorResponse,
 }) => {
     const reducedMotion = useReducedMotion();
     const reduce = reduceProp ?? !!reducedMotion;
     const a = ACCENT[accent];
     const showCorrectMentor = mentorMode === 'both';
     const showWrongMentor = mentorMode === 'both' || mentorMode === 'recovery';
+    // F3 RESPOND: שורת תגובה במקום הדמות שבצד, בשתי התוצאות באותו מבנה בדיוק.
+    const respond = mentorMode === 'respond';
+    const respondCorrect = respond ? mentorResponse?.correct : undefined;
+    const respondWrong = respond ? mentorResponse?.wrong : undefined;
 
     // הקראה נקודתית בכל כרטיסי המשוב בלומדה: אף טקסט בניחוש לא נשאר בלי הקראה.
     // טקסט ההקראה נגזר מהתוכן הנוכחי של הכרטיס, כולל ההסבר המדויק רק אחרי שנחשף.
-    const correctSpeak = speakJoin(correctTitle, correctLead, correctExplain, correctInsight);
+    const correctSpeak = speakJoin(correctTitle, correctLead, correctExplain, correctInsight, respondCorrect);
     const wrongSpeak = speakJoin(
         wrongTitle,
         wrongExplain,
         wrongExplainMore,
+        respondWrong,
         !!reveal?.revealed && reveal.title,
         !!reveal?.revealed && reveal.body,
     );
@@ -346,6 +363,7 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                         )}
                                     </p>
                                 )}
+                                <MentorResponse line={respondCorrect} />
                                 <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2.5">
                                     {continueCta && (
                                         <GuessButton
@@ -405,6 +423,8 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                 {wrongExplainMore && (
                                     <p className="mt-1.5 text-sm leading-relaxed text-slate-400">{wrongExplainMore}</p>
                                 )}
+
+                                <MentorResponse line={respondWrong} />
 
                                 {reveal && reveal.revealed && (
                                     <motion.div

@@ -94,8 +94,18 @@ interface AssessmentProps {
      * 'recovery' הוא ה-opt-in של פרקי הפיילוט: אין מנטור בפתיחת המבדק ואין מנטור
      * על מעבר, והדמות נשארת רק במסך תוצאות שלא עבר, כליווי אנושי לפני חזרה על החומר.
      * טקסט המנטור המתאים נשאר; רק המסכים שבהם הדמות מופיעה משתנים.
+     * 'respond' הוא מודל F3 SELECTIVE RESPOND (פיילוט M7): המבדק אינו מציג דמות
+     * מנטור בכלל, בשום מסך ובשום תוצאה. אייקון הסטטוס נשאר בראש כרטיס התוצאה בשתי
+     * התוצאות (גביע במעבר, חץ-חזרה בגוון דרגת הציון בלי מעבר), ומתחתיו מופיע משפט
+     * תגובה אנושי ספציפי לפרק כטקסט בלבד. כך אין החלפה בין אייקון סטטוס לפנים, ואין
+     * דמות שחוזרת במסך שנראה זהה בכל 19 הפרקים.
      */
-    mentorScope?: 'all' | 'recovery';
+    mentorScope?: 'all' | 'recovery' | 'respond';
+    /**
+     * משפטי התגובה האנושית של 'respond', ספציפיים לפרק. בלעדיהם המבדק פשוט אינו מציג
+     * שורת תגובה, ולכן אין סיכון למשפט גנרי שחוזר זהה ב-19 פרקים.
+     */
+    mentorResponse?: { pass: string; fail: string };
     /** צבע ההדגשה של המנטור. ברירת מחדל: ציאן (תואם BTS-AI). */
     mentorAccent?: MentorAccent;
     /** מיפוי תצוגה למושגים (concept) בצ׳יפים. המפתח נשאר q.concept היציב; רק התצוגה מתורגמת. */
@@ -145,12 +155,16 @@ export const AssessmentEngine = ({
     showTimer = true,
     showMentor = true,
     mentorScope = 'all',
+    mentorResponse,
     mentorAccent,
     conceptDisplayMap,
 }: AssessmentProps) => {
     // מסך הפתיחה מציג מנטור רק כשההיקף הוא 'all'. ב-'recovery' נעשה שימוש בענף
     // ללא-מנטור הקיים (אייקון Play), בלי שינוי בטקסט או במבנה המסך.
     const showStartMentor = showMentor && mentorScope === 'all';
+    // F3 SELECTIVE RESPOND: הסטטוס נשאר בראש הכרטיס בשתי התוצאות, והתגובה האנושית
+    // מופיעה מתחתיו כטקסט בלבד. אין דמות מנטור באף מסך של המבדק.
+    const respond = mentorScope === 'respond';
     // כרום מתורגם וכיוון מהרישום. props שמועברים מבחוץ גוברים על ברירות המחדל מהמילון.
     const { t, dir } = useT();
     const a = t.chrome.assessment;
@@ -444,8 +458,10 @@ export const AssessmentEngine = ({
                 <div className="relative">
                     <div className="mb-6">
                         {/* ב-'recovery' הדמות מופיעה רק כשלא עוברים: המעבר מקבל את גביע
-                            ההצלחה הקיים, והליווי האנושי נשמר לרגע שבו הוא באמת עוזר. */}
-                        {showMentor && (mentorScope === 'all' || !passed) ? (
+                            ההצלחה הקיים, והליווי האנושי נשמר לרגע שבו הוא באמת עוזר.
+                            ב-'respond' הענף הזה לעולם אינו נבחר: המבדק חסר-דמות לגמרי,
+                            ולכן שתי התוצאות מקבלות בסלוט הזה אייקון סטטוס ולא פנים. */}
+                        {showMentor && !respond && (mentorScope === 'all' || !passed) ? (
                             <div className="flex justify-center mb-5">
                                 <Mentor
                                     pose={passed ? 'celebrate' : 'reassure'}
@@ -453,6 +469,14 @@ export const AssessmentEngine = ({
                                     line={passed ? (scoreValue >= 90 ? a.mentorPassHigh : a.mentorPass) : a.mentorFail}
                                     accent={mentorAccent}
                                 />
+                            </div>
+                        ) : respond && !passed ? (
+                            /* אות סטטוס עצמאי לתוצאה שלא עברה. גביע כאן היה משקר, ופנים
+                               כאן היו הופכות את הדמות לאייקון הכישלון. חץ-חזרה הוא בדיוק
+                               מה שהתוצאה אומרת: עוד סיבוב. הגוון נלקח מדרגת הציון, כדי
+                               שהאייקון וטבעת הציון ידברו באותו צבע. */
+                            <div className="w-20 h-20 bg-white/[0.06] rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-white/[0.03]">
+                                <RotateCcw size={38} className={feedback.color} />
                             </div>
                         ) : (
                             <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-blue-500/5">
@@ -493,6 +517,19 @@ export const AssessmentEngine = ({
                     {!passed && (
                         <p className="mb-6 text-sm leading-relaxed text-slate-400">
                             {a.failNote}
+                        </p>
+                    )}
+
+                    {/* שכבת התגובה האנושית של המבדק, כטקסט בלבד (M7, מודל C). אין כאן דמות:
+                        מסך התוצאות זהה במבנה בכל 19 הפרקים, ודמות שחוזרת בו בכל פעם הופכת
+                        למרכיב תבנית ולא לרגע הוראה. המשפט עצמו נשאר, כי הוא ספציפי לפרק.
+                        טיפוגרפיה: הערת-שוליים עם קו-צד, השפה שכבר משמשת שורות תובנה בלומדה.
+                        הקו ניטרלי בכוונה ואינו משתנה לפי התוצאה, כדי שלא ייווצר ערוץ סטטוס
+                        שני לצד טבעת הציון. נקרא אוטומטית עם כרטיס התוצאה (role=status
+                        aria-live), ולכן בלי כפתור הקראה משלו ובלי דיבור כפול. */}
+                    {respond && (passed ? mentorResponse?.pass : mentorResponse?.fail) && (
+                        <p className="mb-6 border-s-2 border-white/15 ps-3.5 text-start text-[13px] leading-relaxed text-slate-300">
+                            {passed ? mentorResponse?.pass : mentorResponse?.fail}
                         </p>
                     )}
 

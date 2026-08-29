@@ -23,6 +23,19 @@ import { semanticSpaceQuiz } from './semanticSpaceQuiz';
 export const semanticSpace: typeof he = {
     contentLocale: 'en' as Locale,
 
+    // F3 RESPOND (M6 pilot): the chapter's human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'What you just did is the hard part: you ignored the resemblance that jumped out at you. That is worth carrying forward, because plenty of answers sound like a fit without actually being close.',
+        guessWrong:
+            'Almost everyone reads the words first, and that is not an embarrassing mistake. It is how we are used to comparing. The moment it shifts is the moment you stop asking how the sentence sounds and start asking what it says.',
+        quizPass:
+            'You are reading the map by distance now, not by words. Keep the caveat too: closeness in the space means the representations are similar, not that the meaning is identical or that the content is true.',
+        quizFail:
+            'It is easy to leave this chapter feeling you have it before the understanding is complete. What is worth returning to is not the definition but the measurement: what exactly the model compares. Try one sentence with a negation in the lab.',
+    },
+
     hero: {
         badge: he.hero.badge,
         titleLead: 'Every meaning',
