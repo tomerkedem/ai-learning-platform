@@ -93,12 +93,18 @@ function cardClasses(state: CardState, reduce: boolean): string {
 // headingLevel (אופציונלי): דרגת הכותרת הסמנטית של שאלת הניחוש. ברירת המחדל 3 משמרת
 // את ההתנהגות הקיימת בכל הצרכנים. פרק שבו הניחוש הוא מקטע עליון מעביר 2, כדי שמתאר
 // הכותרות לא ידלג על דרגה. העיצוב אינו משתנה.
+//
+// mentorMode (אופציונלי): נוכחות המנטור בניחוש. ברירת המחדל 'classic' משמרת בדיוק את
+// ההתנהגות הקיימת בכל הצרכנים. 'recovery' הוא ה-opt-in של פרקי הפיילוט: אין דמות לפני
+// הבחירה ואין דמות על תשובה נכונה, ודמות המנטור נשארת רק אחרי טעות, כליווי אנושי.
+// אף טקסט אינו נעלם באף מצב: משפט ההזמנה עובר לטקסט גוף ונשאר גלוי גם בטלפון.
 export const OpeningGuess: React.FC<{
     content: OpeningGuessContent;
     cards: DiscoveryGuessCard[];
     speechLocale?: Locale;
     headingLevel?: 2 | 3;
-}> = ({ content, cards, speechLocale, headingLevel = 3 }) => {
+    mentorMode?: 'classic' | 'recovery';
+}> = ({ content, cards, speechLocale, headingLevel = 3, mentorMode = 'classic' }) => {
     const Heading = `h${headingLevel}` as const;
     const reduce = useReducedMotion();
     const [chosenId, setChosenId] = useState<string | null>(null);
@@ -128,7 +134,7 @@ export const OpeningGuess: React.FC<{
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-violet-500/10 blur-[80px]" />
 
             <div className="relative z-10">
-                {!chosen && <GuessInvite pose={content.invitePose} line={content.invite} />}
+                {!chosen && <GuessInvite pose={content.invitePose} line={content.invite} showMentor={mentorMode === 'classic'} />}
 
                 <div className="text-center">
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-400">
@@ -218,6 +224,7 @@ export const OpeningGuess: React.FC<{
                         reveal={preciseCard ? { button: content.revealButton, title: `${content.revealTitle} ${preciseCard.title}`, body: content.revealCopy, revealed, onReveal: () => setRevealed(true) } : undefined}
                         onRetry={reset}
                         retryLabel={content.resetButton}
+                        mentorMode={mentorMode === 'recovery' ? 'recovery' : 'both'}
                     />
                 )}
             </div>

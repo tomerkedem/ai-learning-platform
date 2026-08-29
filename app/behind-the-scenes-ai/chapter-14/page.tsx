@@ -11,7 +11,6 @@ import { InsightBox } from '@/components/content/InsightBox';
 
 import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
 import { MistakeLearningLab } from '@/components/ai-internals/MistakeLearningLab';
-import { Mentor } from '@/components/ai-internals/Mentor';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
@@ -178,7 +177,10 @@ export default function BehindTheScenesChapter14() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={14}>
 
             {/* ══════════ HERO ══════════ */}
-            <div className="relative">
+            {/* M4: מנטור ההירו הוסר. הבועה שלו ("שיפור אמיתי הוא תהליך, לא קסם") הייתה
+                המסקנה של הפרק, והיא נאמרה לפני ניחוש הפתיחה. hero.hook פותח את הסקרנות
+                בלי לתת את התשובה, והמסקנה נשארת במקומה: ברגע ה-wow ובנעילת ההבנה. */}
+            <div>
                 <motion.section
                     initial={reduce ? false : { opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -235,15 +237,13 @@ export default function BehindTheScenesChapter14() {
                     </div>
                 </motion.section>
 
-                {/* המנטור: שיפור אמיתי הוא תהליך, לא קסם. ממוקם בצד החיצוני לפי כיוון הקריאה. */}
-                <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[280px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="headsup" line={c14.mentor.hero} width={280} flip={!isRtl} />
-                </div>
             </div>
 
             {/* ══════════ ניחוש פתיחה ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <OpeningGuess content={guessContent} cards={guessCards} speechLocale={speechLocale} />
+                {/* M4: מנטור ההזמנה ומנטור התשובה-הנכונה הוסרו. משפט ההזמנה נשאר כטקסט גוף
+                    וגלוי גם בטלפון, והדמות נשמרת רק לכרטיס הטעות, כליווי אנושי (F3). */}
+                <OpeningGuess content={guessContent} cards={guessCards} speechLocale={speechLocale} mentorMode="recovery" />
             </section>
 
             {/* ══════════ רגע לפני המעבדה ══════════ */}
@@ -302,7 +302,7 @@ export default function BehindTheScenesChapter14() {
             </section>
 
             {/* ══════════ מעבדת הלמידה מטעות ══════════ */}
-            <section id="mistake-learning-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+            <section id="mistake-learning-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-fuchsia-400" />
                     <div>
@@ -319,11 +319,8 @@ export default function BehindTheScenesChapter14() {
                 </div>
 
                 <MistakeLearningLab data={c14.lab} dir={dir} speechLocale={speechLocale} />
-
-                {/* המנטור: איפה השיפור באמת קורה */}
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
-                    <Mentor pose="inspect" line={c14.mentor.labExplain} width={160} flip={!isRtl} />
-                </div>
+                {/* M4: המנטור "איפה השיפור באמת קורה" הוסר. אין כאן המרה לטקסט גוף כי
+                    lab.sectionIntro כבר אומר בדיוק את המשפט הזה, מילה במילה, בשש השפות. */}
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}
@@ -338,10 +335,9 @@ export default function BehindTheScenesChapter14() {
             </section>
 
             {/* ══════════ תיקון טעות נפוצה ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="reassure" line={c14.mentor.misconception} width={155} flip={!isRtl} />
-                </div>
+            {/* M4: המנטור "תיקון בשיחה אינו אימון" הוסר. שני הכרטיסים כאן כבר אומרים את זה
+                במפורש: הציטוט השגוי הוא בדיוק ההנחה הזאת, ו-rightBody מפרק אותה. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl border border-rose-500/30 bg-rose-950/10 p-5">
                         <div className="mb-2 flex items-center gap-2 text-rose-200">
@@ -366,10 +362,10 @@ export default function BehindTheScenesChapter14() {
             </section>
 
             {/* ══════════ בדיקת הבנה ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
-                    <Mentor pose="happy" line={c14.mentor.lock} width={160} flip={!isRtl} />
-                </div>
+            {/* M4: המנטור שלפני השאלה הוסר ולא הועבר לשום מקום אחר. הבועה שלו ("הפרידו
+                שיפור בשיחה משינוי במודל") נתנה את מפתח התשובה: היא פסלה את מסיח 0 והצביעה
+                על מסיח 1 עוד לפני שהלומד בחר. השאלה נשארת זהה, בלי רמז מקדים. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-fuchsia-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center gap-2">
                         <ListChecks size={20} className="text-fuchsia-300" />
@@ -383,10 +379,9 @@ export default function BehindTheScenesChapter14() {
             </section>
 
             {/* ══════════ תובנה מעשית ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="pointdown" line={c14.mentor.practical} width={160} flip={!isRtl} />
-                </div>
+            {/* M4: המנטור "תקנו בצורה שאפשר לפעול לפיה" הוסר. practical.lead אומר בדיוק את זה,
+                ואחריו חמש דוגמאות קונקרטיות שהבועה רק חזרה עליהן בקיצור. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c14.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c14.practical.lead}</span>
@@ -408,7 +403,9 @@ export default function BehindTheScenesChapter14() {
             <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{cq.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{cq.transitions[14]}</p></section>
             <section className="mt-16 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} />
+                    {/* M4: בלי מנטור בפתיחת המבדק ובלי מנטור על מעבר. הדמות נשארת רק
+                        בתוצאה שלא עברה, לצד קישורי החזרה הממוקדים. */}
+                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} mentorScope="recovery" />
                 </ExpandableLab>
             </section>
         </ChapterLayout>

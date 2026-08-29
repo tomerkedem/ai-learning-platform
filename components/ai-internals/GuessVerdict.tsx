@@ -175,20 +175,32 @@ export const ShimmerFrame: React.FC<{
     );
 };
 
-/* ── מנטור ההזמנה: דמות תומכת ממורכזת מעל הכרטיסים, נעלמת אחרי הבחירה. ── */
-export const GuessInvite: React.FC<{ pose?: MentorPose; line?: string; width?: number }> = ({
+/* ── מנטור ההזמנה: דמות תומכת ממורכזת מעל הכרטיסים, נעלמת אחרי הבחירה. ──
+   showMentor=false (opt-in של פרקי הפיילוט): ההזמנה לנחש נשארת בדיוק אותו טקסט, אבל
+   כטקסט גוף בלי דמות. במצב הזה היא גם מפסיקה להיות מוסתרת מתחת ל-sm: המשפט הוא תוכן
+   לימודי ("נסו לנחש לפני שנפתח"), ואין סיבה שלומד בטלפון לא יקבל אותו. ברירת המחדל
+   true משמרת את ההתנהגות הקיימת בכל שאר הפרקים. */
+export const GuessInvite: React.FC<{ pose?: MentorPose; line?: string; width?: number; showMentor?: boolean }> = ({
     pose = 'think',
     line,
     // מנטור-think של ההזמנה מוצג בגודל מוגדל (x1.5) ברחבי הלומדה כברירת מחדל.
     width = 162,
-}) => (
-    <div className="mb-5 hidden flex-col items-center sm:flex">
-        <Mentor pose={pose} width={width} glow={false} />
-        {line && (
-            <p className="mt-1 max-w-xs text-center text-[12px] font-medium leading-snug text-slate-400">{line}</p>
-        )}
-    </div>
-);
+    showMentor = true,
+}) => {
+    if (!showMentor) {
+        return line ? (
+            <p className="mx-auto mb-5 max-w-md text-center text-[13px] font-medium leading-snug text-slate-400">{line}</p>
+        ) : null;
+    }
+    return (
+        <div className="mb-5 hidden flex-col items-center sm:flex">
+            <Mentor pose={pose} width={width} glow={false} />
+            {line && (
+                <p className="mt-1 max-w-xs text-center text-[12px] font-medium leading-snug text-slate-400">{line}</p>
+            )}
+        </div>
+    );
+};
 
 export interface GuessVerdictProps {
     correct: boolean;
@@ -223,6 +235,16 @@ export interface GuessVerdictProps {
     /** דריסת פוזות מנטור. ברירת מחדל: celebrate להצלחה, reassure לטעות. */
     correctPose?: MentorPose;
     wrongPose?: MentorPose;
+
+    /**
+     * מתי המנטור מופיע בכרטיס ההכרעה. opt-in של פרקי הפיילוט; ברירת המחדל 'both'
+     * משמרת בדיוק את ההתנהגות הקיימת בכל שאר הצרכנים.
+     *   both      - דמות בהצלחה וגם בטעות (המצב הקיים).
+     *   recovery  - דמות בטעות בלבד, כליווי אנושי אחרי טעות משמעותית.
+     *   none      - בלי דמות בכלל.
+     * הטקסט של הכרטיס אינו משתנה באף מצב: רק הדמות מוסתרת.
+     */
+    mentorMode?: 'both' | 'recovery' | 'none';
 }
 
 /** חיבור מקטעי הקראה: מסנן ריקים ומוסיף נקודה רק כשאין סימן סיום, למניעת "..". */
@@ -254,10 +276,13 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
     retryLabel,
     correctPose = 'celebrate',
     wrongPose = 'reassure',
+    mentorMode = 'both',
 }) => {
     const reducedMotion = useReducedMotion();
     const reduce = reduceProp ?? !!reducedMotion;
     const a = ACCENT[accent];
+    const showCorrectMentor = mentorMode === 'both';
+    const showWrongMentor = mentorMode === 'both' || mentorMode === 'recovery';
 
     // הקראה נקודתית בכל כרטיסי המשוב בלומדה: אף טקסט בניחוש לא נשאר בלי הקראה.
     // טקסט ההקראה נגזר מהתוכן הנוכחי של הכרטיס, כולל ההסבר המדויק רק אחרי שנחשף.
@@ -291,9 +316,11 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                         {!reduce && <AuroraBloom rgb={a.rgb} />}
                         {!reduce && <SparkleBurst colorClass={a.sparkle} />}
                         <div className="relative flex items-start gap-4">
-                            <div className="hidden shrink-0 self-center sm:block">
-                                <Mentor pose={correctPose} width={176} glow={false} float={false} />
-                            </div>
+                            {showCorrectMentor && (
+                                <div className="hidden shrink-0 self-center sm:block">
+                                    <Mentor pose={correctPose} width={176} glow={false} float={false} />
+                                </div>
+                            )}
                             <div className="flex-1 text-start">
                                 <div className="flex items-center gap-2">
                                     <DrawCheck colorClass={a.icon} reduce={reduce} />
@@ -356,9 +383,11 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                             />
                         )}
                         <div className="relative flex items-start gap-4">
-                            <div className="hidden shrink-0 self-center sm:block">
-                                <Mentor pose={wrongPose} width={172} glow={false} float={false} />
-                            </div>
+                            {showWrongMentor && (
+                                <div className="hidden shrink-0 self-center sm:block">
+                                    <Mentor pose={wrongPose} width={172} glow={false} float={false} />
+                                </div>
+                            )}
                             <div className="flex-1 text-start">
                                 <div className="flex items-center gap-2">
                                     <motion.span

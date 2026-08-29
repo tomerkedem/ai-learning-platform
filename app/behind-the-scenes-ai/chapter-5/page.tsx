@@ -221,10 +221,8 @@ export default function BehindTheScenesChapter5() {
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={5}>
 
             {/* ══════════ HERO ══════════ */}
-            {/* עטיפה חיצונית יחסית: מאפשרת למקם את המנטור absolute מחוץ ל-section (שהוא
-                overflow-hidden), כך שהוא אינו נחתך, אינו משתתף בזרימת הטקסט, ואינו שומר עמודת
-                grid. את הגריד הישן והמנטור הפנימי לא משחזרים. */}
-            <div className="relative">
+            {/* M4: מנטור ההירו הוסר. הוא היה דמות שותקת (בלי בועה ובלי טקסט) בשש עטיפות
+                רספונסיביות, ולא לימד דבר. הכותרת, הפתיח והצ'יפים נושאים את ההירו לבדם. */}
             <motion.section
                 initial={reduce ? false : { opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -280,34 +278,6 @@ export default function BehindTheScenesChapter5() {
                 </div>
             </motion.section>
 
-            {/* מנטור ההירו, מדורג רספונסיבית. נכס ה-holographicUi מצביע שמאלה מטבעו, ולכן ממוקם
-                בצד ימין הפיזי בכל שובר ובשתי השפות כדי שהמחווה תצביע פנימה, בלי flip ובלי
-                scaleX(-1). ממוקם absolute מחוץ ל-section, מעוגן לראש הכרטיס (top-6) כדי להישאר
-                מעל דוק ההקראה הצף. מוסתר בטלפון (מתחת ל-md). הגודל מכויל לרצועה הפנויה מימין
-                לטקסט, שנמדדה זהה בשתי השפות: ~89px ב-768-1024, 121px ב-1280, 164px ב-1366,
-                ומשם גדלה. לכן: 80px בטאבלט (md), 104px מ-1280, 132px מ-1366, 188px מ-1440,
-                232px מ-1536, 336px מ-1800. Mentor.width הוא מספר ולכן כל גודל הוא מופע נפרד,
-                אך רק אחד גלוי בכל רוחב (השאר display:none). right בפיקסלים הוא פיזי ואינו מתהפך.
-                הטקסט הטורקי המוטמע בנכס הוא נושא להחלפת נכס עתידית, לא סיבה להסתרה. */}
-            <div className="pointer-events-none absolute top-2 z-20 hidden min-[768px]:block min-[1280px]:hidden" style={{ right: '-40px' }}>
-                <Mentor pose="holographicUi" width={72} glow={false} />
-            </div>
-            <div className="pointer-events-none absolute top-2 z-20 hidden min-[1280px]:block min-[1366px]:hidden" style={{ right: '-72px' }}>
-                <Mentor pose="holographicUi" width={104} glow={false} />
-            </div>
-            <div className="pointer-events-none absolute top-2 z-20 hidden min-[1366px]:block min-[1440px]:hidden" style={{ right: '-105px' }}>
-                <Mentor pose="holographicUi" width={132} glow={false} />
-            </div>
-            <div className="pointer-events-none absolute top-2 z-20 hidden min-[1440px]:block min-[1536px]:hidden" style={{ right: '-153px' }}>
-                <Mentor pose="holographicUi" width={188} glow={false} />
-            </div>
-            <div className="pointer-events-none absolute top-2 z-20 hidden min-[1536px]:block min-[1800px]:hidden" style={{ right: '-199px' }}>
-                <Mentor pose="holographicUi" width={232} glow={false} />
-            </div>
-            <div className="pointer-events-none absolute top-2 z-20 hidden min-[1800px]:block" style={{ right: '-315px' }}>
-                <Mentor pose="holographicUi" width={336} glow={false} />
-            </div>
-            </div>
 
             {/* ══════════ במילים פשוטות ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
@@ -329,7 +299,9 @@ export default function BehindTheScenesChapter5() {
 
             {/* ══════════ ניחוש מהיר ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <OpeningGuess content={guessContent} cards={guessCards} headingLevel={2} />
+                {/* M4: מנטור ההזמנה ומנטור התשובה-הנכונה הוסרו. משפט ההזמנה נשאר כטקסט גוף
+                    וגלוי גם בטלפון, והדמות נשמרת רק לכרטיס הטעות, כליווי אנושי (F3). */}
+                <OpeningGuess content={guessContent} cards={guessCards} headingLevel={2} mentorMode="recovery" />
             </section>
 
             {/* ══════════ Semantic Space Lab ══════════ */}
@@ -343,16 +315,25 @@ export default function BehindTheScenesChapter5() {
                     </div>
                 </div>
 
-                {/* חייב להישאר מחוץ ל-ExpandableLab: הוא מרנדר את ילדיו ל-Portal במסך מלא,
-                    ומנטור בפנים היה צץ גם מעל המעבדה המוגדלת.
-                    ה-pt שומר מקום לבועה מעל הראש כדי שלא תטפס על כותרת ה-section. */}
-                <div className="hidden justify-center pt-10 sm:flex">
-                    <Mentor pose="think" line={c5.mentor.lab} width={160} />
-                </div>
-
+                {/* M4 - עדשה אנושית (F2). זה המקום היחיד בשלושת פרקי הפיילוט שבו המנטור אומר
+                    משהו שהטקסט הקיים אינו אומר: labIntro מסביר מה לעשות במעבדה, והמשפט הזה
+                    מסביר על מה להסתכל בזמן שעושים. לכן הוא נשאר, אבל משנה צורה: הדמות ירדה
+                    לגודל שקט ובלי ריחוף, והמשפט עצמו כבר אינו בועת-דיבור אלא טקסט גוף בתוך
+                    כרטיס המסגור. כך הוא מגיע גם ללומד בטלפון (שם הדמות מוסתרת) ונכנס להקראה
+                    הקיימת של הכרטיס בלי מקטע חדש. בלי flip: זו תמונה של אדם אמיתי. */}
                 <div className="flex items-start justify-between gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    <span>{c5.sections.labIntro}</span>
-                    <SpeakButton text={`${c5.sections.labTitle}. ${c5.sections.labIntro}`} className="mt-0.5" />
+                    <div className="flex flex-1 items-start gap-3.5">
+                        <div className="hidden shrink-0 self-center sm:block">
+                            <Mentor pose="think" width={92} glow={false} float={false} />
+                        </div>
+                        <div>
+                            <span className="block">{c5.sections.labIntro}</span>
+                            <span className="mt-2.5 block border-s-2 border-violet-400/50 ps-3 text-sm font-bold text-violet-100">
+                                {c5.mentor.lab}
+                            </span>
+                        </div>
+                    </div>
+                    <SpeakButton text={`${c5.sections.labTitle}. ${c5.sections.labIntro} ${c5.mentor.lab}`} className="mt-0.5" />
                 </div>
 
                 <ExpandableLab title={c5.sections.labTitle}>
@@ -467,17 +448,14 @@ export default function BehindTheScenesChapter5() {
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
                     {/* הרמז הוא טקסט ולא בועה, כדי שישרוד גם ב-390 שבו התמונה מוסתרת.
                         הוא נאמר לפני התשובה בכוונה, ולכן אינו זקוק ל-state של LockQuestion. */}
-                    <div className="mb-5 flex items-start justify-between gap-4">
-                        <div>
-                            <div className="flex items-center gap-2">
-                                <ListChecks size={20} className="text-violet-300" />
-                                <h2 className="text-xl font-bold text-white">{c5.lock.title}</h2>
-                            </div>
-                            <p className="mt-2 text-[13px] font-semibold leading-relaxed text-violet-200">{c5.mentor.lock}</p>
+                    {/* M4: דמות ה-happy הוסרה. היא הייתה שותקת, וחגגה לפני שהלומד ענה.
+                        הרמז הנייטרלי עצמו כבר היה טקסט גוף והוא נשאר בדיוק כפי שהיה. */}
+                    <div className="mb-5">
+                        <div className="flex items-center gap-2">
+                            <ListChecks size={20} className="text-violet-300" />
+                            <h2 className="text-xl font-bold text-white">{c5.lock.title}</h2>
                         </div>
-                        <div className="hidden shrink-0 self-center sm:block">
-                            <Mentor pose="happy" width={104} glow={false} float={false} />
-                        </div>
+                        <p className="mt-2 text-[13px] font-semibold leading-relaxed text-violet-200">{c5.mentor.lock}</p>
                     </div>
                     <LockQuestion />
                 </div>
@@ -511,7 +489,9 @@ export default function BehindTheScenesChapter5() {
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-16 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={c5.quiz.conceptLabels} />
+                    {/* M4: בלי מנטור בפתיחת המבדק ובלי מנטור על מעבר. הדמות נשארת רק
+                        בתוצאה שלא עברה, לצד קישורי החזרה הממוקדים. */}
+                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={c5.quiz.conceptLabels} mentorScope="recovery" />
                 </ExpandableLab>
             </section>
         </ChapterLayout>

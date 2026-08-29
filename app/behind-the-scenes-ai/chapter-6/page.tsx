@@ -12,7 +12,7 @@ import { InsightBox } from '@/components/content/InsightBox';
 
 import { AttentionGuess, type AttentionGuessCard, type AttentionGuessContent, type Cue, type StatusTone } from '@/components/ai-internals/AttentionGuess';
 import { AttentionSentenceLab } from '@/components/ai-internals/AttentionSentenceLab';
-import { Mentor, type MentorPose } from '@/components/ai-internals/Mentor';
+import type { MentorPose } from '@/components/ai-internals/Mentor';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
@@ -91,7 +91,7 @@ const DiagnosisQuestion: React.FC = () => {
 };
 
 export default function BehindTheScenesChapter6() {
-    const { t, dir, locale } = useT();
+    const { t, dir } = useT();
     const reduce = useReducedMotion();
     const isRtl = dir === 'rtl';
     const c6 = t.behindAi.attention;
@@ -246,49 +246,18 @@ export default function BehindTheScenesChapter6() {
                     </div>
                 </motion.section>
 
-                {/* מנטור הירו: פתרון תלוי-לוקאל (מקרה מיוחד לפרק 6). עברית – התמונה עם הצ'יפים
-                    בעברית; היא פונה שמאלה מטבעה, לכן בצד ימין ובלי היפוך. שאר השפות – פוזה גנרית
-                    ללא טקסט מוטבע דרך רכיב Mentor, עם flip לפי כיוון כדי לפנות לתוך הכרטיס.
-                    pointer-events-none; מוצג רק מ-xl ומעלה. */}
-                {locale === 'he' ? (
-                    // עברית שומרת על נכס האמנות הייעודי (עם הצ'יפים בעברית), מוגדל פי 1.7 ל-476px
-                    // ומוגבה (bottom-24) כדי שיבלוט לצד הכותרת. מעליו בועת-דיבור מתורגמת בסגנון בועת המנטור.
-                    <div className="pointer-events-none absolute bottom-24 right-0 z-20 hidden w-[476px] translate-x-[80%] xl:block">
-                        {/* data-mentor-root: מנטור ההירו של פרק 6 בעברית משתמש ב-img גולמי (לא רכיב
-                            Mentor), לכן מסמנים אותו ידנית כדי שכלל מנטור-הצד הממורכז ימקם אותו מחדש
-                            בזרימה בטאבלט/דסקטופ קטן, בדיוק כמו שאר המנטורים. */}
-                        <div className="relative" data-mentor-root>
-                            <div data-mentor-bubble className="absolute left-1/2 -top-2 z-10 w-max max-w-[12rem] -translate-x-1/2 -translate-y-full">
-                                <div className="relative rounded-2xl border px-3 py-2 text-center shadow-lg backdrop-blur-sm" style={{ borderColor: 'rgb(6 182 212 / 0.4)', backgroundColor: 'rgb(15 23 42 / 0.95)' }}>
-                                    <p className="text-[11px] font-bold leading-snug" style={{ color: '#a5f3fc' }}>{c6.mentor.hero}</p>
-                                    <span className="absolute left-1/2 -bottom-1.5 h-3 w-3 -translate-x-1/2 rotate-45 border-b border-r" style={{ borderColor: 'rgb(6 182 212 / 0.4)', backgroundColor: 'rgb(15 23 42 / 0.95)' }} />
-                                </div>
-                            </div>
-                            <motion.img
-                                src="/assets/chapter-06-attention-mentor-hero-alpha.png"
-                                alt={c6.hero.mentorAlt}
-                                initial={reduce ? false : { opacity: 0, scale: 0.94 }}
-                                animate={reduce ? { opacity: 1 } : { opacity: 1, y: [0, -10, 0] }}
-                                transition={reduce ? { duration: 0 } : { y: { repeat: Infinity, duration: 4, ease: 'easeInOut' }, opacity: { duration: 0.4 } }}
-                                /* הדמות מצוירת מימין למרכז ה-PNG, לכן מוסטת שמאלה כדי שהראש יעמוד מתחת לבועה הממורכזת */
-                                style={{ x: -95 }}
-                                className="block h-auto w-full object-contain drop-shadow-[0_15px_35px_rgba(34,211,238,0.30)]"
-                                draggable={false}
-                            />
-                        </div>
-                    </div>
-                ) : (
-                    <div className={`pointer-events-none absolute bottom-20 z-20 hidden xl:block ${isRtl ? 'right-0 translate-x-[72%]' : 'left-0 -translate-x-[72%]'}`}>
-                        {/* פוזה גנרית ללא טקסט עברי מוטבע (inspect – מתאימה לנושא Attention). בועת-דיבור
-                            מתורגמת דרך הרכיב. מוגדל פי 1.7 ומוגבה כמו מנטור-ההירו בעברית. flip לפי כיוון לפנות לתוך הכרטיס. */}
-                        <Mentor pose="inspect" line={c6.mentor.hero} width={422} flip={!isRtl} />
-                    </div>
-                )}
+                {/* M4: מנטור ההירו הוסר בכל שש השפות, ואיתו הפיצול המבני עברית-מול-השאר.
+                    הבועה ("המודל בוחר על אילו מילים להתמקד") נתנה את מסקנת הניחוש לפני
+                    שהלומד ניחש, והנכס העברי הייעודי נשא טקסט מוטבע שלא היה קיים בשאר השפות.
+                    כעת שש השפות מקבלות בדיוק את אותו הירו. קובצי הנכסים נשארים במאגר. */}
             </div>
 
             {/* ══════════ ניחוש לפני הסבר: ארבע השערות על Attention ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <AttentionGuess content={guessContent} cards={guessCards} prompt={c6.prompt} dir={dir} speechLocale={speechLocale} />
+                {/* M4: מנטור ההזמנה, מנטור ההשערה-הקרובה ומנטור כרטיס התובנה הוסרו. משפט
+                    ההזמנה נשאר כטקסט גוף וגלוי גם בטלפון, והדמות נשמרת רק להשערה שאינה
+                    הקרובה, כליווי אנושי (F3). */}
+                <AttentionGuess content={guessContent} cards={guessCards} prompt={c6.prompt} dir={dir} speechLocale={speechLocale} mentorMode="recovery" />
             </section>
 
             {/* ══════════ רגע לפני המעבדה: הסבר Attention ══════════ */}
@@ -322,7 +291,7 @@ export default function BehindTheScenesChapter6() {
             </section>
 
             {/* ══════════ מעבדת הקשב ══════════ */}
-            <section id="attention-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+            <section id="attention-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -337,10 +306,9 @@ export default function BehindTheScenesChapter6() {
                 </div>
 
                 <AttentionSentenceLab data={c6.sentenceLab} dir={dir} speechLocale={speechLocale} />
-
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
-                    <Mentor pose="explain" line={c6.mentor.lab} width={160} flip={!isRtl} />
-                </div>
+                {/* M4: המנטור "שנו מילה, והמשקל זז" הוסר. אין כאן המרה לטקסט גוף כי
+                    sectionIntro כבר אומר את זה, ובאופן קונקרטי יותר (איזו מילה לשנות),
+                    וכותרת המעבדה עצמה היא "שנו משהו במשפט, וראו לאן הקשב זז". */}
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}
@@ -409,10 +377,9 @@ export default function BehindTheScenesChapter6() {
             </section>
 
             {/* ══════════ בדיקת הבנה ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="celebrate" line={c6.mentor.lock} width={160} flip={!isRtl} />
-                </div>
+            {/* M4: המנטור שלפני השאלה הוסר. הוא היה בפוזת celebrate ואמר "תפסתם את הקשב",
+                כלומר חגג הבנה לפני שהלומד אבחן משהו. השאלה נשארת זהה. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -440,10 +407,9 @@ export default function BehindTheScenesChapter6() {
             </section>
 
             {/* ══════════ תובנה מעשית ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
-                    <Mentor pose="pointdown" line={c6.mentor.practical} width={160} flip={!isRtl} />
-                </div>
+            {/* M4: המנטור "ככה כותבים פרומפט שהקשב מבין" הוסר. זו כותרת התובנה המעשית עצמה,
+                והרשימה שמתחתיה כבר מפרטת בדיוק איך. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c6.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c6.practical.lead}</span>
@@ -465,7 +431,9 @@ export default function BehindTheScenesChapter6() {
             <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{cq.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{cq.transitions[6]}</p></section>
             <section className="mt-12 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} />
+                    {/* M4: בלי מנטור בפתיחת המבדק ובלי מנטור על מעבר. הדמות נשארת רק
+                        בתוצאה שלא עברה, לצד קישורי החזרה הממוקדים. */}
+                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} mentorScope="recovery" />
                 </ExpandableLab>
             </section>
         </ChapterLayout>

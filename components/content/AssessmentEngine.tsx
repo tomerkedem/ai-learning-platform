@@ -88,6 +88,14 @@ interface AssessmentProps {
     soundEnabled?: boolean;
     /** האם להציג את המנטור במסכי הפתיחה והתוצאות. ברירת מחדל: true. */
     showMentor?: boolean;
+    /**
+     * באילו מסכים המנטור מופיע כשהוא מופעל. ברירת המחדל 'all' משמרת בדיוק את
+     * ההתנהגות הקיימת בכל הצרכנים (פתיחה, מעבר וכישלון).
+     * 'recovery' הוא ה-opt-in של פרקי הפיילוט: אין מנטור בפתיחת המבדק ואין מנטור
+     * על מעבר, והדמות נשארת רק במסך תוצאות שלא עבר, כליווי אנושי לפני חזרה על החומר.
+     * טקסט המנטור המתאים נשאר; רק המסכים שבהם הדמות מופיעה משתנים.
+     */
+    mentorScope?: 'all' | 'recovery';
     /** צבע ההדגשה של המנטור. ברירת מחדל: ציאן (תואם BTS-AI). */
     mentorAccent?: MentorAccent;
     /** מיפוי תצוגה למושגים (concept) בצ׳יפים. המפתח נשאר q.concept היציב; רק התצוגה מתורגמת. */
@@ -136,9 +144,13 @@ export const AssessmentEngine = ({
     completedTitle,
     showTimer = true,
     showMentor = true,
+    mentorScope = 'all',
     mentorAccent,
     conceptDisplayMap,
 }: AssessmentProps) => {
+    // מסך הפתיחה מציג מנטור רק כשההיקף הוא 'all'. ב-'recovery' נעשה שימוש בענף
+    // ללא-מנטור הקיים (אייקון Play), בלי שינוי בטקסט או במבנה המסך.
+    const showStartMentor = showMentor && mentorScope === 'all';
     // כרום מתורגם וכיוון מהרישום. props שמועברים מבחוץ גוברים על ברירות המחדל מהמילון.
     const { t, dir } = useT();
     const a = t.chrome.assessment;
@@ -350,7 +362,7 @@ export const AssessmentEngine = ({
                 />
 
                 <div className="relative">
-                    {showMentor ? (
+                    {showStartMentor ? (
                         <div className="flex justify-center mb-8">
                             <Mentor pose="ready" width={140} line={a.mentorStart} accent={mentorAccent} />
                         </div>
@@ -431,7 +443,9 @@ export const AssessmentEngine = ({
 
                 <div className="relative">
                     <div className="mb-6">
-                        {showMentor ? (
+                        {/* ב-'recovery' הדמות מופיעה רק כשלא עוברים: המעבר מקבל את גביע
+                            ההצלחה הקיים, והליווי האנושי נשמר לרגע שבו הוא באמת עוזר. */}
+                        {showMentor && (mentorScope === 'all' || !passed) ? (
                             <div className="flex justify-center mb-5">
                                 <Mentor
                                     pose={passed ? 'celebrate' : 'reassure'}
