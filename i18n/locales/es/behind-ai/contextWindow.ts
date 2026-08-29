@@ -141,6 +141,19 @@ export const contextWindow = {
         practical: 'Así mantienes el dato crítico en la imagen',
     },
 
+    // F3 RESPOND (M8): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Notaste que la pregunta no es cuánto recuerda el modelo, sino qué tiene delante ahora mismo. Es un giro pequeño en el ángulo, y es el que después explica por qué una conversación larga empieza a perder detalles.',
+        guessWrong:
+            'Esa conjetura no vino de un descuido. Vino de que hablamos con el modelo como con alguien que sostiene una conversación, y quien sostiene una conversación tiene memoria. Vale la pena releer las líneas de arriba sosteniendo la idea de que aquí nadie recuerda: solo está lo que se muestra en este momento.',
+        quizPass:
+            'Tratas la ventana como lo que se muestra, no como lo que quedó guardado. Esa es justo la distinción que hará que vuelvas a pegar un dato crítico en vez de suponer que sigue ahí.',
+        quizFail:
+            'Esto se ve mejor de lo que se lee. Vuelve al laboratorio, alarga la conversación y observa qué frase sale primero de la ventana y qué le pasa a la respuesta enseguida.',
+    },
+
     // ── Conjetura inicial ──
     guess: {
         eyebrow: 'Conjetura rápida · cuatro hipótesis sobre la ventana de contexto',

@@ -34,6 +34,19 @@ export const chapter4 = {
         practical: 'Text became a number, now we can compute',
     },
 
+    // F3 RESPOND (M8): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You separated the thing that points from the thing that holds. That separation is easy to miss, because a number usually does tell us something about quantity or rank. Here it only tells the model where to go.',
+        guessWrong:
+            'That choice did not come from confusion. It came from a very reasonable assumption: that if the model receives a number, the number itself carries information. It is worth rereading the lines above while asking not what the number says, but where it sends you.',
+        quizPass:
+            'You are separating the id from the vector it pulls up. That is the distinction that will carry you into the next chapter, when we start talking about closeness between meanings.',
+        quizFail:
+            'This idea gets clear through action, not through a definition. Go back to the lookup lab, pick one word, and watch what changes in the row that comes back and what stays fixed.',
+    },
+
     // Quick guess: text only; the icon, correct answer, and poses are structural.
     // Option ids (address/meaning/importance) are stable page keys, not translated.
     // address = the correct answer, meaning/importance = wrong, with a why.

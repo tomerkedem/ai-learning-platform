@@ -144,6 +144,19 @@ export const contextWindow = {
         practical: 'This is how you keep the critical detail in the picture',
     },
 
+    // F3 RESPOND (M8): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You noticed that the question is not how much the model remembers, but what is in front of it right now. That is a small shift of angle, and it is the one that will later explain why a long conversation starts losing details.',
+        guessWrong:
+            'That guess did not come from carelessness. It came from the fact that we talk to the model the way we talk to someone holding a conversation, and someone holding a conversation has a memory. It is worth rereading the lines above while holding on to the idea that nothing here remembers, there is only what is on display right now.',
+        quizPass:
+            'You are treating the window as what is on display, not as what was saved. That is exactly the distinction that will make you paste a critical detail back in instead of assuming it is still there.',
+        quizFail:
+            'This is easier to see than to read about. Go back to the lab, stretch the conversation, and watch which sentence leaves the window first and what happens to the answer right after.',
+    },
+
     // -- Opening guess --
     guess: {
         eyebrow: 'Quick guess · four ideas about the context window',

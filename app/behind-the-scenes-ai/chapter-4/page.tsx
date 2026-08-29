@@ -8,7 +8,6 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
 import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
-import { Mentor } from '@/components/ai-internals/Mentor';
 import { GuessButton } from '@/components/ai-internals/GuessButton';
 import { GuessVerdict } from '@/components/ai-internals/GuessVerdict';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
@@ -48,6 +47,8 @@ const scrollToSee = (smooth: boolean) => {
 const MeaningGuess: React.FC = () => {
     const { t, dir } = useT();
     const g = t.behindAi.chapter4.guess;
+    // שכבת התגובה האנושית של הפרק (M8, מודל C). ספציפית לפרק בכוונה.
+    const mr = t.behindAi.chapter4.mentorRespond;
     const reduce = useReducedMotion();
     const [chosenId, setChosenId] = useState<GuessId | null>(null);
     const chosenMeta = GUESS_CARD_META.find((o) => o.id === chosenId) ?? null;
@@ -74,16 +75,14 @@ const MeaningGuess: React.FC = () => {
                     <p className="mx-auto mb-6 max-w-xl rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-sm font-bold text-slate-200" dir="ltr">{g.prompt}</p>
                 </div>
 
-                {/* מצב לפני בחירה: מנטור מהורהר מזמין + כרטיסים.
-                    ההזמנה מקומית לפרק (ולא GuessInvite המשותף) משתי סיבות: המנטור כאן הוא רמז
-                    ולא דמות פתיחה, ולכן הוא קטן משמעותית מההירו, והטקסט נקרא ב-13px ולא ב-12px.
-                    הנראות זהה למקור: מוסתר מתחת ל-sm, בדיוק כמו GuessInvite. */}
+                {/* מצב לפני בחירה: הזמנה לנחש + כרטיסים.
+                    M8 F3 SELECTIVE RESPOND: דמות ההזמנה הוסרה, ומשפט ההזמנה עצמו נשאר מילה
+                    במילה כטקסט גוף. כמו בפרקי הפיילוט, הוא גם מפסיק להיות מוסתר מתחת ל-sm:
+                    "מה לדעתכם המספר הזה מייצג" הוא תוכן לימודי ולא קישוט, ואין סיבה שלומד
+                    בטלפון לא יקבל אותו. הטיפוגרפיה זהה לענף חסר-הדמות של GuessInvite. */}
                 {!answered && (
                     <>
-                        <div className="mb-5 hidden flex-col items-center sm:flex">
-                            <Mentor pose="think" width={110} glow={false} />
-                            <p className="mt-1.5 max-w-xs text-center text-[13px] font-medium leading-snug text-slate-400">{g.invite}</p>
-                        </div>
+                        <p className="mx-auto mb-5 max-w-md text-center text-[13px] font-medium leading-snug text-slate-400">{g.invite}</p>
 
                         <div className="mx-auto grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
                             {GUESS_CARD_META.map((meta) => {
@@ -116,7 +115,10 @@ const MeaningGuess: React.FC = () => {
                     </>
                 )}
 
-                {/* מצב אחרי בחירה: התגובה המשותפת (הצלחה מפורשת או טעות תומכת) */}
+                {/* מצב אחרי בחירה: התגובה המשותפת (הצלחה מפורשת או טעות תומכת).
+                    M8 F3 SELECTIVE RESPOND: זה רגע הדמות היחיד בפרק. אותה פוזה, אותו גודל
+                    ואותו מיקום בשתי התוצאות, כך שנוכחות הדמות אינה מסגירה אם צדקתם. הסטטוס
+                    (הוי או הנורה, הכותרת, ההסבר) נשאר הערוץ היחיד שאומר את התוצאה. */}
                 {answered && (
                     <GuessVerdict
                         key={chosenId ?? undefined}
@@ -130,6 +132,8 @@ const MeaningGuess: React.FC = () => {
                         wrongExplain={chosenWhy ?? ''}
                         onRetry={() => setChosenId(null)}
                         retryLabel={correct ? g.retryLink : g.retryButton}
+                        mentorMode="respond"
+                        mentorResponse={{ correct: mr.guessCorrect, wrong: mr.guessWrong }}
                     />
                 )}
             </div>
@@ -319,12 +323,9 @@ export default function BehindTheScenesChapter4() {
                         </FloatingReadAloud>
                     </div>
                 </motion.section>
-                {/* המנטור מציג שהמנוע רואה מספרים (xl+, צד חיצוני לפי כיוון). נקודת העיגון
-                    האנכית מונמכת מעט (50%+56px) כדי שכל יחידת המנטור, כולל בועת-הדיבור שמעליו,
-                    תשב מתחת לאזור הכותרת ולא תזלוג אל הכותרת העליונה. הבועה והדמות זזות יחד. */}
-                <div className={`absolute top-[calc(50%+56px)] -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="meaningSpace" line={c4.mentor.hero} width={280} flip={!isRtl} />
-                </div>
+                {/* M8: מנטור ההירו הוסר. הבועה ("המנוע רואה מספרים, לא מילים") נתנה את
+                    מסקנת הניחוש לפני שהלומד ניחש, ובנוסף הופיעה רק מ-xl ומעלה, כך שלומד
+                    בטלפון ממילא לא ראה אותה. הכותרת והלד של ההירו נשארים כפי שהם. */}
             </div>
 
             {/* ══════════ ניחוש מהיר ══════════ */}
@@ -419,10 +420,9 @@ export default function BehindTheScenesChapter4() {
             </section>
 
             {/* ══════════ תובנה מעשית + גשר לפרק 5 ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="pointdown" line={c4.mentor.practical} width={160} flip={!isRtl} />
-                </div>
+            {/* M8: המנטור "טקסט הפך למספר, עכשיו אפשר לחשב" הוסר. זו בדיוק התובנה שהכרטיס
+                שמתחתיו כבר אומר, ובאופן מפורט יותר. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c4.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c4.practical.lead}</span>
@@ -457,7 +457,15 @@ export default function BehindTheScenesChapter4() {
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-16 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={c4.quiz.conceptLabels} />
+                    {/* M8 F3 SELECTIVE RESPOND: המבדק חסר-דמות לחלוטין. אייקון הסטטוס נשאר בראש
+                        כרטיס התוצאה בשתי התוצאות, ומשפט התגובה הספציפי לפרק מופיע מתחתיו
+                        כטקסט בלבד. */}
+                    <AssessmentEngine
+                        {...localizedQuiz}
+                        conceptDisplayMap={c4.quiz.conceptLabels}
+                        mentorScope="respond"
+                        mentorResponse={{ pass: c4.mentorRespond.quizPass, fail: c4.mentorRespond.quizFail }}
+                    />
                 </ExpandableLab>
             </section>
         </ChapterLayout>

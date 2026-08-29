@@ -32,6 +32,19 @@ export const hallucinations = {
         practical: 'Sabe cuándo verificar',
     },
 
+    // F3 RESPOND (M8): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Captaste que el problema no es la calidad de la redacción sino lo que hay detrás. Es una distinción incómoda, porque implica que una respuesta que nos suena bien no necesariamente fue comprobada.',
+        guessWrong:
+            'Esa conjetura tiene mucho sentido, porque entre personas la seguridad sí suele indicar conocimiento. En un modelo esas dos cosas simplemente no están conectadas. Vale la pena volver a las líneas de arriba y separarlas.',
+        quizPass:
+            'Ya preguntas en qué se apoya la respuesta, no solo cómo suena. Esa pregunta te seguirá sirviendo con sistemas que nunca estudiaste aquí.',
+        quizFail:
+            'Esta diferencia se ve mejor en una comparación. Vuelve al laboratorio, lanza la misma pregunta con fuente y sin ella, y observa qué cambia exactamente en la respuesta.',
+    },
+
     primer: {
         eyebrow: 'La fluidez del lenguaje no es comprobar los hechos',
         title: 'Antes del laboratorio: ¿por qué una respuesta segura puede estar equivocada?',

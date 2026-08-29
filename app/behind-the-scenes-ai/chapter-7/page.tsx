@@ -12,7 +12,7 @@ import { InsightBox } from '@/components/content/InsightBox';
 
 import { AttentionGuess, type AttentionGuessCard, type AttentionGuessContent, type Cue, type StatusTone } from '@/components/ai-internals/AttentionGuess';
 import { ContextWindowLab } from '@/components/ai-internals/ContextWindowLab';
-import { Mentor, type MentorPose } from '@/components/ai-internals/Mentor';
+import type { MentorPose } from '@/components/ai-internals/Mentor';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
@@ -247,18 +247,27 @@ export default function BehindTheScenesChapter7() {
                     </div>
                 </motion.section>
 
-                {/* מנטור הירו של פרק 7: נכס ה-presenter הייעודי נשמר, אך מוצג דרך רכיב Mentor
-                    (pose="presenter") כדי לקבל בועת-דיבור מתורגמת, הילה ותנועה עקביות עם שאר הפרקים.
-                    הרוחב מנורמל כלפי מידת פרק 2 (248) בהתאמה קלה לדמות גוף-מלא. ממוקם כמציג לצד
-                    הכרטיס לפי כיוון הקריאה; pointer-events-none; מוסתר במובייל (מ-xl ומעלה). */}
-                <div className={`pointer-events-none absolute bottom-6 z-20 hidden xl:block ${isRtl ? 'right-0 translate-x-[60%]' : 'left-0 -translate-x-[60%]'}`}>
-                    <Mentor pose="presenter" line={c7.mentor.hero} width={374} flip={!isRtl} bubbleShiftX={70} />
-                </div>
+                {/* M8: מנטור ההירו הוסר. הבועה ("מה שנכנס לחלון, זה מה שהמודל רואה") היא
+                    בדיוק התשובה של הניחוש שמופיע מיד אחריו, והיא הופיעה רק מ-xl ומעלה, כך
+                    שלומד בטלפון ממילא לא ראה אותה. נכס ה-presenter נשאר במאגר. */}
             </div>
 
             {/* ══════════ ניחוש לפני הסבר: ארבע השערות על חלון ההקשר ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <AttentionGuess content={guessContent} cards={guessCards} prompt={c7.guess.title} dir={dir} speechLocale={speechLocale} labTargetId="context-window-lab" />
+                {/* M8 F3 SELECTIVE RESPOND: מנטור ההזמנה, מנטור ההשערה ומנטור כרטיס התובנה
+                    הוסרו, ומשפט ההזמנה נשאר כטקסט גוף וגלוי גם בטלפון. אחרי הבחירה כל ארבע
+                    ההשערות מקבלות בדיוק אותה שורת תגובה אנושית, וצ׳יפ הסטטוס נשאר הערוץ
+                    היחיד שאומר עד כמה ההשערה קרובה. זה רגע הדמות היחיד בפרק. */}
+                <AttentionGuess
+                    content={guessContent}
+                    cards={guessCards}
+                    prompt={c7.guess.title}
+                    dir={dir}
+                    speechLocale={speechLocale}
+                    labTargetId="context-window-lab"
+                    mentorMode="respond"
+                    mentorResponse={{ correct: c7.mentorRespond.guessCorrect, wrong: c7.mentorRespond.guessWrong }}
+                />
             </section>
 
             {/* ══════════ רגע לפני המעבדה: הסבר חלון ההקשר ══════════ */}
@@ -291,7 +300,7 @@ export default function BehindTheScenesChapter7() {
             </section>
 
             {/* ══════════ מעבדת חלון ההקשר ══════════ */}
-            <section id="context-window-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+            <section id="context-window-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <Frame size={24} className="text-violet-400" />
                     <div>
@@ -306,10 +315,8 @@ export default function BehindTheScenesChapter7() {
                 </div>
 
                 <ContextWindowLab data={c7.lab} dir={dir} speechLocale={speechLocale} />
-
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
-                    <Mentor pose="explain" line={c7.mentor.lab} width={160} flip={!isRtl} />
-                </div>
+                {/* M8: המנטור "הזיזו את החלון, והתשובה זזה" הוסר. sectionIntro שמעל המעבדה
+                    כבר אומר את זה, ובאופן קונקרטי יותר. */}
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}
@@ -378,10 +385,9 @@ export default function BehindTheScenesChapter7() {
             </section>
 
             {/* ══════════ בדיקת הבנה ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="celebrate" line={c7.mentor.lock} width={160} flip={!isRtl} />
-                </div>
+            {/* M8: המנטור שלפני השאלה הוסר. הוא היה בפוזת celebrate ואמר "תפסתם את חלון
+                ההקשר", כלומר חגג הבנה לפני שהלומד ענה. תוכן הבדיקה נשאר זהה. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -409,10 +415,9 @@ export default function BehindTheScenesChapter7() {
             </section>
 
             {/* ══════════ תובנה מעשית ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
-                    <Mentor pose="pointdown" line={c7.mentor.practical} width={160} flip={!isRtl} />
-                </div>
+            {/* M8: המנטור "ככה שומרים את הפרט הקריטי בתמונה" הוסר. זו כותרת התובנה המעשית
+                עצמה, והרשימה שמתחתיה כבר מפרטת בדיוק איך. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c7.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c7.practical.lead}</span>
@@ -434,7 +439,15 @@ export default function BehindTheScenesChapter7() {
             <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{cq.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{cq.transitions[7]}</p></section>
             <section className="mt-12 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} />
+                    {/* M8 F3 SELECTIVE RESPOND: המבדק חסר-דמות לחלוטין. אייקון הסטטוס נשאר בראש
+                        כרטיס התוצאה בשתי התוצאות, ומשפט התגובה הספציפי לפרק מופיע מתחתיו
+                        כטקסט בלבד. */}
+                    <AssessmentEngine
+                        {...localizedQuiz}
+                        conceptDisplayMap={t.behindAi.conceptLabels}
+                        mentorScope="respond"
+                        mentorResponse={{ pass: c7.mentorRespond.quizPass, fail: c7.mentorRespond.quizFail }}
+                    />
                 </ExpandableLab>
             </section>
         </ChapterLayout>

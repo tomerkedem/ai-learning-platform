@@ -32,6 +32,19 @@ export const chapter4 = {
         practical: 'El texto se volvió número, ahora podemos calcular',
     },
 
+    // F3 RESPOND (M8): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Separaste lo que señala de lo que contiene. Esa separación se pasa por alto con facilidad, porque un número casi siempre nos dice algo sobre cantidad o sobre orden. Aquí solo indica adónde ir.',
+        guessWrong:
+            'Esa elección no vino de la confusión. Vino de un supuesto muy razonable: que si el modelo recibe un número, el número mismo lleva información. Vale la pena releer las líneas de arriba preguntando no qué dice el número, sino adónde te envía.',
+        quizPass:
+            'Ya distingues el identificador del vector que ese identificador trae. Esa es la distinción que te sostendrá en el próximo capítulo, cuando empecemos a hablar de cercanía entre significados.',
+        quizFail:
+            'Esta idea se aclara actuando, no leyendo una definición. Vuelve al laboratorio de búsqueda, elige una palabra y observa qué cambia en la fila que aparece y qué se mantiene igual.',
+    },
+
     // Adivinanza rápida: solo texto; el icono, la respuesta correcta y las poses son estructurales.
     // Los ids de opción (address/meaning/importance) son claves estables de la página, no se traducen.
     // address = la respuesta correcta, meaning/importance = incorrectas, con un why.

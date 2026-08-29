@@ -32,6 +32,19 @@ export const hallucinations = {
         practical: 'Know when to verify',
     },
 
+    // F3 RESPOND (M8): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You caught that the problem is not the quality of the phrasing but what stands behind it. That is an uncomfortable distinction, because it means an answer that sounds good to us has not necessarily been checked.',
+        guessWrong:
+            'That guess makes a lot of sense, because between people confidence usually does signal knowledge. In a model those two things are simply not connected to each other. It is worth going back to the lines above and pulling them apart.',
+        quizPass:
+            'You are already asking what the answer rests on, not only how it sounds. That question will keep working on systems you never studied here.',
+        quizFail:
+            'This difference shows up better in a comparison. Go back to the lab, run the same question with a source and without one, and watch exactly what changes in the answer.',
+    },
+
     primer: {
         eyebrow: 'Language fluency is not fact checking',
         title: 'Before the lab: why can a confident answer be wrong?',
