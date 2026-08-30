@@ -42,6 +42,19 @@ export const chatToAgent = {
         practical: 'Define objetivo, limites y aprobacion',
     },
 
+    // F3 RESPOND (M10): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Leíste la petición por lo que exige, no por cómo suena. Ese es también el criterio práctico: si hay que traer información de fuera y decidir el paso siguiente, es una tarea, aunque se haya escrito en una sola frase corta.',
+        guessWrong:
+            'Es razonable pensarlo, porque la petición está escrita como cualquier otro mensaje de chat. La diferencia no está en la redacción sino en lo que debe ocurrir después: herramientas, estado de tarea y una decisión sobre si continuar. Vale la pena releer las líneas de arriba y preguntar qué necesita el sistema para responder.',
+        quizPass:
+            'Distingues cuándo una petición necesita un recorrido de trabajo y no solo una respuesta. Eso te permite fijar objetivo, límite y punto de aprobación antes de que algo se ejecute.',
+        quizFail:
+            'La diferencia no es más listo o menos listo, sino respuesta frente a tarea. Vuelve al laboratorio, recorre los cuatro modos y observa qué añade cada uno al sistema.',
+    },
+
     primer: {
         eyebrow: 'El chat explica. El agente avanza hacia la accion.',
         title: 'Justo antes del laboratorio: cuando una pregunta se convierte en tarea?',

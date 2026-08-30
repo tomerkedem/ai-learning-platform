@@ -15,7 +15,6 @@ import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from 
 import { TokenizationLab } from '@/components/ai-internals/TokenizationLab';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
 import { TokenizationRoadmap } from '@/components/ai-internals/TokenizationRoadmap';
-import { Mentor } from '@/components/ai-internals/Mentor';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
@@ -221,28 +220,22 @@ export default function BehindTheScenesChapter3() {
                     </div>
                 </motion.section>
 
-                {/* מנטור ההירו: מוגדל, יושב בצד הפנימי של הכרטיס (הצד של הסרגל): ב-RTL מימין,
-                    ב-LTR משמאל. ההיפוך (flip={!isRtl}) מפנה את היד הפתוחה אל הטקסט, וה-translate
-                    מקרב את הדמות אל שולי הכרטיס כך שהיד אינה מכסה את הטקסט. ה-pt מרחיק את הבועה
-                    מהראש, וה-bubbleShiftX ממרכז אותה מעל הראש (שאינו במרכז המסגרת). */}
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full -translate-x-[115px]' : 'right-full translate-x-[115px]'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor
-                        pose="token"
-                        line={c3.mentor.hero}
-                        width={414}
-                        flip={!isRtl}
-                        float={false}
-                        bubbleShiftX={74}
-                        bubbleWidthClass="max-w-[17rem]"
-                        bubbleTextClass="text-[15px]"
-                        className="pt-[6px]"
-                    />
-                </div>
+                {/* M10: מנטור ההירו הוסר. הבועה ("קודם מפרקים, אז מבינים") היא בדיוק התשובה
+                    של הניחוש שמופיע מיד אחריה, והיא הופיעה רק מ-xl ומעלה, כך שלומד בטלפון ממילא
+                    לא ראה אותה. הכותרת והלד של ההירו נשארים כפי שהם. */}
             </div>
 
             {/* ══════════ נחש ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <OpeningGuess content={guessContent} cards={guessCards} />
+                {/* M10 F3 SELECTIVE RESPOND: מנטור ההזמנה ומנטור כרטיס ההכרעה הוסרו, ומשפט ההזמנה
+                    נשאר כטקסט גוף וגלוי גם בטלפון. אחרי הבחירה שתי התוצאות מקבלות בדיוק אותה שורת
+                    תגובה אנושית: אותה פוזה, אותו גודל, אותו מיקום. זה רגע הדמות היחיד בפרק. */}
+                <OpeningGuess
+                    content={guessContent}
+                    cards={guessCards}
+                    mentorMode="respond"
+                    mentorResponse={{ correct: c3.mentorRespond.guessCorrect, wrong: c3.mentorRespond.guessWrong }}
+                />
             </section>
 
             {/* ══════════ הסבר פשוט: מה באמת קורה כאן (במקום "הנקודה המפתיעה") ══════════ */}
@@ -262,7 +255,7 @@ export default function BehindTheScenesChapter3() {
 
             {/* ══════════ גע: מעבדת הפירוק ══════════ */}
             <Chapter3LabProvider value={labContent}>
-                <section id="token-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+                <section id="token-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                     <div className="flex items-center gap-3">
                         <FlaskConical size={24} className="text-violet-400" />
                         <div>
@@ -281,17 +274,15 @@ export default function BehindTheScenesChapter3() {
                     </ExpandableLab>
                     <TokenizationRoadmap />
 
-                    <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'} z-20 hidden xl:block pointer-events-none`}>
-                        <Mentor pose="tokenRibbon" line={c3.mentor.lab} width={160} flip={!isRtl} />
-                    </div>
+                    {/* M10: המנטור "כל טוקן הוא יחידת עבודה" הוסר. מבוא המעבדה ורצועת הטוקנים
+                        שמתחתיו מראים את זה ישירות, במקום לומר את זה. */}
                 </section>
             </Chapter3LabProvider>
 
             {/* ══════════ בדיקת הבנה ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="happy" line={c3.mentor.lock} width={160} flip={!isRtl} />
-                </div>
+            <section className="mt-12 text-start" dir={dir}>
+                {/* M10: המנטור שלפני הבדיקה הוסר. "תפסתם את הרעיון" הוא שבח שניתן לפני
+                    שהלומד ענה בכלל, ולכן הוא גם לא מדויק וגם מרוקן את הבדיקה. תוכן הבדיקה נשאר זהה. */}
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -319,10 +310,9 @@ export default function BehindTheScenesChapter3() {
             </section>
 
             {/* ══════════ תובנה מעשית ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="pointdown" line={c3.mentor.practical} width={160} flip={!isRtl} />
-                </div>
+            <section className="mt-12 text-start" dir={dir}>
+                {/* M10: המנטור "ככה כותבים למודל חכם יותר" הוסר. זו כותרת התובנה המעשית עצמה,
+                    והרשימה שמתחתיה כבר מפרטת בדיוק איך. */}
                 <div className="rounded-2xl border border-violet-500/30 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -347,7 +337,15 @@ export default function BehindTheScenesChapter3() {
             <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{t.behindAi.chapterQuiz.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{t.behindAi.chapterQuiz.transitions[3]}</p></section>
             <section className="mt-16 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={c3.quiz.conceptLabels} />
+                    {/* M10 F3 SELECTIVE RESPOND: המבדק חסר-דמות לחלוטין. אייקון הסטטוס נשאר בראש
+                        כרטיס התוצאה בשתי התוצאות, ומשפט התגובה הספציפי לפרק מופיע מתחתיו
+                        כטקסט בלבד. */}
+                    <AssessmentEngine
+                        {...localizedQuiz}
+                        conceptDisplayMap={c3.quiz.conceptLabels}
+                        mentorScope="respond"
+                        mentorResponse={{ pass: c3.mentorRespond.quizPass, fail: c3.mentorRespond.quizFail }}
+                    />
                 </ExpandableLab>
             </section>
         </ChapterLayout>

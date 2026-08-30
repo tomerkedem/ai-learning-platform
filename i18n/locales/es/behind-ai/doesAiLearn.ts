@@ -40,6 +40,19 @@ export const doesAiLearn = {
         practical: 'Aporta de nuevo la regla o la fuente',
     },
 
+    // F3 RESPOND (M10): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Separaste funcionó de quedó guardado, y esa separación cuesta más justo cuando la corrección funcionó delante de ti. Vale aplicarla también a la memoria del producto: lo que reaparece en la próxima conversación reaparece porque algo lo guardó, no porque el modelo haya aprendido.',
+        guessWrong:
+            'Por dentro esa sensación es exacta: corregiste y la respuesta mejoró de verdad. Lo fácil de pasar por alto es dónde quedó la corrección, en el contexto de esta conversación y no en el modelo. Vale la pena volver arriba y preguntar qué parte de la corrección podría llegar siquiera a una conversación nueva.',
+        quizPass:
+            'Distingues entre contexto, memoria del producto y entrenamiento, en lugar de dar por hecho que el sistema recuerda. Esa distinción evita que confíes en algo que nunca se guardó.',
+        quizFail:
+            'Esta confusión es normal, porque desde fuera todas las capas parecen decir que el modelo ya lo sabe. Vuelve al laboratorio, recorre las cuatro capas y observa dónde desaparece exactamente la corrección.',
+    },
+
     primer: {
         eyebrow: 'Contexto, memoria y entrenamiento no son lo mismo',
         title: 'Antes del laboratorio: que significa que el modelo "aprende de mi"?',

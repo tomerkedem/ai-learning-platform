@@ -39,6 +39,19 @@ export const doesAiLearn = {
         practical: 'Provide the rule or the source again',
     },
 
+    // F3 RESPOND (M10): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You separated it worked from it was saved, and that separation is hardest to make exactly when the correction succeeded right in front of you. The same separation is worth applying to product memory: whatever comes back in the next conversation comes back because something stored it, not because the model learned.',
+        guessWrong:
+            'From the inside that feeling is accurate: you corrected it, and the answer really did improve. What is easy to miss is where the correction sat, in the context of the current conversation rather than in the model itself. It is worth going back up and asking which part of the correction could reach a new conversation at all.',
+        quizPass:
+            'You tell context, product memory and training apart instead of assuming the system simply remembers. That distinction is what stops you relying on something that was never stored.',
+        quizFail:
+            'The confusion here is normal, because from the outside every layer looks like the model knows. Go back to the lab, move through the four layers, and see exactly where the correction disappears.',
+    },
+
     primer: {
         eyebrow: 'Context, memory, and training are not the same',
         title: 'Before the lab: what does it mean that the model "learns from me"?',

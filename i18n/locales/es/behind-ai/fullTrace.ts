@@ -42,6 +42,19 @@ export const fullTrace = {
         practical: 'Define objetivo, fuente, limite y salida',
     },
 
+    // F3 RESPOND (M10): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Viste un recorrido y no un solo suceso, y eso es justo lo que permite preguntar dónde falló esto en lugar de por qué se equivoca la IA. Cada estación que estudiaste en el curso es un punto concreto que ahora puedes señalar.',
+        guessWrong:
+            'Es razonable pensar que hay un solo paso, porque desde fuera se ve una petición y un resultado. Lo oculto es lo que pasó entre ambos: una fuente, una comprobación y un límite de aprobación. Vale la pena volver arriba y preguntar cuántas decisiones hacen falta antes de que se produzca algo.',
+        quizPass:
+            'Puedes explicar no solo qué respondió el sistema, sino en qué se apoyó y qué decidió no hacer. Esa es la diferencia entre usar la IA y supervisarla.',
+        quizFail:
+            'El recorrido es largo, así que es fácil perder una estación. Vuelve al laboratorio, recorre un trayecto paso a paso y fíjate en dos puntos: de dónde vino la información y qué detuvo el envío.',
+    },
+
     primer: {
         eyebrow: 'Un prompt recorre un camino completo, no un solo paso magico.',
         title: 'Justo antes del laboratorio: por que importa Full Trace?',

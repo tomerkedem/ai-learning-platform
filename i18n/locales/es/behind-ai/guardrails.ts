@@ -41,6 +41,19 @@ export const guardrails = {
         practical: 'Define lo permitido, lo prohibido y la aprobacion',
     },
 
+    // F3 RESPOND (M10): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Separaste capacidad de permiso, y esa es justo la separación sobre la que se apoya el capítulo. Funciona también al revés: una acción bloqueada no es necesariamente una acción mala, a veces solo cruzó un límite que alguien fijó de antemano.',
+        guessWrong:
+            'Es razonable suponerlo, porque la tarea parece terminada en cuanto el mensaje está redactado. Lo que queda fuera es quién asume la consecuencia del envío. Vale la pena volver arriba y preguntar qué acciones salen del sistema.',
+        quizPass:
+            'No preguntas solo qué puede hacer el sistema, sino qué le está permitido hacer ahora. Esa pregunta convierte una parada en señal de un sistema diseñado, y no en un fallo.',
+        quizFail:
+            'La cuestión no es que la IA sea peligrosa, sino que una acción que sale del sistema necesita una compuerta. Vuelve al laboratorio, recorre las cinco acciones y observa cuál se detiene y por qué.',
+    },
+
     primer: {
         eyebrow: 'Poder ejecutar una accion no es permiso para ejecutarla.',
         title: 'Justo antes del laboratorio: por que un agente necesita guardrails?',

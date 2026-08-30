@@ -12,7 +12,6 @@ import type { Chapter1QuizId } from '@/i18n/locales/he/behind-ai/chapter1Quiz';
 
 import { TransparentLabLayout } from '@/components/ai-internals/TransparentLabLayout';
 import { ChatInterfacePanel } from '@/components/ai-internals/ChatInterfacePanel';
-import { Mentor } from '@/components/ai-internals/Mentor';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
@@ -291,18 +290,18 @@ export default function BehindTheScenesChapter1() {
                 />
             </FloatingReadAloud>
 
-            {/* מנטור עצמאי: הכנה קצרה לפני Transparent Chat, ללא מעטפת של כרטיס לימודי. */}
+            {/* הכנה קצרה לפני Transparent Chat, ללא מעטפת של כרטיס לימודי.
+
+                M10: שתי דמויות המנטור הוסרו מכאן. לפרק 1 אין ניחוש ואין רגע מחויבות של הלומד,
+                ולכן אין בו נקודת הכרעה שבה F3 RESPOND שייך. הדמות שישבה כאן הייתה נוכחות
+                קבועה במנוחה, בדיוק מה שהמודל הנבחר מבקש להסיר, והיא לא לימדה דבר מעבר לטקסט
+                שלצדה. הטקסט עצמו נשאר במלואו: הוא מסביר על מה להסתכל במעבדה, וזה תוכן לימודי
+                שאינו קיים במקום אחר. גם מקטע ההקראה (id 'mentor') נשאר כפי שהוא. */}
             <section
                 data-chapter1-mentor-guide
-                className="mt-8 flex items-center gap-4 text-start sm:gap-7 md:mt-10"
+                className="mt-8 text-start md:mt-10"
                 dir={dir}
             >
-                <div className="shrink-0 sm:hidden" aria-hidden>
-                    <Mentor pose="pointdown" width={96} float={false} glow={false} />
-                </div>
-                <div className="max-sm:hidden shrink-0" aria-hidden>
-                    <Mentor pose="pointdown" width={210} float={false} />
-                </div>
                 <div className="min-w-0 max-w-3xl">
                     <div className="flex items-start gap-2.5">
                         <div>
@@ -458,7 +457,15 @@ export default function BehindTheScenesChapter1() {
             {/* ══════════ מבדק הבנה ══════════ */}
             <section data-chapter1-quiz className="mt-10 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={quizText.conceptLabels} />
+                    {/* M10 F3 SELECTIVE RESPOND: המבדק חסר-דמות לחלוטין, כמו בכל 19 הפרקים.
+                        אייקון הסטטוס נשאר בראש כרטיס התוצאה בשתי התוצאות, ומשפט התגובה
+                        הספציפי לפרק מופיע מתחתיו כטקסט בלבד. */}
+                    <AssessmentEngine
+                        {...localizedQuiz}
+                        conceptDisplayMap={quizText.conceptLabels}
+                        mentorScope="respond"
+                        mentorResponse={{ pass: c1.mentorRespond.quizPass, fail: c1.mentorRespond.quizFail }}
+                    />
                 </ExpandableLab>
             </section>
         </ChapterLayout>

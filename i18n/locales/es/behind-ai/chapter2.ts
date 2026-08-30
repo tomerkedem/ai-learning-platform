@@ -30,6 +30,19 @@ export const chapter2 = {
         lock: 'Detente y elige una respuesta. Así sabrás si captaste la idea del capítulo.',
     },
 
+    // F3 RESPOND (M10): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Te diste cuenta de que el modelo recibe una sola cosa: lo que realmente se escribió. Por eso un detalle pequeño, como un número de seguimiento, cambia tanto: ese dato sí entra, mientras que tu intención se queda contigo.',
+        guessWrong:
+            'Es una suposición natural, porque con una persona basta una insinuación y la otra parte completa el resto. Aquí hay una diferencia: lo que no se escribió simplemente no llegó. Vale la pena releer las líneas de arriba y preguntarte qué parte de lo que pensabas quedó escrita de verdad.',
+        quizPass:
+            'Lees una petición y ves también lo que le falta, no solo lo que dice. Ese hábito convierte una petición vaga en una que sí se puede responder.',
+        quizFail:
+            'La idea no es recordar qué partes tiene una entrada, sino separar lo que escribiste de lo que querías decir. Vuelve al laboratorio de comparación, cambia una sola formulación y observa qué gana el modelo y qué desaparece.',
+    },
+
     // Opening guess (DiscoveryGuess): text only; poses and target are structural in the page
     guess: {
         eyebrow: 'Adivinanza rápida · qué entra al modelo',

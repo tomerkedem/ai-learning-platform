@@ -37,6 +37,15 @@ export const chapter1 = {
         body: 'En el Chat Transparente verás cómo la misma solicitud cambia paso a paso hasta convertirse en una respuesta. Todavía no necesitas recordar cada número ni cada término. En cada estación, pregúntate: ¿qué entró, qué cambió y qué salió?',
     },
 
+    // M10: el capitulo 1 no tiene conjetura ni momento de veredicto, asi que no lleva F3 RESPOND
+    // ni retrato del mentor. Solo queda la capa de respuesta del test, como texto, en ambos casos.
+    mentorRespond: {
+        quizPass:
+            'La respuesta que ves es el final de un recorrido, y ya sabes preguntar qué pasó por el camino. Esa misma pregunta vuelve en cada capítulo a partir de aquí, solo que con otro nombre para cada estación.',
+        quizFail:
+            'Este capítulo no te pide memorizar términos, sino ver que hay un recorrido entre la pregunta y la respuesta. Vuelve al Chat Transparente, envía una sola frase y sigue una única estación: qué entró y qué salió.',
+    },
+
     // Transparent Chat Lab
     lab: {
         title: 'El Chat Transparente',

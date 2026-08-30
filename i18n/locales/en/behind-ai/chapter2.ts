@@ -30,6 +30,19 @@ export const chapter2 = {
         lock: 'Pause and pick an answer. That is how you will know if you caught the chapter idea.',
     },
 
+    // F3 RESPOND (M10): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You noticed that the model receives one thing: what was actually written. That is also why a small addition like a tracking number changes so much. It goes in, while your intention stays with you.',
+        guessWrong:
+            'That assumption is natural, because with a person a hint is enough and the other side fills in the rest. Here one thing is different: what was not written simply did not arrive. It is worth rereading the lines above and asking which part of what you had in mind was actually typed.',
+        quizPass:
+            'You read a request and see what is missing from it, not only what it says. That habit is what turns a vague request into one that can actually be answered.',
+        quizFail:
+            'The idea here is not to remember which parts an input has, but to separate what you wrote from what you meant. Go back to the comparison lab, change one phrasing only, and see what the model gains and what disappears.',
+    },
+
     // Opening guess (DiscoveryGuess): text only; poses and target are structural in the page
     guess: {
         eyebrow: 'Quick guess · what goes into the model',

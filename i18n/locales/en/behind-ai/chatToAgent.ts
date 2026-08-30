@@ -41,6 +41,19 @@ export const chatToAgent = {
         practical: 'Define goal, boundaries, and approval',
     },
 
+    // F3 RESPOND (M10): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You read the request by what it demands, not by how it sounds. That is also the practical test: if information has to be fetched from outside and a next step decided, it is a task, even when it was written as one short sentence.',
+        guessWrong:
+            'It is reasonable to think so, because the request was written like any other chat message. The difference is not in the wording but in what has to happen next: tools, task state, and a decision whether to continue. It is worth rereading the lines above and asking what the system needs in order to answer.',
+        quizPass:
+            'You can tell when a request needs a work route and not just a reply. That is what lets you set a goal, a boundary and an approval point before anything runs.',
+        quizFail:
+            'The difference here is not smarter versus less smart, but answer versus task. Go back to the lab, move through the four modes, and see what each one adds to the system.',
+    },
+
     primer: {
         eyebrow: 'Chat explains. Agent moves toward action.',
         title: 'Right before the lab: when does a question become a task?',

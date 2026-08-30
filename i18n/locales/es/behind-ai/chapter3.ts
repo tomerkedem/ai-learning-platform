@@ -33,6 +33,19 @@ export const chapter3 = {
         practical: 'Así escribes prompts más inteligentes',
     },
 
+    // F3 RESPOND (M10): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Viste que la división ocurre antes de la comprensión, no después. Por eso cosas que a nosotros nos parecen idénticas, como un cambio de puntuación o un número de seguimiento, pueden verse muy distintas para el modelo.',
+        guessWrong:
+            'Un error razonable, porque cuando leemos una frase la percibimos como un todo y no como piezas. Para el modelo el orden es el inverso: primero el corte en unidades y solo después el significado. Vale la pena mirar de nuevo las líneas de arriba y preguntarte qué se corta antes que qué.',
+        quizPass:
+            'Miras un texto y ya te preguntas en cuántas unidades se dividirá. Esa mirada explica por qué contar palabras no es contar tokens, y por qué un idioma cuesta más que otro.',
+        quizFail:
+            'La idea no es recordar cómo se corta cada palabra, sino que el corte ocurre antes que todo lo demás. Vuelve al laboratorio de tokens, escribe la misma frase de dos maneras y observa dónde se mueven los límites de las unidades.',
+    },
+
     guess: {
         eyebrow: 'Adivinanza rápida · qué le pasa al texto',
         title: '¿Qué le pasa al texto justo después de enviarlo, antes de calcular cualquier significado?',

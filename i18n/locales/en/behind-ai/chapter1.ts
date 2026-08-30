@@ -37,6 +37,15 @@ export const chapter1 = {
         body: 'In the Transparent Chat, you will see how the same request changes step by step on its way to an answer. You do not need to remember every number or term yet. At each station, ask: what went in, what changed, and what came out?',
     },
 
+    // M10: chapter 1 has no guess and no verdict moment, so it carries no F3 RESPOND and no
+    // mentor portrait at all. What remains is the quiz response layer only, as text, on both outcomes.
+    mentorRespond: {
+        quizPass:
+            'The answer you see is the end of a route, and you already know to ask what happened along the way. That is the same question that returns in every chapter from here, only with a different name for each station.',
+        quizFail:
+            'This chapter does not ask you to memorize terms. It asks you to see that there is a route between question and answer. Go back to the Transparent Chat, send one sentence, and follow a single station: what went into it, and what came out.',
+    },
+
     // Transparent Chat Lab
     lab: {
         title: 'The Transparent Chat',

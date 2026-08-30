@@ -41,6 +41,19 @@ export const guardrails = {
         practical: 'Define allowed, forbidden, and approval',
     },
 
+    // F3 RESPOND (M10): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You separated capability from permission, and that is exactly the separation this chapter is built on. It works in the other direction too: a blocked action is not necessarily a bad action, sometimes it only crossed a boundary someone set in advance.',
+        guessWrong:
+            'It is reasonable to assume so, because the task sounds finished the moment the message is drafted. What stays outside the frame is who carries the consequence of sending it. It is worth going back up and asking which actions leave the system.',
+        quizPass:
+            'You ask not only what the system can do, but what it is allowed to do right now. That question turns a stop from a malfunction into a sign of a designed system.',
+        quizFail:
+            'The point here is not that AI is dangerous, but that an action leaving the system needs a gate. Go back to the lab, move through the five actions, and see which one stops and why.',
+    },
+
     primer: {
         eyebrow: 'Being able to perform an action is not permission to perform it.',
         title: 'Right before the lab: why does an agent need guardrails?',

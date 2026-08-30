@@ -35,6 +35,19 @@ export const chapter3 = {
         practical: 'This is how you write smarter prompts',
     },
 
+    // F3 RESPOND (M10): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You spotted that the split happens before understanding, not after it. That is also why things that look identical to us, like a change in punctuation or a tracking number, can look completely different to the model.',
+        guessWrong:
+            'A reasonable mistake, because when we read a sentence we take it in as one whole, not as pieces. For the model the order is reversed: first the cut into units, and only then meaning. It is worth looking at the lines above again and asking what gets cut before what.',
+        quizPass:
+            'You look at a text and already ask how many units it will break into. That is the view that explains why counting words is not counting tokens, and why one language costs more than another.',
+        quizFail:
+            'The idea is not to remember exactly how each word is cut, but that the cutting happens before everything else. Go back to the token lab, type the same sentence two ways, and watch where the unit boundaries move.',
+    },
+
     // Opening guess (DiscoveryGuess): text only; poses and target are structural
     guess: {
         eyebrow: 'Quick guess · what happens to the text',

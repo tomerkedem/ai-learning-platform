@@ -12,7 +12,6 @@ import type { Chapter2QuizId } from '@/i18n/locales/he/behind-ai/chapter2Quiz';
 import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
 import { InputComparisonLab } from '@/components/ai-internals/InputComparisonLab';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
-import { Mentor } from '@/components/ai-internals/Mentor';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
@@ -242,18 +241,26 @@ export default function BehindTheScenesChapter2() {
                     </div>
                 </motion.section>
 
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="inputClarity" line={c2.mentor.hero} width={248} flip={!isRtl} />
-                </div>
+                {/* M10: מנטור ההירו הוסר. הבועה ("בואו נשווה כמה ניסוחים ונראה מה משתנה") היא
+                    בדיוק ההזמנה של הניחוש ושל מעבדת ההשוואה שמופיעים מיד אחריה, והיא הופיעה רק
+                    מ-xl ומעלה, כך שלומד בטלפון ממילא לא ראה אותה. הכותרת והלד נשארים כפי שהם. */}
             </div>
 
             {/* ══════════ ניחוש פתיחה ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <OpeningGuess content={guessContent} cards={guessCards} />
+                {/* M10 F3 SELECTIVE RESPOND: מנטור ההזמנה ומנטור כרטיס ההכרעה הוסרו, ומשפט ההזמנה
+                    נשאר כטקסט גוף וגלוי גם בטלפון. אחרי הבחירה שתי התוצאות מקבלות בדיוק אותה שורת
+                    תגובה אנושית: אותה פוזה, אותו גודל, אותו מיקום. זה רגע הדמות היחיד בפרק. */}
+                <OpeningGuess
+                    content={guessContent}
+                    cards={guessCards}
+                    mentorMode="respond"
+                    mentorResponse={{ correct: c2.mentorRespond.guessCorrect, wrong: c2.mentorRespond.guessWrong }}
+                />
             </section>
 
             {/* ══════════ מעבדת השוואת קלט ══════════ */}
-            <section id="input-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+            <section id="input-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-indigo-400" />
                     <div>
@@ -275,9 +282,8 @@ export default function BehindTheScenesChapter2() {
                     <InputComparisonLab />
                 </ExpandableLab>
 
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="explain" line={c2.mentor.lab} width={160} flip={!isRtl} />
-                </div>
+                {/* M10: המנטור "אותו צורך, חומר אחר" הוסר. פתיח המעבדה שמעליו אומר בדיוק את זה
+                    ("אותה בקשה, כמה ניסוחים שונים"), ובאופן קונקרטי יותר. */}
             </section>
 
             {/* ══════════ הודעה גלויה מול הקלט המלא (סוגר את הבטחת שם הפרק) ══════════ */}
@@ -338,10 +344,9 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ בדיקת הבנה ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-                    <Mentor pose="happy" line={c2.mentor.lock} width={200} flip={!isRtl} bubbleWidthClass="max-w-[14rem]" />
-                </div>
+            <section className="mt-12 text-start" dir={dir}>
+                {/* M10: המנטור שלפני הבדיקה הוסר. "עצרו רגע ובחרו תשובה" הוא הוראת הפעלה
+                    של שאלת האבחון שמתחתיו, והשאלה עצמה כבר מזמינה לבחור. תוכן הבדיקה נשאר זהה. */}
                 <div className="rounded-2xl border border-indigo-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -372,7 +377,15 @@ export default function BehindTheScenesChapter2() {
             <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{cq.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{cq.transitions[2]}</p></section>
             <section className="mt-12 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={quizText.conceptLabels} />
+                    {/* M10 F3 SELECTIVE RESPOND: המבדק חסר-דמות לחלוטין. אייקון הסטטוס נשאר בראש
+                        כרטיס התוצאה בשתי התוצאות, ומשפט התגובה הספציפי לפרק מופיע מתחתיו
+                        כטקסט בלבד. */}
+                    <AssessmentEngine
+                        {...localizedQuiz}
+                        conceptDisplayMap={quizText.conceptLabels}
+                        mentorScope="respond"
+                        mentorResponse={{ pass: c2.mentorRespond.quizPass, fail: c2.mentorRespond.quizFail }}
+                    />
                 </ExpandableLab>
             </section>
         </ChapterLayout>

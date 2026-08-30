@@ -42,6 +42,19 @@ export const fullTrace = {
         practical: 'Define goal, source, boundary, and output',
     },
 
+    // F3 RESPOND (M10): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You saw a route rather than a single event, and that is exactly what lets you ask where did this go wrong instead of why does AI get things wrong. Every station you studied in this course is one point you can now put your finger on.',
+        guessWrong:
+            'It is reasonable to think there is one step here, because from the outside you see a request and a result. What is hidden is what happened between them: a source, a check, and an approval boundary. It is worth going back up and asking how many decisions are needed before anything is produced.',
+        quizPass:
+            'You can explain not only what the system answered, but what it relied on and what it chose not to do. That is the difference between using AI and supervising it.',
+        quizFail:
+            'The route is long, so it is easy to lose a station. Go back to the lab, walk one route step by step, and watch two points in particular: where the information came from, and what stopped the send.',
+    },
+
     primer: {
         eyebrow: 'One prompt travels a whole route, not one magic step.',
         title: 'Right before the lab: why does Full Trace matter?',
