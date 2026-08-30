@@ -39,6 +39,19 @@ export const evaluation = {
         practical: 'Test on several cases before you trust it',
     },
 
+    // F3 RESPOND (M9): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You stayed with the careful wording, it might generalize, instead of jumping to a conclusion. That caution is not a lack of confidence. It is exactly what evaluation does: it says what the evidence allows you to conclude, and how much.',
+        guessWrong:
+            'That conclusion sounds reasonable, because success on a new case really is impressive. The question is how much weight a single example can carry. It is worth rereading the lines above and asking what else would have to happen before you could know.',
+        quizPass:
+            'You are measuring how much evidence there is, not how good the result looks. That habit is what keeps you from trusting a system too early after it worked once.',
+        quizFail:
+            'The idea here is not that the model is wrong, but that one example is not enough to know. Go back to the lab, step through the hard cases, and see exactly where the success stops holding.',
+    },
+
     primer: {
         eyebrow: 'One correct example is not a test',
         title: 'Just before the lab: how do we test whether the model really improved?',

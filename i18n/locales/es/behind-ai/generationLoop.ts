@@ -27,6 +27,19 @@ export const generationLoop = {
         practical: 'Orienta el bucle desde el inicio',
     },
 
+    // F3 RESPOND (M9): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Notaste que la salida vuelve a ser entrada. Ese punto es fácil de pasar por alto, porque la respuesta se lee como si hubiera sido escrita entera desde el principio. De ahí viene también que una palabra temprana pese más que una tardía.',
+        guessWrong:
+            'Esa elección describe algo que de verdad ocurre en pantalla: una respuesta que fluye de corrido. Lo que se le escapa está entre los pasos. Vale la pena releer las líneas de arriba y preguntar de dónde sale el contexto del paso siguiente.',
+        quizPass:
+            'Estás leyendo la respuesta como una secuencia de decisiones y no como un producto terminado. Esa lectura explica por qué conviene corregir pronto en lugar de esperar al final.',
+        quizFail:
+            'El bucle se aclara viéndolo moverse, no leyendo sobre él. Vuelve al laboratorio, cambia solo la apertura y observa cuánto de la respuesta cambia después.',
+    },
+
     sections: {
         labEyebrow: 'Answer Builder Lab',
         labTitle: 'Laboratorio de construcción de la respuesta',

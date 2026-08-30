@@ -211,6 +211,19 @@ export const logitsSoftmax = {
         practical: 'This is how you steer the distribution',
     },
 
+    // F3 RESPOND (M9): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You ranked fit to the sentence, not what actually happened to the package. That is the exact separation this chapter is built on. Notice how fragile the lead is: one detail of context is enough to hand it to a different continuation.',
+        guessWrong:
+            'That choice is perfectly reasonable, because you asked what could have happened to the package. The model asks a narrower question: what fits the sentence that already exists. It is worth rereading the lines above and asking where the current context pulls, not what is true in the world.',
+        quizPass:
+            'You are reading a percentage as a ranking of fit, not as a level of certainty. That reading is what will carry you into the next chapter, when the same distribution faces a completely different question: which option gets picked out of it.',
+        quizFail:
+            'The usual confusion here is between highest and correct. Go back to the lab, add a single detail of context, and watch which continuation takes the lead. When the lead moves and the package has not, the difference becomes clear.',
+    },
+
     // Sub-spaces
     lab: logitsSoftmaxLab,
     quiz: logitsSoftmaxQuiz,

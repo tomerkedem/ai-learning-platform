@@ -33,6 +33,19 @@ export const grounding = {
         practical: 'Ask for an answer from a source',
     },
 
+    // F3 RESPOND (M9): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You separated leaning on a source from knowing more. That distinction is easy to miss, because both of them improve the answer. Only one of them keeps it inside limits you can check.',
+        guessWrong:
+            'The assumption here is a sensible one: if the model received information, something in it changed. It is worth rereading the lines above and asking what exactly changed, the context of this one conversation or the model itself.',
+        quizPass:
+            'You are asking not only whether there is a source, but what the source actually says. That question is what will carry you into the next chapter, when we start checking answers against the source behind them.',
+        quizFail:
+            'The point here is not that a source helps, but how far it helps. Go back to the lab, ask the same question with and without a source, and read what is left in the answer when the source does not cover the detail.',
+    },
+
     primer: {
         eyebrow: 'A better answer starts with a clear source',
         title: 'Before the lab: what is RAG and what is Grounding?',

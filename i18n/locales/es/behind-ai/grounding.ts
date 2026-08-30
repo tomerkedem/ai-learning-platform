@@ -33,6 +33,19 @@ export const grounding = {
         practical: 'Pide una respuesta a partir de una fuente',
     },
 
+    // F3 RESPOND (M9): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Separaste apoyarse en una fuente de saber más. Esa distinción es fácil de pasar por alto, porque ambas mejoran la respuesta. Solo una la mantiene dentro de límites que puedes comprobar.',
+        guessWrong:
+            'La suposición aquí es razonable: si el modelo recibió información, algo cambió en él. Vale la pena releer las líneas de arriba y preguntar qué cambió exactamente, el contexto de esta conversación o el modelo en sí.',
+        quizPass:
+            'No preguntas solo si hay una fuente, sino qué dice esa fuente en realidad. Esa pregunta te sostendrá en el próximo capítulo, cuando empecemos a contrastar respuestas con la fuente que las respalda.',
+        quizFail:
+            'El punto aquí no es que una fuente ayude, sino hasta dónde ayuda. Vuelve al laboratorio, haz la misma pregunta con fuente y sin ella, y lee qué queda en la respuesta cuando la fuente no cubre ese dato.',
+    },
+
     primer: {
         eyebrow: 'Una respuesta mejor empieza con una fuente clara',
         title: 'Antes del laboratorio: ¿qué es RAG y qué es Grounding?',

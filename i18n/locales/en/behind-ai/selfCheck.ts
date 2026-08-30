@@ -38,6 +38,19 @@ export const selfCheck = {
         practical: 'Ask for a check, not just an answer',
     },
 
+    // F3 RESPOND (M9): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You chose to check the draft rather than improve how it sounds. That separation is the whole chapter: good phrasing and a supported claim are two entirely different things.',
+        guessWrong:
+            'The step you picked deals with the quality of the writing, and that is a real consideration. The problem in this draft sits somewhere else. It is worth going back to the source and marking which detail in the answer appears there and which does not.',
+        quizPass:
+            'You are checking a claim against a source rather than against a feeling. That is exactly the work that separates an answer you can send from an answer that merely sounds right.',
+        quizFail:
+            'It is easy to read a whole answer and miss the single detail that has no cover. Go back to the lab, take one draft, and mark each claim separately against the source.',
+    },
+
     primer: {
         eyebrow: 'A good answer is not only written, it is checked',
         title: 'Before the lab: what is a self-check?',

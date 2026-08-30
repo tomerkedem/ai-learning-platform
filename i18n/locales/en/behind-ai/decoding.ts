@@ -217,6 +217,19 @@ export const decoding = {
         practical: 'This is how you pick a style to fit the task',
     },
 
+    // F3 RESPOND (M9): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You did not say always. You tied the behaviour to the selection style rather than to the distribution itself, and that separation is what the whole chapter rests on. The exact same distribution can lead to different tokens.',
+        guessWrong:
+            'The direction you picked rests on something real, and yet it merges two questions: what is likely, and what actually gets picked. It is worth rereading the lines above and asking what changes when the distribution stays identical and only the selection style is swapped.',
+        quizPass:
+            'You are separating the distribution from the choice made out of it. That separation is what explains how one question can get two different answers without either of them having been checked.',
+        quizFail:
+            'It is easy to merge picked and correct here. Go back to the lab, keep the same sentence, and swap only the selection style. What moves is the output, not the facts.',
+    },
+
     // Sub-spaces
     lab: decodingLab,
     quiz: decodingQuiz,

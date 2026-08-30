@@ -11,7 +11,6 @@ import { InsightBox } from '@/components/content/InsightBox';
 
 import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard } from '@/components/ai-internals/OpeningGuess';
 import { GenerationLoopLab } from '@/components/ai-internals/GenerationLoopLab';
-import { Mentor } from '@/components/ai-internals/Mentor';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
@@ -236,15 +235,23 @@ export default function BehindTheScenesChapter10() {
                     </div>
                 </motion.section>
 
-                {/* המנטור בונה תשובה צעד אחר צעד מחלקים והקשר. ממוקם בצד החיצוני לפי כיוון הקריאה. */}
-                <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[280px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="answerBuilder" line={c10.mentor.hero} width={280} flip={!isRtl} />
-                </div>
+                {/* M9: מנטור ההירו הוסר. הבועה ("כל צעד בונה את הבא") היא בדיוק המסקנה של הניחוש
+                    שמופיע מיד אחריו, והיא הופיעה רק מ-xl ומעלה, כך שלומד בטלפון ממילא לא ראה
+                    אותה. הכותרת, הלד וה-hook של ההירו נשארים כפי שהם. */}
             </div>
 
             {/* ══════════ ניחוש פתיחה ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <OpeningGuess content={guessContent} cards={guessCards} speechLocale={speechLocale} />
+                {/* M9 F3 SELECTIVE RESPOND: מנטור ההזמנה ומנטור כרטיס ההכרעה הוסרו, ומשפט ההזמנה
+                    נשאר כטקסט גוף וגלוי גם בטלפון. אחרי הבחירה שתי התוצאות מקבלות בדיוק אותה שורת
+                    תגובה אנושית: אותה פוזה, אותו גודל, אותו מיקום. זה רגע הדמות היחיד בפרק. */}
+                <OpeningGuess
+                    content={guessContent}
+                    cards={guessCards}
+                    speechLocale={speechLocale}
+                    mentorMode="respond"
+                    mentorResponse={{ correct: c10.mentorRespond.guessCorrect, wrong: c10.mentorRespond.guessWrong }}
+                />
             </section>
 
             {/* ══════════ רגע לפני המעבדה: מה זו Generation Loop ══════════ */}
@@ -303,7 +310,7 @@ export default function BehindTheScenesChapter10() {
             </section>
 
             {/* ══════════ מעבדת לולאת הייצור ══════════ */}
-            <section id="generation-loop-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+            <section id="generation-loop-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -321,10 +328,8 @@ export default function BehindTheScenesChapter10() {
 
                 <GenerationLoopLab />
 
-                {/* המנטור מסביר שהפלט חוזר פנימה */}
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
-                    <Mentor pose="explain" line={c10.mentor.labExplain} width={160} flip={!isRtl} />
-                </div>
+                {/* M9: המנטור "כל חלק חוזר פנימה" הוסר. מבוא המעבדה שמעליו כבר אומר את זה,
+                    ובאופן קונקרטי יותר. */}
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}
@@ -353,10 +358,9 @@ export default function BehindTheScenesChapter10() {
             </section>
 
             {/* ══════════ תיקון טעות נפוצה ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="reassure" line={c10.mentor.misconception} width={155} flip={!isRtl} />
-                </div>
+            {/* M9: המנטור "אין תשובה שמחכה מוכנה" הוסר. שני הכרטיסים שמתחתיו אומרים
+                בדיוק את אותה הבחנה, ובניסוח מלא יותר. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl border border-rose-500/30 bg-rose-950/10 p-5">
                         <div className="mb-2 flex items-center gap-2 text-rose-200">
@@ -381,10 +385,9 @@ export default function BehindTheScenesChapter10() {
             </section>
 
             {/* ══════════ בדיקת הבנה ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
-                    <Mentor pose="happy" line={c10.mentor.lock} width={160} flip={!isRtl} />
-                </div>
+            {/* M9: המנטור שלפני השאלה הוסר. "תפסתם את הרעיון" חגג הבנה לפני שהלומד ענה.
+                תוכן הבדיקה נשאר זהה. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center gap-2">
                         <ListChecks size={20} className="text-violet-300" />
@@ -398,10 +401,9 @@ export default function BehindTheScenesChapter10() {
             </section>
 
             {/* ══════════ תובנה מעשית ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="pointdown" line={c10.mentor.practical} width={160} flip={!isRtl} />
-                </div>
+            {/* M9: המנטור "כוונו את הלולאה מראש" הוסר. זו כותרת התובנה המעשית עצמה,
+                והרשימה שמתחתיה כבר מפרטת בדיוק איך. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c10.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c10.practical.lead}</span>
@@ -423,7 +425,15 @@ export default function BehindTheScenesChapter10() {
             <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{cq.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{cq.transitions[10]}</p></section>
             <section className="mt-16 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} />
+                    {/* M9 F3 SELECTIVE RESPOND: המבדק חסר-דמות לחלוטין. אייקון הסטטוס נשאר בראש
+                        כרטיס התוצאה בשתי התוצאות, ומשפט התגובה הספציפי לפרק מופיע מתחתיו
+                        כטקסט בלבד. */}
+                    <AssessmentEngine
+                        {...localizedQuiz}
+                        conceptDisplayMap={t.behindAi.conceptLabels}
+                        mentorScope="respond"
+                        mentorResponse={{ pass: c10.mentorRespond.quizPass, fail: c10.mentorRespond.quizFail }}
+                    />
                 </ExpandableLab>
             </section>
         </ChapterLayout>

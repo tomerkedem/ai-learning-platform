@@ -12,7 +12,7 @@ import { InsightBox } from '@/components/content/InsightBox';
 
 import { AttentionGuess, type AttentionGuessCard, type AttentionGuessContent, type Cue, type StatusTone } from '@/components/ai-internals/AttentionGuess';
 import { LogitsSoftmaxLab } from '@/components/ai-internals/LogitsSoftmaxLab';
-import { Mentor, type MentorPose } from '@/components/ai-internals/Mentor';
+import type { MentorPose } from '@/components/ai-internals/Mentor';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
@@ -249,15 +249,27 @@ export default function BehindTheScenesChapter8() {
                     </div>
                 </motion.section>
 
-                {/* מנטור הירו: מציג שכמה המשכים מתחרים. ממוקם בצד החיצוני לפי כיוון הקריאה. */}
-                <div className={`pointer-events-none absolute top-1/2 z-20 hidden w-[280px] -translate-y-1/2 xl:block ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="plausiblePaths" line={c8.mentor.hero} width={280} flip={!isRtl} />
-                </div>
+                {/* M9: מנטור ההירו הוסר. הבועה ("ציונים הופכים לאחוזים כאן") היא בדיוק המסקנה של
+                    הניחוש שמופיע מיד אחריו, והיא הופיעה רק מ-xl ומעלה, כך שלומד בטלפון ממילא לא
+                    ראה אותה. הכותרת והלד של ההירו נשארים כפי שהם. */}
             </div>
 
             {/* ══════════ ניחוש לפני הסבר: איזה המשך מוביל ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <AttentionGuess content={guessContent} cards={guessCards} prompt={c8.prompt} dir={dir} speechLocale={speechLocale} labTargetId="logits-softmax-lab" />
+                {/* M9 F3 SELECTIVE RESPOND: מנטור ההזמנה, מנטור ההשערה ומנטור כרטיס התובנה הוסרו,
+                    ומשפט ההזמנה נשאר כטקסט גוף וגלוי גם בטלפון. אחרי הבחירה כל ארבע ההשערות מקבלות
+                    בדיוק אותה שורת תגובה אנושית, וצ׳יפ הסטטוס נשאר הערוץ היחיד שאומר עד כמה ההשערה
+                    קרובה. זה רגע הדמות היחיד בפרק. */}
+                <AttentionGuess
+                    content={guessContent}
+                    cards={guessCards}
+                    prompt={c8.prompt}
+                    dir={dir}
+                    speechLocale={speechLocale}
+                    labTargetId="logits-softmax-lab"
+                    mentorMode="respond"
+                    mentorResponse={{ correct: c8.mentorRespond.guessCorrect, wrong: c8.mentorRespond.guessWrong }}
+                />
             </section>
 
             {/* ══════════ רגע לפני המעבדה: Logits ו-Softmax ══════════ */}
@@ -315,7 +327,7 @@ export default function BehindTheScenesChapter8() {
             </section>
 
             {/* ══════════ מעבדת Logits ו-Softmax ══════════ */}
-            <section id="logits-softmax-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+            <section id="logits-softmax-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <Percent size={24} className="text-purple-400" />
                     <div>
@@ -331,9 +343,8 @@ export default function BehindTheScenesChapter8() {
 
                 <LogitsSoftmaxLab data={c8.lab} dir={dir} speechLocale={speechLocale} />
 
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
-                    <Mentor pose="explain" line={c8.mentor.lab} width={160} flip={!isRtl} />
-                </div>
+                {/* M9: המנטור "שנו נתון, והאחוזים זזים" הוסר. sectionIntro שמעל המעבדה כבר אומר
+                    את זה, ובאופן קונקרטי יותר. */}
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}
@@ -402,10 +413,9 @@ export default function BehindTheScenesChapter8() {
             </section>
 
             {/* ══════════ בדיקת הבנה ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}>
-                    <Mentor pose="celebrate" line={c8.mentor.lock} width={160} flip={!isRtl} />
-                </div>
+            {/* M9: המנטור שלפני השאלה הוסר. הוא היה בפוזת celebrate ואמר "תפסתם את הרעיון",
+                כלומר חגג הבנה לפני שהלומד ענה. תוכן הבדיקה נשאר זהה. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-purple-500/40 bg-slate-900/60 p-6">
                     <div className="mb-5 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -433,10 +443,9 @@ export default function BehindTheScenesChapter8() {
             </section>
 
             {/* ══════════ תובנה מעשית ══════════ */}
-            <section className="relative mt-12 text-start" dir={dir}>
-                <div className={`absolute top-1/2 -translate-y-1/2 z-20 hidden xl:block pointer-events-none ${isRtl ? 'right-full mr-3 2xl:mr-6' : 'left-full ml-3 2xl:ml-6'}`}>
-                    <Mentor pose="pointdown" line={c8.mentor.practical} width={160} flip={!isRtl} />
-                </div>
+            {/* M9: המנטור "ככה מכוונים את ההתפלגות" הוסר. זו כותרת התובנה המעשית עצמה,
+                והרשימה שמתחתיה כבר מפרטת בדיוק איך. */}
+            <section className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c8.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c8.practical.lead}</span>
@@ -458,7 +467,15 @@ export default function BehindTheScenesChapter8() {
             <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{cq.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{cq.transitions[8]}</p></section>
             <section className="mt-12 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
-                    <AssessmentEngine {...localizedQuiz} conceptDisplayMap={t.behindAi.conceptLabels} />
+                    {/* M9 F3 SELECTIVE RESPOND: המבדק חסר-דמות לחלוטין. אייקון הסטטוס נשאר בראש
+                        כרטיס התוצאה בשתי התוצאות, ומשפט התגובה הספציפי לפרק מופיע מתחתיו
+                        כטקסט בלבד. */}
+                    <AssessmentEngine
+                        {...localizedQuiz}
+                        conceptDisplayMap={t.behindAi.conceptLabels}
+                        mentorScope="respond"
+                        mentorResponse={{ pass: c8.mentorRespond.quizPass, fail: c8.mentorRespond.quizFail }}
+                    />
                 </ExpandableLab>
             </section>
         </ChapterLayout>

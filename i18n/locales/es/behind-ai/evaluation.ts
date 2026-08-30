@@ -40,6 +40,19 @@ export const evaluation = {
         practical: 'Prueba con varios casos antes de confiar',
     },
 
+    // F3 RESPOND (M9): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Te quedaste con la formulación prudente, quizá generalizó, en vez de saltar a una conclusión. Esa prudencia no es falta de confianza. Es exactamente lo que hace una evaluación: decir qué permite concluir la evidencia, y hasta dónde.',
+        guessWrong:
+            'Esa conclusión suena razonable, porque acertar en un caso nuevo sí que impresiona. La pregunta es cuánto peso puede cargar un solo ejemplo. Vale la pena releer las líneas de arriba y preguntar qué más tendría que ocurrir para poder saberlo.',
+        quizPass:
+            'Estás midiendo cuánta evidencia hay, no lo bien que se ve el resultado. Ese hábito es el que evita confiar demasiado pronto en un sistema que funcionó una vez.',
+        quizFail:
+            'La idea aquí no es que el modelo se equivoque, sino que un ejemplo no basta para saberlo. Vuelve al laboratorio, recorre los casos difíciles y observa dónde deja de sostenerse el acierto.',
+    },
+
     primer: {
         eyebrow: 'Un ejemplo correcto no es una prueba',
         title: 'Justo antes del laboratorio: ¿cómo comprobamos si el modelo de verdad mejoró?',

@@ -214,6 +214,19 @@ export const decoding = {
         practical: 'Asi eliges un estilo segun la tarea',
     },
 
+    // F3 RESPOND (M9): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'No dijiste siempre. Ataste el comportamiento al estilo de selección y no a la distribución en sí, y sobre esa separación se apoya todo el capítulo. La misma distribución exacta puede llevar a tokens distintos.',
+        guessWrong:
+            'La dirección que elegiste se apoya en algo real, pero mezcla dos preguntas: qué es probable y qué se elige de hecho. Vale la pena releer las líneas de arriba y preguntar qué cambia cuando la distribución sigue idéntica y solo se cambia el estilo de selección.',
+        quizPass:
+            'Estás separando la distribución de la elección hecha a partir de ella. Esa separación explica cómo una misma pregunta puede recibir dos respuestas distintas sin que ninguna haya sido verificada.',
+        quizFail:
+            'Aquí es fácil mezclar elegido con correcto. Vuelve al laboratorio, deja la misma frase y cambia solo el estilo de selección. Lo que se mueve es la salida, no los hechos.',
+    },
+
     // Subespacios
     lab: decodingLab,
     quiz: decodingQuiz,

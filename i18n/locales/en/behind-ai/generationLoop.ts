@@ -29,6 +29,19 @@ export const generationLoop = {
         practical: 'Steer the loop up front',
     },
 
+    // F3 RESPOND (M9): the chapter human response layer. The status stays
+    // independent; this is only what the mentor says next, on both outcomes.
+    mentorRespond: {
+        guessCorrect:
+            'You noticed that the output becomes the input again. That point is easy to miss, because the answer reads as if it had been written whole from the start. It is also where the weight of an early word over a late one comes from.',
+        guessWrong:
+            'That choice describes something that genuinely happens on screen: an answer that flows in one continuous stream. What it misses sits between the steps. It is worth rereading the lines above and asking where the context for the next step comes from.',
+        quizPass:
+            'You are reading the answer as a sequence of decisions rather than as a finished product. That reading is what explains why it pays to correct early instead of waiting for the end.',
+        quizFail:
+            'The loop becomes clear by watching it move, not by reading about it. Go back to the lab, change only the opening, and see how much of the answer shifts after it.',
+    },
+
     sections: {
         labEyebrow: 'Answer Builder Lab',
         labTitle: 'The Answer Builder Lab',

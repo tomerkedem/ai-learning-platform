@@ -38,6 +38,19 @@ export const selfCheck = {
         practical: 'Pide una comprobación, no solo una respuesta',
     },
 
+    // F3 RESPOND (M9): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Elegiste revisar el borrador en vez de mejorar cómo suena. Esa separación es todo el capítulo: una buena redacción y una afirmación respaldada son dos cosas completamente distintas.',
+        guessWrong:
+            'El paso que elegiste atiende la calidad de la escritura, y esa es una consideración real. El problema de este borrador está en otro sitio. Vale la pena volver a la fuente y marcar qué dato de la respuesta aparece allí y cuál no.',
+        quizPass:
+            'Estás contrastando una afirmación con una fuente y no con una impresión. Ese es justo el trabajo que separa una respuesta que se puede enviar de una que solo suena bien.',
+        quizFail:
+            'Es fácil leer una respuesta entera y pasar por alto el único dato que no tiene respaldo. Vuelve al laboratorio, toma un borrador y marca cada afirmación por separado contra la fuente.',
+    },
+
     primer: {
         eyebrow: 'Una buena respuesta no solo se escribe, se comprueba',
         title: 'Antes del laboratorio: ¿qué es la autocomprobación?',

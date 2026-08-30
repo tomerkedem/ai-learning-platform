@@ -208,6 +208,19 @@ export const logitsSoftmax = {
         practical: 'Así se orienta la distribución',
     },
 
+    // F3 RESPOND (M9): la capa de respuesta humana del capitulo. El estado sigue
+    // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
+    mentorRespond: {
+        guessCorrect:
+            'Clasificaste el ajuste a la frase, no lo que de verdad le pasó al paquete. Esa es justo la separación sobre la que se apoya este capítulo. Fíjate en lo frágil que es esa ventaja: un solo dato de contexto basta para cedérsela a otra continuación.',
+        guessWrong:
+            'Esa elección es del todo razonable, porque preguntaste qué le pudo pasar al paquete. El modelo hace una pregunta más estrecha: qué encaja con la frase que ya existe. Vale la pena releer las líneas de arriba preguntando hacia dónde tira el contexto actual, no qué es cierto en el mundo.',
+        quizPass:
+            'Estás leyendo un porcentaje como una clasificación de ajuste, no como un grado de certeza. Esa lectura es la que te sostendrá en el próximo capítulo, cuando la misma distribución se enfrente a otra pregunta: cuál de las opciones se elige.',
+        quizFail:
+            'La confusión habitual aquí es entre lo más alto y lo correcto. Vuelve al laboratorio, añade un solo dato de contexto y observa qué continuación pasa a liderar. Cuando el liderazgo se mueve y el paquete no, la diferencia se ve.',
+    },
+
     // Subespacios
     lab: logitsSoftmaxLab,
     quiz: logitsSoftmaxQuiz,
