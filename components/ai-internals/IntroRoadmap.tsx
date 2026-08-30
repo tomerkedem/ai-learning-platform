@@ -24,10 +24,9 @@ import {
 } from 'lucide-react';
 import { ACCENTS, type AccentStyle } from './accents';
 import type { Accent } from './types';
-import { StationViz, STATION_PALETTE, STATION_RGB, haptic } from './IntroStationViz';
+import { StationViz, STATION_PALETTE, haptic } from './IntroStationViz';
 import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
-import { Mentor, type MentorAccent } from './Mentor';
 import { useT } from '@/i18n/useT';
 import type {
     RoadmapStation, RoadmapZone, RoadmapZoneId,
@@ -158,10 +157,12 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                         className="overflow-hidden"
                     >
                         <div className={`border-t ${a.border} px-3.5 pb-4 pt-3 md:px-4`}>
-                            {/* מהות התחנה בקול: הקראת הכותרת, ההסבר ורמז-המנטור של התחנה הפתוחה.
-                                רמז-המנטור מוצג כאן גם כטקסט מתחת ל-xl, כי שם בועת המנטור לא קיימת. */}
+                            {/* מהות התחנה בקול: הקראת הכותרת, ההסבר ורמז התחנה הפתוחה.
+                                עד M12 הרמז הוצג כטקסט רק מתחת ל-xl, כי מעל זה הוא ישב בבועת
+                                מנטור-הצד. הבועה ירדה יחד עם הפורטרט, ולכן הרמז הוא עכשיו הטקסט
+                                היחיד שנושא אותו, והוא גלוי בכל רוחב מסך כשורה משלו מעל פרטי התחנה. */}
+                            {hint && <p className={`mb-2.5 text-sm font-bold leading-relaxed ${a.text}`}>{hint}</p>}
                             <div className="mb-2.5 flex items-start justify-between gap-2.5">
-                                {hint && <p className={`text-sm leading-relaxed ${a.text} xl:hidden`}>{hint}</p>}
                                 <div>
                                     {station.term && <code dir="ltr" className={`rounded-md border ${a.border} bg-slate-950/60 px-1.5 py-0.5 font-mono text-[11px] font-bold ${a.text}`}>{station.term}</code>}
                                     <p className="mt-2 text-sm leading-relaxed text-slate-300">{station.detail ?? station.explanation}</p>
@@ -195,18 +196,14 @@ interface IntroRoadmapProps {
     reduce: boolean;
     /** כיוון הכתיבה הפעיל. נקבע בעמוד מ-useT, לא מקובע ב-rtl. */
     dir: Direction;
-    /** משפט מנטור-המדריך שגולש לאורך המפה אל התחנה הפתוחה (xl+). ללא טקסט - אין מנטור. */
-    mentorLine?: string;
-    /** רוחב מנטור-המדריך בפיקסלים. */
-    mentorWidth?: number;
 }
 
-export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, reduce, dir, mentorLine, mentorWidth = 425 }) => {
+export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, reduce, dir }) => {
     // תוויות מסגרת קצרות (אזור / הצצה / תג הלולאה) מהמילון.
     const introVisuals = useT().t.behindAi.introVisuals;
     const roadmapLabels = introVisuals.roadmap;
-    // משפט-מנטור קצר לכל תחנה (מוסיף זווית מעבר להסבר שעל הכרטיס). ברירת מחדל:
-    // כשאין תחנה פתוחה, המנטור אומר את משפט הליווי הכללי (mentorLine).
+    // רמז קצר לכל תחנה: מוסיף זווית מעבר להסבר שעל הכרטיס, ומוצג בראש
+    // הפאנל הפתוח. מפתח המילון נשאר mentorHints (מפתח פנימי יציב, לא מתורגם).
     const mentorHints = introVisuals.viz.mentorHints as Record<string, string>;
     // מספור רץ ורציף 1..N על פני כל האזורים (סדר המערך = סדר המסלול).
     const indexById = new Map(stations.map((s, i) => [s.id, i]));
@@ -384,53 +381,6 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
         return () => window.removeEventListener('keydown', onKey, { capture: true });
     }, [demo, dir, step]);
 
-    // ── מנטור-המדריך שגולש לאורך המפה ─────────────────────────────────────────
-    // יעד המיקום: ראש בועת-הדיבור (מעל ראש המנטור) מתיישר לראש הכרטיס הפתוח. מודדים
-    // את הבועה בפועל (data-mentor-bubble) כדי לדייק בלי ניחוש. מודדים פעמיים: מוקדם
-    // לתגובה מהירה, ושוב אחרי שאנימציית ה"וווש" מתייצבת (scale=1) לדיוק מלא. ה-y
-    // בלתי תלוי גלילה כי הוא נמדד יחסית לשורש המפה.
-    const rootRef = useRef<HTMLDivElement>(null);
-    const mentorRef = useRef<HTMLDivElement>(null);
-    const [mentorY, setMentorY] = useState<number | null>(null);
-    useEffect(() => {
-        if (!openId) return;
-        const measure = () => {
-            const root = rootRef.current;
-            const card = cardEls.current.get(openId);
-            const wrap = mentorRef.current;
-            if (!root || !card || !wrap) return;
-            const rr = root.getBoundingClientRect();
-            const cr = card.getBoundingClientRect();
-            const bubble = wrap.querySelector('[data-mentor-bubble]') as HTMLElement | null;
-            if (bubble) {
-                // הפרש קבוע (בלתי תלוי ב-y הנוכחי): מיקום ראש הבועה יחסית לראש עוטף המנטור.
-                const wr = wrap.getBoundingClientRect();
-                const br = bubble.getBoundingClientRect();
-                setMentorY((cr.top - rr.top) - (br.top - wr.top));
-            } else {
-                // גיבוי: מרכוז אנכי על הכרטיס אם אין בועה.
-                setMentorY((cr.top + cr.bottom) / 2 - rr.top - wrap.offsetHeight / 2);
-            }
-        };
-        const t1 = window.setTimeout(measure, reduce ? 0 : 360);
-        const t2 = window.setTimeout(measure, reduce ? 0 : 760);
-        return () => { window.clearTimeout(t1); window.clearTimeout(t2); };
-    }, [openId, reduce]);
-
-    // בועת-הדיבור מקבלת את גוון התחנה הפתוחה: מסגרת והילה בצבע התחנה, ורקע כהה
-    // מוצלל באותו גוון (color-mix) כדי שהטקסט יישאר קריא. כשאין תחנה פתוחה -
-    // undefined, והמנטור חוזר לגוון ברירת המחדל (ציאן).
-    const mentorRgb = openId ? STATION_RGB[openId] : undefined;
-    const mentorAccent: MentorAccent | undefined = mentorRgb
-        ? {
-            base: mentorRgb,
-            shadow: mentorRgb,
-            // טקסט בגוון בהיר (pastel) של צבע התחנה, קריא על הרקע הכהה המוצלל.
-            text: `color-mix(in srgb, rgb(${mentorRgb}) 70%, white)`,
-            bubbleBg: `color-mix(in srgb, rgb(${mentorRgb}) 18%, #020617)`,
-        }
-        : undefined;
-
     // מצב הדגמה: מיקום התחנה הנוכחית למונה ולנעילת הקצוות של הניווט.
     const isRtl = dir === 'rtl';
     const demoLabels = roadmapLabels.demo;
@@ -440,7 +390,7 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
     const atEnd = currentIndex >= total - 1;
 
     return (
-        <div ref={rootRef} dir={dir} className="relative flex flex-col gap-4">
+        <div dir={dir} className="relative flex flex-col gap-4">
             {/* מתג מצב הדגמה: קטן ולא פולשני, נשאר מחוץ לחוויית הלומד העצמאי כשמכובה */}
             <div className="flex justify-end">
                 <button
@@ -516,38 +466,6 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                     </React.Fragment>
                 );
             })}
-
-            {/* מנטור-המדריך: גולש אל הכרטיס הפתוח (xl+ בלבד, דקורטיבי). ב-LTR מהופך
-                אופקית כדי לפנות אל התוכן. float כבוי כדי שהגלישה תהיה התנועה היחידה. */}
-            {mentorLine && (
-                <motion.div
-                    ref={mentorRef}
-                    aria-hidden
-                    className={`pointer-events-none absolute top-0 z-20 hidden xl:block ${dir === 'rtl' ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'}`}
-                    animate={reduce
-                        ? { y: mentorY ?? 0 }
-                        : { y: mentorY ?? 0, scale: mentorY == null ? 1 : [1, 0.82, 1] }}
-                    transition={reduce
-                        ? { duration: 0 }
-                        : { y: { type: 'spring', stiffness: 90, damping: 16 }, scale: { duration: 0.6, times: [0, 0.5, 1], ease: 'easeInOut' } }}
-                >
-                    <Mentor
-                        pose="mapNavigator"
-                        line={(openId ? mentorHints[openId] : undefined) ?? mentorLine}
-                        width={mentorWidth}
-                        flip={dir === 'ltr'}
-                        float={false}
-                        accent={mentorAccent}
-                        bubbleWidthClass="max-w-xs"
-                        bubbleTextClass="text-base leading-snug"
-                        // התמונה בלבד גדלה פי 1.6 ומוזזת כך שראש המנטור יושב מתחת לשפיץ
-                        // של בועת-הדיבור. ב-LTR הדמות מהופכת (flip), כך שהראש ממורכז לצד
-                        // הנגדי; לכן ההזזה מותאמת-כיוון וממושקפת, והבועה נשארת במקומה.
-                        imageScale={1.6}
-                        imageShiftX={dir === 'rtl' ? -125 : 125}
-                    />
-                </motion.div>
-            )}
 
             {/* דוק ניווט אנכי למצב הדגמה: מוצמד לקצה הצד דרך Portal ל-body כדי לצאת מכל
                 stacking context (טרנספורמים של סקשנים, מסך מלא) ולהישאר נגיש במגע. יושב

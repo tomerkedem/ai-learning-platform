@@ -11,7 +11,6 @@ import { ChapterLayout } from '@/components/ChapterLayout';
 import { AssessmentEngine, type ReviewLink } from '@/components/content/AssessmentEngine';
 import { behindAiChapterQuizzes } from '../quizData';
 import { InsightBox } from '@/components/content/InsightBox';
-import { Mentor } from '@/components/ai-internals/Mentor';
 import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard, type GuessTone } from '@/components/ai-internals/OpeningGuess';
 import { SemanticSpaceLab } from '@/components/ai-internals/SemanticSpaceLab';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
@@ -322,23 +321,17 @@ export default function BehindTheScenesChapter5() {
                     </div>
                 </div>
 
-                {/* M4 - עדשה אנושית (F2). זה המקום היחיד בשלושת פרקי הפיילוט שבו המנטור אומר
-                    משהו שהטקסט הקיים אינו אומר: labIntro מסביר מה לעשות במעבדה, והמשפט הזה
-                    מסביר על מה להסתכל בזמן שעושים. לכן הוא נשאר, אבל משנה צורה: הדמות ירדה
-                    לגודל שקט ובלי ריחוף, והמשפט עצמו כבר אינו בועת-דיבור אלא טקסט גוף בתוך
-                    כרטיס המסגור. כך הוא מגיע גם ללומד בטלפון (שם הדמות מוסתרת) ונכנס להקראה
-                    הקיימת של הכרטיס בלי מקטע חדש. בלי flip: זו תמונה של אדם אמיתי. */}
+                {/* עדשת המעבדה: המשפט היחיד בפרק שאומר משהו שהטקסט הקיים אינו אומר.
+                    labIntro מסביר מה לעשות במעבדה, והשורה שאחריו מסבירה על מה להסתכל בזמן
+                    שעושים. M12: הפורטרט ירד (אין דמות בלומדה הזאת), והדגש עבר כולו
+                    לטיפוגרפיה: קו-צד סגול, משקל בולט וגוון בהיר מגוף הטקסט. כך העדשה
+                    נשארת נבדלת בבירור מהפסקה שמעליה בכל רוחב מסך, ולא רק מ-sm ומעלה. */}
                 <div className="flex items-start justify-between gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
-                    <div className="flex flex-1 items-start gap-3.5">
-                        <div className="hidden shrink-0 self-center sm:block">
-                            <Mentor pose="think" width={92} glow={false} float={false} />
-                        </div>
-                        <div>
-                            <span className="block">{c5.sections.labIntro}</span>
-                            <span className="mt-2.5 block border-s-2 border-violet-400/50 ps-3 text-sm font-bold text-violet-100">
-                                {c5.mentor.lab}
-                            </span>
-                        </div>
+                    <div className="flex-1">
+                        <span className="block">{c5.sections.labIntro}</span>
+                        <span className="mt-3 block border-s-2 border-violet-400/60 ps-3.5 text-[15px] font-bold text-violet-100">
+                            {c5.mentor.lab}
+                        </span>
                     </div>
                     <SpeakButton text={`${c5.sections.labTitle}. ${c5.sections.labIntro} ${c5.mentor.lab}`} className="mt-0.5" />
                 </div>

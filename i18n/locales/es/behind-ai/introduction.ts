@@ -11,6 +11,17 @@ import { introRoadmap } from './introRoadmap';
 export const introduction = {
     contentLocale: 'es' as Locale,
 
+    // La capa de respuesta humana de la tarjeta de veredicto. El estado (la marca o la
+    // bombilla, el titulo, la explicacion) sigue siendo una capa independiente; aqui solo
+    // esta lo que se dice despues, con la misma forma en ambos resultados. Especifico de
+    // la introduccion a proposito.
+    mentorRespond: {
+        guessCorrect:
+            'Lo que te trajo hasta aquí es la idea de que la respuesta se construye en lugar de encontrarse. Esa idea no es evidente, porque desde fuera la respuesta llega entera y pulida, sin ninguna señal del proceso que la precedió.',
+        guessWrong:
+            'Esta suposición no nació de la confusión. Las cuatro opciones suenan razonables desde fuera, porque desde fuera solo se ven una solicitud y una respuesta. Lo que ayuda ahora no es buscar la explicación correcta, sino preguntarse qué le ocurre al texto mismo entre una y otra.',
+    },
+
     // ── Hero ──
     hero: {
         badge: 'El laboratorio transparente · Behind the Scenes',

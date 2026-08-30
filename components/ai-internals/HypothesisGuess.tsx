@@ -16,7 +16,7 @@
 import React, { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
 import { HelpCircle, Eye, Lock, Database, Check } from 'lucide-react';
-import { GuessInvite, GuessVerdict } from './GuessVerdict';
+import { GuessVerdict } from './GuessVerdict';
 import { SpeakButton } from './SpeakButton';
 import { ExpandableLabContext } from './ExpandableLab';
 import { useT } from '@/i18n/useT';
@@ -96,8 +96,10 @@ export const HypothesisGuess: React.FC<{
     reduce: boolean;
     content: QuickGuessContent;
     dir: Direction;
+    /** משפטי התגובה האנושית של כרטיס ההכרעה, אחד לכל תוצאה. ספציפיים למבוא בכוונה. */
+    mentorResponse: { correct: string; wrong: string };
     onFeedbackNarration?: (text: string | null) => void;
-}> = ({ reduce, content, dir, onFeedbackNarration }) => {
+}> = ({ reduce, content, dir, mentorResponse, onFeedbackNarration }) => {
     // במסך מלא יש רוחב: ארבע ההשערות עוברות לשורה אחת, הכרטיס מתרחב, והכותרת גדלה.
     const expanded = useContext(ExpandableLabContext);
     const [chosenId, setChosenId] = useState<string | null>(null);
@@ -132,9 +134,6 @@ export const HypothesisGuess: React.FC<{
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[80px]" />
 
             <div className="relative">
-                {/* מנטור הזמנה: משותף לכל הפרקים - דמות חושבת ממורכזת, נעלמת אחרי הבחירה. */}
-                {!chosen && <GuessInvite pose="think" width={243} />}
-
                 <div className="text-center">
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-400">
                         <HelpCircle size={14} /> {content.eyebrow}
@@ -221,6 +220,11 @@ export const HypothesisGuess: React.FC<{
                         reveal={correctCard ? { button: content.revealCorrect, title: `${correctCard.title}: ${content.correctLead}`, body: content.correctBody, revealed, onReveal: () => setRevealed(true) } : undefined}
                         onRetry={reset}
                         retryLabel={content.retry}
+                        // הכרעת הניחוש עברה למודל התגובה של הפרקים: בלי דמות בהצלחה ובלי
+                        // דמות בטעות (שתי דמויות שונות הפכו את התוצאה לנראית לפני שקוראים),
+                        // ובמקומן שורת תגובה אנושית באותו מבנה בדיוק בשתי התוצאות.
+                        mentorMode="respond"
+                        mentorResponse={mentorResponse}
                     />
                 )}
             </div>

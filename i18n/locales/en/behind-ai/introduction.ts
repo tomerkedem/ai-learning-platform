@@ -11,6 +11,16 @@ import { introRoadmap } from './introRoadmap';
 export const introduction = {
     contentLocale: 'en' as Locale,
 
+    // The human response layer of the guess verdict card. The status (check or bulb,
+    // title, explanation) stays an independent layer; this is only what is said after
+    // it, in the same shape on both outcomes. Specific to the introduction by design.
+    mentorRespond: {
+        guessCorrect:
+            'What brought you here is the assumption that the answer is built rather than found. That assumption is not obvious, because from the outside the answer arrives whole and polished, with no sign of the process behind it.',
+        guessWrong:
+            'That guess did not come from confusion. All four options sound reasonable from the outside, because from the outside you only see a request and an answer. What helps now is not to look for the right explanation but to ask what happens to the text itself in between.',
+    },
+
     // ── Hero ──
     hero: {
         badge: 'The Transparent Lab · Behind the Scenes',

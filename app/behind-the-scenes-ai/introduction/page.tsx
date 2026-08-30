@@ -5,14 +5,13 @@ import {
   ChevronLeft, ChevronRight, Info, MousePointerClick,
 } from "lucide-react";
 import Link from 'next/link';
-import { ChapterLayout, FocusModeContext } from "@/components/ChapterLayout";
+import { ChapterLayout } from "@/components/ChapterLayout";
 import { IntroRoadmap } from "@/components/ai-internals/IntroRoadmap";
 import { VizSoundToggle } from "@/components/ai-internals/IntroStationViz";
 import { ExpandableLab } from "@/components/ai-internals/ExpandableLab";
 import { EngineReveal } from "@/components/ai-internals/EngineReveal";
 import { HypothesisGuess } from "@/components/ai-internals/HypothesisGuess";
 import { AgentLoop } from "@/components/ai-internals/AgentLoop";
-import { Mentor } from "@/components/ai-internals/Mentor";
 import { ReadAloudControls, type ReadAloudMode } from "@/components/ai-internals/ReadAloudControls";
 import { FloatingReadAloud } from "@/components/ai-internals/FloatingReadAloud";
 import type { ReadAloudSegment } from "@/components/ai-internals/useReadAloud";
@@ -74,23 +73,6 @@ const LOCALE_SPEECH_LANG: Record<Locale, string> = {
   ja: 'ja-JP',
 };
 
-
-// מנטור ההירו: הגודל תלוי במצב המיקוד. הרכיב חייב לשבת בתוך ה-children של
-// ChapterLayout (כלומר בתוך ה-Provider) כדי לקרוא את המצב החי. במיקוד פי 2.7
-// (486px, בועה 30px), מחוץ למיקוד פי 2 (360px, בועה 22px).
-function HeroMentor({ line, flip }: { line: string; flip: boolean }) {
-  const isFocusMode = React.useContext(FocusModeContext);
-  return (
-    <Mentor
-      pose="hero"
-      line={line}
-      flip={flip}
-      width={isFocusMode ? 486 : 360}
-      bubbleWidthClass="max-w-md"
-      bubbleTextClass={isFocusMode ? 'text-[30px] leading-tight' : 'text-[22px] leading-tight'}
-    />
-  );
-}
 
 // כותרת-מקטע אחידה
 function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
@@ -239,9 +221,12 @@ export default function BehindTheScenesIntroPage() {
           {/* ══════════ 1 · OUTSIDE VIEW ══════════ */}
           {/* מבחוץ נראה כמו שני שלבים: בקשה ותשובה. השאלה "מה קרה באמצע" נשארת פתוחה. */}
           <div className="relative">
-            {/* ב-lg+ דוק ההאזנה מעוגן בפינה העליונה, מעל הכותרת. הכותרת וה-lede מתפזרים
-                לרוחב מלא ויושבים מתחתיו (הבאדג' שמעל הכותרת מפנה אותם מתחת לדוק). */}
-            <div className="text-center md:text-start mb-6">
+            {/* הירו טקסט-ראשון (M12). עד כאן עמדה בשוליים דמות גדולה, והטקסט יושר לצד
+                אחד כדי לפנות לה מקום. בלי הדמות אין למה ליישר: הכותרת והפתיח ממורכזים
+                מעל כרטיס הצאט, עם מידת-שורה קריאה לפתיח, כך שהמרכז הוויזואלי של העמוד
+                עובר לטיפוגרפיה ולמה שקורה בכרטיס עצמו. דוק ההאזנה צף (portal ל-body)
+                ואינו משפיע על הזרימה כאן. */}
+            <div className="mb-8 text-center">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-cyan-500/30 mb-3">
                 <span className="relative flex h-2 w-2">
                   {!reduce && <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping" />}
@@ -250,13 +235,13 @@ export default function BehindTheScenesIntroPage() {
                 <span className="text-cyan-300 text-xs font-bold tracking-wide">{intro.hero.badge}</span>
               </div>
 
-              <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-3">
+              <h1 className="mx-auto max-w-4xl text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4">
                 {intro.hero.titleLead}{' '}
                 <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent`}>
                   {intro.hero.titleAccent}
                 </span>
               </h1>
-              <p className="text-base md:text-lg text-slate-300 leading-relaxed">{intro.hero.intro}</p>
+              <p className="mx-auto max-w-2xl text-base md:text-lg text-slate-300 leading-relaxed">{intro.hero.intro}</p>
 
               {/* דוק האזנה מודרכת צף: מצמיד לקצה החיצוני (תלוי-כיוון) ונשאר נגיש תוך כדי
                   גלילה; במובייל מתכווץ לאייקון בלבד. ממומש דרך portal ל-body (FloatingReadAloud). */}
@@ -291,12 +276,6 @@ export default function BehindTheScenesIntroPage() {
                 inputPlaceholder={intro.chat.inputPlaceholder}
               />
             </motion.div>
-
-            {/* המנטור עומד בצד הקריאה הטבעי של הכרטיס המרכזי (xl+ בלבד). */}
-            {/* ב-LTR הוא יושב מימין לכרטיס, ולכן מהופך אופקית כדי לפנות אל התוכן ולא ממנו. */}
-            <div className={`absolute top-44 ${isRtl ? 'left-full ml-3 2xl:ml-6' : 'right-full mr-3 2xl:mr-6'} z-20 hidden xl:block pointer-events-none`}>
-              <HeroMentor line={intro.mentor.hero} flip={!isRtl} />
-            </div>
           </div>
 
           {/* ══════════ 2 · QUICK GUESS: FOUR COMPETING HYPOTHESES ══════════ */}
@@ -313,6 +292,7 @@ export default function BehindTheScenesIntroPage() {
                 reduce={!!reduce}
                 content={quickGuess}
                 dir={dir}
+                mentorResponse={{ correct: intro.mentorRespond.guessCorrect, wrong: intro.mentorRespond.guessWrong }}
                 onFeedbackNarration={setGuessNarration}
               />
             </ExpandableLab>
@@ -338,13 +318,11 @@ export default function BehindTheScenesIntroPage() {
               <VizSoundToggle />
             </div>
 
-            {/* המנטור-מדריך גולש אל התחנה הפתוחה; הוא מרונדר בתוך IntroRoadmap כדי
-                שתהיה לו גישה ישירה לכרטיס הפתוח ולמיקומו. */}
-            <div className="relative">
-              <ExpandableLab>
-                <IntroRoadmap zones={roadmapZones} stations={roadmapStations} reduce={!!reduce} dir={dir} mentorLine={intro.mentor.roadmap} mentorWidth={330} />
-              </ExpandableLab>
-            </div>
+            {/* רמז כל תחנה ישב עד M12 בבועת מנטור-צד (xl+). הפורטרט ירד, והרמז עבר
+                לראש פאנל התחנה הפתוחה, גלוי בכל רוחב מסך. */}
+            <ExpandableLab>
+              <IntroRoadmap zones={roadmapZones} stations={roadmapStations} reduce={!!reduce} dir={dir} />
+            </ExpandableLab>
 
             {/* ── 7 · TRUTH NOTE (near the roadmap) ── */}
             <div className="mt-6 flex items-start gap-2.5 rounded-2xl border border-cyan-500/20 bg-cyan-900/10 p-4 backdrop-blur-xl">
@@ -385,22 +363,20 @@ export default function BehindTheScenesIntroPage() {
             <h2 className="relative text-2xl md:text-4xl font-black text-white mb-4 tracking-tight">
               {intro.cta.title}
             </h2>
-            <p className="relative text-slate-400 text-base md:text-lg max-w-xl mx-auto mb-8 lg:mb-40 leading-relaxed">
+            {/* עד M12 עמדה כאן דמות מצביעה מעל הכפתור, ו-mb-40 פינה לה מקום ב-lg+.
+                הדמות ירדה והמרווח הגדול ירד איתה, כדי שלא יישאר חלל בצורת אדם. הכפתור
+                עוקב עכשיו ישירות אחרי הטקסט, וההילה העליונה של הכרטיס נשארת המרכיב
+                הוויזואלי היחיד מעליו. */}
+            <p className="relative text-slate-400 text-base md:text-lg max-w-xl mx-auto mb-9 leading-relaxed">
               {intro.cta.body}
             </p>
-            {/* עוטף את הכפתור כדי שהמנטור יעמוד בדיוק מעליו והאצבע תנחת עליו (lg+ בלבד) */}
-            <div className="relative inline-block">
-              <div className="pointer-events-none absolute bottom-full left-1/2 z-10 -translate-x-1/2 translate-y-[2%] hidden lg:block">
-                <Mentor pose="pointdown" width={132} glow={false} float={false} />
-              </div>
-              <Link
-                href={CTA_HREF}
-                className="relative inline-flex items-center gap-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-4 px-10 rounded-2xl transition-all shadow-[0_8px_30px_-6px_rgba(34,211,238,0.6)] hover:shadow-[0_8px_40px_-4px_rgba(34,211,238,0.8)] active:scale-95 no-underline text-lg"
-              >
-                {intro.cta.button}
-                {isRtl ? <ChevronLeft size={22} /> : <ChevronRight size={22} />}
-              </Link>
-            </div>
+            <Link
+              href={CTA_HREF}
+              className="relative inline-flex items-center gap-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-4 px-10 rounded-2xl transition-all shadow-[0_8px_30px_-6px_rgba(34,211,238,0.6)] hover:shadow-[0_8px_40px_-4px_rgba(34,211,238,0.8)] active:scale-95 no-underline text-lg"
+            >
+              {intro.cta.button}
+              {isRtl ? <ChevronLeft size={22} /> : <ChevronRight size={22} />}
+            </Link>
           </motion.section>
 
         </div>

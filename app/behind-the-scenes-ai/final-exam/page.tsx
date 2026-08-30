@@ -110,6 +110,10 @@ export default function FinalExamPage() {
                         startLabel={fx.startLabel}
                         submitLabel={fx.submitLabel}
                         completedTitle={fx.completedTitle}
+                        /* המבחן המסכם היה הצרכן היחיד שנשאר על ברירת המחדל 'all' ולכן
+                           עוד הציג דמות בפתיחה ובתוצאה. כל 19 הפרקים כבר על 'respond',
+                           והמבחן מיישר איתם: אייקוני סטטוס בלבד, בלי פורטרט. */
+                        mentorScope="respond"
                         reviewHref="/behind-the-scenes-ai/introduction"
                         reviewLabel={fx.reviewLabel}
                         nextHref="/"
