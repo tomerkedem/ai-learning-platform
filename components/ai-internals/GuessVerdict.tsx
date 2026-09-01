@@ -8,9 +8,13 @@
 //
 // המטרה: אחידות חלקית. מנגנון הניחוש עצמו נשאר גמיש וייחודי לכל פרק, אבל שני
 // החלקים האלה זהים בכל מקום:
-//   1. GuessInvite  - מנטור ההזמנה שמעל הכרטיסים, לפני הבחירה.
-//   2. GuessVerdict - התגובה שאחרי הבחירה: הצלחה ("נכון מאוד!", מנטור חוגג, מסגרת-אור
-//      מסתובבת, פריחת אאורה, וי מצויר) או טעות תומכת ("עוד לא", מנטור מרגיע, כתום רך).
+//   1. GuessInvite  - משפט ההזמנה לנחש שמעל הכרטיסים, לפני הבחירה.
+//   2. GuessVerdict - התגובה שאחרי הבחירה: הצלחה ("נכון מאוד!", מסגרת-אור מסתובבת,
+//      פריחת אאורה, וי מצויר) או טעות תומכת ("עוד לא", כתום רך).
+//
+// M13: אין כאן פורטרט מנטור, ואי אפשר להחזיר אותו בטעות. הרכיב אינו מייבא את Mentor,
+// אין בו prop של פוזה ואין mentorMode. שכבת הקול האנושי היא ResponseNote בלבד: שורת
+// טקסט זהה במבנה בשתי התוצאות, שמופיעה רק כשהפרק סיפק משפט תגובה משלו.
 //
 // שפת עיצוב AI 2026: המסגרת "חיה" (conic shimmer איטי), רגע ההצלחה הוא רגע-שיא עם
 // פריחה חד-פעמית, וי מצויר, וכותרת שנכנסת מ-blur. הכל תומך-משמעות ולא דקורטיבי:
@@ -23,8 +27,7 @@
 import React from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { CheckCircle2, Lightbulb, RotateCcw, ArrowDown, Sparkles } from 'lucide-react';
-import { Mentor, type MentorPose } from './Mentor';
-import { MentorResponse } from './MentorResponse';
+import { ResponseNote } from './ResponseNote';
 import { GuessButton } from './GuessButton';
 import { SpeakButton } from './SpeakButton';
 
@@ -98,7 +101,7 @@ export function SparkleBurst({ colorClass }: { colorClass: string }) {
     );
 }
 
-/* פריחת אאורה חד-פעמית שנפתחת מפינת המנטור ומשאירה זוהר רך (מונפש בלבד). */
+/* פריחת אאורה חד-פעמית שנפתחת מפינת הכרטיס ומשאירה זוהר רך (מונפש בלבד). */
 export function AuroraBloom({ rgb }: { rgb: string }) {
     return (
         <motion.div
@@ -176,30 +179,13 @@ export const ShimmerFrame: React.FC<{
     );
 };
 
-/* ── מנטור ההזמנה: דמות תומכת ממורכזת מעל הכרטיסים, נעלמת אחרי הבחירה. ──
-   showMentor=false (opt-in של פרקי הפיילוט): ההזמנה לנחש נשארת בדיוק אותו טקסט, אבל
-   כטקסט גוף בלי דמות. במצב הזה היא גם מפסיקה להיות מוסתרת מתחת ל-sm: המשפט הוא תוכן
-   לימודי ("נסו לנחש לפני שנפתח"), ואין סיבה שלומד בטלפון לא יקבל אותו. ברירת המחדל
-   true משמרת את ההתנהגות הקיימת בכל שאר הפרקים. */
-export const GuessInvite: React.FC<{ pose?: MentorPose; line?: string; width?: number; showMentor?: boolean }> = ({
-    pose = 'think',
-    line,
-    // מנטור-think של ההזמנה מוצג בגודל מוגדל (x1.5) ברחבי הלומדה כברירת מחדל.
-    width = 162,
-    showMentor = true,
-}) => {
-    if (!showMentor) {
-        return line ? (
-            <p className="mx-auto mb-5 max-w-md text-center text-[13px] font-medium leading-snug text-slate-400">{line}</p>
-        ) : null;
-    }
+/* ── ההזמנה לנחש: משפט ממורכז מעל הכרטיסים, נעלם אחרי הבחירה. ──
+   טקסט בלבד, וגלוי גם בטלפון: המשפט הוא תוכן לימודי ("נסו לנחש לפני שנפתח"), ואין
+   סיבה שלומד במסך קטן לא יקבל אותו. אין כאן דמות ואין prop שיכול להחזיר אותה. */
+export const GuessInvite: React.FC<{ line?: string }> = ({ line }) => {
+    if (!line) return null;
     return (
-        <div className="mb-5 hidden flex-col items-center sm:flex">
-            <Mentor pose={pose} width={width} glow={false} />
-            {line && (
-                <p className="mt-1 max-w-xs text-center text-[12px] font-medium leading-snug text-slate-400">{line}</p>
-            )}
-        </div>
+        <p className="mx-auto mb-5 max-w-md text-center text-[13px] font-medium leading-snug text-slate-400">{line}</p>
     );
 };
 
@@ -233,27 +219,11 @@ export interface GuessVerdictProps {
     onRetry: () => void;
     retryLabel: string;
 
-    /** דריסת פוזות מנטור. ברירת מחדל: celebrate להצלחה, reassure לטעות. */
-    correctPose?: MentorPose;
-    wrongPose?: MentorPose;
-
     /**
-     * מתי המנטור מופיע בכרטיס ההכרעה. opt-in של פרקי הפיילוט; ברירת המחדל 'both'
-     * משמרת בדיוק את ההתנהגות הקיימת בכל שאר הצרכנים.
-     *   both      - דמות גדולה בצד, בהצלחה וגם בטעות (המצב הקיים).
-     *   recovery  - דמות בטעות בלבד, כליווי אנושי אחרי טעות משמעותית.
-     *   respond   - מודל F3 SELECTIVE RESPOND (פיילוט M7): בלי הדמות הגדולה בצד,
-     *               ובמקומה שורת תגובה אנושית זהה לחלוטין בשתי התוצאות: אותה פוזה,
-     *               אותו גודל, אותו מיקום (ראו MentorResponse). הסטטוס (וי/נורה,
-     *               כותרת, הסבר) נשאר שכבה עצמאית ואינו מוחלף.
-     *   none      - בלי דמות בכלל.
-     * הטקסט הלימודי של הכרטיס אינו משתנה באף מצב.
-     */
-    mentorMode?: 'both' | 'recovery' | 'respond' | 'none';
-
-    /**
-     * משפטי התגובה האנושית של מצב 'respond', אחד לכל תוצאה. ספציפיים לפרק בכוונה:
-     * תגובה גנרית שחוזרת בכל פרק היא בדיוק מה שהופך מלווה אנושי לאייקון.
+     * משפטי התגובה האנושית, אחד לכל תוצאה. ספציפיים לפרק בכוונה: תגובה גנרית שחוזרת
+     * בכל פרק היא בדיוק מה שהופך מלווה אנושי לאייקון. בלי משפטים אין שורת תגובה, ולכן
+     * אין סיכון למשפט ברירת-מחדל שחוזר זהה בכל הלומדה. הסטטוס (וי/נורה, כותרת, הסבר)
+     * נשאר שכבה עצמאית ואינו מוחלף.
      */
     mentorResponse?: { correct: string; wrong: string };
 }
@@ -285,20 +255,14 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
     reveal,
     onRetry,
     retryLabel,
-    correctPose = 'celebrate',
-    wrongPose = 'reassure',
-    mentorMode = 'both',
     mentorResponse,
 }) => {
     const reducedMotion = useReducedMotion();
     const reduce = reduceProp ?? !!reducedMotion;
     const a = ACCENT[accent];
-    const showCorrectMentor = mentorMode === 'both';
-    const showWrongMentor = mentorMode === 'both' || mentorMode === 'recovery';
-    // F3 RESPOND: שורת תגובה במקום הדמות שבצד, בשתי התוצאות באותו מבנה בדיוק.
-    const respond = mentorMode === 'respond';
-    const respondCorrect = respond ? mentorResponse?.correct : undefined;
-    const respondWrong = respond ? mentorResponse?.wrong : undefined;
+    // שורת התגובה האנושית, בשתי התוצאות באותו מבנה בדיוק.
+    const respondCorrect = mentorResponse?.correct;
+    const respondWrong = mentorResponse?.wrong;
 
     // הקראה נקודתית בכל כרטיסי המשוב בלומדה: אף טקסט בניחוש לא נשאר בלי הקראה.
     // טקסט ההקראה נגזר מהתוכן הנוכחי של הכרטיס, כולל ההסבר המדויק רק אחרי שנחשף.
@@ -333,11 +297,6 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                         {!reduce && <AuroraBloom rgb={a.rgb} />}
                         {!reduce && <SparkleBurst colorClass={a.sparkle} />}
                         <div className="relative flex items-start gap-4">
-                            {showCorrectMentor && (
-                                <div className="hidden shrink-0 self-center sm:block">
-                                    <Mentor pose={correctPose} width={176} glow={false} float={false} />
-                                </div>
-                            )}
                             <div className="flex-1 text-start">
                                 <div className="flex items-center gap-2">
                                     <DrawCheck colorClass={a.icon} reduce={reduce} />
@@ -363,7 +322,7 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                         )}
                                     </p>
                                 )}
-                                <MentorResponse line={respondCorrect} />
+                                <ResponseNote line={respondCorrect} />
                                 <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2.5">
                                     {continueCta && (
                                         <GuessButton
@@ -401,11 +360,6 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                             />
                         )}
                         <div className="relative flex items-start gap-4">
-                            {showWrongMentor && (
-                                <div className="hidden shrink-0 self-center sm:block">
-                                    <Mentor pose={wrongPose} width={172} glow={false} float={false} />
-                                </div>
-                            )}
                             <div className="flex-1 text-start">
                                 <div className="flex items-center gap-2">
                                     <motion.span
@@ -424,7 +378,7 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                     <p className="mt-1.5 text-sm leading-relaxed text-slate-400">{wrongExplainMore}</p>
                                 )}
 
-                                <MentorResponse line={respondWrong} />
+                                <ResponseNote line={respondWrong} />
 
                                 {reveal && reveal.revealed && (
                                     <motion.div

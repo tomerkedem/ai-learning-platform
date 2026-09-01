@@ -5,35 +5,40 @@
 //
 // לא מבחן ולא חלק מהניקוד. הלומד בוחר מודל חשיבה אחד מתוך ארבע השערות על איך
 // המודל מחליט למה להתייחס. כל בחירה מקבלת סטטוס פדגוגי ומשוב מובנה: מה זה תופס
-// נכון, מה זה מפספס, ומשפט גשר. לכל סטטוס פוזת מנטור משלו.
+// נכון, מה זה מפספס, ומשפט גשר.
 //
 // i18n: כל הטקסט מגיע דרך props (content, cards, prompt) מהמילון לפי locale. המבנה
-// (cue, statusTone, mentorPose) נשאר מטא-דאטה בעמוד. הכיוון (RTL/LTR) מגיע מ-dir.
+// (cue, statusTone) נשאר מטא-דאטה בעמוד. הכיוון (RTL/LTR) מגיע מ-dir.
 //
-// אין שימוש ב-scaleX flip ידני; היפוך המנטור נעשה דרך prop ה-flip של Mentor בלבד,
-// בצד שבו הפוזה צריכה לפנות אל הטקסט ב-LTR. אין בקובץ הזה מקף ארוך או מקף בינוני.
+// M13: אין כאן פורטרט מנטור ואין mentorMode. הרכיב אינו מייבא את Mentor, ולכן שום
+// prop חסר אינו יכול להחזיר דמות. הקול האנושי הוא ResponseNote בלבד: שורת טקסט אחת
+// באותו מבנה בדיוק בשתי התוצאות. אין בקובץ הזה מקף ארוך או מקף בינוני.
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { HelpCircle, Sparkles, Highlighter, Globe, Check, ArrowDown, RotateCcw } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
-import { Mentor, type MentorPose } from './Mentor';
-import { MentorResponse } from './MentorResponse';
+import type { MentorPose } from './Mentor';
+import { ResponseNote } from './ResponseNote';
 import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
 
 export type Cue = 'spotlight' | 'highlighter' | 'nodes' | 'factcheck';
 export type StatusTone = 'close' | 'partial' | 'common' | 'layer';
 
-/** כרטיס השערה: טקסט מהמילון + מטא-דאטה מבני (cue, statusTone, mentorPose). */
+/** כרטיס השערה: טקסט מהמילון + מטא-דאטה מבני (cue, statusTone). */
 export interface AttentionGuessCard {
     id: string;
     title: string;
     desc: string;
     cue: Cue;
     statusTone: StatusTone;
-    mentorPose: MentorPose;
+    /**
+     * @deprecated M13: אינו נצרך יותר. נשאר אופציונלי כדי לא לגעת בנתוני הפרקים
+     * במשימה הזאת; רשומות ה-mentorPose בעמודים מסומנות להסרה ב-M14.
+     */
+    mentorPose?: MentorPose;
     statusLabel: string;
     getsRight: string;
     missesLabel: string;
@@ -68,18 +73,10 @@ interface AttentionGuessProps {
      */
     labTargetId?: string;
     /**
-     * נוכחות המנטור בניחוש. ברירת המחדל 'classic' משמרת בדיוק את ההתנהגות הקיימת
-     * בפרקים 6-9. 'recovery' הוא ה-opt-in של הפיילוט: בלי דמות הזמנה, בלי דמות על
-     * ההשערה הקרובה, ובלי דמות בכרטיס התובנה הנחשפת. הדמות נשארת רק כשההשערה שנבחרה
-     * אינה הקרובה, כליווי אנושי אחרי טעות. אף טקסט אינו נעלם: משפט ההזמנה עובר
-     * לטקסט גוף ונשאר גלוי גם בטלפון.
-     * 'respond' הוא מודל F3 RESPOND (פיילוט M6): גם בלי דמות הזמנה ובלי דמות בכרטיס
-     * התובנה, אבל פאנל המשוב מקבל שורת תגובה אנושית אחידה בשתי התוצאות. צ׳יפ הסטטוס
-     * נשאר שכבת הסטטוס העצמאית ואינו מוחלף בדמות.
+     * משפטי התגובה האנושית הספציפיים לפרק, אחד לכל תוצאה. פאנל המשוב מקבל שורת תגובה
+     * אחידה בשתי התוצאות, וצ׳יפ הסטטוס נשאר שכבת הסטטוס העצמאית לצידה.
      */
-    mentorMode?: 'classic' | 'recovery' | 'respond';
-    /** משפטי התגובה הספציפיים לפרק, נדרש רק ב-'respond'. */
-    mentorResponse?: { correct: string; wrong: string };
+    mentorResponse: { correct: string; wrong: string };
 }
 
 const STATUS_TONE: Record<StatusTone, string> = {
@@ -133,24 +130,17 @@ function CueIllustration({ cue }: { cue: Cue }) {
     );
 }
 
-export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, prompt, dir, speechLocale, labTargetId = 'attention-lab', mentorMode = 'classic', mentorResponse }) => {
+export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, prompt, dir, speechLocale, labTargetId = 'attention-lab', mentorResponse }) => {
     const reduce = useReducedMotion();
-    const isRtl = dir === 'rtl';
     const [chosenId, setChosenId] = useState<string | null>(null);
     const [revealed, setRevealed] = useState(false);
 
     const chosen = cards.find((c) => c.id === chosenId) ?? null;
     const choiceMade = chosenId !== null;
-    const classicMentors = mentorMode === 'classic';
-    const respond = mentorMode === 'respond';
-    // ב-recovery הדמות מופיעה רק כשההשערה שנבחרה אינה הקרובה (statusTone !== 'close').
-    // ב-respond אין דמות בעמודת הצד כלל: היא עוברת לשורת התגובה שמתחת למשוב, זהה
-    // במבנה בשתי התוצאות.
-    const showFeedbackMentor = !respond && (classicMentors || (!!chosen && chosen.statusTone !== 'close'));
     // ההשערה הקרובה היא תוצאת ההצלחה של הניחוש הזה; כל שאר הגוונים הם תוצאת הטעות.
-    const respondLine = !respond || !chosen
+    const respondLine = !chosen
         ? undefined
-        : chosen.statusTone === 'close' ? mentorResponse?.correct : mentorResponse?.wrong;
+        : chosen.statusTone === 'close' ? mentorResponse.correct : mentorResponse.wrong;
 
     const goToLab = () => {
         const el = typeof document !== 'undefined' ? document.getElementById(labTargetId) : null;
@@ -179,20 +169,12 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-violet-500/10 blur-[80px]" />
 
             <div className="relative z-10">
-                {/* ההזמנה לנחש לפני הבחירה. classic: דמות ממורכזת עם המשפט מתחתיה.
-                    recovery: אותו משפט בדיוק כטקסט גוף בלבד, וגלוי גם בטלפון. */}
-                {!choiceMade && (classicMentors ? (
-                    <div className="mb-5 hidden flex-col items-center sm:flex">
-                        <Mentor pose="think" width={162} glow={false} />
-                        <p className="mt-1 max-w-xs text-center text-[12px] font-medium leading-snug text-slate-400">
-                            {content.invite}
-                        </p>
-                    </div>
-                ) : (
+                {/* ההזמנה לנחש לפני הבחירה: טקסט גוף בלבד, גלוי גם בטלפון. */}
+                {!choiceMade && (
                     <p className="mx-auto mb-5 max-w-md text-center text-[13px] font-medium leading-snug text-slate-400">
                         {content.invite}
                     </p>
-                ))}
+                )}
                 <div className="text-center">
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-400">
                         <HelpCircle size={14} /> {content.eyebrow}
@@ -235,7 +217,7 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                     ))}
                 </div>
 
-                {/* משוב מובנה: סטטוס, מה תופס נכון, מה מפספס, גשר, ומנטור מגיב לפי הסטטוס */}
+                {/* משוב מובנה: סטטוס, מה תופס נכון, מה מפספס, גשר, ושורת התגובה האנושית */}
                 <AnimatePresence initial={false}>
                     {chosen && (
                         <motion.div
@@ -250,15 +232,6 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                         >
                             <div className="rounded-2xl border border-violet-400/30 bg-violet-900/15 p-5">
                                 <div className="flex items-start gap-4">
-                                    {/* המנטור יושב בצד ההתחלה ופונה אל הטקסט; ב-classic הוא מתהפך ב-LTR
-                                        כדי לפנות פנימה. ב-recovery הוא נשאר ללא היפוך: זו תמונה של אדם
-                                        אמיתי, ובמצב הזה היא מופיעה רק אחרי טעות ולכן אין הצדקה למראה. */}
-                                    {showFeedbackMentor && (
-                                        <div className="hidden shrink-0 self-center sm:block">
-                                            <Mentor pose={chosen.mentorPose} width={68} glow={false} float={false} flip={classicMentors && !isRtl} />
-                                        </div>
-                                    )}
-
                                     <div className="flex-1">
                                         <div className="flex items-start justify-between gap-2">
                                             <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${STATUS_TONE[chosen.statusTone]}`}>
@@ -291,7 +264,7 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                                             </p>
                                         </div>
 
-                                        <MentorResponse line={respondLine} />
+                                        <ResponseNote line={respondLine} />
 
                                         <div className="mt-4 flex flex-wrap items-center gap-3">
                                             {!revealed && (
@@ -318,7 +291,7 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                     )}
                 </AnimatePresence>
 
-                {/* התובנה הגדולה: נפתחת בלחיצה, מנטור pointdown מוביל אל המעבדה */}
+                {/* התובנה הגדולה: נפתחת בלחיצה ומובילה אל המעבדה */}
                 <AnimatePresence initial={false}>
                     {revealed && (
                         <motion.div
@@ -339,11 +312,6 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                                 <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-slate-300">{content.revealCopy}</p>
 
                                 <div className="mt-4 flex flex-col items-center gap-2">
-                                    {classicMentors && (
-                                        <div className="hidden sm:block">
-                                            <Mentor pose="pointdown" width={72} glow={false} float={false} />
-                                        </div>
-                                    )}
                                     <button
                                         type="button"
                                         onClick={goToLab}

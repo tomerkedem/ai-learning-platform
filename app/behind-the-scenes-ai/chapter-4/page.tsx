@@ -132,7 +132,6 @@ const MeaningGuess: React.FC = () => {
                         wrongExplain={chosenWhy ?? ''}
                         onRetry={() => setChosenId(null)}
                         retryLabel={correct ? g.retryLink : g.retryButton}
-                        mentorMode="respond"
                         mentorResponse={{ correct: mr.guessCorrect, wrong: mr.guessWrong }}
                     />
                 )}
@@ -463,7 +462,6 @@ export default function BehindTheScenesChapter4() {
                     <AssessmentEngine
                         {...localizedQuiz}
                         conceptDisplayMap={c4.quiz.conceptLabels}
-                        mentorScope="respond"
                         mentorResponse={{ pass: c4.mentorRespond.quizPass, fail: c4.mentorRespond.quizFail }}
                     />
                 </ExpandableLab>

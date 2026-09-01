@@ -110,10 +110,9 @@ export default function FinalExamPage() {
                         startLabel={fx.startLabel}
                         submitLabel={fx.submitLabel}
                         completedTitle={fx.completedTitle}
-                        /* המבחן המסכם היה הצרכן היחיד שנשאר על ברירת המחדל 'all' ולכן
-                           עוד הציג דמות בפתיחה ובתוצאה. כל 19 הפרקים כבר על 'respond',
-                           והמבחן מיישר איתם: אייקוני סטטוס בלבד, בלי פורטרט. */
-                        mentorScope="respond"
+                        /* M13: אין כאן prop של מנטור. חוסר-הפורטרט הוא ברירת המחדל של
+                           AssessmentEngine, ולכן אייקוני הסטטוס בפתיחה ובתוצאה אינם
+                           תלויים בכך שהעמוד הזה יזכור להעביר משהו. */
                         reviewHref="/behind-the-scenes-ai/introduction"
                         reviewLabel={fx.reviewLabel}
                         nextHref="/"

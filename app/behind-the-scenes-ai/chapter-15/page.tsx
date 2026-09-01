@@ -254,7 +254,6 @@ export default function BehindTheScenesChapter15() {
                     content={guessContent}
                     cards={guessCards}
                     speechLocale={speechLocale}
-                    mentorMode="respond"
                     mentorResponse={{ correct: c15.mentorRespond.guessCorrect, wrong: c15.mentorRespond.guessWrong }}
                 />
             </section>
@@ -447,7 +446,6 @@ export default function BehindTheScenesChapter15() {
                     <AssessmentEngine
                         {...localizedQuiz}
                         conceptDisplayMap={t.behindAi.conceptLabels}
-                        mentorScope="respond"
                         mentorResponse={{ pass: c15.mentorRespond.quizPass, fail: c15.mentorRespond.quizFail }}
                     />
                 </ExpandableLab>

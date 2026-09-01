@@ -331,6 +331,7 @@ else:
                         title="מבדק אינטואיציה מתמטית" 
                         subtitle="ענה על השאלות בעיון כדי לקבל הסמכה להמשך" 
                         questions={chapterQuestions} 
+                        legacyMentorPortraits
                     />
                
             </div>

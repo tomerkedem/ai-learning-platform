@@ -220,10 +220,10 @@ export const HypothesisGuess: React.FC<{
                         reveal={correctCard ? { button: content.revealCorrect, title: `${correctCard.title}: ${content.correctLead}`, body: content.correctBody, revealed, onReveal: () => setRevealed(true) } : undefined}
                         onRetry={reset}
                         retryLabel={content.retry}
-                        // הכרעת הניחוש עברה למודל התגובה של הפרקים: בלי דמות בהצלחה ובלי
+                        // הכרעת הניחוש עובדת במודל התגובה של הפרקים: בלי דמות בהצלחה ובלי
                         // דמות בטעות (שתי דמויות שונות הפכו את התוצאה לנראית לפני שקוראים),
-                        // ובמקומן שורת תגובה אנושית באותו מבנה בדיוק בשתי התוצאות.
-                        mentorMode="respond"
+                        // ובמקומן שורת תגובה אנושית באותו מבנה בדיוק בשתי התוצאות. מ-M13 זו
+                        // ההתנהגות היחידה של GuessVerdict ואינה תלויה יותר ב-prop של הקורא.
                         mentorResponse={mentorResponse}
                     />
                 )}

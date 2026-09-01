@@ -267,7 +267,6 @@ export default function BehindTheScenesChapter9() {
                     dir={dir}
                     speechLocale={speechLocale}
                     labTargetId="decoding-lab"
-                    mentorMode="respond"
                     mentorResponse={{ correct: c9.mentorRespond.guessCorrect, wrong: c9.mentorRespond.guessWrong }}
                 />
             </section>
@@ -474,7 +473,6 @@ export default function BehindTheScenesChapter9() {
                     <AssessmentEngine
                         {...localizedQuiz}
                         conceptDisplayMap={t.behindAi.conceptLabels}
-                        mentorScope="respond"
                         mentorResponse={{ pass: c9.mentorRespond.quizPass, fail: c9.mentorRespond.quizFail }}
                     />
                 </ExpandableLab>

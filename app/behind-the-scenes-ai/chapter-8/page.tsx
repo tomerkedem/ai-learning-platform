@@ -267,7 +267,6 @@ export default function BehindTheScenesChapter8() {
                     dir={dir}
                     speechLocale={speechLocale}
                     labTargetId="logits-softmax-lab"
-                    mentorMode="respond"
                     mentorResponse={{ correct: c8.mentorRespond.guessCorrect, wrong: c8.mentorRespond.guessWrong }}
                 />
             </section>
@@ -473,7 +472,6 @@ export default function BehindTheScenesChapter8() {
                     <AssessmentEngine
                         {...localizedQuiz}
                         conceptDisplayMap={t.behindAi.conceptLabels}
-                        mentorScope="respond"
                         mentorResponse={{ pass: c8.mentorRespond.quizPass, fail: c8.mentorRespond.quizFail }}
                     />
                 </ExpandableLab>

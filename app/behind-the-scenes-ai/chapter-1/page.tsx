@@ -463,7 +463,6 @@ export default function BehindTheScenesChapter1() {
                     <AssessmentEngine
                         {...localizedQuiz}
                         conceptDisplayMap={quizText.conceptLabels}
-                        mentorScope="respond"
                         mentorResponse={{ pass: c1.mentorRespond.quizPass, fail: c1.mentorRespond.quizFail }}
                     />
                 </ExpandableLab>

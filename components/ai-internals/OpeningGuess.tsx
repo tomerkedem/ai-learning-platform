@@ -5,9 +5,12 @@
 // השערה אחת; הכרטיס המדויק מזוהה לפי statusTone === 'precise'. בשימוש כל הפרקים
 // עם ניחוש פתיחה מסוג כרטיסים (2, 3, 5, 8, 10).
 //
-// זהו ה-body הייחודי של הניחוש בלבד. מנטור ההזמנה והתגובה שאחרי הבחירה מגיעים
+// זהו ה-body הייחודי של הניחוש בלבד. משפט ההזמנה והתגובה שאחרי הבחירה מגיעים
 // מהרכיבים המשותפים GuessInvite ו-GuessVerdict, כדי שההתנהגות והמראה יהיו זהים בכל
-// הלומדה (אותו מנטור, אותה תגובת הצלחה/טעות, מנגנון ניחוש גמיש לכל פרק).
+// הלומדה (אותה הזמנה, אותה תגובת הצלחה/טעות, מנגנון ניחוש גמיש לכל פרק).
+//
+// M13: אין כאן פורטרט מנטור ואין mentorMode. הרכיב אינו יכול לרנדר דמות בשום מסלול,
+// ולכן פרק חדש שישכח prop יקבל את ההתנהגות הנכונה בלי לדעת עליה.
 //
 // גם טיפוסי הכרטיס והתוכן (GuessTone, DiscoveryGuessCard, DiscoveryGuessContent)
 // מוגדרים כאן ומיוצאים, כבית המשותף שלהם. בלי בועת דיבור למנטור. אין מקף ארוך, מקף
@@ -34,7 +37,11 @@ export interface DiscoveryGuessCard {
     icon?: LucideIcon;
     statusLabel: string;
     statusTone: GuessTone;
-    mentorPose: MentorPose;
+    /**
+     * @deprecated M13: אינו נצרך יותר. נשאר אופציונלי כדי לא לגעת בנתוני הפרקים
+     * במשימה הזאת; רשומות ה-mentorPose בעמודים מסומנות להסרה ב-M14.
+     */
+    mentorPose?: MentorPose;
     getsRight: string;
     /** תווית השורה השנייה: לרוב "מה זה מפספס", ולכרטיס הנכון "מה נשאר לראות". */
     missesLabel: string;
@@ -47,16 +54,18 @@ export interface DiscoveryGuessContent {
     eyebrow: string;
     title: string;
     subtitle: string;
-    /** משפט מנטור ההזמנה שלפני הבחירה. */
+    /** משפט ההזמנה לנחש שלפני הבחירה. */
     invite: string;
-    invitePose: MentorPose;
+    /** @deprecated M13: אינו נצרך יותר. להסרה מנתוני הפרקים ב-M14. */
+    invitePose?: MentorPose;
     /** פרומפט עוגן אופציונלי שמוצג בכותרת. */
     prompt?: string;
     getsRightLabel: string;
     revealButton: string;
     revealTitle: string;
     revealCopy: string;
-    revealPose: MentorPose;
+    /** @deprecated M13: אינו נצרך יותר. להסרה מנתוני הפרקים ב-M14. */
+    revealPose?: MentorPose;
     cta: string;
     /** id של אלמנט שאליו גוללים בלחיצת ה-CTA (למשל המעבדה). */
     ctaTargetId?: string;
@@ -94,22 +103,15 @@ function cardClasses(state: CardState, reduce: boolean): string {
 // את ההתנהגות הקיימת בכל הצרכנים. פרק שבו הניחוש הוא מקטע עליון מעביר 2, כדי שמתאר
 // הכותרות לא ידלג על דרגה. העיצוב אינו משתנה.
 //
-// mentorMode (אופציונלי): נוכחות המנטור בניחוש. ברירת המחדל 'classic' משמרת בדיוק את
-// ההתנהגות הקיימת בכל הצרכנים. 'recovery' הוא ה-opt-in של פרקי הפיילוט: אין דמות לפני
-// הבחירה ואין דמות על תשובה נכונה, ודמות המנטור נשארת רק אחרי טעות, כליווי אנושי.
-// 'respond' הוא מודל F3 RESPOND (פיילוט M6): אין דמות לפני הבחירה, ואחרי הבחירה שתי
-// התוצאות מקבלות את אותה שורת תגובה אנושית, כך שהדמות אינה אות שגיאה.
-// אף טקסט אינו נעלם באף מצב: משפט ההזמנה עובר לטקסט גוף ונשאר גלוי גם בטלפון.
-//
-// mentorResponse (אופציונלי): משפטי התגובה הספציפיים לפרק, נדרש רק ב-'respond'.
+// mentorResponse: משפטי התגובה האנושית הספציפיים לפרק, אחד לכל תוצאה. נדרש, כדי
+// שהשכבה האנושית של הניחוש תהיה החלטה מפורשת של הפרק ולא ברירת מחדל גנרית.
 export const OpeningGuess: React.FC<{
     content: OpeningGuessContent;
     cards: DiscoveryGuessCard[];
     speechLocale?: Locale;
     headingLevel?: 2 | 3;
-    mentorMode?: 'classic' | 'recovery' | 'respond';
-    mentorResponse?: { correct: string; wrong: string };
-}> = ({ content, cards, speechLocale, headingLevel = 3, mentorMode = 'classic', mentorResponse }) => {
+    mentorResponse: { correct: string; wrong: string };
+}> = ({ content, cards, speechLocale, headingLevel = 3, mentorResponse }) => {
     const Heading = `h${headingLevel}` as const;
     const reduce = useReducedMotion();
     const [chosenId, setChosenId] = useState<string | null>(null);
@@ -139,7 +141,7 @@ export const OpeningGuess: React.FC<{
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-violet-500/10 blur-[80px]" />
 
             <div className="relative z-10">
-                {!chosen && <GuessInvite pose={content.invitePose} line={content.invite} showMentor={mentorMode === 'classic'} />}
+                {!chosen && <GuessInvite line={content.invite} />}
 
                 <div className="text-center">
                     <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-400">
@@ -229,7 +231,6 @@ export const OpeningGuess: React.FC<{
                         reveal={preciseCard ? { button: content.revealButton, title: `${content.revealTitle} ${preciseCard.title}`, body: content.revealCopy, revealed, onReveal: () => setRevealed(true) } : undefined}
                         onRetry={reset}
                         retryLabel={content.resetButton}
-                        mentorMode={mentorMode === 'classic' ? 'both' : mentorMode}
                         mentorResponse={mentorResponse}
                     />
                 )}

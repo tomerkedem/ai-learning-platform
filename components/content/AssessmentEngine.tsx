@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import confetti from 'canvas-confetti';
 import { ExpandableLabExitContext } from '../ai-internals/ExpandableLab';
-import { Mentor, type MentorAccent } from '../ai-internals/Mentor';
+import { Mentor } from '../ai-internals/Mentor';
 import { GuessButton } from '../ai-internals/GuessButton';
 import { SpeakButton } from '../ai-internals/SpeakButton';
 import { speakJoin } from '../ai-internals/GuessVerdict';
@@ -86,28 +86,23 @@ interface AssessmentProps {
     showTimer?: boolean;
     /** לא בשימוש. נשמר לתאימות לאחור בלבד; אפקטי הסאונד החיצוניים הוסרו. */
     soundEnabled?: boolean;
-    /** האם להציג את המנטור במסכי הפתיחה והתוצאות. ברירת מחדל: true. */
-    showMentor?: boolean;
     /**
-     * באילו מסכים המנטור מופיע כשהוא מופעל. ברירת המחדל 'all' משמרת בדיוק את
-     * ההתנהגות הקיימת בכל הצרכנים (פתיחה, מעבר וכישלון).
-     * 'recovery' הוא ה-opt-in של פרקי הפיילוט: אין מנטור בפתיחת המבדק ואין מנטור
-     * על מעבר, והדמות נשארת רק במסך תוצאות שלא עבר, כליווי אנושי לפני חזרה על החומר.
-     * טקסט המנטור המתאים נשאר; רק המסכים שבהם הדמות מופיעה משתנים.
-     * 'respond' הוא מודל F3 SELECTIVE RESPOND (פיילוט M7): המבדק אינו מציג דמות
-     * מנטור בכלל, בשום מסך ובשום תוצאה. אייקון הסטטוס נשאר בראש כרטיס התוצאה בשתי
-     * התוצאות (גביע במעבר, חץ-חזרה בגוון דרגת הציון בלי מעבר), ומתחתיו מופיע משפט
-     * תגובה אנושי ספציפי לפרק כטקסט בלבד. כך אין החלפה בין אייקון סטטוס לפנים, ואין
-     * דמות שחוזרת במסך שנראה זהה בכל 19 הפרקים.
+     * מסלול מורשת: פורטרט מנטור במסך הפתיחה ובמסך התוצאות. ברירת המחדל false, ולכן
+     * מבדק חדש הוא חסר-דמות בלי שהקורא צריך לדעת על כך. זהו הגבול המוצהר בין
+     * הלומדות: "מאחורי הקלעים של AI" לעולם אינה מעבירה את ה-prop הזה, והוא קיים אך
+     * ורק בשביל צרכנים שעדיין בנויים סביב הדמות (כרגע: מבדק ההסמכה של מתמטיקה).
+     * true משחזר בדיוק את המסלול הישן: דמות ready בפתיחה, ודמות celebrate/reassure
+     * במסך התוצאות בשתי התוצאות.
+     * false: אייקון הסטטוס נשאר בראש כרטיס התוצאה (גביע במעבר, חץ-חזרה בגוון דרגת
+     * הציון בלי מעבר), ומתחתיו משפט תגובה אנושי ספציפי לפרק כטקסט בלבד. כך אין החלפה
+     * בין אייקון סטטוס לפנים, ואין דמות שחוזרת במסך שנראה זהה בכל 19 הפרקים.
      */
-    mentorScope?: 'all' | 'recovery' | 'respond';
+    legacyMentorPortraits?: boolean;
     /**
-     * משפטי התגובה האנושית של 'respond', ספציפיים לפרק. בלעדיהם המבדק פשוט אינו מציג
-     * שורת תגובה, ולכן אין סיכון למשפט גנרי שחוזר זהה ב-19 פרקים.
+     * משפטי התגובה האנושית, ספציפיים לפרק. בלעדיהם המבדק פשוט אינו מציג שורת תגובה,
+     * ולכן אין סיכון למשפט גנרי שחוזר זהה ב-19 פרקים.
      */
     mentorResponse?: { pass: string; fail: string };
-    /** צבע ההדגשה של המנטור. ברירת מחדל: ציאן (תואם BTS-AI). */
-    mentorAccent?: MentorAccent;
     /** מיפוי תצוגה למושגים (concept) בצ׳יפים. המפתח נשאר q.concept היציב; רק התצוגה מתורגמת. */
     conceptDisplayMap?: Record<string, string>;
 }
@@ -153,18 +148,10 @@ export const AssessmentEngine = ({
     submitLabel,
     completedTitle,
     showTimer = true,
-    showMentor = true,
-    mentorScope = 'all',
+    legacyMentorPortraits = false,
     mentorResponse,
-    mentorAccent,
     conceptDisplayMap,
 }: AssessmentProps) => {
-    // מסך הפתיחה מציג מנטור רק כשההיקף הוא 'all'. ב-'recovery' נעשה שימוש בענף
-    // ללא-מנטור הקיים (אייקון Play), בלי שינוי בטקסט או במבנה המסך.
-    const showStartMentor = showMentor && mentorScope === 'all';
-    // F3 SELECTIVE RESPOND: הסטטוס נשאר בראש הכרטיס בשתי התוצאות, והתגובה האנושית
-    // מופיעה מתחתיו כטקסט בלבד. אין דמות מנטור באף מסך של המבדק.
-    const respond = mentorScope === 'respond';
     // כרום מתורגם וכיוון מהרישום. props שמועברים מבחוץ גוברים על ברירות המחדל מהמילון.
     const { t, dir } = useT();
     const a = t.chrome.assessment;
@@ -206,9 +193,9 @@ export const AssessmentEngine = ({
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     // גוון ההדגשה לכרום של מסכי הפתיחה/תוצאות (הילות, מסגרות, כפתור ראשי).
-    // נגזר מצבע המנטור כדי שהכול ירגיש מתוך עולם אחד; ברירת המחדל ציאן (תואם BTS-AI).
-    const accent = mentorAccent ?? { base: '6 182 212', shadow: '34 211 238', text: '#a5f3fc' };
-    // גוון accent בפורמט של GuessButton (פסיקים במקום רווחים), נגזר מגוון המנטור.
+    // ציאן, בהתאמה לשפת הצבע של הלומדה.
+    const accent = { base: '6 182 212', shadow: '34 211 238', text: '#a5f3fc' };
+    // גוון accent בפורמט של GuessButton (פסיקים במקום רווחים).
     const accentRgb = accent.shadow.replace(/\s+/g, ',');
 
     // העדפת תנועה מופחתת. נקראת ישירות מ-media query (לא framer useReducedMotion) כדי לא
@@ -376,9 +363,9 @@ export const AssessmentEngine = ({
                 />
 
                 <div className="relative">
-                    {showStartMentor ? (
+                    {legacyMentorPortraits ? (
                         <div className="flex justify-center mb-8">
-                            <Mentor pose="ready" width={140} line={a.mentorStart} accent={mentorAccent} />
+                            <Mentor pose="ready" width={140} line={a.mentorStart} />
                         </div>
                     ) : (
                         <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
@@ -457,20 +444,18 @@ export const AssessmentEngine = ({
 
                 <div className="relative">
                     <div className="mb-6">
-                        {/* ב-'recovery' הדמות מופיעה רק כשלא עוברים: המעבר מקבל את גביע
-                            ההצלחה הקיים, והליווי האנושי נשמר לרגע שבו הוא באמת עוזר.
-                            ב-'respond' הענף הזה לעולם אינו נבחר: המבדק חסר-דמות לגמרי,
-                            ולכן שתי התוצאות מקבלות בסלוט הזה אייקון סטטוס ולא פנים. */}
-                        {showMentor && !respond && (mentorScope === 'all' || !passed) ? (
+                        {/* מסלול המורשת בלבד: פורטרט בשתי התוצאות. בברירת המחדל הענף הזה
+                            לעולם אינו נבחר, המבדק חסר-דמות לגמרי, ולכן שתי התוצאות מקבלות
+                            בסלוט הזה אייקון סטטוס ולא פנים. */}
+                        {legacyMentorPortraits ? (
                             <div className="flex justify-center mb-5">
                                 <Mentor
                                     pose={passed ? 'celebrate' : 'reassure'}
                                     width={160}
                                     line={passed ? (scoreValue >= 90 ? a.mentorPassHigh : a.mentorPass) : a.mentorFail}
-                                    accent={mentorAccent}
                                 />
                             </div>
-                        ) : respond && !passed ? (
+                        ) : !passed ? (
                             /* אות סטטוס עצמאי לתוצאה שלא עברה. גביע כאן היה משקר, ופנים
                                כאן היו הופכות את הדמות לאייקון הכישלון. חץ-חזרה הוא בדיוק
                                מה שהתוצאה אומרת: עוד סיבוב. הגוון נלקח מדרגת הציון, כדי
@@ -527,7 +512,7 @@ export const AssessmentEngine = ({
                         הקו ניטרלי בכוונה ואינו משתנה לפי התוצאה, כדי שלא ייווצר ערוץ סטטוס
                         שני לצד טבעת הציון. נקרא אוטומטית עם כרטיס התוצאה (role=status
                         aria-live), ולכן בלי כפתור הקראה משלו ובלי דיבור כפול. */}
-                    {respond && (passed ? mentorResponse?.pass : mentorResponse?.fail) && (
+                    {!legacyMentorPortraits && (passed ? mentorResponse?.pass : mentorResponse?.fail) && (
                         <p className="mb-6 border-s-2 border-white/15 ps-3.5 text-start text-[13px] leading-relaxed text-slate-300">
                             {passed ? mentorResponse?.pass : mentorResponse?.fail}
                         </p>
