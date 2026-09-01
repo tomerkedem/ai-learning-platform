@@ -30,14 +30,6 @@ export const selfCheck = {
         chipCompare: 'Compara una afirmación con respaldo y una inventada',
     },
 
-    mentor: {
-        hero: 'Comprueba el borrador antes de que salga',
-        labExplain: 'Qué afirmación tiene aquí de verdad respaldo',
-        misconception: 'La comprobación ayuda, no garantiza la verdad',
-        lock: 'Separa lo respaldado de lo inventado',
-        practical: 'Pide una comprobación, no solo una respuesta',
-    },
-
     // F3 RESPOND (M9): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

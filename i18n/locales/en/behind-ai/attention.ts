@@ -48,7 +48,6 @@ export const attention = {
         promptEyebrow: 'The chapter prompt',
         chipEdit: 'Change something in the sentence',
         chipSee: 'and see where attention moves',
-        mentorAlt: 'The course mentor',
     },
 
     // -- Just before the lab --
@@ -140,14 +139,6 @@ export const attention = {
         ],
         caveat:
             'And remember: high attention weight on a word does not mean the information is correct. Attention links parts of text to one another, it does not check facts in the world. Verification needs an external source or a tool.',
-    },
-
-    // -- Mentor lines --
-    mentor: {
-        hero: 'The model picks which words to focus on',
-        lab: 'Change a word, and the weight moves',
-        lock: 'Attention is clear now',
-        practical: 'This is how you write a prompt that attention understands',
     },
 
     // -- Opening guess --

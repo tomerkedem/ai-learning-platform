@@ -23,13 +23,6 @@ export const chapter2 = {
         chipCompare: 'Compare phrasings and see what changes',
     },
 
-    // Mentor speech bubbles (text only; pose and placement are structural in the page)
-    mentor: {
-        hero: 'Let us compare a few phrasings and see what changes',
-        lab: 'Same need, different material',
-        lock: 'Pause and pick an answer. That is how you will know if you caught the chapter idea.',
-    },
-
     // F3 RESPOND (M10): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

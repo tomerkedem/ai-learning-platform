@@ -27,14 +27,6 @@ export const chapter3 = {
         chipTouch: 'Type and watch the sentence get cut',
     },
 
-    // Mentor speech bubbles (text only; pose and placement are structural in the page)
-    mentor: {
-        hero: 'First we split, then we understand',
-        lab: 'Every token is a working unit',
-        lock: 'The idea is clear now',
-        practical: 'This is how you write smarter prompts',
-    },
-
     // F3 RESPOND (M10): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

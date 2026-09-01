@@ -197,13 +197,6 @@ export const introduction = {
         speed: 'Velocidad',
     },
 
-    // ── Líneas del mentor (microtexto decorativo; la pose vive en la capa de vista) ──
-    mentor: {
-        hero: 'Levantemos la tapa juntos',
-        roadmap: 'El mapa del motor se está abriendo',
-        cta: 'Aquí es donde empezamos',
-    },
-
     // ── Subespacio: el mapa de las estaciones principales ──
     roadmap: introRoadmap,
 };

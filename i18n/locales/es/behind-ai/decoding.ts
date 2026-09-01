@@ -206,14 +206,6 @@ export const decoding = {
             'Y recuerda: ningun estilo de decodificacion verifica hechos. Conservador da estabilidad, abierto da variedad, pero verificar contra el mundo necesita una fuente externa o una herramienta.',
     },
 
-    // -- Lineas del mentor --
-    mentor: {
-        hero: 'La misma distribución, otra elección',
-        lab: 'Cambia el estilo, y obtienes otro token',
-        lock: 'Captaste la idea',
-        practical: 'Asi eliges un estilo segun la tarea',
-    },
-
     // F3 RESPOND (M9): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

@@ -32,14 +32,6 @@ export const doesAiLearn = {
         chipCompare: 'Ve cuando ayuda la correccion y cuando desaparece',
     },
 
-    mentor: {
-        hero: 'Corregir ahora no es necesariamente aprender para siempre',
-        labExplain: 'Muevete entre las capas y ve que cambia',
-        misconception: 'Funciono, pero no necesariamente se aprendio',
-        lock: 'Un chat nuevo empieza en una pagina limpia',
-        practical: 'Aporta de nuevo la regla o la fuente',
-    },
-
     // F3 RESPOND (M10): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

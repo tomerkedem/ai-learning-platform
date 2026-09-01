@@ -24,14 +24,6 @@ export const hallucinations = {
         chipCompare: 'Compara segura frente a prudente',
     },
 
-    mentor: {
-        hero: 'La fluidez no es comprobar',
-        labExplain: 'Misma pregunta, distinto riesgo',
-        misconception: 'El problema no es la redacción',
-        lock: 'Sin fuente, no está fundamentada',
-        practical: 'Sabe cuándo verificar',
-    },
-
     // F3 RESPOND (M8): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

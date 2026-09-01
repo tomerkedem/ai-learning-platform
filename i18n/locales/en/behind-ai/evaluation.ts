@@ -31,14 +31,6 @@ export const evaluation = {
         chipCompare: 'See where the model holds the principle and where it fails',
     },
 
-    mentor: {
-        hero: 'One correct example is not a test',
-        labExplain: 'Change the case, and see if the principle holds',
-        misconception: 'A familiar success is not generalization',
-        lock: 'A failure at the edge reveals a weakness',
-        practical: 'Test on several cases before you trust it',
-    },
-
     // F3 RESPOND (M9): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

@@ -24,14 +24,6 @@ export const hallucinations = {
         chipCompare: '自信と慎重を比べる',
     },
 
-    mentor: {
-        hero: '流暢さは確認ではない',
-        labExplain: '同じ質問、違うリスク',
-        misconception: '問題は言い回しではない',
-        lock: '出典がなければ根拠はない',
-        practical: 'いつ確かめるかを知る',
-    },
-
     // F3 RESPOND (M8): この章の人間的な応答レイヤー。ステータスは独立したまま、
     // ここにあるのは正解時も不正解時もメンターが続けて言う一文だけ。
     mentorRespond: {

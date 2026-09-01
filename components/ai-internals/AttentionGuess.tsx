@@ -19,7 +19,6 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { HelpCircle, Sparkles, Highlighter, Globe, Check, ArrowDown, RotateCcw } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
-import type { MentorPose } from './Mentor';
 import { ResponseNote } from './ResponseNote';
 import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
@@ -34,11 +33,6 @@ export interface AttentionGuessCard {
     desc: string;
     cue: Cue;
     statusTone: StatusTone;
-    /**
-     * @deprecated M13: אינו נצרך יותר. נשאר אופציונלי כדי לא לגעת בנתוני הפרקים
-     * במשימה הזאת; רשומות ה-mentorPose בעמודים מסומנות להסרה ב-M14.
-     */
-    mentorPose?: MentorPose;
     statusLabel: string;
     getsRight: string;
     missesLabel: string;

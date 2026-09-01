@@ -21,14 +21,6 @@ export const generationLoop = {
         chipContext: 'Watch the context grow at every step',
     },
 
-    mentor: {
-        hero: 'Each step builds the next',
-        labExplain: 'Every part loops back in',
-        misconception: 'No answer waits ready',
-        lock: 'The idea is clear now',
-        practical: 'Steer the loop up front',
-    },
-
     // F3 RESPOND (M9): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

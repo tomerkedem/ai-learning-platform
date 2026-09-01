@@ -34,14 +34,6 @@ export const fullTrace = {
         chipCompare: 'Observa donde entra la informacion, donde podria entrar un error y donde se agrega control',
     },
 
-    mentor: {
-        hero: 'No solo la respuesta, todo el camino hacia ella',
-        labExplain: 'Recorrelo y observa el camino',
-        misconception: 'La respuesta es el final, el camino es lo que importa',
-        lock: 'Fuente antes que conclusion, aprobacion antes de enviar',
-        practical: 'Define objetivo, fuente, limite y salida',
-    },
-
     // F3 RESPOND (M10): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

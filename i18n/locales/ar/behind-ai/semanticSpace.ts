@@ -8,8 +8,6 @@
 //   hero.badge          - سطر الهوية "Behind the Scenes · 05"، وهو نفسه في كل اللغات.
 //   sections.labEyebrow - الاسم التجاري للمختبر ("Semantic Space Lab")، ويبقى بالإنجليزية
 //                         في كل اللغات، بما فيها العبرية.
-//   mentor.hero / guess / negation / practical - لا يعرضها الفصل، وتظهر mentor.lab
-//                         و mentor.lock فقط. تُورَّث بدل اختلاق ترجمة لنص لا يقرأه أحد.
 //
 // بلا شرطة طويلة أو متوسطة، وفق قواعد النص في المشروع.
 
@@ -44,7 +42,6 @@ export const semanticSpace: typeof he = {
     },
 
     mentor: {
-        ...he.mentor,
         lab: 'انتبهوا إلى المسافة، لا إلى الكلمات.',
         lock: 'هناك إجابة مغرية هنا. خذوا لحظة قبل أن تختاروا.',
     },

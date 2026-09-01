@@ -33,14 +33,6 @@ export const guardrails = {
         chipCompare: 'See how the same capability leads to a different decision depending on risk',
     },
 
-    mentor: {
-        hero: 'Able to act? That does not mean allowed',
-        labExplain: 'Move between the actions and see what changes',
-        misconception: 'Control is design, not fear',
-        lock: 'Draft and approval before sending',
-        practical: 'Define allowed, forbidden, and approval',
-    },
-
     // F3 RESPOND (M10): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

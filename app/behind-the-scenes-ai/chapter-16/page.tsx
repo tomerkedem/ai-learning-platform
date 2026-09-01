@@ -8,7 +8,7 @@
 // שונות. הפרק כללי ומושגי, בלי טענות על מדיניות/פרטיות/אימון של מוצר מסוים.
 //
 // i18n-first: כל הטקסט הגלוי מגיע מ-t.behindAi.doesAiLearn (6 שפות אמיתיות). המבנה
-// (אייקונים, גוונים, פוזות מנטור, מזהי אלמנטים) נשאר כאן. פרק 16 הוא הפרק הבנוי
+// (אייקונים, גוונים, מזהי אלמנטים) נשאר כאן. פרק 16 הוא הפרק הבנוי
 // האחרון בשלב הנוכחי, ולכן הוא שומר על מעבר למבחן סיום הלומדה.
 // ────────────────────────────────────────────────────────────────────────
 
@@ -37,13 +37,13 @@ import { useT } from '@/i18n/useT';
 import type { DoesAiLearnQuizId } from '@/i18n/locales/he/behind-ai/doesAiLearnQuiz';
 
 // טקסט הכרטיסים מגיע מהמילון (t.behindAi.doesAiLearn.guess.cards) לפי מזהה. כאן נשאר
-// רק המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה. הכרטיס עם
+// רק המבנה: אייקון וגוון הסטטוס, שאינם תלויי שפה. הכרטיס עם
 // statusTone === 'precise' הוא הבחירה הנכונה (התיקון עוזר בהקשר, לא בהכרח נלמד לתמיד).
 const GUESS_CARD_META = [
-    { id: 'alwaysRemembers', icon: RotateCcw, statusTone: 'common', mentorPose: 'reassure' },
-    { id: 'contextNotPermanent', icon: MessageSquare, statusTone: 'precise', mentorPose: 'correct' },
-    { id: 'cantUseAtAll', icon: Ban, statusTone: 'layer', mentorPose: 'headsup' },
-    { id: 'everyoneGetsIt', icon: Users, statusTone: 'partial', mentorPose: 'think' },
+    { id: 'alwaysRemembers', icon: RotateCcw, statusTone: 'common' },
+    { id: 'contextNotPermanent', icon: MessageSquare, statusTone: 'precise' },
+    { id: 'cantUseAtAll', icon: Ban, statusTone: 'layer' },
+    { id: 'everyoneGetsIt', icon: Users, statusTone: 'partial' },
 ] as const;
 
 /* ════════════════════════ בדיקת הבנה: מה ההנחה הבטוחה בשיחה חדשה ════════════════════════ */
@@ -112,20 +112,18 @@ export default function BehindTheScenesChapter16() {
     const speechLocale = c16.contentLocale;
     const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
 
-    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון) מהמטא־דאטה.
     const guessContent: OpeningGuessContent = {
         eyebrow: c16.guess.eyebrow,
         title: c16.guess.title,
         subtitle: c16.guess.subtitle,
         invite: c16.guess.invite,
-        invitePose: 'think',
         correctTitle: c16.guess.correctTitle,
         wrongTitle: c16.guess.wrongTitle,
         getsRightLabel: c16.guess.getsRightLabel,
         revealButton: c16.guess.revealButton,
         revealTitle: c16.guess.revealTitle,
         revealCopy: c16.guess.revealCopy,
-        revealPose: 'pointdown',
         cta: c16.guess.cta,
         ctaTargetId: 'does-ai-learn-lab',
         resetButton: c16.guess.resetButton,
@@ -135,7 +133,6 @@ export default function BehindTheScenesChapter16() {
         id: m.id,
         icon: m.icon,
         statusTone: m.statusTone,
-        mentorPose: m.mentorPose,
         ...c16.guess.cards[m.id],
     }));
 

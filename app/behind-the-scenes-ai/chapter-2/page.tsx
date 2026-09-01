@@ -20,12 +20,12 @@ import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import { useT } from '@/i18n/useT';
 
 /* ════════════════════════ מטא-דאטה מבני של ניחוש הפתיחה ════════════════════════ */
-// id, אייקון, גוון סטטוס ופוזת מנטור הם מבניים (לא טקסט). הטקסט מגיע מהמילון, באותו סדר.
+// id, אייקון וגוון סטטוס הם מבניים (לא טקסט). הטקסט מגיע מהמילון, באותו סדר.
 const GUESS_CARD_META = [
-    { id: 'intention', icon: Brain, statusTone: 'common', mentorPose: 'reassure' },
-    { id: 'text', icon: FileText, statusTone: 'precise', mentorPose: 'correct' },
-    { id: 'answer', icon: MessageSquare, statusTone: 'layer', mentorPose: 'headsup' },
-    { id: 'important', icon: Filter, statusTone: 'partial', mentorPose: 'think' },
+    { id: 'intention', icon: Brain, statusTone: 'common' },
+    { id: 'text', icon: FileText, statusTone: 'precise' },
+    { id: 'answer', icon: MessageSquare, statusTone: 'layer' },
+    { id: 'important', icon: Filter, statusTone: 'partial' },
 ] as const;
 
 /* ════════════════════════ בדיקת הבנה: שאלת אבחון ════════════════════════ */
@@ -143,20 +143,18 @@ export default function BehindTheScenesChapter2() {
         getReviewLinks,
     };
 
-    // תוכן ניחוש הפתיחה: טקסט מהמילון, פוזות ויעד מבניים בעמוד.
+    // תוכן ניחוש הפתיחה: טקסט מהמילון, יעד ה-CTA מבני בעמוד.
     const guessContent: OpeningGuessContent = {
         eyebrow: c2.guess.eyebrow,
         title: c2.guess.title,
         subtitle: c2.guess.subtitle,
         invite: c2.guess.invite,
-        invitePose: 'think',
         correctTitle: c2.guess.correctTitle,
         wrongTitle: c2.guess.wrongTitle,
         getsRightLabel: c2.guess.getsRightLabel,
         revealButton: c2.guess.revealButton,
         revealTitle: c2.guess.revealTitle,
         revealCopy: c2.guess.revealCopy,
-        revealPose: 'pointdown',
         cta: c2.guess.cta,
         ctaTargetId: 'input-lab',
         resetButton: c2.guess.resetButton,
@@ -168,7 +166,6 @@ export default function BehindTheScenesChapter2() {
             id: m.id,
             icon: m.icon,
             statusTone: m.statusTone,
-            mentorPose: m.mentorPose,
             title: card.title,
             desc: card.desc,
             statusLabel: card.statusLabel,

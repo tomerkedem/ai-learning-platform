@@ -26,13 +26,6 @@ export const chapter3 = {
         chipTouch: 'Escribe y mira cómo se corta la frase',
     },
 
-    mentor: {
-        hero: 'Primero dividimos, luego entendemos',
-        lab: 'Cada token es una unidad de trabajo',
-        lock: 'Captaste la idea',
-        practical: 'Así escribes prompts más inteligentes',
-    },
-
     // F3 RESPOND (M10): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

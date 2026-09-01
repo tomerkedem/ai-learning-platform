@@ -22,7 +22,6 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { HelpCircle, Check, type LucideIcon } from 'lucide-react';
 import { GuessInvite, GuessVerdict } from './GuessVerdict';
 import { SpeakButton } from './SpeakButton';
-import type { MentorPose } from './Mentor';
 import type { Locale } from '@/i18n/config';
 
 /** גוון הצ׳יפ של הסטטוס. precise=הצלחה, partial=חלקי, common=טעות נפוצה, layer=שכבה אחרת. */
@@ -37,11 +36,6 @@ export interface DiscoveryGuessCard {
     icon?: LucideIcon;
     statusLabel: string;
     statusTone: GuessTone;
-    /**
-     * @deprecated M13: אינו נצרך יותר. נשאר אופציונלי כדי לא לגעת בנתוני הפרקים
-     * במשימה הזאת; רשומות ה-mentorPose בעמודים מסומנות להסרה ב-M14.
-     */
-    mentorPose?: MentorPose;
     getsRight: string;
     /** תווית השורה השנייה: לרוב "מה זה מפספס", ולכרטיס הנכון "מה נשאר לראות". */
     missesLabel: string;
@@ -49,23 +43,19 @@ export interface DiscoveryGuessCard {
     bridge: string;
 }
 
-/** תוכן בורר הניחוש המשותף (כותרות, מנטור הזמנה, חשיפה מדורגת, CTA). */
+/** תוכן בורר הניחוש המשותף (כותרות, הזמנה לנחש, חשיפה מדורגת, CTA). */
 export interface DiscoveryGuessContent {
     eyebrow: string;
     title: string;
     subtitle: string;
     /** משפט ההזמנה לנחש שלפני הבחירה. */
     invite: string;
-    /** @deprecated M13: אינו נצרך יותר. להסרה מנתוני הפרקים ב-M14. */
-    invitePose?: MentorPose;
     /** פרומפט עוגן אופציונלי שמוצג בכותרת. */
     prompt?: string;
     getsRightLabel: string;
     revealButton: string;
     revealTitle: string;
     revealCopy: string;
-    /** @deprecated M13: אינו נצרך יותר. להסרה מנתוני הפרקים ב-M14. */
-    revealPose?: MentorPose;
     cta: string;
     /** id של אלמנט שאליו גוללים בלחיצת ה-CTA (למשל המעבדה). */
     ctaTargetId?: string;

@@ -196,13 +196,6 @@ export const introduction = {
         speed: 'Speed',
     },
 
-    // ── Mentor lines (decorative microcopy; the pose lives in the view layer) ──
-    mentor: {
-        hero: "Let's lift the lid together",
-        roadmap: 'The engine map is opening',
-        cta: 'This is where we begin',
-    },
-
     // ── Sub-namespace: the map of main stations ──
     roadmap: introRoadmap,
 };

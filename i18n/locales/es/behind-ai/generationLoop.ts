@@ -19,14 +19,6 @@ export const generationLoop = {
         chipContext: 'Observa cómo el contexto crece en cada paso',
     },
 
-    mentor: {
-        hero: 'Cada paso construye el siguiente',
-        labExplain: 'Cada parte vuelve hacia dentro',
-        misconception: 'Ninguna respuesta espera ya hecha',
-        lock: 'Captaste la idea',
-        practical: 'Orienta el bucle desde el inicio',
-    },
-
     // F3 RESPOND (M9): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

@@ -23,13 +23,6 @@ export const chapter2 = {
         chipCompare: 'Compara formulaciones y observa qué cambia',
     },
 
-    // Mentor speech bubbles (text only; pose and placement are structural in the page)
-    mentor: {
-        hero: 'Comparemos varias formulaciones y veamos qué cambia',
-        lab: 'La misma necesidad, material distinto',
-        lock: 'Detente y elige una respuesta. Así sabrás si captaste la idea del capítulo.',
-    },
-
     // F3 RESPOND (M10): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

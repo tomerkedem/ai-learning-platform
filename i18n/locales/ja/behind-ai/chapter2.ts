@@ -23,13 +23,6 @@ export const chapter2 = {
         chipCompare: '言い回しを比べて何が変わるか見てみよう',
     },
 
-    // Mentor speech bubbles (text only; pose and placement are structural in the page)
-    mentor: {
-        hero: 'いくつかの言い回しを比べて、何が変わるか見てみましょう',
-        lab: '同じ目的、違う材料',
-        lock: '少し止まって、答えを選びましょう。そうすれば、この章の考え方をつかめたか分かります。',
-    },
-
     // F3 RESPOND (M10): この章の人間的な応答レイヤー。ステータスは独立したまま、
     // ここにあるのは正解時も不正解時もメンターが続けて言う一文だけ。
     mentorRespond: {

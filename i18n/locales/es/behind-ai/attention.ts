@@ -46,7 +46,6 @@ export const attention = {
         promptEyebrow: 'El prompt del capítulo',
         chipEdit: 'Cambia algo en la frase',
         chipSee: 'y observa hacia dónde se mueve la atención',
-        mentorAlt: 'El mentor de la lumada',
     },
 
     // ── Justo antes del laboratorio ──
@@ -138,14 +137,6 @@ export const attention = {
         ],
         caveat:
             'Y recuerda: un peso de atención alto en una palabra no dice que la información sea correcta. Attention conecta partes de texto entre sí, no verifica hechos en el mundo. Para verificar hace falta una fuente externa o una herramienta.',
-    },
-
-    // ── Llamadas del mentor ──
-    mentor: {
-        hero: 'El modelo elige en qué palabras fijarse',
-        lab: 'Cambia una palabra y el peso se mueve',
-        lock: 'Entendiste la atención',
-        practical: 'Así se escribe un prompt que la atención entiende',
     },
 
     // ── Conjetura inicial ──

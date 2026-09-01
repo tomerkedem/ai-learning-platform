@@ -26,12 +26,12 @@ import type { Chapter3QuizId } from '@/i18n/locales/he/behind-ai/chapter3Quiz';
 
 /* ════════════════════════ מטא-דאטה מבני (לא ניתן לתרגום) ════════════════════════ */
 // טקסט הכרטיסים מגיע מהמילון (t.behindAi.chapter3.guess.cards) לפי מזהה; כאן נשאר רק
-// המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה.
+// המבנה: אייקון וגוון הסטטוס, שאינם תלויי שפה.
 const GUESS_CARD_META = [
-    { id: 'as-is', icon: Type, statusTone: 'common', mentorPose: 'reassure' },
-    { id: 'tokens', icon: Boxes, statusTone: 'precise', mentorPose: 'correct' },
-    { id: 'meaning', icon: Brain, statusTone: 'layer', mentorPose: 'headsup' },
-    { id: 'important', icon: Filter, statusTone: 'partial', mentorPose: 'think' },
+    { id: 'as-is', icon: Type, statusTone: 'common' },
+    { id: 'tokens', icon: Boxes, statusTone: 'precise' },
+    { id: 'meaning', icon: Brain, statusTone: 'layer' },
+    { id: 'important', icon: Filter, statusTone: 'partial' },
 ] as const;
 
 /* ════════════════════════ בדיקת הבנה: שאלת סיווג פעילה ════════════════════════ */
@@ -118,20 +118,18 @@ export default function BehindTheScenesChapter3() {
         full: [sTitle, sGuessQ, ...sCards, sGuessReveal, sInsight, sLab, sLock, sPracticalFull, sBridge],
     };
 
-    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא-דאטה.
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון) מהמטא-דאטה.
     const guessContent: OpeningGuessContent = {
         eyebrow: c3.guess.eyebrow,
         title: c3.guess.title,
         subtitle: c3.guess.subtitle,
         invite: c3.guess.invite,
-        invitePose: 'think',
         correctTitle: c3.guess.correctTitle,
         wrongTitle: c3.guess.wrongTitle,
         getsRightLabel: c3.guess.getsRightLabel,
         revealButton: c3.guess.revealButton,
         revealTitle: c3.guess.revealTitle,
         revealCopy: c3.guess.revealCopy,
-        revealPose: 'pointdown',
         cta: c3.guess.cta,
         ctaTargetId: 'token-lab',
         resetButton: c3.guess.resetButton,
@@ -141,7 +139,6 @@ export default function BehindTheScenesChapter3() {
         id: m.id,
         icon: m.icon,
         statusTone: m.statusTone,
-        mentorPose: m.mentorPose,
         ...c3.guess.cards[m.id],
     }));
 

@@ -12,7 +12,6 @@ import { InsightBox } from '@/components/content/InsightBox';
 
 import { AttentionGuess, type AttentionGuessCard, type AttentionGuessContent, type Cue, type StatusTone } from '@/components/ai-internals/AttentionGuess';
 import { AttentionSentenceLab } from '@/components/ai-internals/AttentionSentenceLab';
-import type { MentorPose } from '@/components/ai-internals/Mentor';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
@@ -22,14 +21,14 @@ import { useT } from '@/i18n/useT';
 import type { AttentionQuizId } from '@/i18n/locales/he/behind-ai/attentionQuiz';
 
 /* ════════════════════ מטא-דאטה מבני של כרטיסי הניחוש (לא ניתן לתרגום) ════════════════════ */
-// הטקסט מגיע מהמילון (guess.cards[id]); כאן רק המבנה: אייקון (cue), גוון הסטטוס
-// ופוזת המנטור, שאינם תלויי שפה. הכרטיס הנכון הוא "dynamic".
+// הטקסט מגיע מהמילון (guess.cards[id]); כאן רק המבנה: אייקון (cue) וגוון הסטטוס,
+// שאינם תלויי שפה. הכרטיס הנכון הוא "dynamic".
 type GuessCardId = 'one-word' | 'highlight' | 'dynamic' | 'factcheck';
-const GUESS_CARD_META: { id: GuessCardId; cue: Cue; tone: StatusTone; pose: MentorPose }[] = [
-    { id: 'one-word', cue: 'spotlight', tone: 'partial', pose: 'think' },
-    { id: 'highlight', cue: 'highlighter', tone: 'common', pose: 'reassure' },
-    { id: 'dynamic', cue: 'nodes', tone: 'close', pose: 'correct' },
-    { id: 'factcheck', cue: 'factcheck', tone: 'layer', pose: 'headsup' },
+const GUESS_CARD_META: { id: GuessCardId; cue: Cue; tone: StatusTone }[] = [
+    { id: 'one-word', cue: 'spotlight', tone: 'partial' },
+    { id: 'highlight', cue: 'highlighter', tone: 'common' },
+    { id: 'dynamic', cue: 'nodes', tone: 'close' },
+    { id: 'factcheck', cue: 'factcheck', tone: 'layer' },
 ];
 
 /* ════════════════════════ בדיקת הבנה: התשובה הנכונה מבנית ════════════════════════ */
@@ -121,7 +120,6 @@ export default function BehindTheScenesChapter6() {
             id: meta.id,
             cue: meta.cue,
             statusTone: meta.tone,
-            mentorPose: meta.pose,
             title: card.title,
             desc: card.desc,
             statusLabel: card.statusLabel,

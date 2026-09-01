@@ -25,14 +25,6 @@ export const grounding = {
         chipCompare: 'Compare an answer with no source and with a source',
     },
 
-    mentor: {
-        hero: 'Give the model something to rest on',
-        labExplain: 'Same question, the source changes everything',
-        misconception: 'A source is not magic',
-        lock: 'Keep the answer tied to the source',
-        practical: 'Ask for an answer from a source',
-    },
-
     // F3 RESPOND (M9): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

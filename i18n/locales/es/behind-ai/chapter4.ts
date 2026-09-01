@@ -26,12 +26,6 @@ export const chapter4 = {
         chipMeaning: '¿Entonces de dónde viene el significado?',
     },
 
-    // Burbujas del mentor (solo texto; la pose y la ubicación son estructurales en la página)
-    mentor: {
-        hero: 'El motor ve números, no palabras',
-        practical: 'El texto se volvió número, ahora podemos calcular',
-    },
-
     // F3 RESPOND (M8): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

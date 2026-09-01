@@ -41,14 +41,6 @@ export const mistakeLearning = {
         chipCompare: 'よくなったものと、そうでないものを比べる',
     },
 
-    mentor: {
-        hero: '本物の改善は、魔法ではなくプロセス',
-        labExplain: '改善が本当に起きるのはどこか',
-        misconception: '会話での修正は訓練ではない',
-        lock: '会話での改善と、モデルの変更を分けよう',
-        practical: '実行に移せる形で直そう',
-    },
-
     primer: {
         eyebrow: '会話での修正は、いつもモデルの変更とは限らない',
         title: 'ラボの前に：間違いから学ぶとは何か？',

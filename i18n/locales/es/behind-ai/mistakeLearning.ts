@@ -45,15 +45,6 @@ export const mistakeLearning = {
         chipCompare: 'Compara qué mejoró frente a qué no',
     },
 
-    // ── Llamadas del mentor (solo texto de la burbuja, sin emoji) ──
-    mentor: {
-        hero: 'La mejora real es un proceso, no magia',
-        labExplain: 'Dónde ocurre de verdad la mejora',
-        misconception: 'Una corrección en la conversación no es entrenamiento',
-        lock: 'Separa una mejora en la conversación de un cambio en el modelo',
-        practical: 'Corrige de una forma que sirva para actuar',
-    },
-
     // ── Antes del laboratorio (primer) ──
     primer: {
         eyebrow: 'Una corrección en la conversación no siempre es un cambio en el modelo',

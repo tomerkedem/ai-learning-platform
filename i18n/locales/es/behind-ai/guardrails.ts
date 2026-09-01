@@ -33,14 +33,6 @@ export const guardrails = {
         chipCompare: 'Observa como la misma capacidad lleva a una decision distinta segun el riesgo',
     },
 
-    mentor: {
-        hero: 'Poder actuar? Eso no significa tener permiso',
-        labExplain: 'Muevete entre las acciones y observa que cambia',
-        misconception: 'El control es planificacion, no miedo',
-        lock: 'Borrador y aprobacion antes de enviar',
-        practical: 'Define lo permitido, lo prohibido y la aprobacion',
-    },
-
     // F3 RESPOND (M10): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

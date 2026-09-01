@@ -31,14 +31,6 @@ export const doesAiLearn = {
         chipCompare: 'See when the correction helps and when it disappears',
     },
 
-    mentor: {
-        hero: 'Correcting now is not necessarily learning forever',
-        labExplain: 'Move between the layers and see what changes',
-        misconception: 'It worked, but it was not necessarily learned',
-        lock: 'A new chat starts from a clean page',
-        practical: 'Provide the rule or the source again',
-    },
-
     // F3 RESPOND (M10): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

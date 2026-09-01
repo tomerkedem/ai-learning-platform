@@ -24,14 +24,6 @@ export const grounding = {
         chipCompare: '出典なしの答えと出典ありの答えを比べる',
     },
 
-    mentor: {
-        hero: 'モデルに頼れるものを与える',
-        labExplain: '同じ質問、出典がすべてを変える',
-        misconception: '出典は魔法ではない',
-        lock: '答えを出典に結びつけておく',
-        practical: '出典に基づく答えを求める',
-    },
-
     // F3 RESPOND (M9): この章の人間的な応答レイヤー。ステータスは独立したまま、
     // ここにあるのは正解時も不正解時もメンターが続けて言う一文だけ。
     mentorRespond: {

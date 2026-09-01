@@ -12,7 +12,6 @@ import { InsightBox } from '@/components/content/InsightBox';
 
 import { AttentionGuess, type AttentionGuessCard, type AttentionGuessContent, type Cue, type StatusTone } from '@/components/ai-internals/AttentionGuess';
 import { LogitsSoftmaxLab } from '@/components/ai-internals/LogitsSoftmaxLab';
-import type { MentorPose } from '@/components/ai-internals/Mentor';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
@@ -22,14 +21,14 @@ import { useT } from '@/i18n/useT';
 import type { LogitsSoftmaxQuizId } from '@/i18n/locales/he/behind-ai/logitsSoftmaxQuiz';
 
 /* ════════════════════ מטא-דאטה מבני של כרטיסי הניחוש (לא ניתן לתרגום) ════════════════════ */
-// הטקסט מגיע מהמילון (guess.cards[id]); כאן רק המבנה: אייקון (cue), גוון הסטטוס ופוזת
-// המנטור, שאינם תלויי שפה. הכרטיסים הם ארבעת ההמשכים; "delayed" הוא המוביל בברירת המחדל.
+// הטקסט מגיע מהמילון (guess.cards[id]); כאן רק המבנה: אייקון (cue) וגוון
+// הסטטוס, שאינם תלויי שפה. הכרטיסים הם ארבעת ההמשכים; "delayed" הוא המוביל בברירת המחדל.
 type GuessCardId = 'delayed' | 'delivered' | 'pickup' | 'lost';
-const GUESS_CARD_META: { id: GuessCardId; cue: Cue; tone: StatusTone; pose: MentorPose }[] = [
-    { id: 'delayed', cue: 'nodes', tone: 'close', pose: 'correct' },
-    { id: 'delivered', cue: 'spotlight', tone: 'partial', pose: 'think' },
-    { id: 'pickup', cue: 'highlighter', tone: 'layer', pose: 'headsup' },
-    { id: 'lost', cue: 'factcheck', tone: 'common', pose: 'reassure' },
+const GUESS_CARD_META: { id: GuessCardId; cue: Cue; tone: StatusTone }[] = [
+    { id: 'delayed', cue: 'nodes', tone: 'close' },
+    { id: 'delivered', cue: 'spotlight', tone: 'partial' },
+    { id: 'pickup', cue: 'highlighter', tone: 'layer' },
+    { id: 'lost', cue: 'factcheck', tone: 'common' },
 ];
 
 /* ════════════════════════ בדיקת הבנה: מה מותר להסיק מהסתברות גבוהה ════════════════════════ */
@@ -121,7 +120,6 @@ export default function BehindTheScenesChapter8() {
             id: meta.id,
             cue: meta.cue,
             statusTone: meta.tone,
-            mentorPose: meta.pose,
             title: card.title,
             desc: card.desc,
             statusLabel: card.statusLabel,

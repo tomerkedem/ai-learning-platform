@@ -24,14 +24,6 @@ export const hallucinations = {
         chipCompare: 'Compare confident vs careful',
     },
 
-    mentor: {
-        hero: 'Fluency is not a check',
-        labExplain: 'Same question, different risk',
-        misconception: 'The problem is not the phrasing',
-        lock: 'Without a source, it is not grounded',
-        practical: 'Know when to verify',
-    },
-
     // F3 RESPOND (M8): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

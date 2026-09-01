@@ -34,14 +34,6 @@ export const chatToAgent = {
         chipCompare: 'Observa como la misma solicitud se responde una vez como texto y una vez como tarea',
     },
 
-    mentor: {
-        hero: 'El chat responde. El agente avanza hacia una tarea',
-        labExplain: 'Muevete entre los modos y observa que cambia',
-        misconception: 'No mas inteligente. Tiene una ruta de trabajo',
-        lock: 'Preguntar primero, no inventar',
-        practical: 'Define objetivo, limites y aprobacion',
-    },
-
     // F3 RESPOND (M10): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

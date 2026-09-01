@@ -8,10 +8,6 @@
 //   hero.badge        - the brand line "Behind the Scenes · 05", identical in all locales.
 //   sections.labEyebrow - the product name of the lab ("Semantic Space Lab"), kept in
 //                       English across all locales, including Hebrew.
-//   mentor.hero / guess / negation / practical - not rendered by the chapter; only
-//                       mentor.lab and mentor.lock are shown. They are inherited rather
-//                       than invented so no translated string exists for text no learner
-//                       ever sees.
 //
 // No em dash and no en dash, per project text rules.
 
@@ -46,7 +42,6 @@ export const semanticSpace: typeof he = {
     },
 
     mentor: {
-        ...he.mentor,
         lab: 'Watch the distance, not the words.',
         lock: 'One answer here is tempting. Take a moment before you choose.',
     },

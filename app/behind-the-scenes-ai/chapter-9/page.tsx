@@ -12,7 +12,6 @@ import { InsightBox } from '@/components/content/InsightBox';
 
 import { AttentionGuess, type AttentionGuessCard, type AttentionGuessContent, type Cue, type StatusTone } from '@/components/ai-internals/AttentionGuess';
 import { DecodingLab } from '@/components/ai-internals/DecodingLab';
-import type { MentorPose } from '@/components/ai-internals/Mentor';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
@@ -22,14 +21,14 @@ import { useT } from '@/i18n/useT';
 import type { DecodingQuizId } from '@/i18n/locales/he/behind-ai/decodingQuiz';
 
 /* ════════════════════ מטא-דאטה מבני של כרטיסי הניחוש (לא ניתן לתרגום) ════════════════════ */
-// הטקסט מגיע מהמילון (guess.cards[id]); כאן רק המבנה: אייקון (cue), גוון הסטטוס ופוזת
-// המנטור, שאינם תלויי שפה. הכרטיסים הם ארבעה פירושים לשאלה "האם תמיד נבחרת הגבוהה?".
+// הטקסט מגיע מהמילון (guess.cards[id]); כאן רק המבנה: אייקון (cue) וגוון
+// הסטטוס, שאינם תלויי שפה. הכרטיסים הם ארבעה פירושים לשאלה "האם תמיד נבחרת הגבוהה?".
 type GuessCardId = 'alwaysTop' | 'conservative' | 'sampled' | 'autoTrue';
-const GUESS_CARD_META: { id: GuessCardId; cue: Cue; tone: StatusTone; pose: MentorPose }[] = [
-    { id: 'alwaysTop', cue: 'spotlight', tone: 'partial', pose: 'think' },
-    { id: 'conservative', cue: 'nodes', tone: 'close', pose: 'correct' },
-    { id: 'sampled', cue: 'highlighter', tone: 'layer', pose: 'headsup' },
-    { id: 'autoTrue', cue: 'factcheck', tone: 'common', pose: 'reassure' },
+const GUESS_CARD_META: { id: GuessCardId; cue: Cue; tone: StatusTone }[] = [
+    { id: 'alwaysTop', cue: 'spotlight', tone: 'partial' },
+    { id: 'conservative', cue: 'nodes', tone: 'close' },
+    { id: 'sampled', cue: 'highlighter', tone: 'layer' },
+    { id: 'autoTrue', cue: 'factcheck', tone: 'common' },
 ];
 
 /* ════════════════════════ בדיקת הבנה: מה מותר להסיק מבחירה פתוחה ════════════════════════ */
@@ -121,7 +120,6 @@ export default function BehindTheScenesChapter9() {
             id: meta.id,
             cue: meta.cue,
             statusTone: meta.tone,
-            mentorPose: meta.pose,
             title: card.title,
             desc: card.desc,
             statusLabel: card.statusLabel,

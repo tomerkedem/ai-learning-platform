@@ -9,7 +9,7 @@
 // שה-Agent חכם יותר, שכלים תמיד בטוחים, או ש-Agent פועל לבד בלי גבול.
 //
 // i18n-first: כל הטקסט הגלוי מגיע מ-t.behindAi.chatToAgent (6 שפות אמיתיות). המבנה
-// (אייקונים, גוונים, פוזות מנטור, מזהי אלמנטים) נשאר כאן. פרק 17 אינו הפרק האחרון
+// (אייקונים, גוונים, מזהי אלמנטים) נשאר כאן. פרק 17 אינו הפרק האחרון
 // בתוכנית (עוד מחכים 18 Guardrails ו-19 Full Trace), ולכן הוא מסתיים כפרק רגיל עם
 // גשר מושגי לפרק 18, בלי מעבר למבחן הסיום. מבחן הסיום יחזור אחרי פרק 19.
 // ────────────────────────────────────────────────────────────────────────
@@ -39,13 +39,13 @@ import { useT } from '@/i18n/useT';
 import type { ChatToAgentQuizId } from '@/i18n/locales/he/behind-ai/chatToAgentQuiz';
 
 // טקסט הכרטיסים מגיע מהמילון (t.behindAi.chatToAgent.guess.cards) לפי מזהה. כאן נשאר
-// רק המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה. הכרטיס עם
+// רק המבנה: אייקון וגוון הסטטוס, שאינם תלויי שפה. הכרטיס עם
 // statusTone === 'precise' הוא הבחירה הנכונה (שאלה שיכולה להפוך למשימה).
 const GUESS_CARD_META = [
-    { id: 'becomesTask', icon: Workflow, statusTone: 'precise', mentorPose: 'correct' },
-    { id: 'alwaysChat', icon: MessageSquare, statusTone: 'common', mentorPose: 'reassure' },
-    { id: 'justLonger', icon: AlignLeft, statusTone: 'partial', mentorPose: 'think' },
-    { id: 'alwaysAutonomous', icon: ShieldAlert, statusTone: 'layer', mentorPose: 'headsup' },
+    { id: 'becomesTask', icon: Workflow, statusTone: 'precise' },
+    { id: 'alwaysChat', icon: MessageSquare, statusTone: 'common' },
+    { id: 'justLonger', icon: AlignLeft, statusTone: 'partial' },
+    { id: 'alwaysAutonomous', icon: ShieldAlert, statusTone: 'layer' },
 ] as const;
 
 /* ════════════════ בדיקת הבנה: מה Agent טוב יעשה קודם כשחסר מספר מעקב ════════════════ */
@@ -114,20 +114,18 @@ export default function BehindTheScenesChapter17() {
     const speechLocale = c17.contentLocale;
     const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
 
-    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון) מהמטא־דאטה.
     const guessContent: OpeningGuessContent = {
         eyebrow: c17.guess.eyebrow,
         title: c17.guess.title,
         subtitle: c17.guess.subtitle,
         invite: c17.guess.invite,
-        invitePose: 'think',
         correctTitle: c17.guess.correctTitle,
         wrongTitle: c17.guess.wrongTitle,
         getsRightLabel: c17.guess.getsRightLabel,
         revealButton: c17.guess.revealButton,
         revealTitle: c17.guess.revealTitle,
         revealCopy: c17.guess.revealCopy,
-        revealPose: 'pointdown',
         cta: c17.guess.cta,
         ctaTargetId: 'chat-to-agent-lab',
         resetButton: c17.guess.resetButton,
@@ -137,7 +135,6 @@ export default function BehindTheScenesChapter17() {
         id: m.id,
         icon: m.icon,
         statusTone: m.statusTone,
-        mentorPose: m.mentorPose,
         ...c17.guess.cards[m.id],
     }));
 

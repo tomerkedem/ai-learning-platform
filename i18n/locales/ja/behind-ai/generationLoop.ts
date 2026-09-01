@@ -20,14 +20,6 @@ export const generationLoop = {
         chipContext: '各ステップで文脈が育つのを見る',
     },
 
-    mentor: {
-        hero: '各ステップが次を作る',
-        labExplain: 'どの部分も内側へ戻る',
-        misconception: '完成した回答は待っていない',
-        lock: '考えを身につけました',
-        practical: 'ループを先に方向づける',
-    },
-
     // F3 RESPOND (M9): この章の人間的な応答レイヤー。ステータスは独立したまま、
     // ここにあるのは正解時も不正解時もメンターが続けて言う一文だけ。
     mentorRespond: {

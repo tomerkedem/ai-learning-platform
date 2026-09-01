@@ -12,7 +12,6 @@ import { InsightBox } from '@/components/content/InsightBox';
 
 import { AttentionGuess, type AttentionGuessCard, type AttentionGuessContent, type Cue, type StatusTone } from '@/components/ai-internals/AttentionGuess';
 import { ContextWindowLab } from '@/components/ai-internals/ContextWindowLab';
-import type { MentorPose } from '@/components/ai-internals/Mentor';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
@@ -22,14 +21,14 @@ import { useT } from '@/i18n/useT';
 import type { ContextWindowQuizId } from '@/i18n/locales/he/behind-ai/contextWindowQuiz';
 
 /* ════════════════════ מטא-דאטה מבני של כרטיסי הניחוש (לא ניתן לתרגום) ════════════════════ */
-// הטקסט מגיע מהמילון (guess.cards[id]); כאן רק המבנה: אייקון (cue), גוון הסטטוס
-// ופוזת המנטור, שאינם תלויי שפה. הכרטיס הנכון הוא "in-window".
+// הטקסט מגיע מהמילון (guess.cards[id]); כאן רק המבנה: אייקון (cue) וגוון הסטטוס,
+// שאינם תלויי שפה. הכרטיס הנכון הוא "in-window".
 type GuessCardId = 'remembers-all' | 'in-window' | 'first-message' | 'saved-memory';
-const GUESS_CARD_META: { id: GuessCardId; cue: Cue; tone: StatusTone; pose: MentorPose }[] = [
-    { id: 'remembers-all', cue: 'highlighter', tone: 'common', pose: 'reassure' },
-    { id: 'in-window', cue: 'nodes', tone: 'close', pose: 'correct' },
-    { id: 'first-message', cue: 'spotlight', tone: 'partial', pose: 'think' },
-    { id: 'saved-memory', cue: 'factcheck', tone: 'layer', pose: 'headsup' },
+const GUESS_CARD_META: { id: GuessCardId; cue: Cue; tone: StatusTone }[] = [
+    { id: 'remembers-all', cue: 'highlighter', tone: 'common' },
+    { id: 'in-window', cue: 'nodes', tone: 'close' },
+    { id: 'first-message', cue: 'spotlight', tone: 'partial' },
+    { id: 'saved-memory', cue: 'factcheck', tone: 'layer' },
 ];
 
 /* ════════════════════════ בדיקת הבנה: איזה פרומפט עומד בפני עצמו ════════════════════════ */
@@ -122,7 +121,6 @@ export default function BehindTheScenesChapter7() {
             id: meta.id,
             cue: meta.cue,
             statusTone: meta.tone,
-            mentorPose: meta.pose,
             title: card.title,
             desc: card.desc,
             statusLabel: card.statusLabel,

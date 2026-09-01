@@ -209,14 +209,6 @@ export const decoding = {
             'And remember: no decoding style verifies facts. Conservative gives stability, open gives variety, but verification against the world needs an external source or a tool.',
     },
 
-    // -- Mentor lines --
-    mentor: {
-        hero: 'Same distribution, a different choice',
-        lab: 'Change the style, and you get a different token',
-        lock: 'The idea is clear now',
-        practical: 'This is how you pick a style to fit the task',
-    },
-
     // F3 RESPOND (M9): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

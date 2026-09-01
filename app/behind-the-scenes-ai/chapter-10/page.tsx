@@ -22,12 +22,12 @@ import type { GenerationLoopQuizId } from '@/i18n/locales/he/behind-ai/generatio
 
 /* ════════════════════════ מטא־דאטה מבני (לא ניתן לתרגום) ════════════════════════ */
 // טקסט הכרטיסים מגיע מהמילון (t.behindAi.generationLoop.guess.cards) לפי מזהה; כאן נשאר
-// רק המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה.
+// רק המבנה: אייקון וגוון הסטטוס, שאינם תלויי שפה.
 const GUESS_CARD_META = [
-    { id: 'ready', icon: Database, statusTone: 'common', mentorPose: 'reassure' },
-    { id: 'loop', icon: Repeat2, statusTone: 'precise', mentorPose: 'correct' },
-    { id: 'verify', icon: Globe, statusTone: 'layer', mentorPose: 'headsup' },
-    { id: 'last-word', icon: ArrowLeft, statusTone: 'partial', mentorPose: 'think' },
+    { id: 'ready', icon: Database, statusTone: 'common' },
+    { id: 'loop', icon: Repeat2, statusTone: 'precise' },
+    { id: 'verify', icon: Globe, statusTone: 'layer' },
+    { id: 'last-word', icon: ArrowLeft, statusTone: 'partial' },
 ] as const;
 
 /* ════════════════════════ בדיקת הבנה: שאלת סיווג ════════════════════════ */
@@ -96,20 +96,18 @@ export default function BehindTheScenesChapter10() {
     const speechLocale = c10.contentLocale;
     const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
 
-    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון) מהמטא־דאטה.
     const guessContent: OpeningGuessContent = {
         eyebrow: c10.guess.eyebrow,
         title: c10.guess.title,
         subtitle: c10.guess.subtitle,
         invite: c10.guess.invite,
-        invitePose: 'think',
         correctTitle: c10.guess.correctTitle,
         wrongTitle: c10.guess.wrongTitle,
         getsRightLabel: c10.guess.getsRightLabel,
         revealButton: c10.guess.revealButton,
         revealTitle: c10.guess.revealTitle,
         revealCopy: c10.guess.revealCopy,
-        revealPose: 'pointdown',
         cta: c10.guess.cta,
         ctaTargetId: 'generation-loop-lab',
         resetButton: c10.guess.resetButton,
@@ -119,7 +117,6 @@ export default function BehindTheScenesChapter10() {
         id: m.id,
         icon: m.icon,
         statusTone: m.statusTone,
-        mentorPose: m.mentorPose,
         ...c10.guess.cards[m.id],
     }));
 

@@ -21,13 +21,13 @@ import { useT } from '@/i18n/useT';
 import type { GroundingQuizId } from '@/i18n/locales/he/behind-ai/groundingQuiz';
 
 // טקסט הכרטיסים מגיע מהמילון (t.behindAi.grounding.guess.cards) לפי מזהה. כאן נשאר רק
-// המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה. הכרטיס עם
+// המבנה: אייקון וגוון הסטטוס, שאינם תלויי שפה. הכרטיס עם
 // statusTone === 'precise' הוא הבחירה הנכונה.
 const GUESS_CARD_META = [
-    { id: 'grounded', icon: Link2, statusTone: 'precise', mentorPose: 'correct' },
-    { id: 'smarter', icon: GraduationCap, statusTone: 'common', mentorPose: 'reassure' },
-    { id: 'knowsAll', icon: Globe, statusTone: 'layer', mentorPose: 'headsup' },
-    { id: 'autoTrue', icon: ShieldCheck, statusTone: 'partial', mentorPose: 'think' },
+    { id: 'grounded', icon: Link2, statusTone: 'precise' },
+    { id: 'smarter', icon: GraduationCap, statusTone: 'common' },
+    { id: 'knowsAll', icon: Globe, statusTone: 'layer' },
+    { id: 'autoTrue', icon: ShieldCheck, statusTone: 'partial' },
 ] as const;
 
 /* ════════════════════════ בדיקת הבנה: שאלת סיווג ════════════════════════ */
@@ -97,20 +97,18 @@ export default function BehindTheScenesChapter12() {
     const speechLocale = c12.contentLocale;
     const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
 
-    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון) מהמטא־דאטה.
     const guessContent: OpeningGuessContent = {
         eyebrow: c12.guess.eyebrow,
         title: c12.guess.title,
         subtitle: c12.guess.subtitle,
         invite: c12.guess.invite,
-        invitePose: 'think',
         correctTitle: c12.guess.correctTitle,
         wrongTitle: c12.guess.wrongTitle,
         getsRightLabel: c12.guess.getsRightLabel,
         revealButton: c12.guess.revealButton,
         revealTitle: c12.guess.revealTitle,
         revealCopy: c12.guess.revealCopy,
-        revealPose: 'pointdown',
         cta: c12.guess.cta,
         ctaTargetId: 'grounding-lab',
         resetButton: c12.guess.resetButton,
@@ -120,7 +118,6 @@ export default function BehindTheScenesChapter12() {
         id: m.id,
         icon: m.icon,
         statusTone: m.statusTone,
-        mentorPose: m.mentorPose,
         ...c12.guess.cards[m.id],
     }));
 

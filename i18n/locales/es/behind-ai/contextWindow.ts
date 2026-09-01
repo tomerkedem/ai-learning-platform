@@ -133,14 +133,6 @@ export const contextWindow = {
             'Y recuerda: meter un dato en el prompt no lo vuelve correcto. La ventana de contexto determina qué ve el modelo, no si es verdad. Para verificar sigues necesitando una fuente externa o una herramienta.',
     },
 
-    // ── Llamadas del mentor ──
-    mentor: {
-        hero: 'Lo que entra en la ventana es lo que el modelo ve',
-        lab: 'Mueve la ventana, y la respuesta se mueve',
-        lock: 'Entendiste la ventana de contexto',
-        practical: 'Así mantienes el dato crítico en la imagen',
-    },
-
     // F3 RESPOND (M8): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

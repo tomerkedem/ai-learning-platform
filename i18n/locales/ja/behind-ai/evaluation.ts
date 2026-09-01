@@ -29,14 +29,6 @@ export const evaluation = {
         chipCompare: 'モデルが原則を保つ場所と失敗する場所を見る',
     },
 
-    mentor: {
-        hero: '一つの正しい例はテストではない',
-        labExplain: 'ケースを変えて、原則が保たれるか見よう',
-        misconception: '見慣れた成功は一般化ではない',
-        lock: '境界での失敗が弱点を明らかにする',
-        practical: '信頼する前に、いくつかのケースで試そう',
-    },
-
     // F3 RESPOND (M9): この章の人間的な応答レイヤー。ステータスは独立したまま、
     // ここにあるのは正解時も不正解時もメンターが続けて言う一文だけ。
     mentorRespond: {

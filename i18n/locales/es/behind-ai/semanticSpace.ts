@@ -8,9 +8,6 @@
 //   hero.badge          - la línea de marca "Behind the Scenes · 05", idéntica en todos los idiomas.
 //   sections.labEyebrow - el nombre de producto del laboratorio ("Semantic Space Lab"), que
 //                         se mantiene en inglés en todos los idiomas, incluido el hebreo.
-//   mentor.hero / guess / negation / practical - el capítulo no los muestra; solo se ven
-//                         mentor.lab y mentor.lock. Se heredan en lugar de inventar una
-//                         traducción para texto que ningún estudiante llega a leer.
 //
 // Sin raya ni semirraya, según las reglas de texto del proyecto.
 
@@ -45,7 +42,6 @@ export const semanticSpace: typeof he = {
     },
 
     mentor: {
-        ...he.mentor,
         lab: 'Fíjate en la distancia, no en las palabras.',
         lock: 'Aquí hay una respuesta tentadora. Tómate un momento antes de elegir.',
     },

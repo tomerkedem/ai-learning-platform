@@ -11,7 +11,7 @@
 // הוא הצצה למחשבה פרטית. Full Trace הוא תיעוד חינוכי של שלבים גלויים, לא chain-of-thought.
 //
 // i18n-first: כל הטקסט הגלוי מגיע מ-t.behindAi.fullTrace (6 שפות אמיתיות). המבנה
-// (אייקונים, גוונים, פוזות מנטור, מזהי אלמנטים) נשאר כאן. פרק 19 הוא הפרק האחרון
+// (אייקונים, גוונים, מזהי אלמנטים) נשאר כאן. פרק 19 הוא הפרק האחרון
 // בתוכנית, ולכן הוא מסתיים ב-CTA למבחן הסיום, בלי מסך "עוד פרקים בקרוב".
 // ────────────────────────────────────────────────────────────────────────
 
@@ -40,13 +40,13 @@ import { useT } from '@/i18n/useT';
 import type { FullTraceQuizId } from '@/i18n/locales/he/behind-ai/fullTraceQuiz';
 
 // טקסט הכרטיסים מגיע מהמילון (t.behindAi.fullTrace.guess.cards) לפי מזהה. כאן נשאר
-// רק המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה. הכרטיס עם
+// רק המבנה: אייקון וגוון הסטטוס, שאינם תלויי שפה. הכרטיס עם
 // statusTone === 'precise' הוא הבחירה הנכונה (מסלול שלם, לא תשובה אחת).
 const GUESS_CARD_META = [
-    { id: 'fullRoute', icon: Route, statusTone: 'precise', mentorPose: 'correct' },
-    { id: 'oneAnswer', icon: MessageSquareText, statusTone: 'common', mentorPose: 'reassure' },
-    { id: 'agentSends', icon: Send, statusTone: 'layer', mentorPose: 'headsup' },
-    { id: 'noChecks', icon: Search, statusTone: 'partial', mentorPose: 'think' },
+    { id: 'fullRoute', icon: Route, statusTone: 'precise' },
+    { id: 'oneAnswer', icon: MessageSquareText, statusTone: 'common' },
+    { id: 'agentSends', icon: Send, statusTone: 'layer' },
+    { id: 'noChecks', icon: Search, statusTone: 'partial' },
 ] as const;
 
 /* ════════════════ בדיקת הבנה: מה המערכת תוציא כשהמקור בעיכוב וההנחיה היא לא לשלוח ════════════════ */
@@ -116,20 +116,18 @@ export default function BehindTheScenesChapter19() {
     const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
     const [activeTraceNarration, setActiveTraceNarration] = useState('');
 
-    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון) מהמטא־דאטה.
     const guessContent: OpeningGuessContent = {
         eyebrow: c19.guess.eyebrow,
         title: c19.guess.title,
         subtitle: c19.guess.subtitle,
         invite: c19.guess.invite,
-        invitePose: 'think',
         correctTitle: c19.guess.correctTitle,
         wrongTitle: c19.guess.wrongTitle,
         getsRightLabel: c19.guess.getsRightLabel,
         revealButton: c19.guess.revealButton,
         revealTitle: c19.guess.revealTitle,
         revealCopy: c19.guess.revealCopy,
-        revealPose: 'pointdown',
         cta: c19.guess.cta,
         ctaTargetId: 'full-trace-lab',
         resetButton: c19.guess.resetButton,
@@ -139,7 +137,6 @@ export default function BehindTheScenesChapter19() {
         id: m.id,
         icon: m.icon,
         statusTone: m.statusTone,
-        mentorPose: m.mentorPose,
         ...c19.guess.cards[m.id],
     }));
 

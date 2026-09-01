@@ -203,14 +203,6 @@ export const logitsSoftmax = {
             'And remember: even the leading continuation is not proof. Verification against the world still needs an external source or a tool.',
     },
 
-    // -- Mentor lines --
-    mentor: {
-        hero: 'Here scores turn into percentages',
-        lab: 'Change a detail, and the percentages shift',
-        lock: 'The idea is clear now',
-        practical: 'This is how you steer the distribution',
-    },
-
     // F3 RESPOND (M9): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

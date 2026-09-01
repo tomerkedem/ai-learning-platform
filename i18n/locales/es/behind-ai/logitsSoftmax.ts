@@ -200,14 +200,6 @@ export const logitsSoftmax = {
             'Y recuerda: incluso la continuación líder no es una prueba. Para verificar contra el mundo sigue haciendo falta una fuente externa o una herramienta.',
     },
 
-    // ── Llamadas del mentor ──
-    mentor: {
-        hero: 'Aquí las puntuaciones se vuelven porcentajes',
-        lab: 'Cambia un dato, y los porcentajes se mueven',
-        lock: 'Captaste la idea',
-        practical: 'Así se orienta la distribución',
-    },
-
     // F3 RESPOND (M9): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

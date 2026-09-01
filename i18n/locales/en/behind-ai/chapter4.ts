@@ -28,12 +28,6 @@ export const chapter4 = {
         chipMeaning: 'So where does the meaning come from?',
     },
 
-    // Mentor speech bubbles (text only; pose and placement are structural in the page)
-    mentor: {
-        hero: 'The engine sees numbers, not words',
-        practical: 'Text became a number, now we can compute',
-    },
-
     // F3 RESPOND (M8): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

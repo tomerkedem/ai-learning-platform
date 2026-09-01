@@ -30,14 +30,6 @@ export const doesAiLearn = {
         chipCompare: '訂正がいつ役立ち、いつ消えるかを見る',
     },
 
-    mentor: {
-        hero: '今の訂正は、必ずしも永久の学習ではない',
-        labExplain: '層を切り替えて、何が変わるか見よう',
-        misconception: '効いた。でも必ずしも学ばれてはいない',
-        lock: '新しいチャットはまっさらな紙から始まる',
-        practical: '規則や情報源をもう一度渡そう',
-    },
-
     // F3 RESPOND (M10): この章の人間的な応答レイヤー。ステータスは独立したまま、
     // ここにあるのは正解時も不正解時もメンターが続けて言う一文だけ。
     mentorRespond: {

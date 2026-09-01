@@ -33,14 +33,6 @@ export const chatToAgent = {
         chipCompare: 'See how the same request is answered once as text and once as a task',
     },
 
-    mentor: {
-        hero: 'Chat answers. Agent moves toward a task',
-        labExplain: 'Move between the modes and see what changes',
-        misconception: 'Not smarter. It has a work path',
-        lock: 'Ask first, do not invent',
-        practical: 'Define goal, boundaries, and approval',
-    },
-
     // F3 RESPOND (M10): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

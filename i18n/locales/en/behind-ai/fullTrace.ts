@@ -34,14 +34,6 @@ export const fullTrace = {
         chipCompare: 'See where information enters, where an error could enter, and where control is added',
     },
 
-    mentor: {
-        hero: 'Not just the answer, the whole path to it',
-        labExplain: 'Step through it and see the route',
-        misconception: 'The answer is the end, the route is the point',
-        lock: 'Source before conclusion, approval before sending',
-        practical: 'Define goal, source, boundary, and output',
-    },
-
     // F3 RESPOND (M10): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

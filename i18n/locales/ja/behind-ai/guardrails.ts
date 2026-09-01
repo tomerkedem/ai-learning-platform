@@ -30,14 +30,6 @@ export const guardrails = {
         chipCompare: '同じ能力が、リスクによってどう違う決定につながるかを見る',
     },
 
-    mentor: {
-        hero: '実行できる？それはまだ許可ではない',
-        labExplain: '行動を切り替えて、何が変わるか見よう',
-        misconception: '制御は設計であって、恐れではない',
-        lock: '送信の前に下書きと承認',
-        practical: '許可、禁止、承認を定めよう',
-    },
-
     // F3 RESPOND (M10): この章の人間的な応答レイヤー。ステータスは独立したまま、
     // ここにあるのは正解時も不正解時もメンターが続けて言う一文だけ。
     mentorRespond: {

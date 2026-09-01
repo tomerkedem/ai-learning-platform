@@ -21,13 +21,13 @@ import { useT } from '@/i18n/useT';
 import type { MistakeLearningQuizId } from '@/i18n/locales/he/behind-ai/mistakeLearningQuiz';
 
 // טקסט הכרטיסים מגיע מהמילון (t.behindAi.mistakeLearning.guess.cards) לפי מזהה. כאן נשאר
-// רק המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה. הכרטיס עם
+// רק המבנה: אייקון וגוון הסטטוס, שאינם תלויי שפה. הכרטיס עם
 // statusTone === 'precise' הוא הבחירה הנכונה (התיקון עוזר לשיחה הנוכחית).
 const GUESS_CARD_META = [
-    { id: 'context', icon: MessageSquare, statusTone: 'precise', mentorPose: 'correct' },
-    { id: 'permanent', icon: Lock, statusTone: 'common', mentorPose: 'reassure' },
-    { id: 'everyone', icon: Users, statusTone: 'layer', mentorPose: 'headsup' },
-    { id: 'nothing', icon: Ban, statusTone: 'partial', mentorPose: 'think' },
+    { id: 'context', icon: MessageSquare, statusTone: 'precise' },
+    { id: 'permanent', icon: Lock, statusTone: 'common' },
+    { id: 'everyone', icon: Users, statusTone: 'layer' },
+    { id: 'nothing', icon: Ban, statusTone: 'partial' },
 ] as const;
 
 /* ════════════════════════ בדיקת הבנה: איזו פרשנות בטוחה ════════════════════════ */
@@ -96,20 +96,18 @@ export default function BehindTheScenesChapter14() {
     const speechLocale = c14.contentLocale;
     const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
 
-    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון) מהמטא־דאטה.
     const guessContent: OpeningGuessContent = {
         eyebrow: c14.guess.eyebrow,
         title: c14.guess.title,
         subtitle: c14.guess.subtitle,
         invite: c14.guess.invite,
-        invitePose: 'think',
         correctTitle: c14.guess.correctTitle,
         wrongTitle: c14.guess.wrongTitle,
         getsRightLabel: c14.guess.getsRightLabel,
         revealButton: c14.guess.revealButton,
         revealTitle: c14.guess.revealTitle,
         revealCopy: c14.guess.revealCopy,
-        revealPose: 'pointdown',
         cta: c14.guess.cta,
         ctaTargetId: 'mistake-learning-lab',
         resetButton: c14.guess.resetButton,
@@ -119,7 +117,6 @@ export default function BehindTheScenesChapter14() {
         id: m.id,
         icon: m.icon,
         statusTone: m.statusTone,
-        mentorPose: m.mentorPose,
         ...c14.guess.cards[m.id],
     }));
 

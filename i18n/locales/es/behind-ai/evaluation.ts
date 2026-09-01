@@ -32,14 +32,6 @@ export const evaluation = {
         chipCompare: 'Observa dónde el modelo mantiene el principio y dónde falla',
     },
 
-    mentor: {
-        hero: 'Un ejemplo correcto no es una prueba',
-        labExplain: 'Cambia el caso, y observa si el principio se mantiene',
-        misconception: 'Un acierto conocido no es generalización',
-        lock: 'Un fallo en el borde revela una debilidad',
-        practical: 'Prueba con varios casos antes de confiar',
-    },
-
     // F3 RESPOND (M9): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

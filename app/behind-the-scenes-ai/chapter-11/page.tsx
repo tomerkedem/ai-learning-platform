@@ -22,13 +22,13 @@ import type { HallucinationsQuizId } from '@/i18n/locales/he/behind-ai/hallucina
 
 /* ════════════════════════ מטא־דאטה מבני (לא ניתן לתרגום) ════════════════════════ */
 // טקסט הכרטיסים מגיע מהמילון (t.behindAi.hallucinations.guess.cards) לפי מזהה. כאן
-// נשאר רק המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה. הכרטיס עם
+// נשאר רק המבנה: אייקון וגוון הסטטוס, שאינם תלויי שפה. הכרטיס עם
 // statusTone === 'precise' הוא הבחירה הנכונה.
 const GUESS_CARD_META = [
-    { id: 'plausible', icon: Sparkles, statusTone: 'precise', mentorPose: 'correct' },
-    { id: 'confidentTrue', icon: BadgeCheck, statusTone: 'common', mentorPose: 'reassure' },
-    { id: 'dateChecked', icon: CalendarClock, statusTone: 'layer', mentorPose: 'headsup' },
-    { id: 'longerBetter', icon: AlignLeft, statusTone: 'partial', mentorPose: 'think' },
+    { id: 'plausible', icon: Sparkles, statusTone: 'precise' },
+    { id: 'confidentTrue', icon: BadgeCheck, statusTone: 'common' },
+    { id: 'dateChecked', icon: CalendarClock, statusTone: 'layer' },
+    { id: 'longerBetter', icon: AlignLeft, statusTone: 'partial' },
 ] as const;
 
 /* ════════════════════════ בדיקת הבנה: שאלת סיווג ════════════════════════ */
@@ -98,20 +98,18 @@ export default function BehindTheScenesChapter11() {
     const speechLocale = c11.contentLocale;
     const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
 
-    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון) מהמטא־דאטה.
     const guessContent: OpeningGuessContent = {
         eyebrow: c11.guess.eyebrow,
         title: c11.guess.title,
         subtitle: c11.guess.subtitle,
         invite: c11.guess.invite,
-        invitePose: 'think',
         correctTitle: c11.guess.correctTitle,
         wrongTitle: c11.guess.wrongTitle,
         getsRightLabel: c11.guess.getsRightLabel,
         revealButton: c11.guess.revealButton,
         revealTitle: c11.guess.revealTitle,
         revealCopy: c11.guess.revealCopy,
-        revealPose: 'pointdown',
         cta: c11.guess.cta,
         ctaTargetId: 'hallucination-lab',
         resetButton: c11.guess.resetButton,
@@ -121,7 +119,6 @@ export default function BehindTheScenesChapter11() {
         id: m.id,
         icon: m.icon,
         statusTone: m.statusTone,
-        mentorPose: m.mentorPose,
         ...c11.guess.cards[m.id],
     }));
 

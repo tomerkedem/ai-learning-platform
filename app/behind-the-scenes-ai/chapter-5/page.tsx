@@ -35,17 +35,16 @@ import { SpeakButton } from '@/components/ai-internals/SpeakButton';
 import type { ReadAloudSegment } from '@/components/ai-internals/useReadAloud';
 import { LOCALE_SPEECH_LANG } from '@/components/ai-internals/readAloudLang';
 import { useT } from '@/i18n/useT';
-import type { MentorPose } from '@/components/ai-internals/Mentor';
 import type { SemanticSpaceQuizId } from '@/i18n/locales/he/behind-ai/semanticSpaceQuiz';
 
 /* ════════════════════ מטא-דאטה מבני של כרטיסי הניחוש (לא ניתן לתרגום) ════════════════════ */
-// הטקסט מגיע מהמילון (guess.cards[id]); כאן רק המבנה: מזהה, אייקון, גוון הסטטוס
-// ופוזת המנטור, שאינם תלויי שפה. הכרטיס הנכון הוא "delayed" (precise).
-const GUESS_CARD_META: { id: 'arrived' | 'delayed' | 'checking' | 'recipe'; tone: GuessTone; pose: MentorPose; icon: DiscoveryGuessCard['icon'] }[] = [
-    { id: 'arrived', tone: 'common', pose: 'reassure', icon: ArrowLeftRight },
-    { id: 'delayed', tone: 'precise', pose: 'celebrate', icon: Sparkles },
-    { id: 'checking', tone: 'partial', pose: 'think', icon: Wrench },
-    { id: 'recipe', tone: 'layer', pose: 'think', icon: ChefHat },
+// הטקסט מגיע מהמילון (guess.cards[id]); כאן רק המבנה: מזהה, אייקון וגוון הסטטוס,
+// שאינם תלויי שפה. הכרטיס הנכון הוא "delayed" (precise).
+const GUESS_CARD_META: { id: 'arrived' | 'delayed' | 'checking' | 'recipe'; tone: GuessTone; icon: DiscoveryGuessCard['icon'] }[] = [
+    { id: 'arrived', tone: 'common', icon: ArrowLeftRight },
+    { id: 'delayed', tone: 'precise', icon: Sparkles },
+    { id: 'checking', tone: 'partial', icon: Wrench },
+    { id: 'recipe', tone: 'layer', icon: ChefHat },
 ];
 
 /* ════════════════════ בדיקת הבנה: התשובה הנכונה מבנית ════════════════════ */
@@ -128,14 +127,12 @@ export default function BehindTheScenesChapter5() {
         subtitle: g.subtitle,
         prompt: g.prompt,
         invite: g.invite,
-        invitePose: 'think',
         correctTitle: g.correctTitle,
         wrongTitle: g.wrongTitle,
         getsRightLabel: g.getsRightLabel,
         revealButton: g.revealButton,
         revealTitle: g.revealTitle,
         revealCopy: g.revealCopy,
-        revealPose: 'celebrate',
         cta: g.cta,
         ctaTargetId: 'semantic-lab',
         resetButton: g.resetButton,
@@ -150,7 +147,6 @@ export default function BehindTheScenesChapter5() {
             icon: meta.icon,
             statusLabel: card.statusLabel,
             statusTone: meta.tone,
-            mentorPose: meta.pose,
             getsRight: card.getsRight,
             missesLabel: card.missesLabel,
             misses: card.misses,
@@ -461,8 +457,7 @@ export default function BehindTheScenesChapter5() {
             </section>
 
             {/* ══════════ תובנה מעשית ══════════ */}
-            {/* בכוונה בלי מנטור: הבועה הקודמת רק חזרה על התבליט הראשון. mentor.practical
-                עדיין קיים במילון אך אינו מוצג. */}
+            {/* בכוונה בלי בועה: הקודמת רק חזרה על התבליט הראשון. */}
             <section className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c5.practical.title} headingLevel={2}>
                     <div className="flex items-start justify-between gap-2.5">

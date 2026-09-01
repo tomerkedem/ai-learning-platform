@@ -136,14 +136,6 @@ export const contextWindow = {
             'And remember: putting a detail into the prompt does not make it correct. The context window determines what the model sees, not whether it is true. Verification still needs an external source or a tool.',
     },
 
-    // -- Mentor lines --
-    mentor: {
-        hero: 'What fits in the window is what the model sees',
-        lab: 'Move the window, and the answer moves',
-        lock: 'The context window is clear now',
-        practical: 'This is how you keep the critical detail in the picture',
-    },
-
     // F3 RESPOND (M8): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {

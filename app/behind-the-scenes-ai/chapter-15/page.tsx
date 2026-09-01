@@ -22,13 +22,13 @@ import { useT } from '@/i18n/useT';
 import type { EvaluationQuizId } from '@/i18n/locales/he/behind-ai/evaluationQuiz';
 
 // טקסט הכרטיסים מגיע מהמילון (t.behindAi.evaluation.guess.cards) לפי מזהה. כאן נשאר
-// רק המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה. הכרטיס עם
+// רק המבנה: אייקון וגוון הסטטוס, שאינם תלויי שפה. הכרטיס עם
 // statusTone === 'precise' הוא הבחירה הנכונה (הצלחה על מקרה מגוון מרמזת על הכללה).
 const GUESS_CARD_META = [
-    { id: 'alwaysRight', icon: BadgeCheck, statusTone: 'common', mentorPose: 'reassure' },
-    { id: 'generalizes', icon: Sparkles, statusTone: 'precise', mentorPose: 'correct' },
-    { id: 'memorized', icon: BookMarked, statusTone: 'layer', mentorPose: 'headsup' },
-    { id: 'noNeed', icon: Ban, statusTone: 'partial', mentorPose: 'think' },
+    { id: 'alwaysRight', icon: BadgeCheck, statusTone: 'common' },
+    { id: 'generalizes', icon: Sparkles, statusTone: 'precise' },
+    { id: 'memorized', icon: BookMarked, statusTone: 'layer' },
+    { id: 'noNeed', icon: Ban, statusTone: 'partial' },
 ] as const;
 
 /* ════════════════════════ בדיקת הבנה: מה חושף כישלון בקצה ════════════════════════ */
@@ -100,20 +100,18 @@ export default function BehindTheScenesChapter15() {
     const speechLocale = c15.contentLocale;
     const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
 
-    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון) מהמטא־דאטה.
     const guessContent: OpeningGuessContent = {
         eyebrow: c15.guess.eyebrow,
         title: c15.guess.title,
         subtitle: c15.guess.subtitle,
         invite: c15.guess.invite,
-        invitePose: 'think',
         correctTitle: c15.guess.correctTitle,
         wrongTitle: c15.guess.wrongTitle,
         getsRightLabel: c15.guess.getsRightLabel,
         revealButton: c15.guess.revealButton,
         revealTitle: c15.guess.revealTitle,
         revealCopy: c15.guess.revealCopy,
-        revealPose: 'pointdown',
         cta: c15.guess.cta,
         ctaTargetId: 'evaluation-lab',
         resetButton: c15.guess.resetButton,
@@ -123,7 +121,6 @@ export default function BehindTheScenesChapter15() {
         id: m.id,
         icon: m.icon,
         statusTone: m.statusTone,
-        mentorPose: m.mentorPose,
         ...c15.guess.cards[m.id],
     }));
 

@@ -7,9 +7,6 @@
 //   hero.badge          - ブランド行「Behind the Scenes · 05」。全言語で同一です。
 //   sections.labEyebrow - ラボの製品名「Semantic Space Lab」。ヘブライ語を含む全言語で
 //                         英語のまま保ちます。
-//   mentor.hero / guess / negation / practical - この章では表示されず、mentor.lab と
-//                         mentor.lock だけが出ます。誰も読まないテキストの訳を作らないよう
-//                         継承しています。
 //
 // ダッシュ（em dash / en dash）は使いません。プロジェクトの文章ルールに従います。
 
@@ -44,7 +41,6 @@ export const semanticSpace: typeof he = {
     },
 
     mentor: {
-        ...he.mentor,
         lab: '言葉ではなく、距離に注目してください。',
         lock: 'ここには魅力的な答えがあります。選ぶ前に少し考えてみてください。',
     },

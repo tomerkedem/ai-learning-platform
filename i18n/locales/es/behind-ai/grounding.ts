@@ -25,14 +25,6 @@ export const grounding = {
         chipCompare: 'Compara una respuesta sin fuente y con una fuente',
     },
 
-    mentor: {
-        hero: 'Dale al modelo algo en qué apoyarse',
-        labExplain: 'La misma pregunta, la fuente lo cambia todo',
-        misconception: 'Una fuente no es magia',
-        lock: 'Mantén la respuesta ligada a la fuente',
-        practical: 'Pide una respuesta a partir de una fuente',
-    },
-
     // F3 RESPOND (M9): la capa de respuesta humana del capitulo. El estado sigue
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {

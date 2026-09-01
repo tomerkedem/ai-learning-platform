@@ -21,13 +21,13 @@ import { useT } from '@/i18n/useT';
 import type { SelfCheckQuizId } from '@/i18n/locales/he/behind-ai/selfCheckQuiz';
 
 // טקסט הכרטיסים מגיע מהמילון (t.behindAi.selfCheck.guess.cards) לפי מזהה. כאן נשאר רק
-// המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה. הכרטיס עם
+// המבנה: אייקון וגוון הסטטוס, שאינם תלויי שפה. הכרטיס עם
 // statusTone === 'precise' הוא הבחירה הנכונה (לבדוק אילו חלקים נתמכים במקור).
 const GUESS_CARD_META = [
-    { id: 'check', icon: ClipboardCheck, statusTone: 'precise', mentorPose: 'correct' },
-    { id: 'send', icon: Send, statusTone: 'common', mentorPose: 'reassure' },
-    { id: 'add', icon: FilePlus2, statusTone: 'layer', mentorPose: 'headsup' },
-    { id: 'replace', icon: Scissors, statusTone: 'partial', mentorPose: 'think' },
+    { id: 'check', icon: ClipboardCheck, statusTone: 'precise' },
+    { id: 'send', icon: Send, statusTone: 'common' },
+    { id: 'add', icon: FilePlus2, statusTone: 'layer' },
+    { id: 'replace', icon: Scissors, statusTone: 'partial' },
 ] as const;
 
 /* ════════════════════════ בדיקת הבנה: איזו טענה לסמן ════════════════════════ */
@@ -96,20 +96,18 @@ export default function BehindTheScenesChapter13() {
     const speechLocale = c13.contentLocale;
     const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
 
-    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון) מהמטא־דאטה.
     const guessContent: OpeningGuessContent = {
         eyebrow: c13.guess.eyebrow,
         title: c13.guess.title,
         subtitle: c13.guess.subtitle,
         invite: c13.guess.invite,
-        invitePose: 'think',
         correctTitle: c13.guess.correctTitle,
         wrongTitle: c13.guess.wrongTitle,
         getsRightLabel: c13.guess.getsRightLabel,
         revealButton: c13.guess.revealButton,
         revealTitle: c13.guess.revealTitle,
         revealCopy: c13.guess.revealCopy,
-        revealPose: 'pointdown',
         cta: c13.guess.cta,
         ctaTargetId: 'self-check-lab',
         resetButton: c13.guess.resetButton,
@@ -119,7 +117,6 @@ export default function BehindTheScenesChapter13() {
         id: m.id,
         icon: m.icon,
         statusTone: m.statusTone,
-        mentorPose: m.mentorPose,
         ...c13.guess.cards[m.id],
     }));
 

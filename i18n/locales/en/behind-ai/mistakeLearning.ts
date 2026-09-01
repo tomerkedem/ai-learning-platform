@@ -44,14 +44,6 @@ export const mistakeLearning = {
         chipCompare: 'Compare what improved with what did not',
     },
 
-    mentor: {
-        hero: 'Real improvement is a process, not magic',
-        labExplain: 'Where the improvement really happens',
-        misconception: 'A correction in a conversation is not training',
-        lock: 'Separate an improvement in a conversation from a change to the model',
-        practical: 'Correct in a way that can be acted on',
-    },
-
     primer: {
         eyebrow: 'A correction in a conversation is not always a change to the model',
         title: 'Before the lab: what does it mean to learn from a mistake?',

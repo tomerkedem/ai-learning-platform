@@ -10,7 +10,7 @@
 // שיכולת פירושה הרשאה. בקרה היא תכנון מקצועי, לא פחד.
 //
 // i18n-first: כל הטקסט הגלוי מגיע מ-t.behindAi.guardrails (6 שפות אמיתיות). המבנה
-// (אייקונים, גוונים, פוזות מנטור, מזהי אלמנטים) נשאר כאן. פרק 18 אינו הפרק האחרון
+// (אייקונים, גוונים, מזהי אלמנטים) נשאר כאן. פרק 18 אינו הפרק האחרון
 // בתוכנית (עוד מחכה 19 Full Trace), ולכן הוא מסתיים כפרק רגיל עם גשר מושגי לפרק 19,
 // בלי מעבר למבחן הסיום. מבחן הסיום יחזור אחרי פרק 19.
 // ────────────────────────────────────────────────────────────────────────
@@ -39,13 +39,13 @@ import { useT } from '@/i18n/useT';
 import type { GuardrailsQuizId } from '@/i18n/locales/he/behind-ai/guardrailsQuiz';
 
 // טקסט הכרטיסים מגיע מהמילון (t.behindAi.guardrails.guess.cards) לפי מזהה. כאן נשאר
-// רק המבנה: אייקון, גוון הסטטוס ופוזת המנטור, שאינם תלויי שפה. הכרטיס עם
+// רק המבנה: אייקון וגוון הסטטוס, שאינם תלויי שפה. הכרטיס עם
 // statusTone === 'precise' הוא הבחירה הנכונה (שליחה יכולה לדרוש אישור).
 const GUESS_CARD_META = [
-    { id: 'needsApproval', icon: ShieldCheck, statusTone: 'precise', mentorPose: 'correct' },
-    { id: 'canSend', icon: Send, statusTone: 'common', mentorPose: 'reassure' },
-    { id: 'alwaysAlone', icon: ShieldAlert, statusTone: 'layer', mentorPose: 'headsup' },
-    { id: 'neverTools', icon: Ban, statusTone: 'partial', mentorPose: 'think' },
+    { id: 'needsApproval', icon: ShieldCheck, statusTone: 'precise' },
+    { id: 'canSend', icon: Send, statusTone: 'common' },
+    { id: 'alwaysAlone', icon: ShieldAlert, statusTone: 'layer' },
+    { id: 'neverTools', icon: Ban, statusTone: 'partial' },
 ] as const;
 
 /* ════════════════ בדיקת הבנה: מה Agent טוב יעשה עם טיוטה מוכנה בלי אישור שליחה ════════════════ */
@@ -114,20 +114,18 @@ export default function BehindTheScenesChapter18() {
     const speechLocale = c18.contentLocale;
     const FlowArrow = isRtl ? ArrowLeft : ArrowRight;
 
-    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון/פוזה) מהמטא־דאטה.
+    // ניחוש הפתיחה: טקסט מהמילון, מבנה (אייקון/גוון) מהמטא־דאטה.
     const guessContent: OpeningGuessContent = {
         eyebrow: c18.guess.eyebrow,
         title: c18.guess.title,
         subtitle: c18.guess.subtitle,
         invite: c18.guess.invite,
-        invitePose: 'think',
         correctTitle: c18.guess.correctTitle,
         wrongTitle: c18.guess.wrongTitle,
         getsRightLabel: c18.guess.getsRightLabel,
         revealButton: c18.guess.revealButton,
         revealTitle: c18.guess.revealTitle,
         revealCopy: c18.guess.revealCopy,
-        revealPose: 'pointdown',
         cta: c18.guess.cta,
         ctaTargetId: 'guardrails-lab',
         resetButton: c18.guess.resetButton,
@@ -137,7 +135,6 @@ export default function BehindTheScenesChapter18() {
         id: m.id,
         icon: m.icon,
         statusTone: m.statusTone,
-        mentorPose: m.mentorPose,
         ...c18.guess.cards[m.id],
     }));
 

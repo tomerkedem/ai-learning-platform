@@ -30,14 +30,6 @@ export const selfCheck = {
         chipCompare: 'Compare a supported claim with an invented claim',
     },
 
-    mentor: {
-        hero: 'Check the draft before it goes out',
-        labExplain: 'Which claim here is really supported',
-        misconception: 'A check helps, it does not guarantee truth',
-        lock: 'Separate supported from invented',
-        practical: 'Ask for a check, not just an answer',
-    },
-
     // F3 RESPOND (M9): the chapter human response layer. The status stays
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {
