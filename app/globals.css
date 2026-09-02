@@ -209,45 +209,6 @@ html[data-locale="ar"] body {
   }
 }
 
-/* ───────────── Behind the Scenes of AI: מנטור-צד רספונסיבי ─────────────
-   מנטורי-הצד ממוקמים absolute בשוליים שמחוץ לעמודת התוכן ומוסתרים מתחת ל-xl
-   (hidden xl:block / 2xl:block), ולכן נעלמו לגמרי בטאבלט ובדסקטופ קטן. במקום לערוך
-   ~90 מופעים ב-19 פרקים, כלל ממורכז אחד מזהה כל עטיפת מנטור-צד - אלמנט עם המחלקה
-   hidden שהוא הורה ישיר של שורש מנטור ([data-mentor-root]) - וממקם אותה מחדש בתוך
-   הזרימה, ממורכזת מתחת למקטע, בקנה-מידה נזיל. מעל 2xl (רוחב גדול) הכלל אינו חל
-   ומיקום-הצד המקורי נשמר. הבחירה ב-max-width (ולא width) על השורש מכבדת את רוחב
-   האינליין ורק מקטינה אותו. :not(.left-1\/2) מחריג מנטור דקורטיבי ממורכז יחיד במבוא.
-   הכלל אינו בתוך @layer ולכן גובר על מחלקות Tailwind (שכבתיות) בלי !important.
-
-   הבורר מחייב .absolute וגם .xl\:block, כלומר בדיוק עטיפת מנטור-צד: ממוקמת absolute
-   ומוסתרת מתחת ל-xl. בלי שני התנאים האלה הוא תפס גם עטיפות שאינן מנטור-צד, ומכיוון
-   שהוא גובר על Tailwind הוא החזיר אותן לתצוגה מתחת ל-1536px. כך נחשפו בטלפון מנטורים
-   שהוסתרו בכוונה (עטיפות hidden sm:block בניחוש ובבדיקת ההבנה), ובפרק 5 הוצגו בו-זמנית
-   כל שש עטיפות ההירו המדורגות (hidden min-[Npx]:block) במקום אחת בכל שובר. */
-@media (max-width: 1535.98px) {
-  .bts-fluid .absolute.hidden.xl\:block:has(> [data-mentor-root]):not(.left-1\/2) {
-    position: static;
-    display: block;
-    /* Tailwind v4 ממקם היסטים דרך המאפיין translate (לא transform), אך Lightning CSS
-       מסלק את translate:none כשקיים transform:none. לכן מאפסים את משתני ה-translate של
-       Tailwind עצמם - את הביטוי translate: var(--tw-translate-x) var(--tw-translate-y)
-       שהיוטיליטי מחשב - וכך מבטלים -translate-x/-translate-y ו-translate-x-[%] של מיקום-הצד. */
-    --tw-translate-x: 0;
-    --tw-translate-y: 0;
-    transform: none;
-    inset: auto;
-    /* margin עליון מפנה מקום לבועת-הדיבור הצפה מעל ראש המנטור, כדי שלא תיגע בתוכן שמעל */
-    margin: clamp(3.5rem, 6vw, 5rem) auto 0;
-    width: fit-content;
-    max-width: 100%;
-    z-index: 0;
-  }
-  .bts-fluid .absolute.hidden.xl\:block:has(> [data-mentor-root]):not(.left-1\/2) > [data-mentor-root] {
-    max-width: min(17rem, 62vw);
-    margin-inline: auto;
-  }
-}
-
 @layer utilities {
   /* שמירה על ה-Scrollbar המקורי שלך ללא שינוי */
   .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
