@@ -19,26 +19,13 @@ export type MentorPose =
     | 'reassure'
     | 'explain'
     | 'explain-opposite'
-    | 'inputClarity'
     | 'token'
-    | 'tokenRibbon'
     | 'happy'
     | 'roadmap'
     | 'inspect'
-    | 'peek'
-    | 'pointdown'
     | 'chart'
     | 'code'
-    | 'type'
-    | 'guessThinking'
-    | 'correct'
-    | 'plausiblePaths'
-    | 'answerBuilder'
-    | 'holographic'
-    | 'holographicUi'
-    | 'mapNavigator'
-    | 'meaningSpace'
-    | 'presenter';
+    | 'type';
 
 const POSE_SRC: Record<MentorPose, string> = {
     hero: '/assets/mentor-hero.png',
@@ -50,44 +37,13 @@ const POSE_SRC: Record<MentorPose, string> = {
     reassure: '/assets/mentor-reassure.png',
     explain: '/assets/mentor-explain.png',
     'explain-opposite': '/assets/mentor-explain-opposite.png',
-    // פוזת פרק 2 (הירו): המנטור מציג שדה קלט זוהר, בהירות ותשומת לב לניסוח.
-    inputClarity: '/assets/mentor-input-clarity-alpha.png',
     token: '/assets/mentor-token.png',
-    // פוזת מעבדת הטוקנים של פרק 3: המנטור מסדר רצועת אריחי טוקנים צפים.
-    tokenRibbon: '/assets/mentor-token-ribbon-alpha.png',
     happy: '/assets/mentor-happy.png',
     roadmap: '/assets/mentor-roadmap.png',
     inspect: '/assets/mentor-inspect.png',
-    peek: '/assets/mentor-peek.png',
-    pointdown: '/assets/mentor-pointdown.png',
     chart: '/assets/mentor-chart.png',
     code: '/assets/mentor-code.png',
     type: '/assets/mentor-type.png',
-    // פוזה גלובלית לשימוש חוזר: מנטור מהורהר שמזמין לעצור ולחשוב לפני שבוחרים.
-    guessThinking: '/assets/mentor-thinking-refine-alpha.png',
-    // פוזת הצלחה לשימוש חוזר (תשובה נכונה). כרגע ממופה לנכס החגיגה הקיים.
-    correct: '/assets/mentor-celebrate.png',
-    // פוזת הירו של פרק 4 (הלב ההסתברותי): המנטור מציג כמה המשכים אפשריים ובוחר את
-    // הסביר ביותר. בשימוש בהירו של פרק 4 בלבד.
-    plausiblePaths: '/assets/mentor-plausible-paths-alpha.png',
-    // פוזת הירו של פרק 5 (איך AI בונה תשובה): המנטור בונה תשובה צעד אחר צעד מחלקים
-    // והקשר. בשימוש בהירו של פרק 5 בלבד.
-    answerBuilder: '/assets/mentor-answer-builder-alpha.png',
-    // פוזת פרק 1 (המעבדה השקופה): המנטור חושף מנוע AI הולוגרפי בין השאלה לתשובה.
-    // נכס landscape רחב, שונה מהפוזות הפורטרט. בשימוש בפרק 1 בלבד.
-    holographic: '/assets/mentor_holographic.png',
-    // פוזת הירו של פרק 5 (המרחב הסמנטי): המנטור מחזיק אשכולות מושגים הולוגרפיים
-    // ומצביע על קבוצות מילים קרובות במשמעות. נכס שקוף. בשימוש בהירו של פרק 5 בלבד.
-    holographicUi: '/assets/mentor-holographic.png',
-    // פוזת מבוא (מפת המנוע): המנטור מלווה את מפת התחנות מהטקסט עד התשובה ופותח אותה
-    // ללומד. נכס שקוף (ללא מסכה לבנה). בשימוש במבוא בלבד.
-    mapNavigator: '/assets/mentor_map_navigator.png',
-    // פוזת הירו של פרק 4 (Embeddings): המנטור מציג מרחב משמעות תלת-ממדי שאליו נכנס
-    // משפט והופך לנקודה זוהרת ליד נקודות קרובות ורחוקות. בשימוש בהירו של פרק 4 בלבד.
-    meaningSpace: '/assets/mentor-embeddings-meaning-space.png',
-    // פוזת מציג (presenter) של פרק 7: דמות גוף-מלא שמציגה את הרעיון לצד כרטיס הירו.
-    // נכס ייעודי לפרק. בשימוש בהירו של פרק 7 בלבד.
-    presenter: '/assets/mentor-presenter.png',
 };
 
 // נרמול גודל: פוזות "גוף מלא" (600px) מצולמות רחוק יותר מהבוסטים (~315px), ולכן הפנים
@@ -98,11 +54,9 @@ const POSE_SCALE: Partial<Record<MentorPose, number>> = {
     ready: 1.12,
     explain: 1.12,
     'explain-opposite': 1.12,
-    inputClarity: 1.12,
     token: 1.08,
     roadmap: 1.15,
     inspect: 1.12,
-    pointdown: 1.12,
 };
 
 // צבע ההדגשה (הילה, בועת-דיבור, drop-shadow). ברירת המחדל מעתיקה במדויק את גווני
@@ -142,7 +96,7 @@ export interface MentorProps {
     float?: boolean;
     /** צד בועת-הדיבור ביחס לדמות. */
     bubbleSide?: 'top' | 'bottom';
-    /** הזזה אופקית של הבועה (px) כשהראש אינו במרכז המסגרת (למשל פוזת presenter של גוף-מלא).
+    /** הזזה אופקית של הבועה (px) כשהראש אינו במרכז המסגרת (למשל פוזת גוף-מלא).
      *  חיובי = ימינה. ממורכז אוטומטית לפי flip, כך שהחץ נשאר מעל הראש בשני הכיוונים. ברירת מחדל 0. */
     bubbleShiftX?: number;
     /** הילת רקע רכה. ברירת מחדל true. */
