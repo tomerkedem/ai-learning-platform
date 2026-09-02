@@ -148,9 +148,6 @@ export const Mentor: React.FC<MentorProps> = ({
 
     return (
         <motion.div
-            // data-mentor-root: וו יציב שמאפשר לכלל ה-CSS הממורכז (globals.css) לזהות עטיפות
-            // מנטור-צד (הורה ישיר של שורש זה) ולמקם אותן מחדש בזרימה בטאבלט/דסקטופ קטן, במקום
-            // שייעלמו. אינו משנה עיצוב בפני עצמו.
             data-mentor-root
             initial={reduce ? false : { opacity: 0, y: 12, scale: 0.92 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
