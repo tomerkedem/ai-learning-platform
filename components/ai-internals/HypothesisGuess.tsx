@@ -77,14 +77,17 @@ function CueIllustration({ cue }: { cue: HypothesisCue }) {
 
 type CardState = 'idle' | 'correct' | 'wrong' | 'revealed' | 'dim';
 
+// אחרי הבחירה, כרטיס-הבחירה מוסר את ההילה הרחבה ונשאר עם מסגרת ורקע בלבד. הסיבה:
+// אחרי שהתוצאה מופיעה, פאנל ההסבר הוא משטח הקריאה הראשי, ושני משטחים מוארים במקביל
+// חילקו את המבט. ההבחנה הסמנטית בין נכון (תכלת) לשגוי (ענבר) נשמרת במלואה.
 function stateClasses(state: CardState, reduce: boolean): string {
     switch (state) {
         case 'correct':
-            return `border-cyan-400/70 bg-cyan-900/25 ${reduce ? '' : 'shadow-[0_0_40px_-10px_rgba(34,211,238,0.6)]'}`;
+            return `border-cyan-400/60 bg-cyan-900/20 ${reduce ? '' : 'shadow-[0_0_20px_-14px_rgba(34,211,238,0.5)]'}`;
         case 'wrong':
-            return 'border-amber-400/50 bg-amber-900/15';
+            return 'border-amber-400/45 bg-amber-900/12';
         case 'revealed':
-            return 'border-cyan-400/60 bg-cyan-900/15';
+            return 'border-cyan-400/45 bg-cyan-900/12';
         case 'dim':
             return 'border-white/5 bg-slate-900/40 opacity-60';
         default:

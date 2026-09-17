@@ -334,7 +334,9 @@ export default function BehindTheScenesIntroPage() {
           {/* ══════════ 5 · CHAT vs AGENT TEASER ══════════ */}
           <section className="mt-20">
             <div className="mx-auto mb-7 max-w-3xl text-center">
-              <div className="mx-auto mb-4 h-px w-20 bg-gradient-to-r from-cyan-400/70 via-slate-500/30 to-purple-400/70" />
+              {/* מפריד דק לפני מקטע ה-Agent. הגרדיאנט הצבעוני ירד: המרווח כבר מפריד,
+                  והצבע כאן לא נשא משמעות. נשאר קו סלייט שקט. */}
+              <div className="mx-auto mb-4 h-px w-20 bg-gradient-to-r from-transparent via-slate-600/50 to-transparent" />
               <p className="text-lg font-bold leading-relaxed tracking-tight text-slate-100 md:text-2xl">{intro.agent.intro}</p>
             </div>
             <ExpandableLab title={agentCard.title}>
@@ -356,7 +358,7 @@ export default function BehindTheScenesIntroPage() {
             transition={{ duration: 0.5 }}
             className="mt-20 relative overflow-hidden rounded-[2.5rem] border border-cyan-500/30 bg-gradient-to-br from-slate-900 to-slate-900/60 p-10 md:p-14 text-center shadow-2xl"
           >
-            <div className="absolute -top-20 right-1/2 translate-x-1/2 w-80 h-40 bg-cyan-500/15 blur-[80px] rounded-full pointer-events-none" />
+            <div className="absolute -top-20 right-1/2 translate-x-1/2 w-80 h-40 bg-cyan-500/8 blur-[80px] rounded-full pointer-events-none" />
             <span className="relative text-cyan-400 text-[11px] font-bold uppercase tracking-[0.25em] block mb-3">
               {intro.cta.eyebrow}
             </span>
@@ -372,7 +374,9 @@ export default function BehindTheScenesIntroPage() {
             </p>
             <Link
               href={CTA_HREF}
-              className="relative inline-flex items-center gap-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-4 px-10 rounded-2xl transition-all shadow-[0_8px_30px_-6px_rgba(34,211,238,0.6)] hover:shadow-[0_8px_40px_-4px_rgba(34,211,238,0.8)] active:scale-95 no-underline text-lg"
+              // ה-CTA נשאר הדבר הבולט בסוף המסך. ההילה הורדה לרמת "כפתור מוצק עם עומק"
+              // במקום מקור אור, והריחוף נשאר האות החזק יותר.
+              className="relative inline-flex items-center gap-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-4 px-10 rounded-2xl transition-all shadow-[0_6px_20px_-8px_rgba(34,211,238,0.5)] hover:shadow-[0_8px_28px_-8px_rgba(34,211,238,0.7)] active:scale-95 no-underline text-lg"
             >
               {intro.cta.button}
               {isRtl ? <ChevronLeft size={22} /> : <ChevronRight size={22} />}

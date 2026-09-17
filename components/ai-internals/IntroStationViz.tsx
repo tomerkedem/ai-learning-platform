@@ -24,6 +24,7 @@
 // רצפים מתוזמנים, והאינטראקציות ממשיכות לעבוד בלי תנועה.
 
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
     ArrowLeft, ArrowRight, ArrowRightLeft, CornerDownLeft, Pause, Play, Plus,
@@ -158,12 +159,29 @@ interface VizProps {
     silent: boolean;
     viz: IntroViz;
     dir: Direction;
+    // Focus Stage (אב-טיפוס לתחנה 1 במבוא בלבד). כבוי כברירת מחדל; רק RequestViz מגיב לו.
+    focus?: boolean;
 }
+
+// Focus Stage: StationViz מספק כאן אלמנט-יעד, והכיתוב מרונדר אליו (portal) מתחת לפריסת
+// הקריאה + המכשיר. undefined = ברירת המחדל (כיתוב במקומו). null = היעד עוד לא קיים.
+const FocusCaptionSlot = React.createContext<HTMLElement | null | undefined>(undefined);
 
 function Caption({ children }: { children: React.ReactNode }) {
     // שורת התובנה של הסצנה, עם הקראה נקודתית שלה. הטקסט תמיד מגיע כמחרוזת מהמילון
     // (כולל כיתובים דינמיים), אז ההקראה תמיד תואמת את מה שמוצג כרגע.
     const text = typeof children === 'string' ? children : undefined;
+    const slot = React.useContext(FocusCaptionSlot);
+    if (slot !== undefined) {
+        // כיתוב אחד בלבד: עד שהיעד קיים לא מרונדר דבר, ואז הוא עובר לשם כמשפט הסיכום.
+        return slot && createPortal(
+            <div className="flex items-start gap-3">
+                <p className="flex-1 text-[15px] font-medium leading-relaxed text-slate-100">{children}</p>
+                {text && <SpeakButton text={text} className="shrink-0" />}
+            </div>,
+            slot,
+        );
+    }
     return (
         <div className="mt-3 flex items-start gap-2">
             <p className="flex-1 text-[13px] leading-relaxed text-slate-400">{children}</p>
@@ -241,8 +259,9 @@ export function haptic(ms = 8) {
 }
 
 // כפתור פעולה קטן ואחיד לסצנות (מגע נוח גם בטלפון).
-function VizButton({ onClick, active, disabled, children, a }: {
-    onClick: () => void; active?: boolean; disabled?: boolean; children: React.ReactNode; a: AccentStyle;
+// focus (Focus Stage בלבד): מקטע ניטרלי בקבוצה, עם פס-בחירה דק בגוון התחנה במקום מילוי מלא.
+function VizButton({ onClick, active, disabled, children, a, focus }: {
+    onClick: () => void; active?: boolean; disabled?: boolean; children: React.ReactNode; a: AccentStyle; focus?: boolean;
 }) {
     return (
         <button
@@ -250,12 +269,18 @@ function VizButton({ onClick, active, disabled, children, a }: {
             onClick={() => { haptic(); onClick(); }}
             disabled={disabled}
             aria-pressed={active}
-            className={`inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active
+            className={focus
+                ? `relative inline-flex min-h-[44px] flex-1 items-center justify-center rounded-lg px-3 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active
+                    ? 'bg-slate-700/70 text-white'
+                    : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
+                    } ${disabled ? 'opacity-40' : ''}`
+                : `inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active
                 ? `${a.border} ${a.solid} ${a.solidText}`
                 : `${a.border} bg-slate-950/50 ${a.text} hover:bg-white/[0.04]`
                 } ${disabled ? 'opacity-40' : ''}`}
         >
             {children}
+            {focus && active && <span className={`absolute inset-x-5 bottom-1 h-0.5 rounded-full opacity-70 ${a.solid}`} aria-hidden />}
         </button>
     );
 }
@@ -265,7 +290,7 @@ function VizButton({ onClick, active, disabled, children, a }: {
 // רוחבי מקטעי הרצף (הוראות / היסטוריה / הבקשה), באחוזים. להמחשה בלבד.
 const REQ_SEGMENTS = [42, 33, 25];
 
-function RequestViz({ a, reduce, silent, viz, dir }: VizProps) {
+function RequestViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
     const v = viz.request;
     const [view, setView] = useState<'you' | 'model'>(reduce ? 'model' : 'you');
     const touched = useRef(false);
@@ -279,14 +304,106 @@ function RequestViz({ a, reduce, silent, viz, dir }: VizProps) {
 
     const pick = (next: 'you' | 'model') => { touched.current = true; sound.tick(1); setView(next); };
 
+    // Focus Stage בלבד: מיקום משותף בתא אחד של grid, כדי ששתי התצוגות וה"ממדד" יחלקו גובה.
+    const cell = focus ? 'col-start-1 row-start-1 ' : '';
+
+    // תצוגת "מה שהמודל מקבל". מוגדרת פעם אחת כי ב-Focus Stage היא מרונדרת גם כממדד
+    // שקוף (ראו למטה). ברירת המחדל מרנדרת בדיוק את אותו פלט כמו קודם.
+    const modelView = (
+        <motion.div
+            key="model"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduce ? 0 : 0.25 }}
+            className={`${cell}flex flex-col gap-1.5`}
+        >
+            {/* השכבות הסמויות נערמות מעל ההודעה הגלויה. לכל שכבה צבע משלה,
+                ואותם צבעים בדיוק חוזרים ברצועה למטה: הרצועה היא שלוש השכבות.
+                ב-Focus Stage אלה שורות בתוך מכשיר אחד: בלי משטח ומסגרת לכל שורה, קו מפריד דק,
+                והקטגוריה נשמרת בנקודה ובסימן-קצה דק ומעומעם. */}
+            {([
+                ['system', v.systemLabel, v.systemText, 'border-violet-500/40 bg-violet-900/20 text-violet-100', 'bg-violet-400'],
+                ['history', v.historyLabel, v.historyText, 'border-amber-500/40 bg-amber-900/15 text-amber-100', 'bg-amber-400'],
+                ['user', v.userLabel, v.userText, `${a.border} ${a.bgSoft} text-white`, ''],
+            ] as const).map(([key, label, text, cls, dotCls], i) => (
+                <motion.div
+                    key={key}
+                    initial={reduce ? false : { opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={reduce ? { duration: 0 } : { duration: 0.3, delay: i * 0.22 }}
+                    className={focus
+                        ? `relative overflow-hidden border border-transparent py-2 pe-3 ps-4 text-slate-100 ${i > 0 ? 'border-t-slate-700/50' : ''}`
+                        : `rounded-xl border px-3 py-2 ${cls}`}
+                >
+                    {focus && <span className={`absolute inset-y-2 start-0 w-0.5 rounded-full opacity-50 ${key === 'user' ? a.dot : dotCls}`} aria-hidden />}
+                    <span className={focus
+                        ? 'flex items-center gap-1.5 text-xs font-black uppercase tracking-wide text-slate-300'
+                        : 'flex items-center gap-1.5 text-xs font-black uppercase tracking-wide opacity-80'}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${key === 'user' ? a.dot : dotCls}`} aria-hidden />
+                        {label}
+                    </span>
+                    <span className="mt-0.5 block text-sm leading-relaxed">{text}</span>
+                </motion.div>
+            ))}
+
+            {/* הפאנץ׳: שלוש השכבות נדחסות לרצועה אחת. החץ פועם מטה כדי
+                לרמז על הזרימה, והרצועה "נתפסת" ב-snap עם סריקת-אור. */}
+            <motion.div
+                initial={reduce ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={reduce ? { duration: 0 } : { duration: 0.3, delay: 0.8 }}
+                className="mt-1.5"
+            >
+                <span className={`mb-1 flex items-center gap-1 text-sm font-bold ${focus ? 'text-slate-300' : a.text}`}>
+                    <motion.span
+                        aria-hidden
+                        animate={reduce ? undefined : { y: [0, 3, 0] }}
+                        transition={reduce ? undefined : { duration: 0.9, delay: 0.85, repeat: 2, ease: 'easeInOut' }}
+                        className="inline-flex"
+                    >
+                        <CornerDownLeft size={13} aria-hidden />
+                    </motion.span>
+                    {v.stripLabel}
+                </span>
+                <div className={focus ? 'relative flex h-2.5 w-full gap-0.5 overflow-hidden rounded-full' : 'relative flex h-3 w-full overflow-hidden rounded-full'} dir={dir}>
+                    {REQ_SEGMENTS.map((w, i) => (
+                        <motion.span
+                            key={i}
+                            initial={reduce ? false : { scaleX: 0 }}
+                            animate={{ scaleX: 1 }}
+                            style={{ width: `${w}%`, originX: dir === 'rtl' ? 1 : 0 }}
+                            transition={reduce ? { duration: 0 } : { delay: 0.9 + i * 0.18, type: 'spring', stiffness: 300, damping: 16 }}
+                            className={`${i === 0 ? 'bg-violet-500' : i === 1 ? 'bg-amber-500' : a.solid}${focus ? ' opacity-70' : ''}`}
+                        />
+                    ))}
+                    {/* סריקת-אור חד-פעמית שעוברת על הרצועה כשהיא מתגבשת. דקורטיבית בלבד,
+                        ולכן לא מוצגת ב-Focus Stage. */}
+                    {!reduce && !focus && (
+                        <motion.span
+                            aria-hidden
+                            className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent"
+                            initial={{ left: '-33%', opacity: 0 }}
+                            animate={{ left: ['-33%', '100%'], opacity: [0, 1, 0] }}
+                            transition={{ duration: 0.6, delay: 1.5, ease: 'easeInOut' }}
+                        />
+                    )}
+                </div>
+            </motion.div>
+        </motion.div>
+    );
+
     return (
         <div dir={dir}>
-            <div className="mb-3 flex flex-wrap gap-1.5">
-                <VizButton a={a} active={view === 'you'} onClick={() => pick('you')}>{v.youTab}</VizButton>
-                <VizButton a={a} active={view === 'model'} onClick={() => pick('model')}>{v.modelTab}</VizButton>
+            <div className={focus ? 'mb-3 flex gap-1 rounded-xl border border-slate-700/70 bg-slate-900/40 p-1' : 'mb-3 flex flex-wrap gap-1.5'}>
+                <VizButton a={a} focus={focus} active={view === 'you'} onClick={() => pick('you')}>{v.youTab}</VizButton>
+                <VizButton a={a} focus={focus} active={view === 'model'} onClick={() => pick('model')}>{v.modelTab}</VizButton>
             </div>
 
-            <div className="min-h-[150px]">
+            <div className={focus ? 'grid' : 'min-h-[150px]'}>
+                {/* Focus Stage: ממדד שקוף של תצוגת המודל באותו תא, כך שהגובה הסופי שמור מהרינדור
+                    הראשון והחשיפה אחרי 1.7 שניות לא מגדילה את התחנה. לא נראה ולא נקרא. */}
+                {focus && <div aria-hidden className="invisible col-start-1 row-start-1">{modelView}</div>}
                 <AnimatePresence mode="wait" initial={false}>
                     {view === 'you' ? (
                         <motion.div
@@ -295,95 +412,23 @@ function RequestViz({ a, reduce, silent, viz, dir }: VizProps) {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: reduce ? 0 : 0.3 }}
-                            className="flex justify-end pt-4"
+                            className={`${cell}${focus ? 'self-center ' : ''}flex justify-end pt-4`}
                         >
                             <div className="max-w-[85%]">
-                                <span className={`mb-1 block text-end text-xs font-bold ${a.softText}`}>{v.userLabel}</span>
+                                <span className={`mb-1 block text-end text-xs font-bold ${focus ? 'text-slate-300' : a.softText}`}>{v.userLabel}</span>
                                 <motion.div
                                     initial={reduce ? false : { scale: 0.9, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 22, delay: 0.15 }}
-                                    className={`rounded-2xl ${a.solid} ${a.solidText} px-4 py-2.5 text-sm font-bold`}
+                                    className={focus
+                                        ? 'rounded-2xl border border-slate-600/60 bg-slate-800 px-4 py-2.5 text-sm font-bold text-slate-50'
+                                        : `rounded-2xl ${a.solid} ${a.solidText} px-4 py-2.5 text-sm font-bold`}
                                 >
                                     {v.userText}
                                 </motion.div>
                             </div>
                         </motion.div>
-                    ) : (
-                        <motion.div
-                            key="model"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: reduce ? 0 : 0.25 }}
-                            className="flex flex-col gap-1.5"
-                        >
-                            {/* השכבות הסמויות נערמות מעל ההודעה הגלויה. לכל שכבה צבע משלה,
-                                ואותם צבעים בדיוק חוזרים ברצועה למטה: הרצועה היא שלוש השכבות. */}
-                            {([
-                                ['system', v.systemLabel, v.systemText, 'border-violet-500/40 bg-violet-900/20 text-violet-100', 'bg-violet-400'],
-                                ['history', v.historyLabel, v.historyText, 'border-amber-500/40 bg-amber-900/15 text-amber-100', 'bg-amber-400'],
-                                ['user', v.userLabel, v.userText, `${a.border} ${a.bgSoft} text-white`, ''],
-                            ] as const).map(([key, label, text, cls, dotCls], i) => (
-                                <motion.div
-                                    key={key}
-                                    initial={reduce ? false : { opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={reduce ? { duration: 0 } : { duration: 0.3, delay: i * 0.22 }}
-                                    className={`rounded-xl border px-3 py-2 ${cls}`}
-                                >
-                                    <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wide opacity-80">
-                                        <span className={`h-1.5 w-1.5 rounded-full ${key === 'user' ? a.dot : dotCls}`} aria-hidden />
-                                        {label}
-                                    </span>
-                                    <span className="mt-0.5 block text-sm leading-relaxed">{text}</span>
-                                </motion.div>
-                            ))}
-
-                            {/* הפאנץ׳: שלוש השכבות נדחסות לרצועה אחת. החץ פועם מטה כדי
-                                לרמז על הזרימה, והרצועה "נתפסת" ב-snap עם סריקת-אור. */}
-                            <motion.div
-                                initial={reduce ? false : { opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={reduce ? { duration: 0 } : { duration: 0.3, delay: 0.8 }}
-                                className="mt-1.5"
-                            >
-                                <span className={`mb-1 flex items-center gap-1 text-sm font-bold ${a.text}`}>
-                                    <motion.span
-                                        aria-hidden
-                                        animate={reduce ? undefined : { y: [0, 3, 0] }}
-                                        transition={reduce ? undefined : { duration: 0.9, delay: 0.85, repeat: 2, ease: 'easeInOut' }}
-                                        className="inline-flex"
-                                    >
-                                        <CornerDownLeft size={13} aria-hidden />
-                                    </motion.span>
-                                    {v.stripLabel}
-                                </span>
-                                <div className="relative flex h-3 w-full overflow-hidden rounded-full" dir={dir}>
-                                    {REQ_SEGMENTS.map((w, i) => (
-                                        <motion.span
-                                            key={i}
-                                            initial={reduce ? false : { scaleX: 0 }}
-                                            animate={{ scaleX: 1 }}
-                                            style={{ width: `${w}%`, originX: dir === 'rtl' ? 1 : 0 }}
-                                            transition={reduce ? { duration: 0 } : { delay: 0.9 + i * 0.18, type: 'spring', stiffness: 300, damping: 16 }}
-                                            className={i === 0 ? 'bg-violet-500' : i === 1 ? 'bg-amber-500' : a.solid}
-                                        />
-                                    ))}
-                                    {/* סריקת-אור חד-פעמית שעוברת על הרצועה כשהיא מתגבשת */}
-                                    {!reduce && (
-                                        <motion.span
-                                            aria-hidden
-                                            className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent"
-                                            initial={{ left: '-33%', opacity: 0 }}
-                                            animate={{ left: ['-33%', '100%'], opacity: [0, 1, 0] }}
-                                            transition={{ duration: 0.6, delay: 1.5, ease: 'easeInOut' }}
-                                        />
-                                    )}
-                                </div>
-                            </motion.div>
-                        </motion.div>
-                    )}
+                    ) : modelView}
                 </AnimatePresence>
             </div>
             <Caption>{v.caption}</Caption>
@@ -1836,7 +1881,11 @@ export const VizSoundToggle: React.FC = () => {
     );
 };
 
-export const StationViz: React.FC<{ kind: StationVizKind; a: AccentStyle; reduce: boolean }> = ({ kind, a, reduce }) => {
+/**
+ * focusStage: אב-טיפוס Focus Stage לתחנה 1 במבוא בלבד (כבוי כברירת מחדל). המכשיר מקבל משטח
+ * שקוע ניטרלי, הסצנה שומרת את הגובה הסופי שלה, והכיתוב מרונדר אל captionSlot של ההורה.
+ */
+export const StationViz: React.FC<{ kind: StationVizKind; a: AccentStyle; reduce: boolean; focusStage?: { captionSlot: HTMLElement | null } }> = ({ kind, a, reduce, focusStage }) => {
     const { t, dir } = useT();
     const viz = t.behindAi.introVisuals.viz;
     // key=runId: כל עלייה טוענת את הסצנה מחדש (ידנית או מלולאת התצוגה).
@@ -1858,7 +1907,7 @@ export const StationViz: React.FC<{ kind: StationVizKind; a: AccentStyle; reduce
     const stopLoop = () => setLooping(false);
     const Cmp = VIZ_MAP[kind];
     return (
-        <div className="mt-3 rounded-xl border border-white/5 bg-slate-950/40 p-3.5" dir={dir}>
+        <div className={focusStage ? 'rounded-2xl border border-slate-700/50 bg-slate-950/60 p-3.5 md:p-4' : 'mt-3 rounded-xl border border-white/5 bg-slate-950/40 p-3.5'} dir={dir}>
             <div className="mb-1.5 flex justify-end">
                 <button
                     type="button"
@@ -1870,7 +1919,9 @@ export const StationViz: React.FC<{ kind: StationVizKind; a: AccentStyle; reduce
                 </button>
             </div>
             <div key={runId} onPointerDownCapture={stopLoop} onKeyDownCapture={stopLoop}>
-                <Cmp a={a} reduce={reduce} viz={viz} dir={dir} silent={autoReplay} />
+                <FocusCaptionSlot.Provider value={focusStage ? focusStage.captionSlot : undefined}>
+                    <Cmp a={a} reduce={reduce} viz={viz} dir={dir} silent={autoReplay} focus={!!focusStage} />
+                </FocusCaptionSlot.Provider>
             </div>
         </div>
     );

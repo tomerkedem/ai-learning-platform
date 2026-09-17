@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { ACCENTS, type AccentStyle } from './accents';
 import type { Accent } from './types';
-import { StationViz, STATION_PALETTE, haptic } from './IntroStationViz';
+import { StationViz, STATION_PALETTE, STATION_RGB, haptic } from './IntroStationViz';
 import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
 import { useT } from '@/i18n/useT';
@@ -65,6 +65,28 @@ const STATION_ICON: Record<string, React.ReactNode> = {
     loop: <Repeat size={18} />,
 };
 
+/* ── טיפול הצבע של כרטיס התחנה (נורמליזציה ויזואלית) ──────────────────────────
+   צבע הזהות של התחנה נשאר, אבל הוא כבר לא צובע את כל הכרטיס. כרטיס סגור יושב על
+   משטח סלייט ניטרלי, והזהות נשמרת בסימנים מעטים: פס-השדרה, המספר, האייקון והמסגרת
+   כשהכרטיס פתוח. כך "מודגש" הופך למצב, לא לברירת המחדל של כל 14 התחנות.
+
+   ה-RGB מגיע מ-STATION_RGB (ייבוא קריאה-בלבד; הפלטה עצמה לא משתנה, כדי שפרק 1
+   שצורך את STATION_PALETTE יישאר זהה). STATION_INK מחזיק רק את שני הגוונים שנמדדו
+   מתחת ל-4.5:1 גם על המשטח המנוטרל, בבהירות מעט גבוהה יותר ובאותו גוון. */
+// הערכים נפתרו מול המשטח *הפתוח* (הבהיר מבין השניים), כדי שיעברו את הסף גם כשהתחנה
+// פתוחה וגם כשהיא סגורה.
+const STATION_INK: Record<string, string> = {
+    position: '169 88 255',  // מקור #a24bff - 4.59:1 ומעלה
+    decoding: '132 107 255', // מקור #6c4dff - 4.57:1 ומעלה
+};
+const inkOf = (id: string) => STATION_INK[id] ?? STATION_RGB[id] ?? '148 163 184';
+
+/* ── Focus Stage: אב-טיפוס לתחנה 1 בלבד ─────────────────────────────────────────
+   תחנה פתוחה היא יחידת הלמידה הנוכחית, לא אקורדיון צבעוני. רק התחנה הזו מקבלת את
+   הפריסה (צד קריאה + מכשיר, והכיתוב הקיים מתחתיהם), את המשטח הניטרלי ואת המיקום
+   בחלון בפתיחה מפורשת. תחנות 2-14 נשארות כפי שהן עד לאישור העיצוב. */
+const FOCUS_STAGE_STATION_ID = 'request';
+
 /* ── כרטיס תחנה בודד (disclosure) ── */
 // open/onToggle מנוהלים מרמת המפה (אקורדיון מונחה-גלילה, אחד פתוח בכל רגע).
 // registerRef רושם את שורש הכרטיס אצל ה-IntersectionObserver של המפה.
@@ -75,6 +97,12 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
     const isLoop = station.id === 'loop';
     const setRef = useCallback((el: HTMLDivElement | null) => registerRef(station.id, el), [registerRef, station.id]);
     const instant = reduce || snap;
+    const rgb = STATION_RGB[station.id] ?? '148 163 184';
+    const ink = inkOf(station.id);
+    const focusStation = station.id === FOCUS_STAGE_STATION_ID;
+    const stage = open && focusStation;
+    // יעד הכיתוב של Focus Stage (StationViz מרנדר אליו את הכיתוב הקיים, פעם אחת).
+    const [captionSlot, setCaptionSlot] = useState<HTMLDivElement | null>(null);
 
     return (
         <div
@@ -82,19 +110,38 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
             data-station-id={station.id}
             // עוגן הגלילה במצב הדגמה: התחנה נוחתת מתחת לכותרת הקבועה (--bts-sticky-top,
             // גובה הכותרת שנמדד ב-ChapterLayout) בתוספת מרווח נשימה, כדי שלא תיפתח גבוה מדי.
-            style={{ scrollMarginTop: 'calc(var(--bts-sticky-top, 6rem) + 1.75rem)' }}
-            className={`relative overflow-hidden rounded-2xl border ${a.border} ${a.bgSoft} transition-shadow duration-500 ${open ? a.glow : candidate ? `ring-1 ${a.ringSoft}` : ''}`}
+            //
+            // הצבע: סגור = משטח סלייט ניטרלי; מועמד = רמז מסגרת עדין בגוון התחנה; פתוח =
+            // מסגרת בגוון מלא + גוון-רקע דק מאוד + הילה מרוסנת. הזוהר הרחב הקודם (a.glow)
+            // ירד: הוא סימן "פעיל" גם כשהכרטיס רק ישב במקומו.
+            //
+            // Focus Stage (תחנה 1 פתוחה): משטח סלייט ניטרלי, מסגרת ניטרלית ועומק שקט במקום
+            // הילה. במובייל הכרטיס מתרחב אל ריפוד האזור בצד ההתחלה בלבד, כדי לפנות רוחב קריאה
+            // בלי להיכנס מתחת למסילת-הקצה הצפה שיושבת בצד הסוף.
+            style={{
+                scrollMarginTop: 'calc(var(--bts-sticky-top, 6rem) + 1.75rem)',
+                borderColor: stage ? 'rgba(71 85 105 / 0.55)' : open ? `rgba(${rgb} / 0.45)` : candidate ? `rgba(${rgb} / 0.3)` : 'rgba(51 65 85 / 0.5)',
+                backgroundColor: stage ? 'rgba(15 23 42 / 0.92)' : open ? `rgba(${rgb} / 0.05)` : 'rgba(15 23 42 / 0.4)',
+                boxShadow: stage ? '0 24px 48px -32px rgba(2 6 23 / 0.9)' : open ? `0 0 28px -16px rgba(${rgb} / 0.55)` : 'none',
+            }}
+            className={stage
+                ? 'relative overflow-hidden rounded-2xl border transition-shadow duration-500 max-md:-ms-5 max-md:rounded-s-none max-md:border-s-0'
+                : 'relative overflow-hidden rounded-2xl border transition-shadow duration-500'}
         >
             {/* פס-שדרה צבעוני בקצה-ההתחלה: "נטען" עמום כשהכרטיס מכוון בגלילה (candidate),
-                ונדלק במלואו כשהוא נפתח - כך רואים אילו כרטיס עומד להיפתח. */}
-            <motion.span
-                aria-hidden
-                className={`pointer-events-none absolute inset-y-0 start-0 w-1 ${a.solid}`}
-                initial={false}
-                animate={{ scaleY: open ? 1 : candidate ? 0.5 : 0, opacity: open ? 1 : candidate ? 0.45 : 0 }}
-                transition={reduce ? { duration: 0 } : { duration: 0.35, ease: 'easeOut' }}
-                style={{ originY: 0 }}
-            />
+                ונדלק במלואו כשהוא נפתח - כך רואים אילו כרטיס עומד להיפתח.
+                תחנה 1 (Focus Stage) לא מרנדרת אותו כלל: אם העיצוב היה תלוי ב-open, הסגירה
+                הייתה מחזירה את הפס המלא בזמן שאנימציית היציאה שלו עוד רצה. */}
+            {!focusStation && (
+                <motion.span
+                    aria-hidden
+                    className={`pointer-events-none absolute inset-y-0 start-0 w-1 ${a.solid}`}
+                    initial={false}
+                    animate={{ scaleY: open ? 1 : candidate ? 0.5 : 0, opacity: open ? 1 : candidate ? 0.45 : 0 }}
+                    transition={reduce ? { duration: 0 } : { duration: 0.35, ease: 'easeOut' }}
+                    style={{ originY: 0 }}
+                />
+            )}
             <button
                 type="button"
                 onClick={onToggle}
@@ -102,27 +149,34 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                 aria-controls={panelId}
                 className="flex w-full items-start gap-3.5 p-3.5 text-start transition-colors hover:bg-white/[0.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-900 md:p-4"
             >
-                {/* תג מספר רץ */}
+                {/* תג מספר רץ. עד כאן היה מילוי רווי בגוון התחנה עם טקסט לבן, שנמדד
+                    ב-3.19:1 עד 3.61:1 בגוונים הבהירים. עכשיו: משטח כהה ניטרלי, המספר
+                    עצמו בגוון התחנה (שם נשארת הזהות), וטבעת פנימית דקה במקום המילוי. */}
                 <motion.span
-                    animate={open && !reduce ? { scale: [1, 1.12, 1] } : { scale: 1 }}
+                    animate={open && !reduce && !stage ? { scale: [1, 1.12, 1] } : { scale: 1 }}
                     transition={reduce ? { duration: 0 } : { duration: 0.4, ease: 'easeOut' }}
-                    className={`relative mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${a.solid} ${a.solidText}`}
+                    className="relative mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                    style={{
+                        backgroundColor: 'rgba(2 6 23 / 0.7)',
+                        color: `rgb(${ink})`,
+                        boxShadow: `inset 0 0 0 1px rgba(${rgb} / ${stage ? 0.4 : open ? 0.55 : 0.35})`,
+                    }}
                     dir="ltr"
                 >
                     {n}
                 </motion.span>
 
-                {/* אייקון */}
-                <span className={`mt-1 shrink-0 ${a.text}`} aria-hidden>
+                {/* אייקון: נשאר בגוון הזהות המלא (גרפיקה, לא טקסט) */}
+                <span className="mt-1 shrink-0" style={{ color: stage ? `rgba(${rgb} / 0.8)` : `rgb(${rgb})` }} aria-hidden>
                     {STATION_ICON[station.id]}
                 </span>
 
                 {/* טקסט */}
                 <span className="min-w-0 flex-1">
                     <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <span className="text-base font-bold leading-tight text-white">{station.title}</span>
+                        <span className={stage ? 'text-lg font-bold leading-tight text-white md:text-xl' : 'text-base font-bold leading-tight text-white'}>{station.title}</span>
                         {isLoop && (
-                            <span className={`inline-flex items-center gap-1 text-xs font-bold ${a.text}`}>
+                            <span className="inline-flex items-center gap-1 text-xs font-bold" style={{ color: `rgb(${ink})` }}>
                                 <CornerDownLeft size={13} aria-hidden />
                                 {roadmapLabels.loopBadge}
                             </span>
@@ -132,12 +186,21 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
 
                 {/* מחוון פתיחה: רמז ברור שאפשר להציץ פנימה */}
                 <span className="mt-0.5 flex shrink-0 items-center gap-1.5">
-                    {!open && <span className={`hidden text-xs font-bold sm:inline ${a.text}`}>{roadmapLabels.peek}</span>}
+                    {!open && <span className="hidden text-xs font-bold sm:inline" style={{ color: `rgb(${ink})` }}>{roadmapLabels.peek}</span>}
                     <motion.span
                         aria-hidden
                         animate={{ rotate: open ? 180 : 0 }}
                         transition={reduce ? { duration: 0 } : { duration: 0.25 }}
-                        className={`flex h-6 w-6 items-center justify-center rounded-full border ${a.border} ${open ? `${a.text} ${a.bgSoft}` : `${a.text} bg-slate-950/40`}`}
+                        className="flex h-6 w-6 items-center justify-center rounded-full border"
+                        style={stage ? {
+                            borderColor: 'rgba(100 116 139 / 0.5)',
+                            backgroundColor: 'transparent',
+                            color: 'rgb(203 213 225)',
+                        } : {
+                            borderColor: `rgba(${rgb} / ${open ? 0.45 : 0.28})`,
+                            backgroundColor: open ? `rgba(${rgb} / 0.08)` : 'rgba(2 6 23 / 0.4)',
+                            color: `rgb(${ink})`,
+                        }}
                     >
                         <ChevronDown size={15} />
                     </motion.span>
@@ -156,33 +219,66 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                         transition={instant ? { duration: 0 } : { duration: 0.3, ease: 'easeOut' }}
                         className="overflow-hidden"
                     >
-                        <div className={`border-t ${a.border} px-3.5 pb-4 pt-3 md:px-4`}>
-                            {/* מהות התחנה בקול: הקראת הכותרת, ההסבר ורמז התחנה הפתוחה.
-                                עד M12 הרמז הוצג כטקסט רק מתחת ל-xl, כי מעל זה הוא ישב בבועת
-                                מנטור-הצד. הבועה ירדה יחד עם הפורטרט, ולכן הרמז הוא עכשיו הטקסט
-                                היחיד שנושא אותו, והוא גלוי בכל רוחב מסך כשורה משלו מעל פרטי התחנה. */}
-                            {hint && <p className={`mb-2.5 text-sm font-bold leading-relaxed ${a.text}`}>{hint}</p>}
-                            <div className="mb-2.5 flex items-start justify-between gap-2.5">
-                                <div>
-                                    {station.term && <code dir="ltr" className={`rounded-md border ${a.border} bg-slate-950/60 px-1.5 py-0.5 font-mono text-[11px] font-bold ${a.text}`}>{station.term}</code>}
-                                    <p className="mt-2 text-sm leading-relaxed text-slate-300">{station.detail ?? station.explanation}</p>
+                        {stage ? (
+                            // Focus Stage: צד קריאה (מה לשים לב אליו) ומכשיר (מה מפעילים), ומתחתם
+                            // הכיתוב הקיים כמשפט הסיכום. שתי עמודות רק כשרוחב הכרטיס עצמו מספיק
+                            // (container query), כי הסרגל הצדדי משנה את הרוחב הזמין. סדר ה-DOM
+                            // נשאר לינארי: רמז, מונח, הסבר, מכשיר, כיתוב.
+                            <div className="@container px-4 pb-5 pt-1 md:px-5">
+                                <div className="grid gap-4 @min-[560px]:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] @min-[560px]:gap-6">
+                                    <div className="min-w-0">
+                                        {hint && <p className="text-base font-semibold leading-relaxed text-slate-50">{hint}</p>}
+                                        <div className="mt-3 flex items-center justify-between gap-2.5">
+                                            {station.term && <code dir="ltr" className="rounded-md border border-slate-600/60 bg-slate-950/60 px-1.5 py-0.5 font-mono text-[11px] font-bold text-slate-300">{station.term}</code>}
+                                            <SpeakButton
+                                                text={speakJoin(station.title, station.term, station.explanation, station.detail, hint)}
+                                                className="ms-auto shrink-0"
+                                            />
+                                        </div>
+                                        <p className="mt-2 text-[15px] leading-relaxed text-slate-300">{station.detail ?? station.explanation}</p>
+                                    </div>
+                                    {station.viz && (
+                                        <motion.div
+                                            className="min-w-0"
+                                            initial={reduce ? false : { opacity: 0, y: 8 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={reduce ? { duration: 0 } : { duration: 0.3, delay: 0.06 }}
+                                        >
+                                            <StationViz kind={station.viz} a={a} reduce={reduce} focusStage={{ captionSlot }} />
+                                        </motion.div>
+                                    )}
                                 </div>
-                                <SpeakButton
-                                    text={speakJoin(station.title, station.term, station.explanation, station.detail, hint)}
-                                    className="ms-auto shrink-0"
-                                />
+                                <div ref={setCaptionSlot} className="mt-5 border-t border-slate-700/60 pt-4" />
                             </div>
-                            {/* הסצנה החיה היא ההעמקה: היא מתנגנת מיד, ושורת התובנה שלה נושאת את הטקסט */}
-                            {station.viz && (
-                                <motion.div
-                                    initial={reduce ? false : { opacity: 0, y: 8 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={reduce ? { duration: 0 } : { duration: 0.3, delay: 0.06 }}
-                                >
-                                    <StationViz kind={station.viz} a={a} reduce={reduce} />
-                                </motion.div>
-                            )}
-                        </div>
+                        ) : (
+                            <div className="border-t px-3.5 pb-4 pt-3 md:px-4" style={{ borderColor: `rgba(${rgb} / 0.32)` }}>
+                                {/* מהות התחנה בקול: הקראת הכותרת, ההסבר ורמז התחנה הפתוחה.
+                                    עד M12 הרמז הוצג כטקסט רק מתחת ל-xl, כי מעל זה הוא ישב בבועת
+                                    מנטור-הצד. הבועה ירדה יחד עם הפורטרט, ולכן הרמז הוא עכשיו הטקסט
+                                    היחיד שנושא אותו, והוא גלוי בכל רוחב מסך כשורה משלו מעל פרטי התחנה. */}
+                                {hint && <p className="mb-2.5 text-sm font-bold leading-relaxed" style={{ color: `rgb(${ink})` }}>{hint}</p>}
+                                <div className="mb-2.5 flex items-start justify-between gap-2.5">
+                                    <div>
+                                        {station.term && <code dir="ltr" className="rounded-md border bg-slate-950/60 px-1.5 py-0.5 font-mono text-[11px] font-bold" style={{ borderColor: `rgba(${rgb} / 0.35)`, color: `rgb(${ink})` }}>{station.term}</code>}
+                                        <p className="mt-2 text-sm leading-relaxed text-slate-300">{station.detail ?? station.explanation}</p>
+                                    </div>
+                                    <SpeakButton
+                                        text={speakJoin(station.title, station.term, station.explanation, station.detail, hint)}
+                                        className="ms-auto shrink-0"
+                                    />
+                                </div>
+                                {/* הסצנה החיה היא ההעמקה: היא מתנגנת מיד, ושורת התובנה שלה נושאת את הטקסט */}
+                                {station.viz && (
+                                    <motion.div
+                                        initial={reduce ? false : { opacity: 0, y: 8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={reduce ? { duration: 0 } : { duration: 0.3, delay: 0.06 }}
+                                    >
+                                        <StationViz kind={station.viz} a={a} reduce={reduce} />
+                                    </motion.div>
+                                )}
+                            </div>
+                        )}
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -240,12 +336,39 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
 
     // גלילה יציבה אל התחנה: ראש הכרטיס נוחת באותו מקום בכל צעד (scroll-mt-24), כך
     // שהתחנה הפעילה לא "קופצת". אחרי הפריים כי הפתיחה במצב הדגמה מיידית (snap).
+    // Focus Stage (תחנה 1, פתיחה מפורשת בלבד): מציבים את היחידה בחלון הלמידה הזמין, כלומר
+    // מתחת לכותרת הקבועה (--bts-sticky-top) ועד תחתית מיכל הגלילה, לא לפי innerHeight.
+    // FIT: כל התחנה נכנסת עם מרווחי נשימה, ולכן היא ממורכזת. TOP: לא נכנסת, ולכן ראשה
+    // נוחת מתחת לכותרת והשאר בגלילה רגילה. שני פריימים: הפאנל עלה והכיתוב עבר ליעדו.
+    // הגובה נלקח מהתוכן הפנימי, שכבר בגובהו הסופי גם בזמן שאנימציית הגובה רצה, והסצנה
+    // שומרת את גובה תצוגת המודל מראש, כך שהחשיפה המאוחרת לא מזיזה את התחנה.
+    const positionFocusStage = useCallback((id: string) => {
+        if (typeof window === 'undefined') return;
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            const card = cardEls.current.get(id);
+            const head = card?.querySelector<HTMLElement>(':scope > button');
+            const body = card?.querySelector<HTMLElement>('[role="region"] > div');
+            let scroller = card?.parentElement ?? null;
+            while (scroller && !/(auto|scroll)/.test(getComputedStyle(scroller).overflowY)) scroller = scroller.parentElement;
+            if (!card || !head || !body || !scroller) return;
+            const box = scroller.getBoundingClientRect();
+            const stickyTop = parseFloat(getComputedStyle(scroller).getPropertyValue('--bts-sticky-top'));
+            const top = Number.isFinite(stickyTop) ? Math.max(box.top, stickyTop - 8) : box.top;
+            const available = box.bottom - top;
+            const height = head.offsetHeight + body.offsetHeight + (card.offsetHeight - card.clientHeight);
+            const margin = Math.min(32, Math.max(12, available * 0.03));
+            const target = height <= available - 2 * margin ? top + (available - height) / 2 : top + 12;
+            scroller.scrollBy({ top: card.getBoundingClientRect().top - target, behavior: reduce ? 'instant' : 'smooth' });
+        }));
+    }, [reduce]);
+
     const scrollToCard = useCallback((id: string) => {
         if (typeof window === 'undefined') return;
+        if (id === FOCUS_STAGE_STATION_ID) { positionFocusStage(id); return; }
         requestAnimationFrame(() => {
             cardEls.current.get(id)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
         });
-    }, [reduce]);
+    }, [reduce, positionFocusStage]);
 
     const registerRef = useCallback((id: string, el: HTMLElement | null) => {
         if (el) cardEls.current.set(id, el); else cardEls.current.delete(id);
@@ -266,8 +389,10 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
         // במצב הדגמה לחיצה בוחרת תחנה (תמיד נפתחת, לא נסגרת) כדי שהתחנה הפעילה לא
         // תיעלם באמצע הסבר; מחוץ למצב הדגמה מתנהג כאקורדיון רגיל.
         if (demo) { setOpenId(id); scrollToCard(id); return; }
+        // Focus Stage: רק פתיחה מפורשת של תחנה 1 מציבה אותה בחלון (לא סגירה, ולא פתיחה מגלילה).
+        if (id === FOCUS_STAGE_STATION_ID && openIdRef.current !== id) positionFocusStage(id);
         setOpenId((prev) => (prev === id ? null : id));
-    }, [demo, scrollToCard]);
+    }, [demo, scrollToCard, positionFocusStage]);
 
     // צעד הדגמה: קדימה/אחורה תחנה אחת (נעצר בקצוות), פותח מיידית וגולל למקום יציב.
     const step = useCallback((delta: number) => {
@@ -418,7 +543,9 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                             transition={{ duration: 0.5, delay: reduce ? 0 : zi * 0.05 }}
                             className={`relative overflow-hidden rounded-[1.75rem] border ${a.border} bg-slate-900/55 p-5 backdrop-blur-xl md:p-6`}
                         >
-                            <div className={`pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full ${a.bgSoft} blur-[70px]`} />
+                            {/* הילת-אזור: נשארת כרמז עומק בלבד. הוחלשה כדי שהאזור ייקרא
+                                כמשטח קריאה רגוע ולא כמשטח מואר. */}
+                            <div className={`pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full ${a.bgSoft} opacity-50 blur-[70px]`} />
 
                             {/* כותרת האזור */}
                             <header className="relative mb-5 flex items-start gap-3">

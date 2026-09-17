@@ -40,9 +40,9 @@ export const EngineReveal: React.FC<EngineRevealProps> = ({
             dir={dir}
             className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/70 p-5 backdrop-blur-2xl shadow-2xl md:p-7"
         >
-            {/* הילות רקע */}
-            <div className="pointer-events-none absolute -top-20 -right-16 h-64 w-64 rounded-full bg-cyan-500/10 blur-[90px]" />
-            <div className="pointer-events-none absolute -bottom-20 -left-12 h-72 w-72 rounded-full bg-indigo-500/10 blur-[100px]" />
+            {/* הילות רקע: נשארות כרמז עומק, בעוצמה נמוכה יותר */}
+            <div className="pointer-events-none absolute -top-20 -right-16 h-64 w-64 rounded-full bg-cyan-500/6 blur-[90px]" />
+            <div className="pointer-events-none absolute -bottom-20 -left-12 h-72 w-72 rounded-full bg-indigo-500/6 blur-[100px]" />
 
             <div className="relative">
                 {/* ── בקשה (משתמש) ── */}
@@ -61,7 +61,9 @@ export const EngineReveal: React.FC<EngineRevealProps> = ({
                     <div className="relative flex flex-col items-center gap-2 rounded-2xl border border-dashed border-slate-600/50 bg-slate-950/40 px-4 py-4">
                         {!reduce && (
                             <motion.div
-                                className="pointer-events-none absolute inset-x-6 h-px bg-gradient-to-l from-transparent via-cyan-400/70 to-transparent"
+                                // סריקת-האור שרומזת שמשהו פועל באמצע. הוחלשה: היא רצה
+                                // ברציפות מתחת לטקסט הקריאה, ולא נדרשת בעוצמה מלאה.
+                                className="pointer-events-none absolute inset-x-6 h-px bg-gradient-to-l from-transparent via-cyan-400/35 to-transparent"
                                 initial={{ top: '0%' }}
                                 animate={{ top: ['0%', '100%', '0%'] }}
                                 transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -92,7 +94,9 @@ export const EngineReveal: React.FC<EngineRevealProps> = ({
                 {/* ── שורת ההקלדה (תחתית): כמו בצ׳אט אמיתי, הקלט למטה וההודעות מעליו.
                     דהויה ולא-פעילה בכוונה - היא רק ממחישה איפה מקלידים. ── */}
                 <div className="mt-4 flex items-center gap-2 rounded-2xl border border-slate-600/50 bg-slate-950/60 py-2 pr-4 pl-2">
-                    <span className="flex-1 text-sm text-slate-500">{inputPlaceholder}</span>
+                    {/* slate-500 נמדד ב-4.09:1 מול משטח הקלט. slate-400 מחזיר את המראה
+                        הדהוי ועובר את סף AA. */}
+                    <span className="flex-1 text-sm text-slate-400">{inputPlaceholder}</span>
                     <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500 text-slate-950" aria-hidden>
                         <Send size={16} />
                     </span>

@@ -72,25 +72,28 @@ const EngineCore: React.FC<{
     coreLabel: string; coreText: string; reduce: boolean;
     running: boolean; completed: boolean; onRun: () => void; runLabel: string; replayLabel: string;
 }> = ({ coreLabel, coreText, reduce, running, completed, onRun, runLabel, replayLabel }) => (
-    <div className="relative flex h-48 w-48 flex-col items-center justify-center rounded-full border border-cyan-400/40 bg-slate-900/70 backdrop-blur-xl shadow-[0_0_90px_-10px_rgba(34,211,238,0.6),inset_0_0_48px_-16px_rgba(34,211,238,0.65)]">
-        {/* מערבולת-אנרגיה מסתובבת: תחושת ליבה חיה, עדינה ולא מסיחה */}
+    // הליבה: ההילה החיצונית הרחבה ירדה משמעותית. הליבה נקראת עכשיו כגוף מוגדר עם
+    // מסגרת ועומק פנימי, ולא כמקור אור שמתחרה בהסבר שלידה.
+    <div className="relative flex h-48 w-48 flex-col items-center justify-center rounded-full border border-cyan-400/35 bg-slate-900/70 backdrop-blur-xl shadow-[0_0_48px_-22px_rgba(34,211,238,0.4),inset_0_0_40px_-22px_rgba(34,211,238,0.4)]">
+        {/* מערבולת-אנרגיה מסתובבת: תחושת ליבה חיה. הוחלשה כדי שתישאר מרקם ולא תאורה. */}
         {!reduce && (
             <motion.div
-                className="pointer-events-none absolute inset-1.5 rounded-full opacity-70"
+                className="pointer-events-none absolute inset-1.5 rounded-full opacity-40"
                 aria-hidden
-                style={{ background: 'conic-gradient(from 0deg, transparent 0deg, rgba(34,211,238,0.30) 55deg, transparent 150deg, rgba(168,85,247,0.24) 250deg, transparent 340deg)' }}
+                style={{ background: 'conic-gradient(from 0deg, transparent 0deg, rgba(34,211,238,0.20) 55deg, transparent 150deg, rgba(168,85,247,0.14) 250deg, transparent 340deg)' }}
                 animate={{ rotate: 360 }}
                 transition={{ duration: 16, repeat: Infinity, ease: 'linear' }}
             />
         )}
-        {/* פעימת-נשימה: שכבת זוהר פנימית שנושמת, בלי להזיז את הטקסט */}
+        {/* פעימת-נשימה: שכבת זוהר פנימית שנושמת. משרעת האטימות צומצמה, כך שהנשימה
+            נשארת מורגשת אך אינה מהבהבת ברקע לאורך כל זמן הקריאה. */}
         {reduce ? (
-            <div className="pointer-events-none absolute inset-4 rounded-full bg-gradient-to-br from-cyan-400/12 to-purple-400/12 blur-md" aria-hidden />
+            <div className="pointer-events-none absolute inset-4 rounded-full bg-gradient-to-br from-cyan-400/8 to-purple-400/8 blur-md" aria-hidden />
         ) : (
             <motion.div
-                className="pointer-events-none absolute inset-4 rounded-full bg-gradient-to-br from-cyan-400/18 to-purple-400/18 blur-lg"
+                className="pointer-events-none absolute inset-4 rounded-full bg-gradient-to-br from-cyan-400/10 to-purple-400/10 blur-lg"
                 aria-hidden
-                animate={{ opacity: [0.5, 1, 0.5], scale: [0.92, 1.05, 0.92] }}
+                animate={{ opacity: [0.45, 0.7, 0.45], scale: [0.92, 1.05, 0.92] }}
                 transition={{ duration: 3.4, repeat: Infinity, ease: 'easeInOut' }}
             />
         )}
@@ -119,7 +122,7 @@ const EngineCore: React.FC<{
             <button
                 type="button"
                 onClick={onRun}
-                className="relative inline-flex items-center gap-1.5 rounded-full border border-cyan-300/60 bg-cyan-500/20 px-4 py-2 text-sm font-black text-white shadow-[0_0_22px_-4px_rgba(34,211,238,0.85)] transition-all hover:scale-[1.04] hover:bg-cyan-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70"
+                className="relative inline-flex items-center gap-1.5 rounded-full border border-cyan-300/55 bg-cyan-500/20 px-4 py-2 text-sm font-black text-white shadow-[0_0_16px_-6px_rgba(34,211,238,0.6)] transition-all hover:scale-[1.04] hover:bg-cyan-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70"
             >
                 <Play size={14} className="fill-current" aria-hidden />
                 {completed ? replayLabel : runLabel}
@@ -137,8 +140,9 @@ const ChatStraightPath: React.FC<{ reduce: boolean; running: boolean; isRtl: boo
         {/* מסדרון-הזכוכית: לוח אופקי רחב שממלא את הסצנה ונותן לה גוף (מרוּוח אך לא ריק) */}
         <div className="absolute inset-x-[6%] inset-y-[16%] rounded-[2.25rem] border border-cyan-500/25 bg-cyan-500/[0.04] shadow-[inset_0_1px_0_0_rgba(34,211,238,0.15)]" />
         <div className="absolute inset-x-[6%] inset-y-[16%] rounded-[2.25rem] bg-gradient-to-b from-cyan-400/[0.06] via-transparent to-cyan-500/[0.03]" />
-        {/* הילת-מוקד גדולה ורכה סביב הליבה: עומק וכובד-מרכז לעולם התכלת */}
-        <div className="absolute left-1/2 top-1/2 h-[46%] w-[46%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-400/[0.10] blur-3xl" />
+        {/* הילת-מוקד רכה סביב הליבה: עומק וכובד-מרכז. הוחלשה כדי שלא תיצור מקור אור
+            שני לצד הליבה עצמה. */}
+        <div className="absolute left-1/2 top-1/2 h-[46%] w-[46%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-400/[0.05] blur-3xl" />
         {/* המסילה: קו דק שמחבר קלט->ליבה->תשובה */}
         <div className="absolute inset-x-[15%] top-1/2 h-[3px] -translate-y-1/2 overflow-hidden rounded-full bg-gradient-to-r from-cyan-500/10 via-cyan-400/50 to-cyan-500/10">
             {running && !reduce && (
@@ -156,20 +160,20 @@ const ChatStraightPath: React.FC<{ reduce: boolean; running: boolean; isRtl: boo
 //    עוברת בדיוק דרך מרכזי התחנות (inset 12% = רדיוס 38%). ──
 const AgentControlRoom: React.FC<{ reduce: boolean }> = ({ reduce }) => (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
-        {/* הילת-מוקד גדולה ורכה מאחורי הליבה: מרכז זוהר כמו גרעין-מערכת */}
-        <div className="absolute left-1/2 top-1/2 h-[46%] w-[46%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-500/20 blur-3xl" />
+        {/* הילת-מוקד רכה מאחורי הליבה. הוחלשה: הסגול הוא מבטא משני, ולא תאורת-במה. */}
+        <div className="absolute left-1/2 top-1/2 h-[46%] w-[46%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-500/10 blur-3xl" />
         {/* דיסק-רקע עדין בתוך טבעת התחנות, נותן עומק */}
-        <div className="absolute inset-[12%] rounded-full bg-gradient-to-b from-purple-500/[0.07] via-transparent to-slate-950/20" />
+        <div className="absolute inset-[12%] rounded-full bg-gradient-to-b from-purple-500/[0.05] via-transparent to-slate-950/20" />
         {/* טבעת התחנות המקווקוות (עוברת דרך מרכזי התחנות) */}
-        <div className="absolute inset-[12%] rounded-full border border-dashed border-purple-400/35" />
+        <div className="absolute inset-[12%] rounded-full border border-dashed border-purple-400/28" />
         {/* טבעת דקה נוספת בפנים: שכבתיות של חדר בקרה */}
-        <div className="absolute inset-[30%] rounded-full border border-purple-300/15" />
+        <div className="absolute inset-[30%] rounded-full border border-purple-300/10" />
         {!reduce ? (
             <>
                 <motion.div
                     className="absolute inset-[4%] rounded-full"
                     style={{
-                        background: 'conic-gradient(from 0deg, rgba(168,85,247,0), rgba(168,85,247,0.5), rgba(34,211,238,0.3), rgba(168,85,247,0))',
+                        background: 'conic-gradient(from 0deg, rgba(168,85,247,0), rgba(168,85,247,0.3), rgba(34,211,238,0.16), rgba(168,85,247,0))',
                         WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
                         mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
                     }}
@@ -180,7 +184,7 @@ const AgentControlRoom: React.FC<{ reduce: boolean }> = ({ reduce }) => (
                 <motion.div
                     className="absolute inset-[22%] rounded-full"
                     style={{
-                        background: 'conic-gradient(from 180deg, rgba(34,211,238,0), rgba(34,211,238,0.28), rgba(168,85,247,0))',
+                        background: 'conic-gradient(from 180deg, rgba(34,211,238,0), rgba(34,211,238,0.16), rgba(168,85,247,0))',
                         WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 1px), #000 calc(100% - 1px))',
                         mask: 'radial-gradient(farthest-side, transparent calc(100% - 1px), #000 calc(100% - 1px))',
                     }}
@@ -430,7 +434,7 @@ export const AgentLoop: React.FC<{
                 {/* הילת-אווירה רכה מאחורי הכותרת, מתחלפת בצבע לפי המצב (גימור עדין) */}
                 <div
                     aria-hidden
-                    className={`pointer-events-none absolute -top-10 end-0 -z-10 h-40 w-2/3 rounded-full blur-3xl transition-colors duration-700 ${isAgent ? 'bg-purple-600/12' : 'bg-cyan-500/12'}`}
+                    className={`pointer-events-none absolute -top-10 end-0 -z-10 h-40 w-2/3 rounded-full blur-3xl transition-colors duration-700 ${isAgent ? 'bg-purple-600/6' : 'bg-cyan-500/6'}`}
                 />
 
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
@@ -481,8 +485,8 @@ export const AgentLoop: React.FC<{
                                                         ? 'linear-gradient(135deg,#c084fc 0%,#a855f7 45%,#7c3aed 100%)'
                                                         : 'linear-gradient(135deg,#67e8f9 0%,#22d3ee 45%,#0891b2 100%)',
                                                     boxShadow: isA
-                                                        ? '0 4px 18px -3px rgba(168,85,247,0.7), inset 0 1px 0 rgba(255,255,255,0.35)'
-                                                        : '0 4px 18px -3px rgba(34,211,238,0.7), inset 0 1px 0 rgba(255,255,255,0.45)',
+                                                        ? '0 3px 12px -5px rgba(168,85,247,0.5), inset 0 1px 0 rgba(255,255,255,0.3)'
+                                                        : '0 3px 12px -5px rgba(34,211,238,0.5), inset 0 1px 0 rgba(255,255,255,0.4)',
                                                 }}
                                                 transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 380, damping: 30 }}
                                             />
@@ -500,7 +504,7 @@ export const AgentLoop: React.FC<{
                     וגוון תלוי-מצב. שלילת המרווח (-mx) מותחת אותו עד קצות הכרטיס. */}
                 <div
                     aria-hidden
-                    className={`mt-5 -mx-4 h-px bg-gradient-to-r from-transparent to-transparent transition-colors duration-500 md:-mx-6 ${isAgent ? 'via-purple-400/50' : 'via-cyan-400/50'}`}
+                    className={`mt-5 -mx-4 h-px bg-gradient-to-r from-transparent to-transparent transition-colors duration-500 md:-mx-6 ${isAgent ? 'via-purple-400/30' : 'via-cyan-400/30'}`}
                 />
             </div>
 
@@ -588,19 +592,24 @@ export const AgentLoop: React.FC<{
                                 viewport={{ once: true }}
                                 transition={reduce ? { duration: 0 } : { duration: 0.3 }}
                                 className="relative flex h-14 w-14 items-center justify-center rounded-2xl border transition-all duration-300"
+                                // התחנה הפעילה נשארת האות הברור: מסגרת מלאה, מילוי בגוון והילה.
+                                // התחנות במנוחה ירדו למסגרת עדינה על משטח סלייט, כדי שרק אחת
+                                // תיראה "דולקת" בכל רגע.
                                 style={{
-                                    borderColor: isActive ? `rgb(${rgb})` : `rgba(${rgb},0.42)`,
-                                    background: isActive ? `rgba(${rgb},0.22)` : 'rgba(15,23,42,0.8)',
+                                    borderColor: isActive ? `rgb(${rgb})` : `rgba(${rgb},0.3)`,
+                                    background: isActive ? `rgba(${rgb},0.2)` : 'rgba(15,23,42,0.8)',
                                     color: isActive ? '#ffffff' : `rgb(${rgb})`,
-                                    boxShadow: isActive ? `0 0 24px -2px rgba(${rgb},0.75)` : 'none',
+                                    boxShadow: isActive ? `0 0 20px -4px rgba(${rgb},0.6)` : 'none',
                                 }}
                             >
+                                {/* טבעת-פעימה על התחנה הפעילה. הוחלשה: הפולס שנוחת בתחנה
+                                    וההילה כבר מסמנים אותה, ושלושה אותות במקביל היו עודף. */}
                                 {isActive && !reduce && (
                                     <motion.span
                                         aria-hidden
                                         className="absolute inset-0 rounded-2xl"
-                                        style={{ boxShadow: `0 0 0 2px rgba(${rgb},0.7)` }}
-                                        animate={{ opacity: [0.4, 0.9, 0.4] }}
+                                        style={{ boxShadow: `0 0 0 2px rgba(${rgb},0.45)` }}
+                                        animate={{ opacity: [0.3, 0.6, 0.3] }}
                                         transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
                                     />
                                 )}
