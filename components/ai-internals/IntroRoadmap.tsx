@@ -81,11 +81,13 @@ const STATION_INK: Record<string, string> = {
 };
 const inkOf = (id: string) => STATION_INK[id] ?? STATION_RGB[id] ?? '148 163 184';
 
-/* ── Focus Stage: אב-טיפוס לתחנה 1 בלבד ─────────────────────────────────────────
-   תחנה פתוחה היא יחידת הלמידה הנוכחית, לא אקורדיון צבעוני. רק התחנה הזו מקבלת את
+/* ── Focus Stage: הצטרפות מפורשת, תחנה אחר תחנה ────────────────────────────────
+   תחנה פתוחה היא יחידת הלמידה הנוכחית, לא אקורדיון צבעוני. תחנה שנרשמה כאן מקבלת את
    הפריסה (צד קריאה + מכשיר, והכיתוב הקיים מתחתיהם), את המשטח הניטרלי ואת המיקום
-   בחלון בפתיחה מפורשת. תחנות 2-14 נשארות כפי שהן עד לאישור העיצוב. */
-const FOCUS_STAGE_STATION_ID = 'request';
+   בחלון בפתיחה מפורשת. הרשימה מפורשת בכוונה: תחנה שלא נמצאת כאן נשארת בדיוק כפי
+   שהיא. תחנה 1 (request) היא עיצוב הייחוס המאושר; 7/8/13 נבחרו כבדיקת תאימות של
+   שלושה סוגי תחנה שונים (המחשה כבדה, שליטה כבדה, גבוהה וצפופה). */
+const FOCUS_STAGE_STATIONS = new Set<string>(['request', 'attention', 'mix', 'decoding']);
 
 /* ── כרטיס תחנה בודד (disclosure) ── */
 // open/onToggle מנוהלים מרמת המפה (אקורדיון מונחה-גלילה, אחד פתוח בכל רגע).
@@ -99,7 +101,7 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
     const instant = reduce || snap;
     const rgb = STATION_RGB[station.id] ?? '148 163 184';
     const ink = inkOf(station.id);
-    const focusStation = station.id === FOCUS_STAGE_STATION_ID;
+    const focusStation = FOCUS_STAGE_STATIONS.has(station.id);
     const stage = open && focusStation;
     // יעד הכיתוב של Focus Stage (StationViz מרנדר אליו את הכיתוב הקיים, פעם אחת).
     const [captionSlot, setCaptionSlot] = useState<HTMLDivElement | null>(null);
@@ -115,7 +117,7 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
             // מסגרת בגוון מלא + גוון-רקע דק מאוד + הילה מרוסנת. הזוהר הרחב הקודם (a.glow)
             // ירד: הוא סימן "פעיל" גם כשהכרטיס רק ישב במקומו.
             //
-            // Focus Stage (תחנה 1 פתוחה): משטח סלייט ניטרלי, מסגרת ניטרלית ועומק שקט במקום
+            // Focus Stage (תחנת-במה פתוחה): משטח סלייט ניטרלי, מסגרת ניטרלית ועומק שקט במקום
             // הילה. במובייל הכרטיס מתרחב אל ריפוד האזור בצד ההתחלה בלבד, כדי לפנות רוחב קריאה
             // בלי להיכנס מתחת למסילת-הקצה הצפה שיושבת בצד הסוף.
             style={{
@@ -130,7 +132,7 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
         >
             {/* פס-שדרה צבעוני בקצה-ההתחלה: "נטען" עמום כשהכרטיס מכוון בגלילה (candidate),
                 ונדלק במלואו כשהוא נפתח - כך רואים אילו כרטיס עומד להיפתח.
-                תחנה 1 (Focus Stage) לא מרנדרת אותו כלל: אם העיצוב היה תלוי ב-open, הסגירה
+                תחנת Focus Stage לא מרנדרת אותו כלל: אם העיצוב היה תלוי ב-open, הסגירה
                 הייתה מחזירה את הפס המלא בזמן שאנימציית היציאה שלו עוד רצה. */}
             {!focusStation && (
                 <motion.span
@@ -336,13 +338,18 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
 
     // גלילה יציבה אל התחנה: ראש הכרטיס נוחת באותו מקום בכל צעד (scroll-mt-24), כך
     // שהתחנה הפעילה לא "קופצת". אחרי הפריים כי הפתיחה במצב הדגמה מיידית (snap).
-    // Focus Stage (תחנה 1, פתיחה מפורשת בלבד): מציבים את היחידה בחלון הלמידה הזמין, כלומר
+    // Focus Stage (תחנת-במה, פתיחה מפורשת בלבד): מציבים את היחידה בחלון הלמידה הזמין, כלומר
     // מתחת לכותרת הקבועה (--bts-sticky-top) ועד תחתית מיכל הגלילה, לא לפי innerHeight.
     // FIT: כל התחנה נכנסת עם מרווחי נשימה, ולכן היא ממורכזת. TOP: לא נכנסת, ולכן ראשה
     // נוחת מתחת לכותרת והשאר בגלילה רגילה. שני פריימים: הפאנל עלה והכיתוב עבר ליעדו.
     // הגובה נלקח מהתוכן הפנימי, שכבר בגובהו הסופי גם בזמן שאנימציית הגובה רצה, והסצנה
     // שומרת את גובה תצוגת המודל מראש, כך שהחשיפה המאוחרת לא מזיזה את התחנה.
-    const positionFocusStage = useCallback((id: string) => {
+    //
+    // closingId: הכרטיס שנסגר באותה לחיצה. אם הוא יושב מעל תחנת היעד, הפאנל שלו עוד
+    // בעיצומה של אנימציית הסגירה ברגע המדידה, ולכן תחנת היעד עוד תעלה בדיוק בגובה
+    // שנשאר לו. בלי הקיזוז הזה הגלילה מחושבת מול פריסה שכבר אינה נכונה, והתחנה נוחתת
+    // מעל ראש חלון הלמידה. תחנה 1 לא חשפה זאת כי אין מעליה כרטיס, ושם הקיזוז תמיד 0.
+    const positionFocusStage = useCallback((id: string, closingId: string | null) => {
         if (typeof window === 'undefined') return;
         requestAnimationFrame(() => requestAnimationFrame(() => {
             const card = cardEls.current.get(id);
@@ -358,13 +365,22 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
             const height = head.offsetHeight + body.offsetHeight + (card.offsetHeight - card.clientHeight);
             const margin = Math.min(32, Math.max(12, available * 0.03));
             const target = height <= available - 2 * margin ? top + (available - height) / 2 : top + 12;
-            scroller.scrollBy({ top: card.getBoundingClientRect().top - target, behavior: reduce ? 'instant' : 'smooth' });
+            const cardTop = card.getBoundingClientRect().top;
+            let closing = 0;
+            if (closingId && closingId !== id) {
+                const prev = cardEls.current.get(closingId);
+                const prevPanel = prev?.querySelector<HTMLElement>('[role="region"]');
+                if (prev && prevPanel && prev.getBoundingClientRect().top < cardTop) {
+                    closing = prevPanel.getBoundingClientRect().height;
+                }
+            }
+            scroller.scrollBy({ top: cardTop - closing - target, behavior: reduce ? 'instant' : 'smooth' });
         }));
     }, [reduce]);
 
     const scrollToCard = useCallback((id: string) => {
         if (typeof window === 'undefined') return;
-        if (id === FOCUS_STAGE_STATION_ID) { positionFocusStage(id); return; }
+        if (FOCUS_STAGE_STATIONS.has(id)) { positionFocusStage(id, openIdRef.current); return; }
         requestAnimationFrame(() => {
             cardEls.current.get(id)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
         });
@@ -389,8 +405,8 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
         // במצב הדגמה לחיצה בוחרת תחנה (תמיד נפתחת, לא נסגרת) כדי שהתחנה הפעילה לא
         // תיעלם באמצע הסבר; מחוץ למצב הדגמה מתנהג כאקורדיון רגיל.
         if (demo) { setOpenId(id); scrollToCard(id); return; }
-        // Focus Stage: רק פתיחה מפורשת של תחנה 1 מציבה אותה בחלון (לא סגירה, ולא פתיחה מגלילה).
-        if (id === FOCUS_STAGE_STATION_ID && openIdRef.current !== id) positionFocusStage(id);
+        // Focus Stage: רק פתיחה מפורשת של תחנת-במה מציבה אותה בחלון (לא סגירה, ולא פתיחה מגלילה).
+        if (FOCUS_STAGE_STATIONS.has(id) && openIdRef.current !== id) positionFocusStage(id, openIdRef.current);
         setOpenId((prev) => (prev === id ? null : id));
     }, [demo, scrollToCard, positionFocusStage]);
 

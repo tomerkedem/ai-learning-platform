@@ -159,7 +159,8 @@ interface VizProps {
     silent: boolean;
     viz: IntroViz;
     dir: Direction;
-    // Focus Stage (אב-טיפוס לתחנה 1 במבוא בלבד). כבוי כברירת מחדל; רק RequestViz מגיב לו.
+    // Focus Stage: הסצנה מרונדרת כמכשיר של תחנת-במה. כבוי כברירת מחדל; סצנה שלא
+    // מגיבה ל-focus פשוט מרנדרת כרגיל, ולכן ההצטרפות היא תמיד מפורשת.
     focus?: boolean;
 }
 
@@ -260,27 +261,32 @@ export function haptic(ms = 8) {
 
 // כפתור פעולה קטן ואחיד לסצנות (מגע נוח גם בטלפון).
 // focus (Focus Stage בלבד): מקטע ניטרלי בקבוצה, עם פס-בחירה דק בגוון התחנה במקום מילוי מלא.
-function VizButton({ onClick, active, disabled, children, a, focus }: {
-    onClick: () => void; active?: boolean; disabled?: boolean; children: React.ReactNode; a: AccentStyle; focus?: boolean;
+// action (עם focus): הכפתור אינו מקטע בקבוצת בחירה אלא פעולה בפני עצמה (למשל "הגרילו"),
+// ולכן הוא שומר על רוחב טבעי ומסגרת משלו במקום להימתח כמקטע.
+function VizButton({ onClick, active, disabled, children, a, focus, action }: {
+    onClick: () => void; active?: boolean; disabled?: boolean; children: React.ReactNode; a: AccentStyle; focus?: boolean; action?: boolean;
 }) {
+    const segment = focus && !action;
     return (
         <button
             type="button"
             onClick={() => { haptic(); onClick(); }}
             disabled={disabled}
             aria-pressed={active}
-            className={focus
+            className={segment
                 ? `relative inline-flex min-h-[44px] flex-1 items-center justify-center rounded-lg px-3 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active
                     ? 'bg-slate-700/70 text-white'
                     : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
                     } ${disabled ? 'opacity-40' : ''}`
-                : `inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active
+                : focus
+                    ? `inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-slate-600/70 bg-slate-800/60 px-3.5 py-1 text-sm font-bold text-slate-100 transition-colors hover:bg-slate-700/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${disabled ? 'opacity-40' : ''}`
+                    : `inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active
                 ? `${a.border} ${a.solid} ${a.solidText}`
                 : `${a.border} bg-slate-950/50 ${a.text} hover:bg-white/[0.04]`
                 } ${disabled ? 'opacity-40' : ''}`}
         >
             {children}
-            {focus && active && <span className={`absolute inset-x-5 bottom-1 h-0.5 rounded-full opacity-70 ${a.solid}`} aria-hidden />}
+            {segment && active && <span className={`absolute inset-x-5 bottom-1 h-0.5 rounded-full opacity-70 ${a.solid}`} aria-hidden />}
         </button>
     );
 }
@@ -939,7 +945,7 @@ const ATTN_DEFAULT_FOCUS = 3;
 
 type AttnArc = { d: string; tx: number; ty: number; lx: number; ly: number };
 
-function AttentionViz({ a, reduce, viz, dir }: VizProps) {
+function AttentionViz({ a, reduce, viz, dir, focus: stage }: VizProps) {
     const v = viz.attention;
     const wrapRef = useRef<HTMLDivElement>(null);
     const tokRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -1074,19 +1080,26 @@ function AttentionViz({ a, reduce, viz, dir }: VizProps) {
                     })}
                 </div>
             </div>
-            {/* שורת הסיפור: מה בדיוק המילה שבמוקד מחפשת, מתחלפת עם כל לחיצה */}
-            <AnimatePresence mode="wait" initial={false}>
-                <motion.p
-                    key={focus}
-                    initial={reduce ? { opacity: 0 } : { opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: reduce ? 0 : 0.2 }}
-                    className={`mt-2.5 text-sm font-bold ${a.text}`}
-                >
-                    {v.stories[focus]}
-                </motion.p>
-            </AnimatePresence>
+            {/* שורת הסיפור: מה בדיוק המילה שבמוקד מחפשת, מתחלפת עם כל לחיצה.
+                ב-Focus Stage כל חמשת המשפטים נערמים בתא אחד של grid, אחד גלוי והשאר
+                ממדדים שקופים, כדי שמעבר בין מילים לא ישנה את גובה התחנה. */}
+            <div className={stage ? 'mt-2.5 grid' : 'mt-2.5'}>
+                {stage && v.stories.map((story, i) => (
+                    <p key={`m-${i}`} aria-hidden className="invisible col-start-1 row-start-1 text-sm font-bold">{story}</p>
+                ))}
+                <AnimatePresence mode="wait" initial={false}>
+                    <motion.p
+                        key={focus}
+                        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: reduce ? 0 : 0.2 }}
+                        className={stage ? 'col-start-1 row-start-1 text-sm font-bold text-slate-100' : `text-sm font-bold ${a.text}`}
+                    >
+                        {v.stories[focus]}
+                    </motion.p>
+                </AnimatePresence>
+            </div>
             <Caption>{v.caption}</Caption>
         </div>
     );
@@ -1107,6 +1120,13 @@ const MIX_STYLE = {
     },
 } as const;
 
+// Focus Stage: אותם שני צבעי-הקשר, אבל על משטח ניטרלי. הצבע נשאר הסימן שמקשר בין
+// הטוקן שנכנס לטוקן שיוצא, ולא הופך את הכרטיס למשטח צבוע.
+const MIX_STAGE_CHIP = {
+    a: 'border-cyan-500/35 bg-slate-900/70 text-cyan-100',
+    b: 'border-amber-500/35 bg-slate-900/70 text-amber-100',
+} as const;
+
 // בנק המומחים: 8 מומחים, ורק תת-קבוצה נדלקת לכל טוקן. זו החתימה של מודלי 2026
 // (Mixture-of-Experts): ראוטר מפעיל מעט מומחים מתוך רבים, כך שהמודל עצום אך רק
 // חלק קטן רץ לכל טוקן. הניתוב כאן קבוע להמחשה בלבד; אין התמחות-נושא אמיתית
@@ -1114,7 +1134,7 @@ const MIX_STYLE = {
 const NUM_EXPERTS = 8;
 const EXPERT_ROUTES: Record<'a' | 'b', number[]> = { a: [1, 4, 6], b: [0, 3] };
 
-function MixViz({ a, reduce, silent, viz, dir }: VizProps) {
+function MixViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
     const v = viz.mix;
     const [tok, setTok] = useState<'a' | 'b'>('a');
     const touched = useRef(false);
@@ -1139,12 +1159,17 @@ function MixViz({ a, reduce, silent, viz, dir }: VizProps) {
     }, []);
 
     const s = MIX_STYLE[tok];
+    const chip = focus ? MIX_STAGE_CHIP[tok] : s.chip;
     const token = tok === 'a' ? v.tokenA : v.tokenB;
+    // ממדד שקוף לשורות שמתחלפות ב-AnimatePresence: בזמן ההחלפה אין ילד בתא, ובלי
+    // הממדד הזירה הייתה מתכווצת ומזיזה את התחנה. משמש בטוקן הנכנס ובטוקן היוצא.
+    const cell = focus ? 'col-start-1 row-start-1 ' : '';
 
     return (
         <div dir={dir}>
-            {/* בחירת טוקן: שני טוקנים לדוגמה, כל אחד מנותב למומחים אחרים */}
-            <div className="flex gap-2">
+            {/* בחירת טוקן: שני טוקנים לדוגמה, כל אחד מנותב למומחים אחרים.
+                ב-Focus Stage זו קבוצת-בחירה ניטרלית, וצבע ההקשר נשאר כנקודה קטנה. */}
+            <div className={focus ? 'flex gap-1 rounded-xl border border-slate-700/70 bg-slate-900/40 p-1' : 'flex gap-2'}>
                 {(['a', 'b'] as const).map((k) => {
                     const on = tok === k;
                     return (
@@ -1153,8 +1178,11 @@ function MixViz({ a, reduce, silent, viz, dir }: VizProps) {
                             type="button"
                             onClick={() => { haptic(); touched.current = true; route(k, true); }}
                             aria-pressed={on}
-                            className={`flex-1 rounded-xl border px-3 py-2 text-center text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${on ? MIX_STYLE[k].chip : 'border-white/10 bg-slate-950/50 text-slate-400 hover:bg-white/[0.03]'}`}
+                            className={focus
+                                ? `inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${on ? 'bg-slate-700/70 text-white' : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'}`
+                                : `flex-1 rounded-xl border px-3 py-2 text-center text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${on ? MIX_STYLE[k].chip : 'border-white/10 bg-slate-950/50 text-slate-400 hover:bg-white/[0.03]'}`}
                         >
+                            {focus && <span className={`h-1.5 w-1.5 rounded-full ${MIX_STYLE[k].dot} ${on ? '' : 'opacity-50'}`} aria-hidden />}
                             {k === 'a' ? v.tokenA : v.tokenB}
                         </button>
                     );
@@ -1164,18 +1192,21 @@ function MixViz({ a, reduce, silent, viz, dir }: VizProps) {
             {/* הזירה: טוקן נכנס -> ראוטר -> בנק מומחים (רק כמה נדלקים) -> טוקן מועשר */}
             <div className="mt-3 flex flex-col items-center gap-2">
                 {/* טוקן נכנס */}
-                <AnimatePresence mode="wait" initial={false}>
-                    <motion.span
-                        key={`in-${tok}`}
-                        initial={reduce ? { opacity: 0 } : { opacity: 0, y: -6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: reduce ? 0 : 0.22 }}
-                        className={`rounded-full border px-3 py-1 text-sm font-bold ${s.chip}`}
-                    >
-                        {token}
-                    </motion.span>
-                </AnimatePresence>
+                <div className={focus ? 'grid justify-items-center' : ''}>
+                    {focus && <span aria-hidden className={`${cell}invisible rounded-full border px-3 py-1 text-sm font-bold`}>{v.tokenA}</span>}
+                    <AnimatePresence mode="wait" initial={false}>
+                        <motion.span
+                            key={`in-${tok}`}
+                            initial={reduce ? { opacity: 0 } : { opacity: 0, y: -6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: reduce ? 0 : 0.22 }}
+                            className={`${cell}rounded-full border px-3 py-1 text-sm font-bold ${chip}`}
+                        >
+                            {token}
+                        </motion.span>
+                    </AnimatePresence>
+                </div>
 
                 {/* מוליך זורם מהטוקן אל הראוטר */}
                 <span aria-hidden className="relative h-3 w-0.5 overflow-hidden bg-white/15">
@@ -1191,9 +1222,11 @@ function MixViz({ a, reduce, silent, viz, dir }: VizProps) {
                 </span>
 
                 {/* ראוטר */}
-                <div className={`flex items-center gap-1.5 rounded-lg border ${a.border} ${a.bgSoft} px-2.5 py-1`}>
+                <div className={focus
+                    ? 'flex items-center gap-1.5 rounded-lg border border-slate-700/60 bg-slate-900/60 px-2.5 py-1'
+                    : `flex items-center gap-1.5 rounded-lg border ${a.border} ${a.bgSoft} px-2.5 py-1`}>
                     <span className={`h-2 w-2 rounded-sm ${a.solid}`} aria-hidden />
-                    <span className={`text-xs font-bold ${a.text}`}>{v.routerLabel}</span>
+                    <span className={focus ? 'text-xs font-bold text-slate-200' : `text-xs font-bold ${a.text}`}>{v.routerLabel}</span>
                 </div>
 
                 {/* בנק מומחים: 8, ורק active נדלקים בפעימה מדורגת */}
@@ -1206,7 +1239,7 @@ function MixViz({ a, reduce, silent, viz, dir }: VizProps) {
                                 initial={reduce ? false : { scale: on ? 0.8 : 1, opacity: on ? 0.5 : 0.35 }}
                                 animate={on ? { scale: [0.8, 1.12, 1], opacity: 1 } : { scale: 1, opacity: 0.35 }}
                                 transition={reduce ? { duration: 0 } : { duration: 0.4, delay: on ? 0.3 + active.indexOf(i) * 0.14 : 0, ease: 'easeOut' }}
-                                className={`flex h-9 w-9 items-center justify-center rounded-lg border text-[11px] font-black ${on ? `${a.border} ${a.bgSoft} ${a.text} ${a.glow}` : 'border-white/10 bg-slate-950/50 text-slate-600'}`}
+                                className={`flex h-9 w-9 items-center justify-center rounded-lg border text-[11px] font-black ${on ? `${a.border} ${a.bgSoft} ${a.text}${focus ? '' : ` ${a.glow}`}` : 'border-white/10 bg-slate-950/50 text-slate-600'}`}
                             >
                                 <span dir="ltr">{i + 1}</span>
                             </motion.div>
@@ -1215,25 +1248,33 @@ function MixViz({ a, reduce, silent, viz, dir }: VizProps) {
                 </div>
 
                 {/* כמה מומחים מתוך כמה רצים */}
-                <span className={`text-xs font-bold ${a.text}`} dir="auto">{v.activeNote(active.length, NUM_EXPERTS)}</span>
+                <span className={focus ? 'text-xs font-bold text-slate-300' : `text-xs font-bold ${a.text}`} dir="auto">{v.activeNote(active.length, NUM_EXPERTS)}</span>
 
                 {/* טוקן מועשר יוצא */}
-                <AnimatePresence mode="wait" initial={false}>
-                    <motion.span
-                        key={`out-${tok}`}
-                        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={reduce ? { duration: 0 } : { delay: 0.6, type: 'spring', stiffness: 300, damping: 22 }}
-                        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-bold ${s.chip}`}
-                    >
-                        <Plus size={12} aria-hidden />
-                        <span>{token} · {v.outLabel}</span>
-                    </motion.span>
-                </AnimatePresence>
+                <div className={focus ? 'grid justify-items-center' : ''}>
+                    {focus && (
+                        <span aria-hidden className={`${cell}invisible inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-bold`}>
+                            <Plus size={12} aria-hidden />
+                            <span>{v.tokenA} · {v.outLabel}</span>
+                        </span>
+                    )}
+                    <AnimatePresence mode="wait" initial={false}>
+                        <motion.span
+                            key={`out-${tok}`}
+                            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={reduce ? { duration: 0 } : { delay: 0.6, type: 'spring', stiffness: 300, damping: 22 }}
+                            className={`${cell}inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-bold ${chip}`}
+                        >
+                            <Plus size={12} aria-hidden />
+                            <span>{token} · {v.outLabel}</span>
+                        </motion.span>
+                    </AnimatePresence>
+                </div>
             </div>
 
-            <p className={`mt-2.5 text-sm font-bold ${a.text}`}>{v.hint}</p>
+            <p className={focus ? 'mt-2.5 text-sm font-bold text-slate-200' : `mt-2.5 text-sm font-bold ${a.text}`}>{v.hint}</p>
             <Caption>{v.caption}</Caption>
         </div>
     );
@@ -1612,7 +1653,7 @@ function ScoresViz({ a, reduce, silent, viz, dir }: VizProps) {
 // ההסתברויות זהות לתחנת ה-Softmax (72/19/6), כדי שהסיפור יהיה רציף.
 const DECODE_PROBS = [72, 19, 6];
 
-function DecodingViz({ a, reduce, silent, viz, dir }: VizProps) {
+function DecodingViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
     const v = viz.decoding;
     const labels = viz.scores.rowLabels;
     const [mode, setMode] = useState<'sure' | 'surprise'>('sure');
@@ -1668,23 +1709,32 @@ function DecodingViz({ a, reduce, silent, viz, dir }: VizProps) {
 
     return (
         <div dir={dir}>
-            {/* המשפט הנבנה: הפרומפט + הטוקן שנבחר */}
+            {/* המשפט הנבנה: הפרומפט + הטוקן שנבחר. ב-Focus Stage מקומו של הטוקן שמור
+                מראש (ממדד שקוף באותו תא), כדי שההגרלה הראשונה והמעברים בין ההגרלות
+                לא יגדילו ולא יכווצו את התחנה. */}
             <div className="mb-3 flex flex-wrap items-center gap-1.5">
                 <span className="rounded-lg border border-white/5 bg-slate-950/50 px-3 py-1.5 text-sm text-slate-300">{v.prompt}</span>
-                <AnimatePresence mode="wait">
-                    {chosen !== null && (
-                        <motion.span
-                            key={`${rolls}-${chosen}`}
-                            initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.7 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 340, damping: 18 }}
-                            className={`rounded-lg border ${a.border} ${a.bgSoft} px-3 py-1.5 text-base font-black ${a.text}`}
-                        >
-                            {labels[chosen]}
-                        </motion.span>
+                <div className={focus ? 'grid' : ''}>
+                    {focus && (
+                        <span aria-hidden className="invisible col-start-1 row-start-1 rounded-lg border px-3 py-1.5 text-base font-black">
+                            {labels[0]}
+                        </span>
                     )}
-                </AnimatePresence>
+                    <AnimatePresence mode="wait">
+                        {chosen !== null && (
+                            <motion.span
+                                key={`${rolls}-${chosen}`}
+                                initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.7 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 340, damping: 18 }}
+                                className={`${focus ? 'col-start-1 row-start-1 ' : ''}rounded-lg border ${a.border} ${a.bgSoft} px-3 py-1.5 text-base font-black ${a.text}`}
+                            >
+                                {labels[chosen]}
+                            </motion.span>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
 
             {/* שלוש האפשרויות עם ההסתברויות שלהן */}
@@ -1713,16 +1763,25 @@ function DecodingViz({ a, reduce, silent, viz, dir }: VizProps) {
                 })}
             </div>
 
-            {/* מגע: מצב, הגרלה, ותוצאות מצטברות */}
-            <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                <VizButton a={a} active={mode === 'sure'} onClick={() => setMode('sure')}>{v.sure}</VizButton>
-                <VizButton a={a} active={mode === 'surprise'} onClick={() => setMode('surprise')}>{v.surprise}</VizButton>
-                <VizButton a={a} disabled={spinning} onClick={() => roll(mode, true)}>
+            {/* מגע: מצב, הגרלה, ותוצאות מצטברות. ב-Focus Stage שני המצבים הם קבוצת-בחירה
+                אחת וההגרלה היא פעולה נפרדת לידה, כי אלה שני תפקידים שונים. */}
+            <div className={focus ? 'mt-3 flex flex-wrap items-center gap-2' : 'mt-3 flex flex-wrap items-center gap-1.5'}>
+                <div className={focus ? 'flex min-w-0 grow basis-[220px] gap-1 rounded-xl border border-slate-700/70 bg-slate-900/40 p-1' : 'contents'}>
+                    <VizButton a={a} focus={focus} active={mode === 'sure'} onClick={() => setMode('sure')}>{v.sure}</VizButton>
+                    <VizButton a={a} focus={focus} active={mode === 'surprise'} onClick={() => setMode('surprise')}>{v.surprise}</VizButton>
+                </div>
+                <VizButton a={a} focus={focus} action disabled={spinning} onClick={() => roll(mode, true)}>
                     <Play size={12} aria-hidden />
                     {v.roll}
                 </VizButton>
             </div>
-            {rolls > 1 && (
+            {/* שורת התוצאות המצטברות מופיעה רק מההגרלה השנייה. ב-Focus Stage מקומה שמור
+                מראש, כדי שהופעתה לא תקפיץ את התחנה באמצע ההתנסות. */}
+            {focus ? (
+                <p className={`mt-2 text-[13px] font-bold text-slate-400 ${rolls > 1 ? '' : 'invisible'}`} aria-hidden={rolls > 1 ? undefined : true}>
+                    {v.tally}: {labels.map((w, i) => `${w} ${tally[i]}`).join(' · ')}
+                </p>
+            ) : rolls > 1 && (
                 <p className="mt-2 text-[13px] font-bold text-slate-400">
                     {v.tally}: {labels.map((w, i) => `${w} ${tally[i]}`).join(' · ')}
                 </p>
@@ -1882,8 +1941,8 @@ export const VizSoundToggle: React.FC = () => {
 };
 
 /**
- * focusStage: אב-טיפוס Focus Stage לתחנה 1 במבוא בלבד (כבוי כברירת מחדל). המכשיר מקבל משטח
- * שקוע ניטרלי, הסצנה שומרת את הגובה הסופי שלה, והכיתוב מרונדר אל captionSlot של ההורה.
+ * focusStage: תחנת-במה (כבוי כברירת מחדל). המכשיר מקבל משטח שקוע ניטרלי, הסצנה שומרת
+ * את הגובה הסופי שלה, והכיתוב מרונדר אל captionSlot של ההורה.
  */
 export const StationViz: React.FC<{ kind: StationVizKind; a: AccentStyle; reduce: boolean; focusStage?: { captionSlot: HTMLElement | null } }> = ({ kind, a, reduce, focusStage }) => {
     const { t, dir } = useT();
