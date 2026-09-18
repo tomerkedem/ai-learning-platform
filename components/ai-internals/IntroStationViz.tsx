@@ -168,12 +168,15 @@ interface VizProps {
 // הקריאה + המכשיר. undefined = ברירת המחדל (כיתוב במקומו). null = היעד עוד לא קיים.
 const FocusCaptionSlot = React.createContext<HTMLElement | null | undefined>(undefined);
 
-function Caption({ children }: { children: React.ReactNode }) {
+// local: כיתוב שמסביר שלב באמצע הסצנה ולא את הסצנה כולה, ולכן הוא נשאר במקומו גם
+// ב-Focus Stage. משמש רק כשלסצנה שני כיתובים (ייצוג מספרי), כדי ששורת הסיכום שיורדת
+// למטה תישאר אחת.
+function Caption({ children, local }: { children: React.ReactNode; local?: boolean }) {
     // שורת התובנה של הסצנה, עם הקראה נקודתית שלה. הטקסט תמיד מגיע כמחרוזת מהמילון
     // (כולל כיתובים דינמיים), אז ההקראה תמיד תואמת את מה שמוצג כרגע.
     const text = typeof children === 'string' ? children : undefined;
     const slot = React.useContext(FocusCaptionSlot);
-    if (slot !== undefined) {
+    if (slot !== undefined && !local) {
         // כיתוב אחד בלבד: עד שהיעד קיים לא מרונדר דבר, ואז הוא עובר לשם כמשפט הסיכום.
         return slot && createPortal(
             <div className="flex items-start gap-3">
@@ -262,7 +265,8 @@ export function haptic(ms = 8) {
 // כפתור פעולה קטן ואחיד לסצנות (מגע נוח גם בטלפון).
 // focus (Focus Stage בלבד): מקטע ניטרלי בקבוצה, עם פס-בחירה דק בגוון התחנה במקום מילוי מלא.
 // action (עם focus): הכפתור אינו מקטע בקבוצת בחירה אלא פעולה בפני עצמה (למשל "הגרילו"),
-// ולכן הוא שומר על רוחב טבעי ומסגרת משלו במקום להימתח כמקטע.
+// ולכן הוא שומר על רוחב טבעי ומסגרת משלו במקום להימתח כמקטע. מתג בודד (למשל "הצג מה
+// בפנים") הוא גם פעולה בתפקידו, ולכן הוא מקבל את אותו טיפול ומסמן את מצבו במשטח בלבד.
 function VizButton({ onClick, active, disabled, children, a, focus, action }: {
     onClick: () => void; active?: boolean; disabled?: boolean; children: React.ReactNode; a: AccentStyle; focus?: boolean; action?: boolean;
 }) {
@@ -279,7 +283,7 @@ function VizButton({ onClick, active, disabled, children, a, focus, action }: {
                     : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
                     } ${disabled ? 'opacity-40' : ''}`
                 : focus
-                    ? `inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-slate-600/70 bg-slate-800/60 px-3.5 py-1 text-sm font-bold text-slate-100 transition-colors hover:bg-slate-700/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${disabled ? 'opacity-40' : ''}`
+                    ? `inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-slate-600/70 px-3.5 py-1 text-sm font-bold transition-colors hover:bg-slate-700/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active ? 'bg-slate-700/70 text-white' : 'bg-slate-800/60 text-slate-100'} ${disabled ? 'opacity-40' : ''}`
                     : `inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active
                 ? `${a.border} ${a.solid} ${a.solidText}`
                 : `${a.border} bg-slate-950/50 ${a.text} hover:bg-white/[0.04]`
@@ -454,7 +458,7 @@ const PIECE_STYLES = [
     { border: 'border-rose-500/40', text: 'text-rose-300' },
 ];
 
-function TokenizeViz({ a, reduce, silent, viz, dir }: VizProps) {
+function TokenizeViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
     const v = viz.tokenize;
     const [variant, setVariant] = useState<'a' | 'b'>('a');
     const after = useTimers();
@@ -472,14 +476,17 @@ function TokenizeViz({ a, reduce, silent, viz, dir }: VizProps) {
         <div dir={dir}>
             {/* key=variant: החלפת משפט מריצה את סצנת החיתוך מחדש */}
             <div key={variant}>
-                <div className="relative mb-3 overflow-hidden rounded-lg border border-white/5 bg-slate-950/50 px-3 py-2 text-sm text-slate-300">
+                <div className={focus
+                    ? 'relative mb-3 overflow-hidden rounded-lg border border-slate-700/50 bg-slate-900/50 px-3 py-2 text-sm text-slate-200'
+                    : 'relative mb-3 overflow-hidden rounded-lg border border-white/5 bg-slate-950/50 px-3 py-2 text-sm text-slate-300'}>
                     {data.sentence}
-                    {/* קו החיתוך: לייזר זוהר שחולף על המשפט בכיוון הקריאה */}
+                    {/* קו החיתוך: לייזר שחולף על המשפט בכיוון הקריאה. ב-Focus Stage הקו נשאר
+                        (הוא החיתוך עצמו) בלי ההילה הלבנה שסביבו. */}
                     {!reduce && (
                         <motion.span
                             aria-hidden
                             className={`absolute inset-y-0 w-0.5 ${a.solid}`}
-                            style={{ boxShadow: `0 0 10px 2px rgb(255 255 255 / 0.5)` }}
+                            style={focus ? undefined : { boxShadow: `0 0 10px 2px rgb(255 255 255 / 0.5)` }}
                             initial={{ left: dir === 'rtl' ? '100%' : '0%', opacity: 1 }}
                             animate={{ left: dir === 'rtl' ? '0%' : '100%', opacity: [1, 1, 0] }}
                             transition={{ duration: 0.7, ease: 'easeInOut' }}
@@ -501,45 +508,62 @@ function TokenizeViz({ a, reduce, silent, viz, dir }: VizProps) {
                         );
                     })}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                    {data.tokens.map((tok, i) => {
-                        // במשפט המילים הארוכות, חלקי אותה מילה צבועים באותו צבע.
-                        const piece = variant === 'b'
-                            ? PIECE_STYLES[v.altGroups[i] % PIECE_STYLES.length]
-                            : { border: a.border, text: a.text };
-                        // התנפצות: כל טוקן נופל כרסיס מהמשפט, עם overshoot וסיבוב קל,
-                        // ונוחת אחרי שהלייזר חתך את התפר שלו. dropDelay מסונכרן עם הניצוץ.
-                        const dropDelay = 0.5 + i * 0.11;
-                        return (
-                            <span key={`${tok}-${i}`} className="relative inline-flex">
-                                {/* הבזק-נחיתה מאחורי הטוקן ברגע שהוא מתייצב */}
-                                {!reduce && (
+                {/* שני הרצפים נבדלים במספר הטוקנים, ולכן בגובה השורות במסך צר.
+                    ב-Focus Stage שניהם נערמים בתא אחד של grid (העותקים שקופים), כך שהמעבר
+                    בין הדוגמאות לא מקפיץ את המכשיר. */}
+                <div className={focus ? 'grid' : ''}>
+                    {focus && [v.tokens, v.altTokens].map((list, k) => (
+                        <div key={`g-${k}`} aria-hidden className="invisible col-start-1 row-start-1 flex flex-wrap gap-2">
+                            {list.map((tok, i) => (
+                                <span key={`${tok}-${i}`} className="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5">
+                                    <span className="font-mono text-[10px]" dir="ltr">{i + 1}</span>
+                                    <span className="text-sm font-bold">{tok}</span>
+                                </span>
+                            ))}
+                        </div>
+                    ))}
+                    <div className={focus ? 'col-start-1 row-start-1 flex flex-wrap gap-2' : 'flex flex-wrap gap-2'}>
+                        {data.tokens.map((tok, i) => {
+                            // במשפט המילים הארוכות, חלקי אותה מילה צבועים באותו צבע.
+                            const piece = variant === 'b'
+                                ? PIECE_STYLES[v.altGroups[i] % PIECE_STYLES.length]
+                                : { border: a.border, text: a.text };
+                            // התנפצות: כל טוקן נופל כרסיס מהמשפט, עם overshoot וסיבוב קל,
+                            // ונוחת אחרי שהלייזר חתך את התפר שלו. dropDelay מסונכרן עם הניצוץ.
+                            const dropDelay = 0.5 + i * 0.11;
+                            return (
+                                <span key={`${tok}-${i}`} className="relative inline-flex">
+                                    {/* הבזק-נחיתה מאחורי הטוקן ברגע שהוא מתייצב. דקורטיבי בלבד
+                                        (הנחיתה עצמה נראית בקפיצה של הטוקן), ולכן יורד ב-Focus Stage. */}
+                                    {!reduce && !focus && (
+                                        <motion.span
+                                            aria-hidden
+                                            className={`pointer-events-none absolute inset-0 rounded-lg ${a.solid}`}
+                                            initial={{ scale: 0.6, opacity: 0 }}
+                                            animate={{ scale: [0.6, 1.5], opacity: [0.6, 0] }}
+                                            transition={{ duration: 0.45, delay: dropDelay + 0.05, ease: 'easeOut' }}
+                                        />
+                                    )}
                                     <motion.span
-                                        aria-hidden
-                                        className={`pointer-events-none absolute inset-0 rounded-lg ${a.solid}`}
-                                        initial={{ scale: 0.6, opacity: 0 }}
-                                        animate={{ scale: [0.6, 1.5], opacity: [0.6, 0] }}
-                                        transition={{ duration: 0.45, delay: dropDelay + 0.05, ease: 'easeOut' }}
-                                    />
-                                )}
-                                <motion.span
-                                    initial={reduce ? false : { opacity: 0, y: -14, scale: 0.6, rotate: i % 2 === 0 ? -8 : 8 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
-                                    transition={reduce ? { duration: 0 } : { delay: dropDelay, type: 'spring', stiffness: 360, damping: 15 }}
-                                    className={`relative inline-flex items-center gap-1.5 rounded-lg border ${piece.border} bg-slate-950/60 px-2.5 py-1.5`}
-                                >
-                                    <span className="font-mono text-[10px] text-slate-500" dir="ltr">{i + 1}</span>
-                                    <span className={`text-sm font-bold ${piece.text}`}>{tok}</span>
-                                </motion.span>
-                            </span>
-                        );
-                    })}
+                                        initial={reduce ? false : { opacity: 0, y: -14, scale: 0.6, rotate: i % 2 === 0 ? -8 : 8 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
+                                        transition={reduce ? { duration: 0 } : { delay: dropDelay, type: 'spring', stiffness: 360, damping: 15 }}
+                                        className={`relative inline-flex items-center gap-1.5 rounded-lg border ${piece.border} bg-slate-950/60 px-2.5 py-1.5`}
+                                    >
+                                        <span className="font-mono text-[10px] text-slate-500" dir="ltr">{i + 1}</span>
+                                        <span className={`text-sm font-bold ${piece.text}`}>{tok}</span>
+                                    </motion.span>
+                                </span>
+                            );
+                        })}
+                    </div>
                 </div>
                 <Caption>{data.caption}</Caption>
             </div>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-                <VizButton a={a} active={variant === 'a'} onClick={() => { sound.tick(0); setVariant('a'); }}>{v.variantA}</VizButton>
-                <VizButton a={a} active={variant === 'b'} onClick={() => { sound.tick(0); setVariant('b'); }}>{v.variantB}</VizButton>
+            {/* שני המשפטים הם בחירה בין דוגמאות, ולכן ב-Focus Stage זו קבוצת-בחירה אחת */}
+            <div className={focus ? 'mt-2 flex gap-1 rounded-xl border border-slate-700/70 bg-slate-900/40 p-1' : 'mt-2 flex flex-wrap gap-1.5'}>
+                <VizButton a={a} focus={focus} active={variant === 'a'} onClick={() => { sound.tick(0); setVariant('a'); }}>{v.variantA}</VizButton>
+                <VizButton a={a} focus={focus} active={variant === 'b'} onClick={() => { sound.tick(0); setVariant('b'); }}>{v.variantB}</VizButton>
             </div>
         </div>
     );
@@ -550,7 +574,7 @@ function TokenizeViz({ a, reduce, silent, viz, dir }: VizProps) {
 // מזהים להמחשה בלבד (כתובות במילון), לא מזהים אמיתיים של מודל.
 const TOKEN_IDS = [7412, 209, 5306, 4812, 1573, 662, 3948, 88];
 
-function IdsViz({ a, reduce, silent, viz, dir }: VizProps) {
+function IdsViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
     const v = viz.ids;
     const tokens = viz.tokenize.tokens;
     const [flipped, setFlipped] = useState<boolean[]>(() => tokens.map(() => reduce));
@@ -596,7 +620,7 @@ function IdsViz({ a, reduce, silent, viz, dir }: VizProps) {
                     </button>
                 ))}
             </div>
-            <p className={`mt-2.5 text-sm font-bold ${a.text}`}>{v.hint}</p>
+            <p className={focus ? 'mt-2.5 text-sm font-bold text-slate-200' : `mt-2.5 text-sm font-bold ${a.text}`}>{v.hint}</p>
             <Caption>{v.caption}</Caption>
         </div>
     );
@@ -634,7 +658,7 @@ const CLUSTER_STYLE = [
 ];
 const clusterOf = (i: number) => (i < 2 ? 0 : 1);
 
-function EmbeddingViz({ a, reduce, viz, dir }: VizProps) {
+function EmbeddingViz({ a, reduce, viz, dir, focus }: VizProps) {
     const [sel, setSel] = useState(0);
     const near = MAP_NEAREST[sel];
 
@@ -676,15 +700,19 @@ function EmbeddingViz({ a, reduce, viz, dir }: VizProps) {
                     <span className="px-1 font-mono text-[10px] text-slate-600">...</span>
                 </div>
             </div>
-            {/* כיתוב השרשרת יושב מתחת לשרשרת (במקום wall אחד גדול למטה) */}
-            <Caption>{viz.embedding.caption(viz.sharedNote)}</Caption>
+            {/* כיתוב השרשרת יושב מתחת לשרשרת (במקום wall אחד גדול למטה). local: הוא מסביר
+                את השרשרת בלבד, ולכן גם ב-Focus Stage הוא נשאר כאן, ורק כיתוב המפה יורד
+                לשורת הסיכום. */}
+            <Caption local>{viz.embedding.caption(viz.sharedNote)}</Caption>
 
             {/* מפת המשמעות: נכנסת אחרי השרשרת (חשיפה מדורגת, פחות עומס בבת אחת) */}
             <motion.div
                 initial={reduce ? false : { opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { duration: 0.4, delay: 0.7 }}
-                className="relative mt-3 h-36 overflow-hidden rounded-xl border border-white/5 bg-slate-950/60 sm:h-44"
+                className={focus
+                    ? 'relative mt-3 h-36 overflow-hidden rounded-xl border border-slate-700/50 bg-slate-900/40 sm:h-44'
+                    : 'relative mt-3 h-36 overflow-hidden rounded-xl border border-white/5 bg-slate-950/60 sm:h-44'}
                 dir="ltr"
             >
                 {/* רשת קואורדינטות עדינה: הופכת את הכרטיס למרחב, כך שברור שהמיקום נושא משמעות */}
@@ -742,7 +770,7 @@ function EmbeddingViz({ a, reduce, viz, dir }: VizProps) {
                     );
                 })}
             </motion.div>
-            <p className={`mt-2 text-sm font-bold ${a.text}`}>
+            <p className={focus ? 'mt-2 text-sm font-bold text-slate-200' : `mt-2 text-sm font-bold ${a.text}`}>
                 {viz.embedding.nearLabel}: {viz.embedding.mapWords[sel]} + {viz.embedding.mapWords[near]} · {viz.embedding.mapHint}
             </p>
             {/* כיתוב המפה בלבד (הערת השרשרת עברה למעלה, מתחת לשרשרת) */}
@@ -756,7 +784,7 @@ function EmbeddingViz({ a, reduce, viz, dir }: VizProps) {
 // אינדקסים מבניים: אילו שתי מילים מתחלפות. המילים עצמן מהמילון.
 const POS_SWAP: readonly [number, number] = [1, 3];
 
-function PositionViz({ a, reduce, silent, viz, dir }: VizProps) {
+function PositionViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
     const v = viz.position;
     const [swapped, setSwapped] = useState(false);
     const touched = useRef(false);
@@ -773,7 +801,8 @@ function PositionViz({ a, reduce, silent, viz, dir }: VizProps) {
 
     return (
         <div dir={dir}>
-            {/* תגי המיקום קבועים במקומם; המילים הן שזזות ביניהם */}
+            {/* תגי המיקום קבועים במקומם; המילים הן שזזות ביניהם. ב-Focus Stage התגים הם
+                משבצות ניטרליות: הצבע כאן לא נשא מידע, והמילים הן שצריכות לשאת אותו. */}
             <div className="grid grid-cols-4 gap-1.5">
                 {v.tokens.map((_, i) => (
                     <motion.span
@@ -781,7 +810,9 @@ function PositionViz({ a, reduce, silent, viz, dir }: VizProps) {
                         initial={reduce ? false : { scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={reduce ? { duration: 0 } : { delay: 0.2 + i * 0.12, type: 'spring', stiffness: 340, damping: 18 }}
-                        className={`mx-auto flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${a.solid} ${a.solidText}`}
+                        className={focus
+                            ? 'mx-auto flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-slate-200 ring-1 ring-slate-600/70'
+                            : `mx-auto flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${a.solid} ${a.solidText}`}
                         dir="ltr"
                     >
                         {i + 1}
@@ -808,13 +839,14 @@ function PositionViz({ a, reduce, silent, viz, dir }: VizProps) {
 
             {/* המשמעות מתהפכת יחד עם הסדר */}
             <div className="mt-3 flex flex-wrap items-center gap-2">
-                <VizButton a={a} onClick={() => { touched.current = true; sound.tick(3); setSwapped((s) => !s); }}>
+                {/* החלפה היא פעולה, לא בחירה בין מצבים: טיפול-פעולה שקט ב-Focus Stage */}
+                <VizButton a={a} focus={focus} action onClick={() => { touched.current = true; sound.tick(3); setSwapped((s) => !s); }}>
                     <ArrowRightLeft size={12} aria-hidden />
                     {v.swapLabel}
                 </VizButton>
                 <div className="relative inline-flex">
                     {/* ניצוץ שפורץ ברגע שהמשמעות מתהפכת, כדי להדגיש שזה אותו טקסט בדיוק */}
-                    {!reduce && (
+                    {!reduce && !focus && (
                         <motion.span
                             key={`spark-${swapped}`}
                             aria-hidden
@@ -824,21 +856,29 @@ function PositionViz({ a, reduce, silent, viz, dir }: VizProps) {
                             transition={{ duration: 0.5, ease: 'easeOut' }}
                         />
                     )}
-                    <AnimatePresence mode="wait" initial={false}>
-                        <motion.span
-                            key={swapped ? 'b' : 'a'}
-                            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: reduce ? 0 : 0.2 }}
-                            className={`relative rounded-full border px-3 py-1 text-sm font-bold ${swapped
-                                ? 'border-amber-500/40 bg-amber-900/15 text-amber-300'
-                                : 'border-emerald-500/40 bg-emerald-900/15 text-emerald-300'
-                                }`}
-                        >
-                            {swapped ? v.meaningB : v.meaningA}
-                        </motion.span>
-                    </AnimatePresence>
+                    {/* Focus Stage: שתי המשמעויות נערמות בתא אחד של grid (העותק השני שקוף), כך
+                        שההחלפה לא משנה את רוחב השורה ולא מזיזה את מה שמתחתיה. הגוון נשאר
+                        (הוא שמקשר בין המשמעות למילה שנסעה), אבל על משטח ניטרלי. */}
+                    <div className={focus ? 'grid' : 'contents'}>
+                        {focus && [v.meaningA, v.meaningB].map((m) => (
+                            <span key={m} aria-hidden className="invisible col-start-1 row-start-1 justify-self-start rounded-full border px-3 py-1 text-sm font-bold">{m}</span>
+                        ))}
+                        <AnimatePresence mode="wait" initial={false}>
+                            <motion.span
+                                key={swapped ? 'b' : 'a'}
+                                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: reduce ? 0 : 0.2 }}
+                                className={`relative rounded-full border px-3 py-1 text-sm font-bold ${focus ? 'col-start-1 row-start-1 justify-self-start ' : ''}${swapped
+                                    ? focus ? 'border-amber-500/35 bg-slate-900/70 text-amber-200' : 'border-amber-500/40 bg-amber-900/15 text-amber-300'
+                                    : focus ? 'border-emerald-500/35 bg-slate-900/70 text-emerald-200' : 'border-emerald-500/40 bg-emerald-900/15 text-emerald-300'
+                                    }`}
+                            >
+                                {swapped ? v.meaningB : v.meaningA}
+                            </motion.span>
+                        </AnimatePresence>
+                    </div>
                 </div>
             </div>
             <Caption>{v.caption}</Caption>
@@ -850,7 +890,7 @@ function PositionViz({ a, reduce, silent, viz, dir }: VizProps) {
 
 const CTX_WINDOW = 3;
 
-function ContextViz({ a, reduce, silent, viz, dir }: VizProps) {
+function ContextViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
     const v = viz.context;
     const msgs = v.messages;
     const [count, setCount] = useState(CTX_WINDOW);
@@ -868,10 +908,20 @@ function ContextViz({ a, reduce, silent, viz, dir }: VizProps) {
 
     return (
         <div dir={dir}>
-            {/* הערימה שמחוץ לחלון: אפורה, דחוסה, לא קיימת עבור המודל */}
-            <div className="mb-2 min-h-[22px]">
+            {/* הערימה שמחוץ לחלון: אפורה, דחוסה, לא קיימת עבור המודל. הערימה גדלה עם כל
+                הודעה חדשה, ולכן ב-Focus Stage הגובה של כל ההודעות שיוצאות שמור מראש
+                (עותק שקוף באותו תא), והלחיצה על "הוסיפו הודעה" לא מזיזה את התחנה. */}
+            <div className={focus ? 'mb-2 grid' : 'mb-2 min-h-[22px]'}>
+                {focus && (
+                    <div aria-hidden className="invisible col-start-1 row-start-1 flex flex-col gap-1">
+                        <span className="text-xs font-bold">{v.outLabel} · 0</span>
+                        {msgs.slice(0, msgs.length - CTX_WINDOW).map((m, i) => (
+                            <span key={`ghost-${i}`} className="w-fit max-w-[80%] rounded-lg border px-2 py-0.5 text-xs">{m}</span>
+                        ))}
+                    </div>
+                )}
                 {outside.length > 0 && (
-                    <div className="flex flex-col gap-1">
+                    <div className={focus ? 'col-start-1 row-start-1 flex flex-col gap-1' : 'flex flex-col gap-1'}>
                         <span className="text-xs font-bold text-slate-500">{v.outLabel} · <span dir="ltr">{outside.length}</span></span>
                         {outside.map((m, i) => (
                             <motion.div
@@ -887,40 +937,57 @@ function ContextViz({ a, reduce, silent, viz, dir }: VizProps) {
                 )}
             </div>
 
-            {/* החלון עצמו: רק מה שבפנים קיים. מבזיק כשהודעה נדחפת החוצה (count עולה). */}
+            {/* החלון עצמו: רק מה שבפנים קיים. מבזיק כשהודעה נדחפת החוצה (count עולה).
+                ב-Focus Stage גבול החלון נשאר מודגש (הוא המושג שנלמד) אבל ניטרלי, והתווית
+                נושאת את גוון התחנה. ההבזק נשאר: הוא משוב על "משהו נדחף החוצה". */}
             <motion.div
                 key={`win-${count}`}
                 animate={reduce ? undefined : { boxShadow: ['0 0 0 0 rgba(255,255,255,0)', '0 0 22px 2px rgba(255,255,255,0.18)', '0 0 0 0 rgba(255,255,255,0)'] }}
                 transition={reduce ? undefined : { duration: 0.6, ease: 'easeOut' }}
-                className={`rounded-xl border-2 ${a.border} ${a.bgSoft} p-2.5 ring-1 ${a.ringSoft}`}
+                className={focus
+                    ? 'rounded-xl border-2 border-slate-600/70 bg-slate-900/50 p-2.5'
+                    : `rounded-xl border-2 ${a.border} ${a.bgSoft} p-2.5 ring-1 ${a.ringSoft}`}
             >
                 <span className={`mb-1.5 block text-xs font-black uppercase tracking-wide ${a.text}`}>
                     {v.windowLabel} · <span dir="ltr">{CTX_WINDOW}</span>
                 </span>
-                <div className="flex flex-col gap-1.5">
-                    {inside.map((m, i) => {
-                        const gi = count - CTX_WINDOW + i;
-                        return (
-                            <motion.div
-                                key={`m-${gi}`}
-                                layoutId={`ctx-${gi}`}
-                                initial={reduce ? false : { opacity: 0, y: 12 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 30 }}
-                                className={`w-fit max-w-[85%] rounded-lg border px-2.5 py-1 text-sm ${gi % 2 === 0
-                                    ? `self-start ${a.border} bg-slate-950/60 text-slate-200`
-                                    : 'self-end border-white/10 bg-slate-800/60 text-slate-300'
-                                    }`}
-                            >
-                                {m}
-                            </motion.div>
-                        );
-                    })}
+                {/* החלון מחליק: עם כל הודעה חדשה נכנסות שלוש הודעות אחרות, והן נבדלות
+                    בגובה במסך צר. ב-Focus Stage כל החלונות האפשריים נערמים בתא אחד של grid
+                    (העותקים שקופים), כך שההחלקה לא מכווצת את המכשיר. */}
+                <div className={focus ? 'grid' : ''}>
+                    {focus && Array.from({ length: msgs.length - CTX_WINDOW + 1 }, (_, k) => (
+                        <div key={`gw-${k}`} aria-hidden className="invisible col-start-1 row-start-1 flex flex-col gap-1.5">
+                            {msgs.slice(k, k + CTX_WINDOW).map((m, i) => (
+                                <span key={i} className={`w-fit max-w-[85%] rounded-lg border px-2.5 py-1 text-sm ${(k + i) % 2 === 0 ? 'self-start' : 'self-end'}`}>{m}</span>
+                            ))}
+                        </div>
+                    ))}
+                    <div className={focus ? 'col-start-1 row-start-1 flex flex-col gap-1.5' : 'flex flex-col gap-1.5'}>
+                        {inside.map((m, i) => {
+                            const gi = count - CTX_WINDOW + i;
+                            return (
+                                <motion.div
+                                    key={`m-${gi}`}
+                                    layoutId={`ctx-${gi}`}
+                                    initial={reduce ? false : { opacity: 0, y: 12 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 30 }}
+                                    className={`w-fit max-w-[85%] rounded-lg border px-2.5 py-1 text-sm ${gi % 2 === 0
+                                        ? `self-start ${focus ? 'border-slate-600/70' : a.border} bg-slate-950/60 text-slate-200`
+                                        : 'self-end border-white/10 bg-slate-800/60 text-slate-300'
+                                        }`}
+                                >
+                                    {m}
+                                </motion.div>
+                            );
+                        })}
+                    </div>
                 </div>
             </motion.div>
 
+            {/* הוספת הודעה היא פעולה, ולכן טיפול-פעולה שקט ב-Focus Stage */}
             <div className="mt-2.5">
-                <VizButton a={a} disabled={done} onClick={() => { sound.tick(2); setCount((c) => Math.min(c + 1, msgs.length)); }}>
+                <VizButton a={a} focus={focus} action disabled={done} onClick={() => { sound.tick(2); setCount((c) => Math.min(c + 1, msgs.length)); }}>
                     <Plus size={12} aria-hidden />
                     {v.addLabel}
                 </VizButton>
@@ -1290,7 +1357,7 @@ const FLOOR_OPACITY = [0.55, 0.8, 1];
 const NUM_LAYERS = 10;
 const PHASE_AT = [1, 5, 9];
 
-function LayersViz({ a, reduce, silent, viz, dir }: VizProps) {
+function LayersViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
     const v = viz.layers;
     const [phase, setPhase] = useState(reduce ? v.floors.length - 1 : 0);
     const touched = useRef(false);
@@ -1316,7 +1383,9 @@ function LayersViz({ a, reduce, silent, viz, dir }: VizProps) {
             <motion.div
                 animate={{ filter: `blur(${FLOOR_BLUR[phase]}px)`, opacity: FLOOR_OPACITY[phase] }}
                 transition={{ duration: reduce ? 0 : 0.45 }}
-                className="mb-3 rounded-lg border border-white/5 bg-slate-950/50 px-3 py-2 text-center text-sm font-bold text-slate-100"
+                className={focus
+                    ? 'mb-3 rounded-lg border border-slate-700/50 bg-slate-900/50 px-3 py-2 text-center text-sm font-bold text-slate-100'
+                    : 'mb-3 rounded-lg border border-white/5 bg-slate-950/50 px-3 py-2 text-center text-sm font-bold text-slate-100'}
             >
                 {v.sentence}
             </motion.div>
@@ -1337,7 +1406,9 @@ function LayersViz({ a, reduce, silent, viz, dir }: VizProps) {
                                     initial={false}
                                     animate={{ opacity: reached ? 1 : 0.2, scale: cur ? 1.14 : 1 }}
                                     transition={{ duration: reduce ? 0 : 0.3, delay: reduce ? 0 : (reached ? i * 0.03 : 0) }}
-                                    className={`h-2 w-9 rounded-sm ${reached ? a.solid : 'bg-slate-700/50'} ${cur ? a.glow : ''}`}
+                                    // הסמן הנוכחי סומן עד כה בהילה רחבה. ב-Focus Stage הוא מסומן
+                                    // בהתרחבות ובטבעת דקה בלבד, בלי אור דקורטיבי.
+                                    className={`h-2 w-9 rounded-sm ${reached ? a.solid : 'bg-slate-700/50'} ${cur ? (focus ? 'ring-1 ring-slate-300/50' : a.glow) : ''}`}
                                 />
                             );
                         })}
@@ -1354,9 +1425,14 @@ function LayersViz({ a, reduce, silent, viz, dir }: VizProps) {
                                 type="button"
                                 onClick={() => { haptic(); touched.current = true; goPhase(i, true); }}
                                 aria-pressed={active}
-                                className={`w-full rounded-xl border px-3 py-2 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active ? `${a.border} ${a.bgSoft}` : 'border-white/5 bg-slate-950/40 hover:bg-white/[0.03]'}`}
+                                // שלושת השלבים הם קבוצת-בחירה אנכית: ב-Focus Stage השלב הנבחר
+                                // מסומן במשטח ניטרלי בהיר יותר ובפס-בחירה דק בגוון התחנה.
+                                className={`relative w-full overflow-hidden rounded-xl border px-3 py-2 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${focus
+                                    ? active ? 'border-slate-600/70 bg-slate-800/50' : 'border-slate-700/40 bg-slate-950/40 hover:bg-white/[0.03]'
+                                    : active ? `${a.border} ${a.bgSoft}` : 'border-white/5 bg-slate-950/40 hover:bg-white/[0.03]'}`}
                             >
-                                <span className={`block text-sm font-bold ${active ? a.text : 'text-slate-400'}`}>
+                                {focus && active && <span className={`absolute inset-y-1.5 start-0 w-0.5 rounded-full opacity-70 ${a.solid}`} aria-hidden />}
+                                <span className={`block text-sm font-bold ${active ? (focus ? 'text-slate-50' : a.text) : 'text-slate-400'}`}>
                                     {v.floors[i]}
                                 </span>
                                 <AnimatePresence initial={false}>
@@ -1368,7 +1444,23 @@ function LayersViz({ a, reduce, silent, viz, dir }: VizProps) {
                                             transition={{ duration: reduce ? 0 : 0.25 }}
                                             className="block overflow-hidden text-[13px] leading-relaxed text-slate-300"
                                         >
-                                            {v.notes[i]}
+                                            {/* ב-Focus Stage שלוש ההערות נערמות בתא אחד של grid (השתיים
+                                                שאינן פעילות שקופות), כי הן נבדלות בגובה: בלי זה מעבר בין
+                                                השלבים היה מזיז את התחנה. תמיד שלב אחד בלבד פעיל, ולכן זה
+                                                שומר את הגובה של ההערה הגבוהה פעם אחת בסך התחנה. */}
+                                            {focus ? (
+                                                <span className="grid">
+                                                    {v.notes.map((note, k) => (
+                                                        <span
+                                                            key={k}
+                                                            aria-hidden={k === i ? undefined : true}
+                                                            className={k === i ? 'col-start-1 row-start-1' : 'invisible col-start-1 row-start-1'}
+                                                        >
+                                                            {note}
+                                                        </span>
+                                                    ))}
+                                                </span>
+                                            ) : v.notes[i]}
                                         </motion.span>
                                     )}
                                 </AnimatePresence>
@@ -1379,7 +1471,7 @@ function LayersViz({ a, reduce, silent, viz, dir }: VizProps) {
             </div>
 
             {/* מה חוזר בכל שכבה (קשב + feed-forward), ורמז אינטראקציה */}
-            <p className={`mt-2.5 text-center text-[13px] font-bold ${a.text}`} dir="auto">{v.blockLabel}</p>
+            <p className={focus ? 'mt-2.5 text-center text-[13px] font-bold text-slate-200' : `mt-2.5 text-center text-[13px] font-bold ${a.text}`} dir="auto">{v.blockLabel}</p>
             <p className="mt-1 text-center text-[13px] font-bold text-slate-400">{v.hint}</p>
             <Caption>{v.caption}</Caption>
         </div>
@@ -1397,7 +1489,7 @@ const GHOST_POS = [
     { left: '42%', top: '4%' },
 ];
 
-function StateViz({ a, reduce, silent, viz, dir }: VizProps) {
+function StateViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
     const v = viz.state;
     const tokens = viz.attention.tokens;
     const [ghosts, setGhosts] = useState(reduce);
@@ -1472,17 +1564,20 @@ function StateViz({ a, reduce, silent, viz, dir }: VizProps) {
                     <motion.div
                         animate={reduce ? undefined : { scale: [1, 1.07, 1] }}
                         transition={reduce ? undefined : { duration: 2.4, repeat: Infinity, ease: 'easeInOut', delay: 2.4 }}
-                        className={`h-16 w-16 rounded-full ${a.barGradient} ${a.glow}`}
+                        // הכדור הוא האובייקט המרכזי, ולכן הגרדיאנט נשאר. ההילה הרחבה יורדת
+                        // ב-Focus Stage: היא האירה את כל המכשיר בלי ללמד דבר.
+                        className={`h-16 w-16 rounded-full ${a.barGradient}${focus ? '' : ` ${a.glow}`}`}
                         aria-hidden
                     />
                 </motion.div>
-                <span className={`absolute bottom-0 left-1/2 w-full -translate-x-1/2 text-center text-sm font-bold leading-tight ${a.text}`}>
+                <span className={`absolute bottom-0 left-1/2 w-full -translate-x-1/2 text-center text-sm font-bold leading-tight ${focus ? 'text-slate-200' : a.text}`}>
                     {v.orbLabel}
                 </span>
             </div>
 
+            {/* מתג בודד ("מה בפנים"): תפקידו פעולה, והמצב הלחוץ מסומן במשטח */}
             <div className="mt-2.5 flex justify-center">
-                <VizButton a={a} active={ghosts} onClick={() => { sound.tick(4); setGhosts((g) => !g); }}>{v.insideBtn}</VizButton>
+                <VizButton a={a} focus={focus} action active={ghosts} onClick={() => { sound.tick(4); setGhosts((g) => !g); }}>{v.insideBtn}</VizButton>
             </div>
             <Caption>{v.caption}</Caption>
         </div>
@@ -1497,7 +1592,7 @@ const LOGIT_MAX = 10;
 // מדליות פודיום לשלושת המובילים (זהב, כסף, ארד). מחלקות סטטיות בלבד.
 const LOGIT_MEDAL = ['bg-amber-400 text-slate-950', 'bg-slate-300 text-slate-950', 'bg-amber-700 text-white'];
 
-function LogitsViz({ a, reduce, silent, viz, dir }: VizProps) {
+function LogitsViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
     const v = viz.logits;
     const [sorted, setSorted] = useState(reduce);
     const after = useTimers();
@@ -1514,7 +1609,9 @@ function LogitsViz({ a, reduce, silent, viz, dir }: VizProps) {
 
     return (
         <div dir={dir}>
-            <div className="mb-2.5 w-fit rounded-lg border border-white/5 bg-slate-950/50 px-3 py-1.5 text-sm text-slate-300">
+            <div className={focus
+                ? 'mb-2.5 w-fit rounded-lg border border-slate-700/50 bg-slate-900/50 px-3 py-1.5 text-sm text-slate-200'
+                : 'mb-2.5 w-fit rounded-lg border border-white/5 bg-slate-950/50 px-3 py-1.5 text-sm text-slate-300'}>
                 {v.prompt}
             </div>
             <div className="flex flex-col gap-1.5">
@@ -1525,7 +1622,9 @@ function LogitsViz({ a, reduce, silent, viz, dir }: VizProps) {
                             key={w}
                             layout
                             transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 30 }}
-                            className={`flex items-center gap-2 rounded-md px-1.5 py-0.5 ${isLeader ? `ring-1 ${a.ringSoft} ${a.bgSoft}` : ''}`}
+                            // שורת המוביל מסומנת. ב-Focus Stage הסימון הוא משטח ניטרלי בהיר
+                            // יותר: הגוון נשאר על שם המוביל ועל העמודה שלו, שם הוא נתון.
+                            className={`flex items-center gap-2 rounded-md px-1.5 py-0.5 ${isLeader ? (focus ? 'bg-slate-800/50 ring-1 ring-slate-600/60' : `ring-1 ${a.ringSoft} ${a.bgSoft}`) : ''}`}
                         >
                             {/* מדליית פודיום לשלושת המובילים, מופיעה כשהרשימה מסתדרת */}
                             <span className="flex h-5 w-5 shrink-0 items-center justify-center" dir="ltr">
@@ -1569,7 +1668,7 @@ const SCORE_DATA = [
     { raw: 4.0, prob: 6 },
 ];
 
-function ScoresViz({ a, reduce, silent, viz, dir }: VizProps) {
+function ScoresViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
     const maxRaw = 10; // קנה מידה קבוע לעמודות הציון הגולמי
     const [total, setTotal] = useState(reduce ? 100 : 0);
 
@@ -1634,10 +1733,14 @@ function ScoresViz({ a, reduce, silent, viz, dir }: VizProps) {
             {/* רגע הנעילה: ביחד תמיד 100% */}
             <div className="flex items-center justify-end gap-2" dir={dir}>
                 <span className="text-sm font-bold text-slate-400">{viz.scores.totalLabel}</span>
+                {/* רגע הנעילה מסומן בגוון התחנה על משטח ניטרלי ב-Focus Stage: הצבע אומר
+                    "ננעל", ולא צובע עוד כרטיס. */}
                 <motion.span
                     animate={total === 100 && !reduce ? { scale: [1, 1.18, 1] } : { scale: 1 }}
                     transition={{ duration: 0.35 }}
-                    className={`rounded-full border px-2.5 py-0.5 font-mono text-sm font-black ${total === 100 ? `${a.border} ${a.text} ${a.bgSoft}` : 'border-white/10 text-slate-400'}`}
+                    className={`rounded-full border px-2.5 py-0.5 font-mono text-sm font-black ${total === 100
+                        ? focus ? `border-slate-600/70 bg-slate-800/60 ${a.text}` : `${a.border} ${a.text} ${a.bgSoft}`
+                        : 'border-white/10 text-slate-400'}`}
                     dir="ltr"
                 >
                     {total}%
@@ -1793,7 +1896,7 @@ function DecodingViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
 
 /* ════════════ 14 · הלולאה: כל סיבוב מנוע מוסיף טוקן אחד ════════════ */
 
-function LoopViz({ a, reduce, silent, viz, dir }: VizProps) {
+function LoopViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
     const v = viz.loop;
     const [n, setN] = useState(reduce ? v.words.length : 0);
     const [playing, setPlaying] = useState(!reduce);
@@ -1814,7 +1917,10 @@ function LoopViz({ a, reduce, silent, viz, dir }: VizProps) {
 
     return (
         <div dir={dir}>
-            <div className="mb-3 flex items-center gap-3">
+            {/* שורת המנוע. ב-Focus Stage היא נשברת לשורה נוספת במסך צר (במקום להידחס),
+                ומקומו של כפתור ההשהיה נשמר גם אחרי סימן העצירה - בלי זה השורה הייתה
+                מתכווצת בדיוק ברגע הסיום, ובמסך צר בגובה שורה שלמה. */}
+            <div className={focus ? 'mb-3 flex flex-wrap items-center gap-3' : 'mb-3 flex items-center gap-3'}>
                 {/* טבעת המנוע: מסתובבת כשהלולאה רצה */}
                 <span className="relative flex h-9 w-9 shrink-0 items-center justify-center" aria-hidden>
                     {done ? (
@@ -1829,49 +1935,72 @@ function LoopViz({ a, reduce, silent, viz, dir }: VizProps) {
                         />
                     )}
                 </span>
-                <span className={`text-sm font-bold ${a.text}`}>
+                <span className={`text-sm font-bold ${focus ? 'text-slate-200' : a.text}`}>
                     {v.tokenLabel} <span className="font-mono" dir="ltr">{n}/{v.words.length}</span>
                 </span>
+                {/* השהיה/המשך היא פעולה, ולכן טיפול-פעולה שקט ב-Focus Stage */}
                 {!reduce && !done && (
-                    <VizButton a={a} onClick={() => setPlaying((p) => !p)}>
+                    <VizButton a={a} focus={focus} action onClick={() => setPlaying((p) => !p)}>
                         {playing ? <Pause size={12} aria-hidden /> : <Play size={12} aria-hidden />}
                         {playing ? v.pause : v.play}
                     </VizButton>
                 )}
+                {!reduce && done && focus && (
+                    <span aria-hidden className="invisible inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border px-3.5 py-1 text-sm font-bold">
+                        <Play size={12} />
+                        {v.play}
+                    </span>
+                )}
             </div>
 
-            {/* התשובה הנבנית, טוקן אחרי טוקן */}
-            <div className="flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-lg border border-white/5 bg-slate-950/50 px-3 py-2">
-                {v.words.slice(0, n).map((w, i) => (
-                    <motion.span
-                        key={i}
-                        initial={reduce ? false : { opacity: 0, y: 6, scale: 0.8 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 340, damping: 20 }}
-                        className={`rounded-md border ${a.border} bg-slate-950/60 px-2 py-0.5 text-sm font-bold ${a.text}`}
-                    >
-                        {w}
-                    </motion.span>
-                ))}
-                {!done && !reduce && playing && (
-                    <motion.span
-                        aria-hidden
-                        className={`h-4 w-0.5 ${a.solid}`}
-                        animate={{ opacity: [1, 0, 1] }}
-                        transition={{ duration: 0.9, repeat: Infinity }}
-                    />
+            {/* התשובה הנבנית, טוקן אחרי טוקן. ב-Focus Stage גובה התשובה המלאה שמור מראש
+                (עותק שקוף באותו תא), כדי שהטוקנים שנוספים לא יגדילו את התחנה תוך כדי. */}
+            <div className={focus ? 'grid' : ''}>
+                {focus && (
+                    <div aria-hidden className="invisible col-start-1 row-start-1 flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-lg border px-3 py-2">
+                        {v.words.map((w, i) => (
+                            <span key={`ghost-${i}`} className="rounded-md border px-2 py-0.5 text-sm font-bold">{w}</span>
+                        ))}
+                        <span className="inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-bold">
+                            <Square size={9} fill="currentColor" aria-hidden />
+                            {v.stopLabel}
+                        </span>
+                    </div>
                 )}
-                {done && (
-                    <motion.span
-                        initial={reduce ? false : { opacity: 0, scale: 0.7 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 18 }}
-                        className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-slate-900 px-2 py-0.5 text-xs font-bold text-slate-400"
-                    >
-                        <Square size={9} fill="currentColor" aria-hidden />
-                        {v.stopLabel}
-                    </motion.span>
-                )}
+                <div className={focus
+                    ? 'col-start-1 row-start-1 flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-lg border border-slate-700/50 bg-slate-900/50 px-3 py-2'
+                    : 'flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-lg border border-white/5 bg-slate-950/50 px-3 py-2'}>
+                    {v.words.slice(0, n).map((w, i) => (
+                        <motion.span
+                            key={i}
+                            initial={reduce ? false : { opacity: 0, y: 6, scale: 0.8 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 340, damping: 20 }}
+                            className={`rounded-md border ${a.border} bg-slate-950/60 px-2 py-0.5 text-sm font-bold ${a.text}`}
+                        >
+                            {w}
+                        </motion.span>
+                    ))}
+                    {!done && !reduce && playing && (
+                        <motion.span
+                            aria-hidden
+                            className={`h-4 w-0.5 ${a.solid}`}
+                            animate={{ opacity: [1, 0, 1] }}
+                            transition={{ duration: 0.9, repeat: Infinity }}
+                        />
+                    )}
+                    {done && (
+                        <motion.span
+                            initial={reduce ? false : { opacity: 0, scale: 0.7 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 18 }}
+                            className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-slate-900 px-2 py-0.5 text-xs font-bold text-slate-400"
+                        >
+                            <Square size={9} fill="currentColor" aria-hidden />
+                            {v.stopLabel}
+                        </motion.span>
+                    )}
+                </div>
             </div>
             <Caption>{v.caption}</Caption>
         </div>

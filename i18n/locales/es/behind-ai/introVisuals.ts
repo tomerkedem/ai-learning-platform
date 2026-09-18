@@ -66,13 +66,13 @@ export const introVisuals = {
             historyLabel: 'La conversación hasta ahora',
             historyText: 'Pedí ayer y recibí un número de seguimiento.',
             stripLabel: 'Todo entra como una sola secuencia',
-            caption: 'El modelo nunca recibe solo tu último mensaje: las instrucciones, el historial y tu petición se pegan en una sola secuencia larga.',
+            caption: 'Las instrucciones, el historial y tu petición se pegan en una sola secuencia larga, así que todas moldean la respuesta.',
         },
 
         tokenize: {
             sentence: 'Mi paquete no llegó',
             tokens: ['Mi', 'paquete', 'no', 'llegó'] as string[],
-            caption: 'El texto se divide en unidades. En un modelo real, a veces el corte cae dentro de una palabra.',
+            caption: 'En un modelo real, a veces el corte cae dentro de una palabra, no solo entre palabras.',
             altSentence: 'Las entregas son impresionantes',
             altTokens: ['Las', 'entreg', 'as', 'son', 'impresion', 'antes'] as string[],
             // Maps each piece to its original word (same-word pieces share a color).
@@ -84,7 +84,7 @@ export const introVisuals = {
 
         ids: {
             hint: 'Toca una tarjeta para girarla',
-            caption: 'A partir de aquí no hay palabras dentro. Solo números.',
+            caption: 'El ID es una dirección en el vocabulario, no un significado.',
         },
 
         embedding: {
@@ -95,7 +95,7 @@ export const introVisuals = {
             mapWords: ['paquete', 'entrega', 'gato', 'perro'] as string[],
             mapHint: 'Toca una palabra en el mapa',
             nearLabel: 'Par más cercano',
-            mapCaption: 'Las palabras con significado parecido reciben números parecidos y caen cerca unas de otras.',
+            mapCaption: 'Las representaciones con significado parecido pueden quedar cerca unas de otras en el espacio.',
         },
 
         position: {
@@ -103,7 +103,7 @@ export const introVisuals = {
             swapLabel: 'Cambia el orden',
             meaningA: 'Pagas antes de que salga el paquete.',
             meaningB: 'Pagas solo cuando llega el paquete.',
-            caption: 'Las mismas palabras, otro orden, otro trato. Por eso cada token recibe una etiqueta de posición.',
+            caption: 'La etiqueta de posición es lo que separa aquí el "antes" del "después".',
         },
 
         context: {
@@ -118,7 +118,7 @@ export const introVisuals = {
                 'El paquete todavía no llegó',
                 '¿Qué habías pedido exactamente?',
             ] as string[],
-            caption: 'Lo que sale de la ventana deja de existir para el modelo. Por eso una conversación larga puede olvidar su propio comienzo.',
+            caption: 'La ventana no crece: cada mensaje nuevo que entra empuja uno viejo hacia fuera.',
         },
 
         // stories order must match the tokens order (index for index).
@@ -133,7 +133,7 @@ export const introVisuals = {
                 '¿Quién es "él"? El modelo lo une a "el perro".',
                 '¿Quién estaba feliz? "estaba feliz" se une a "él", el perro.',
             ] as string[],
-            caption: 'Toca una palabra para cambiar el foco. Cada palabra atiende a las demás con distinta intensidad.',
+            caption: 'Cada palabra atiende a las demás con distinta intensidad.',
         },
 
         // Station 8: one ambiguous word, two contexts, the meaning flips.
@@ -144,7 +144,7 @@ export const introVisuals = {
             activeNote: (k: number, n: number) => `${k} de ${n} expertos se ejecutan`,
             outLabel: 'enriquecido',
             hint: 'Cambia de token y mira qué expertos se encienden',
-            caption: 'Tras la atención, cada token pasa por una red feed-forward que lo enriquece. En los modelos grandes un router enciende solo unos pocos expertos de entre muchos - eso es Mixture-of-Experts: conocimiento enorme, pero solo una parte pequeña se ejecuta por token. Los "expertos" no son expertos humanos en temas: el enrutamiento se aprende en el entrenamiento, es puramente numérico y no es legible de forma directa para las personas.',
+            caption: 'Tras la atención, cada token pasa por una red feed-forward que lo enriquece. En los modelos grandes esto funciona como Mixture-of-Experts: conocimiento enorme, pero solo una parte pequeña se ejecuta por token. Los "expertos" no son expertos humanos en temas: el enrutamiento se aprende en el entrenamiento, es puramente numérico y no es legible de forma directa para las personas.',
         },
 
         layers: {
@@ -158,13 +158,13 @@ export const introVisuals = {
             floorLabel: 'Piso',
             blockLabel: 'Cada capa: atención + feed-forward',
             hint: 'Toca un piso para saltar allí',
-            caption: 'Un modelo real tiene decenas de pisos como estos, y cada uno pule la comprensión un poco más.',
+            caption: 'Ninguna capa entiende por sí sola: el mismo bloque se repite y la comprensión se construye poco a poco.',
         },
 
         state: {
             orbLabel: 'Una sola representación de todo el contexto',
             insideBtn: '¿Qué hay comprimido dentro?',
-            caption: 'Todo el contexto queda comprimido en un punto. De ahí nacerá la próxima palabra. El contexto en sí no se borra: en cada vuelta el modelo vuelve a mirarlo.',
+            caption: 'El contexto en sí no se borra: en cada vuelta el modelo vuelve a mirarlo.',
         },
 
         logits: {
@@ -172,7 +172,7 @@ export const introVisuals = {
             words: ['soleado', 'lluvioso', 'nublado', 'caluroso', 'fresco', 'agradable', 'tormentoso', 'despejado'] as string[],
             note: 'Ocho candidatos de las decenas de miles que se evalúan a la vez.',
             caption: (note: string) =>
-                `Cada candidato recibe una puntuación bruta y la lista se ordena según quién lidera. ${note}`,
+                `Una puntuación más alta solo dice "más probable", no "cuánto más". ${note}`,
         },
 
         scores: {
@@ -181,7 +181,7 @@ export const introVisuals = {
             probHeader: 'Probabilidad',
             totalLabel: 'En total',
             caption: (note: string) =>
-                `Las puntuaciones brutas (gris) se convierten en probabilidades que suman 100%. ${note}`,
+                `Incluso después de la conversión esto sigue siendo una distribución, no una decisión. ${note}`,
         },
 
         decoding: {
@@ -200,7 +200,7 @@ export const introVisuals = {
             pause: 'Pausar',
             tokenLabel: 'Token',
             stopLabel: 'Señal de parada',
-            caption: 'Cada vuelta añade un token a la respuesta. Por eso la respuesta del chat se construye ante tus ojos, palabra a palabra.',
+            caption: 'Por eso la respuesta del chat se construye ante tus ojos, palabra a palabra.',
         },
     },
 };

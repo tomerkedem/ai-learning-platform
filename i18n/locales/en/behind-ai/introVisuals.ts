@@ -65,13 +65,13 @@ export const introVisuals = {
             historyLabel: 'The chat so far',
             historyText: 'I ordered yesterday and got a tracking number.',
             stripLabel: 'Everything goes in as one sequence',
-            caption: 'The model never gets just your last message: the instructions, the history and your request are glued into one long sequence.',
+            caption: 'The instructions, the history and your request are glued into one long sequence, so all of them shape the answer.',
         },
 
         tokenize: {
             sentence: 'My package did not arrive',
             tokens: ['My', 'package', 'did not', 'arrive'] as string[],
-            caption: 'The text is split into units. In a real model the split sometimes lands inside a word.',
+            caption: 'In a real model the split sometimes lands inside a word, not only between words.',
             altSentence: 'The deliveries are unbelievable',
             altTokens: ['The', 'deliver', 'ies', 'are', 'un', 'believ', 'able'] as string[],
             // Maps each piece to its original word (same-word pieces share a color).
@@ -83,7 +83,7 @@ export const introVisuals = {
 
         ids: {
             hint: 'Tap a card to flip it',
-            caption: 'From here on there are no words inside. Only numbers.',
+            caption: 'The ID is an address in the vocabulary, not a meaning.',
         },
 
         embedding: {
@@ -94,7 +94,7 @@ export const introVisuals = {
             mapWords: ['package', 'delivery', 'cat', 'dog'] as string[],
             mapHint: 'Tap a word on the map',
             nearLabel: 'Closest pair',
-            mapCaption: 'Words with similar meaning get similar numbers, so they land close together.',
+            mapCaption: 'Representations with similar meaning can end up close to each other in the space.',
         },
 
         position: {
@@ -102,7 +102,7 @@ export const introVisuals = {
             swapLabel: 'Swap the order',
             meaningA: 'You pay before the package ships.',
             meaningB: 'You pay only after the package arrives.',
-            caption: 'Exactly the same words, different order, different deal. That is why every token gets a position tag.',
+            caption: 'The position tag is what separates "before" from "after" in this deal.',
         },
 
         context: {
@@ -117,7 +117,7 @@ export const introVisuals = {
                 'The package is still not here',
                 'What exactly did you order again?',
             ] as string[],
-            caption: 'Whatever falls out of the window does not exist for the model. That is why a long chat can forget its own beginning.',
+            caption: 'The window does not grow: every new message that comes in pushes an old one out.',
         },
 
         // stories order must match the tokens order (index for index).
@@ -132,7 +132,7 @@ export const introVisuals = {
                 'Who is "it"? The model links it to "the dog".',
                 'Who was happy? "was happy" links to "it", the dog.',
             ] as string[],
-            caption: 'Tap a word to change the focus. Each word attends to the others with different strength.',
+            caption: 'Each word attends to the others with different strength.',
         },
 
         // Station 8: one ambiguous word, two contexts, the meaning flips.
@@ -143,7 +143,7 @@ export const introVisuals = {
             activeNote: (k: number, n: number) => `${k} of ${n} experts run`,
             outLabel: 'enriched',
             hint: 'Switch token and see which experts light up',
-            caption: 'After attention, each token passes through a feed-forward network that enriches it. In large models a router lights up only a few experts out of many - that is Mixture-of-Experts: huge knowledge, but only a small part runs per token. The "experts" are not human subject-matter experts: the routing is learned in training, purely numerical, and not directly human-readable.',
+            caption: 'After attention, each token passes through a feed-forward network that enriches it. In large models this works as Mixture-of-Experts: huge knowledge, but only a small part runs per token. The "experts" are not human subject-matter experts: the routing is learned in training, purely numerical, and not directly human-readable.',
         },
 
         layers: {
@@ -157,13 +157,13 @@ export const introVisuals = {
             floorLabel: 'Floor',
             blockLabel: 'Each layer: attention + feed-forward',
             hint: 'Tap a floor to jump there',
-            caption: 'A real model has dozens of floors like these, and each one polishes the understanding a bit more.',
+            caption: 'No single layer does the understanding: the same block repeats, and the understanding is built gradually.',
         },
 
         state: {
             orbLabel: 'One representation of the whole context',
             insideBtn: 'What is packed inside?',
-            caption: 'The whole context is compressed into one point. The next word will be born from it. The context itself is not deleted: every generation round looks at it again.',
+            caption: 'The context itself is not deleted: every generation round looks at it again.',
         },
 
         logits: {
@@ -171,7 +171,7 @@ export const introVisuals = {
             words: ['sunny', 'rainy', 'cloudy', 'hot', 'chilly', 'pleasant', 'stormy', 'bright'] as string[],
             note: 'Eight candidates out of tens of thousands checked at once.',
             caption: (note: string) =>
-                `Every candidate gets a raw score, and the list settles by who leads. ${note}`,
+                `A higher score only says "more likely", not "by how much". ${note}`,
         },
 
         scores: {
@@ -180,7 +180,7 @@ export const introVisuals = {
             probHeader: 'Chance',
             totalLabel: 'Together',
             caption: (note: string) =>
-                `The raw scores (gray) turn into probabilities that add up to 100%. ${note}`,
+                `Even after the conversion this is still a distribution, not a decision. ${note}`,
         },
 
         decoding: {
@@ -199,7 +199,7 @@ export const introVisuals = {
             pause: 'Pause',
             tokenLabel: 'Token',
             stopLabel: 'Stop signal',
-            caption: 'Each cycle adds one token to the answer. That is why chat answers build up in front of your eyes, word by word.',
+            caption: 'That is why chat answers build up in front of your eyes, word by word.',
         },
     },
 };

@@ -65,13 +65,13 @@ export const introVisuals = {
             historyLabel: 'これまでの会話',
             historyText: '昨日注文して、追跡番号を受け取りました。',
             stripLabel: 'すべてが一つの列として入る',
-            caption: 'モデルは最後のメッセージだけを受け取るのではありません。指示、履歴、依頼が一つの長い列につながります。',
+            caption: '指示、履歴、依頼が一つの長い列につながるので、そのすべてが答えを左右します。',
         },
 
         tokenize: {
             sentence: '私の荷物が届かない',
             tokens: ['私の', '荷物', 'が', '届かない'] as string[],
-            caption: 'テキストは単位に分割されます。実際のモデルでは、分割が単語の途中に入ることもあります。',
+            caption: '実際のモデルでは、分割は単語の間だけでなく、単語の途中に入ることもあります。',
             altSentence: '再配達をお願いします',
             altTokens: ['再', '配達', 'を', 'お願い', 'します'] as string[],
             // Maps each piece to its original word (same-word pieces share a color).
@@ -83,7 +83,7 @@ export const introVisuals = {
 
         ids: {
             hint: 'カードをタップすると裏返ります',
-            caption: 'ここから先、中に言葉はありません。数字だけです。',
+            caption: 'IDは語彙の中の住所であって、意味ではありません。',
         },
 
         embedding: {
@@ -94,7 +94,7 @@ export const introVisuals = {
             mapWords: ['荷物', '配達', '猫', '犬'] as string[],
             mapHint: '地図の言葉をタップ',
             nearLabel: '一番近いペア',
-            mapCaption: '意味が近い言葉は近い数値になり、近くに並びます。',
+            mapCaption: '意味が近い表現は、空間の中で近くに位置することがあります。',
         },
 
         position: {
@@ -102,7 +102,7 @@ export const introVisuals = {
             swapLabel: '順番を入れ替える',
             meaningA: '荷物が出る前に支払います。',
             meaningB: '荷物が届いてから支払います。',
-            caption: 'まったく同じ言葉でも、順番が変われば取引も変わります。だから各トークンに位置タグが付きます。',
+            caption: '位置タグが、ここで「前」と「後」を分けています。',
         },
 
         context: {
@@ -117,7 +117,7 @@ export const introVisuals = {
                 '荷物がまだ届きません',
                 '何をご注文でしたか?',
             ] as string[],
-            caption: 'ウィンドウから出たものは、モデルにとって存在しません。だから長い会話は最初を忘れることがあります。',
+            caption: 'ウィンドウは大きくなりません。新しいメッセージが入るたび、古いものが押し出されます。',
         },
 
         // stories order must match the tokens order (index for index).
@@ -132,7 +132,7 @@ export const introVisuals = {
                 '「それ」とは何?モデルは「犬」と結びつけます。',
                 '誰が嬉しい?「嬉しい」は「それ」、つまり犬とつながります。',
             ] as string[],
-            caption: '言葉をタップすると焦点が変わります。それぞれの言葉は異なる強さで他の言葉に注意を向けます。',
+            caption: 'それぞれの言葉は異なる強さで他の言葉に注意を向けます。',
         },
 
         // Station 8: one ambiguous word, two contexts, the meaning flips.
@@ -143,7 +143,7 @@ export const introVisuals = {
             activeNote: (k: number, n: number) => `${n}人中${k}人の専門家が動く`,
             outLabel: '強化済み',
             hint: 'トークンを切り替えて、どの専門家が点灯するか見て',
-            caption: 'アテンションのあと、各トークンはfeed-forwardネットワークを通って強化されます。大きなモデルでは、ルーターが多くのうちほんの数人の専門家だけを点灯させます。これがMixture-of-Experts、膨大な知識を持ちながら、トークンごとにごく一部だけが動きます。「専門家」は人間の分野別専門家ではありません。振り分けは学習で得られた純粋に数値的なもので、人がそのまま読めるものではありません。',
+            caption: 'アテンションのあと、各トークンはfeed-forwardネットワークを通って強化されます。大きなモデルでは、これがMixture-of-Expertsとして働き、膨大な知識を持ちながら、トークンごとにごく一部だけが動きます。「専門家」は人間の分野別専門家ではありません。振り分けは学習で得られた純粋に数値的なもので、人がそのまま読めるものではありません。',
         },
 
         layers: {
@@ -157,13 +157,13 @@ export const introVisuals = {
             floorLabel: '階',
             blockLabel: '各層：アテンション + feed-forward',
             hint: '階をタップすると移動します',
-            caption: '実際のモデルには何十もの階があり、それぞれが理解を少しずつ磨きます。',
+            caption: '理解する層が一つあるわけではありません。同じブロックが繰り返され、理解は少しずつ積み上がります。',
         },
 
         state: {
             orbLabel: '文脈全体のひとつの表現',
             insideBtn: '中に何が詰まっている?',
-            caption: '文脈全体がひとつの点に圧縮されました。次の言葉はここから生まれます。文脈そのものが消えるわけではなく、生成のたびにモデルは文脈をもう一度見直します。',
+            caption: '文脈そのものが消えるわけではなく、生成のたびにモデルは文脈をもう一度見直します。',
         },
 
         logits: {
@@ -171,7 +171,7 @@ export const introVisuals = {
             words: ['晴れ', '雨', '曇り', '暑い', '涼しい', '快適', '嵐', '快晴'] as string[],
             note: '一度に検討される数万の候補のうちの8つです。',
             caption: (note: string) =>
-                `各候補が生スコアを受け取り、リストはトップ順に並びます。${note}`,
+                `スコアが高いことは「より起こりそう」だけを表し、「どれだけ」は表しません。${note}`,
         },
 
         scores: {
@@ -180,7 +180,7 @@ export const introVisuals = {
             probHeader: '確率',
             totalLabel: '合計',
             caption: (note: string) =>
-                `生のスコア（灰色）が合計100%の確率になります。${note}`,
+                `変換したあとでも、これはまだ分布であって決定ではありません。${note}`,
         },
 
         decoding: {
@@ -199,7 +199,7 @@ export const introVisuals = {
             pause: '一時停止',
             tokenLabel: 'トークン',
             stopLabel: '停止記号',
-            caption: '一周ごとに答えへトークンが1つ加わります。だからチャットの答えは目の前で言葉ずつ組み上がるのです。',
+            caption: 'だからチャットの答えは目の前で言葉ずつ組み上がるのです。',
         },
     },
 };
