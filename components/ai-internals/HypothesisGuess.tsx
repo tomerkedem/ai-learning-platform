@@ -132,21 +132,21 @@ export const HypothesisGuess: React.FC<{
     return (
         <div
             dir={dir}
-            className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/60 p-6 backdrop-blur-xl md:p-8"
+            className="relative overflow-hidden rounded-[2rem] border border-[var(--bts-border)] bg-[var(--bts-surface)] p-6 backdrop-blur-xl md:p-8"
         >
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[80px]" />
 
             <div className="relative">
                 <div className="text-center">
-                    <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-400">
+                    <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--bts-brand-primary-strong)]">
                         <HelpCircle size={14} /> {content.eyebrow}
                     </span>
                     <div className="mb-2 flex items-center justify-center gap-2.5">
-                        <h3 className="text-xl font-black text-white md:text-3xl">{content.question}</h3>
+                        <h3 className="text-xl font-black text-[var(--bts-text-primary)] md:text-3xl">{content.question}</h3>
                         {/* הקראה אחת לשאלה יחד עם שורת ההסבר שמתחתיה */}
                         <SpeakButton text={`${content.question} ${content.hint}`} />
                     </div>
-                    <p className={`mx-auto mb-7 text-sm text-slate-400 md:text-base ${expanded ? 'max-w-2xl' : 'max-w-xl'}`}>{content.hint}</p>
+                    <p className={`mx-auto mb-7 text-sm text-[var(--bts-text-muted)] md:text-base ${expanded ? 'max-w-2xl' : 'max-w-xl'}`}>{content.hint}</p>
                 </div>
 
                 {/* רשת ההשערות: 2x2 בתצוגה רגילה, שורה אחת (4 עמודות) במסך מלא. */}
@@ -165,7 +165,7 @@ export const HypothesisGuess: React.FC<{
                                 aria-label={`${h.title}. ${h.concept}`}
                                 whileHover={reduce ? undefined : { scale: 1.015 }}
                                 whileTap={reduce ? undefined : { scale: 0.985 }}
-                                className={`relative flex h-full w-full flex-col gap-2.5 rounded-2xl border p-4 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${stateClasses(state, reduce)}`}
+                                className={`relative flex h-full w-full flex-col gap-2.5 rounded-2xl border p-4 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bts-focus-ring-offset)] ${stateClasses(state, reduce)}`}
                             >
                                 {/* פעימת-אישור חד-פעמית בבחירה נכונה */}
                                 {!reduce && state === 'correct' && (

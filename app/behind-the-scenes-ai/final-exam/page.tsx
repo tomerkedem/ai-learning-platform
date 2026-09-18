@@ -55,6 +55,9 @@ export default function FinalExamPage() {
         <div
             className="flex min-h-screen bg-[#050B14] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-hidden relative"
             dir={dir}
+            // נעילת-היקף ל-Dark. למבדק יש מעטפת משלו ולא ChapterLayout, ולכן הוא
+            // חותם את המאפיין בעצמו ואינו יורש את הערכה הגלובלית מ-<html>.
+            data-theme="dark"
         >
             {/* רקע גלובלי, באותו שפה עיצובית של פרקי הלומדה */}
             <div className="fixed inset-0 z-0 pointer-events-none">

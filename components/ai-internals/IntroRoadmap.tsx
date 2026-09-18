@@ -121,7 +121,7 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                 scrollMarginTop: 'calc(var(--bts-sticky-top, 6rem) + 1.75rem)',
                 borderColor: open ? 'rgba(71 85 105 / 0.55)' : candidate ? `rgba(${rgb} / 0.3)` : 'rgba(51 65 85 / 0.5)',
                 backgroundColor: open ? 'rgba(15 23 42 / 0.92)' : 'rgba(15 23 42 / 0.4)',
-                boxShadow: open ? '0 24px 48px -32px rgba(2 6 23 / 0.9)' : 'none',
+                boxShadow: open ? 'var(--bts-shadow-elevation)' : 'none',
             }}
             className={open
                 ? 'relative overflow-hidden rounded-2xl border transition-shadow duration-500 max-md:-ms-5 max-md:rounded-s-none max-md:border-s-0'
@@ -132,7 +132,7 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                 onClick={onToggle}
                 aria-expanded={open}
                 aria-controls={panelId}
-                className="flex w-full items-start gap-3.5 p-3.5 text-start transition-colors hover:bg-white/[0.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-900 md:p-4"
+                className="flex w-full items-start gap-3.5 p-3.5 text-start transition-colors hover:bg-white/[0.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--bts-focus-ring-offset)] md:p-4"
             >
                 {/* תג מספר רץ. עד כאן היה מילוי רווי בגוון התחנה עם טקסט לבן, שנמדד
                     ב-3.19:1 עד 3.61:1 בגוונים הבהירים. עכשיו: משטח כהה ניטרלי, המספר
@@ -157,7 +157,7 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                 {/* טקסט */}
                 <span className="min-w-0 flex-1">
                     <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <span className={open ? 'text-lg font-bold leading-tight text-white md:text-xl' : 'text-base font-bold leading-tight text-white'}>{station.title}</span>
+                        <span className={open ? 'text-lg font-bold leading-tight text-[var(--bts-text-primary)] md:text-xl' : 'text-base font-bold leading-tight text-[var(--bts-text-primary)]'}>{station.title}</span>
                         {isLoop && (
                             <span className="inline-flex items-center gap-1 text-xs font-bold" style={{ color: `rgb(${ink})` }}>
                                 <CornerDownLeft size={13} aria-hidden />
@@ -211,13 +211,13 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                                 <div className="min-w-0">
                                     {hint && <p className="text-base font-semibold leading-relaxed text-slate-50">{hint}</p>}
                                     <div className="mt-3 flex items-center justify-between gap-2.5">
-                                        {station.term && <code dir="ltr" className="rounded-md border border-slate-600/60 bg-slate-950/60 px-1.5 py-0.5 font-mono text-[11px] font-bold text-slate-300">{station.term}</code>}
+                                        {station.term && <code dir="ltr" className="rounded-md border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-inset)] px-1.5 py-0.5 font-mono text-[11px] font-bold text-[var(--bts-text-secondary)]">{station.term}</code>}
                                         <SpeakButton
                                             text={speakJoin(station.title, station.term, station.explanation, station.detail, hint)}
                                             className="ms-auto shrink-0"
                                         />
                                     </div>
-                                    <p className="mt-2 text-[15px] leading-relaxed text-slate-300">{station.detail ?? station.explanation}</p>
+                                    <p className="mt-2 text-[15px] leading-relaxed text-[var(--bts-text-secondary)]">{station.detail ?? station.explanation}</p>
                                 </div>
                                 {station.viz && (
                                     <motion.div

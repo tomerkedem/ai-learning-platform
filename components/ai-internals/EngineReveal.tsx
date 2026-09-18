@@ -38,7 +38,7 @@ export const EngineReveal: React.FC<EngineRevealProps> = ({
     return (
         <div
             dir={dir}
-            className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/70 p-5 backdrop-blur-2xl shadow-2xl md:p-7"
+            className="relative overflow-hidden rounded-[2rem] border border-[var(--bts-border)] bg-[var(--bts-surface-elevated)] p-5 backdrop-blur-2xl shadow-2xl md:p-7"
         >
             {/* הילות רקע: נשארות כרמז עומק, בעוצמה נמוכה יותר */}
             <div className="pointer-events-none absolute -top-20 -right-16 h-64 w-64 rounded-full bg-cyan-500/6 blur-[90px]" />
@@ -70,7 +70,7 @@ export const EngineReveal: React.FC<EngineRevealProps> = ({
                                 aria-hidden
                             />
                         )}
-                        <p className="text-center text-sm leading-relaxed text-slate-400">{outsideLine}</p>
+                        <p className="text-center text-sm leading-relaxed text-[var(--bts-text-muted)]">{outsideLine}</p>
                         <p className="text-center text-base font-bold leading-relaxed text-cyan-200 md:text-lg">{curiosityLine}</p>
                         {/* הקראת סיפור הכרטיס כולו בסדר הקריאה: בקשה, הרווח שבאמצע, תשובה */}
                         <SpeakButton
@@ -82,10 +82,10 @@ export const EngineReveal: React.FC<EngineRevealProps> = ({
 
                 {/* ── תשובה (מודל) ── */}
                 <div className="flex items-start gap-2.5">
-                    <div className="mt-0.5 shrink-0 rounded-full border border-indigo-500/30 bg-slate-800 p-2">
+                    <div className="mt-0.5 shrink-0 rounded-full border border-[var(--bts-brand-secondary)]/30 bg-slate-800 p-2">
                         <Sparkles size={16} className="text-indigo-300" />
                     </div>
-                    <div className="max-w-[80%] rounded-2xl rounded-tl-sm border border-indigo-500/30 bg-indigo-900/15 px-4 py-3">
+                    <div className="max-w-[80%] rounded-2xl rounded-tl-sm border border-[var(--bts-brand-secondary)]/30 bg-indigo-900/15 px-4 py-3">
                         <div className="mb-1 text-[11px] font-bold text-indigo-300/80">{answerRole}</div>
                         <p className="text-sm leading-relaxed text-slate-100 md:text-base">{answer}</p>
                     </div>
@@ -93,11 +93,11 @@ export const EngineReveal: React.FC<EngineRevealProps> = ({
 
                 {/* ── שורת ההקלדה (תחתית): כמו בצ׳אט אמיתי, הקלט למטה וההודעות מעליו.
                     דהויה ולא-פעילה בכוונה - היא רק ממחישה איפה מקלידים. ── */}
-                <div className="mt-4 flex items-center gap-2 rounded-2xl border border-slate-600/50 bg-slate-950/60 py-2 pr-4 pl-2">
+                <div className="mt-4 flex items-center gap-2 rounded-2xl border border-slate-600/50 bg-[var(--bts-surface-inset)] py-2 pr-4 pl-2">
                     {/* slate-500 נמדד ב-4.09:1 מול משטח הקלט. slate-400 מחזיר את המראה
                         הדהוי ועובר את סף AA. */}
-                    <span className="flex-1 text-sm text-slate-400">{inputPlaceholder}</span>
-                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-500 text-slate-950" aria-hidden>
+                    <span className="flex-1 text-sm text-[var(--bts-text-muted)]">{inputPlaceholder}</span>
+                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--bts-brand-primary)] text-slate-950" aria-hidden>
                         <Send size={16} />
                     </span>
                 </div>

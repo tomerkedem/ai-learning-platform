@@ -115,6 +115,88 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+/* ───────────── Behind the Scenes of AI: אסימוני ערכת-נושא (theme tokens) ─────────────
+   שכבה סמנטית דקה מעל צבעי Tailwind. כל אסימון מתאר *תפקיד* (משטח, טקסט, מסגרת),
+   לא גוון, כך שאפשר יהיה להחליף ערכה בלי לגעת ברכיבים.
+
+   הערכה הנפתרת נקבעת במאפיין data-theme:
+     <html data-theme="dark|light">  - הערכה הגלובלית (נקבעת לפני הציור הראשון)
+     <div data-theme="dark">         - נעילת-היקף לתת-עץ (מסלולים שלא הצטרפו לערכות)
+   מאפייני CSS מותאמים יורשים, ולכן הצהרה חוזרת על שורש תת-עץ גוברת על הירושה.
+
+   ערכי ה-Dark זהים בדיוק לערכים המאושרים הקיימים. לכל אסימון מורכב (שקיפות) יש
+   הצהרת נפילה בהקסה לפני color-mix, בדיוק כמו ש-Tailwind עצמו פולט, כדי שדפדפנים
+   בלי color-mix ימשיכו לראות את אותם פיקסלים.
+
+   T2A: Light עדיין אינו עיצוב. הערכים שלו זהים ל-Dark בכוונה, כדי להוכיח את
+   התשתית בנפרד מהעיצוב. הפלטה האמיתית של Light נכתבת ב-T2B. */
+:root,
+[data-theme="dark"] {
+  --bts-page: #050B14;
+
+  --bts-surface: #0f172b99;
+  --bts-surface: color-mix(in oklab, var(--color-slate-900) 60%, transparent);
+  --bts-surface-elevated: #0f172bb3;
+  --bts-surface-elevated: color-mix(in oklab, var(--color-slate-900) 70%, transparent);
+  --bts-surface-inset: #02061899;
+  --bts-surface-inset: color-mix(in oklab, var(--color-slate-950) 60%, transparent);
+
+  --bts-text-primary: var(--color-white);
+  --bts-text-secondary: var(--color-slate-300);
+  --bts-text-muted: var(--color-slate-400);
+
+  --bts-border: #31415880;
+  --bts-border: color-mix(in oklab, var(--color-slate-700) 50%, transparent);
+  --bts-border-emphasis: #45556c99;
+  --bts-border-emphasis: color-mix(in oklab, var(--color-slate-600) 60%, transparent);
+
+  /* brand-primary = מילוי הפעולה (cyan-500); brand-primary-strong = המדרגה הבהירה
+     יותר (cyan-400) לטקסט-מבטא ולריחוף. שני ערכים מאושרים ושונים לעין, ולכן שני
+     אסימונים ולא אחד. */
+  --bts-brand-primary: var(--color-cyan-500);
+  --bts-brand-primary-strong: var(--color-cyan-400);
+  --bts-brand-secondary: var(--color-indigo-500);
+
+  --bts-focus-ring: #00d2ef99;
+  --bts-focus-ring: color-mix(in oklab, var(--color-cyan-400) 60%, transparent);
+  --bts-focus-ring-offset: var(--color-slate-900);
+
+  /* ערך מילולי מאושר. אינו נגזר מ--color-slate-950 (020618) כי הגוון הכתוב כאן
+     (2 6 23) שונה ממנו, והחלפה הייתה משנה פיקסלים. */
+  --bts-shadow-elevation: 0 24px 48px -32px rgba(2 6 23 / 0.9);
+}
+
+/* T2A בלבד: Light נפתר לאותם ערכים כמו Dark. אין כאן עדיין שום החלטת עיצוב. */
+[data-theme="light"] {
+  --bts-page: #050B14;
+
+  --bts-surface: #0f172b99;
+  --bts-surface: color-mix(in oklab, var(--color-slate-900) 60%, transparent);
+  --bts-surface-elevated: #0f172bb3;
+  --bts-surface-elevated: color-mix(in oklab, var(--color-slate-900) 70%, transparent);
+  --bts-surface-inset: #02061899;
+  --bts-surface-inset: color-mix(in oklab, var(--color-slate-950) 60%, transparent);
+
+  --bts-text-primary: var(--color-white);
+  --bts-text-secondary: var(--color-slate-300);
+  --bts-text-muted: var(--color-slate-400);
+
+  --bts-border: #31415880;
+  --bts-border: color-mix(in oklab, var(--color-slate-700) 50%, transparent);
+  --bts-border-emphasis: #45556c99;
+  --bts-border-emphasis: color-mix(in oklab, var(--color-slate-600) 60%, transparent);
+
+  --bts-brand-primary: var(--color-cyan-500);
+  --bts-brand-primary-strong: var(--color-cyan-400);
+  --bts-brand-secondary: var(--color-indigo-500);
+
+  --bts-focus-ring: #00d2ef99;
+  --bts-focus-ring: color-mix(in oklab, var(--color-cyan-400) 60%, transparent);
+  --bts-focus-ring-offset: var(--color-slate-900);
+
+  --bts-shadow-elevation: 0 24px 48px -32px rgba(2 6 23 / 0.9);
+}
+
 @layer base {
   * { @apply border-border outline-ring/50; }
   body { @apply bg-background text-foreground; }

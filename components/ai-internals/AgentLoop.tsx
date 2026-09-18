@@ -278,8 +278,8 @@ const LiveStatusSlot: React.FC<{
                                 <div className="mt-0.5 text-base font-bold leading-snug text-white">{inputText}</div>
                             </div>
                         )}
-                        {body && <p className="text-[15px] leading-relaxed text-slate-300">{body}</p>}
-                        <p className="text-sm text-slate-400">{hintPrompt}</p>
+                        {body && <p className="text-[15px] leading-relaxed text-[var(--bts-text-secondary)]">{body}</p>}
+                        <p className="text-sm text-[var(--bts-text-muted)]">{hintPrompt}</p>
                     </div>
                 )}
             </motion.div>
@@ -463,7 +463,7 @@ export const AgentLoop: React.FC<{
 
                     {/* בקרות: מתג-נוזל + הרצה */}
                     <div className="flex shrink-0 items-center gap-3">
-                        <div className="relative inline-flex items-center rounded-full border border-white/10 bg-slate-950/60 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
+                        <div className="relative inline-flex items-center rounded-full border border-white/10 bg-[var(--bts-surface-inset)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
                             {(['chat', 'agent'] as const).map((m) => {
                                 const on = mode === m;
                                 const isA = m === 'agent';
@@ -473,7 +473,7 @@ export const AgentLoop: React.FC<{
                                         type="button"
                                         onClick={() => switchMode(m)}
                                         aria-pressed={on}
-                                        className={`relative z-10 flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-bold transition-colors duration-300 focus:outline-none focus-visible:ring-2 ${isA ? 'focus-visible:ring-purple-400/50' : 'focus-visible:ring-cyan-400/50'} ${on ? (isA ? 'text-white' : 'text-slate-950') : 'text-slate-400 hover:text-slate-200'}`}
+                                        className={`relative z-10 flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-bold transition-colors duration-300 focus:outline-none focus-visible:ring-2 ${isA ? 'focus-visible:ring-purple-400/50' : 'focus-visible:ring-cyan-400/50'} ${on ? (isA ? 'text-[var(--bts-text-primary)]' : 'text-slate-950') : 'text-[var(--bts-text-muted)] hover:text-slate-200'}`}
                                     >
                                         {on && (
                                             <motion.span

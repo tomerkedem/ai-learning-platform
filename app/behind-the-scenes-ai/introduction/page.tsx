@@ -78,11 +78,11 @@ const LOCALE_SPEECH_LANG: Record<Locale, string> = {
 function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
   return (
     <div className="text-center mb-6">
-      <span className="text-cyan-400 text-sm md:text-base font-bold uppercase tracking-[0.2em] block mb-3">
+      <span className="text-[var(--bts-brand-primary-strong)] text-sm md:text-base font-bold uppercase tracking-[0.2em] block mb-3">
         {eyebrow}
       </span>
-      <h2 className="text-2xl md:text-4xl font-black text-white tracking-tight mb-3">{title}</h2>
-      {children && <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">{children}</p>}
+      <h2 className="text-2xl md:text-4xl font-black text-[var(--bts-text-primary)] tracking-tight mb-3">{title}</h2>
+      {children && <p className="text-[var(--bts-text-muted)] text-base md:text-lg max-w-2xl mx-auto leading-relaxed">{children}</p>}
     </div>
   );
 }
@@ -214,7 +214,7 @@ export default function BehindTheScenesIntroPage() {
   } as AgentDemo;
 
   return (
-    <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={0}>
+    <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={0} themeAware>
       <div className="px-4 pb-24 mt-24 sm:mt-32 md:mt-40" dir={dir}>
         <div className="max-w-5xl mx-auto">
 
@@ -235,13 +235,13 @@ export default function BehindTheScenesIntroPage() {
                 <span className="text-cyan-300 text-xs font-bold tracking-wide">{intro.hero.badge}</span>
               </div>
 
-              <h1 className="mx-auto max-w-4xl text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4">
+              <h1 className="mx-auto max-w-4xl text-3xl md:text-5xl font-black text-[var(--bts-text-primary)] tracking-tight leading-tight mb-4">
                 {intro.hero.titleLead}{' '}
                 <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent`}>
                   {intro.hero.titleAccent}
                 </span>
               </h1>
-              <p className="mx-auto max-w-2xl text-base md:text-lg text-slate-300 leading-relaxed">{intro.hero.intro}</p>
+              <p className="mx-auto max-w-2xl text-base md:text-lg text-[var(--bts-text-secondary)] leading-relaxed">{intro.hero.intro}</p>
 
               {/* דוק האזנה מודרכת צף: מצמיד לקצה החיצוני (תלוי-כיוון) ונשאר נגיש תוך כדי
                   גלילה; במובייל מתכווץ לאייקון בלבד. ממומש דרך portal ל-body (FloatingReadAloud). */}
@@ -327,7 +327,7 @@ export default function BehindTheScenesIntroPage() {
             {/* ── 7 · TRUTH NOTE (near the roadmap) ── */}
             <div className="mt-6 flex items-start gap-2.5 rounded-2xl border border-cyan-500/20 bg-cyan-900/10 p-4 backdrop-blur-xl">
               <Info size={16} className="mt-0.5 shrink-0 text-cyan-400/80" />
-              <p className="text-[13px] leading-relaxed text-slate-300 md:text-sm">{intro.truthNote}</p>
+              <p className="text-[13px] leading-relaxed text-[var(--bts-text-secondary)] md:text-sm">{intro.truthNote}</p>
             </div>
           </section>
 
@@ -340,12 +340,12 @@ export default function BehindTheScenesIntroPage() {
               <p className="text-lg font-bold leading-relaxed tracking-tight text-slate-100 md:text-2xl">{intro.agent.intro}</p>
             </div>
             <ExpandableLab title={agentCard.title}>
-              <div className={`relative overflow-hidden rounded-[2rem] border bg-slate-900/60 p-4 backdrop-blur-xl md:p-6 ${agentMode === 'agent' ? 'border-purple-500/30' : 'border-cyan-500/30'}`}>
+              <div className={`relative overflow-hidden rounded-[2rem] border bg-[var(--bts-surface)] p-4 backdrop-blur-xl md:p-6 ${agentMode === 'agent' ? 'border-purple-500/30' : 'border-cyan-500/30'}`}>
                 <AgentLoop reduce={!!reduce} demo={agentDemo} mode={agentMode} onModeChange={setAgentMode}
                   dir={dir} eyebrow={agentCard.eyebrow} title={agentCard.title} body={agentCard.body} closing={agentCard.closing} />
               </div>
             </ExpandableLab>
-            <p className="mx-auto mt-8 max-w-2xl text-center text-base leading-relaxed text-slate-400 md:text-lg">
+            <p className="mx-auto mt-8 max-w-2xl text-center text-base leading-relaxed text-[var(--bts-text-muted)] md:text-lg">
               {intro.scopeSentence}
             </p>
           </section>
@@ -359,24 +359,24 @@ export default function BehindTheScenesIntroPage() {
             className="mt-20 relative overflow-hidden rounded-[2.5rem] border border-cyan-500/30 bg-gradient-to-br from-slate-900 to-slate-900/60 p-10 md:p-14 text-center shadow-2xl"
           >
             <div className="absolute -top-20 right-1/2 translate-x-1/2 w-80 h-40 bg-cyan-500/8 blur-[80px] rounded-full pointer-events-none" />
-            <span className="relative text-cyan-400 text-[11px] font-bold uppercase tracking-[0.25em] block mb-3">
+            <span className="relative text-[var(--bts-brand-primary-strong)] text-[11px] font-bold uppercase tracking-[0.25em] block mb-3">
               {intro.cta.eyebrow}
             </span>
-            <h2 className="relative text-2xl md:text-4xl font-black text-white mb-4 tracking-tight">
+            <h2 className="relative text-2xl md:text-4xl font-black text-[var(--bts-text-primary)] mb-4 tracking-tight">
               {intro.cta.title}
             </h2>
             {/* עד M12 עמדה כאן דמות מצביעה מעל הכפתור, ו-mb-40 פינה לה מקום ב-lg+.
                 הדמות ירדה והמרווח הגדול ירד איתה, כדי שלא יישאר חלל בצורת אדם. הכפתור
                 עוקב עכשיו ישירות אחרי הטקסט, וההילה העליונה של הכרטיס נשארת המרכיב
                 הוויזואלי היחיד מעליו. */}
-            <p className="relative text-slate-400 text-base md:text-lg max-w-xl mx-auto mb-9 leading-relaxed">
+            <p className="relative text-[var(--bts-text-muted)] text-base md:text-lg max-w-xl mx-auto mb-9 leading-relaxed">
               {intro.cta.body}
             </p>
             <Link
               href={CTA_HREF}
               // ה-CTA נשאר הדבר הבולט בסוף המסך. ההילה הורדה לרמת "כפתור מוצק עם עומק"
               // במקום מקור אור, והריחוף נשאר האות החזק יותר.
-              className="relative inline-flex items-center gap-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-4 px-10 rounded-2xl transition-all shadow-[0_6px_20px_-8px_rgba(34,211,238,0.5)] hover:shadow-[0_8px_28px_-8px_rgba(34,211,238,0.7)] active:scale-95 no-underline text-lg"
+              className="relative inline-flex items-center gap-2.5 bg-[var(--bts-brand-primary)] hover:bg-[var(--bts-brand-primary-strong)] text-slate-950 font-black py-4 px-10 rounded-2xl transition-all shadow-[0_6px_20px_-8px_rgba(34,211,238,0.5)] hover:shadow-[0_8px_28px_-8px_rgba(34,211,238,0.7)] active:scale-95 no-underline text-lg"
             >
               {intro.cta.button}
               {isRtl ? <ChevronLeft size={22} /> : <ChevronRight size={22} />}

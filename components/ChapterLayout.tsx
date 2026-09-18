@@ -53,13 +53,22 @@ interface ChapterLayoutProps {
     courseId: string;
     currentChapterId: number;
     lang?: Language;
+    /**
+     * הצטרפות מפורשת לערכת הנושא הגלובלית. ברירת המחדל (false) נועלת את תת-העץ
+     * של הפרק ל-Dark: השורש חותם data-theme="dark", ולכן אסימוני הערכה נפתרים
+     * ל-Dark גם כאשר <html> נפתר ל-light. כך כל המסלולים שלא הצטרפו (פרקים 1-19,
+     * המבדק, Python, מתמטיקה) נשארים בדיוק כפי שהם, בלי לגעת בקבצים שלהם.
+     * כשהערך true לא נחתם מאפיין כלל, והערכה יורשת מ-<html> בקסקדה.
+     */
+    themeAware?: boolean;
 }
 
 export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     children,
     courseId,
     currentChapterId,
-    lang
+    lang,
+    themeAware = false
 }) => {
     // השפה הפעילה מגיעה מה-LocaleProvider. ה-prop lang נשאר כ-override אופציונלי
     // (לא בשימוש כיום). הכיוון תמיד נגזר מהרישום (dirOf), לא מ-lang === 'he'.
@@ -253,8 +262,10 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
 
     return (
         <div
-            className="flex min-h-[100dvh] bg-[#050B14] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-hidden relative"
+            className="flex min-h-[100dvh] bg-[var(--bts-page)] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-hidden relative"
             dir={dir}
+            // נעילת-היקף: ראה themeAware למעלה.
+            data-theme={themeAware ? undefined : 'dark'}
             // --bts-sticky-top: נקודת העגינה לפסים הדביקים - גובה הכותרת *הנוכחי* + מרווח קטן.
             // --bts-content-top: הריפוד העליון של התוכן - גובה הכותרת *במנוחה* + מרווח קטן, כדי
             // שהתוכן לא יתחיל מתחת לכותרת האטומה. נפרד מהראשון כי הכותרת מתכווצת בגלילה.
@@ -268,7 +279,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
         >
             {/* --- רקע גלובלי --- */}
             <div className="fixed inset-0 z-0 pointer-events-none">
-                 <div className="absolute inset-0 bg-[#050B14]"></div>
+                 <div className="absolute inset-0 bg-[var(--bts-page)]"></div>
                  <div className="absolute inset-0 opacity-40"> 
                     <div className="absolute inset-0" 
                         style={{ 
@@ -283,7 +294,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                      צבע ההילה מגיע מהמפה הסטטית (themeAccent), לא מאינטרפולציה. */}
                  <div className={`absolute top-[-20%] ${isRTL ? 'right-[-10%]' : 'left-[-10%]'} w-150 h-150 ${themeAccent.glowTop} blur-[120px] rounded-full mix-blend-screen animate-pulse motion-reduce:animate-none`}></div>
                  <div className={`absolute bottom-[-20%] ${isRTL ? 'left-[-10%]' : 'right-[-10%]'} w-125 h-125 ${themeAccent.glowBottom} blur-[100px] rounded-full mix-blend-screen`}></div>
-                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050B14_120%)]"></div>
+                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,var(--bts-page)_120%)]"></div>
             </div>
 
             {/* מצב מיקוד: וינייטה אווירתית שמכהה את הקצוות וממקדת את העין במרכז הקריאה */}
