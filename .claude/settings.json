@@ -18,7 +18,6 @@
       "WebFetch(domain:distill.pub)",
       "PowerShell(npx tsc --noEmit 2>&1)",
       "Bash(command -v chromium-cli)",
-      "Bash(cd \"c:/D/2025/AI Engineer/AI-Math-Intuition-course\" && sed -i '1s/פרק 15/פרק 16/' app/behind-the-scenes-ai/chapter-16/coachEngine.ts app/behind-the-scenes-ai/chapter-16/coachData.ts && grep -n \"פרק 16\" app/behind-the-scenes-ai/chapter-16/coachEngine.ts app/behind-the-scenes-ai/chapter-16/coachData.ts)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/behind-the-scenes-ai/introduction)",
       "Bash(sort -t- -k4 -n)",
       "Bash(node -e \"const s=require\\('./package.json'\\).scripts; console.log\\(JSON.stringify\\({typecheck:s.typecheck, lint:s.lint, build:s.build}, null, 2\\)\\)\")",
@@ -35,10 +34,7 @@
       "PowerShell(npx tsc --noEmit -p tsconfig.json; \"TSC_EXIT: $LASTEXITCODE\"; npx eslint \"app/behind-the-scenes-ai/chapter-1/CounterfactualDiff.tsx\" \"app/behind-the-scenes-ai/chapter-1/DecisionTrace.tsx\" \"app/behind-the-scenes-ai/chapter-1/page.tsx\"; \"ESLINT_EXIT: $LASTEXITCODE\")",
       "PowerShell(npm run build 2>&1 | Select-Object -Last 6; \"BUILD_EXIT: $LASTEXITCODE\")"
     ],
-    "additionalDirectories": [
-      "c:\\Users\\USER\\.claude\\projects\\c--D-2025-AI-Engineer-AI-Math-Intuition-course\\memory",
-      "c:\\D\\2025\\AI Engineer\\AI-Math-Intuition-course\\app\\behind-the-scenes-ai\\chapter-16"
-    ]
+    "additionalDirectories": []
   },
   "attribution": {
     "commit": "",
