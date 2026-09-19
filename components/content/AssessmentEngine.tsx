@@ -431,7 +431,7 @@ export const AssessmentEngine = ({
             <motion.div
                 initial={reduce ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 24 }}
-                className="relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-[var(--bts-panel-from)] to-[var(--bts-panel-to)] border border-[var(--bts-divider-soft)] text-center shadow-[0_25px_50px_-12px_var(--bts-shadow-lift)]"
+                className="bts-tier relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-[var(--bts-panel-from)] to-[var(--bts-panel-to)] border border-[var(--bts-divider-soft)] text-center shadow-[0_25px_50px_-12px_var(--bts-shadow-lift)]"
                 dir={dir}
                 role="status"
                 aria-live="polite"
@@ -483,7 +483,7 @@ export const AssessmentEngine = ({
                                 initial={reduce ? false : { strokeDashoffset: ring }}
                                 animate={{ strokeDashoffset: ring * (1 - scoreValue / 100) }}
                                 transition={reduce ? { duration: 0 } : { duration: 1.2, ease: 'easeOut', delay: 0.15 }}
-                                style={{ filter: 'drop-shadow(0 0 6px currentColor)' }}
+                                style={{ filter: 'drop-shadow(0 0 6px color-mix(in srgb, currentColor calc(100% - var(--bts-tint-mix) * 0.7), transparent))' }}
                             />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">

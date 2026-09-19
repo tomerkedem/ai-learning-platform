@@ -51,9 +51,9 @@ function finalExamText(status: FinalExamStatus, progress: ProgressDict): { label
         case "passed":
             return { label: progress.status.passed, color: "text-emerald-400" };
         case "needs-review":
-            return { label: progress.status.needsReview, color: "text-amber-400" };
+            return { label: progress.status.needsReview, color: "bts-tier-amber" };
         default:
-            return { label: progress.status.notTaken, color: "text-slate-400" };
+            return { label: progress.status.notTaken, color: "text-[var(--bts-text-muted)]" };
     }
 }
 
@@ -68,12 +68,12 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
 
     if (!summary || !summary.hasAnyData) {
         return (
-            <div dir={dir} className="rounded-3xl border border-white/10 bg-slate-900/50 p-6 text-start">
-                <div className="flex items-center gap-2 text-slate-300 mb-1">
+            <div dir={dir} className="rounded-3xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 text-start">
+                <div className="flex items-center gap-2 text-[var(--bts-text-secondary)] mb-1">
                     <TrendingUp size={18} className="text-blue-400" />
-                    <h3 className="font-black text-white">{progress.emptyTitle}</h3>
+                    <h3 className="font-black text-[var(--bts-text-primary)]">{progress.emptyTitle}</h3>
                 </div>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <p className="text-sm text-[var(--bts-text-muted)] leading-relaxed">
                     {progress.emptyBody}
                 </p>
             </div>
@@ -83,27 +83,27 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
     const exam = finalExamText(summary.finalExam, progress);
 
     return (
-        <div dir={dir} className="rounded-3xl border border-white/10 bg-slate-900/50 p-6 text-start space-y-5">
-            <div className="flex items-center gap-2 text-slate-300">
+        <div dir={dir} className="rounded-3xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 text-start space-y-5">
+            <div className="flex items-center gap-2 text-[var(--bts-text-secondary)]">
                 <TrendingUp size={18} className="text-blue-400" />
-                <h3 className="font-black text-white">{progress.title}</h3>
+                <h3 className="font-black text-[var(--bts-text-primary)]">{progress.title}</h3>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-white/5 rounded-2xl border border-white/10 p-3">
-                    <div className="text-[10px] font-bold uppercase text-slate-500 mb-1">{progress.completed}</div>
-                    <div className="text-white font-black text-lg">{summary.completedChapters}<span className="text-slate-500 text-sm">/{summary.totalChapters}</span></div>
+                <div className="bg-[var(--bts-fill-soft)] rounded-2xl border border-[var(--bts-divider-soft)] p-3">
+                    <div className="text-[10px] font-bold uppercase text-[var(--bts-text-faint)] mb-1">{progress.completed}</div>
+                    <div className="text-[var(--bts-text-primary)] font-black text-lg">{summary.completedChapters}<span className="text-[var(--bts-text-faint)] text-sm">/{summary.totalChapters}</span></div>
                 </div>
-                <div className="bg-white/5 rounded-2xl border border-white/10 p-3">
-                    <div className="text-[10px] font-bold uppercase text-slate-500 mb-1">{progress.passed}</div>
-                    <div className="text-emerald-400 font-black text-lg">{summary.passedChapters}<span className="text-slate-500 text-sm">/{summary.totalChapters}</span></div>
+                <div className="bg-[var(--bts-fill-soft)] rounded-2xl border border-[var(--bts-divider-soft)] p-3">
+                    <div className="text-[10px] font-bold uppercase text-[var(--bts-text-faint)] mb-1">{progress.passed}</div>
+                    <div className="text-emerald-400 font-black text-lg">{summary.passedChapters}<span className="text-[var(--bts-text-faint)] text-sm">/{summary.totalChapters}</span></div>
                 </div>
-                <div className="bg-white/5 rounded-2xl border border-white/10 p-3">
-                    <div className="text-[10px] font-bold uppercase text-slate-500 mb-1">{progress.average}</div>
-                    <div className="text-white font-black text-lg tabular-nums">{summary.averageScore !== null ? `${summary.averageScore}%` : "-"}</div>
+                <div className="bg-[var(--bts-fill-soft)] rounded-2xl border border-[var(--bts-divider-soft)] p-3">
+                    <div className="text-[10px] font-bold uppercase text-[var(--bts-text-faint)] mb-1">{progress.average}</div>
+                    <div className="text-[var(--bts-text-primary)] font-black text-lg tabular-nums">{summary.averageScore !== null ? `${summary.averageScore}%` : "-"}</div>
                 </div>
-                <div className="bg-white/5 rounded-2xl border border-white/10 p-3">
-                    <div className="text-[10px] font-bold uppercase text-slate-500 mb-1">{progress.finalExam}</div>
+                <div className="bg-[var(--bts-fill-soft)] rounded-2xl border border-[var(--bts-divider-soft)] p-3">
+                    <div className="text-[10px] font-bold uppercase text-[var(--bts-text-faint)] mb-1">{progress.finalExam}</div>
                     <div className={`font-black text-lg ${exam.color}`}>{exam.label}</div>
                 </div>
             </div>
@@ -123,7 +123,7 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
 
             {summary.weakConcepts.length > 0 && (
                 <div>
-                    <div className="flex items-center gap-1.5 text-amber-400 text-xs font-black mb-2">
+                    <div className="flex items-center gap-1.5 bts-tier-amber text-xs font-black mb-2">
                         <Target size={14} /> {progress.weakHeader}
                     </div>
                     <div className="flex flex-wrap gap-1.5">
@@ -231,7 +231,7 @@ export function SidebarMastery() {
 
                             {summary.weakConcepts.length > 0 && (
                                 <div className="mb-3">
-                                    <div className="text-[9px] text-amber-400 font-bold mb-1.5">{progress.weakHeaderShort}</div>
+                                    <div className="text-[9px] bts-tier-amber font-bold mb-1.5">{progress.weakHeaderShort}</div>
                                     <div className="flex flex-wrap gap-1">
                                         {summary.weakConcepts.slice(0, 3).map(c => (
                                             <span key={c} className="text-[10px] font-medium text-amber-200/90 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{conceptLabels[c] ?? c}</span>

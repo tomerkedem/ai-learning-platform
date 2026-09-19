@@ -3,7 +3,7 @@
 // ════════════════════════════════════════════════════════════════════════
 // עמוד ייעודי למבחן סיום הלומדה "מאחורי הקלעים של AI".
 // מפריד את המבחן המסכם מפרק 16, ומציג מעליו את לוח ההתקדמות.
-// משתמש בסרגל הצד המשותף וברקע הכהה של הלומדה, בלי לשנות את ChapterLayout.
+// משתמש בסרגל הצד המשותף וברקע של הלומדה, בלי לשנות את ChapterLayout.
 // כל מחרוזת תצוגה מגיעה מהמילון (t.behindAi.finalExam); ההתנהגות והנתונים המבניים
 // של דרגות הציון (min/color) נשארים ב-quizData.ts ואינם משתנים כאן.
 // אין שימוש בתו "מקף ארוך" (em dash).
@@ -53,24 +53,21 @@ export default function FinalExamPage() {
 
     return (
         <div
-            className="flex min-h-screen bg-[#050B14] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-hidden relative"
+            className="flex min-h-screen bg-[var(--bts-page)] font-sans text-[var(--bts-text-bright)] selection:bg-indigo-500/30 overflow-hidden relative"
             dir={dir}
-            // נעילת-היקף ל-Dark. למבדק יש מעטפת משלו ולא ChapterLayout, ולכן הוא
-            // חותם את המאפיין בעצמו ואינו יורש את הערכה הגלובלית מ-<html>.
-            data-theme="dark"
         >
             {/* רקע גלובלי, באותו שפה עיצובית של פרקי הלומדה */}
             <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute inset-0 bg-[#050B14]" />
+                <div className="absolute inset-0 bg-[var(--bts-page)]" />
                 <div className="absolute inset-0 opacity-40">
                     <div
                         className="absolute inset-0"
-                        style={{ backgroundImage: "radial-gradient(#4f46e5 1px, transparent 1px)", backgroundSize: "40px 40px" }}
+                        style={{ backgroundImage: "radial-gradient(var(--bts-dot) 1px, transparent 1px)", backgroundSize: "40px 40px" }}
                     />
                 </div>
-                <div className="absolute top-[-20%] right-[-10%] w-150 h-150 bg-blue-500/20 blur-[120px] rounded-full mix-blend-screen animate-pulse" />
-                <div className="absolute bottom-[-20%] left-[-10%] w-125 h-125 bg-indigo-600/10 blur-[100px] rounded-full mix-blend-screen" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050B14_120%)]" />
+                <div className="absolute top-[-20%] right-[-10%] w-150 h-150 bg-blue-500/20 blur-[120px] rounded-full [mix-blend-mode:var(--bts-ambient-blend)] animate-pulse motion-reduce:animate-none" />
+                <div className="absolute bottom-[-20%] left-[-10%] w-125 h-125 bg-indigo-600/10 blur-[100px] rounded-full [mix-blend-mode:var(--bts-ambient-blend)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,var(--bts-page)_120%)]" />
             </div>
 
             <CourseSidebar />
@@ -81,7 +78,7 @@ export default function FinalExamPage() {
                     <header className="text-center space-y-4">
                         <Link
                             href="/behind-the-scenes-ai/chapter-19"
-                            className="inline-flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-blue-400 transition-colors no-underline group"
+                            className="inline-flex items-center gap-2 text-xs font-medium text-[var(--bts-text-faint)] hover:text-[color-mix(in_oklab,var(--color-blue-400)_calc(100%_-_var(--bts-ink-darken)),black)] transition-colors no-underline group"
                         >
                             {dir === "rtl"
                                 ? <ArrowRight size={14} className="group-hover:-translate-x-1 transition-transform" />
@@ -91,8 +88,8 @@ export default function FinalExamPage() {
                         <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto border border-blue-500/20">
                             <GraduationCap size={32} className="text-blue-400" />
                         </div>
-                        <h1 className="text-3xl md:text-4xl font-black text-white">{fx.pageTitle}</h1>
-                        <p className="text-slate-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+                        <h1 className="text-3xl md:text-4xl font-black text-[var(--bts-text-primary)]">{fx.pageTitle}</h1>
+                        <p className="text-[var(--bts-text-muted)] text-sm md:text-base max-w-xl mx-auto leading-relaxed">
                             {fx.pageSubtitle}
                         </p>
                     </header>
