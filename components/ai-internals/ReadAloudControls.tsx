@@ -164,7 +164,7 @@ export function ReadAloudControls({
     return (
         <div
             dir={dir}
-            className={`inline-flex max-w-full flex-col gap-3 rounded-2xl border border-[var(--bts-border)] bg-[var(--bts-surface)] text-start shadow-[0_8px_30px_rgba(2,6,23,0.5)] backdrop-blur-xl ${compact && !isActive ? 'p-2 sm:p-3' : 'p-3'}`}
+            className={`inline-flex max-w-full flex-col gap-3 rounded-2xl border border-[var(--bts-border)] bg-[var(--bts-surface)] text-start shadow-[0_8px_30px_rgba(2,6,23,0.5)] [html[data-theme=light]_&]:shadow-none backdrop-blur-xl ${compact && !isActive ? 'p-2 sm:p-3' : 'p-3'}`}
         >
             {/* שורת הפקדים הראשית */}
             <div className="flex flex-wrap items-center gap-2">
