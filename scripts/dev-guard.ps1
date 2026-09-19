@@ -1,7 +1,7 @@
 # Guarded `next dev`: kills ONLY the process tree it started if it runs away.
 # Usage: npm run dev:safe
 $MaxProcesses = 40      # root + descendants
-$MaxMemoryGB  = 2       # total working set of the tree
+$MaxMemoryGB  = 4       # total working set of the tree; normal dev compile peaks ~2.2 GB, process count is the primary runaway guard
 $StartupSec   = 90      # port must accept connections by then
 $Port         = 3000
 $PollSec      = 1
