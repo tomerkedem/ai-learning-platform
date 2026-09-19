@@ -1,14 +1,11 @@
-\---
-
+---
 name: visual-qa
-
 description: Validate learner-facing UI changes in a real browser with focused responsive, visual, accessibility, RTL/LTR, and regression checks. Use after meaningful UI, layout, responsive, theme, color, or interaction changes.
-
-\---
-
+---
 
 
-\# Visual QA
+
+# Visual QA
 
 
 
@@ -16,7 +13,7 @@ Use this skill for learner-facing visual changes.
 
 
 
-\## Goal
+## Goal
 
 
 
@@ -34,15 +31,15 @@ Do not rely only on:
 
 
 
-\- source-code inspection
+- source-code inspection
 
-\- DOM inspection
+- DOM inspection
 
-\- one viewport
+- one viewport
 
-\- geometry measurements
+- geometry measurements
 
-\- automated screenshots
+- automated screenshots
 
 
 
@@ -50,7 +47,7 @@ Do not generate large screenshot matrices unless explicitly requested.
 
 
 
-\## Primary viewports
+## Primary viewports
 
 
 
@@ -58,15 +55,15 @@ Prioritize:
 
 
 
-\- 1366x768
+- 1366x768
 
-\- 1440x900
+- 1440x900
 
-\- 1536x864
+- 1536x864
 
-\- 390x844
+- 390x844
 
-\- 360x740
+- 360x740
 
 
 
@@ -78,7 +75,7 @@ Use additional sizes only when the component or defect requires them.
 
 
 
-\## Responsive validation
+## Responsive validation
 
 
 
@@ -90,27 +87,27 @@ Check:
 
 
 
-\- clipping
+- clipping
 
-\- horizontal overflow
+- horizontal overflow
 
-\- internal scrolling
+- internal scrolling
 
-\- viewport fit
+- viewport fit
 
-\- sticky/fixed chrome
+- sticky/fixed chrome
 
-\- readable line length
+- readable line length
 
-\- touch-target usability
+- touch-target usability
 
-\- control wrapping
+- control wrapping
 
-\- layout shift
+- layout shift
 
-\- open/close transitions
+- open/close transitions
 
-\- dynamic interaction states
+- dynamic interaction states
 
 
 
@@ -118,7 +115,7 @@ Do not declare a component responsive based only on width breakpoints.
 
 
 
-\## Open learning units
+## Open learning units
 
 
 
@@ -126,23 +123,23 @@ When an interactive learning unit opens:
 
 
 
-\- it should become the current learning focus
+- it should become the current learning focus
 
-\- if it fits in the available learning viewport, show it completely
+- if it fits in the available learning viewport, show it completely
 
-\- center it vertically when appropriate
+- center it vertically when appropriate
 
-\- account for persistent header/chrome
+- account for persistent header/chrome
 
-\- if it cannot fit without harming readability, use natural page scrolling
+- if it cannot fit without harming readability, use natural page scrolling
 
-\- avoid internal scrollbars
+- avoid internal scrollbars
 
-\- never shrink typography merely to claim that it fits
+- never shrink typography merely to claim that it fits
 
 
 
-\## Visual quality
+## Visual quality
 
 
 
@@ -150,17 +147,17 @@ Evaluate whether the experience feels:
 
 
 
-\- mature
+- mature
 
-\- calm
+- calm
 
-\- premium
+- premium
 
-\- professional
+- professional
 
-\- educational
+- educational
 
-\- technically sophisticated
+- technically sophisticated
 
 
 
@@ -168,19 +165,19 @@ Flag visual treatment that feels:
 
 
 
-\- neon
+- neon
 
-\- gamer-like
+- gamer-like
 
-\- dashboard-like
+- dashboard-like
 
-\- demo-like
+- demo-like
 
-\- excessively saturated
+- excessively saturated
 
-\- unnecessarily decorative
+- unnecessarily decorative
 
-\- visually exhausting
+- visually exhausting
 
 
 
@@ -188,15 +185,15 @@ Strong color should communicate:
 
 
 
-\- identity
+- identity
 
-\- state
+- state
 
-\- interaction
+- interaction
 
-\- semantic meaning
+- semantic meaning
 
-\- pedagogical relationships
+- pedagogical relationships
 
 
 
@@ -204,7 +201,7 @@ Decoration alone is not sufficient justification for strong color.
 
 
 
-\## Color discipline
+## Color discipline
 
 
 
@@ -212,19 +209,19 @@ Prefer hierarchy through:
 
 
 
-1\. layout
+1. layout
 
-2\. typography
+2. typography
 
-3\. whitespace
+3. whitespace
 
-4\. surface hierarchy
+4. surface hierarchy
 
-5\. borders
+5. borders
 
-6\. accent color
+6. accent color
 
-7\. glow
+7. glow
 
 
 
@@ -240,7 +237,7 @@ Do not normalize pedagogical data colors into generic brand colors.
 
 
 
-\## Theme validation
+## Theme validation
 
 
 
@@ -248,7 +245,7 @@ When theme-related code changes:
 
 
 
-\### Dark
+### Dark
 
 
 
@@ -260,7 +257,7 @@ Do not accept visible Dark regressions unless explicitly requested.
 
 
 
-\### Light
+### Light
 
 
 
@@ -272,23 +269,23 @@ Check:
 
 
 
-\- comfortable page luminance
+- comfortable page luminance
 
-\- no pure-white glare
+- no pure-white glare
 
-\- readable secondary text
+- readable secondary text
 
-\- restrained borders
+- restrained borders
 
-\- appropriate elevation
+- appropriate elevation
 
-\- station identity
+- station identity
 
-\- pedagogical colors
+- pedagogical colors
 
-\- semantic states
+- semantic states
 
-\- focus visibility
+- focus visibility
 
 
 
@@ -296,7 +293,7 @@ Dark-only glow should normally not be reproduced on Light.
 
 
 
-\### System
+### System
 
 
 
@@ -304,25 +301,25 @@ Verify:
 
 
 
-\- prefers-color-scheme resolution
+- prefers-color-scheme resolution
 
-\- explicit Light override
+- explicit Light override
 
-\- explicit Dark override
+- explicit Dark override
 
-\- persistence
+- persistence
 
-\- live OS-theme changes while System is active
+- live OS-theme changes while System is active
 
-\- first-paint behavior
+- first-paint behavior
 
-\- no theme flash
+- no theme flash
 
-\- no hydration regression
+- no hydration regression
 
 
 
-\## Dark parity
+## Dark parity
 
 
 
@@ -354,7 +351,7 @@ screenshots.
 
 
 
-\## Languages
+## Languages
 
 
 
@@ -364,29 +361,29 @@ For substantial visual changes:
 
 Primary:
 
-\- HE
+- HE
 
-\- EN
+- EN
 
 
 
 RTL smoke:
 
-\- AR
+- AR
 
 
 
 Long-copy smoke:
 
-\- ES
+- ES
 
-\- RU
+- RU
 
 
 
 Wrapping smoke:
 
-\- JA
+- JA
 
 
 
@@ -396,7 +393,7 @@ requires it.
 
 
 
-\## Accessibility
+## Accessibility
 
 
 
@@ -404,21 +401,21 @@ Check where relevant:
 
 
 
-\- visible focus
+- visible focus
 
-\- keyboard operation
+- keyboard operation
 
-\- text contrast
+- text contrast
 
-\- meaningful non-text contrast
+- meaningful non-text contrast
 
-\- state not communicated only by color
+- state not communicated only by color
 
-\- accessible names
+- accessible names
 
-\- reduced motion
+- reduced motion
 
-\- no invisible focusable elements
+- no invisible focusable elements
 
 
 
@@ -426,7 +423,7 @@ Use WCAG AA as the minimum text-contrast target.
 
 
 
-\## Dynamic geometry
+## Dynamic geometry
 
 
 
@@ -434,19 +431,19 @@ For interactive content that changes after opening:
 
 
 
-\- inspect the final geometry
+- inspect the final geometry
 
-\- detect layout shift
+- detect layout shift
 
-\- ensure delayed reveals do not break viewport fit
+- ensure delayed reveals do not break viewport fit
 
-\- reserve geometry only when justified
+- reserve geometry only when justified
 
-\- do not duplicate learning logic merely to reserve space
+- do not duplicate learning logic merely to reserve space
 
 
 
-\## Regression discipline
+## Regression discipline
 
 
 
@@ -454,17 +451,17 @@ Before fixing a visual problem:
 
 
 
-1\. reproduce it
+1. reproduce it
 
-2\. identify the owning component/state
+2. identify the owning component/state
 
-3\. identify the root cause
+3. identify the root cause
 
-4\. make the smallest correct change
+4. make the smallest correct change
 
-5\. validate the affected state
+5. validate the affected state
 
-6\. verify representative unaffected states
+6. verify representative unaffected states
 
 
 
@@ -472,7 +469,7 @@ Do not fix unrelated findings.
 
 
 
-\## Browser validation
+## Browser validation
 
 
 
@@ -484,21 +481,21 @@ Exercise the actual interaction when relevant:
 
 
 
-\- open
+- open
 
-\- close
+- close
 
-\- toggle
+- toggle
 
-\- selection
+- selection
 
-\- action
+- action
 
-\- reveal
+- reveal
 
-\- replay
+- replay
 
-\- result change
+- result change
 
 
 
@@ -506,7 +503,7 @@ Do not infer runtime quality solely from code.
 
 
 
-\## Artifacts
+## Artifacts
 
 
 
@@ -526,7 +523,7 @@ development.
 
 
 
-\## Testing
+## Testing
 
 
 
@@ -540,15 +537,15 @@ Prefer lean validation:
 
 
 
-\- TypeScript compile
+- TypeScript compile
 
-\- lint on changed files
+- lint on changed files
 
-\- git diff --check
+- git diff --check
 
-\- production build
+- production build
 
-\- real-browser validation
+- real-browser validation
 
 
 
@@ -558,7 +555,7 @@ the user explicitly requests them.
 
 
 
-\## Scope
+## Scope
 
 
 
@@ -582,7 +579,7 @@ Do not turn a focused UI task into a general audit.
 
 
 
-\## Final report
+## Final report
 
 
 
@@ -594,21 +591,21 @@ Include:
 
 
 
-\- what changed
+- what changed
 
-\- what was validated
+- what was validated
 
-\- important viewports
+- important viewports
 
-\- important states
+- important states
 
-\- regressions found
+- regressions found
 
-\- regressions fixed
+- regressions fixed
 
-\- remaining limitations
+- remaining limitations
 
-\- whether product-owner review is required
+- whether product-owner review is required
 
 
 

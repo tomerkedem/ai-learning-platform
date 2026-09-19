@@ -1,18 +1,15 @@
-\---
-
+---
 name: i18n-six-locales
-
 description: Apply and validate learner-facing copy changes across the six supported locales: Hebrew, English, Spanish, Russian, Arabic, and Japanese. Use whenever learner-visible text, labels, messages, captions, assessment copy, or localized UI changes.
-
-\---
-
-
-
-\# Six-Locale i18n
+---
 
 
 
-\## Supported locales
+# Six-Locale i18n
+
+
+
+## Supported locales
 
 
 
@@ -20,17 +17,17 @@ Every learner-facing localized feature supports:
 
 
 
-\- he - Hebrew
+- he - Hebrew
 
-\- en - English
+- en - English
 
-\- es - Spanish
+- es - Spanish
 
-\- ru - Russian
+- ru - Russian
 
-\- ar - Arabic
+- ar - Arabic
 
-\- ja - Japanese
+- ja - Japanese
 
 
 
@@ -38,7 +35,7 @@ A localized copy change is incomplete until all six locales are aligned.
 
 
 
-\## Core rule
+## Core rule
 
 
 
@@ -46,19 +43,19 @@ When learner-visible text changes:
 
 
 
-1\. identify the exact dictionary key or keys
+1. identify the exact dictionary key or keys
 
-2\. update all six locales
+2. update all six locales
 
-3\. preserve semantic meaning
+3. preserve semantic meaning
 
-4\. preserve pedagogical intent
+4. preserve pedagogical intent
 
-5\. preserve the level of certainty
+5. preserve the level of certainty
 
-6\. verify dictionary parity
+6. verify dictionary parity
 
-7\. validate relevant RTL/LTR rendering
+7. validate relevant RTL/LTR rendering
 
 
 
@@ -68,7 +65,7 @@ explicitly requires one.
 
 
 
-\## Scope discipline
+## Scope discipline
 
 
 
@@ -84,19 +81,19 @@ Do not:
 
 
 
-\- rewrite surrounding copy
+- rewrite surrounding copy
 
-\- improve unrelated wording
+- improve unrelated wording
 
-\- rename unrelated keys
+- rename unrelated keys
 
-\- reorganize dictionaries
+- reorganize dictionaries
 
-\- reformat locale files
+- reformat locale files
 
-\- change learning content
+- change learning content
 
-\- introduce new concepts
+- introduce new concepts
 
 
 
@@ -104,7 +101,7 @@ A localization task is not permission for a content-editing pass.
 
 
 
-\## Translation quality
+## Translation quality
 
 
 
@@ -122,19 +119,19 @@ Preserve:
 
 
 
-\- meaning
+- meaning
 
-\- teaching purpose
+- teaching purpose
 
-\- terminology
+- terminology
 
-\- tone
+- tone
 
-\- emphasis
+- emphasis
 
-\- uncertainty
+- uncertainty
 
-\- logical relationships
+- logical relationships
 
 
 
@@ -142,17 +139,17 @@ If the source says:
 
 
 
-\- may
+- may
 
-\- can
+- can
 
-\- might
+- might
 
-\- often
+- often
 
-\- typically
+- typically
 
-\- sometimes
+- sometimes
 
 
 
@@ -164,7 +161,7 @@ Never strengthen the claim during translation.
 
 
 
-\## Technical terminology
+## Technical terminology
 
 
 
@@ -176,23 +173,23 @@ Terms such as:
 
 
 
-\- token
+- token
 
-\- embedding
+- embedding
 
-\- attention
+- attention
 
-\- context
+- context
 
-\- logits
+- logits
 
-\- softmax
+- softmax
 
-\- decoding
+- decoding
 
-\- agent
+- agent
 
-\- model
+- model
 
 
 
@@ -210,7 +207,7 @@ Consistency is more important than literal translation.
 
 
 
-\## Hebrew source
+## Hebrew source
 
 
 
@@ -218,13 +215,13 @@ When the repository uses Hebrew as the structural source dictionary:
 
 
 
-\- preserve its key structure
+- preserve its key structure
 
-\- preserve type inference
+- preserve type inference
 
-\- ensure all other locales match
+- ensure all other locales match
 
-\- do not use Hebrew learner-facing copy as fallback for another locale
+- do not use Hebrew learner-facing copy as fallback for another locale
 
 
 
@@ -238,7 +235,7 @@ Each locale should read naturally.
 
 
 
-\## Dictionary parity
+## Dictionary parity
 
 
 
@@ -254,15 +251,15 @@ Do not:
 
 
 
-\- add a key to only one locale
+- add a key to only one locale
 
-\- silently omit a translation
+- silently omit a translation
 
-\- leave placeholder copy
+- leave placeholder copy
 
-\- copy Hebrew into another locale
+- copy Hebrew into another locale
 
-\- copy English into another locale as a temporary fallback
+- copy English into another locale as a temporary fallback
 
 
 
@@ -274,7 +271,7 @@ quality check.
 
 
 
-\## contentLocale
+## contentLocale
 
 
 
@@ -286,17 +283,17 @@ Expected values:
 
 
 
-\- he -> he-IL
+- he -> he-IL
 
-\- en -> en-US unless the existing module establishes another English locale
+- en -> en-US unless the existing module establishes another English locale
 
-\- es -> existing Spanish contentLocale
+- es -> existing Spanish contentLocale
 
-\- ru -> existing Russian contentLocale
+- ru -> existing Russian contentLocale
 
-\- ar -> existing Arabic contentLocale
+- ar -> existing Arabic contentLocale
 
-\- ja -> existing Japanese contentLocale
+- ja -> existing Japanese contentLocale
 
 
 
@@ -312,7 +309,7 @@ Never leave another language using the Hebrew contentLocale.
 
 
 
-\## RTL / LTR
+## RTL / LTR
 
 
 
@@ -320,9 +317,9 @@ RTL:
 
 
 
-\- he
+- he
 
-\- ar
+- ar
 
 
 
@@ -330,13 +327,13 @@ LTR:
 
 
 
-\- en
+- en
 
-\- es
+- es
 
-\- ru
+- ru
 
-\- ja
+- ja
 
 
 
@@ -344,23 +341,23 @@ When copy changes materially affect rendering, validate:
 
 
 
-\- direction
+- direction
 
-\- alignment
+- alignment
 
-\- punctuation
+- punctuation
 
-\- wrapping
+- wrapping
 
-\- icon placement
+- icon placement
 
-\- inline controls
+- inline controls
 
-\- badges
+- badges
 
-\- labels
+- labels
 
-\- numbers mixed with text
+- numbers mixed with text
 
 
 
@@ -368,7 +365,7 @@ Do not assume Hebrew rendering proves Arabic rendering.
 
 
 
-\## Length-sensitive languages
+## Length-sensitive languages
 
 
 
@@ -390,17 +387,17 @@ Check:
 
 
 
-\- wrapping
+- wrapping
 
-\- button width
+- button width
 
-\- cards
+- cards
 
-\- labels
+- labels
 
-\- segmented controls
+- segmented controls
 
-\- captions
+- captions
 
 
 
@@ -412,7 +409,7 @@ Fix responsive layout when layout is the real problem.
 
 
 
-\## Japanese
+## Japanese
 
 
 
@@ -420,15 +417,15 @@ Check Japanese independently for:
 
 
 
-\- wrapping
+- wrapping
 
-\- punctuation
+- punctuation
 
-\- compact labels
+- compact labels
 
-\- line breaks
+- line breaks
 
-\- technical terminology
+- technical terminology
 
 
 
@@ -436,7 +433,7 @@ Do not assume LTR Latin-language behavior predicts Japanese layout.
 
 
 
-\## Arabic
+## Arabic
 
 
 
@@ -444,17 +441,17 @@ Check Arabic independently for:
 
 
 
-\- RTL direction
+- RTL direction
 
-\- punctuation
+- punctuation
 
-\- mixed Latin technical terms
+- mixed Latin technical terms
 
-\- numbers
+- numbers
 
-\- controls
+- controls
 
-\- alignment
+- alignment
 
 
 
@@ -462,7 +459,7 @@ Do not use Hebrew as the only RTL validation.
 
 
 
-\## Learner-facing precision
+## Learner-facing precision
 
 
 
@@ -476,19 +473,19 @@ Especially protect distinctions such as:
 
 
 
-\- representation vs meaning
+- representation vs meaning
 
-\- probability vs decision
+- probability vs decision
 
-\- score vs probability
+- score vs probability
 
-\- token vs word
+- token vs word
 
-\- model input vs user message
+- model input vs user message
 
-\- similarity vs equality
+- similarity vs equality
 
-\- can vs always
+- can vs always
 
 
 
@@ -498,7 +495,7 @@ sounds fluent.
 
 
 
-\## Redundancy
+## Redundancy
 
 
 
@@ -518,7 +515,7 @@ same sentence.
 
 
 
-\## UI labels
+## UI labels
 
 
 
@@ -526,13 +523,13 @@ For utility controls such as:
 
 
 
-\- theme
+- theme
 
-\- focus mode
+- focus mode
 
-\- read aloud
+- read aloud
 
-\- navigation
+- navigation
 
 
 
@@ -566,7 +563,7 @@ Visible labels are localized.
 
 
 
-\## Visual validation
+## Visual validation
 
 
 
@@ -576,9 +573,9 @@ For a small copy change:
 
 Primary:
 
-\- HE
+- HE
 
-\- EN
+- EN
 
 
 
@@ -590,15 +587,15 @@ For substantial copy/UI changes:
 
 
 
-\- HE
+- HE
 
-\- EN
+- EN
 
-\- AR
+- AR
 
-\- ES or RU
+- ES or RU
 
-\- JA
+- JA
 
 
 
@@ -612,7 +609,7 @@ Use evidence-based coverage.
 
 
 
-\## Browser validation
+## Browser validation
 
 
 
@@ -632,21 +629,21 @@ Look for:
 
 
 
-\- overflow
+- overflow
 
-\- clipping
+- clipping
 
-\- awkward wrapping
+- awkward wrapping
 
-\- broken RTL
+- broken RTL
 
-\- control resizing
+- control resizing
 
-\- unexpected height changes
+- unexpected height changes
 
 
 
-\## Testing
+## Testing
 
 
 
@@ -660,19 +657,19 @@ Prefer:
 
 
 
-\- TypeScript type checking
+- TypeScript type checking
 
-\- lint on changed files
+- lint on changed files
 
-\- git diff --check
+- git diff --check
 
-\- production build
+- production build
 
-\- targeted browser validation
+- targeted browser validation
 
 
 
-\## Diff discipline
+## Diff discipline
 
 
 
@@ -694,7 +691,7 @@ Do not run automatic formatters across locale files unless required.
 
 
 
-\## Reporting
+## Reporting
 
 
 
@@ -702,13 +699,13 @@ For a small localization change, report concisely:
 
 
 
-\- key changed
+- key changed
 
-\- six final strings
+- six final strings
 
-\- parity result
+- parity result
 
-\- validation result
+- validation result
 
 
 
@@ -716,17 +713,17 @@ For larger localization work:
 
 
 
-\- keys changed
+- keys changed
 
-\- locales changed
+- locales changed
 
-\- semantic/terminology decisions
+- semantic/terminology decisions
 
-\- RTL/LTR result
+- RTL/LTR result
 
-\- overflow result
+- overflow result
 
-\- validation
+- validation
 
 
 

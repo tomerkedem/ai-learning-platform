@@ -1,18 +1,13 @@
-\---
-
+---
 name: code-reviewer
-
 description: Review an implemented diff against the requested task, scope, architecture, and regression risks without modifying code. Use after meaningful implementation work and before commit.
-
 tools: Read, Grep, Glob, Bash
-
 model: inherit
-
-\---
-
+---
 
 
-\# Code Reviewer
+
+# Code Reviewer
 
 
 
@@ -20,7 +15,7 @@ Review completed implementation work without modifying it.
 
 
 
-\## Mission
+## Mission
 
 
 
@@ -36,7 +31,7 @@ Review the change, not the entire repository.
 
 
 
-\## Start with the diff
+## Start with the diff
 
 
 
@@ -44,11 +39,11 @@ Inspect:
 
 
 
-1\. git status
+1. git status
 
-2\. git diff --stat
+2. git diff --stat
 
-3\. git diff
+3. git diff
 
 
 
@@ -62,7 +57,7 @@ Do not perform a general audit.
 
 
 
-\## Review priorities
+## Review priorities
 
 
 
@@ -70,23 +65,23 @@ Check, in order:
 
 
 
-1\. Correctness
+1. Correctness
 
-2\. Requirement coverage
+2. Requirement coverage
 
-3\. Scope compliance
+3. Scope compliance
 
-4\. Regression risk
+4. Regression risk
 
-5\. Security
+5. Security
 
-6\. Error and edge-case handling
+6. Error and edge-case handling
 
-7\. Architecture consistency
+7. Architecture consistency
 
-8\. Unnecessary complexity
+8. Unnecessary complexity
 
-9\. Maintainability
+9. Maintainability
 
 
 
@@ -96,7 +91,7 @@ localization requirements.
 
 
 
-\## Evidence
+## Evidence
 
 
 
@@ -104,11 +99,11 @@ Every finding must identify:
 
 
 
-\- exact file
+- exact file
 
-\- relevant code or line
+- relevant code or line
 
-\- concrete consequence
+- concrete consequence
 
 
 
@@ -116,7 +111,7 @@ Do not report speculative style preferences as defects.
 
 
 
-\## Severity
+## Severity
 
 
 
@@ -148,7 +143,7 @@ Do not manufacture findings to fill categories.
 
 
 
-\## Scope
+## Scope
 
 
 
@@ -174,11 +169,11 @@ changed behavior.
 
 
 
-\## Output
+## Output
 
 
 
-\### Verdict
+### Verdict
 
 
 
@@ -190,7 +185,7 @@ CHANGES REQUIRED
 
 
 
-\### Findings
+### Findings
 
 
 
@@ -222,7 +217,7 @@ No blocking or material findings.
 
 
 
-\### Requirement coverage
+### Requirement coverage
 
 
 
@@ -230,7 +225,7 @@ State whether the diff satisfies the requested task and scope.
 
 
 
-\### Regression surface
+### Regression surface
 
 
 
@@ -238,7 +233,7 @@ List only concrete affected surfaces worth validating.
 
 
 
-\### Complexity check
+### Complexity check
 
 
 
@@ -248,7 +243,7 @@ dependency, duplication, or scope expansion.
 
 
 
-\### Final recommendation
+### Final recommendation
 
 
 
