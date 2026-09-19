@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { courses } from "@/lib/courseData";
 import { ArrowLeft, ArrowRight, CodeXml, Sigma, BrainCog, BookOpen, Eye } from "lucide-react";
@@ -11,6 +11,7 @@ import { useReducedMotion } from "framer-motion";
 import { Tilt } from '@/components/ui/Tilt';
 import { useT } from "@/i18n/useT";
 import { formatChapterCount } from "@/i18n/format";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function HomePage() {
 
@@ -18,6 +19,10 @@ export default function HomePage() {
   // כיבוד reduced-motion: כשהמשתמש מבקש פחות תנועה, לא מרנדרים את שכבת החלקיקים
   // כלל (נשארת רק הילת הגרדיאנט הסטטית). אחרת מריצים גרסה קלה יותר (60 חלקיקים, 60fps).
   const reduce = useReducedMotion();
+  // מבנה ה-DOM קבוע בשרת ובלקוח: העטיפה תמיד קיימת, והחלקיקים נטענים רק אחרי mount.
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- הבחנת mount, מונעת הבדל SSR/לקוח סביב reduced-motion
+  useEffect(() => { setMounted(true); }, []);
 
   const particlesInit = useCallback(async (engine: Engine) => {
     await loadSlim(engine);
@@ -65,15 +70,15 @@ export default function HomePage() {
   const getIconColor = (id: string) => {
     switch(id) {
         case 'python':
-            return 'bg-gradient-to-br from-yellow-400/20 to-orange-500/20 text-yellow-300 border-yellow-400/30 shadow-[0_0_15px_rgba(250,204,21,0.3)]';
+            return 'bg-gradient-to-br from-yellow-400/20 to-orange-500/20 text-yellow-300 border-yellow-400/30 shadow-[0_0_15px_rgba(250,204,21,0.3)] light:text-amber-600 light:border-amber-500/40 light:shadow-[0_6px_16px_-6px_rgba(245,158,11,0.5)]';
         case 'mathIntuitive':
-            return 'bg-gradient-to-br from-blue-400/20 to-cyan-500/20 text-blue-300 border-blue-400/30 shadow-[0_0_15px_rgba(96,165,250,0.3)]';
+            return 'bg-gradient-to-br from-blue-400/20 to-cyan-500/20 text-blue-300 border-blue-400/30 shadow-[0_0_15px_rgba(96,165,250,0.3)] light:text-blue-600 light:border-blue-500/40 light:shadow-[0_6px_16px_-6px_rgba(59,130,246,0.5)]';
         case 'mathProbabilistic':
-            return 'bg-gradient-to-br from-pink-400/20 to-purple-500/20 text-pink-300 border-pink-400/30 shadow-[0_0_15px_rgba(232,121,249,0.3)]';
+            return 'bg-gradient-to-br from-pink-400/20 to-purple-500/20 text-pink-300 border-pink-400/30 shadow-[0_0_15px_rgba(232,121,249,0.3)] light:text-fuchsia-600 light:border-fuchsia-500/40 light:shadow-[0_6px_16px_-6px_rgba(192,38,211,0.45)]';
         case 'behind-the-scenes-ai':
-            return 'bg-gradient-to-br from-cyan-400/20 to-blue-500/20 text-cyan-300 border-cyan-400/30 shadow-[0_0_15px_rgba(34,211,238,0.3)]';
+            return 'bg-gradient-to-br from-cyan-400/20 to-blue-500/20 text-cyan-300 border-cyan-400/30 shadow-[0_0_15px_rgba(34,211,238,0.3)] light:text-cyan-700 light:border-cyan-500/40 light:shadow-[0_6px_16px_-6px_rgba(6,182,212,0.5)]';
         default:
-            return 'bg-gradient-to-br from-blue-400/20 to-cyan-500/20 text-blue-300 border-blue-400/30 shadow-[0_0_15px_rgba(96,165,250,0.3)]';
+            return 'bg-gradient-to-br from-blue-400/20 to-cyan-500/20 text-blue-300 border-blue-400/30 shadow-[0_0_15px_rgba(96,165,250,0.3)] light:text-blue-600 light:border-blue-500/40';
     }
   };
 
@@ -111,42 +116,49 @@ x = x - lr * slope(x)
   ];
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-200 font-sans selection:bg-indigo-500/30 relative overflow-hidden" dir={dir} data-theme="dark">
+    <div className="min-h-screen bg-[#020617] light:bg-[var(--bts-page)] text-slate-200 light:text-slate-800 font-sans selection:bg-indigo-500/30 relative overflow-hidden" dir={dir}>
+        {/* Theme selector (shared preference with BTS) */}
+        <div className="absolute top-5 end-5 z-50">
+            <ThemeToggle />
+        </div>
+
         {/* Credit Card */}
         <div className="fixed top-6 start-6 z-50 hidden md:flex animate-fade-in-down">
-            <div className="group flex items-center gap-3 pl-6 pr-2 py-2 rounded-full bg-[#0B1121]/60 backdrop-blur-xl border border-slate-700/50 shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:border-indigo-500/50 transition-all duration-500 hover:scale-105 cursor-default">
+            <div className="group flex items-center gap-3 pl-6 pr-2 py-2 rounded-full bg-[#0B1121]/60 backdrop-blur-xl border border-slate-700/50 shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:border-indigo-500/50 light:bg-white/75 light:border-slate-300/80 light:shadow-[0_8px_30px_-12px_rgba(30,41,59,0.25)] light:hover:border-indigo-400 transition-all duration-500 hover:scale-105 cursor-default">
                 <div className="relative">
                      <div className="w-10 h-10 rounded-full bg-linear-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold text-sm shadow-lg border border-white/10">
                         תק
                      </div>
-                     <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0B1121] rounded-full animate-pulse"></div>
+                     <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#0B1121] light:border-white rounded-full animate-pulse"></div>
                 </div>
                 <div className="flex flex-col items-start gap-0.5">
-                    <span className="text-[10px] text-slate-400 font-medium group-hover:text-indigo-300 transition-colors uppercase tracking-wider">{t.catalog.builtBy}</span>
-                    <span className="text-sm font-black text-white tracking-wide leading-none">{t.catalog.authorName}</span>
+                    <span className="text-[10px] text-slate-400 light:text-slate-500 font-medium group-hover:text-indigo-300 light:group-hover:text-indigo-600 transition-colors uppercase tracking-wider">{t.catalog.builtBy}</span>
+                    <span className="text-sm font-black text-white light:text-slate-900 tracking-wide leading-none">{t.catalog.authorName}</span>
                 </div>
             </div>
         </div>
 
         {/* Backgrounds */}
-        {!reduce && (
-            <div className="fixed inset-0 z-0 pointer-events-none">
+        {/* Light: אותה רשת בדיוק, רק מוכהית ומועשרת בצבע דרך filter, כדי שלא תיווצר אנימציה חדשה */}
+        <div className="fixed inset-0 z-0 pointer-events-none light:brightness-[0.4] light:saturate-[2]">
+             {mounted && !reduce && (
                  <Particles id="tsparticles" init={particlesInit} options={particlesOptions} className="absolute inset-0 h-full w-full" />
-            </div>
-        )}
-        <div className="fixed inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/20 via-[#020617]/80 to-[#020617]"></div>
+             )}
+        </div>
+        <div className="fixed inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/20 via-[#020617]/80 to-[#020617] light:from-indigo-300/40 light:via-transparent light:to-transparent"></div>
+        <div className="hidden light:block fixed inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_bottom_right,rgba(34,211,238,0.16),transparent_55%)]"></div>
 
         <main className="relative z-10 max-w-6xl mx-auto px-6 py-20 flex flex-col items-center">
             {/* Header */}
             <div className="text-center max-w-3xl mx-auto mb-16 space-y-6">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-xs font-mono text-slate-400 mb-4 backdrop-blur-sm">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-xs font-mono text-slate-400 light:bg-white/70 light:border-slate-300 light:text-slate-600 mb-4 backdrop-blur-sm">
                     <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_10px_#6366f1]"></span>
                     {t.catalog.badge}
                 </div>
-               <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-linear-to-b from-white via-indigo-100 to-slate-500 tracking-tight leading-tight">
+               <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-linear-to-b from-white via-indigo-100 to-slate-500 light:from-slate-900 light:via-indigo-800 light:to-indigo-500 tracking-tight leading-tight">
                     {t.catalog.heroTitle}
                 </h1>
-                <p className="text-xl text-slate-400 leading-relaxed max-w-2xl mx-auto italic">
+                <p className="text-xl text-slate-400 light:text-slate-600 leading-relaxed max-w-2xl mx-auto italic">
                     &quot;{t.catalog.tagline}&quot;
                 </p>
             </div>
@@ -162,20 +174,20 @@ x = x - lr * slope(x)
 
                     return (
                         <Tilt key={card.id} options={tiltOptions} className="h-full">
-                            <Link href={firstChapterHref} className="group relative h-full block">
-                                <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-md rounded-3xl border border-slate-700/50 group-hover:border-indigo-500/50 transition-all duration-300"></div>
+                            <Link href={firstChapterHref} className="group relative h-full block rounded-3xl focus-visible:outline-none">
+                                <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-md rounded-3xl border border-slate-700/50 group-hover:border-indigo-500/50 group-focus-visible:ring-2 group-focus-visible:ring-cyan-400/70 transition-all duration-300 light:bg-white/85 light:border-slate-200 light:shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_18px_36px_-24px_rgba(30,41,59,0.35)] light:group-hover:border-indigo-400/70 light:group-hover:shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_24px_44px_-22px_rgba(79,70,229,0.35)] light:group-focus-visible:ring-cyan-600"></div>
 
                                 <div className="relative h-full p-8 flex flex-col items-start">
-                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border mb-6 transition-all duration-300 ${getIconColor(card.id)} group-hover:scale-110 shadow-lg`}>
+                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border mb-6 transition-all duration-300 light:[--bts-ink-darken:30%] ${getIconColor(card.id)} group-hover:scale-110 shadow-lg`}>
                                         {getIcon(card.id)}
                                     </div>
 
-                                    <h2 className="text-2xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors">
+                                    <h2 className="text-2xl font-bold text-white light:text-slate-900 mb-3 group-hover:text-indigo-300 light:group-hover:text-indigo-600 transition-colors">
                                         {cardText.title}
                                     </h2>
 
                                     {/* Code Snippet Section */}
-                                    <div className="w-full bg-black/60 rounded-xl p-4 mb-6 border border-slate-800 shadow-inner group-hover:border-slate-700 transition-colors overflow-hidden">
+                                    <div className="w-full bg-black/60 rounded-xl p-4 mb-6 border border-slate-800 shadow-inner group-hover:border-slate-700 transition-colors overflow-hidden light:bg-slate-950 light:border-slate-700 [--bts-ink-darken:0%] light:shadow-[0_10px_20px_-12px_rgba(15,23,42,0.55)]">
                                         <div className="flex gap-1.5 mb-3 opacity-30">
                                             <div className="w-2 h-2 rounded-full bg-red-500" />
                                             <div className="w-2 h-2 rounded-full bg-yellow-500" />
@@ -189,16 +201,16 @@ x = x - lr * slope(x)
                                         </pre>
                                     </div>
 
-                                    <p className="text-slate-400 text-sm leading-relaxed mb-8 flex-1">
+                                    <p className="text-slate-400 light:text-slate-600 text-sm leading-relaxed mb-8 flex-1">
                                         {cardText.description}
                                     </p>
 
-                                    <div className="w-full pt-6 border-t border-slate-800 flex items-center justify-between">
-                                        <span className="text-xs font-mono text-slate-500 flex items-center gap-2">
+                                    <div className="w-full pt-6 border-t border-slate-800 light:border-slate-200 flex items-center justify-between">
+                                        <span className="text-xs font-mono text-slate-500 light:text-slate-600 flex items-center gap-2">
                                             <BookOpen size={14} />
                                             {formatChapterCount(locale, originalCourseData.chapters.length - 1)}
                                         </span>
-                                        <span className={`flex items-center gap-2 text-sm font-bold text-white transition-transform ${dir === 'rtl' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`}>
+                                        <span className={`flex items-center gap-2 text-sm font-bold text-white light:text-indigo-700 transition-transform ${dir === 'rtl' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`}>
                                             {t.catalog.startLearning}
                                             {dir === 'rtl' ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
                                         </span>

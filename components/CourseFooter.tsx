@@ -32,8 +32,8 @@ export function CourseFooter() {
     const pathname = usePathname();
     const { locale, t } = useT();
     const courseTitle = getActiveCourseTitle(pathname ?? '', locale) ?? t.chrome.footer.defaultLabel;
-    // רק הלומדה "מאחורי הקלעים" תומכת ב-Light. שאר הלומדות נשארות Dark, ולכן ה-override נוסף רק כאן.
-    const themed = pathname?.startsWith('/behind-the-scenes-ai') ?? false;
+    // רק הלומדה "מאחורי הקלעים" ודף הבית תומכים ב-Light. שאר הלומדות נשארות Dark, ולכן ה-override נוסף רק כאן.
+    const themed = pathname === '/' || (pathname?.startsWith('/behind-the-scenes-ai') ?? false);
     const lt = (light: string) => (themed ? light : '');
 
     return (
