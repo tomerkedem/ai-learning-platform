@@ -93,7 +93,7 @@ export const GuessButton: React.FC<GuessButtonProps> = ({
         background: `linear-gradient(180deg, rgba(${rgb},0.9), rgba(${rgb},0.3))`,
         filter: reduce || disabled ? undefined : `drop-shadow(0 8px 20px rgba(${rgb},0.4))`,
     };
-    const outerCls = `group relative rounded-xl p-px no-underline focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,white_40%,transparent))] ${disabled ? 'pointer-events-none opacity-40 grayscale' : ''} ${widthCls} ${className}`;
+    const outerCls = `group relative rounded-xl p-px no-underline focus:outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),transparent)] ${disabled ? 'pointer-events-none opacity-40 grayscale' : ''} ${widthCls} ${className}`;
 
     const inner = (
         <span

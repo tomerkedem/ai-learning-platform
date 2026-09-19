@@ -371,6 +371,25 @@
   .text-pink-300 { color: color-mix(in oklab, var(--color-pink-300) calc(100% - var(--bts-ink-darken)), black); }
   .text-orange-300 { color: color-mix(in oklab, var(--color-orange-300) calc(100% - var(--bts-ink-darken)), black); }
   .text-lime-300 { color: color-mix(in oklab, var(--color-lime-300) calc(100% - var(--bts-ink-darken)), black); }
+  /* T3.2: אותו מנגנון לטקסט-מצב שנשאר בפרקי Batch 1 (Dark: ללא שינוי, --bts-ink-darken=0%). */
+  .text-emerald-100 { color: color-mix(in oklab, var(--color-emerald-100) calc(100% - var(--bts-ink-darken)), black); }
+  .text-rose-100 { color: color-mix(in oklab, var(--color-rose-100) calc(100% - var(--bts-ink-darken)), black); }
+  .text-rose-200 { color: color-mix(in oklab, var(--color-rose-200) calc(100% - var(--bts-ink-darken)), black); }
+  .text-sky-100 { color: color-mix(in oklab, var(--color-sky-100) calc(100% - var(--bts-ink-darken)), black); }
+  .text-sky-400 { color: color-mix(in oklab, var(--color-sky-400) calc(100% - var(--bts-ink-darken)), black); }
+  .text-teal-100 { color: color-mix(in oklab, var(--color-teal-100) calc(100% - var(--bts-ink-darken)), black); }
+  .text-teal-200 { color: color-mix(in oklab, var(--color-teal-200) calc(100% - var(--bts-ink-darken)), black); }
+  .text-teal-400 { color: color-mix(in oklab, var(--color-teal-400) calc(100% - var(--bts-ink-darken)), black); }
+  .text-indigo-100 { color: color-mix(in oklab, var(--color-indigo-100) calc(100% - var(--bts-ink-darken)), black); }
+  .text-fuchsia-100 { color: color-mix(in oklab, var(--color-fuchsia-100) calc(100% - var(--bts-ink-darken)), black); }
+  .text-fuchsia-200 { color: color-mix(in oklab, var(--color-fuchsia-200) calc(100% - var(--bts-ink-darken)), black); }
+  .text-fuchsia-400 { color: color-mix(in oklab, var(--color-fuchsia-400) calc(100% - var(--bts-ink-darken)), black); }
+  .text-orange-100 { color: color-mix(in oklab, var(--color-orange-100) calc(100% - var(--bts-ink-darken)), black); }
+  .text-cyan-200 { color: color-mix(in oklab, var(--color-cyan-200) calc(100% - var(--bts-ink-darken)), black); }
+  .text-cyan-400 { color: color-mix(in oklab, var(--color-cyan-400) calc(100% - var(--bts-ink-darken)), black); }
+  .text-sky-200\/90 { color: color-mix(in oklab, color-mix(in oklab, var(--color-sky-200) calc(100% - var(--bts-ink-darken)), black) 90%, transparent); }
+  .text-indigo-200\/90 { color: color-mix(in oklab, color-mix(in oklab, var(--color-indigo-200) calc(100% - var(--bts-ink-darken)), black) 90%, transparent); }
+  .text-amber-300\/90 { color: color-mix(in oklab, color-mix(in oklab, var(--color-amber-300) calc(100% - var(--bts-ink-darken)), black) 90%, transparent); }
   .text-cyan-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-cyan-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
   .text-sky-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-sky-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
   .text-teal-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-teal-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
@@ -391,6 +410,8 @@
 
 @layer base {
   * { @apply border-border outline-ring/50; }
+  /* T3.2: טבעת-מיקוד קריאה ב-Light (הברירת-מחדל outline-ring/50 כמעט בלתי נראית על משטח בהיר). Dark: --bts-tint-mix=0%, זהה לערך הקודם. */
+  :focus-visible { outline-color: color-mix(in oklab, var(--bts-focus-ring) var(--bts-tint-mix), color-mix(in oklab, var(--ring) 50%, transparent)); }
   body { @apply bg-background text-foreground; }
 }
 

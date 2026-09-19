@@ -34,9 +34,9 @@ interface HallucinationLabProps {
 
 /** גוון תווית הסיכון לפי רמה. מבני, נגזר מ-risk. */
 const RISK_TONE: Record<RiskLevel, string> = {
-    high: 'border-rose-400/50 bg-rose-950/25 text-rose-100',
-    medium: 'border-amber-400/50 bg-amber-950/25 text-amber-100',
-    low: 'border-emerald-400/50 bg-emerald-950/25 text-emerald-100',
+    high: 'border-rose-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] text-rose-100',
+    medium: 'border-amber-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] text-amber-100',
+    low: 'border-emerald-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] text-emerald-100',
 };
 
 /** אייקון וגוון לכל מצב בדיקת עובדות. מבני, נגזר מ-state. */
@@ -61,29 +61,29 @@ export const HallucinationLab: React.FC<HallucinationLabProps> = ({ data, dir, s
     );
 
     return (
-        <div className="rounded-2xl border border-amber-500/25 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-2xl border border-amber-500/25 bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             {/* כותרת הרכיב */}
             <div className="mb-4 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <FileSearch size={18} className="text-amber-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-100">{data.heading}</div>
-                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">{data.kicker}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-bright)]">{data.heading}</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]" dir="ltr">{data.kicker}</div>
                     </div>
                 </div>
                 <SpeakButton text={stateSpeech} speechLocale={speechLocale} />
             </div>
 
             {/* שאלת הלקוח הקבועה */}
-            <div className="mb-4 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                <div className="mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
-                    <MessageSquare size={12} className="text-slate-400" /> {data.questionLabel}
+            <div className="mb-4 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3">
+                <div className="mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">
+                    <MessageSquare size={12} className="text-[var(--bts-text-muted)]" /> {data.questionLabel}
                 </div>
-                <p className="text-sm font-bold text-slate-100">{data.question}</p>
+                <p className="text-sm font-bold text-[var(--bts-text-bright)]">{data.question}</p>
             </div>
 
             {/* בורר סגנון התשובה */}
-            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">{data.modeLabel}</div>
+            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-faint)]">{data.modeLabel}</div>
             <div className="mb-4 grid grid-cols-2 gap-2" role="group" aria-label={data.sr.modeGroup}>
                 {data.modes.map((m) => {
                     const active = m.id === modeId;
@@ -94,8 +94,8 @@ export const HallucinationLab: React.FC<HallucinationLabProps> = ({ data, dir, s
                             onClick={() => setModeId(m.id)}
                             aria-pressed={active}
                             className={`rounded-xl border px-2.5 py-2.5 text-center text-sm font-bold leading-tight break-words transition-colors ${active
-                                ? 'border-amber-400/60 bg-amber-900/25 text-amber-100'
-                                : 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600'
+                                ? 'border-amber-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)] text-amber-100'
+                                : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                 }`}
                         >
                             {m.control}
@@ -107,7 +107,7 @@ export const HallucinationLab: React.FC<HallucinationLabProps> = ({ data, dir, s
             {/* מצב הסגנון הפעיל */}
             <motion.div
                 key={mode.id}
-                initial={reduce ? false : { opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { duration: DUR.quick }}
                 className="space-y-3"
@@ -124,14 +124,14 @@ export const HallucinationLab: React.FC<HallucinationLabProps> = ({ data, dir, s
 
                 {/* כרטיס מקור לדוגמה (בסגנון המבוסס בלבד) */}
                 {mode.showSource && (
-                    <div className="rounded-xl border border-sky-500/30 bg-sky-950/15 p-3">
+                    <div className="rounded-xl border border-sky-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-sky-950)] [--t-l:var(--color-sky-500)] p-3">
                         <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-sky-200">{data.source.label}</div>
-                        <p className="mb-2.5 text-[13px] leading-relaxed text-slate-400">{data.source.caption}</p>
+                        <p className="mb-2.5 text-[13px] leading-relaxed text-[var(--bts-text-muted)]">{data.source.caption}</p>
                         <dl className="space-y-1.5">
                             {data.source.rows.map((row) => (
-                                <div key={row.label} className="flex items-center justify-between gap-3 border-b border-slate-800/60 pb-1.5 last:border-0 last:pb-0">
-                                    <dt className="text-[13px] font-medium text-slate-400">{row.label}</dt>
-                                    <dd className="text-[13px] font-bold text-slate-100">{row.value}</dd>
+                                <div key={row.label} className="flex items-center justify-between gap-3 border-b border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border)_var(--bts-tint-mix),var(--color-slate-800))_60%,transparent)] pb-1.5 last:border-0 last:pb-0">
+                                    <dt className="text-[13px] font-medium text-[var(--bts-text-muted)]">{row.label}</dt>
+                                    <dd className="text-[13px] font-bold text-[var(--bts-text-bright)]">{row.value}</dd>
                                 </div>
                             ))}
                         </dl>
@@ -140,18 +140,18 @@ export const HallucinationLab: React.FC<HallucinationLabProps> = ({ data, dir, s
                 )}
 
                 {/* התשובה שהתקבלה */}
-                <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3.5">
+                <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3.5">
                     <div className="mb-1.5 flex items-center justify-between gap-2">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{data.answerLabel}</span>
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">{data.answerLabel}</span>
                         <SpeakButton text={mode.answer} speechLocale={speechLocale} />
                     </div>
-                    <p className="text-[15px] font-bold leading-relaxed text-slate-100">{mode.answer}</p>
-                    <p className="mt-2 text-[13px] leading-relaxed text-slate-400">{mode.answerSummary}</p>
+                    <p className="text-[15px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{mode.answer}</p>
+                    <p className="mt-2 text-[13px] leading-relaxed text-[var(--bts-text-muted)]">{mode.answerSummary}</p>
                 </div>
 
                 {/* פאנל בדיקת עובדות */}
-                <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-3.5">
-                    <div className="mb-2.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-3.5">
+                    <div className="mb-2.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">
                         <FileSearch size={13} className="text-amber-300" /> {data.factCheckLabel}
                     </div>
                     <ul className="space-y-2.5" role="group" aria-label={data.sr.checks}>
@@ -161,8 +161,8 @@ export const HallucinationLab: React.FC<HallucinationLabProps> = ({ data, dir, s
                                 <li key={check.id} className="flex items-start gap-2.5">
                                     <Icon size={16} className={`mt-0.5 shrink-0 ${cls}`} aria-hidden />
                                     <div>
-                                        <div className="text-[13px] font-bold text-slate-200">{check.label}</div>
-                                        <p className="text-[13px] leading-relaxed text-slate-400">{check.note}</p>
+                                        <div className="text-[13px] font-bold text-[var(--bts-text-body)]">{check.label}</div>
+                                        <p className="text-[13px] leading-relaxed text-[var(--bts-text-muted)]">{check.note}</p>
                                     </div>
                                 </li>
                             );
@@ -171,30 +171,30 @@ export const HallucinationLab: React.FC<HallucinationLabProps> = ({ data, dir, s
                 </div>
 
                 {/* מה חסר */}
-                <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-3.5">
-                    <div className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-3.5">
+                    <div className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">
                         <HelpCircle size={13} className="text-amber-300" /> {data.missingLabel}
                     </div>
-                    <p className="text-[13px] leading-relaxed text-slate-300">{mode.missing}</p>
+                    <p className="text-[13px] leading-relaxed text-[var(--bts-text-secondary)]">{mode.missing}</p>
                 </div>
 
                 {/* שורה תחתונה */}
-                <div className="rounded-xl border border-amber-500/30 bg-amber-950/15 p-3.5">
+                <div className="rounded-xl border border-amber-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] p-3.5">
                     <div className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-amber-200">
                         <Lightbulb size={13} className="text-amber-300" /> {data.takeawayLabel}
                     </div>
-                    <p className="text-[13px] font-bold leading-relaxed text-slate-100">{mode.takeaway}</p>
+                    <p className="text-[13px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{mode.takeaway}</p>
                 </div>
             </motion.div>
 
             {/* השוואה קבועה: ביטחון וביסוס הם שני צירים נפרדים, מנוגדים לפי הראיה ולא לפי הנימה */}
-            <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-sky-500/30 bg-sky-950/15 p-3.5">
+            <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-sky-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-sky-950)] [--t-l:var(--color-sky-500)] p-3.5">
                 <Scale size={16} className="mt-0.5 shrink-0 text-sky-300" aria-hidden />
-                <p className="text-[13px] leading-relaxed text-slate-200">{data.evidenceNote}</p>
+                <p className="text-[13px] leading-relaxed text-[var(--bts-text-body)]">{data.evidenceNote}</p>
             </div>
 
             {/* הבהרה: כל הדוגמאות לימודיות בלבד */}
-            <p className="mt-4 text-[13px] leading-relaxed text-slate-500">{data.disclaimer}</p>
+            <p className="mt-4 text-[13px] leading-relaxed text-[var(--bts-text-faint)]">{data.disclaimer}</p>
         </div>
     );
 };

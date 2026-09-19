@@ -41,10 +41,10 @@ interface DoesAiLearnLabProps {
 
 /** אייקון וגוון לכל סוג שכבה. מבני, נגזר מ-layerType. */
 const LAYER_TONE: Record<LearnLayerType, { Icon: LucideIcon; cls: string; dot: string }> = {
-    sameChat: { Icon: MessageSquare, cls: 'border-emerald-400/50 bg-emerald-950/25 text-emerald-100', dot: 'bg-emerald-400' },
-    newChat: { Icon: FilePlus2, cls: 'border-amber-400/50 bg-amber-950/25 text-amber-100', dot: 'bg-amber-400' },
-    memory: { Icon: Bookmark, cls: 'border-violet-400/50 bg-violet-950/25 text-violet-100', dot: 'bg-violet-400' },
-    training: { Icon: GraduationCap, cls: 'border-indigo-400/50 bg-indigo-950/25 text-indigo-100', dot: 'bg-indigo-400' },
+    sameChat: { Icon: MessageSquare, cls: 'border-emerald-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] text-emerald-100', dot: 'bg-emerald-400' },
+    newChat: { Icon: FilePlus2, cls: 'border-amber-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] text-amber-100', dot: 'bg-amber-400' },
+    memory: { Icon: Bookmark, cls: 'border-violet-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-violet-950)] [--t-l:var(--color-violet-500)] text-violet-100', dot: 'bg-violet-400' },
+    training: { Icon: GraduationCap, cls: 'border-indigo-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-indigo-950)] [--t-l:var(--color-indigo-500)] text-indigo-100', dot: 'bg-indigo-400' },
 };
 
 export const DoesAiLearnLab: React.FC<DoesAiLearnLabProps> = ({ data, dir, speechLocale }) => {
@@ -65,38 +65,38 @@ export const DoesAiLearnLab: React.FC<DoesAiLearnLabProps> = ({ data, dir, speec
     );
 
     return (
-        <div className="rounded-2xl border border-violet-500/25 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-2xl border border-violet-500/25 bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             {/* כותרת הרכיב */}
             <div className="mb-4 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <Layers size={18} className="text-violet-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-100">{data.heading}</div>
-                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">{data.kicker}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-bright)]">{data.heading}</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]" dir="ltr">{data.kicker}</div>
                     </div>
                 </div>
                 <SpeakButton text={stateSpeech} speechLocale={speechLocale} />
             </div>
 
             {/* ── כרטיס התרחיש הקבוע ── */}
-            <div className="mb-4 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3.5">
-                <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">{data.scenario.label}</div>
+            <div className="mb-4 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3.5">
+                <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">{data.scenario.label}</div>
                 <div className="space-y-2">
                     <div className="flex items-start gap-2">
                         <Sparkles size={14} className="mt-0.5 shrink-0 text-violet-300" aria-hidden />
-                        <p className="text-[14px] leading-relaxed text-slate-200">
+                        <p className="text-[14px] leading-relaxed text-[var(--bts-text-body)]">
                             <span className="font-bold text-violet-200">{data.scenario.aiSaidLabel}: </span>{data.scenario.aiSaid}
                         </p>
                     </div>
                     <div className="flex items-start gap-2">
                         <User size={14} className="mt-0.5 shrink-0 text-amber-300" aria-hidden />
-                        <p className="text-[14px] leading-relaxed text-slate-200">
+                        <p className="text-[14px] leading-relaxed text-[var(--bts-text-body)]">
                             <span className="font-bold text-amber-200">{data.scenario.userCorrectionLabel}: </span>{data.scenario.userCorrection}
                         </p>
                     </div>
                     <div className="flex items-start gap-2">
                         <Sparkles size={14} className="mt-0.5 shrink-0 text-emerald-300" aria-hidden />
-                        <p className="text-[14px] leading-relaxed text-slate-200">
+                        <p className="text-[14px] leading-relaxed text-[var(--bts-text-body)]">
                             <span className="font-bold text-emerald-200">{data.scenario.aiRevisedLabel}: </span>{data.scenario.aiRevised}
                         </p>
                     </div>
@@ -104,7 +104,7 @@ export const DoesAiLearnLab: React.FC<DoesAiLearnLabProps> = ({ data, dir, speec
             </div>
 
             {/* ── בורר השכבות ── */}
-            <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-slate-400">{data.layerSelectLabel}</div>
+            <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">{data.layerSelectLabel}</div>
             <div className="mb-4 grid grid-cols-2 gap-2 lg:grid-cols-4" role="group" aria-label={data.sr.layerGroup}>
                 {data.layers.map((l) => {
                     const activeBtn = l.id === layerId;
@@ -116,8 +116,8 @@ export const DoesAiLearnLab: React.FC<DoesAiLearnLabProps> = ({ data, dir, speec
                             onClick={() => setLayerId(l.id)}
                             aria-pressed={activeBtn}
                             className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-2.5 text-start text-[13px] font-bold leading-tight break-words transition-colors ${activeBtn
-                                ? 'border-violet-400/60 bg-violet-900/25 text-violet-100'
-                                : 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600'
+                                ? 'border-violet-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-violet-900)] [--t-l:var(--color-violet-500)] text-violet-100'
+                                : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                 }`}
                         >
                             <Icon size={15} className="shrink-0" aria-hidden />
@@ -130,7 +130,7 @@ export const DoesAiLearnLab: React.FC<DoesAiLearnLabProps> = ({ data, dir, speec
             {/* ── השכבה הפעילה ── */}
             <motion.div
                 key={active.id}
-                initial={reduce ? false : { opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { duration: DUR.quick }}
                 className="space-y-3"
@@ -143,18 +143,18 @@ export const DoesAiLearnLab: React.FC<DoesAiLearnLabProps> = ({ data, dir, speec
                         <LayerIcon size={16} aria-hidden />
                         <span className="text-sm font-black">{active.badgeLabel}</span>
                     </span>
-                    <div className="mt-1.5 text-[15px] font-bold leading-snug text-slate-100">{active.title}</div>
-                    <p className="mt-1 text-[13px] leading-relaxed text-slate-300">{active.summary}</p>
+                    <div className="mt-1.5 text-[15px] font-bold leading-snug text-[var(--bts-text-bright)]">{active.title}</div>
+                    <p className="mt-1 text-[13px] leading-relaxed text-[var(--bts-text-secondary)]">{active.summary}</p>
                 </div>
 
                 {/* מה המודל רואה עכשיו */}
-                <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                    <div className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                        <Eye size={13} className="text-slate-300" aria-hidden /> {data.seesLabel}
+                <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3">
+                    <div className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">
+                        <Eye size={13} className="text-[var(--bts-text-secondary)]" aria-hidden /> {data.seesLabel}
                     </div>
                     <ul className="space-y-1.5">
                         {active.sees.map((row) => (
-                            <li key={row} className="flex items-start gap-2 text-[13px] leading-relaxed text-slate-200">
+                            <li key={row} className="flex items-start gap-2 text-[13px] leading-relaxed text-[var(--bts-text-body)]">
                                 <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${LAYER_TONE[active.layerType].dot}`} aria-hidden />
                                 <span>{row}</span>
                             </li>
@@ -163,43 +163,43 @@ export const DoesAiLearnLab: React.FC<DoesAiLearnLabProps> = ({ data, dir, speec
                 </div>
 
                 {/* תשובת המודל */}
-                <div className="rounded-xl border border-violet-500/30 bg-violet-950/15 p-3">
+                <div className="rounded-xl border border-violet-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-violet-950)] [--t-l:var(--color-violet-500)] p-3">
                     <div className="mb-1.5 flex items-center justify-between gap-2">
                         <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-violet-200">
                             <Sparkles size={13} className="text-violet-300" aria-hidden /> {data.answerLabel}
                         </span>
                         <SpeakButton text={`${data.answerLabel}. ${active.answer}`} speechLocale={speechLocale} />
                     </div>
-                    <p className="text-[14px] font-bold leading-relaxed text-slate-100">{active.answer}</p>
+                    <p className="text-[14px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{active.answer}</p>
                 </div>
 
                 {/* מה השתנה / מה לא השתנה */}
                 <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/12 p-3">
+                    <div className="rounded-xl border border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(12%_-_var(--bts-tint-mix)_*_0.06),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] p-3">
                         <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-200">
                             <CheckCircle2 size={13} aria-hidden /> {data.changedLabel}
                         </div>
-                        <p className="text-[13px] leading-relaxed text-slate-200">{active.changed}</p>
+                        <p className="text-[13px] leading-relaxed text-[var(--bts-text-body)]">{active.changed}</p>
                     </div>
-                    <div className="rounded-xl border border-slate-600/40 bg-slate-950/40 p-3">
-                        <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <div className="rounded-xl border border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))_40%,transparent)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3">
+                        <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">
                             <Lock size={13} aria-hidden /> {data.unchangedLabel}
                         </div>
-                        <p className="text-[13px] leading-relaxed text-slate-200">{active.unchanged}</p>
+                        <p className="text-[13px] leading-relaxed text-[var(--bts-text-body)]">{active.unchanged}</p>
                     </div>
                 </div>
 
                 {/* השורה התחתונה */}
-                <div className="rounded-xl border border-violet-500/30 bg-slate-950/40 p-3.5">
+                <div className="rounded-xl border border-violet-500/30 bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3.5">
                     <div className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-violet-200">
                         <Lightbulb size={13} className="text-violet-300" aria-hidden /> {data.takeawayLabel}
                     </div>
-                    <p className="text-[13px] font-bold leading-relaxed text-slate-100">{active.takeaway}</p>
+                    <p className="text-[13px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{active.takeaway}</p>
                 </div>
             </motion.div>
 
             {/* הבהרה: כל הדוגמאות לימודיות בלבד */}
-            <p className="mt-4 text-[13px] leading-relaxed text-slate-500">{data.disclaimer}</p>
+            <p className="mt-4 text-[13px] leading-relaxed text-[var(--bts-text-faint)]">{data.disclaimer}</p>
         </div>
     );
 };

@@ -70,7 +70,7 @@ export const StickyContextBar: React.FC<StickyContextBarProps> = ({
     reduce,
     stickyClassName = 'sticky z-10',
 }) => {
-    const { t } = useT();
+    const { t, dir } = useT();
     const ia = ACCENTS[inputAccent];
     const da = ACCENTS[TONE_ACCENT[tone]];
 
@@ -78,13 +78,13 @@ export const StickyContextBar: React.FC<StickyContextBarProps> = ({
         <div className={stickyClassName} style={{ top: 'var(--bts-sticky-top, 88px)' }}>
             {/* רקע אטום-למחצה + blur כדי שהניתוח שנגלל מאחור לא יזלוג. */}
             <div
-                className="flex items-center justify-between gap-3 rounded-2xl border border-slate-700/50 bg-slate-950/85 px-3 py-2 shadow-xl shadow-black/30 backdrop-blur-xl"
-                dir="rtl"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_85%,transparent)] px-3 py-2 shadow-xl shadow-black/30 backdrop-blur-xl"
+                dir={dir}
             >
                 {/* ── ימין (התחלת RTL): הקלט הנוכחי ── */}
                 <div className="flex min-w-0 items-center gap-2">
-                    <span className="hidden shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 sm:inline-flex">
-                        <ScanSearch size={13} className="text-slate-400" />
+                    <span className="hidden shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--bts-text-faint)] sm:inline-flex">
+                        <ScanSearch size={13} className="text-[var(--bts-text-muted)]" />
                         <span>{t.behindAi.aiInternals.stickyContextBar.currentlyAnalyzed}</span>
                     </span>
 
@@ -92,20 +92,20 @@ export const StickyContextBar: React.FC<StickyContextBarProps> = ({
 
                     <span className="min-w-0 leading-tight">
                         {labelHe && (
-                            <span className="block truncate text-[9px] font-bold uppercase tracking-wider text-slate-500">
+                            <span className="block truncate text-[9px] font-bold uppercase tracking-wider text-[var(--bts-text-faint)]">
                                 {labelHe}
                                 {labelEn && <span className="ms-1 opacity-70" dir="ltr">{labelEn}</span>}
                             </span>
                         )}
                         {/* הקלט עצמו - טקסט פשוט (ללא אנימציה פר-תו, נוח לשדה הקלדה חי). */}
-                        <span className="block truncate text-sm font-bold text-slate-100">{inputText}</span>
+                        <span className="block truncate text-sm font-bold text-[var(--bts-text-bright)]">{inputText}</span>
                     </span>
                 </div>
 
                 {/* ── שמאל: מדד + ההחלטה ── */}
                 <div className="flex shrink-0 items-center gap-2">
                     {metricHe && (
-                        <span className="hidden rounded-md border border-slate-700/60 bg-slate-950/40 px-2 py-0.5 text-[10px] font-bold text-slate-400 sm:inline-flex" dir="rtl">
+                        <span className="hidden rounded-md border border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] px-2 py-0.5 text-[10px] font-bold text-[var(--bts-text-muted)] sm:inline-flex" dir={dir}>
                             {metricHe}
                         </span>
                     )}

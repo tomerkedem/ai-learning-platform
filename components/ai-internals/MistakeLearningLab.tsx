@@ -40,20 +40,20 @@ interface MistakeLearningLabProps {
 
 /** אייקון וגוון לכל רמת שיפור. מבני, נגזר מ-level. */
 const LEVEL_TONE: Record<MistakeLevel, { Icon: LucideIcon; cls: string }> = {
-    context: { Icon: MessageSquare, cls: 'border-sky-400/50 bg-sky-950/25 text-sky-100' },
-    system: { Icon: Wrench, cls: 'border-violet-400/50 bg-violet-950/25 text-violet-100' },
-    training: { Icon: GraduationCap, cls: 'border-amber-400/50 bg-amber-950/25 text-amber-100' },
-    evaluation: { Icon: Gauge, cls: 'border-emerald-400/50 bg-emerald-950/25 text-emerald-100' },
+    context: { Icon: MessageSquare, cls: 'border-sky-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-sky-950)] [--t-l:var(--color-sky-500)] text-sky-100' },
+    system: { Icon: Wrench, cls: 'border-violet-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-violet-950)] [--t-l:var(--color-violet-500)] text-violet-100' },
+    training: { Icon: GraduationCap, cls: 'border-amber-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] text-amber-100' },
+    evaluation: { Icon: Gauge, cls: 'border-emerald-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] text-emerald-100' },
 };
 
 /** אייקון וגוון לכל גוון שלב. מבני, נגזר מ-tone. */
 const STEP_TONE: Record<StepTone, { Icon: LucideIcon; dot: string; text: string }> = {
-    wrong: { Icon: XCircle, dot: 'border-rose-400/40 bg-rose-950/25', text: 'text-rose-200' },
-    context: { Icon: MessageSquare, dot: 'border-sky-400/40 bg-sky-950/25', text: 'text-sky-200' },
-    system: { Icon: Wrench, dot: 'border-violet-400/40 bg-violet-950/25', text: 'text-violet-200' },
-    training: { Icon: GraduationCap, dot: 'border-amber-400/40 bg-amber-950/25', text: 'text-amber-200' },
-    eval: { Icon: ClipboardCheck, dot: 'border-cyan-400/40 bg-cyan-950/25', text: 'text-cyan-200' },
-    good: { Icon: CheckCircle2, dot: 'border-emerald-400/40 bg-emerald-950/25', text: 'text-emerald-200' },
+    wrong: { Icon: XCircle, dot: 'border-rose-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)]', text: 'text-rose-200' },
+    context: { Icon: MessageSquare, dot: 'border-sky-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-sky-950)] [--t-l:var(--color-sky-500)]', text: 'text-sky-200' },
+    system: { Icon: Wrench, dot: 'border-violet-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-violet-950)] [--t-l:var(--color-violet-500)]', text: 'text-violet-200' },
+    training: { Icon: GraduationCap, dot: 'border-amber-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)]', text: 'text-amber-200' },
+    eval: { Icon: ClipboardCheck, dot: 'border-cyan-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-cyan-950)] [--t-l:var(--color-cyan-500)]', text: 'text-cyan-200' },
+    good: { Icon: CheckCircle2, dot: 'border-emerald-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)]', text: 'text-emerald-200' },
 };
 
 export const MistakeLearningLab: React.FC<MistakeLearningLabProps> = ({ data, dir, speechLocale }) => {
@@ -74,14 +74,14 @@ export const MistakeLearningLab: React.FC<MistakeLearningLabProps> = ({ data, di
     );
 
     return (
-        <div className="rounded-2xl border border-fuchsia-500/25 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-2xl border border-fuchsia-500/25 bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             {/* כותרת הרכיב */}
             <div className="mb-4 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <GraduationCap size={18} className="text-fuchsia-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-100">{data.heading}</div>
-                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">{data.kicker}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-bright)]">{data.heading}</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]" dir="ltr">{data.kicker}</div>
                     </div>
                 </div>
                 <SpeakButton text={stateSpeech} speechLocale={speechLocale} />
@@ -89,24 +89,24 @@ export const MistakeLearningLab: React.FC<MistakeLearningLabProps> = ({ data, di
 
             {/* ── בלוק קבוע: פנייה, מקור, תשובה שגויה, תיקון ── */}
             {/* פניית הלקוח */}
-            <div className="mb-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">
-                    <User size={12} className="text-slate-400" /> {data.scenarioLabel}
+            <div className="mb-3 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3">
+                <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">
+                    <User size={12} className="text-[var(--bts-text-muted)]" /> {data.scenarioLabel}
                 </div>
-                <p className="text-sm font-bold text-slate-100">{data.scenario}</p>
+                <p className="text-sm font-bold text-[var(--bts-text-bright)]">{data.scenario}</p>
             </div>
 
             {/* כרטיס המקור הקבוע */}
-            <div className="mb-3 rounded-xl border border-sky-500/30 bg-sky-950/15 p-3">
+            <div className="mb-3 rounded-xl border border-sky-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-sky-950)] [--t-l:var(--color-sky-500)] p-3">
                 <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-sky-200">
                     <FileSearch size={13} aria-hidden /> {data.sourceLabel}
                 </div>
-                <p className="mb-2.5 text-[13px] leading-relaxed text-slate-400">{data.sourceCaption}</p>
+                <p className="mb-2.5 text-[13px] leading-relaxed text-[var(--bts-text-muted)]">{data.sourceCaption}</p>
                 <dl className="space-y-1.5">
                     {data.sourceRows.map((row) => (
-                        <div key={row.label} className="flex items-center justify-between gap-3 border-b border-slate-800/60 pb-1.5 last:border-0 last:pb-0">
-                            <dt className="text-[13px] font-medium text-slate-400">{row.label}</dt>
-                            <dd className={`text-[13px] font-bold ${row.missing ? 'text-amber-300/90' : 'text-slate-100'}`}>{row.value}</dd>
+                        <div key={row.label} className="flex items-center justify-between gap-3 border-b border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border)_var(--bts-tint-mix),var(--color-slate-800))_60%,transparent)] pb-1.5 last:border-0 last:pb-0">
+                            <dt className="text-[13px] font-medium text-[var(--bts-text-muted)]">{row.label}</dt>
+                            <dd className={`text-[13px] font-bold ${row.missing ? 'text-amber-300/90' : 'text-[var(--bts-text-bright)]'}`}>{row.value}</dd>
                         </div>
                     ))}
                 </dl>
@@ -114,14 +114,14 @@ export const MistakeLearningLab: React.FC<MistakeLearningLabProps> = ({ data, di
             </div>
 
             {/* התשובה השגויה הראשונה */}
-            <div className="mb-2 rounded-xl border border-rose-500/30 bg-rose-950/15 p-3">
+            <div className="mb-2 rounded-xl border border-rose-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] p-3">
                 <div className="mb-1.5 flex items-center justify-between gap-2">
                     <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-rose-200">
                         <XCircle size={13} aria-hidden /> {data.initialLabel}
                     </span>
                     <SpeakButton text={`${data.initialLabel}. ${data.initialAnswer}`} speechLocale={speechLocale} />
                 </div>
-                <p className="text-[15px] font-bold leading-relaxed text-slate-100">{data.initialAnswer}</p>
+                <p className="text-[15px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{data.initialAnswer}</p>
             </div>
 
             {/* חץ מהתשובה לתיקון */}
@@ -130,18 +130,18 @@ export const MistakeLearningLab: React.FC<MistakeLearningLabProps> = ({ data, di
             </div>
 
             {/* התיקון של הלומד */}
-            <div className="mt-2 mb-4 rounded-xl border border-fuchsia-500/30 bg-fuchsia-950/15 p-3">
+            <div className="mt-2 mb-4 rounded-xl border border-fuchsia-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-fuchsia-950)] [--t-l:var(--color-fuchsia-500)] p-3">
                 <div className="mb-1.5 flex items-center justify-between gap-2">
                     <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-fuchsia-200">
                         <Reply size={13} aria-hidden /> {data.correctionLabel}
                     </span>
                     <SpeakButton text={`${data.correctionLabel}. ${data.correction}`} speechLocale={speechLocale} />
                 </div>
-                <p className="text-[15px] font-bold leading-relaxed text-slate-100">{data.correction}</p>
+                <p className="text-[15px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{data.correction}</p>
             </div>
 
             {/* ── בורר רמת השיפור ── */}
-            <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-slate-400">{data.modeLabel}</div>
+            <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">{data.modeLabel}</div>
             <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4" role="group" aria-label={data.sr.modeGroup}>
                 {data.modes.map((m) => {
                     const active = m.id === modeId;
@@ -153,8 +153,8 @@ export const MistakeLearningLab: React.FC<MistakeLearningLabProps> = ({ data, di
                             onClick={() => setModeId(m.id)}
                             aria-pressed={active}
                             className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-2.5 text-start text-[13px] font-bold leading-tight break-words transition-colors ${active
-                                ? 'border-fuchsia-400/60 bg-fuchsia-900/25 text-fuchsia-100'
-                                : 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600'
+                                ? 'border-fuchsia-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-fuchsia-900)] [--t-l:var(--color-fuchsia-500)] text-fuchsia-100'
+                                : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                 }`}
                         >
                             <Icon size={15} className="shrink-0" aria-hidden />
@@ -167,7 +167,7 @@ export const MistakeLearningLab: React.FC<MistakeLearningLabProps> = ({ data, di
             {/* ── המצב הפעיל ── */}
             <motion.div
                 key={mode.id}
-                initial={reduce ? false : { opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { duration: DUR.quick }}
                 className="space-y-3"
@@ -178,13 +178,13 @@ export const MistakeLearningLab: React.FC<MistakeLearningLabProps> = ({ data, di
                         <LevelIcon size={16} aria-hidden />
                         <span className="text-sm font-black">{mode.badgeLabel}</span>
                     </div>
-                    <div className="mt-1.5 text-[15px] font-bold leading-snug text-slate-100">{mode.title}</div>
-                    <p className="mt-1 text-[13px] leading-relaxed text-slate-300">{mode.summary}</p>
+                    <div className="mt-1.5 text-[15px] font-bold leading-snug text-[var(--bts-text-bright)]">{mode.title}</div>
+                    <p className="mt-1 text-[13px] leading-relaxed text-[var(--bts-text-secondary)]">{mode.summary}</p>
                 </div>
 
                 {/* שלבי התהליך */}
-                <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-3.5">
-                    <div className="mb-2.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-3.5">
+                    <div className="mb-2.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">
                         <ArrowDown size={13} className="text-fuchsia-300" aria-hidden /> {data.flowLabel}
                     </div>
                     <ol className="space-y-2" role="group" aria-label={data.sr.steps}>
@@ -198,11 +198,11 @@ export const MistakeLearningLab: React.FC<MistakeLearningLabProps> = ({ data, di
                                             <Icon size={15} className={`shrink-0 ${tone.text}`} aria-hidden />
                                             <span className={`text-[13px] font-bold ${tone.text}`}>{step.label}</span>
                                         </div>
-                                        <p className="mt-1 text-[13px] leading-relaxed text-slate-300">{step.text}</p>
+                                        <p className="mt-1 text-[13px] leading-relaxed text-[var(--bts-text-secondary)]">{step.text}</p>
                                     </div>
                                     {i < mode.steps.length - 1 && (
                                         <div className="flex justify-center py-0.5" aria-hidden>
-                                            <ArrowDown size={14} className="text-slate-600" />
+                                            <ArrowDown size={14} className="text-[var(--bts-text-subtle)]" />
                                         </div>
                                     )}
                                 </li>
@@ -214,48 +214,48 @@ export const MistakeLearningLab: React.FC<MistakeLearningLabProps> = ({ data, di
                 {/* לפני ואחרי (רק במצבים שיש בהם השוואה) */}
                 {mode.beforeAfter && (
                     <div className="grid gap-2 sm:grid-cols-2">
-                        <div className="rounded-xl border border-rose-500/30 bg-rose-950/15 p-3">
+                        <div className="rounded-xl border border-rose-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] p-3">
                             <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-rose-200">
                                 <XCircle size={13} aria-hidden /> {mode.beforeAfter.beforeLabel}
                             </div>
-                            <p className="text-[13px] font-bold leading-relaxed text-slate-100">{mode.beforeAfter.before}</p>
+                            <p className="text-[13px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{mode.beforeAfter.before}</p>
                         </div>
-                        <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-3">
+                        <div className="rounded-xl border border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] p-3">
                             <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-200">
                                 <CheckCircle2 size={13} aria-hidden /> {mode.beforeAfter.afterLabel}
                             </div>
-                            <p className="text-[13px] font-bold leading-relaxed text-slate-100">{mode.beforeAfter.after}</p>
+                            <p className="text-[13px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{mode.beforeAfter.after}</p>
                         </div>
                     </div>
                 )}
 
                 {/* מה השתפר מול מה שלא */}
                 <div className="grid gap-2 sm:grid-cols-2">
-                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-3">
+                    <div className="rounded-xl border border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] p-3">
                         <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-200">
                             <CheckCircle2 size={13} aria-hidden /> {data.improvedLabel}
                         </div>
-                        <p className="text-[13px] leading-relaxed text-slate-200">{mode.improved}</p>
+                        <p className="text-[13px] leading-relaxed text-[var(--bts-text-body)]">{mode.improved}</p>
                     </div>
-                    <div className="rounded-xl border border-amber-500/30 bg-amber-950/12 p-3">
+                    <div className="rounded-xl border border-amber-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(12%_-_var(--bts-tint-mix)_*_0.06),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] p-3">
                         <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-200">
                             <XCircle size={13} aria-hidden /> {data.notImprovedLabel}
                         </div>
-                        <p className="text-[13px] leading-relaxed text-slate-200">{mode.notImproved}</p>
+                        <p className="text-[13px] leading-relaxed text-[var(--bts-text-body)]">{mode.notImproved}</p>
                     </div>
                 </div>
 
                 {/* שורה תחתונה */}
-                <div className="rounded-xl border border-fuchsia-500/30 bg-fuchsia-950/15 p-3.5">
+                <div className="rounded-xl border border-fuchsia-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-fuchsia-950)] [--t-l:var(--color-fuchsia-500)] p-3.5">
                     <div className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-fuchsia-200">
                         <Lightbulb size={13} className="text-fuchsia-300" /> {data.takeawayLabel}
                     </div>
-                    <p className="text-[13px] font-bold leading-relaxed text-slate-100">{mode.takeaway}</p>
+                    <p className="text-[13px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{mode.takeaway}</p>
                 </div>
             </motion.div>
 
             {/* הבהרה: כל הדוגמאות לימודיות בלבד */}
-            <p className="mt-4 text-[13px] leading-relaxed text-slate-500">{data.disclaimer}</p>
+            <p className="mt-4 text-[13px] leading-relaxed text-[var(--bts-text-faint)]">{data.disclaimer}</p>
         </div>
     );
 };

@@ -22,9 +22,9 @@ import { BASE_ID, type Ambiguity } from '@/app/behind-the-scenes-ai/chapter-2/in
 
 // גוון הצ׳יפ של רמת העמימות (מבני; התווית עברה למילון chapter2Visuals.inputLab.ambiguityLabels).
 const AMBIGUITY_CHIP: Record<Ambiguity, string> = {
-    low: 'border-emerald-400/40 bg-emerald-900/20 text-emerald-200',
-    medium: 'border-amber-400/40 bg-amber-900/20 text-amber-200',
-    high: 'border-rose-400/40 bg-rose-900/20 text-rose-200',
+    low: 'border-emerald-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-emerald-900)] [--t-l:var(--color-emerald-500)] text-emerald-200',
+    medium: 'border-amber-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)] text-amber-200',
+    high: 'border-rose-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-rose-900)] [--t-l:var(--color-rose-500)] text-rose-200',
 };
 
 // טון פס ההקשר הדביק נגזר מרמת העמימות של הקלט (תכונה של הקלט עצמו, בתוך גבול הפרק):
@@ -37,11 +37,11 @@ const AMBIGUITY_TONE: Record<Ambiguity, ContextTone> = {
 
 /** כרטיס שדה בודד בלוח הקריאה. */
 const Field: React.FC<{ icon: React.ReactNode; title: string; children: React.ReactNode }> = ({ icon, title, children }) => (
-    <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-3.5">
-        <div className="mb-2 flex items-center gap-2 text-[13px] font-bold uppercase tracking-wider text-slate-400">
+    <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-3.5">
+        <div className="mb-2 flex items-center gap-2 text-[13px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">
             {icon} {title}
         </div>
-        <div className="text-sm leading-relaxed text-slate-200">{children}</div>
+        <div className="text-sm leading-relaxed text-[var(--bts-text-body)]">{children}</div>
     </div>
 );
 
@@ -57,9 +57,9 @@ export const InputComparisonLab: React.FC = () => {
     const ambLabel = viz.ambiguityLabels[v.ambiguity];
 
     return (
-        <div className="rounded-2xl border border-violet-500/30 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-2xl border border-violet-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             {/* בורר ניסוחים: ההוראה יושבת צמוד לכפתורים, ובולטת יותר מהערות המשנה */}
-            <p className="mb-3 flex items-start gap-1.5 text-sm font-medium text-slate-200">
+            <p className="mb-3 flex items-start gap-1.5 text-sm font-medium text-[var(--bts-text-body)]">
                 <MousePointerClick size={16} className="mt-0.5 shrink-0 text-violet-400" />
                 {viz.pickerHint}
             </p>
@@ -73,8 +73,8 @@ export const InputComparisonLab: React.FC = () => {
                             onClick={() => setId(item.id)}
                             aria-pressed={active}
                             className={`rounded-xl border px-3 py-1.5 text-sm font-bold transition-colors ${active
-                                ? 'border-violet-400/60 bg-violet-900/30 text-violet-100'
-                                : 'border-slate-700/50 bg-slate-950/30 text-slate-400 hover:border-slate-600'
+                                ? 'border-violet-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(30%_-_var(--bts-tint-mix)_*_0.15),transparent)] [--t-d:var(--color-violet-900)] [--t-l:var(--color-violet-500)] text-violet-100'
+                                : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-muted)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                 }`}
                         >
                             {item.label}
@@ -95,7 +95,7 @@ export const InputComparisonLab: React.FC = () => {
             {/* לוח הקריאה */}
             <motion.div
                 key={v.id}
-                initial={reduce ? false : { opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { duration: 0.25 }}
                 className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2"
@@ -113,10 +113,10 @@ export const InputComparisonLab: React.FC = () => {
                 </Field>
 
                 <Field icon={<ArrowLeftRight size={13} className="text-violet-300" />} title={viz.fields.changed}>
-                    {isBase ? <span className="text-slate-400">{viz.baseComparison}</span> : v.changed}
+                    {isBase ? <span className="text-[var(--bts-text-muted)]">{viz.baseComparison}</span> : v.changed}
                 </Field>
 
-                <Field icon={<Gauge size={13} className="text-slate-300" />} title={viz.fields.ambiguity}>
+                <Field icon={<Gauge size={13} className="text-[var(--bts-text-secondary)]" />} title={viz.fields.ambiguity}>
                     <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-bold ${ambChip}`}>{ambLabel}</span>
                 </Field>
 
@@ -125,21 +125,21 @@ export const InputComparisonLab: React.FC = () => {
                 </Field>
 
                 {v.note && (
-                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-3.5 sm:col-span-2">
+                    <div className="rounded-xl border border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] p-3.5 sm:col-span-2">
                         <div className="mb-1 flex items-center gap-2 text-[13px] font-bold uppercase tracking-wider text-emerald-300">
                             <Info size={13} /> {viz.noticeLabel}
                         </div>
-                        <div className="text-sm leading-relaxed text-slate-200">{v.note}</div>
+                        <div className="text-sm leading-relaxed text-[var(--bts-text-body)]">{v.note}</div>
                     </div>
                 )}
             </motion.div>
 
-            <p className="mt-4 text-xs leading-relaxed text-slate-500">
+            <p className="mt-4 text-xs leading-relaxed text-[var(--bts-text-faint)]">
                 {viz.outro}
             </p>
 
             {/* רמיזה קצרה לטוקניזציה כהערת "בהמשך", אחרי הלוח כדי לא לקטוע את זרימת המעבדה */}
-            <p className="mt-4 rounded-xl border border-slate-700/40 bg-slate-950/30 p-3 text-xs leading-relaxed text-slate-400">
+            <p className="mt-4 rounded-xl border border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-700))_40%,transparent)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-3 text-xs leading-relaxed text-[var(--bts-text-muted)]">
                 {viz.tokenizationHint}
             </p>
         </div>
