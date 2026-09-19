@@ -90,28 +90,28 @@ export default function HomePage() {
         snippet: `def process(data: dict) -> list[float]:
     # Modern AI Engineering
     return [0.1, 0.5, 0.9]`,
-        snippetColor: "text-yellow-400"
+        snippetColor: "text-yellow-400 light:text-amber-700!"
     },
     {
         id: 'mathIntuitive',
         snippet: `# Cosine Similarity
 similarity = dot(a, b) / (norm(a)*norm(b))
 # Spatial Geometry`,
-        snippetColor: "text-blue-400"
+        snippetColor: "text-blue-400 light:text-blue-700!"
     },
     {
         id: 'mathProbabilistic',
         snippet: `# Gradient Descent
 x = x - lr * slope(x)
 # P(Spam | Words)`,
-        snippetColor: "text-pink-400"
+        snippetColor: "text-pink-400 light:text-pink-700!"
     },
     {
         id: 'behind-the-scenes-ai',
         snippet: `Input -> Tokens -> Numbers
 -> Probabilities -> Decision
 # Chat & Agent, exposed`,
-        snippetColor: "text-cyan-400"
+        snippetColor: "text-cyan-400 light:text-cyan-700!"
     }
   ];
 
@@ -187,15 +187,15 @@ x = x - lr * slope(x)
                                     </h2>
 
                                     {/* Code Snippet Section */}
-                                    <div className="w-full bg-black/60 rounded-xl p-4 mb-6 border border-slate-800 shadow-inner group-hover:border-slate-700 transition-colors overflow-hidden light:bg-slate-950 light:border-slate-700 [--bts-ink-darken:0%] light:shadow-[0_10px_20px_-12px_rgba(15,23,42,0.55)]">
-                                        <div className="flex gap-1.5 mb-3 opacity-30">
+                                    <div className="w-full bg-black/60 rounded-xl p-4 mb-6 border border-slate-800 shadow-inner group-hover:border-slate-700 transition-colors overflow-hidden light:bg-[#f3f5fb] light:border-slate-300/80 light:group-hover:border-indigo-300 light:shadow-[inset_0_1px_0_#fff,0_8px_18px_-14px_rgba(30,41,59,0.4)]">
+                                        <div className="flex gap-1.5 mb-3 opacity-30 light:opacity-80">
                                             <div className="w-2 h-2 rounded-full bg-red-500" />
                                             <div className="w-2 h-2 rounded-full bg-yellow-500" />
                                             <div className="w-2 h-2 rounded-full bg-green-500" />
                                         </div>
                                         <pre 
                                             dir="ltr" 
-                                            className={`font-mono text-[10px] sm:text-[11px] leading-relaxed tracking-tight ${card.snippetColor} opacity-90 text-left`}
+                                            className={`font-mono text-[10px] sm:text-[11px] leading-relaxed tracking-tight whitespace-pre-wrap break-words ${card.snippetColor} opacity-90 light:opacity-100 text-left`}
                                         >
                                             {card.snippet}
                                         </pre>
