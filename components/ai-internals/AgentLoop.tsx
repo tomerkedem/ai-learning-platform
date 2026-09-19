@@ -535,7 +535,7 @@ export const AgentLoop: React.FC<{
             </div>
             {/* הבמה: ליבה משותפת + סצנה תלוית-מצב. mx-auto ממרכז אותה תמיד. ב-Chat הבמה
                 נמוכה יותר (aspect-[7/5]) כדי שהמנוע יעלה למעלה ולא יישאר מרווח מיותר. */}
-            <div className={`relative mx-auto w-full max-w-[460px] ${isAgent ? 'aspect-square' : 'aspect-[7/5]'}`}>
+            <div data-theme="dark" className={`relative mx-auto w-full max-w-[460px] rounded-[2rem] [html[data-theme=light]_&]:bg-[var(--bts-page)] ${isAgent ? 'aspect-square' : 'aspect-[7/5]'}`}>
                 {/* שכבת-חלקיקים עתידית: ריקה, aria-hidden, לא מציירת דבר כרגע (עיגון ל-Canvas). */}
                 <canvas ref={particleLayerRef} aria-hidden className="pointer-events-none absolute inset-0 h-full w-full opacity-0" />
 

@@ -32,10 +32,13 @@ export function CourseFooter() {
     const pathname = usePathname();
     const { locale, t } = useT();
     const courseTitle = getActiveCourseTitle(pathname ?? '', locale) ?? t.chrome.footer.defaultLabel;
+    // רק הלומדה "מאחורי הקלעים" תומכת ב-Light. שאר הלומדות נשארות Dark, ולכן ה-override נוסף רק כאן.
+    const themed = pathname?.startsWith('/behind-the-scenes-ai') ?? false;
+    const lt = (light: string) => (themed ? light : '');
 
     return (
         // הוספנו 'group' והגדלנו את הריפוד העליון ל-pt-64 כדי למנוע חפיפה עם התמונה
-        <footer className="relative w-full bg-slate-950 pt-64 border-t border-slate-800/50 group">
+        <footer className={`relative w-full bg-slate-950 pt-64 border-t border-slate-800/50 group ${lt('[html[data-theme=light]_&]:bg-[var(--bts-page)] [html[data-theme=light]_&]:border-[var(--bts-border)]')}`}>
                         {/* רקע תמונה (חלק עליון) - גובה h-48 נשאר כפי שצוין */}
             <div className="absolute top-0 left-0 w-full h-48 overflow-hidden"> 
                 <Image
@@ -53,14 +56,14 @@ export function CourseFooter() {
                     priority={false} 
                 />
                 {/* כיסוי כהה למטה למעבר חלק יותר */}
-                 <div className="absolute bottom-0 w-full h-10 bg-linear-to-t from-slate-950 to-transparent"></div>
+                 <div className={`absolute bottom-0 w-full h-10 bg-linear-to-t from-slate-950 to-transparent ${lt('[html[data-theme=light]_&]:from-[var(--bts-page)]')}`}></div>
             </div>
 
             {/* תוכן הפוטר (חלק תחתון) */}
-            <div className="relative z-10 text-center py-2 px-2 text-slate-400 max-w-4xl mx-auto">
+            <div className={`relative z-10 text-center py-2 px-2 text-slate-400 max-w-4xl mx-auto ${lt('[html[data-theme=light]_&]:text-[var(--bts-text-muted)]')}`}>
                 {/* ... (שאר התוכן נשאר זהה) */}
                 {/* הוספת שורה כדי שהטקסט לא יעלה על התמונה */}
-                <p className="text-sm text-slate-400 mb-1">{courseTitle}</p>
+                <p className={`text-sm text-slate-400 mb-1 ${lt('[html[data-theme=light]_&]:text-[var(--bts-text-secondary)]')}`}>{courseTitle}</p>
                 <p className="text-xs mb-4">
                    {t.chrome.footer.copyright}
                 </p>
