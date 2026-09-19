@@ -24,7 +24,7 @@ export const TokenChip: React.FC<TokenChipProps> = ({ text, role, onClick, activ
     const reduce = useReducedMotion();
     const s = ROLE_STYLE[role];
     const cls = `inline-flex items-center gap-1.5 rounded-lg border font-mono ${SIZE[size]} ${s.border} ${s.bg} ${s.text} ${
-        active ? 'ring-2 ring-white/30' : ''
+        active ? 'ring-2 ring-[rgb(var(--bts-fill-rgb)/0.3)]' : ''
     }`;
 
     const dot = <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${s.dot}`} aria-hidden />;
@@ -42,7 +42,7 @@ export const TokenChip: React.FC<TokenChipProps> = ({ text, role, onClick, activ
                 type="button"
                 onClick={onClick}
                 aria-pressed={active}
-                whileTap={reduce ? undefined : { scale: 0.94 }}
+                whileTap={{ scale: reduce ? 1 : 0.94 }}
                 animate={pulse && !reduce ? { scale: [1, 1.12, 1] } : undefined}
                 transition={pulse && !reduce ? { duration: 0.5 } : undefined}
                 className={`${cls} transition-shadow hover:brightness-110`}

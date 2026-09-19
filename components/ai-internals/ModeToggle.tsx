@@ -28,7 +28,7 @@ export const ModeToggle: React.FC<ModeToggleProps> = ({ mode, onChange, accent =
     ];
 
     return (
-        <div className="relative inline-flex items-center gap-1 p-1 rounded-2xl bg-slate-900/80 border border-white/10" dir="ltr">
+        <div className="relative inline-flex items-center gap-1 p-1 rounded-2xl bg-[color-mix(in_oklab,var(--bts-panel-from)_80%,transparent)] border border-[var(--bts-divider-soft)]" dir="ltr">
             {options.map((opt) => {
                 const active = mode === opt.value;
                 return (
@@ -37,7 +37,7 @@ export const ModeToggle: React.FC<ModeToggleProps> = ({ mode, onChange, accent =
                         onClick={() => onChange(opt.value)}
                         aria-pressed={active}
                         className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-colors duration-200
-                            ${active ? a.solidText : 'text-slate-400 hover:text-slate-200'}`}
+                            ${active ? a.solidText : 'text-[var(--bts-text-muted)] hover:text-[var(--bts-text-body)]'}`}
                     >
                         {active && (
                             <motion.span

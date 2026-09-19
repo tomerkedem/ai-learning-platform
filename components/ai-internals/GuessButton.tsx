@@ -127,7 +127,7 @@ export const GuessButton: React.FC<GuessButtonProps> = ({
                 href={href}
                 aria-label={ariaLabel}
                 style={outerStyle}
-                className={`${outerCls} inline-block transition-transform ${reduce ? '' : 'hover:-translate-y-0.5 active:translate-y-0'}`}
+                className={`${outerCls} inline-block transition-transform hover:-translate-y-0.5 active:translate-y-0 motion-reduce:hover:translate-y-0`}
             >
                 {inner}
             </Link>
@@ -140,8 +140,8 @@ export const GuessButton: React.FC<GuessButtonProps> = ({
             onClick={onClick}
             aria-label={ariaLabel}
             disabled={disabled}
-            whileHover={reduce || disabled ? undefined : { y: -2 }}
-            whileTap={reduce || disabled ? undefined : { scale: 0.97 }}
+            whileHover={{ y: reduce || disabled ? 0 : -2 }}
+            whileTap={{ scale: reduce || disabled ? 1 : 0.97 }}
             style={outerStyle}
             className={outerCls}
         >

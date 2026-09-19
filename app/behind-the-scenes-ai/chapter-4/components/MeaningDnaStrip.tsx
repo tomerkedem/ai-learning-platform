@@ -13,7 +13,7 @@
 // שתתיישר זהה ב-RTL וב-LTR, והתוויות מקבלות את כיוון השפה. reduced-motion מקפיא את
 // הפיתול, הפעימה וההבהוב ומשאיר סולם סטטי וקריא לחלוטין. aria שומר נגישות והקראה.
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
@@ -22,8 +22,9 @@ import { DNA_DIMS, dimValue } from '../embeddingEngine';
 
 // צבע לפי תפקיד וקבוע: ציאן = המשפט שבחרת, סגול = המשפט להשוואה. הצבע לא תלוי בזהות
 // המשפט (בניגוד למפה), כדי שהעין תקרא "מי מול מי" ולא תחפש משמעות בצבע המתחלף.
-const ROLE_A = { hex: '#22d3ee', rgb: '34,211,238' }; // המשפט שבחרת
-const ROLE_B = { hex: '#a78bfa', rgb: '167,139,250' }; // המשפט להשוואה
+// lightInk: גוון כהה של אותו תפקיד לטקסט המקרא על משטח בהיר (Dark משתמש ב-hex עצמו).
+const ROLE_A = { hex: '#22d3ee', rgb: '34,211,238', lightInk: '#0e7490' }; // המשפט שבחרת
+const ROLE_B = { hex: '#a78bfa', rgb: '167,139,250', lightInk: '#7c3aed' }; // המשפט להשוואה
 
 interface MeaningDnaStripProps {
     active: JoinedSentence;
@@ -94,6 +95,7 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
     // פאזת הפיתול, מונעת ב-rAF. reduced-motion משאיר 0 (סולם סטטי וקריא).
     const [phase, setPhase] = useState(0);
     const rafRef = useRef<number | null>(null);
+    const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
     useEffect(() => {
         if (reduce) return;
         let start: number | null = null;
@@ -183,35 +185,37 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
         };
     });
 
-    const bondPulse = reduce ? 1 : 0.5 + 0.5 * Math.sin(phase * 1.6);
+    // מצב תנועה מופחתת נקבע רק אחרי ה-mount, כדי שה-style בהידרציה יהיה זהה לשרת.
+    const still = mounted && reduce;
+    const bondPulse = still ? 1 : 0.5 + 0.5 * Math.sin(phase * 1.6);
     const helixHeight = n * LANE;
 
     return (
         <div dir={dir} className="text-start">
             <div className="mb-2 flex items-center gap-2.5">
                 {labNumber != null && (
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-sm font-black text-slate-200">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))_50%,transparent)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(60%_+_var(--bts-tint-mix)_*_0.4),transparent)] font-mono text-sm font-black text-[var(--bts-text-body)]">
                         {labNumber}
                     </span>
                 )}
-                <div className="text-base font-bold text-slate-100">{title ?? dna.title}</div>
+                <div className="text-base font-bold text-[var(--bts-text-bright)]">{title ?? dna.title}</div>
             </div>
 
             {/* מסגור: למה זה DNA ומה כל חלק אומר. ניתן לכיבוי/דריסה מבחוץ (showIntro/intro). */}
-            {showIntro && <p className="mb-2.5 text-[12px] leading-relaxed text-slate-400">{intro ?? dna.intro}</p>}
+            {showIntro && <p className="mb-2.5 text-[12px] leading-relaxed text-[var(--bts-text-muted)]">{intro ?? dna.intro}</p>}
 
             {/* שורת הפתיחה במילים: למה קרוב או רחוק */}
-            {lead && <p className="mb-2.5 text-[13px] font-semibold leading-relaxed text-slate-200">{lead}</p>}
+            {lead && <p className="mb-2.5 text-[13px] font-semibold leading-relaxed text-[var(--bts-text-body)]">{lead}</p>}
 
             {/* מקרא לפי תפקיד: ציאן = המשפט שבחרת, סגול = המשפט להשוואה */}
             <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] font-bold">
-                <span className="inline-flex items-center gap-1.5" style={{ color: colorA.hex }}>
+                <span className="inline-flex items-center gap-1.5" style={{ color: `color-mix(in oklab, ${colorA.lightInk} var(--bts-tint-mix), ${colorA.hex})` }}>
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colorA.hex, boxShadow: `0 0 6px 1px rgba(${colorA.rgb},0.7)` }} />
                     <span className="text-[10px] uppercase tracking-wide opacity-75">{dna.roleActive}</span>
                     <span>{active.text}</span>
                 </span>
                 {compare && (
-                    <span className="inline-flex items-center gap-1.5" style={{ color: colorB.hex }}>
+                    <span className="inline-flex items-center gap-1.5" style={{ color: `color-mix(in oklab, ${colorB.lightInk} var(--bts-tint-mix), ${colorB.hex})` }}>
                         <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colorB.hex, boxShadow: `0 0 6px 1px rgba(${colorB.rgb},0.7)` }} />
                         <span className="text-[10px] uppercase tracking-wide opacity-75">{dna.roleCompare}</span>
                         <span>{compare.text}</span>
@@ -220,7 +224,7 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
             </div>
 
             {/* ── סולם ה-DNA: עמודת הליקס + עמודת תוויות, מיושרות שורה מול שורה ── */}
-            <div className="flex items-stretch gap-2 rounded-2xl border border-violet-500/25 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-3 sm:gap-3 sm:p-4">
+            <div data-theme="dark" className="flex items-stretch gap-2 rounded-2xl border border-violet-500/25 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-3 sm:gap-3 sm:p-4">
                 {/* עמודת ההליקס. dir=ltr קבוע כדי שצומת A תמיד משמאל וההתיישרות זהה בכל שפה */}
                 <div dir="ltr" className="relative flex-[0_0_56%] sm:flex-[0_0_58%]" style={{ height: helixHeight }}>
                     {/* זוהר רקע עדין */}
@@ -253,7 +257,7 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
                         // גודל = עוצמת הרכיב בלבד. טווח רחב (8..28) כדי שחזק וחלש ייראו שונה לגמרי.
                         const sizeA = 8 + p.va * 20;
                         const sizeB = 8 + p.vb * 20;
-                        const bondSize = reduce ? 15 : 13 + bondPulse * 5;
+                        const bondSize = still ? 15 : 13 + bondPulse * 5;
                         return (
                             <React.Fragment key={`nodes-${p.d}`}>
                                 {/* צומת גדיל A (המשפט הנבחר) */}
@@ -296,8 +300,8 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
                                             width: bondSize,
                                             height: bondSize,
                                             zIndex: 25,
-                                            opacity: reduce ? 1 : 0.78 + 0.22 * bondPulse,
-                                            boxShadow: `0 0 ${reduce ? 12 : 9 + bondPulse * 8}px 2px rgba(52,211,153,0.85)`,
+                                            opacity: still ? 1 : 0.78 + 0.22 * bondPulse,
+                                            boxShadow: `0 0 ${still ? 12 : 9 + bondPulse * 8}px 2px rgba(52,211,153,0.85)`,
                                         }}
                                     />
                                 )}
@@ -325,9 +329,9 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
                     {rows.map((p) => (
                         <div key={`label-${p.d}`} className="flex items-center" style={{ height: LANE }}>
                             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                                <span className="text-[13px] font-bold leading-tight text-slate-100">{geneLabels[p.d]}</span>
+                                <span className="text-[13px] font-bold leading-tight text-[var(--bts-text-bright)]">{geneLabels[p.d]}</span>
                                 {p.shared && (
-                                    <span className="inline-flex items-center gap-0.5 rounded-full border border-emerald-400/40 bg-emerald-900/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-200">
+                                    <span className="inline-flex items-center gap-0.5 rounded-full border border-emerald-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-emerald-900)] [--t-l:var(--color-emerald-500)] px-1.5 py-0.5 text-[9px] font-bold text-emerald-200">
                                         <Check size={9} /> {dna.sharedBadge}
                                     </span>
                                 )}
@@ -338,24 +342,24 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
             </div>
 
             {/* מדריך קריאה קצר: איך לפענח את הסולם */}
-            <div className="mt-3 space-y-1.5 rounded-xl border border-slate-700/40 bg-slate-950/30 p-3">
-                <p className="flex items-center gap-2 text-[12px] leading-relaxed text-slate-400">
+            <div className="mt-3 space-y-1.5 rounded-xl border border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-700))_40%,transparent)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-3">
+                <p className="flex items-center gap-2 text-[12px] leading-relaxed text-[var(--bts-text-muted)]">
                     {/* מפתח גודל ויזואלי: עיגול גדול מול קטן, מראה שגודל = עוצמה */}
                     <span className="flex shrink-0 items-center gap-1">
-                        <span className="h-3.5 w-3.5 rounded-full bg-slate-200" />
-                        <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
+                        <span className="h-3.5 w-3.5 rounded-full bg-[color-mix(in_oklab,var(--bts-text-body)_var(--bts-tint-mix),var(--color-slate-200))]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-[var(--bts-text-faint)]" />
                     </span>
                     {dna.guideSize}
                 </p>
                 {/* קווי ההנחיה על קשר/כריכה בין שני משפטים רלוונטיים רק כשיש משפט השוואה */}
                 {compare && (
                     <>
-                        <p className="flex items-start gap-2 text-[12px] leading-relaxed text-slate-400">
-                            <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-300 shadow-[0_0_6px_1px_rgba(52,211,153,0.7)]" />
+                        <p className="flex items-start gap-2 text-[12px] leading-relaxed text-[var(--bts-text-muted)]">
+                            <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[color-mix(in_oklab,var(--color-emerald-500)_var(--bts-tint-mix),var(--color-emerald-300))] shadow-[0_0_6px_1px_rgba(52,211,153,0.7)]" />
                             {dna.guideBond}
                         </p>
-                        <p className="flex items-start gap-2 text-[12px] leading-relaxed text-slate-400">
-                            <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-violet-300" />
+                        <p className="flex items-start gap-2 text-[12px] leading-relaxed text-[var(--bts-text-muted)]">
+                            <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[color-mix(in_oklab,var(--color-violet-500)_var(--bts-tint-mix),var(--color-violet-300))]" />
                             {dna.twistMeaning}
                         </p>
                     </>
@@ -368,8 +372,8 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
                     <span
                         className={`inline-flex rounded-md border px-2.5 py-1 text-xs font-bold transition-colors duration-500 ${
                             stayedClose
-                                ? 'border-emerald-500/30 bg-emerald-900/15 text-emerald-200'
-                                : 'border-amber-500/30 bg-amber-900/15 text-amber-200'
+                                ? 'border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-900)] [--t-l:var(--color-emerald-500)] text-emerald-200'
+                                : 'border-amber-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)] text-amber-200'
                         }`}
                     >
                         {verdict}
@@ -378,7 +382,7 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
             )}
 
             {/* הבהרה קבועה: הצירים הם תוויות לימודיות, לא ממדי embedding קריאים לאדם */}
-            <p className="mt-3 text-[13px] leading-relaxed text-slate-400">{dna.axesNote}</p>
+            <p className="mt-3 text-[13px] leading-relaxed text-[var(--bts-text-muted)]">{dna.axesNote}</p>
 
             {/* סיכום מוסתר להקראה */}
             <p className="sr-only" aria-live="polite">

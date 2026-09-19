@@ -104,10 +104,10 @@ export interface ClusterStyle {
 }
 
 export const CLUSTER_STYLE: Record<ClusterKey, ClusterStyle> = {
-    complaint: { hex: '#fb7185', text: 'text-rose-300', chip: 'border-rose-500/40 bg-rose-900/15', dot: 'bg-rose-400' },
-    status: { hex: '#22d3ee', text: 'text-cyan-300', chip: 'border-cyan-500/40 bg-cyan-900/15', dot: 'bg-cyan-400' },
-    action: { hex: '#a78bfa', text: 'text-violet-300', chip: 'border-violet-500/40 bg-violet-900/15', dot: 'bg-violet-400' },
-    unrelated: { hex: '#94a3b8', text: 'text-slate-400', chip: 'border-slate-600/50 bg-slate-800/40', dot: 'bg-slate-500' },
+    complaint: { hex: '#fb7185', text: 'text-rose-300', chip: 'border-rose-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-rose-900)] [--t-l:var(--color-rose-500)]', dot: 'bg-rose-400' },
+    status: { hex: '#22d3ee', text: 'text-cyan-300', chip: 'border-cyan-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-cyan-900)] [--t-l:var(--color-cyan-500)]', dot: 'bg-cyan-400' },
+    action: { hex: '#a78bfa', text: 'text-violet-300', chip: 'border-violet-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-violet-900)] [--t-l:var(--color-violet-500)]', dot: 'bg-violet-400' },
+    unrelated: { hex: '#94a3b8', text: 'text-[var(--bts-text-muted)]', chip: 'border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))_50%,transparent)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(40%_+_var(--bts-tint-mix)_*_0.6),transparent)]', dot: 'bg-slate-500' },
 };
 
 /* ═══════════════════════ פונקציות עזר טהורות (מרחק) ═══════════════════════ */
@@ -135,9 +135,9 @@ export function closenessTone(dist: number): ClosenessTone {
 }
 
 export const TONE_STYLE: Record<ClosenessTone, { text: string; bar: string; chip: string }> = {
-    near: { text: 'text-emerald-300', bar: 'bg-gradient-to-l from-emerald-400 to-teal-500', chip: 'border-emerald-500/40 bg-emerald-900/15' },
-    mid: { text: 'text-amber-300', bar: 'bg-gradient-to-l from-amber-400 to-orange-500', chip: 'border-amber-500/40 bg-amber-900/15' },
-    far: { text: 'text-slate-400', bar: 'bg-gradient-to-l from-slate-500 to-slate-600', chip: 'border-slate-600/50 bg-slate-800/40' },
+    near: { text: 'text-emerald-300', bar: 'bg-gradient-to-l from-emerald-400 to-teal-500', chip: 'border-emerald-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-900)] [--t-l:var(--color-emerald-500)]' },
+    mid: { text: 'text-amber-300', bar: 'bg-gradient-to-l from-amber-400 to-orange-500', chip: 'border-amber-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)]' },
+    far: { text: 'text-[var(--bts-text-muted)]', bar: 'bg-gradient-to-l from-slate-500 to-slate-600', chip: 'border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))_50%,transparent)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(40%_+_var(--bts-tint-mix)_*_0.6),transparent)]' },
 };
 
 /** מאתר משפט לפי מזהה. */

@@ -80,7 +80,7 @@ const DIAGRAMS = [DiagramTokens, DiagramContext, DiagramSequence];
 /* ── מחבר בין שלבים: חץ מטה במובייל, חץ לפי כיוון הקריאה בדסקטופ. דקורטיבי בלבד. ── */
 
 const Connector: React.FC<{ isRtl: boolean }> = ({ isRtl }) => (
-    <span aria-hidden className="flex shrink-0 items-center justify-center text-slate-600 md:px-1">
+    <span aria-hidden className="flex shrink-0 items-center justify-center text-[var(--bts-text-subtle)] md:px-1">
         <ChevronDown size={14} className="md:hidden" />
         {isRtl ? (
             <ChevronLeft size={16} className="hidden md:block" />
@@ -105,18 +105,18 @@ export const SentenceBridge: React.FC = () => {
     ].join(' ');
 
     return (
-        <section dir={dir} className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-5 backdrop-blur-xl md:p-7">
+        <section dir={dir} className="rounded-[2rem] border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 backdrop-blur-xl md:p-7">
             <div className="flex items-start justify-between gap-2.5">
                 <div>
                     <span className="mb-1.5 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-300">
                         <Layers size={14} /> {s.eyebrow}
                     </span>
-                    <h3 className="text-xl font-black text-white md:text-2xl">{s.title}</h3>
+                    <h3 className="text-xl font-black text-[var(--bts-text-primary)] md:text-2xl">{s.title}</h3>
                 </div>
                 <SpeakButton text={speakText} className="mt-0.5" />
             </div>
 
-            <p className="mt-1.5 text-[15px] leading-relaxed text-slate-300">{s.intro}</p>
+            <p className="mt-1.5 text-[15px] leading-relaxed text-[var(--bts-text-secondary)]">{s.intro}</p>
 
             {/* שלושת השלבים כזרימה אחת: בלי מסגרת או רקע לכל שלב. במובייל נערמים עם חץ מטה,
                 בדסקטופ בשורה עם חץ לפי כיוון הקריאה. הטקסט מיושר תחת הכותרת (ps במובייל). */}
@@ -127,7 +127,7 @@ export const SentenceBridge: React.FC = () => {
                         <React.Fragment key={step.title}>
                             {i > 0 && <Connector isRtl={isRtl} />}
                             <motion.li
-                                initial={reduce ? false : { opacity: 0, y: 6 }}
+                                initial={{ opacity: 0, y: 6 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={reduce ? { duration: 0 } : { duration: 0.35, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
                                 className="flex-1"
@@ -136,7 +136,7 @@ export const SentenceBridge: React.FC = () => {
                                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-violet-500/40 bg-violet-500/15 font-mono text-[12px] font-black text-violet-200">
                                         {i + 1}
                                     </span>
-                                    <span className="text-base font-bold leading-tight text-white">{step.title}</span>
+                                    <span className="text-base font-bold leading-tight text-[var(--bts-text-primary)]">{step.title}</span>
                                 </div>
 
                                 {/* המחשה חזותית בלבד: הרצף מוסבר במלואו בטקסט שמתחתיה */}
@@ -144,7 +144,7 @@ export const SentenceBridge: React.FC = () => {
                                     <Diagram />
                                 </span>
 
-                                <p className="mt-1.5 ps-[2.125rem] text-[15px] leading-relaxed text-slate-300 md:ps-0">
+                                <p className="mt-1.5 ps-[2.125rem] text-[15px] leading-relaxed text-[var(--bts-text-secondary)] md:ps-0">
                                     {step.body}
                                 </p>
                             </motion.li>
@@ -154,9 +154,9 @@ export const SentenceBridge: React.FC = () => {
             </ol>
 
             {/* שורת הסיום של אותה זרימה: קו דק מפריד, לא כרטיס נפרד */}
-            <div className="mt-4 flex items-start gap-2.5 border-t border-slate-700/50 pt-3.5">
+            <div className="mt-4 flex items-start gap-2.5 border-t border-[var(--bts-border)] pt-3.5">
                 <Info size={17} className="mt-0.5 shrink-0 text-violet-300" />
-                <p className="text-[15px] leading-relaxed text-slate-300">{s.clarify}</p>
+                <p className="text-[15px] leading-relaxed text-[var(--bts-text-secondary)]">{s.clarify}</p>
             </div>
         </section>
     );

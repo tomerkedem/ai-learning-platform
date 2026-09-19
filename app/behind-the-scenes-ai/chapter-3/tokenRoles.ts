@@ -34,18 +34,18 @@ export interface RoleStyle {
 
 /** פלטה נפרדת אך תואמת לפלטת הפרקים הקודמים. מחלקות literal בלבד. */
 export const ROLE_STYLE: Record<TokenRole, RoleStyle> = {
-    object: { border: 'border-blue-500/45', text: 'text-blue-300', bg: 'bg-blue-900/20', dot: 'bg-blue-400' },
-    negation: { border: 'border-rose-500/45', text: 'text-rose-300', bg: 'bg-rose-900/20', dot: 'bg-rose-400' },
-    action: { border: 'border-emerald-500/45', text: 'text-emerald-300', bg: 'bg-emerald-900/20', dot: 'bg-emerald-400' },
-    'action-signal': { border: 'border-violet-500/55', text: 'text-violet-300', bg: 'bg-violet-900/25', dot: 'bg-violet-400' },
-    context: { border: 'border-cyan-500/45', text: 'text-cyan-300', bg: 'bg-cyan-900/20', dot: 'bg-cyan-400' },
-    system: { border: 'border-indigo-500/45', text: 'text-indigo-300', bg: 'bg-indigo-900/20', dot: 'bg-indigo-400' },
-    recipient: { border: 'border-amber-500/45', text: 'text-amber-300', bg: 'bg-amber-900/20', dot: 'bg-amber-400' },
-    'question-signal': { border: 'border-fuchsia-500/45', text: 'text-fuchsia-300', bg: 'bg-fuchsia-900/20', dot: 'bg-fuchsia-400' },
-    'statement-signal': { border: 'border-teal-500/45', text: 'text-teal-300', bg: 'bg-teal-900/20', dot: 'bg-teal-400' },
-    number: { border: 'border-lime-500/45', text: 'text-lime-300', bg: 'bg-lime-900/20', dot: 'bg-lime-400' },
-    noise: { border: 'border-slate-500/45', text: 'text-slate-300', bg: 'bg-slate-700/30', dot: 'bg-slate-400' },
-    other: { border: 'border-slate-600/50', text: 'text-slate-300', bg: 'bg-slate-800/40', dot: 'bg-slate-500' },
+    object: { border: 'border-blue-500/45', text: 'text-blue-300', bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-blue-900)] [--t-l:var(--color-blue-500)]', dot: 'bg-blue-400' },
+    negation: { border: 'border-rose-500/45', text: 'text-rose-300', bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-rose-900)] [--t-l:var(--color-rose-500)]', dot: 'bg-rose-400' },
+    action: { border: 'border-emerald-500/45', text: 'text-emerald-300', bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-emerald-900)] [--t-l:var(--color-emerald-500)]', dot: 'bg-emerald-400' },
+    'action-signal': { border: 'border-violet-500/55', text: 'text-violet-300', bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-violet-900)] [--t-l:var(--color-violet-500)]', dot: 'bg-violet-400' },
+    context: { border: 'border-cyan-500/45', text: 'text-cyan-300', bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-cyan-900)] [--t-l:var(--color-cyan-500)]', dot: 'bg-cyan-400' },
+    system: { border: 'border-indigo-500/45', text: 'text-indigo-300', bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-indigo-900)] [--t-l:var(--color-indigo-500)]', dot: 'bg-indigo-400' },
+    recipient: { border: 'border-amber-500/45', text: 'text-amber-300', bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)]', dot: 'bg-amber-400' },
+    'question-signal': { border: 'border-fuchsia-500/45', text: 'text-fuchsia-300', bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-fuchsia-900)] [--t-l:var(--color-fuchsia-500)]', dot: 'bg-fuchsia-400' },
+    'statement-signal': { border: 'border-teal-500/45', text: 'text-teal-300', bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-teal-900)] [--t-l:var(--color-teal-500)]', dot: 'bg-teal-400' },
+    number: { border: 'border-lime-500/45', text: 'text-lime-300', bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-lime-900)] [--t-l:var(--color-lime-500)]', dot: 'bg-lime-400' },
+    noise: { border: 'border-slate-500/45', text: 'text-[var(--bts-text-secondary)]', bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-700))_calc(30%_+_var(--bts-tint-mix)_*_0.7),transparent)]', dot: 'bg-slate-400' },
+    other: { border: 'border-slate-600/50', text: 'text-[var(--bts-text-secondary)]', bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(40%_+_var(--bts-tint-mix)_*_0.6),transparent)]', dot: 'bg-slate-500' },
 };
 
 export interface RoleInfo {

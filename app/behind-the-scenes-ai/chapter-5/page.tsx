@@ -60,7 +60,7 @@ const LockQuestion: React.FC = () => {
     return (
         <div dir={dir} className="text-start">
             <div className="mb-3 flex items-start justify-between gap-2">
-                <p className="text-sm font-bold text-slate-200">{lock.question}</p>
+                <p className="text-sm font-bold text-[var(--bts-text-body)]">{lock.question}</p>
                 <SpeakButton text={lock.question} />
             </div>
 
@@ -68,10 +68,10 @@ const LockQuestion: React.FC = () => {
                 {lock.options.map((opt, i) => {
                     const isCorrect = i === LOCK_CORRECT;
                     const isChosen = i === choice;
-                    let cls = 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600';
-                    if (answered && isChosen && isCorrect) cls = 'border-emerald-400/70 bg-emerald-900/25 text-emerald-100';
-                    else if (answered && isChosen && !isCorrect) cls = 'border-amber-400/70 bg-amber-900/20 text-amber-100';
-                    else if (answered && isCorrect) cls = 'border-emerald-400/50 bg-emerald-900/15 text-emerald-100';
+                    let cls = 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]';
+                    if (answered && isChosen && isCorrect) cls = 'border-emerald-400/70 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-emerald-900)] [--t-l:var(--color-emerald-500)] text-emerald-100';
+                    else if (answered && isChosen && !isCorrect) cls = 'border-amber-400/70 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)] text-amber-100';
+                    else if (answered && isCorrect) cls = 'border-emerald-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-900)] [--t-l:var(--color-emerald-500)] text-emerald-100';
                     return (
                         <button
                             key={opt}
@@ -92,8 +92,8 @@ const LockQuestion: React.FC = () => {
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.25 }}
-                    className={`mt-4 rounded-xl border p-3 text-sm leading-relaxed text-slate-200 ${
-                        correct ? 'border-emerald-500/30 bg-emerald-950/15' : 'border-amber-500/30 bg-amber-950/15'
+                    className={`mt-4 rounded-xl border p-3 text-sm leading-relaxed text-[var(--bts-text-body)] ${
+                        correct ? 'border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)]' : 'border-amber-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)]'
                     }`}
                 >
                     {correct ? lock.explanationCorrect : lock.explanationWrong}
@@ -213,40 +213,40 @@ export default function BehindTheScenesChapter5() {
     const dnaB = c4Sentences.find((s) => s.id === dnaBId) ?? null;
 
     return (
-        <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={5}>
+        <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={5} themeAware>
 
             {/* ══════════ HERO ══════════ */}
             {/* M4: מנטור ההירו הוסר. הוא היה דמות שותקת (בלי בועה ובלי טקסט) בשש עטיפות
                 רספונסיביות, ולא לימד דבר. הכותרת, הפתיח והצ'יפים נושאים את ההירו לבדם. */}
             <motion.section
-                initial={reduce ? false : { opacity: 0, y: 18 }}
+                initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-start"
+                className="relative overflow-hidden rounded-[2.5rem] border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_60%,transparent)] backdrop-blur-xl p-8 md:p-10 text-start"
                 dir={dir}
             >
                 <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
                 <div className="absolute -bottom-20 -left-10 w-64 h-64 bg-cyan-500/10 blur-[90px] rounded-full pointer-events-none" />
 
                 <div className="relative z-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(70%_+_var(--bts-tint-mix)_*_0.3),transparent)] border border-violet-500/30 mb-5">
                         <Map size={14} className="text-violet-400" />
                         <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">{c5.hero.badge}</span>
                     </div>
 
-                    <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
+                    <h1 className="text-4xl md:text-5xl font-black text-[var(--bts-text-primary)] leading-[1.1] mb-4">
                         {c5.hero.titleLead}{heroTitleSep}
-                        <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent`}>
+                        <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[color-mix(in_oklab,var(--color-violet-400)_calc(100%_-_var(--bts-tint-mix)_*_0.4),black)] via-[color-mix(in_oklab,var(--color-fuchsia-400)_calc(100%_-_var(--bts-tint-mix)_*_0.4),black)] to-[color-mix(in_oklab,var(--color-cyan-400)_calc(100%_-_var(--bts-tint-mix)_*_0.4),black)] bg-clip-text text-transparent`}>
                             {c5.hero.titleHighlight}
                         </span>
                     </h1>
 
                     <div className="flex items-start gap-2.5">
-                        <p className="text-lg text-slate-300 leading-relaxed">{c5.hero.lede}</p>
+                        <p className="text-lg text-[var(--bts-text-secondary)] leading-relaxed">{c5.hero.lede}</p>
                         <SpeakButton text={heroSpeech} className="mt-1" />
                     </div>
 
-                    <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
+                    <div className="flex flex-wrap gap-3 mt-5 text-xs text-[var(--bts-text-muted)]">
                         <span className="inline-flex items-center gap-1.5">
                             <MousePointerClick size={14} className="text-violet-400" /> {c5.hero.chipMap}
                         </span>
@@ -276,17 +276,17 @@ export default function BehindTheScenesChapter5() {
 
             {/* ══════════ במילים פשוטות ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
+                <div className="rounded-[2rem] border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 backdrop-blur-xl md:p-8">
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
                             <Sparkles size={14} /> {c5.plain.eyebrow}
                         </span>
                         <SpeakButton text={`${c5.plain.title} ${c5.plain.paragraphs.join(' ')}`} />
                     </div>
-                    <h2 className="mb-4 text-xl font-black text-white md:text-2xl">{c5.plain.title}</h2>
+                    <h2 className="mb-4 text-xl font-black text-[var(--bts-text-primary)] md:text-2xl">{c5.plain.title}</h2>
                     <div className="space-y-3">
                         {c5.plain.paragraphs.map((p, i) => (
-                            <p key={i} className="text-[15px] leading-relaxed text-slate-200">{p}</p>
+                            <p key={i} className="text-[15px] leading-relaxed text-[var(--bts-text-body)]">{p}</p>
                         ))}
                     </div>
                 </div>
@@ -308,11 +308,11 @@ export default function BehindTheScenesChapter5() {
             {/* ══════════ Semantic Space Lab ══════════ */}
             <section id="semantic-lab" className="mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
                 <div className="flex items-center gap-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-800/60 font-mono text-sm font-black text-slate-200">1</span>
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))_50%,transparent)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(60%_+_var(--bts-tint-mix)_*_0.4),transparent)] font-mono text-sm font-black text-[var(--bts-text-body)]">1</span>
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
                         <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">{c5.sections.labEyebrow}</div>
-                        <h2 className="text-2xl font-bold text-white">{c5.sections.labTitle}</h2>
+                        <h2 className="text-2xl font-bold text-[var(--bts-text-primary)]">{c5.sections.labTitle}</h2>
                     </div>
                 </div>
 
@@ -321,7 +321,7 @@ export default function BehindTheScenesChapter5() {
                     שעושים. M12: הפורטרט ירד (אין דמות בלומדה הזאת), והדגש עבר כולו
                     לטיפוגרפיה: קו-צד סגול, משקל בולט וגוון בהיר מגוף הטקסט. כך העדשה
                     נשארת נבדלת בבירור מהפסקה שמעליה בכל רוחב מסך, ולא רק מ-sm ומעלה. */}
-                <div className="flex items-start justify-between gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
+                <div className="flex items-start justify-between gap-2.5 rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">
                     <div className="flex-1">
                         <span className="block">{c5.sections.labIntro}</span>
                         <span className="mt-3 block border-s-2 border-violet-400/60 ps-3.5 text-[15px] font-bold text-violet-100">
@@ -338,14 +338,14 @@ export default function BehindTheScenesChapter5() {
 
             {/* ══════════ מה המפה מלמדת ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-6">
+                <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-6">
                     <div className="mb-4 flex items-start justify-between gap-2.5">
-                        <h2 className="text-lg font-bold text-slate-200">{c5.explain.title}</h2>
+                        <h2 className="text-lg font-bold text-[var(--bts-text-body)]">{c5.explain.title}</h2>
                         <SpeakButton text={`${c5.explain.title}. ${c5.explain.paragraphs.join(' ')}`} />
                     </div>
                     <div className="space-y-3">
                         {c5.explain.paragraphs.map((p, i) => (
-                            <p key={i} className="text-[15px] leading-relaxed text-slate-300">{p}</p>
+                            <p key={i} className="text-[15px] leading-relaxed text-[var(--bts-text-secondary)]">{p}</p>
                         ))}
                     </div>
                 </div>
@@ -356,17 +356,17 @@ export default function BehindTheScenesChapter5() {
                 הפסים מראים כמה מהדפוס משותף, וזה מה שמזכה אותם במיקומים קרובים במרחב. */}
             {dnaA && (
                 <section className="mt-12 text-start" dir={dir}>
-                  <div className="mb-4 flex items-start justify-between gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
+                  <div className="mb-4 flex items-start justify-between gap-2.5 rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">
                     <span>{c5.sections.dnaIntro}</span>
                     <SpeakButton text={c5.sections.dnaIntro} className="mt-0.5" />
                   </div>
                   <ExpandableLab title={c5.sections.dnaTitle}>
-                    <div className="space-y-4 rounded-2xl border border-violet-500/30 bg-slate-900/40 p-5 sm:p-6">
+                    <div className="space-y-4 rounded-2xl border border-violet-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 sm:p-6">
                         {/* שני בוררים: בחרו שני משפטים וראו כמה רכיבי משמעות משותפים להם.
                             זהים כמעט (שני כשלי מסירה) => הרבה קשרים ירוקים. רחוקים (מסירה מול חיוב)
                             => כמעט בלי קשרים, הגדילים נפרדים. */}
                         {/* הנחיית פעולה קצרה, צמודה לבוררים, כדי שברור שזו השוואת זוג ולא רק תוויות */}
-                        <p className="text-[13px] font-semibold leading-relaxed text-slate-200">{c5.sections.dnaSelectorHint}</p>
+                        <p className="text-[13px] font-semibold leading-relaxed text-[var(--bts-text-body)]">{c5.sections.dnaSelectorHint}</p>
                         <div className="grid gap-4 sm:grid-cols-2">
                             <div>
                                 <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-cyan-300">{c4Lab.dna.roleActive}</div>
@@ -382,7 +382,7 @@ export default function BehindTheScenesChapter5() {
                                                 onClick={() => setDnaAId(id)}
                                                 aria-pressed={on}
                                                 className={`inline-flex min-h-[44px] items-center rounded-lg border px-2.5 py-1 text-sm font-bold transition-colors ${
-                                                    on ? 'border-cyan-400/60 bg-cyan-900/25 text-cyan-100' : 'border-slate-700/50 bg-slate-800/30 text-slate-300 hover:border-slate-600'
+                                                    on ? 'border-cyan-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-cyan-900)] [--t-l:var(--color-cyan-500)] text-cyan-100' : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(30%_+_var(--bts-tint-mix)_*_0.7),transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                                 }`}
                                             >
                                                 {s.text}
@@ -405,7 +405,7 @@ export default function BehindTheScenesChapter5() {
                                                 onClick={() => setDnaBId(id)}
                                                 aria-pressed={on}
                                                 className={`inline-flex min-h-[44px] items-center rounded-lg border px-2.5 py-1 text-sm font-bold transition-colors ${
-                                                    on ? 'border-violet-400/60 bg-violet-900/25 text-violet-100' : 'border-slate-700/50 bg-slate-800/30 text-slate-300 hover:border-slate-600'
+                                                    on ? 'border-violet-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-violet-900)] [--t-l:var(--color-violet-500)] text-violet-100' : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(30%_+_var(--bts-tint-mix)_*_0.7),transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                                 }`}
                                             >
                                                 {s.text}
@@ -416,11 +416,11 @@ export default function BehindTheScenesChapter5() {
                             </div>
                         </div>
 
-                        <div className="rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
+                        <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-4">
                             {/* משפט מקשר צמוד לתצוגה: מבהיר שכל גדיל הוא משפט אחד ולא קו דקורטיבי,
                                 ושדמיון הדפוסים הוא הסיבה לקרבה במרחב. נמצא ממש מעל הסולם כדי שהקישור ברור. */}
                             <div className="mb-3 flex items-start justify-between gap-2.5">
-                                <p className="text-[13px] font-semibold leading-relaxed text-slate-200">{c5.sections.dnaStrandNote}</p>
+                                <p className="text-[13px] font-semibold leading-relaxed text-[var(--bts-text-body)]">{c5.sections.dnaStrandNote}</p>
                                 {/* ההקראה כוללת גם את הבהרת המטאפורה שמתחת לסולם, כדי שהיא נמצאת
                                     בנתיב הקראה בלי כפתור נוסף גלוי. */}
                                 <SpeakButton text={`${c5.sections.dnaStrandNote} ${c5.sections.dnaDisclaimer}`} className="mt-0.5" />
@@ -431,7 +431,7 @@ export default function BehindTheScenesChapter5() {
                         <MeaningDnaStrip active={dnaA} compare={dnaB} geneLabels={c4Lab.genes} dna={c4Lab.dna} dir={dir} labNumber={2} title={c5.sections.dnaStripTitle} showIntro={false} />
                             {/* הבהרת מטאפורה, משנית וקצרה: ה-DNA הוא המחשה, לא חוט ביולוגי. משלימה את
                                 axesNote המשותף (שמדבר על הצירים) בלי לגעת בטקסט פרק 4. */}
-                            <p className="mt-3 text-[12px] leading-relaxed text-slate-500">{c5.sections.dnaDisclaimer}</p>
+                            <p className="mt-3 text-[12px] leading-relaxed text-[var(--bts-text-faint)]">{c5.sections.dnaDisclaimer}</p>
                         </div>
                     </div>
                   </ExpandableLab>
@@ -440,7 +440,7 @@ export default function BehindTheScenesChapter5() {
 
             {/* ══════════ בדיקת הבנה ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
+                <div className="rounded-2xl border border-violet-500/40 bg-[color-mix(in_oklab,var(--bts-panel-from)_60%,transparent)] p-6">
                     {/* הרמז הוא טקסט ולא בועה, כדי שישרוד גם ב-390 שבו התמונה מוסתרת.
                         הוא נאמר לפני התשובה בכוונה, ולכן אינו זקוק ל-state של LockQuestion. */}
                     {/* M4: דמות ה-happy הוסרה. היא הייתה שותקת, וחגגה לפני שהלומד ענה.
@@ -448,7 +448,7 @@ export default function BehindTheScenesChapter5() {
                     <div className="mb-5">
                         <div className="flex items-center gap-2">
                             <ListChecks size={20} className="text-violet-300" />
-                            <h2 className="text-xl font-bold text-white">{c5.lock.title}</h2>
+                            <h2 className="text-xl font-bold text-[var(--bts-text-primary)]">{c5.lock.title}</h2>
                         </div>
                         <p className="mt-2 text-[13px] font-semibold leading-relaxed text-violet-200">{c5.mentor.lock}</p>
                     </div>
@@ -472,7 +472,7 @@ export default function BehindTheScenesChapter5() {
                             </li>
                         ))}
                     </ul>
-                    <span className="mt-3 block text-sm text-slate-400">{c5.practical.caveat}</span>
+                    <span className="mt-3 block text-sm text-[var(--bts-text-muted)]">{c5.practical.caveat}</span>
                     <span className="mt-3 flex items-start gap-2 border-s-2 border-violet-400/50 ps-3 text-sm font-bold text-violet-100">
                         {isRtl ? <ArrowLeft size={15} className="mt-0.5 shrink-0" /> : <ArrowRight size={15} className="mt-0.5 shrink-0" />}
                         {c5.practical.bridge}

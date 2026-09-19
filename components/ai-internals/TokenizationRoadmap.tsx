@@ -17,40 +17,40 @@ export const TokenizationRoadmap: React.FC = () => {
     const { dir } = useT();
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             <div className="mb-4 flex items-center gap-2">
                 <Map size={16} className="text-violet-300" />
                 <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">{roadmap.title}</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{roadmap.titleEn}</div>
+                    <div className="text-sm font-bold text-[var(--bts-text-body)]">{roadmap.title}</div>
+                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">{roadmap.titleEn}</div>
                 </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2" dir="ltr">
                 {roadmap.steps.map((step, i) => (
                     <React.Fragment key={step.en}>
-                        {i > 0 && <ArrowLeft size={15} className="rotate-180 text-slate-600" />}
+                        {i > 0 && <ArrowLeft size={15} className="rotate-180 text-[var(--bts-text-subtle)]" />}
                         <motion.div
-                            initial={reduce ? false : { opacity: 0, y: 6 }}
+                            initial={{ opacity: 0, y: 6 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={reduce ? { duration: 0 } : { duration: 0.3, delay: i * 0.05 }}
                             className={`relative rounded-xl border px-3 py-1.5 text-center leading-tight ${
                                 step.active
-                                    ? 'border-violet-500/50 bg-violet-900/25'
-                                    : 'border-slate-700/40 bg-slate-950/30'
+                                    ? 'border-violet-500/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-violet-900)] [--t-l:var(--color-violet-500)]'
+                                    : 'border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-700))_40%,transparent)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)]'
                             }`}
                         >
-                            <span className={`flex items-center gap-1 text-[11px] font-bold ${step.active ? 'text-violet-200' : 'text-slate-500'}`}>
+                            <span className={`flex items-center gap-1 text-[11px] font-bold ${step.active ? 'text-violet-200' : 'text-[var(--bts-text-faint)]'}`}>
                                 {!step.active && <Lock size={9} />}
                                 {step.he}
                             </span>
-                            <span className="block text-[8px] uppercase tracking-wider text-slate-500" dir="ltr">{step.en}</span>
+                            <span className="block text-[8px] uppercase tracking-wider text-[var(--bts-text-faint)]" dir="ltr">{step.en}</span>
                         </motion.div>
                     </React.Fragment>
                 ))}
             </div>
 
-            <p className="mt-4 text-xs leading-relaxed text-slate-400">
+            <p className="mt-4 text-xs leading-relaxed text-[var(--bts-text-muted)]">
                 {roadmap.note}
             </p>
         </div>

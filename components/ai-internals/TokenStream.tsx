@@ -22,9 +22,9 @@ interface TokenStreamProps {
 const RailNode: React.FC<{ he: string; en: string; accent: Accent; highlight?: boolean }> = ({ he, en, accent, highlight }) => {
     const a = ACCENTS[accent];
     return (
-        <div className={`rounded-xl border px-3 py-1.5 text-center leading-tight ${highlight ? `${a.border} ${a.bgSoft}` : 'border-slate-700/50 bg-slate-950/40'}`}>
-            <span className={`block text-[11px] font-bold ${highlight ? a.text : 'text-slate-300'}`}>{he}</span>
-            <span className="block text-[8px] uppercase tracking-[0.16em] text-slate-500" dir="ltr">{en}</span>
+        <div className={`rounded-xl border px-3 py-1.5 text-center leading-tight ${highlight ? `${a.border} ${a.bgTint}` : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)]'}`}>
+            <span className={`block text-[11px] font-bold ${highlight ? a.text : 'text-[var(--bts-text-secondary)]'}`}>{he}</span>
+            <span className="block text-[8px] uppercase tracking-[0.16em] text-[var(--bts-text-faint)]" dir="ltr">{en}</span>
         </div>
     );
 };
@@ -53,27 +53,27 @@ export const TokenStream: React.FC<TokenStreamProps> = ({ tokens, accent, select
     const selected = selectedIndex != null ? tokens[selectedIndex] : null;
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             <div className="mb-4 flex items-center gap-2">
                 <ScanLine size={16} className={a.text} />
                 <div className="leading-tight">
-                    <div className="text-sm font-bold text-slate-200">{stream.title}</div>
-                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{stream.titleEn}</div>
+                    <div className="text-sm font-bold text-[var(--bts-text-body)]">{stream.title}</div>
+                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">{stream.titleEn}</div>
                 </div>
             </div>
 
             {/* המסלול */}
             <div className="mb-4 flex items-center justify-center gap-2" dir="ltr">
                 <RailNode he={stream.rail.input.label} en={stream.rail.input.en} accent={accent} />
-                <ArrowLeft size={16} className="rotate-180 text-slate-600" />
+                <ArrowLeft size={16} className="rotate-180 text-[var(--bts-text-subtle)]" />
                 <RailNode he={stream.rail.tokenizer.label} en={stream.rail.tokenizer.en} accent={accent} highlight />
-                <ArrowLeft size={16} className="rotate-180 text-slate-600" />
+                <ArrowLeft size={16} className="rotate-180 text-[var(--bts-text-subtle)]" />
                 <RailNode he={stream.rail.stream.label} en={stream.rail.stream.en} accent={accent} />
             </div>
 
             {/* הטוקנים */}
             {tokens.length === 0 ? (
-                <p className="py-4 text-center text-sm text-slate-500">{stream.empty}</p>
+                <p className="py-4 text-center text-sm text-[var(--bts-text-faint)]">{stream.empty}</p>
             ) : (
                 <div className="flex flex-wrap gap-2" dir={dir}>
                     <AnimatePresence mode="popLayout">
@@ -81,7 +81,7 @@ export const TokenStream: React.FC<TokenStreamProps> = ({ tokens, accent, select
                             <motion.div
                                 key={tok.id}
                                 layout
-                                initial={reduce ? false : { opacity: 0, scale: 0.6, y: 10 }}
+                                initial={{ opacity: 0, scale: 0.6, y: 10 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={reduce ? undefined : { opacity: 0, scale: 0.7 }}
                                 transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 360, damping: 22, delay: Math.min(i * 0.06, 0.5) }}
@@ -99,7 +99,7 @@ export const TokenStream: React.FC<TokenStreamProps> = ({ tokens, accent, select
                 </div>
             )}
 
-            <p className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-500">
+            <p className="mt-3 flex items-center gap-1.5 text-[11px] text-[var(--bts-text-faint)]">
                 <Sparkles size={12} className={a.text} /> {stream.hint}
             </p>
 

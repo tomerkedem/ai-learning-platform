@@ -26,7 +26,7 @@ export const TokenRoleCard: React.FC<TokenRoleCardProps> = ({ text, role, onClos
 
     return (
         <motion.div
-            initial={reduce ? false : { opacity: 0, y: 8, scale: 0.98 }}
+            initial={{ opacity: 0, y: 8, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduce ? undefined : { opacity: 0, y: -6, scale: 0.98 }}
             transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 24 }}
@@ -37,22 +37,22 @@ export const TokenRoleCard: React.FC<TokenRoleCardProps> = ({ text, role, onClos
                 type="button"
                 onClick={onClose}
                 aria-label={roleCard.closeAria}
-                className="absolute end-3 top-3 rounded-lg border border-white/10 bg-slate-950/40 p-1 text-slate-400 transition-colors hover:text-slate-200"
+                className="absolute end-3 top-3 rounded-lg border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-1 text-[var(--bts-text-muted)] transition-colors hover:text-[var(--bts-text-body)]"
             >
                 <X size={14} />
             </button>
 
             <div className="mb-2 flex items-center gap-2">
                 <span className={`h-2.5 w-2.5 rounded-full ${s.dot}`} />
-                <span className="font-mono text-lg font-bold text-white">{text}</span>
+                <span className="font-mono text-lg font-bold text-[var(--bts-text-primary)]">{text}</span>
             </div>
 
             <div className="mb-2 flex items-baseline gap-2">
                 <span className={`text-sm font-bold ${s.text}`}>{info.label}</span>
-                <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-slate-500" dir="ltr">{info.en}</span>
+                <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-[var(--bts-text-faint)]" dir="ltr">{info.en}</span>
             </div>
 
-            <p className="text-sm leading-relaxed text-slate-200">{info.why}</p>
+            <p className="text-sm leading-relaxed text-[var(--bts-text-body)]">{info.why}</p>
         </motion.div>
     );
 };

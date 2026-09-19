@@ -81,12 +81,12 @@ export const SemanticSpaceLab: React.FC<{ content: SemanticSpaceLabDict; dir: Di
     return (
         <div className="space-y-4">
             {/* ── בורר הניסוי ─────────────────────────────────────────────── */}
-            <div className="flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between" dir={dir}>
-                <div className="flex items-center gap-2 text-sm text-slate-300">
+            <div className="flex flex-col gap-3 rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-4 sm:flex-row sm:items-center sm:justify-between" dir={dir}>
+                <div className="flex items-center gap-2 text-sm text-[var(--bts-text-secondary)]">
                     <Map size={16} className="text-violet-300" />
-                    <span className="font-bold text-slate-200">{content.selector.label}</span>
+                    <span className="font-bold text-[var(--bts-text-body)]">{content.selector.label}</span>
                 </div>
-                <div className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-slate-900/80 p-1" dir={dir}>
+                <div className="inline-flex items-center gap-1 rounded-xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-from)_80%,transparent)] p-1" dir={dir}>
                     {([['map', content.selector.map], ['negation', content.selector.negation]] as const).map(([key, label]) => {
                         const active = experiment === key;
                         return (
@@ -96,7 +96,7 @@ export const SemanticSpaceLab: React.FC<{ content: SemanticSpaceLabDict; dir: Di
                                 onClick={() => setExperiment(key)}
                                 aria-pressed={active}
                                 className={`inline-flex min-h-[44px] items-center rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${
-                                    active ? 'bg-violet-500 text-white' : 'text-slate-400 hover:text-slate-200'
+                                    active ? 'bg-violet-500 text-white' : 'text-[var(--bts-text-muted)] hover:text-[var(--bts-text-body)]'
                                 }`}
                             >
                                 {label}
@@ -119,7 +119,7 @@ export const SemanticSpaceLab: React.FC<{ content: SemanticSpaceLabDict; dir: Di
             </AnimatePresence>
 
             {/* disclaimer */}
-            <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[13px] leading-relaxed text-slate-400" dir={dir}>
+            <div className="flex items-start gap-2 rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-4 text-[13px] leading-relaxed text-[var(--bts-text-muted)]" dir={dir}>
                 <Info size={14} className="mt-0.5 shrink-0" />
                 <span>{content.disclaimer}</span>
             </div>
@@ -169,12 +169,12 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
     return (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {/* ── המפה ─────────────────────────────────────────────────── */}
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
+            <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
                 <div className="mb-3 flex items-center gap-2">
                     <Compass size={16} className="text-violet-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-200">{m.title}</div>
-                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{m.subtitle}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-body)]">{m.title}</div>
+                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">{m.subtitle}</div>
                     </div>
                 </div>
 
@@ -191,7 +191,7 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
                     })}
                 </div>
 
-                <div className="relative overflow-hidden rounded-xl border border-slate-700/40 bg-slate-950/50">
+                <div className="relative overflow-hidden rounded-xl border border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-700))_40%,transparent)] bg-[color-mix(in_oklab,var(--bts-panel-to)_50%,transparent)]">
                     <svg
                         viewBox={`0 0 ${MAP_SIZE} ${MAP_SIZE}`}
                         className="w-full select-none"
@@ -207,7 +207,8 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
                                 rx={r.rx}
                                 ry={r.ry}
                                 fill={CLUSTER_STYLE[r.key].hex}
-                                opacity={0.07}
+                                // Dark: 7% כמו קודם. Light: 14%, כי אזור רך על משטח בהיר נעלם בעוצמה נמוכה.
+                                style={{ opacity: 'calc(7% + var(--bts-tint-mix) * 0.07)' }}
                             />
                         ))}
 
@@ -236,8 +237,10 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
                                 >
                                     <title>{content.phrases[p.id]}</title>
                                     {/* פעימת רמז חד-פעמית על הנקודה הנבחרת (לא משנה מצב, מכובד ל-reduced-motion) */}
-                                    {!reduce && hintOn && isSel && (
+                                    {hintOn && isSel && (
                                         <motion.circle
+                                            // DOM יציב בין שרת ללקוח; ב-reduced-motion הרמז מוסתר ב-CSS (בלי הבהוב בציור הראשון).
+                                            className="motion-reduce:hidden"
                                             cx={pos.cx}
                                             cy={pos.cy}
                                             fill="none"
@@ -251,9 +254,11 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
                                     )}
                                     {isSel && <circle cx={pos.cx} cy={pos.cy} r={14} fill="none" stroke={c.hex} strokeWidth={1.5} strokeOpacity={0.6} />}
                                     <circle cx={pos.cx} cy={pos.cy} r={isSel ? 8 : 6} fill={c.hex} stroke="#0b1220" strokeWidth={isSel ? 0 : 1.5} />
+                                    {/* Light בלבד: מתאר כהה לנקודה הנבחרת, כדי שגוון בהיר (ציאן/ענבר) לא יימוס במשטח בהיר. ב-Dark שקוף לגמרי. */}
+                                    {isSel && <circle cx={pos.cx} cy={pos.cy} r={8} fill="none" stroke="#0b1220" strokeWidth={1.5} style={{ opacity: 'var(--bts-tint-mix)' }} />}
                                     {/* טבעת פוקוס מקלדת נראית, בניגודיות גבוהה, מעל הנקודה */}
                                     {isFocused && (
-                                        <circle cx={pos.cx} cy={pos.cy} r={16} fill="none" stroke="#f8fafc" strokeWidth={2} strokeDasharray="3 3" pointerEvents="none" />
+                                        <circle cx={pos.cx} cy={pos.cy} r={16} fill="none" stroke="color-mix(in oklab, #0f172a var(--bts-tint-mix), #f8fafc)" strokeWidth={2} strokeDasharray="3 3" pointerEvents="none" />
                                     )}
                                     {/* אזור בחירה נדיב ללמס/קליק */}
                                     <circle cx={pos.cx} cy={pos.cy} r={20} fill="transparent" />
@@ -287,17 +292,17 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
             </div>
 
             {/* ── שכנים קרובים ─────────────────────────────────────────── */}
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
+            <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
                 <div className="mb-3 flex items-center gap-2">
                     <Sparkles size={16} className="text-violet-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-200">{m.neighborsTitle}</div>
-                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{m.neighborsSubtitle}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-body)]">{m.neighborsTitle}</div>
+                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">{m.neighborsSubtitle}</div>
                     </div>
                 </div>
 
                 <div className="mb-3 flex items-center gap-2 text-sm">
-                    <span className="text-slate-400">{m.closenessTo}</span>
+                    <span className="text-[var(--bts-text-muted)]">{m.closenessTo}</span>
                     <span className={`rounded-md border px-2 py-0.5 font-bold ${CLUSTER_STYLE[selPhrase.cluster].chip} ${CLUSTER_STYLE[selPhrase.cluster].text}`}>
                         {content.phrases[selPhrase.id]}
                     </span>
@@ -319,7 +324,7 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
                             <div key={p.id} className={`rounded-xl border px-3 py-2 ${toneStyle.chip}`}>
                                 <div className="mb-1.5 flex items-center justify-between gap-2">
                                     <span className="flex flex-wrap items-center gap-2">
-                                        <span className="text-sm font-bold text-slate-100">{content.phrases[p.id]}</span>
+                                        <span className="text-sm font-bold text-[var(--bts-text-bright)]">{content.phrases[p.id]}</span>
                                         {isClosest && (
                                             <span className="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300">{m.closest}</span>
                                         )}
@@ -327,7 +332,7 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
                                     </span>
                                     <span className={`font-mono text-[11px] ${toneStyle.text}`} dir="ltr">{pct}%</span>
                                 </div>
-                                <div className="h-2 overflow-hidden rounded-full bg-slate-800/80">
+                                <div className="h-2 overflow-hidden rounded-full bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(80%_+_var(--bts-tint-mix)_*_0.2),transparent)]">
                                     <div
                                         className={`h-full rounded-full transition-[width] duration-100 ease-out ${toneStyle.bar}`}
                                         style={{ width: `${pct}%` }}
@@ -337,7 +342,7 @@ const MapExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Direction }>
                         );
                     })}
                 </div>
-                <p className="mt-3 text-[11px] leading-relaxed text-slate-500">{m.note}</p>
+                <p className="mt-3 text-[11px] leading-relaxed text-[var(--bts-text-faint)]">{m.note}</p>
             </div>
         </div>
     );
@@ -411,12 +416,12 @@ const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Directi
     return (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {/* ── שני המשפטים ─────────────────────────────────────────── */}
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
+            <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
                 <div className="mb-4 flex items-center gap-2">
                     <ArrowLeftRight size={16} className="text-violet-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-200">{n.title}</div>
-                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{n.subtitle}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-body)]">{n.title}</div>
+                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">{n.subtitle}</div>
                     </div>
                 </div>
 
@@ -425,7 +430,7 @@ const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Directi
                     innerText שלה נשבר בין שבב לשבב ("荷物 / が / 届..."), וזה מה שקורא מסך
                     מקריא ומה שהלומד מעתיק. לכן השורה מוסתרת מעץ הנגישות, והמשפט הטבעי
                     והרציף נמסר לידה פעם אחת ב-sr-only. הפיצול נשאר לעין בלבד. */}
-                <div className="mb-3 rounded-xl border border-cyan-500/30 bg-cyan-900/10 p-3">
+                <div className="mb-3 rounded-xl border border-cyan-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(10%_-_var(--bts-tint-mix)_*_0.05),transparent)] [--t-d:var(--color-cyan-900)] [--t-l:var(--color-cyan-500)] p-3">
                     <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-cyan-300">{n.baseLabel}</div>
                     <div className="flex flex-wrap gap-1.5" aria-hidden="true">
                         {baseWords.map((w, i) => {
@@ -434,7 +439,7 @@ const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Directi
                                 <span
                                     key={`${w}-${i}`}
                                     className={`rounded-md px-2 py-1 text-sm font-bold ${
-                                        isPivot ? 'bg-rose-500/25 text-rose-200 ring-1 ring-rose-400/50' : 'bg-slate-800/60 text-slate-200'
+                                        isPivot ? 'bg-rose-500/25 text-rose-200 ring-1 ring-rose-400/50' : 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(60%_+_var(--bts-tint-mix)_*_0.4),transparent)] text-[var(--bts-text-body)]'
                                     }`}
                                 >
                                     {w}
@@ -446,11 +451,11 @@ const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Directi
                 </div>
 
                 {/* משפט הנגד. אותו עיקרון: שבבים לעין, משפט רציף לקורא מסך. */}
-                <div className="rounded-xl border border-amber-500/30 bg-amber-900/10 p-3">
+                <div className="rounded-xl border border-amber-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(10%_-_var(--bts-tint-mix)_*_0.05),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)] p-3">
                     <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-amber-300">{n.oppositeLabel}</div>
                     <div className="flex flex-wrap gap-1.5" aria-hidden="true">
                         {oppWords.map((w, i) => (
-                            <span key={`${w}-${i}`} className="rounded-md bg-slate-800/60 px-2 py-1 text-sm font-bold text-slate-200">
+                            <span key={`${w}-${i}`} className="rounded-md bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(60%_+_var(--bts-tint-mix)_*_0.4),transparent)] px-2 py-1 text-sm font-bold text-[var(--bts-text-body)]">
                                 {w}
                             </span>
                         ))}
@@ -460,26 +465,26 @@ const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Directi
 
                 {/* שני צ'יפים: אותן מילים, משמעות הפוכה */}
                 <div className="mt-4 flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/40 bg-cyan-900/15 px-2.5 py-1 text-[11px] font-bold text-cyan-200">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-cyan-900)] [--t-l:var(--color-cyan-500)] px-2.5 py-1 text-[11px] font-bold text-cyan-200">
                         <Check size={12} /> {n.sharedChip}
                     </span>
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-900/15 px-2.5 py-1 text-[11px] font-bold text-rose-200">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-rose-900)] [--t-l:var(--color-rose-500)] px-2.5 py-1 text-[11px] font-bold text-rose-200">
                         <ArrowLeftRight size={12} /> {n.oppositeChip}
                     </span>
                 </div>
             </div>
 
             {/* ── ההסבר ────────────────────────────────────────────────── */}
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
+            <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
                 {/* מיני-מפה: שתי נקודות קרובות מאוד, עם קו ביניהן */}
-                <div className="mb-4 overflow-hidden rounded-xl border border-slate-700/40 bg-slate-950/50">
+                <div className="mb-4 overflow-hidden rounded-xl border border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-700))_40%,transparent)] bg-[color-mix(in_oklab,var(--bts-panel-to)_50%,transparent)]">
                     <svg viewBox={`0 0 ${MAP_SIZE} 150`} className="w-full" role="img" aria-label={n.title}>
                         {/* שתי נקודות קרובות מאוד במרחב, אבל צבע שונה: קרוב במילים, הפוך במשמעות */}
                         <line x1={150} y1={92} x2={214} y2={70} stroke="#f43f5e" strokeWidth={1.5} strokeDasharray="4 4" strokeOpacity={0.6} />
                         <circle cx={150} cy={92} r={7} fill="#22d3ee" />
-                        <text x={150} y={116} fill="#e2e8f0" fontSize={11} fontWeight={700} textAnchor="middle">{baseText}</text>
+                        <text x={150} y={116} fill="var(--bts-text-body)" fontSize={11} fontWeight={700} textAnchor="middle">{baseText}</text>
                         <circle cx={214} cy={70} r={7} fill="#fbbf24" />
-                        <text x={214} y={54} fill="#e2e8f0" fontSize={11} fontWeight={700} textAnchor="middle">{oppositeText}</text>
+                        <text x={214} y={54} fill="var(--bts-text-body)" fontSize={11} fontWeight={700} textAnchor="middle">{oppositeText}</text>
                     </svg>
                 </div>
 
@@ -491,7 +496,7 @@ const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Directi
                             animate={{ opacity: 1, y: 0 }}
                             transition={reduce ? { duration: 0 } : { duration: 0.3 }}
                         >
-                            <p className="rounded-xl border border-rose-500/30 bg-rose-950/15 p-3 text-sm leading-relaxed text-slate-200">
+                            <p className="rounded-xl border border-rose-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] p-3 text-sm leading-relaxed text-[var(--bts-text-body)]">
                                 {n.explanation}
                             </p>
                             <p className="mt-3 border-s-2 border-violet-400/50 ps-3 text-sm font-bold leading-relaxed text-violet-100">
@@ -499,7 +504,7 @@ const NegationExperiment: React.FC<{ content: SemanticSpaceLabDict; dir: Directi
                             </p>
                         </motion.div>
                     ) : (
-                        <motion.div key="hidden" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }}>
+                        <motion.div key="hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={reduce ? { duration: 0 } : undefined}>
                             <GuessButton onClick={() => setRevealed(true)} rgb="244,63,94" reduce={!!reduce} sheen leadingIcon={<Sparkles size={14} />}>
                                 {n.revealButton}
                             </GuessButton>

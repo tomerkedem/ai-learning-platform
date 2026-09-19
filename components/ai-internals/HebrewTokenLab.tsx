@@ -38,48 +38,48 @@ export const HebrewTokenLab: React.FC = () => {
     const allWhole = split.every((v) => !v);
 
     return (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             {/* כותרת + תווית לימודית */}
             <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                     <FlaskConical size={16} className="text-violet-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-200">{subword.title}</div>
-                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{subword.titleEn}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-body)]">{subword.title}</div>
+                        <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">{subword.titleEn}</div>
                     </div>
                 </div>
 
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-900/20 px-2.5 py-1 text-[10px] font-bold text-amber-300">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)] px-2.5 py-1 text-[10px] font-bold text-amber-300">
                     <Info size={11} />
                     {subword.badge}
                 </span>
             </div>
 
             {/* הנחיה */}
-            <p className="mb-4 text-xs leading-relaxed text-slate-400">
+            <p className="mb-4 text-xs leading-relaxed text-[var(--bts-text-muted)]">
                 {subword.hint}
             </p>
 
             {/* מונה חי + כפתורי "פצל הכול / אחד הכול" */}
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-700/50 bg-slate-950/50 p-3">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_50%,transparent)] p-3">
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                         <Layers size={15} className="text-cyan-300" />
-                        <span className="text-xs text-slate-400">
-                            {subword.wordsLabel} <span className="font-bold text-slate-200">{wordCount}</span>
+                        <span className="text-xs text-[var(--bts-text-muted)]">
+                            {subword.wordsLabel} <span className="font-bold text-[var(--bts-text-body)]">{wordCount}</span>
                         </span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400">{subword.tokensLabel}</span>
+                        <span className="text-xs text-[var(--bts-text-muted)]">{subword.tokensLabel}</span>
                         <AnimatePresence mode="popLayout" initial={false}>
                             <motion.span
                                 key={tokenCount}
-                                initial={reduce ? false : { opacity: 0, y: -8, scale: 0.6 }}
+                                initial={{ opacity: 0, y: -8, scale: 0.6 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={reduce ? undefined : { opacity: 0, y: 8, scale: 0.6, position: 'absolute' }}
                                 transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 26 }}
                                 className={`inline-block min-w-[1.5rem] text-center text-base font-black tabular-nums ${
-                                    tokenCount > wordCount ? 'text-cyan-300' : 'text-slate-200'
+                                    tokenCount > wordCount ? 'text-cyan-300' : 'text-[var(--bts-text-body)]'
                                 }`}
                             >
                                 {tokenCount}
@@ -88,12 +88,12 @@ export const HebrewTokenLab: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="inline-flex items-center gap-1 rounded-2xl border border-white/10 bg-slate-950/60 p-1">
+                <div className="inline-flex items-center gap-1 rounded-2xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-to)_60%,transparent)] p-1">
                     <button
                         type="button"
                         onClick={splitAll}
                         disabled={allSplit}
-                        className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-violet-200 transition-colors hover:bg-violet-500/15 disabled:cursor-default disabled:text-slate-600 disabled:hover:bg-transparent"
+                        className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-violet-200 transition-colors hover:bg-violet-500/15 disabled:cursor-default disabled:text-[var(--bts-text-subtle)] disabled:hover:bg-transparent"
                     >
                         <Scissors size={13} />
                         {subword.splitAll}
@@ -102,7 +102,7 @@ export const HebrewTokenLab: React.FC = () => {
                         type="button"
                         onClick={mergeAll}
                         disabled={allWhole}
-                        className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-300 transition-colors hover:bg-white/10 disabled:cursor-default disabled:text-slate-600 disabled:hover:bg-transparent"
+                        className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-[var(--bts-text-secondary)] transition-colors hover:bg-[var(--bts-fill-track)] disabled:cursor-default disabled:text-[var(--bts-text-subtle)] disabled:hover:bg-transparent"
                     >
                         <Combine size={13} />
                         {subword.mergeAll}
@@ -120,7 +120,7 @@ export const HebrewTokenLab: React.FC = () => {
                     const coreRole = roleForWord(core, roleWords);
 
                     return (
-                        <div key={row.word} className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
+                        <div key={row.word} className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3">
                             <div className="flex flex-wrap items-center justify-between gap-3">
                                 <button
                                     type="button"
@@ -136,11 +136,11 @@ export const HebrewTokenLab: React.FC = () => {
                                                 <motion.span
                                                     key="prefix"
                                                     layout
-                                                    initial={reduce ? false : { opacity: 0, x: 22, rotate: -14, scale: 0.5 }}
+                                                    initial={{ opacity: 0, x: 22, rotate: -14, scale: 0.5 }}
                                                     animate={{ opacity: 1, x: 0, rotate: 0, scale: 1 }}
                                                     exit={reduce ? undefined : { opacity: 0, x: 22, rotate: -14, scale: 0.5 }}
                                                     transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 380, damping: 22 }}
-                                                    className="inline-flex items-center rounded-lg border border-amber-500/55 bg-amber-900/25 px-2.5 py-1.5 font-mono text-sm font-bold text-amber-300 shadow-[0_0_18px_-6px] shadow-amber-500/50"
+                                                    className="inline-flex items-center rounded-lg border border-amber-500/55 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)] px-2.5 py-1.5 font-mono text-sm font-bold text-amber-300 shadow-[0_0_18px_-6px] shadow-amber-500/50"
                                                 >
                                                     {prefix}
                                                 </motion.span>
@@ -152,14 +152,14 @@ export const HebrewTokenLab: React.FC = () => {
                                         </motion.div>
                                     </motion.div>
 
-                                    <span className="text-[10px] font-medium text-slate-500 transition-colors group-hover:text-slate-300">
+                                    <span className="text-[10px] font-medium text-[var(--bts-text-faint)] transition-colors group-hover:text-[var(--bts-text-secondary)]">
                                         {isSplit ? subword.mergeHint : subword.splitHint}
                                     </span>
                                 </button>
 
                                 <span className="leading-tight text-end">
-                                    <span className="block text-xs font-bold text-slate-300">{row.roleLabel}</span>
-                                    <span className="block text-[9px] tracking-wider text-slate-500" dir="ltr">{row.roleEn}</span>
+                                    <span className="block text-xs font-bold text-[var(--bts-text-secondary)]">{row.roleLabel}</span>
+                                    <span className="block text-[9px] tracking-wider text-[var(--bts-text-faint)]" dir="ltr">{row.roleEn}</span>
                                 </span>
                             </div>
 
@@ -167,13 +167,13 @@ export const HebrewTokenLab: React.FC = () => {
                                 {isSplit && (
                                     <motion.p
                                         key="note"
-                                        initial={reduce ? false : { opacity: 0, height: 0 }}
+                                        initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: 'auto' }}
                                         exit={reduce ? undefined : { opacity: 0, height: 0 }}
                                         transition={reduce ? { duration: 0 } : { duration: 0.25 }}
                                         className="overflow-hidden"
                                     >
-                                        <span className="mt-2 block text-[11px] leading-relaxed text-slate-400">{row.note}</span>
+                                        <span className="mt-2 block text-[11px] leading-relaxed text-[var(--bts-text-muted)]">{row.note}</span>
                                     </motion.p>
                                 )}
                             </AnimatePresence>
@@ -183,7 +183,7 @@ export const HebrewTokenLab: React.FC = () => {
             </div>
 
             {/* הערת שקיפות */}
-            <div className="mt-4 flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-[11px] leading-relaxed text-slate-500">
+            <div className="mt-4 flex items-start gap-2 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3 text-[11px] leading-relaxed text-[var(--bts-text-faint)]">
                 <Info size={13} className="mt-0.5 shrink-0" />
                 <span>
                     {subword.note}

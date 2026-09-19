@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
     Sparkles, ChevronDown,
@@ -133,7 +133,7 @@ export const WordToNumberLab: React.FC = () => {
         <section
             dir={dir}
             aria-labelledby="lab2-title"
-            className="rounded-[2rem] border border-violet-500/30 bg-slate-900/50 p-4 backdrop-blur-xl md:p-5"
+            className="rounded-[2rem] border border-violet-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-4 backdrop-blur-xl md:p-5"
         >
             {/* ── כותרת המעבדה: המספר 2 מופיע כאן, בתחילת האינטראקציה האמיתית ── */}
             <div className="flex items-start justify-between gap-2.5">
@@ -145,12 +145,12 @@ export const WordToNumberLab: React.FC = () => {
                         <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-violet-300">
                             <FlaskConical size={14} /> {lab.eyebrow}
                         </span>
-                        <h3 id="lab2-title" className="text-xl font-black text-white md:text-2xl">{lab.title}</h3>
+                        <h3 id="lab2-title" className="text-xl font-black text-[var(--bts-text-primary)] md:text-2xl">{lab.title}</h3>
                     </div>
                 </div>
                 <SpeakButton text={`${lab.eyebrow}. ${lab.title}. ${lab.goal}`} className="mt-0.5" />
             </div>
-            <p className="mt-1.5 text-[15px] leading-relaxed text-slate-300">{lab.goal}</p>
+            <p className="mt-1.5 text-[15px] leading-relaxed text-[var(--bts-text-secondary)]">{lab.goal}</p>
 
             {/* ── שני השלבים: פעולה (הרצה לטוקנים) ותצפית (טוקן -> Token ID -> שורה בטבלה).
                 המסקנה אינה שלב, היא הסיכום שלמטה. ── */}
@@ -165,7 +165,7 @@ export const WordToNumberLab: React.FC = () => {
                         הקבוצה גולשת מתחת לבורר באופן טבעי (flex-wrap), בלי גלילה אופקית. */}
                     <div className="space-y-2.5">
                         <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-xs font-bold text-slate-400">{tx.scenarioLabel}</span>
+                            <span className="text-xs font-bold text-[var(--bts-text-muted)]">{tx.scenarioLabel}</span>
                             {modeScenarios.map((s) => {
                                 const active = s.id === scenario.id;
                                 const sa = ACCENTS[s.accent];
@@ -175,12 +175,12 @@ export const WordToNumberLab: React.FC = () => {
                                         type="button"
                                         onClick={() => resetTo(s.id)}
                                         aria-pressed={active}
-                                        className={`flex min-h-[44px] flex-col justify-center rounded-xl border px-3 py-1.5 text-start leading-tight transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
-                                            active ? `${sa.border} ${sa.bgSoft}` : 'border-slate-700/60 bg-slate-800/40 hover:border-slate-600'
+                                        className={`flex min-h-[44px] flex-col justify-center rounded-xl border px-3 py-1.5 text-start leading-tight transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
+                                            active ? `${sa.border} ${sa.bgTint}` : 'border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(40%_+_var(--bts-tint-mix)_*_0.6),transparent)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                         }`}
                                     >
-                                        <span className={`block text-xs font-bold ${active ? sa.text : 'text-slate-300'}`}>{isHe ? s.labelHe : s.labelEn}</span>
-                                        {isHe && <span className="block text-[9px] uppercase tracking-wider text-slate-500" dir="ltr">{s.labelEn}</span>}
+                                        <span className={`block text-xs font-bold ${active ? sa.text : 'text-[var(--bts-text-secondary)]'}`}>{isHe ? s.labelHe : s.labelEn}</span>
+                                        {isHe && <span className="block text-[9px] uppercase tracking-wider text-[var(--bts-text-faint)]" dir="ltr">{s.labelEn}</span>}
                                     </button>
                                 );
                             })}
@@ -190,7 +190,7 @@ export const WordToNumberLab: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={handleAutoType}
-                                    className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${a.border} ${a.bgSoft} ${a.text} hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950`}
+                                    className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${a.border} ${a.bgTint} ${a.text} hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))]`}
                                 >
                                     <Play size={14} /> {tx.typing.autoType}
                                     {isHe && <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.autoTypeLatin}</span>}
@@ -198,7 +198,7 @@ export const WordToNumberLab: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={handleReset}
-                                    className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-800/40 px-3 py-2 text-sm font-bold text-slate-400 transition-colors hover:text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                                    className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(40%_+_var(--bts-tint-mix)_*_0.6),transparent)] px-3 py-2 text-sm font-bold text-[var(--bts-text-muted)] transition-colors hover:text-[var(--bts-text-body)] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))]"
                                 >
                                     <RotateCcw size={14} /> {tx.typing.reset}
                                     {isHe && <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.resetLatin}</span>}
@@ -256,12 +256,12 @@ export const WordToNumberLab: React.FC = () => {
                         <Sparkles size={17} className="mt-0.5 shrink-0 text-violet-300" />
                         <div>
                             <span className="block text-[11px] font-bold uppercase tracking-[0.2em] text-violet-300">{lab.conclusionLabel}</span>
-                            <h4 className="mt-0.5 text-base font-bold text-white">{cc.title}</h4>
+                            <h4 className="mt-0.5 text-base font-bold text-[var(--bts-text-primary)]">{cc.title}</h4>
                         </div>
                     </div>
                     <SpeakButton text={`${lab.conclusionLabel}. ${cc.title}. ${cc.body}`} className="mt-0.5" />
                 </div>
-                <p className="mt-2 text-[15px] leading-relaxed text-slate-200">{cc.body}</p>
+                <p className="mt-2 text-[15px] leading-relaxed text-[var(--bts-text-body)]">{cc.body}</p>
             </div>
         </section>
     );
@@ -280,15 +280,15 @@ const StepHeader: React.FC<{ n: number; stepLabel: string; step: { title: string
 }) => (
     <div className="mb-2">
         <div className="flex items-center gap-2.5">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-slate-600/60 bg-slate-800/60 font-mono text-[12px] font-black text-slate-200">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))_60%,transparent)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(60%_+_var(--bts-tint-mix)_*_0.4),transparent)] font-mono text-[12px] font-black text-[var(--bts-text-body)]">
                 {n}
             </span>
-            <h4 className="text-base font-bold leading-tight text-white">
-                <span className="text-slate-400">{stepLabel} {n}: </span>
+            <h4 className="text-base font-bold leading-tight text-[var(--bts-text-primary)]">
+                <span className="text-[var(--bts-text-muted)]">{stepLabel} {n}: </span>
                 {step.title}
             </h4>
         </div>
-        {showHint && <p className="mt-1 ps-[2.125rem] text-[15px] leading-relaxed text-slate-400">{step.hint}</p>}
+        {showHint && <p className="mt-1 ps-[2.125rem] text-[15px] leading-relaxed text-[var(--bts-text-muted)]">{step.hint}</p>}
     </div>
 );
 
@@ -297,9 +297,9 @@ const StepHeader: React.FC<{ n: number; stepLabel: string; step: { title: string
 // לא "מושבת" ולא "שבור": הודעה קצרה שמסבירה מה יקרה, ומפנה לשלב 1. בלי איור ריק
 // ובלי ערימת כרטיסים. משטח שקט אחד, בגודל גוף רגיל.
 const WaitingNote: React.FC<{ text: string }> = ({ text }) => (
-    <div className="flex items-start gap-2.5 rounded-xl border border-slate-700/50 bg-slate-950/30 p-3.5">
-        <MousePointerClick size={17} className="mt-0.5 shrink-0 text-slate-500" />
-        <p className="text-[15px] leading-relaxed text-slate-400">{text}</p>
+    <div className="flex items-start gap-2.5 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-3.5">
+        <MousePointerClick size={17} className="mt-0.5 shrink-0 text-[var(--bts-text-faint)]" />
+        <p className="text-[15px] leading-relaxed text-[var(--bts-text-muted)]">{text}</p>
     </div>
 );
 
@@ -322,17 +322,17 @@ const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyp
     const a = ACCENTS[accent];
 
     return (
-        <div className="rounded-xl bg-slate-950/40 p-3.5 text-start" dir={dir}>
-            <div className="mb-2.5 flex items-center gap-2 text-xs text-slate-400">
+        <div className="rounded-xl bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3.5 text-start" dir={dir}>
+            <div className="mb-2.5 flex items-center gap-2 text-xs text-[var(--bts-text-muted)]">
                 <Keyboard size={14} className={a.text} />
                 {tx.typing.suggested}
-                <span className="rounded-md bg-slate-800/70 px-2 py-0.5 font-bold text-slate-200">&quot;{prompt}&quot;</span>
+                <span className="rounded-md bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(70%_+_var(--bts-tint-mix)_*_0.3),transparent)] px-2 py-0.5 font-bold text-[var(--bts-text-body)]">&quot;{prompt}&quot;</span>
             </div>
 
             {/* תצוגת המשפט הנבנה (קריאה בלבד). ריק => מציג את המשפט המוצע מעומעם כתצוגה מקדימה */}
-            <div className="relative flex min-h-[3rem] items-center rounded-xl border border-slate-700/60 bg-slate-950/60 px-4 py-2.5">
-                <span className="text-lg font-medium leading-snug text-white">
-                    {text || <span className="text-slate-600">{prompt}</span>}
+            <div className="relative flex min-h-[3rem] items-center rounded-xl border border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,var(--bts-panel-to)_60%,transparent)] px-4 py-2.5">
+                <span className="text-lg font-medium leading-snug text-[var(--bts-text-primary)]">
+                    {text || <span className="text-[var(--bts-text-subtle)]">{prompt}</span>}
                 </span>
                 {autoTyping && !reduce && (
                     <motion.span
@@ -364,20 +364,22 @@ interface IdSequenceViewerProps {
 
 const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, selected, accent, onToggle, onSelect, reduce, dir, tx, tokenId, isHe }) => {
     const a = ACCENTS[accent];
+    // מצב תנועה מופחתת נקבע רק אחרי ה-mount, כדי שה-DOM בהידרציה יהיה זהה לשרת.
+    const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
 
     return (
-        <div className="rounded-xl bg-slate-950/30 p-3.5 text-start" dir={dir}>
+        <div className="rounded-xl bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-3.5 text-start" dir={dir}>
             <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                     <Binary size={16} className={a.text} />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-200">{tx.idSeq.title}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-body)]">{tx.idSeq.title}</div>
                         {/* כותרת-משנה לטינית: סיוע לקורא העברית; בשאר השפות היא רק חוזרת על הכותרת */}
-                        {isHe && <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">{tx.idSeq.sub}</div>}
+                        {isHe && <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">{tx.idSeq.sub}</div>}
                     </div>
                 </div>
                 {/* מתג מילים / מספרים */}
-                <div className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-slate-900/80 p-1" dir="ltr">
+                <div className="inline-flex items-center gap-1 rounded-xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-from)_80%,transparent)] p-1" dir="ltr">
                     {([['words', tx.idSeq.words], ['ids', tx.idSeq.ids]] as const).map(([key, label]) => {
                         const active = (key === 'ids') === idView;
                         return (
@@ -386,8 +388,8 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                                 type="button"
                                 onClick={() => onToggle(key === 'ids')}
                                 aria-pressed={active}
-                                className={`min-h-[44px] min-w-[44px] rounded-lg px-3.5 py-1 text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
-                                    active ? `${a.solid} ${a.solidText}` : 'text-slate-400 hover:text-slate-200'
+                                className={`min-h-[44px] min-w-[44px] rounded-lg px-3.5 py-1 text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
+                                    active ? `${a.solid} ${a.solidText}` : 'text-[var(--bts-text-muted)] hover:text-[var(--bts-text-body)]'
                                 }`}
                             >
                                 {label}
@@ -398,7 +400,7 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
             </div>
 
             {tokens.length === 0 ? (
-                <p className="text-xs leading-relaxed text-slate-500">{tx.idSeq.empty}</p>
+                <p className="text-xs leading-relaxed text-[var(--bts-text-faint)]">{tx.idSeq.empty}</p>
             ) : (
                 <div className="flex flex-wrap items-start gap-3" dir={dir}>
                     {tokens.map((tok, i) => {
@@ -409,17 +411,17 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                                 key={`${tok}-${i}`}
                                 type="button"
                                 onClick={() => onSelect(tok)}
-                                className="flex flex-col items-center gap-1.5 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                                className="flex flex-col items-center gap-1.5 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))]"
                             >
                                 {/* פאה מתחלפת: מילה <-> ID */}
                                 <span
                                     className={`relative flex h-11 min-w-[5.5rem] items-center justify-center rounded-xl border px-3 transition-colors ${
-                                        isSel ? `${a.border} ${a.bgSoft} ring-2 ${a.ringSoft}` : `${a.border} ${a.bgSoft}`
+                                        isSel ? `${a.border} ${a.bgTint} ring-2 ${a.ringSoft}` : `${a.border} ${a.bgTint}`
                                     }`}
                                 >
-                                    {reduce ? (
+                                    {mounted && reduce ? (
                                         <span className="flex flex-col items-center leading-none">
-                                            <span className="text-sm font-bold text-slate-200">{tok}</span>
+                                            <span className="text-sm font-bold text-[var(--bts-text-body)]">{tok}</span>
                                             <span className={`mt-0.5 font-mono text-xs ${a.text}`} dir="ltr">{id ?? '-'}</span>
                                         </span>
                                     ) : (
@@ -443,7 +445,7 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                                                     animate={{ y: 0, opacity: 1 }}
                                                     exit={{ y: 12, opacity: 0 }}
                                                     transition={{ type: 'spring', stiffness: 360, damping: 26, delay: i * 0.05 }}
-                                                    className="text-sm font-bold text-slate-200"
+                                                    className="text-sm font-bold text-[var(--bts-text-body)]"
                                                 >
                                                     {tok}
                                                 </motion.span>
@@ -453,10 +455,10 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                                 </span>
                                 {/* חץ למטה שמתחלף בצבע כשהמילה הופכת ל-ID */}
                                 <motion.span
-                                    animate={reduce ? {} : { opacity: idView ? 1 : 0.4, y: idView ? 0 : -2 }}
+                                    animate={{ opacity: reduce || idView ? 1 : 0.4, y: reduce || idView ? 0 : -2 }}
                                     transition={{ duration: 0.3, delay: i * 0.05 }}
                                 >
-                                    <ChevronDown size={14} className={idView ? a.text : 'text-slate-600'} />
+                                    <ChevronDown size={14} className={idView ? a.text : 'text-[var(--bts-text-subtle)]'} />
                                 </motion.span>
                             </button>
                         );
@@ -470,20 +472,20 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                     {selected && tokenId(selected) !== null ? (
                         <motion.div
                             key={selected}
-                            initial={reduce ? false : { opacity: 0, y: 4 }}
+                            initial={{ opacity: 0, y: 4 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={reduce ? undefined : { opacity: 0, y: -4 }}
                             transition={reduce ? { duration: 0 } : { duration: 0.2 }}
-                            className={`flex flex-wrap items-center gap-2 rounded-xl border ${a.border} ${a.bgSoft} p-3`}
+                            className={`flex flex-wrap items-center gap-2 rounded-xl border ${a.border} ${a.bgTint} p-3`}
                             dir="ltr"
                         >
                             <span className={`font-mono text-sm font-bold ${a.text}`}>Token ID {tokenId(selected)}</span>
-                            <span className="text-xs text-slate-400">{tx.idSeq.pointsTo}</span>
-                            <span className="rounded-md bg-slate-800/70 px-2 py-0.5 text-sm font-bold text-slate-100" dir={dir}>{selected}</span>
-                            <span className="text-[11px] text-slate-500" dir={dir}>{tx.idSeq.addressNote}</span>
+                            <span className="text-xs text-[var(--bts-text-muted)]">{tx.idSeq.pointsTo}</span>
+                            <span className="rounded-md bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(70%_+_var(--bts-tint-mix)_*_0.3),transparent)] px-2 py-0.5 text-sm font-bold text-[var(--bts-text-bright)]" dir={dir}>{selected}</span>
+                            <span className="text-[11px] text-[var(--bts-text-faint)]" dir={dir}>{tx.idSeq.addressNote}</span>
                         </motion.div>
                     ) : (
-                        <p className="text-[11px] leading-relaxed text-slate-500" dir={dir}>{idView ? tx.idSeq.selectHintIds : tx.idSeq.selectHintWords}</p>
+                        <p className="text-[11px] leading-relaxed text-[var(--bts-text-faint)]" dir={dir}>{idView ? tx.idSeq.selectHintIds : tx.idSeq.selectHintWords}</p>
                     )}
                 </AnimatePresence>
             </div>

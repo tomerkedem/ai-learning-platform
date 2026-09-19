@@ -79,22 +79,22 @@ export const TokenizationLab: React.FC = () => {
             {/* בקרות המעבדה (מצב + שדה קלט + הצעות) נשארות דביקות בראש בזמן גלילה, כדי
                 לראות את פירוק הטוקנים למטה בלי לגלול חזרה למעלה. */}
             <div
-                className="sticky z-20 space-y-3 rounded-2xl bg-slate-950/80 p-2 backdrop-blur-md"
+                className="sticky z-20 space-y-3 rounded-2xl bg-[color-mix(in_oklab,var(--bts-panel-to)_80%,transparent)] p-2 backdrop-blur-md"
                 style={{ top: 'var(--bts-sticky-top, 88px)' }}
                 dir={dir}
             >
             {/* בקרת מצב */}
-            <div className="flex flex-col gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4 sm:flex-row sm:items-center sm:justify-between" dir={dir}>
+            <div className="flex flex-col gap-3 rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-4 sm:flex-row sm:items-center sm:justify-between" dir={dir}>
                 <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-400">{content.modeLabel}</span>
+                    <span className="text-xs font-bold text-[var(--bts-text-muted)]">{content.modeLabel}</span>
                     <ModeToggle mode={mode} onChange={(m) => handleMode(m as TokenizationMode)} accent={accent} />
                 </div>
                 {/* תווית המסלול: לאן הפירוק מזין */}
-                <div className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 ${a.border} ${a.bgSoft}`}>
+                <div className={`inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 ${a.border} ${a.bgTint}`}>
                     <Route size={15} className={a.text} />
                     <span className="leading-tight text-start">
                         <span className={`block text-xs font-bold ${a.text}`}>{scenario.routeHe}</span>
-                        <span className="block text-[9px] uppercase tracking-wider text-slate-500" dir="ltr">{scenario.routeEn}</span>
+                        <span className="block text-[9px] uppercase tracking-wider text-[var(--bts-text-faint)]" dir="ltr">{scenario.routeEn}</span>
                     </span>
                 </div>
             </div>
@@ -113,32 +113,33 @@ export const TokenizationLab: React.FC = () => {
             <AnimatePresence>
                 {(sortingCenter || deliveryFailure || actionSignal || numberSignal) && (
                     <motion.div
-                        initial={reduce ? false : { opacity: 0, y: 6 }}
+                        initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
+                        transition={reduce ? { duration: 0 } : undefined}
                         exit={reduce ? undefined : { opacity: 0, y: -6 }}
                         className="flex flex-wrap gap-2"
                         dir={dir}
                     >
                         {numberSignal && (
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-lime-500/45 bg-lime-900/20 px-2.5 py-1 text-[11px] font-bold text-lime-300">
+                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-lime-500/45 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-lime-900)] [--t-l:var(--color-lime-500)] px-2.5 py-1 text-[11px] font-bold text-lime-300">
                                 <Hash size={12} /> {content.signals.number.label}
                                 <span className="opacity-70" dir="ltr">{content.signals.number.en}</span>
                             </span>
                         )}
                         {actionSignal && (
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-violet-500/45 bg-violet-900/20 px-2.5 py-1 text-[11px] font-bold text-violet-300">
+                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-violet-500/45 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-violet-900)] [--t-l:var(--color-violet-500)] px-2.5 py-1 text-[11px] font-bold text-violet-300">
                                 <Zap size={12} /> {content.signals.action.label}
                                 <span className="opacity-70" dir="ltr">{content.signals.action.en}</span>
                             </span>
                         )}
                         {deliveryFailure && (
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/45 bg-rose-900/20 px-2.5 py-1 text-[11px] font-bold text-rose-300">
+                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-rose-500/45 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-rose-900)] [--t-l:var(--color-rose-500)] px-2.5 py-1 text-[11px] font-bold text-rose-300">
                                 <Zap size={12} /> {content.signals.deliveryFailure.label}
                                 <span className="opacity-70" dir="ltr">{content.signals.deliveryFailure.en}</span>
                             </span>
                         )}
                         {sortingCenter && (
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/45 bg-cyan-900/20 px-2.5 py-1 text-[11px] font-bold text-cyan-300">
+                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/45 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-cyan-900)] [--t-l:var(--color-cyan-500)] px-2.5 py-1 text-[11px] font-bold text-cyan-300">
                                 <MapPin size={12} /> {content.signals.sortingCenter.label}
                                 <span className="opacity-70" dir="ltr">{content.signals.sortingCenter.en}</span>
                             </span>
@@ -151,10 +152,11 @@ export const TokenizationLab: React.FC = () => {
             <AnimatePresence>
                 {noSpaceClump && (
                     <motion.div
-                        initial={reduce ? false : { opacity: 0, y: 6 }}
+                        initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
+                        transition={reduce ? { duration: 0 } : undefined}
                         exit={reduce ? undefined : { opacity: 0, y: -6 }}
-                        className="flex items-start gap-2 rounded-xl border border-amber-500/40 bg-amber-900/15 p-3 text-[11px] leading-relaxed text-amber-200/90"
+                        className="flex items-start gap-2 rounded-xl border border-amber-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)] p-3 text-[11px] leading-relaxed text-amber-200/90"
                         dir={dir}
                     >
                         <Combine size={14} className="mt-0.5 shrink-0 text-amber-300" />
@@ -182,8 +184,8 @@ export const TokenizationLab: React.FC = () => {
             <HebrewTokenLab />
 
             {/* הערת שקיפות */}
-            <div className="flex items-start gap-2 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500" dir={dir}>
-                <span className="mt-0.5 shrink-0 rounded-md border border-amber-500/40 bg-amber-900/20 px-1.5 py-0.5 text-[9px] font-bold text-amber-300" dir="ltr">{content.educational.badge}</span>
+            <div className="flex items-start gap-2 rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-4 text-[11px] leading-relaxed text-[var(--bts-text-faint)]" dir={dir}>
+                <span className="mt-0.5 shrink-0 rounded-md border border-amber-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)] px-1.5 py-0.5 text-[9px] font-bold text-amber-300" dir="ltr">{content.educational.badge}</span>
                 <span>
                     {content.educational.note}
                 </span>

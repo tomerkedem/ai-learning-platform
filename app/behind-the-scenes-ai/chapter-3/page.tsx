@@ -48,7 +48,7 @@ const LockQuestion: React.FC = () => {
     return (
         <div dir={dir} className="text-start">
             <div className="mb-3 flex items-start justify-between gap-2">
-                <p className="text-sm font-bold text-slate-200">{lock.question}</p>
+                <p className="text-sm font-bold text-[var(--bts-text-body)]">{lock.question}</p>
                 <SpeakButton text={lock.question} />
             </div>
 
@@ -56,10 +56,10 @@ const LockQuestion: React.FC = () => {
                 {lock.options.map((opt, i) => {
                     const isCorrect = i === LOCK_CORRECT;
                     const isChosen = i === choice;
-                    let cls = 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600';
-                    if (answered && isChosen && isCorrect) cls = 'border-emerald-400/70 bg-emerald-900/25 text-emerald-100';
-                    else if (answered && isChosen && !isCorrect) cls = 'border-amber-400/70 bg-amber-900/20 text-amber-100';
-                    else if (answered && isCorrect) cls = 'border-emerald-400/50 bg-emerald-900/15 text-emerald-100';
+                    let cls = 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]';
+                    if (answered && isChosen && isCorrect) cls = 'border-emerald-400/70 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-emerald-900)] [--t-l:var(--color-emerald-500)] text-emerald-100';
+                    else if (answered && isChosen && !isCorrect) cls = 'border-amber-400/70 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)] text-amber-100';
+                    else if (answered && isCorrect) cls = 'border-emerald-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-900)] [--t-l:var(--color-emerald-500)] text-emerald-100';
                     return (
                         <button
                             key={opt}
@@ -80,7 +80,7 @@ const LockQuestion: React.FC = () => {
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.25 }}
-                    className={`mt-4 rounded-xl border p-3 text-sm leading-relaxed text-slate-200 ${correct ? 'border-emerald-500/30 bg-emerald-950/15' : 'border-amber-500/30 bg-amber-950/15'}`}
+                    className={`mt-4 rounded-xl border p-3 text-sm leading-relaxed text-[var(--bts-text-body)] ${correct ? 'border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)]' : 'border-amber-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)]'}`}
                 >
                     {correct ? lock.explanationCorrect : lock.explanationWrong}
                 </motion.p>
@@ -156,15 +156,15 @@ export default function BehindTheScenesChapter3() {
     };
 
     return (
-        <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={3}>
+        <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={3} themeAware>
 
             {/* ══════════ HERO ══════════ */}
             <div className="relative">
                 <motion.section
-                    initial={reduce ? false : { opacity: 0, y: 18 }}
+                    initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={reduce ? { duration: 0 } : { duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                    className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-start"
+                    className="relative overflow-hidden rounded-[2.5rem] border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_60%,transparent)] backdrop-blur-xl p-8 md:p-10 text-start"
                     dir={dir}
                 >
                     <div className="absolute -top-16 -right-16 w-56 h-56 bg-violet-500/10 blur-[80px] rounded-full pointer-events-none" />
@@ -172,20 +172,20 @@ export default function BehindTheScenesChapter3() {
 
                     {/* ב-lg+ דוק ההאזנה מעוגן בפינה מעל הכותרת; הכותרת וה-lede מתפזרים לרוחב מלא מתחתיו */}
                     <div className="relative z-10">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-violet-500/30 mb-5">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(70%_+_var(--bts-tint-mix)_*_0.3),transparent)] border border-violet-500/30 mb-5">
                             <Scissors size={14} className="text-violet-400" />
                             <span className="font-mono text-[11px] tracking-widest uppercase text-violet-300">{c3.hero.badge}</span>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
+                        <h1 className="text-4xl md:text-5xl font-black text-[var(--bts-text-primary)] leading-[1.1] mb-4">
                             {c3.hero.titleLead}{' '}
-                            <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent`}>
+                            <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[color-mix(in_oklab,var(--color-violet-400)_calc(100%_-_var(--bts-tint-mix)_*_0.4),black)] via-[color-mix(in_oklab,var(--color-fuchsia-400)_calc(100%_-_var(--bts-tint-mix)_*_0.4),black)] to-[color-mix(in_oklab,var(--color-cyan-400)_calc(100%_-_var(--bts-tint-mix)_*_0.4),black)] bg-clip-text text-transparent`}>
                                 {c3.hero.titleHighlight}
                             </span>
                         </h1>
 
                         <div className="flex items-start gap-2.5">
-                            <p className="text-lg text-slate-300 leading-relaxed">
+                            <p className="text-lg text-[var(--bts-text-secondary)] leading-relaxed">
                                 {c3.hero.lede}
                             </p>
                             <SpeakButton text={`${c3.hero.titleLead} ${c3.hero.titleHighlight}. ${c3.hero.lede}`} className="mt-1" />
@@ -193,7 +193,7 @@ export default function BehindTheScenesChapter3() {
 
                         <p className="mt-4 text-base font-bold text-violet-200">{c3.hero.question}</p>
 
-                        <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
+                        <div className="flex flex-wrap gap-3 mt-5 text-xs text-[var(--bts-text-muted)]">
                             <span className="inline-flex items-center gap-1.5">
                                 <MousePointerClick size={14} className="text-violet-400" /> {c3.hero.chipGuess}
                             </span>
@@ -236,16 +236,16 @@ export default function BehindTheScenesChapter3() {
 
             {/* ══════════ הסבר פשוט: מה באמת קורה כאן (במקום "הנקודה המפתיעה") ══════════ */}
             <section className="mt-12 text-start" dir={dir}>
-                <div className="rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6 backdrop-blur-xl md:p-8">
+                <div className="rounded-[2rem] border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 backdrop-blur-xl md:p-8">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                             <Lightbulb size={18} className="text-violet-300" />
-                            <h3 className="text-xl font-black text-white md:text-2xl">{c3.insight.title}</h3>
+                            <h3 className="text-xl font-black text-[var(--bts-text-primary)] md:text-2xl">{c3.insight.title}</h3>
                         </div>
                         <SpeakButton text={`${c3.insight.title}. ${c3.insight.lead} ${c3.insight.body}`} />
                     </div>
                     <p className="mb-2.5 text-lg font-bold text-violet-200">{c3.insight.lead}</p>
-                    <p className="text-[15px] leading-relaxed text-slate-300">{c3.insight.body}</p>
+                    <p className="text-[15px] leading-relaxed text-[var(--bts-text-secondary)]">{c3.insight.body}</p>
                 </div>
             </section>
 
@@ -256,11 +256,11 @@ export default function BehindTheScenesChapter3() {
                         <FlaskConical size={24} className="text-violet-400" />
                         <div>
                             <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-400">{c3.lab.eyebrow}</div>
-                            <h3 className="text-2xl font-bold text-white">{c3.lab.title}</h3>
+                            <h3 className="text-2xl font-bold text-[var(--bts-text-primary)]">{c3.lab.title}</h3>
                         </div>
                     </div>
 
-                    <div className="flex items-start justify-between gap-2.5 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
+                    <div className="flex items-start justify-between gap-2.5 rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">
                         <span>{c3.lab.intro}</span>
                         <SpeakButton text={`${c3.lab.title}. ${c3.lab.intro}`} className="mt-0.5" />
                     </div>
@@ -279,27 +279,27 @@ export default function BehindTheScenesChapter3() {
             <section className="mt-12 text-start" dir={dir}>
                 {/* M10: המנטור שלפני הבדיקה הוסר. "תפסתם את הרעיון" הוא שבח שניתן לפני
                     שהלומד ענה בכלל, ולכן הוא גם לא מדויק וגם מרוקן את הבדיקה. תוכן הבדיקה נשאר זהה. */}
-                <div className="rounded-2xl border border-violet-500/40 bg-slate-900/60 p-6">
+                <div className="rounded-2xl border border-violet-500/40 bg-[color-mix(in_oklab,var(--bts-panel-from)_60%,transparent)] p-6">
                     <div className="mb-5 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                             <ListChecks size={20} className="text-violet-300" />
-                            <h3 className="text-xl font-bold text-white">{c3.lock.title}</h3>
+                            <h3 className="text-xl font-bold text-[var(--bts-text-primary)]">{c3.lock.title}</h3>
                         </div>
                         <SpeakButton text={`${c3.lock.title}. ${c3.lock.truthLabel}: ${c3.lock.truthText} ${c3.lock.mistakeLabel}: ${c3.lock.mistakeText}`} />
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">
-                        <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/10 p-4">
+                        <div className="rounded-xl border border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(10%_-_var(--bts-tint-mix)_*_0.05),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] p-4">
                             <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-emerald-300">{c3.lock.truthLabel}</div>
-                            <p className="text-sm leading-relaxed text-slate-200">{c3.lock.truthText}</p>
+                            <p className="text-sm leading-relaxed text-[var(--bts-text-body)]">{c3.lock.truthText}</p>
                         </div>
-                        <div className="rounded-xl border border-rose-500/30 bg-rose-950/10 p-4">
+                        <div className="rounded-xl border border-rose-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(10%_-_var(--bts-tint-mix)_*_0.05),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] p-4">
                             <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-rose-300">{c3.lock.mistakeLabel}</div>
-                            <p className="text-sm leading-relaxed text-slate-200">{c3.lock.mistakeText}</p>
+                            <p className="text-sm leading-relaxed text-[var(--bts-text-body)]">{c3.lock.mistakeText}</p>
                         </div>
                     </div>
 
-                    <div className="mt-5 rounded-xl border border-slate-700/50 bg-slate-950/30 p-4">
+                    <div className="mt-5 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-4">
                         <LockQuestion />
                     </div>
                 </div>
@@ -309,11 +309,11 @@ export default function BehindTheScenesChapter3() {
             <section className="mt-12 text-start" dir={dir}>
                 {/* M10: המנטור "ככה כותבים למודל חכם יותר" הוסר. זו כותרת התובנה המעשית עצמה,
                     והרשימה שמתחתיה כבר מפרטת בדיוק איך. */}
-                <div className="rounded-2xl border border-violet-500/30 bg-slate-900/40 p-5 leading-relaxed text-slate-300">
+                <div className="rounded-2xl border border-violet-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                             <Lightbulb size={18} className="text-amber-300" />
-                            <div className="text-sm font-bold text-slate-100">{c3.practical.title}</div>
+                            <div className="text-sm font-bold text-[var(--bts-text-bright)]">{c3.practical.title}</div>
                         </div>
                         <SpeakButton text={`${c3.practical.title}. ${c3.practical.intro} ${c3.practical.points.join(' ')}`} />
                     </div>
@@ -330,7 +330,7 @@ export default function BehindTheScenesChapter3() {
             </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
-            <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-indigo-950/15 p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{t.behindAi.chapterQuiz.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-slate-200">{t.behindAi.chapterQuiz.transitions[3]}</p></section>
+            <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-indigo-950)] [--t-l:var(--color-indigo-500)] p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{t.behindAi.chapterQuiz.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-[var(--bts-text-body)]">{t.behindAi.chapterQuiz.transitions[3]}</p></section>
             <section className="mt-16 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
                     {/* M10 F3 SELECTIVE RESPOND: המבדק חסר-דמות לחלוטין. אייקון הסטטוס נשאר בראש
