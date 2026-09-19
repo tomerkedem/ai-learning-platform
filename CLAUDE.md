@@ -69,6 +69,7 @@ Read documentation just in time, not by default. Read only the docs relevant to 
 - Small local UI, copy, asset, or mentor adjustment: `docs/behind-ai-visual-rules.md`, `docs/behind-ai-mentor-rules.md` (only when needed; do not read the chapter plan or template for a local visual tweak that does not change learning structure).
 - Chapter content, structure, or learning-flow work: `docs/behind-ai-final-chapter-plan.md`, `docs/behind-ai-chapter-template.md`.
 - i18n or localization work: `docs/behind-ai-i18n-rules.md`, and the `i18n-six-locales` skill for locale-copy validation. Six locales: `he, en, es, ru, ar, ja`. RTL: `he, ar`. LTR: `en, es, ru, ja`. Do not hardcode Hebrew in non-Hebrew routes, and do not assume a layout that works in Hebrew automatically works in the other five locales.
+- Learner-facing Behind the Scenes of AI work involving theme, colors, surfaces, visualizations, motion/effects, portals, or theme-dependent UI: use the `bts-theme` Skill.
 - Animation or interactive experience work: `docs/behind-ai-animation-rules.md`, `docs/behind-ai-visual-rules.md`.
 - Reordering chapters, routing, progress, quizzes, or implementation sequencing: `docs/behind-ai-implementation-roadmap.md`, `docs/behind-ai-claude-workflow.md`.
 
