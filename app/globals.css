@@ -408,6 +408,12 @@
   .text-amber-200\/90 { color: color-mix(in oklab, color-mix(in oklab, var(--color-amber-200) calc(100% - var(--bts-ink-darken)), black) 90%, transparent); }
 }
 
+/* Final Exam gate: טקסט-מצב amber/rose כהה-מדי ב-Light (65% הכהיה כמעט שחור, זהות הגוון אובדת).
+   ב-Light נעזרים בערכי הסטטוס הקיימים (amber-800 / rose-700, כמו --bts-status-caution/danger);
+   ב-Dark --bts-tint-mix=0% נותן בדיוק את הערך המקורי. שכבה לא-מדורגת, ולכן גוברת על ה-remap. */
+.bts-tier .text-rose-400 { color: color-mix(in oklab, var(--color-rose-400) calc(100% - var(--bts-tint-mix)), var(--color-rose-700)); }
+.bts-tier .text-amber-400, .bts-tier-amber { color: color-mix(in oklab, var(--color-amber-400) calc(100% - var(--bts-tint-mix)), var(--color-amber-800)); }
+
 @layer base {
   * { @apply border-border outline-ring/50; }
   /* T3.2: טבעת-מיקוד קריאה ב-Light (הברירת-מחדל outline-ring/50 כמעט בלתי נראית על משטח בהיר). Dark: --bts-tint-mix=0%, זהה לערך הקודם. */
