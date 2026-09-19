@@ -353,7 +353,7 @@ export const AssessmentEngine = ({
             <motion.div
                 initial={reduce ? false : { opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 22 }}
-                className="relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 text-center shadow-2xl"
+                className="relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-[var(--bts-panel-from)] to-[var(--bts-panel-to)] border border-[var(--bts-divider-soft)] text-center shadow-[0_25px_50px_-12px_var(--bts-shadow-lift)]"
                 dir={dir}
             >
                 {/* הילת הדגשה רכה בראש הכרטיס */}
@@ -372,33 +372,33 @@ export const AssessmentEngine = ({
                             <Play size={32} className="text-blue-400 fill-current ms-1" />
                         </div>
                     )}
-                    <h2 className="text-2xl font-black text-white mb-2">{title}</h2>
-                    <p className="text-slate-400 text-sm mb-8 leading-relaxed">{subtitle}</p>
+                    <h2 className="text-2xl font-black text-[var(--bts-text-primary)] mb-2">{title}</h2>
+                    <p className="text-[var(--bts-text-muted)] text-sm mb-8 leading-relaxed">{subtitle}</p>
 
                     <div className={`grid ${showTimer ? 'grid-cols-2' : 'grid-cols-1'} gap-3 mb-8`}>
-                        <div className="flex items-center gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10 text-start">
+                        <div className="flex items-center gap-3 bg-[var(--bts-fill-soft)] p-3.5 rounded-2xl border border-[var(--bts-divider-soft)] text-start">
                             <span
-                                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                                style={{ background: `rgb(${accent.base} / 0.12)`, color: `rgb(${accent.shadow})` }}
+                                className="bts-ink flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                                style={{ background: `rgb(${accent.base} / 0.12)`, ['--ink' as string]: accent.shadow } as React.CSSProperties}
                             >
                                 <ListChecks size={18} />
                             </span>
                             <div>
-                                <div className="text-slate-500 text-[10px] font-bold uppercase">{a.questionsLabel}</div>
-                                <div className="text-white font-black text-lg leading-tight">{questions.length}</div>
+                                <div className="text-[var(--bts-text-faint)] text-[10px] font-bold uppercase">{a.questionsLabel}</div>
+                                <div className="text-[var(--bts-text-primary)] font-black text-lg leading-tight">{questions.length}</div>
                             </div>
                         </div>
                         {showTimer && (
-                            <div className="flex items-center gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10 text-start">
+                            <div className="flex items-center gap-3 bg-[var(--bts-fill-soft)] p-3.5 rounded-2xl border border-[var(--bts-divider-soft)] text-start">
                                 <span
-                                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                                    style={{ background: `rgb(${accent.base} / 0.12)`, color: `rgb(${accent.shadow})` }}
+                                    className="bts-ink flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                                    style={{ background: `rgb(${accent.base} / 0.12)`, ['--ink' as string]: accent.shadow } as React.CSSProperties}
                                 >
                                     <Timer size={18} />
                                 </span>
                                 <div>
-                                    <div className="text-slate-500 text-[10px] font-bold uppercase">{a.recommendedTimeLabel}</div>
-                                    <div className="text-white font-black text-lg leading-tight">{a.recommendedTime(Math.ceil(questions.length * 0.5))}</div>
+                                    <div className="text-[var(--bts-text-faint)] text-[10px] font-bold uppercase">{a.recommendedTimeLabel}</div>
+                                    <div className="text-[var(--bts-text-primary)] font-black text-lg leading-tight">{a.recommendedTime(Math.ceil(questions.length * 0.5))}</div>
                                 </div>
                             </div>
                         )}
@@ -431,7 +431,7 @@ export const AssessmentEngine = ({
             <motion.div
                 initial={reduce ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 24 }}
-                className="relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10 text-center shadow-2xl"
+                className="relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-[var(--bts-panel-from)] to-[var(--bts-panel-to)] border border-[var(--bts-divider-soft)] text-center shadow-[0_25px_50px_-12px_var(--bts-shadow-lift)]"
                 dir={dir}
                 role="status"
                 aria-live="polite"
@@ -460,7 +460,7 @@ export const AssessmentEngine = ({
                                כאן היו הופכות את הדמות לאייקון הכישלון. חץ-חזרה הוא בדיוק
                                מה שהתוצאה אומרת: עוד סיבוב. הגוון נלקח מדרגת הציון, כדי
                                שהאייקון וטבעת הציון ידברו באותו צבע. */
-                            <div className="w-20 h-20 bg-white/[0.06] rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-white/[0.03]">
+                            <div className="w-20 h-20 bg-[rgb(var(--bts-fill-rgb)/0.06)] rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-[rgb(var(--bts-fill-rgb)/0.03)]">
                                 <RotateCcw size={38} className={feedback.color} />
                             </div>
                         ) : (
@@ -468,13 +468,13 @@ export const AssessmentEngine = ({
                                 <Trophy size={40} className="text-blue-400" />
                             </div>
                         )}
-                        <h2 className="text-2xl font-black text-white">{completedTitleR}</h2>
+                        <h2 className="text-2xl font-black text-[var(--bts-text-primary)]">{completedTitleR}</h2>
                     </div>
 
                     {/* טבעת ציון מונפשת */}
                     <div className="relative mx-auto mb-6 h-44 w-44">
                         <svg className="h-full w-full -rotate-90" viewBox="0 0 120 120">
-                            <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="9" />
+                            <circle cx="60" cy="60" r="52" fill="none" style={{ stroke: 'rgb(var(--bts-fill-rgb) / 0.07)' }} strokeWidth="9" />
                             <motion.circle
                                 cx="60" cy="60" r="52" fill="none"
                                 className={feedback.color}
@@ -495,12 +495,12 @@ export const AssessmentEngine = ({
                                 {scoreValue}%
                             </motion.div>
                             <div className={`mt-1.5 text-base font-black ${feedback.color}`}>{feedback.label}</div>
-                            <div className="text-slate-500 text-[11px] font-medium">{feedback.sub}</div>
+                            <div className="text-[var(--bts-text-faint)] text-[11px] font-medium">{feedback.sub}</div>
                         </div>
                     </div>
 
                     {!passed && (
-                        <p className="mb-6 text-sm leading-relaxed text-slate-400">
+                        <p className="mb-6 text-sm leading-relaxed text-[var(--bts-text-muted)]">
                             {a.failNote}
                         </p>
                     )}
@@ -513,14 +513,14 @@ export const AssessmentEngine = ({
                         שני לצד טבעת הציון. נקרא אוטומטית עם כרטיס התוצאה (role=status
                         aria-live), ולכן בלי כפתור הקראה משלו ובלי דיבור כפול. */}
                     {!legacyMentorPortraits && (passed ? mentorResponse?.pass : mentorResponse?.fail) && (
-                        <p className="mb-6 border-s-2 border-white/15 ps-3.5 text-start text-[13px] leading-relaxed text-slate-300">
+                        <p className="mb-6 border-s-2 border-[rgb(var(--bts-fill-rgb)/0.15)] ps-3.5 text-start text-[13px] leading-relaxed text-[var(--bts-text-secondary)]">
                             {passed ? mentorResponse?.pass : mentorResponse?.fail}
                         </p>
                     )}
 
                     {/* סטטיסטיקות: נכונות וזמן */}
                     <div className={`grid ${showTimer ? 'grid-cols-2' : 'grid-cols-1'} gap-3 mb-6`}>
-                        <div className="flex items-center justify-center gap-2.5 bg-white/5 p-3.5 rounded-2xl border border-white/10">
+                        <div className="flex items-center justify-center gap-2.5 bg-[var(--bts-fill-soft)] p-3.5 rounded-2xl border border-[var(--bts-divider-soft)]">
                             {/* אייקון ספירת הנכונות תלוי במעבר: וי ירוק רק כשעוברים. בלי מעבר
                                 מציגים אייקון רשימה ניטרלי בגוון התוצאה (rose/amber), כדי לא לאותת
                                 הצלחה כשהציון מתחת לסף. */}
@@ -529,16 +529,16 @@ export const AssessmentEngine = ({
                             ) : (
                                 <ListChecks size={16} className={`${feedback.color} shrink-0`} />
                             )}
-                            <div className="text-white font-bold leading-tight text-sm text-start">
+                            <div className="text-[var(--bts-text-primary)] font-bold leading-tight text-sm text-start">
                                 {a.correctSummary(correctCount, questions.length)}
                             </div>
                         </div>
                         {showTimer && (
-                            <div className="flex items-center justify-center gap-2.5 bg-white/5 p-3.5 rounded-2xl border border-white/10">
+                            <div className="flex items-center justify-center gap-2.5 bg-[var(--bts-fill-soft)] p-3.5 rounded-2xl border border-[var(--bts-divider-soft)]">
                                 <Timer size={16} className="text-amber-400" />
                                 <div className="text-start">
-                                    <div className="text-[10px] text-slate-500 font-bold uppercase">{a.timeLabel}</div>
-                                    <div className="text-white font-black leading-tight">{formatTime(seconds)}</div>
+                                    <div className="text-[10px] text-[var(--bts-text-faint)] font-bold uppercase">{a.timeLabel}</div>
+                                    <div className="text-[var(--bts-text-primary)] font-black leading-tight">{formatTime(seconds)}</div>
                                 </div>
                             </div>
                         )}
@@ -572,17 +572,17 @@ export const AssessmentEngine = ({
 
                 {/* חזרה מומלצת: עד שלושה קישורים ממוקדים לפי המושגים החלשים */}
                 {reviewLinks.length > 0 && (
-                    <div className="bg-white/5 p-4 rounded-2xl border border-white/10 mb-6 text-start">
-                        <div className="text-slate-300 text-xs font-black mb-3">{a.recommendedReview}</div>
+                    <div className="bg-[var(--bts-fill-soft)] p-4 rounded-2xl border border-[var(--bts-divider-soft)] mb-6 text-start">
+                        <div className="text-[var(--bts-text-secondary)] text-xs font-black mb-3">{a.recommendedReview}</div>
                         <div className="space-y-2">
                             {reviewLinks.map(link => {
                                 // קישור שמצביע על הפרק הנוכחי (המבדק יושב בתוכו): ניווט Link לא יזיז
                                 // כלום, ולכן נגלול חזרה לראש העמוד כדי לחזור לתוכן הפרק.
                                 const isCurrentPage = pathname === link.href || (pathname?.endsWith(link.href) ?? false);
-                                const linkCls = "flex items-center justify-between gap-2 bg-white/5 hover:bg-white/10 px-3 py-2.5 rounded-xl border border-white/10 transition-all no-underline group";
+                                const linkCls = "flex items-center justify-between gap-2 bg-[var(--bts-fill-soft)] hover:bg-[var(--bts-fill-track)] px-3 py-2.5 rounded-xl border border-[var(--bts-divider-soft)] transition-all no-underline group";
                                 const arrow = isRTL
-                                    ? <ArrowLeft size={16} className="text-slate-500 group-hover:text-white group-hover:-translate-x-0.5 transition-all" />
-                                    : <ArrowRight size={16} className="text-slate-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />;
+                                    ? <ArrowLeft size={16} className="text-[var(--bts-text-faint)] group-hover:text-[var(--bts-text-primary)] group-hover:-translate-x-0.5 transition-all" />
+                                    : <ArrowRight size={16} className="text-[var(--bts-text-faint)] group-hover:text-[var(--bts-text-primary)] group-hover:translate-x-0.5 transition-all" />;
 
                                 if (isCurrentPage) {
                                     return (
@@ -615,7 +615,7 @@ export const AssessmentEngine = ({
                                             }}
                                             className={`w-full text-start ${linkCls}`}
                                         >
-                                            <span className="text-sm font-bold text-slate-200">{link.label}</span>
+                                            <span className="text-sm font-bold text-[var(--bts-text-body)]">{link.label}</span>
                                             {arrow}
                                         </button>
                                     );
@@ -623,7 +623,7 @@ export const AssessmentEngine = ({
 
                                 return (
                                     <Link key={link.href} href={link.href} className={linkCls}>
-                                        <span className="text-sm font-bold text-slate-200">{link.label}</span>
+                                        <span className="text-sm font-bold text-[var(--bts-text-body)]">{link.label}</span>
                                         {arrow}
                                     </Link>
                                 );
@@ -679,7 +679,7 @@ export const AssessmentEngine = ({
         <div className="w-full max-w-2xl mx-auto px-4 py-4 font-sans" dir={dir}>
             {/* ===== קונסולת ההחלטה: כרטיס אחד מאוחד. הכרטיס, הכותרת, ההתקדמות והפוטר
                  נשארים מונטים ויציבים; רק תוכן השאלה הפנימי מתחלף (רצף חלק, בלי מסגרת ריקה). ===== */}
-            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-b from-slate-900/70 to-slate-950/70 shadow-2xl backdrop-blur-md">
+            <div className="relative overflow-hidden rounded-[1.75rem] border border-[var(--bts-divider-soft)] bg-gradient-to-b from-[color-mix(in_oklab,var(--bts-panel-from)_70%,transparent)] to-[color-mix(in_oklab,var(--bts-panel-to)_70%,transparent)] shadow-[0_25px_50px_-12px_var(--bts-shadow-lift)] backdrop-blur-md">
                 {/* הילה אדפטיבית לפי מצב (ויזואלי בלבד): ציאן רגוע, אמרלד נכון, ענבר תיקון, אפור בסקירה */}
                 <div
                     aria-hidden
@@ -688,18 +688,18 @@ export const AssessmentEngine = ({
                 />
 
                 {/* ---- Header band: כותרת + טיימר/רצף/השתקה, ואז מונה "שאלה X מתוך Y" + התקדמות ---- */}
-                <div className="relative border-b border-white/10 px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
+                <div className="relative border-b border-[var(--bts-divider-soft)] px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
                     <div className="mb-4 flex items-start justify-between gap-3">
                         <div className="min-w-0">
                             {/* h2, לא h1: כותרת המבדק היא מקטע בתוך העמוד. ה-h1 היחיד הוא ה-hero. */}
-                            <h2 className="truncate text-[15px] font-black leading-tight text-white sm:text-base">{title}</h2>
-                            <p className="mt-0.5 hidden truncate text-[13px] font-medium text-slate-500 sm:block">{subtitle}</p>
+                            <h2 className="truncate text-[15px] font-black leading-tight text-[var(--bts-text-primary)] sm:text-base">{title}</h2>
+                            <p className="mt-0.5 hidden truncate text-[13px] font-medium text-[var(--bts-text-faint)] sm:block">{subtitle}</p>
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
                             {showTimer && (
-                                <span className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-400/15 bg-white/[0.04] px-2.5 py-1 text-slate-200">
+                                <span className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-400/15 bg-[rgb(var(--bts-fill-rgb)/0.04)] px-2.5 py-1 text-[var(--bts-text-body)]">
                                     <Timer size={13} className="text-cyan-300/70" />
-                                    <span className="font-mono text-[13px] font-bold tabular-nums text-slate-100">{formatTime(seconds)}</span>
+                                    <span className="font-mono text-[13px] font-bold tabular-nums text-[var(--bts-text-bright)]">{formatTime(seconds)}</span>
                                 </span>
                             )}
                             {streak > 1 && (
@@ -713,11 +713,11 @@ export const AssessmentEngine = ({
 
                     <div className="flex items-center gap-3">
                         {/* המונה קבוצה נפרדת מהטיימר, וברור */}
-                        <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-slate-300">
+                        <span className="shrink-0 font-mono text-[13px] font-bold tabular-nums text-[var(--bts-text-secondary)]">
                             {a.questionCounter(currentIndex + 1, questions.length)}
                         </span>
                         {/* פס התקדמות accent מונפש עם נצנוץ אור חד-פעמי בכל מעבר */}
-                        <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+                        <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-[var(--bts-fill-track)]">
                             <motion.div
                                 animate={{ width: `${progress}%` }}
                                 transition={reduce ? { duration: 0 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -753,7 +753,7 @@ export const AssessmentEngine = ({
                             {/* שורת השאלה: prompt חזק + הקראה (אח, לא מקונן) */}
                             <div className="mb-6 flex items-start justify-between gap-3">
                                 {/* h3: השאלה יושבת תחת כותרת המבדק (h2), בלי לדלג רמה. */}
-                                <h3 className="text-xl font-bold leading-relaxed text-white sm:text-2xl">
+                                <h3 className="text-xl font-bold leading-relaxed text-[var(--bts-text-primary)] sm:text-2xl">
                                     {currentQuestion.question}
                                 </h3>
                                 <SpeakButton text={currentQuestion.question} className="mt-1 shrink-0" />
@@ -771,9 +771,9 @@ export const AssessmentEngine = ({
                                     // שגוי = ענבר רגוע (לא אדום). לא צבע בלבד: מסגרת + קו-פתיחה + צ'יפ + אייקון + זוהר.
                                     // textCls נקבע במפורש בכל מצב: טקסט האפשרות תמיד בהיר וקריא על רקע כהה
                                     // (לא יורש שחור). מצב מעומעם רך אך עדיין קריא.
-                                    let rowCls = "border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.015] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] hover:border-cyan-400/40 hover:from-white/[0.10]";
-                                    let chipCls = "bg-gradient-to-b from-white/20 to-white/[0.06] text-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] group-hover:from-cyan-400/40 group-hover:text-white";
-                                    let textCls = "text-slate-100 group-hover:text-white";
+                                    let rowCls = "border-[var(--bts-divider-soft)] bg-gradient-to-b from-[rgb(var(--bts-fill-rgb)/0.06)] to-[rgb(var(--bts-fill-rgb)/0.015)] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] hover:border-[color-mix(in_oklab,var(--bts-brand-primary-strong)_40%,transparent)] hover:from-[var(--bts-fill-track)]";
+                                    let chipCls = "bg-gradient-to-b from-[var(--bts-fill-strong)] to-[rgb(var(--bts-fill-rgb)/0.06)] text-[var(--bts-text-body)] shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] group-hover:from-[color-mix(in_oklab,var(--bts-brand-primary-strong)_40%,transparent)] group-hover:text-[var(--bts-text-primary)]";
+                                    let textCls = "text-[var(--bts-text-bright)] group-hover:text-[var(--bts-text-primary)]";
                                     if (showResult) {
                                         if (isCorrect) {
                                             rowCls = "border-emerald-400/50 border-s-2 border-s-emerald-400 bg-gradient-to-b from-emerald-500/[0.14] to-emerald-500/[0.03] shadow-[0_0_26px_-8px_rgba(16,185,129,0.55)]";
@@ -784,9 +784,9 @@ export const AssessmentEngine = ({
                                             chipCls = "bg-amber-400 text-slate-950";
                                             textCls = "text-amber-50";
                                         } else {
-                                            rowCls = "border-white/5 bg-transparent opacity-70";
-                                            chipCls = "bg-white/10 text-slate-400";
-                                            textCls = "text-slate-300";
+                                            rowCls = "border-[var(--bts-fill-soft)] bg-transparent opacity-70";
+                                            chipCls = "bg-[var(--bts-fill-track)] text-[var(--bts-text-muted)]";
+                                            textCls = "text-[var(--bts-text-secondary)]";
                                         }
                                     }
 
@@ -797,7 +797,7 @@ export const AssessmentEngine = ({
                                             <button
                                                 disabled={showResult && !isReviewMode}
                                                 onClick={() => handleAnswer(oIdx)}
-                                                className={`group relative flex w-full items-center gap-3.5 overflow-hidden rounded-2xl border py-3.5 pe-12 ps-2.5 text-start transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${rowCls} ${showResult || reduce ? '' : 'hover:-translate-y-px active:scale-[0.99]'}`}
+                                                className={`group relative flex w-full items-center gap-3.5 overflow-hidden rounded-2xl border py-3.5 pe-12 ps-2.5 text-start transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bts-panel-to)] ${rowCls} ${showResult || reduce ? '' : 'hover:-translate-y-px active:scale-[0.99]'}`}
                                             >
                                                 <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-[13px] font-black transition-colors ${chipCls}`}>
                                                     {displayPos + 1}
@@ -826,7 +826,7 @@ export const AssessmentEngine = ({
                                 {isAnswered && !isReviewMode && !reduce && (
                                     <motion.div
                                         aria-hidden
-                                        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-14 bg-gradient-to-b from-transparent via-cyan-400/15 to-transparent"
+                                        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-14 bg-gradient-to-b from-transparent via-[color-mix(in_oklab,var(--bts-brand-primary-strong)_15%,transparent)] to-transparent"
                                         initial={{ y: '-30%', opacity: 0 }}
                                         animate={{ y: '340%', opacity: [0, 1, 0] }}
                                         transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -852,7 +852,7 @@ export const AssessmentEngine = ({
                                         {isAnswered && (
                                             <span className="sr-only">{answeredWrong ? a.verdictWrong : a.verdictCorrect}</span>
                                         )}
-                                        <div className={`relative overflow-hidden rounded-2xl border border-white/10 border-s-2 bg-gradient-to-b to-slate-950/40 p-4 ${answeredWrong ? 'border-s-amber-400/70 from-amber-500/[0.09]' : 'border-s-emerald-400/70 from-emerald-500/[0.09]'}`}>
+                                        <div className={`relative overflow-hidden rounded-2xl border border-[var(--bts-divider-soft)] border-s-2 bg-gradient-to-b to-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-4 ${answeredWrong ? 'border-s-amber-400/70 from-amber-500/[0.09]' : 'border-s-emerald-400/70 from-emerald-500/[0.09]'}`}>
                                             <div className="flex items-start gap-3">
                                                 <motion.span
                                                     initial={reduce ? false : { scale: 0.6, opacity: 0 }}
@@ -862,7 +862,7 @@ export const AssessmentEngine = ({
                                                 >
                                                     <Lightbulb size={14} />
                                                 </motion.span>
-                                                <p className="flex-1 text-[14px] font-medium leading-relaxed text-slate-200 sm:text-[15px]">
+                                                <p className="flex-1 text-[14px] font-medium leading-relaxed text-[var(--bts-text-body)] sm:text-[15px]">
                                                     {currentQuestion.explanation}
                                                 </p>
                                                 {/* הקראת ה-readout: השאלה ואז ההסבר (אח של ה-p, לא מקונן) */}
@@ -878,11 +878,11 @@ export const AssessmentEngine = ({
             </div>
 
             {/* ===== סרגל ניווט דביק: מחוץ ל-AnimatePresence, יציב ולא מהבהב. רק Back + המשך. ===== */}
-            <div className="sticky bottom-0 z-20 -mx-4 mt-5 flex items-center justify-between border-t border-white/10 bg-slate-950/85 px-4 py-3 backdrop-blur-md">
+            <div className="sticky bottom-0 z-20 -mx-4 mt-5 flex items-center justify-between border-t border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-to)_85%,transparent)] px-4 py-3 backdrop-blur-md">
                 <button
                     onClick={handleBack}
                     disabled={currentIndex === 0}
-                    className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-bold transition-all ${currentIndex === 0 ? 'pointer-events-none opacity-0' : 'text-slate-500 hover:bg-white/5 hover:text-white'}`}
+                    className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-bold transition-all ${currentIndex === 0 ? 'pointer-events-none opacity-0' : 'text-[var(--bts-text-faint)] hover:bg-[var(--bts-fill-soft)] hover:text-[var(--bts-text-primary)]'}`}
                 >
                     {isRTL ? <ChevronRight size={18} /> : <ChevronLeft size={18} />} {a.prev}
                 </button>

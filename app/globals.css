@@ -189,6 +189,32 @@
   --bts-scan-line: color-mix(in srgb, var(--bts-brand-primary-strong) 35%, transparent);
   --bts-sweep: rgb(255 255 255 / 0.6);
   --bts-divider-soft: rgb(255 255 255 / 0.1);
+
+  /* T3.1: אסימוני רכיבים משותפים (מבדק, ניחוש, תיבות תובנה). ערכי Dark זהים לערכים
+     המילוליים שהוחלפו (white/5, white/10, white/20, slate-200, slate-500, slate-900/950). */
+  --bts-text-body: var(--color-slate-200);
+  --bts-text-faint: var(--color-slate-500);
+  --bts-fill-soft: rgb(255 255 255 / 0.05);
+  --bts-fill-track: rgb(255 255 255 / 0.1);
+  --bts-fill-strong: rgb(255 255 255 / 0.2);
+  --bts-panel-from: var(--color-slate-900);
+  --bts-panel-to: var(--color-slate-950);
+  --bts-vignette: rgba(2, 4, 10, 0.85);
+  --bts-dot: #4f46e5;
+  --bts-fill-rgb: 255 255 255;
+  --bts-text-bright: var(--color-slate-100);
+  --bts-text-subtle: var(--color-slate-600);
+  --bts-sub-rule: color-mix(in oklab, var(--color-slate-800) 80%, transparent);
+  --bts-sub-fill: color-mix(in oklab, var(--color-slate-800) 50%, transparent);
+  --bts-sub-fill-soft: color-mix(in oklab, var(--color-slate-800) 40%, transparent);
+  --bts-sub-fill-hover: var(--color-slate-800);
+  --bts-border-mid: color-mix(in oklab, var(--color-slate-700) 60%, transparent);
+  --bts-shadow-float: rgba(2, 6, 23, 0.6);
+  --bts-shadow-lift: rgb(0 0 0 / 0.25);
+  --bts-tint-mix: 0%;
+  --bts-state-correct-bg: color-mix(in oklab, var(--color-emerald-900) 25%, transparent);
+  --bts-state-wrong-bg: color-mix(in oklab, var(--color-amber-900) 18%, transparent);
+  --bts-state-selected-bg: color-mix(in oklab, var(--color-violet-900) 25%, transparent);
 }
 
 /* T2B: פלטת Light אמיתית. לא היפוך מכני של Dark - ראה docs/behind-ai-visual-rules.md
@@ -219,8 +245,8 @@
   --bts-brand-primary-strong: var(--color-cyan-700);
   --bts-brand-secondary: var(--color-indigo-600);
 
-  --bts-focus-ring: #0891b299;
-  --bts-focus-ring: color-mix(in oklab, var(--color-cyan-600) 60%, transparent);
+  /* T3.1 gate: 60% על לבן היה כ-2:1; מלא (cyan-600) כ-3.7:1 על לבן (סף 3:1 לחיווי פוקוס). */
+  --bts-focus-ring: var(--color-cyan-600);
   --bts-focus-ring-offset: var(--color-white);
 
   --bts-shadow-elevation: 0 20px 40px -26px rgba(30 41 59 / 0.18);
@@ -238,6 +264,30 @@
   --bts-scan-line: color-mix(in srgb, var(--bts-brand-primary-strong) 100%, transparent);
   --bts-sweep: color-mix(in srgb, var(--bts-brand-primary-strong) 40%, transparent);
   --bts-divider-soft: var(--bts-border);
+
+  --bts-text-body: var(--color-slate-700);
+  --bts-text-faint: var(--color-slate-600);
+  --bts-fill-soft: rgb(15 23 42 / 0.04);
+  --bts-fill-track: rgb(15 23 42 / 0.08);
+  --bts-fill-strong: rgb(15 23 42 / 0.14);
+  --bts-panel-from: var(--color-white);
+  --bts-panel-to: var(--color-slate-50);
+  --bts-vignette: rgb(100 116 139 / 0.4);
+  --bts-dot: #4f46e5;
+  --bts-fill-rgb: 15 23 42;
+  --bts-text-bright: var(--color-slate-800);
+  --bts-text-subtle: var(--color-slate-600);
+  --bts-sub-rule: var(--bts-border);
+  --bts-sub-fill: var(--bts-fill-soft);
+  --bts-sub-fill-soft: var(--bts-fill-soft);
+  --bts-sub-fill-hover: var(--bts-fill-track);
+  --bts-border-mid: var(--bts-border);
+  --bts-shadow-float: rgb(30 41 59 / 0.16);
+  --bts-shadow-lift: rgb(15 23 42 / 0.12);
+  --bts-tint-mix: 100%;
+  --bts-state-correct-bg: color-mix(in oklab, var(--color-emerald-500) 13%, transparent);
+  --bts-state-wrong-bg: color-mix(in oklab, var(--color-amber-500) 13%, transparent);
+  --bts-state-selected-bg: color-mix(in oklab, var(--color-violet-500) 11%, transparent);
 }
 
 /* T2B: דיו-זהות-תחנה כטקסט (StationCard, IntroStationViz). STATION_RGB/ink הם צבעי
@@ -293,6 +343,51 @@
 .text-emerald-300 { color: color-mix(in oklab, #6ee7b7 calc(100% - var(--bts-ink-darken)), black) !important; }
 .text-emerald-200 { color: color-mix(in oklab, #a7f3d0 calc(100% - var(--bts-ink-darken)), black) !important; }
 .text-cyan-100 { color: color-mix(in oklab, #cffafe calc(100% - var(--bts-ink-darken)), black) !important; }
+
+/* T3.1: אותו מנגנון בשביל טקסט-מצב/מבטא ברכיבים המשותפים (מבדק, ניחוש, InsightBox,
+   accents.ts). Dark: --bts-ink-darken=0%, ולכן אין שינוי פיקסלים.
+   בכוונה בתוך @layer utilities וללא !important: וריאנטים כמו hover:text-* וכן
+   group-hover: (ספציפיות גבוהה יותר באותה שכבה) ממשיכים לגבור, כך ש-Dark לא מאבד hover. */
+@layer utilities {
+  .text-emerald-400 { color: color-mix(in oklab, var(--color-emerald-400) calc(100% - var(--bts-ink-darken)), black); }
+  .text-amber-400 { color: color-mix(in oklab, var(--color-amber-400) calc(100% - var(--bts-ink-darken)), black); }
+  .text-blue-400 { color: color-mix(in oklab, var(--color-blue-400) calc(100% - var(--bts-ink-darken)), black); }
+  .text-orange-400 { color: color-mix(in oklab, var(--color-orange-400) calc(100% - var(--bts-ink-darken)), black); }
+  .text-rose-400 { color: color-mix(in oklab, var(--color-rose-400) calc(100% - var(--bts-ink-darken)), black); }
+  .text-emerald-50 { color: color-mix(in oklab, var(--color-emerald-50) calc(100% - var(--bts-ink-darken)), black); }
+  .text-amber-50 { color: color-mix(in oklab, var(--color-amber-50) calc(100% - var(--bts-ink-darken)), black); }
+  .text-violet-200 { color: color-mix(in oklab, var(--color-violet-200) calc(100% - var(--bts-ink-darken)), black); }
+  .text-violet-300 { color: color-mix(in oklab, var(--color-violet-300) calc(100% - var(--bts-ink-darken)), black); }
+  .text-violet-400 { color: color-mix(in oklab, var(--color-violet-400) calc(100% - var(--bts-ink-darken)), black); }
+  .text-sky-200 { color: color-mix(in oklab, var(--color-sky-200) calc(100% - var(--bts-ink-darken)), black); }
+  .text-indigo-200 { color: color-mix(in oklab, var(--color-indigo-200) calc(100% - var(--bts-ink-darken)), black); }
+  .text-sky-300 { color: color-mix(in oklab, var(--color-sky-300) calc(100% - var(--bts-ink-darken)), black); }
+  .text-indigo-300 { color: color-mix(in oklab, var(--color-indigo-300) calc(100% - var(--bts-ink-darken)), black); }
+  .text-indigo-400 { color: color-mix(in oklab, var(--color-indigo-400) calc(100% - var(--bts-ink-darken)), black); }
+  .text-cyan-300 { color: color-mix(in oklab, var(--color-cyan-300) calc(100% - var(--bts-ink-darken)), black); }
+  .text-teal-300 { color: color-mix(in oklab, var(--color-teal-300) calc(100% - var(--bts-ink-darken)), black); }
+  .text-purple-300 { color: color-mix(in oklab, var(--color-purple-300) calc(100% - var(--bts-ink-darken)), black); }
+  .text-fuchsia-300 { color: color-mix(in oklab, var(--color-fuchsia-300) calc(100% - var(--bts-ink-darken)), black); }
+  .text-pink-300 { color: color-mix(in oklab, var(--color-pink-300) calc(100% - var(--bts-ink-darken)), black); }
+  .text-orange-300 { color: color-mix(in oklab, var(--color-orange-300) calc(100% - var(--bts-ink-darken)), black); }
+  .text-lime-300 { color: color-mix(in oklab, var(--color-lime-300) calc(100% - var(--bts-ink-darken)), black); }
+  .text-cyan-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-cyan-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-sky-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-sky-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-teal-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-teal-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-blue-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-blue-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-indigo-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-indigo-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-violet-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-violet-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-purple-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-purple-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-fuchsia-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-fuchsia-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-pink-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-pink-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-orange-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-orange-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-lime-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-lime-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-amber-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-amber-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-emerald-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-emerald-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-rose-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-rose-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-cyan-300\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-cyan-300) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
+  .text-amber-200\/90 { color: color-mix(in oklab, color-mix(in oklab, var(--color-amber-200) calc(100% - var(--bts-ink-darken)), black) 90%, transparent); }
+}
 
 @layer base {
   * { @apply border-border outline-ring/50; }

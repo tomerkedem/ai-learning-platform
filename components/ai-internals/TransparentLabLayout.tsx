@@ -37,7 +37,7 @@ const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[]; isRtl: boo
         <div data-transparent-lab-connector className="relative flex h-12 min-w-0 items-center justify-center lg:h-auto lg:min-h-[220px] lg:w-14" aria-hidden>
             {/* מובייל: ה-DOM והזרימה החזותית ממשיכים מלמעלה למטה. */}
             <div className="absolute inset-0 flex items-center justify-center lg:hidden">
-                <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/10" />
+                <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-[var(--bts-fill-track)]" />
                 {!reduce && hasTokens && (
                     <motion.span
                         className={`absolute left-1/2 h-2.5 w-2.5 -translate-x-1/2 rounded-full ${a.solid}`}
@@ -53,8 +53,8 @@ const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[]; isRtl: boo
 
             {/* דסקטופ: המחבר יושב בעמודה האמצעית וזורם מה-Chat אל ה-Engine. */}
             <div className="relative hidden h-full min-h-[220px] w-14 items-center justify-center lg:flex">
-                <span className="absolute top-[calc(50%-2.25rem)] font-mono text-[10px] uppercase tracking-widest text-slate-600">tokens</span>
-                <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-white/10" />
+                <span className="absolute top-[calc(50%-2.25rem)] font-mono text-[10px] uppercase tracking-widest text-[var(--bts-text-subtle)]">tokens</span>
+                <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-[var(--bts-fill-track)]" />
                 {hasTokens && !reduce && Array.from({ length: slotCount }).map((_, i) => (
                     <motion.span
                         key={`${tokens[i]}-${i}`}

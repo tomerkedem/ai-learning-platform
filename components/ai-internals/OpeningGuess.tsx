@@ -75,13 +75,13 @@ type CardState = 'idle' | 'correct' | 'wrong' | 'dim';
 function cardClasses(state: CardState, reduce: boolean): string {
     switch (state) {
         case 'correct':
-            return `border-emerald-400/70 bg-emerald-900/25 ${reduce ? '' : 'shadow-[0_0_40px_-10px_rgba(16,185,129,0.55)]'}`;
+            return `border-emerald-400/70 bg-[var(--bts-state-correct-bg)] ${reduce ? '' : 'shadow-[0_0_40px_-10px_rgba(16,185,129,0.55)]'}`;
         case 'wrong':
-            return 'border-amber-400/55 bg-amber-900/[0.18]';
+            return 'border-amber-400/55 bg-[var(--bts-state-wrong-bg)]';
         case 'dim':
-            return 'border-white/5 bg-slate-900/40 opacity-60';
+            return 'border-[var(--bts-fill-soft)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] opacity-60';
         default:
-            return 'border-slate-700/60 bg-slate-900/50 hover:border-violet-500/50 hover:bg-violet-900/10';
+            return 'border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] hover:border-violet-500/50 hover:bg-[color-mix(in_oklab,color-mix(in_oklab,var(--og-l)_var(--bts-tint-mix),var(--og-d))_10%,transparent)] [--og-d:var(--color-violet-900)] [--og-l:var(--color-violet-500)]';
     }
 }
 
@@ -127,7 +127,7 @@ export const OpeningGuess: React.FC<{
     };
 
     return (
-        <div className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/60 p-6 backdrop-blur-xl md:p-8">
+        <div className="relative overflow-hidden rounded-[2rem] border border-[var(--bts-border)] bg-[var(--bts-surface)] p-6 backdrop-blur-xl md:p-8">
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-violet-500/10 blur-[80px]" />
 
             <div className="relative z-10">
@@ -138,13 +138,13 @@ export const OpeningGuess: React.FC<{
                         <HelpCircle size={14} /> {content.eyebrow}
                     </span>
                     <div className="mb-2 flex items-center justify-center gap-2.5">
-                        <Heading className="text-xl font-black text-white md:text-3xl">{content.title}</Heading>
+                        <Heading className="text-xl font-black text-[var(--bts-text-primary)] md:text-3xl">{content.title}</Heading>
                         {/* הקראה אחת לשאלה יחד עם שורת ההסבר שמתחתיה */}
                         <SpeakButton text={`${content.title} ${content.subtitle}`} speechLocale={speechLocale} />
                     </div>
-                    <p className="mx-auto mb-4 max-w-xl text-sm text-slate-400 md:text-base">{content.subtitle}</p>
+                    <p className="mx-auto mb-4 max-w-xl text-sm text-[var(--bts-text-muted)] md:text-base">{content.subtitle}</p>
                     {content.prompt && (
-                        <p className="mx-auto mb-7 max-w-xl rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-sm font-bold text-slate-200">{content.prompt}</p>
+                        <p className="mx-auto mb-7 max-w-xl rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3 text-sm font-bold text-[var(--bts-text-body)]">{content.prompt}</p>
                     )}
                 </div>
 
@@ -162,7 +162,7 @@ export const OpeningGuess: React.FC<{
                                 aria-label={`${card.title}. ${card.desc}`}
                                 whileHover={reduce ? undefined : { scale: 1.015 }}
                                 whileTap={reduce ? undefined : { scale: 0.985 }}
-                                className={`relative flex h-full w-full flex-col gap-2.5 rounded-2xl border p-4 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${cardClasses(state, !!reduce)}`}
+                                className={`relative flex h-full w-full flex-col gap-2.5 rounded-2xl border p-4 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-violet-400)_60%,transparent))] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bts-focus-ring-offset)] ${cardClasses(state, !!reduce)}`}
                             >
                                 {!reduce && state === 'correct' && (
                                     <motion.span
@@ -175,7 +175,7 @@ export const OpeningGuess: React.FC<{
                                 )}
                                 {/* pe-8 שומר את הפינה לכפתור ההקראה (אח של הכרטיס, ממוקם absolute) */}
                                 <div className="flex items-center justify-between gap-2 pe-8">
-                                    <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-slate-950/50">
+                                    <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-to)_50%,transparent)]">
                                         {Icon ? (
                                             <Icon size={18} className="text-violet-300" />
                                         ) : (
@@ -194,8 +194,8 @@ export const OpeningGuess: React.FC<{
                                     )}
                                 </div>
                                 <div>
-                                    <div className="text-base font-black text-white">{card.title}</div>
-                                    <p className="mt-1 text-sm leading-relaxed text-slate-300">{card.desc}</p>
+                                    <div className="text-base font-black text-[var(--bts-text-primary)]">{card.title}</div>
+                                    <p className="mt-1 text-sm leading-relaxed text-[var(--bts-text-secondary)]">{card.desc}</p>
                                 </div>
                             </motion.button>
                             {/* הקראת הכרטיס: אח של כפתור-הכרטיס (button בתוך button אסור) */}

@@ -74,10 +74,10 @@ interface AttentionGuessProps {
 }
 
 const STATUS_TONE: Record<StatusTone, string> = {
-    close: 'border-emerald-400/40 bg-emerald-900/20 text-emerald-200',
-    partial: 'border-sky-400/40 bg-sky-900/20 text-sky-200',
-    common: 'border-amber-400/40 bg-amber-900/20 text-amber-200',
-    layer: 'border-indigo-400/40 bg-indigo-900/20 text-indigo-200',
+    close: 'border-emerald-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--at-l)_var(--bts-tint-mix),var(--at-d))_20%,transparent)] [--at-d:var(--color-emerald-900)] [--at-l:var(--color-emerald-500)] text-emerald-200',
+    partial: 'border-sky-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--at-l)_var(--bts-tint-mix),var(--at-d))_20%,transparent)] [--at-d:var(--color-sky-900)] [--at-l:var(--color-sky-500)] text-sky-200',
+    common: 'border-amber-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--at-l)_var(--bts-tint-mix),var(--at-d))_20%,transparent)] [--at-d:var(--color-amber-900)] [--at-l:var(--color-amber-500)] text-amber-200',
+    layer: 'border-indigo-400/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--at-l)_var(--bts-tint-mix),var(--at-d))_20%,transparent)] [--at-d:var(--color-indigo-900)] [--at-l:var(--color-indigo-500)] text-indigo-200',
 };
 
 /* ── איור-מיקרו לכל השערה. דקורטיבי בלבד (aria-hidden). ── */
@@ -116,7 +116,7 @@ function CueIllustration({ cue }: { cue: Cue }) {
     // factcheck
     return (
         <div className="flex items-center gap-2" aria-hidden>
-            <Globe size={18} className="text-slate-300" />
+            <Globe size={18} className="text-[var(--bts-text-secondary)]" />
             <span className="flex h-4 w-4 items-center justify-center rounded-full bg-violet-500/80">
                 <Check size={11} strokeWidth={3} className="text-white" />
             </span>
@@ -149,23 +149,23 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
 
     const cardClasses = (id: string): string => {
         if (id === chosenId) {
-            return `border-violet-400/70 bg-violet-900/25 ${reduce ? '' : 'shadow-[0_0_40px_-10px_rgba(139,92,246,0.6)]'}`;
+            return `border-violet-400/70 bg-[var(--bts-state-selected-bg)] ${reduce ? '' : 'shadow-[0_0_40px_-10px_rgba(139,92,246,0.6)]'}`;
         }
-        if (choiceMade) return 'border-white/5 bg-slate-900/40 opacity-70';
-        return 'border-slate-700/60 bg-slate-900/50 hover:border-violet-500/50 hover:bg-violet-900/10';
+        if (choiceMade) return 'border-[var(--bts-fill-soft)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] opacity-70';
+        return 'border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] hover:border-violet-500/50 hover:bg-[color-mix(in_oklab,color-mix(in_oklab,var(--at-l)_var(--bts-tint-mix),var(--at-d))_10%,transparent)] [--at-d:var(--color-violet-900)] [--at-l:var(--color-violet-500)]';
     };
 
     return (
         <div
             dir={dir}
-            className="relative overflow-hidden rounded-[2rem] border border-slate-700/50 bg-slate-900/60 p-6 backdrop-blur-xl md:p-8"
+            className="relative overflow-hidden rounded-[2rem] border border-[var(--bts-border)] bg-[var(--bts-surface)] p-6 backdrop-blur-xl md:p-8"
         >
             <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-violet-500/10 blur-[80px]" />
 
             <div className="relative z-10">
                 {/* ההזמנה לנחש לפני הבחירה: טקסט גוף בלבד, גלוי גם בטלפון. */}
                 {!choiceMade && (
-                    <p className="mx-auto mb-5 max-w-md text-center text-[13px] font-medium leading-snug text-slate-400">
+                    <p className="mx-auto mb-5 max-w-md text-center text-[13px] font-medium leading-snug text-[var(--bts-text-muted)]">
                         {content.invite}
                     </p>
                 )}
@@ -174,12 +174,12 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                         <HelpCircle size={14} /> {content.eyebrow}
                     </span>
                     <div className="mb-2 flex items-center justify-center gap-2.5">
-                        <h3 className="text-xl font-black text-white md:text-3xl">{content.title}</h3>
+                        <h3 className="text-xl font-black text-[var(--bts-text-primary)] md:text-3xl">{content.title}</h3>
                         {/* הקראה אחת לשאלה יחד עם שורת ההסבר שמתחתיה */}
                         <SpeakButton text={`${content.title} ${content.subtitle}`} speechLocale={speechLocale} />
                     </div>
-                    <p className="mx-auto mb-4 max-w-xl text-sm text-slate-400 md:text-base">{content.subtitle}</p>
-                    <p className="mx-auto mb-7 max-w-xl rounded-xl border border-slate-700/50 bg-slate-950/40 p-3 text-sm font-bold text-slate-200">
+                    <p className="mx-auto mb-4 max-w-xl text-sm text-[var(--bts-text-muted)] md:text-base">{content.subtitle}</p>
+                    <p className="mx-auto mb-7 max-w-xl rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3 text-sm font-bold text-[var(--bts-text-body)]">
                         {prompt}
                     </p>
                 </div>
@@ -195,14 +195,14 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                                 aria-label={`${card.title}. ${card.desc}`}
                                 whileHover={reduce ? undefined : { scale: 1.015 }}
                                 whileTap={reduce ? undefined : { scale: 0.985 }}
-                                className={`relative flex h-full w-full flex-col gap-2.5 rounded-2xl border p-4 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${cardClasses(card.id)}`}
+                                className={`relative flex h-full w-full flex-col gap-2.5 rounded-2xl border p-4 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-violet-400)_60%,transparent))] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bts-focus-ring-offset)] ${cardClasses(card.id)}`}
                             >
-                                <span className="w-fit rounded-xl border border-white/10 bg-slate-950/50 px-2.5 py-2">
+                                <span className="w-fit rounded-xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-to)_50%,transparent)] px-2.5 py-2">
                                     <CueIllustration cue={card.cue} />
                                 </span>
                                 <div>
-                                    <div className="text-base font-black text-white">{card.title}</div>
-                                    <p className="mt-1 text-sm leading-relaxed text-slate-300">{card.desc}</p>
+                                    <div className="text-base font-black text-[var(--bts-text-primary)]">{card.title}</div>
+                                    <p className="mt-1 text-sm leading-relaxed text-[var(--bts-text-secondary)]">{card.desc}</p>
                                 </div>
                             </motion.button>
                             {/* הקראת הכרטיס: אח של כפתור-הכרטיס (button בתוך button אסור) */}
@@ -224,7 +224,7 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                             role="status"
                             aria-live="polite"
                         >
-                            <div className="rounded-2xl border border-violet-400/30 bg-violet-900/15 p-5">
+                            <div className="rounded-2xl border border-violet-400/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--at-l)_var(--bts-tint-mix),var(--at-d))_15%,transparent)] [--at-d:var(--color-violet-900)] [--at-l:var(--color-violet-500)] p-5">
                                 <div className="flex items-start gap-4">
                                     <div className="flex-1">
                                         <div className="flex items-start justify-between gap-2">
@@ -244,7 +244,7 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                                             />
                                         </div>
 
-                                        <div className="mt-3 space-y-2 text-sm leading-relaxed text-slate-200">
+                                        <div className="mt-3 space-y-2 text-sm leading-relaxed text-[var(--bts-text-body)]">
                                             <p>
                                                 <span className="font-bold text-emerald-300">{content.getsRightLabel}: </span>
                                                 {chosen.getsRight}
@@ -253,7 +253,7 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                                                 <span className={`font-bold ${chosen.statusTone === 'close' ? 'text-sky-300' : 'text-amber-300'}`}>{chosen.missesLabel}: </span>
                                                 {chosen.misses}
                                             </p>
-                                            <p className="border-s-2 border-violet-400/50 ps-3 font-medium text-slate-100">
+                                            <p className="border-s-2 border-violet-400/50 ps-3 font-medium text-[var(--bts-text-bright)]">
                                                 {chosen.bridge}
                                             </p>
                                         </div>
@@ -265,7 +265,7 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                                                 <button
                                                     type="button"
                                                     onClick={() => setRevealed(true)}
-                                                    className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/50 bg-emerald-900/20 px-4 py-1.5 text-sm font-bold text-emerald-200 transition-colors hover:bg-emerald-900/35"
+                                                    className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--at-l)_var(--bts-tint-mix),var(--at-d))_20%,transparent)] [--at-d:var(--color-emerald-900)] [--at-l:var(--color-emerald-500)] px-4 py-1.5 text-sm font-bold text-emerald-200 transition-colors hover:bg-[color-mix(in_oklab,color-mix(in_oklab,var(--at-l)_var(--bts-tint-mix),var(--at-d))_35%,transparent)]"
                                                 >
                                                     <Sparkles size={14} /> {content.revealButton}
                                                 </button>
@@ -273,7 +273,7 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                                             <button
                                                 type="button"
                                                 onClick={resetGuess}
-                                                className="inline-flex items-center gap-1.5 rounded-full border border-slate-700/60 bg-slate-800/40 px-4 py-1.5 text-sm font-bold text-slate-300 transition-colors hover:border-violet-500/40 hover:text-violet-200"
+                                                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--bts-border-mid)] bg-[var(--bts-sub-fill-soft)] px-4 py-1.5 text-sm font-bold text-[var(--bts-text-secondary)] transition-colors hover:border-violet-500/40 hover:text-violet-200"
                                             >
                                                 <RotateCcw size={13} /> {content.resetButton}
                                             </button>
@@ -295,7 +295,7 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                             transition={reduce ? { duration: 0 } : { duration: 0.35 }}
                             className="mx-auto mt-4 max-w-2xl"
                         >
-                            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/15 p-5 text-center">
+                            <div className="rounded-2xl border border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--at-l)_var(--bts-tint-mix),var(--at-d))_15%,transparent)] [--at-d:var(--color-emerald-950)] [--at-l:var(--color-emerald-500)] p-5 text-center">
                                 <div className="flex items-center justify-center gap-2.5">
                                     <p className="inline-flex items-center gap-2 text-base font-bold text-emerald-200 md:text-lg">
                                         <Sparkles size={16} /> {content.revealTitle}
@@ -303,13 +303,13 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                                     {/* הקראת התובנה הגדולה הנחשפת */}
                                     <SpeakButton text={speakJoin(content.revealTitle, content.revealCopy)} speechLocale={speechLocale} />
                                 </div>
-                                <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-slate-300">{content.revealCopy}</p>
+                                <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-[var(--bts-text-secondary)]">{content.revealCopy}</p>
 
                                 <div className="mt-4 flex flex-col items-center gap-2">
                                     <button
                                         type="button"
                                         onClick={goToLab}
-                                        className="inline-flex items-center gap-1.5 rounded-full border border-violet-500/50 bg-violet-900/25 px-5 py-2 text-sm font-bold text-violet-100 transition-colors hover:bg-violet-900/40"
+                                        className="inline-flex items-center gap-1.5 rounded-full border border-violet-500/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--at-l)_var(--bts-tint-mix),var(--at-d))_25%,transparent)] [--at-d:var(--color-violet-900)] [--at-l:var(--color-violet-500)] px-5 py-2 text-sm font-bold text-violet-100 transition-colors hover:bg-[color-mix(in_oklab,color-mix(in_oklab,var(--at-l)_var(--bts-tint-mix),var(--at-d))_40%,transparent)]"
                                     >
                                         {content.cta}
                                         {reduce ? (

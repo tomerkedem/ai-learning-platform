@@ -353,7 +353,7 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                         </div>
                     </ShimmerFrame>
                 ) : (
-                    <div className="relative overflow-hidden rounded-2xl border border-amber-400/45 bg-gradient-to-b from-amber-900/[0.16] to-[var(--bts-surface)] p-5 md:p-6">
+                    <div className="relative overflow-hidden rounded-2xl border border-amber-400/45 bg-gradient-to-b from-[color-mix(in_oklab,color-mix(in_oklab,var(--gv-l)_var(--bts-tint-mix),var(--gv-d))_16%,transparent)] [--gv-d:var(--color-amber-900)] [--gv-l:var(--color-amber-500)] to-[var(--bts-surface)] p-5 md:p-6">
                         {!reduce && (
                             <motion.div
                                 aria-hidden
@@ -390,7 +390,7 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                         initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={reduce ? { duration: 0 } : { duration: 0.3 }}
-                                        className="mt-4 rounded-xl border border-emerald-400/35 bg-emerald-900/15 p-3.5"
+                                        className="mt-4 rounded-xl border border-emerald-400/35 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--gv-l)_var(--bts-tint-mix),var(--gv-d))_15%,transparent)] [--gv-d:var(--color-emerald-900)] [--gv-l:var(--color-emerald-500)] p-3.5"
                                     >
                                         <div className="flex items-start justify-between gap-2">
                                             <p className="inline-flex items-center gap-1.5 text-sm font-bold text-[var(--bts-status-positive)]">

@@ -25,25 +25,35 @@ export const FocusModeContext = React.createContext(false);
 // וכך ההילה התחתונה וגרדיאנט הריחוף של כרטיס הפרק הבא רונדרו שקופים. המפה מחזירה את אותן
 // המחלקות המדויקות, אך כטקסט קבוע שהסורק מזהה. כל 18 הצבעים שמופיעים ב-courseData (colorFrom).
 const CHAPTER_ACCENT: Record<string, { glowTop: string; glowBottom: string; card: string; grad: string; label: string; kbd: string }> = {
-    amber: { glowTop: "bg-amber-500/20", glowBottom: "bg-amber-600/10", card: "border-amber-500/30 bg-amber-900/10 hover:bg-amber-900/20 hover:border-amber-500/50", grad: "via-amber-500/5 to-amber-500/10", label: "text-amber-400 group-hover:text-amber-300", kbd: "border-amber-500/40 bg-amber-900/20 text-amber-300" },
-    blue: { glowTop: "bg-blue-500/20", glowBottom: "bg-blue-600/10", card: "border-blue-500/30 bg-blue-900/10 hover:bg-blue-900/20 hover:border-blue-500/50", grad: "via-blue-500/5 to-blue-500/10", label: "text-blue-400 group-hover:text-blue-300", kbd: "border-blue-500/40 bg-blue-900/20 text-blue-300" },
-    cyan: { glowTop: "bg-cyan-500/20", glowBottom: "bg-cyan-600/10", card: "border-cyan-500/30 bg-cyan-900/10 hover:bg-cyan-900/20 hover:border-cyan-500/50", grad: "via-cyan-500/5 to-cyan-500/10", label: "text-cyan-400 group-hover:text-cyan-300", kbd: "border-cyan-500/40 bg-cyan-900/20 text-cyan-300" },
-    emerald: { glowTop: "bg-emerald-500/20", glowBottom: "bg-emerald-600/10", card: "border-emerald-500/30 bg-emerald-900/10 hover:bg-emerald-900/20 hover:border-emerald-500/50", grad: "via-emerald-500/5 to-emerald-500/10", label: "text-emerald-400 group-hover:text-emerald-300", kbd: "border-emerald-500/40 bg-emerald-900/20 text-emerald-300" },
-    fuchsia: { glowTop: "bg-fuchsia-500/20", glowBottom: "bg-fuchsia-600/10", card: "border-fuchsia-500/30 bg-fuchsia-900/10 hover:bg-fuchsia-900/20 hover:border-fuchsia-500/50", grad: "via-fuchsia-500/5 to-fuchsia-500/10", label: "text-fuchsia-400 group-hover:text-fuchsia-300", kbd: "border-fuchsia-500/40 bg-fuchsia-900/20 text-fuchsia-300" },
-    green: { glowTop: "bg-green-500/20", glowBottom: "bg-green-600/10", card: "border-green-500/30 bg-green-900/10 hover:bg-green-900/20 hover:border-green-500/50", grad: "via-green-500/5 to-green-500/10", label: "text-green-400 group-hover:text-green-300", kbd: "border-green-500/40 bg-green-900/20 text-green-300" },
-    indigo: { glowTop: "bg-indigo-500/20", glowBottom: "bg-indigo-600/10", card: "border-indigo-500/30 bg-indigo-900/10 hover:bg-indigo-900/20 hover:border-indigo-500/50", grad: "via-indigo-500/5 to-indigo-500/10", label: "text-indigo-400 group-hover:text-indigo-300", kbd: "border-indigo-500/40 bg-indigo-900/20 text-indigo-300" },
-    lime: { glowTop: "bg-lime-500/20", glowBottom: "bg-lime-600/10", card: "border-lime-500/30 bg-lime-900/10 hover:bg-lime-900/20 hover:border-lime-500/50", grad: "via-lime-500/5 to-lime-500/10", label: "text-lime-400 group-hover:text-lime-300", kbd: "border-lime-500/40 bg-lime-900/20 text-lime-300" },
-    orange: { glowTop: "bg-orange-500/20", glowBottom: "bg-orange-600/10", card: "border-orange-500/30 bg-orange-900/10 hover:bg-orange-900/20 hover:border-orange-500/50", grad: "via-orange-500/5 to-orange-500/10", label: "text-orange-400 group-hover:text-orange-300", kbd: "border-orange-500/40 bg-orange-900/20 text-orange-300" },
-    pink: { glowTop: "bg-pink-500/20", glowBottom: "bg-pink-600/10", card: "border-pink-500/30 bg-pink-900/10 hover:bg-pink-900/20 hover:border-pink-500/50", grad: "via-pink-500/5 to-pink-500/10", label: "text-pink-400 group-hover:text-pink-300", kbd: "border-pink-500/40 bg-pink-900/20 text-pink-300" },
-    purple: { glowTop: "bg-purple-500/20", glowBottom: "bg-purple-600/10", card: "border-purple-500/30 bg-purple-900/10 hover:bg-purple-900/20 hover:border-purple-500/50", grad: "via-purple-500/5 to-purple-500/10", label: "text-purple-400 group-hover:text-purple-300", kbd: "border-purple-500/40 bg-purple-900/20 text-purple-300" },
-    red: { glowTop: "bg-red-500/20", glowBottom: "bg-red-600/10", card: "border-red-500/30 bg-red-900/10 hover:bg-red-900/20 hover:border-red-500/50", grad: "via-red-500/5 to-red-500/10", label: "text-red-400 group-hover:text-red-300", kbd: "border-red-500/40 bg-red-900/20 text-red-300" },
-    rose: { glowTop: "bg-rose-500/20", glowBottom: "bg-rose-600/10", card: "border-rose-500/30 bg-rose-900/10 hover:bg-rose-900/20 hover:border-rose-500/50", grad: "via-rose-500/5 to-rose-500/10", label: "text-rose-400 group-hover:text-rose-300", kbd: "border-rose-500/40 bg-rose-900/20 text-rose-300" },
-    sky: { glowTop: "bg-sky-500/20", glowBottom: "bg-sky-600/10", card: "border-sky-500/30 bg-sky-900/10 hover:bg-sky-900/20 hover:border-sky-500/50", grad: "via-sky-500/5 to-sky-500/10", label: "text-sky-400 group-hover:text-sky-300", kbd: "border-sky-500/40 bg-sky-900/20 text-sky-300" },
-    slate: { glowTop: "bg-slate-500/20", glowBottom: "bg-slate-600/10", card: "border-slate-500/30 bg-slate-900/10 hover:bg-slate-900/20 hover:border-slate-500/50", grad: "via-slate-500/5 to-slate-500/10", label: "text-slate-400 group-hover:text-slate-300", kbd: "border-slate-500/40 bg-slate-900/20 text-slate-300" },
-    teal: { glowTop: "bg-teal-500/20", glowBottom: "bg-teal-600/10", card: "border-teal-500/30 bg-teal-900/10 hover:bg-teal-900/20 hover:border-teal-500/50", grad: "via-teal-500/5 to-teal-500/10", label: "text-teal-400 group-hover:text-teal-300", kbd: "border-teal-500/40 bg-teal-900/20 text-teal-300" },
-    violet: { glowTop: "bg-violet-500/20", glowBottom: "bg-violet-600/10", card: "border-violet-500/30 bg-violet-900/10 hover:bg-violet-900/20 hover:border-violet-500/50", grad: "via-violet-500/5 to-violet-500/10", label: "text-violet-400 group-hover:text-violet-300", kbd: "border-violet-500/40 bg-violet-900/20 text-violet-300" },
-    yellow: { glowTop: "bg-yellow-500/20", glowBottom: "bg-yellow-600/10", card: "border-yellow-500/30 bg-yellow-900/10 hover:bg-yellow-900/20 hover:border-yellow-500/50", grad: "via-yellow-500/5 to-yellow-500/10", label: "text-yellow-400 group-hover:text-yellow-300", kbd: "border-yellow-500/40 bg-yellow-900/20 text-yellow-300" },
+    amber: { glowTop: "bg-amber-500/20", glowBottom: "bg-amber-600/10", card: "border-amber-500/30 hover:border-amber-500/50 [--nx-d:var(--color-amber-900)] [--nx-l:var(--color-amber-500)]", grad: "via-amber-500/5 to-amber-500/10", label: "[--nx:var(--color-amber-400)] [--nxh:var(--color-amber-300)]", kbd: "border-amber-500/40" },
+    blue: { glowTop: "bg-blue-500/20", glowBottom: "bg-blue-600/10", card: "border-blue-500/30 hover:border-blue-500/50 [--nx-d:var(--color-blue-900)] [--nx-l:var(--color-blue-500)]", grad: "via-blue-500/5 to-blue-500/10", label: "[--nx:var(--color-blue-400)] [--nxh:var(--color-blue-300)]", kbd: "border-blue-500/40" },
+    cyan: { glowTop: "bg-cyan-500/20", glowBottom: "bg-cyan-600/10", card: "border-cyan-500/30 hover:border-cyan-500/50 [--nx-d:var(--color-cyan-900)] [--nx-l:var(--color-cyan-500)]", grad: "via-cyan-500/5 to-cyan-500/10", label: "[--nx:var(--color-cyan-400)] [--nxh:var(--color-cyan-300)]", kbd: "border-cyan-500/40" },
+    emerald: { glowTop: "bg-emerald-500/20", glowBottom: "bg-emerald-600/10", card: "border-emerald-500/30 hover:border-emerald-500/50 [--nx-d:var(--color-emerald-900)] [--nx-l:var(--color-emerald-500)]", grad: "via-emerald-500/5 to-emerald-500/10", label: "[--nx:var(--color-emerald-400)] [--nxh:var(--color-emerald-300)]", kbd: "border-emerald-500/40" },
+    fuchsia: { glowTop: "bg-fuchsia-500/20", glowBottom: "bg-fuchsia-600/10", card: "border-fuchsia-500/30 hover:border-fuchsia-500/50 [--nx-d:var(--color-fuchsia-900)] [--nx-l:var(--color-fuchsia-500)]", grad: "via-fuchsia-500/5 to-fuchsia-500/10", label: "[--nx:var(--color-fuchsia-400)] [--nxh:var(--color-fuchsia-300)]", kbd: "border-fuchsia-500/40" },
+    green: { glowTop: "bg-green-500/20", glowBottom: "bg-green-600/10", card: "border-green-500/30 hover:border-green-500/50 [--nx-d:var(--color-green-900)] [--nx-l:var(--color-green-500)]", grad: "via-green-500/5 to-green-500/10", label: "[--nx:var(--color-green-400)] [--nxh:var(--color-green-300)]", kbd: "border-green-500/40" },
+    indigo: { glowTop: "bg-indigo-500/20", glowBottom: "bg-indigo-600/10", card: "border-indigo-500/30 hover:border-indigo-500/50 [--nx-d:var(--color-indigo-900)] [--nx-l:var(--color-indigo-500)]", grad: "via-indigo-500/5 to-indigo-500/10", label: "[--nx:var(--color-indigo-400)] [--nxh:var(--color-indigo-300)]", kbd: "border-indigo-500/40" },
+    lime: { glowTop: "bg-lime-500/20", glowBottom: "bg-lime-600/10", card: "border-lime-500/30 hover:border-lime-500/50 [--nx-d:var(--color-lime-900)] [--nx-l:var(--color-lime-500)]", grad: "via-lime-500/5 to-lime-500/10", label: "[--nx:var(--color-lime-400)] [--nxh:var(--color-lime-300)]", kbd: "border-lime-500/40" },
+    orange: { glowTop: "bg-orange-500/20", glowBottom: "bg-orange-600/10", card: "border-orange-500/30 hover:border-orange-500/50 [--nx-d:var(--color-orange-900)] [--nx-l:var(--color-orange-500)]", grad: "via-orange-500/5 to-orange-500/10", label: "[--nx:var(--color-orange-400)] [--nxh:var(--color-orange-300)]", kbd: "border-orange-500/40" },
+    pink: { glowTop: "bg-pink-500/20", glowBottom: "bg-pink-600/10", card: "border-pink-500/30 hover:border-pink-500/50 [--nx-d:var(--color-pink-900)] [--nx-l:var(--color-pink-500)]", grad: "via-pink-500/5 to-pink-500/10", label: "[--nx:var(--color-pink-400)] [--nxh:var(--color-pink-300)]", kbd: "border-pink-500/40" },
+    purple: { glowTop: "bg-purple-500/20", glowBottom: "bg-purple-600/10", card: "border-purple-500/30 hover:border-purple-500/50 [--nx-d:var(--color-purple-900)] [--nx-l:var(--color-purple-500)]", grad: "via-purple-500/5 to-purple-500/10", label: "[--nx:var(--color-purple-400)] [--nxh:var(--color-purple-300)]", kbd: "border-purple-500/40" },
+    red: { glowTop: "bg-red-500/20", glowBottom: "bg-red-600/10", card: "border-red-500/30 hover:border-red-500/50 [--nx-d:var(--color-red-900)] [--nx-l:var(--color-red-500)]", grad: "via-red-500/5 to-red-500/10", label: "[--nx:var(--color-red-400)] [--nxh:var(--color-red-300)]", kbd: "border-red-500/40" },
+    rose: { glowTop: "bg-rose-500/20", glowBottom: "bg-rose-600/10", card: "border-rose-500/30 hover:border-rose-500/50 [--nx-d:var(--color-rose-900)] [--nx-l:var(--color-rose-500)]", grad: "via-rose-500/5 to-rose-500/10", label: "[--nx:var(--color-rose-400)] [--nxh:var(--color-rose-300)]", kbd: "border-rose-500/40" },
+    sky: { glowTop: "bg-sky-500/20", glowBottom: "bg-sky-600/10", card: "border-sky-500/30 hover:border-sky-500/50 [--nx-d:var(--color-sky-900)] [--nx-l:var(--color-sky-500)]", grad: "via-sky-500/5 to-sky-500/10", label: "[--nx:var(--color-sky-400)] [--nxh:var(--color-sky-300)]", kbd: "border-sky-500/40" },
+    slate: { glowTop: "bg-slate-500/20", glowBottom: "bg-slate-600/10", card: "border-slate-500/30 hover:border-slate-500/50 [--nx-d:var(--color-slate-900)] [--nx-l:var(--color-slate-500)]", grad: "via-slate-500/5 to-slate-500/10", label: "[--nx:var(--color-slate-400)] [--nxh:var(--color-slate-300)]", kbd: "border-slate-500/40" },
+    teal: { glowTop: "bg-teal-500/20", glowBottom: "bg-teal-600/10", card: "border-teal-500/30 hover:border-teal-500/50 [--nx-d:var(--color-teal-900)] [--nx-l:var(--color-teal-500)]", grad: "via-teal-500/5 to-teal-500/10", label: "[--nx:var(--color-teal-400)] [--nxh:var(--color-teal-300)]", kbd: "border-teal-500/40" },
+    violet: { glowTop: "bg-violet-500/20", glowBottom: "bg-violet-600/10", card: "border-violet-500/30 hover:border-violet-500/50 [--nx-d:var(--color-violet-900)] [--nx-l:var(--color-violet-500)]", grad: "via-violet-500/5 to-violet-500/10", label: "[--nx:var(--color-violet-400)] [--nxh:var(--color-violet-300)]", kbd: "border-violet-500/40" },
+    yellow: { glowTop: "bg-yellow-500/20", glowBottom: "bg-yellow-600/10", card: "border-yellow-500/30 hover:border-yellow-500/50 [--nx-d:var(--color-yellow-900)] [--nx-l:var(--color-yellow-500)]", grad: "via-yellow-500/5 to-yellow-500/10", label: "[--nx:var(--color-yellow-400)] [--nxh:var(--color-yellow-300)]", kbd: "border-yellow-500/40" },
 };
+
+// label/kbd: הטקסט נקבע בשימוש (NEXT_INK) מתוך שני משתנים, כדי שיוכהה ב-Light דרך
+// --bts-ink-darken (0% ב-Dark = אותו צבע בדיוק) בלי 18 x 2 מחלקות ארוכות.
+const NEXT_INK = "text-[color-mix(in_oklab,var(--nx)_calc(100%_-_var(--bts-ink-darken)),black)] group-hover:text-[color-mix(in_oklab,var(--nxh)_calc(100%_-_var(--bts-ink-darken)),black)]";
+// רקע הכרטיס/הקיבורד: Dark = הגוון -900 בשקיפות (זהה למקור); Light = הגוון -500 (--bts-tint-mix),
+// כדי שהכרטיס לא ייראה כתם אפרפר על רקע בהיר.
+const NEXT_BG = "bg-[color-mix(in_oklab,color-mix(in_oklab,var(--nx-l)_var(--bts-tint-mix),var(--nx-d))_10%,transparent)] hover:bg-[color-mix(in_oklab,color-mix(in_oklab,var(--nx-l)_var(--bts-tint-mix),var(--nx-d))_20%,transparent)]";
+const NEXT_TINT_10 = "bg-[color-mix(in_oklab,color-mix(in_oklab,var(--nx-l)_var(--bts-tint-mix),var(--nx-d))_10%,transparent)]";
+const NEXT_KBD_BG = "bg-[color-mix(in_oklab,color-mix(in_oklab,var(--nx-l)_var(--bts-tint-mix),var(--nx-d))_20%,transparent)]";
+const NEXT_KBD_INK = "text-[color-mix(in_oklab,var(--nxh)_calc(100%_-_var(--bts-ink-darken)),black)]";
 
 // שם צבע -> ערכת מבטא. נופל ל-slate אם הצבע לא מוכר (זהה לברירת המחדל של activeChapter).
 const accentFor = (colorName: string) => CHAPTER_ACCENT[colorName] ?? CHAPTER_ACCENT.slate;
@@ -283,7 +293,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                  <div className="absolute inset-0 opacity-40"> 
                     <div className="absolute inset-0" 
                         style={{ 
-                            backgroundImage: `radial-gradient(#4f46e5 1px, transparent 1px)`,
+                            backgroundImage: `radial-gradient(var(--bts-dot) 1px, transparent 1px)`,
                             backgroundSize: '40px 40px' 
                         }}
                     ></div>
@@ -303,7 +313,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                 initial={false}
                 animate={{ opacity: isFocusMode ? 1 : 0 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
-                className="fixed inset-0 z-[5] pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_center,transparent_55%,rgba(2,4,10,0.85)_100%)]"
+                className="fixed inset-0 z-[5] pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_center,transparent_55%,var(--bts-vignette)_100%)]"
             />
 
             <CourseSidebar isFocusMode={isFocusMode} />
@@ -320,7 +330,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                         whileHover={{ scale: 1.04, y: -2 }}
                         whileTap={{ scale: 0.96 }}
                         transition={{ type: "spring", stiffness: 400, damping: 26 }}
-                        className={`group relative flex items-center gap-2.5 rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-sm font-semibold text-slate-100 shadow-[0_8px_32px_rgba(2,6,23,0.6)] backdrop-blur-xl transition-colors hover:border-indigo-400/40 hover:text-white`}
+                        className={`group relative flex items-center gap-2.5 rounded-2xl border border-[var(--bts-divider-soft)] bg-[var(--bts-surface-elevated)] px-4 py-3 text-sm font-semibold text-[var(--bts-text-bright)] shadow-[0_8px_32px_var(--bts-shadow-float)] backdrop-blur-xl transition-colors hover:border-indigo-400/40 hover:text-[var(--bts-text-primary)]`}
                     >
                         {/* הילה רכה בריחוף */}
                         <span className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r from-indigo-500/0 via-indigo-500/20 to-cyan-500/0 opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
@@ -342,7 +352,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
 
                         <span>{isFocusMode ? t.chrome.focus.exit : t.chrome.focus.enter}</span>
 
-                        <kbd className="ms-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] leading-none text-slate-400 transition-colors group-hover:text-slate-200">F</kbd>
+                        <kbd className="ms-1 rounded-md border border-[var(--bts-divider-soft)] bg-[var(--bts-fill-soft)] px-1.5 py-0.5 font-mono text-[10px] leading-none text-[var(--bts-text-muted)] transition-colors group-hover:text-[var(--bts-text-body)]">F</kbd>
                     </motion.button>
                 </EdgePeekItem>
             </EdgeRail>
@@ -356,14 +366,14 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: -16, scale: 0.96 }}
                             transition={{ type: "spring", stiffness: 300, damping: 26 }}
-                            className="flex items-center gap-2.5 rounded-full border border-white/10 bg-slate-900/80 px-4 py-2 text-xs font-medium text-slate-200 shadow-[0_8px_30px_rgba(2,6,23,0.6)] backdrop-blur-xl"
+                            className="flex items-center gap-2.5 rounded-full border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-from)_80%,transparent)] px-4 py-2 text-xs font-medium text-[var(--bts-text-body)] shadow-[0_8px_30px_var(--bts-shadow-float)] backdrop-blur-xl"
                         >
                             <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
                             <span>{t.chrome.focus.activeBadge}</span>
-                            <span className="text-slate-600">·</span>
-                            <span className="flex items-center gap-1.5 text-slate-400">
+                            <span className="text-[var(--bts-text-subtle)]">·</span>
+                            <span className="flex items-center gap-1.5 text-[var(--bts-text-muted)]">
                                 {t.chrome.focus.press}
-                                <kbd className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] leading-none">Esc</kbd>
+                                <kbd className="rounded border border-[var(--bts-divider-soft)] bg-[var(--bts-fill-soft)] px-1.5 py-0.5 font-mono text-[10px] leading-none">Esc</kbd>
                                 {t.chrome.focus.toExit}
                             </span>
                         </motion.div>
@@ -442,14 +452,14 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                 (() => {
                                     const nextAccent = accentFor(extractColorName(nextChapter.colorFrom));
                                     return (
-                                        <Link href={nextChapter.href || "#"} className={`group relative overflow-hidden rounded-2xl border ${nextAccent.card} p-6 transition-all text-start`}>
+                                        <Link href={nextChapter.href || "#"} className={`group relative overflow-hidden rounded-2xl border ${nextAccent.card} ${NEXT_BG} p-6 transition-all text-start`}>
                                             <div className={`absolute inset-0 bg-linear-to-r from-transparent ${nextAccent.grad} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
 
                                             <div className={`flex flex-col ${isRTL ? 'items-start' : 'items-end'} gap-2 relative z-10`}>
-                                                <span className={`text-xs font-mono font-bold ${nextAccent.label} transition-colors flex items-center gap-2`}>
+                                                <span className={`text-xs font-mono font-bold ${nextAccent.label} ${NEXT_INK} transition-colors flex items-center gap-2`}>
                                                     {formatNextChapterLabel(locale, nextChapter.id)}
                                                     {isRTL ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
-                                                    <kbd className={`rounded border ${nextAccent.kbd} px-1.5 py-0.5 text-[10px] leading-none`}>{isRTL ? '←' : '→'}</kbd>
+                                                    <kbd className={`rounded border ${nextAccent.kbd} ${NEXT_KBD_BG} ${NEXT_KBD_INK} px-1.5 py-0.5 text-[10px] leading-none`}>{isRTL ? '←' : '→'}</kbd>
                                                 </span>
                                                 <div className={`font-bold text-xl text-[var(--bts-text-primary)] group-hover:scale-[1.02] transition-transform ${isRTL ? 'origin-right' : 'origin-left'}`}>
                                                     {tField(nextChapter.title, locale)}
@@ -466,16 +476,16 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                 // הפרק האחרון הבנוי אינו הפרק האחרון בתוכנית: ניסוח ניטרלי שלא
                                 // מרמז שהלומדה הסתיימה (למשל "מאחורי הקלעים של AI", שבה מחכים
                                 // עוד פרקים באזור ה-Agent).
-                                <div className="p-6 rounded-2xl border border-indigo-500/30 bg-indigo-900/10 flex flex-col items-center justify-center text-center gap-2">
+                                <div className={`p-6 rounded-2xl border border-indigo-500/30 ${NEXT_TINT_10} [--nx-d:var(--color-indigo-900)] [--nx-l:var(--color-indigo-500)] flex flex-col items-center justify-center text-center gap-2`}>
                                     <Milestone size={28} className="text-indigo-400" />
-                                    <span className="font-bold text-lg text-white">{t.chrome.nav.moreComingTitle}</span>
-                                    <span className="text-sm text-slate-400">{t.chrome.nav.moreComingSub}</span>
+                                    <span className="font-bold text-lg text-[var(--bts-text-primary)]">{t.chrome.nav.moreComingTitle}</span>
+                                    <span className="text-sm text-[var(--bts-text-muted)]">{t.chrome.nav.moreComingSub}</span>
                                 </div>
                             ) : (
-                                <div className="p-6 rounded-2xl border border-amber-500/30 bg-amber-900/10 flex flex-col items-center justify-center text-center gap-2">
+                                <div className={`p-6 rounded-2xl border border-amber-500/30 ${NEXT_TINT_10} [--nx-d:var(--color-amber-900)] [--nx-l:var(--color-amber-500)] flex flex-col items-center justify-center text-center gap-2`}>
                                     <Trophy size={28} className="text-amber-400" />
-                                    <span className="font-bold text-lg text-white">{t.chrome.nav.finishedTitle}</span>
-                                    <span className="text-sm text-slate-400">{t.chrome.nav.finishedSub}</span>
+                                    <span className="font-bold text-lg text-[var(--bts-text-primary)]">{t.chrome.nav.finishedTitle}</span>
+                                    <span className="text-sm text-[var(--bts-text-muted)]">{t.chrome.nav.finishedSub}</span>
                                 </div>
                             )}
 

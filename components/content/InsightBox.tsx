@@ -21,45 +21,46 @@ export const InsightBox: React.FC<InsightBoxProps> = ({ type = 'info', title, he
     const styles = {
         intuition: {
             border: 'border-indigo-500/30',
-            bg: 'bg-indigo-900/10',
+            bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--ib-l)_var(--bts-tint-mix),var(--ib-d))_10%,transparent)] [--ib-d:var(--color-indigo-900)] [--ib-l:var(--color-indigo-500)]',
             icon: <BrainCircuit size={20} className="text-indigo-400" />,
             titleColor: 'text-indigo-300'
         },
         warning: {
             border: 'border-amber-500/30',
-            bg: 'bg-amber-900/10',
+            bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--ib-l)_var(--bts-tint-mix),var(--ib-d))_10%,transparent)] [--ib-d:var(--color-amber-900)] [--ib-l:var(--color-amber-500)]',
             icon: <AlertTriangle size={20} className="text-amber-400" />,
             titleColor: 'text-amber-300'
         },
         info: {
             border: 'border-blue-500/30',
-            bg: 'bg-blue-900/10',
+            bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--ib-l)_var(--bts-tint-mix),var(--ib-d))_10%,transparent)] [--ib-d:var(--color-blue-900)] [--ib-l:var(--color-blue-500)]',
             icon: <Info size={20} className="text-blue-400" />,
             titleColor: 'text-blue-300'
         },
         math: {
             border: 'border-emerald-500/30',
-            bg: 'bg-emerald-900/10',
+            bg: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--ib-l)_var(--bts-tint-mix),var(--ib-d))_10%,transparent)] [--ib-d:var(--color-emerald-900)] [--ib-l:var(--color-emerald-500)]',
             icon: <Lightbulb size={20} className="text-emerald-400" />,
             titleColor: 'text-emerald-300'
         }
     };
 
+    // רקע התיבה: Dark = הגוון -900 בשקיפות (זהה למקור); Light = הגוון -500 (--bts-tint-mix).
     const style = styles[type];
 
     return (
         <div className={`my-8 rounded-xl border ${style.border} ${style.bg} p-6 relative overflow-hidden text-start`}>
-            <div className="absolute top-0 left-0 w-24 h-24 bg-linear-to-br from-white/5 to-transparent rounded-br-full pointer-events-none"></div>
+            <div className="absolute top-0 left-0 w-24 h-24 bg-linear-to-br from-[var(--bts-fill-soft)] to-transparent rounded-br-full pointer-events-none"></div>
 
             <div className="flex items-start gap-4 relative z-10">
-                <div className="p-2 rounded-lg bg-[#0F172A]/50 border border-white/5 shadow-sm shrink-0">
+                <div className="p-2 rounded-lg bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] border border-[var(--bts-fill-soft)] shadow-sm shrink-0">
                     {style.icon}
                 </div>
                 <div>
                     <Heading className={`text-base font-bold mb-2 ${style.titleColor}`}>
                         {title}
                     </Heading>
-                    <div className="text-slate-300 text-sm leading-relaxed">
+                    <div className="text-[var(--bts-text-secondary)] text-sm leading-relaxed">
                         {children}
                     </div>
                 </div>

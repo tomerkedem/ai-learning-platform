@@ -188,7 +188,7 @@ export function SidebarMastery() {
     const exam = finalExamText(summary.finalExam, progress);
 
     return (
-        <div className="mt-5 pt-5 border-t border-slate-800/80" dir={dir}>
+        <div className="mt-5 pt-5 border-t border-[var(--bts-sub-rule)]" dir={dir}>
             {/* כותרת לחיצה: מציגה סיכום קצר גם כשמכווץ, ומתקפלת בלחיצה */}
             <button
                 type="button"
@@ -197,14 +197,14 @@ export function SidebarMastery() {
                 className="w-full flex items-center justify-between gap-2 group"
             >
                 <span className="flex items-center gap-2 min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-300 transition-colors">{progress.sidebarTitle}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--bts-text-faint)] group-hover:text-[var(--bts-text-secondary)] transition-colors">{progress.sidebarTitle}</span>
                 </span>
                 <span className="flex items-center gap-2 shrink-0">
-                    <span className="text-[10px] font-mono text-slate-400">{summary.completedChapters}/{summary.totalChapters}</span>
+                    <span className="text-[10px] font-mono text-[var(--bts-text-muted)]">{summary.completedChapters}/{summary.totalChapters}</span>
                     {summary.averageScore !== null && (
-                        <span className="text-[10px] font-mono text-slate-500">· {summary.averageScore}%</span>
+                        <span className="text-[10px] font-mono text-[var(--bts-text-faint)]">· {summary.averageScore}%</span>
                     )}
-                    <ChevronDown size={14} className={`text-slate-500 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+                    <ChevronDown size={14} className={`text-[var(--bts-text-faint)] transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
                 </span>
             </button>
 
@@ -219,12 +219,12 @@ export function SidebarMastery() {
                     >
                         <div className="pt-3">
                             <div className="grid grid-cols-2 gap-2 mb-3">
-                                <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 px-2.5 py-1.5">
-                                    <div className="text-[9px] text-slate-500 font-bold">{progress.completed}</div>
-                                    <div className="text-white text-sm font-bold">{summary.completedChapters}/{summary.totalChapters}</div>
+                                <div className="bg-[var(--bts-sub-fill)] rounded-lg border border-[var(--bts-border)] px-2.5 py-1.5">
+                                    <div className="text-[9px] text-[var(--bts-text-faint)] font-bold">{progress.completed}</div>
+                                    <div className="text-[var(--bts-text-primary)] text-sm font-bold">{summary.completedChapters}/{summary.totalChapters}</div>
                                 </div>
-                                <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 px-2.5 py-1.5">
-                                    <div className="text-[9px] text-slate-500 font-bold">{progress.passed}</div>
+                                <div className="bg-[var(--bts-sub-fill)] rounded-lg border border-[var(--bts-border)] px-2.5 py-1.5">
+                                    <div className="text-[9px] text-[var(--bts-text-faint)] font-bold">{progress.passed}</div>
                                     <div className="text-emerald-400 text-sm font-bold">{summary.passedChapters}/{summary.totalChapters}</div>
                                 </div>
                             </div>
@@ -242,9 +242,9 @@ export function SidebarMastery() {
 
                             <Link
                                 href={FINAL_EXAM_HREF}
-                                className="flex items-center justify-between gap-2 bg-slate-800/40 hover:bg-slate-800 px-2.5 py-2 rounded-lg border border-slate-700/50 transition-colors no-underline"
+                                className="flex items-center justify-between gap-2 bg-[var(--bts-sub-fill-soft)] hover:bg-[var(--bts-sub-fill-hover)] px-2.5 py-2 rounded-lg border border-[var(--bts-border)] transition-colors no-underline"
                             >
-                                <span className="flex items-center gap-1.5 text-[11px] font-bold text-slate-300">
+                                <span className="flex items-center gap-1.5 text-[11px] font-bold text-[var(--bts-text-secondary)]">
                                     <GraduationCap size={13} className="text-blue-400" /> {progress.finalExam}
                                 </span>
                                 <span className={`text-[10px] font-bold ${exam.color}`}>{exam.label}</span>
