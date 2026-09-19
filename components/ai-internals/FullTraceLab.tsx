@@ -76,6 +76,8 @@ export const FullTraceLab: React.FC<FullTraceLabProps> = ({ data, dir, speechLoc
         stageId === 'verification' && (approval === 'pending' || approval === 'denied') ? 'skipped' : fallback;
 
     return (
+        // מכשיר כהה במכוון (קונסולת מעקב): נעול ל-Dark בשתי הערכות; המעטפת האטומה מחליפה את הרקע השקוף שלו.
+        <div data-theme="dark" className="rounded-2xl bg-[var(--bts-page)] text-[var(--bts-text-primary)]">
         <div className="rounded-2xl border border-indigo-500/25 bg-slate-900/55 p-4 text-start sm:p-5" dir={dir}>
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -125,7 +127,7 @@ export const FullTraceLab: React.FC<FullTraceLabProps> = ({ data, dir, speechLoc
                     </div>
                 </nav>
 
-                <motion.section key={active.id} initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={reduce ? { duration: 0 } : { duration: 0.2 }} aria-label={data.sr.stageDetail} className="min-w-0 space-y-3">
+                <motion.section key={active.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={reduce ? { duration: 0 } : { duration: 0.2 }} aria-label={data.sr.stageDetail} className="min-w-0 space-y-3">
                     <div className={`rounded-xl border p-4 ${layerStyle.cls}`}>
                         <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-black"><span className="inline-flex items-center gap-1.5"><LayerIcon size={15} />{layer.label}</span><span>{data.statusLabels[visibleStatus(active.id, active.status)]}</span></div>
                         <h3 className="mt-2 text-xl font-black text-white">{active.title}</h3>
@@ -173,6 +175,7 @@ export const FullTraceLab: React.FC<FullTraceLabProps> = ({ data, dir, speechLoc
             </section>
 
             <p className="mt-4 text-xs leading-relaxed text-slate-500"><ExternalLink size={12} className="me-1 inline" aria-hidden />{data.disclosure}</p>
+        </div>
         </div>
     );
 };

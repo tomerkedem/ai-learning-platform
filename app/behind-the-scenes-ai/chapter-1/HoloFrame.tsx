@@ -76,17 +76,16 @@ export const HoloFrame: React.FC<HoloFrameProps> = ({ accent, children, classNam
             />
 
             {/* תוכן (מכסה את מרכז ה-conic, משאיר רק רים מואר) */}
-            <div className="relative overflow-hidden rounded-[2rem] bg-slate-950">
+            {/* מכשיר כהה במכוון: ה-conic/spotlight/גרעין נשענים על משטח כהה, ולכן הפנים נעולים ל-Dark בשתי הערכות. */}
+            <div data-theme="dark" className="relative overflow-hidden rounded-[2rem] bg-slate-950 text-[var(--bts-text-primary)]">
                 {children}
 
                 {/* spotlight שעוקב אחרי העכבר */}
-                {!reduce && (
-                    <motion.div
-                        aria-hidden
-                        className="pointer-events-none absolute inset-0 z-30 mix-blend-screen"
-                        style={{ background: spot }}
-                    />
-                )}
+                <motion.div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 z-30 mix-blend-screen motion-reduce:hidden"
+                    style={{ background: spot }}
+                />
 
                 {/* גרעין מרקם */}
                 <div

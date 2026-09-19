@@ -414,6 +414,9 @@
   .text-teal-200\/80 { color: color-mix(in oklab, color-mix(in oklab, var(--color-teal-200) calc(100% - var(--bts-ink-darken)), black) 80%, transparent); }
   /* T3.5: אותו מנגנון לטקסט-מצב שנשאר בפרקי Batch 3 (Dark: ללא שינוי, --bts-ink-darken=0%). */
   .text-violet-200\/90 { color: color-mix(in oklab, color-mix(in oklab, var(--color-violet-200) calc(100% - var(--bts-ink-darken)), black) 90%, transparent); }
+  /* T3.6: אותו מנגנון לטקסט-מצב שנשאר בפרקי Batch 4 (Dark: ללא שינוי, --bts-ink-darken=0%). */
+  .text-orange-200 { color: color-mix(in oklab, var(--color-orange-200) calc(100% - var(--bts-ink-darken)), black); }
+  .text-purple-400 { color: color-mix(in oklab, var(--color-purple-400) calc(100% - var(--bts-ink-darken)), black); }
 }
 
 /* Final Exam gate: טקסט-מצב amber/rose כהה-מדי ב-Light (65% הכהיה כמעט שחור, זהות הגוון אובדת).

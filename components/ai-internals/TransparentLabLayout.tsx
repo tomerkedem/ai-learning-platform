@@ -26,7 +26,6 @@ const STREAM_DUR = 1.8;
 
 /** מחבר ויזואלי יחיד: אנכי במובייל ואופקי, תלוי כיוון, בין שני הפאנלים בדסקטופ. */
 const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[]; isRtl: boolean }> = ({ accent, tokens, isRtl }) => {
-    const reduce = useReducedMotion();
     const a = ACCENTS[accent];
     const hasTokens = tokens.length > 0;
     const slotCount = Math.min(STREAM_SLOTS, tokens.length);
@@ -38,9 +37,9 @@ const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[]; isRtl: boo
             {/* מובייל: ה-DOM והזרימה החזותית ממשיכים מלמעלה למטה. */}
             <div className="absolute inset-0 flex items-center justify-center lg:hidden">
                 <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-[var(--bts-fill-track)]" />
-                {!reduce && hasTokens && (
+                {hasTokens && (
                     <motion.span
-                        className={`absolute left-1/2 h-2.5 w-2.5 -translate-x-1/2 rounded-full ${a.solid}`}
+                        className={`motion-reduce:hidden absolute left-1/2 h-2.5 w-2.5 -translate-x-1/2 rounded-full ${a.solid}`}
                         initial={{ top: '-10%', opacity: 0 }}
                         animate={{ top: ['-10%', '110%'], opacity: [0, 1, 1, 0] }}
                         transition={{ duration: 0.9, ease: 'easeIn' }}
@@ -55,10 +54,10 @@ const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[]; isRtl: boo
             <div className="relative hidden h-full min-h-[220px] w-14 items-center justify-center lg:flex">
                 <span className="absolute top-[calc(50%-2.25rem)] font-mono text-[10px] uppercase tracking-widest text-[var(--bts-text-subtle)]">tokens</span>
                 <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-[var(--bts-fill-track)]" />
-                {hasTokens && !reduce && Array.from({ length: slotCount }).map((_, i) => (
+                {hasTokens && Array.from({ length: slotCount }).map((_, i) => (
                     <motion.span
                         key={`${tokens[i]}-${i}`}
-                        className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-md border px-1.5 py-0.5 text-center font-mono text-[10px] ${a.border} ${a.bgSoft} ${a.text}`}
+                        className={`motion-reduce:hidden absolute top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-md border px-1.5 py-0.5 text-center font-mono text-[10px] ${a.border} ${a.bgSoft} ${a.text}`}
                         initial={{ left: desktopStart, opacity: 0 }}
                         animate={{ left: desktopEnd, opacity: [0, 1, 1, 0] }}
                         transition={{ duration: STREAM_DUR, ease: 'easeInOut', delay: i * 0.42 }}
@@ -66,8 +65,8 @@ const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[]; isRtl: boo
                         {tokens[i]}
                     </motion.span>
                 ))}
-                {hasTokens && reduce && (
-                    <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[10px] ${a.border} ${a.bgSoft} ${a.text}`}>
+                {hasTokens && (
+                    <span className={`hidden motion-reduce:inline rounded-md border px-1.5 py-0.5 font-mono text-[10px] ${a.border} ${a.bgSoft} ${a.text}`}>
                         {tokens[0]}
                     </span>
                 )}
@@ -95,10 +94,10 @@ export const TransparentLabLayout: React.FC<TransparentLabLayoutProps> = ({ chat
         <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-3" dir={dir}>
             <motion.div
                 data-transparent-lab-chat
-                initial={reduce ? false : { opacity: 0, x: chatX }}
+                initial={{ opacity: 0, x: chatX }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: reduce ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
                 {chat}
             </motion.div>
@@ -108,10 +107,10 @@ export const TransparentLabLayout: React.FC<TransparentLabLayoutProps> = ({ chat
 
             <motion.div
                 data-transparent-lab-engine
-                initial={reduce ? false : { opacity: 0, x: -chatX }}
+                initial={{ opacity: 0, x: -chatX }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
                 {engine}
             </motion.div>

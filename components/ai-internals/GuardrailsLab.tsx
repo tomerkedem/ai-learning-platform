@@ -56,22 +56,22 @@ const ACTION_ICON: Record<GuardrailActionType, LucideIcon> = {
 
 /** גוון תג הסיכון, נגזר מ-riskTone. */
 const RISK_TONE: Record<RiskTone, string> = {
-    missing: 'border-amber-400/50 bg-amber-950/25 text-amber-100',
-    low: 'border-emerald-400/50 bg-emerald-950/25 text-emerald-100',
-    medium: 'border-amber-400/50 bg-amber-950/25 text-amber-100',
-    high: 'border-orange-400/50 bg-orange-950/25 text-orange-100',
-    blocked: 'border-rose-400/50 bg-rose-950/25 text-rose-100',
-    limit: 'border-violet-400/50 bg-violet-950/25 text-violet-100',
+    missing: 'border-amber-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] text-amber-100',
+    low: 'border-emerald-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] text-emerald-100',
+    medium: 'border-amber-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] text-amber-100',
+    high: 'border-orange-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-orange-950)] [--t-l:var(--color-orange-500)] text-orange-100',
+    blocked: 'border-rose-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] text-rose-100',
+    limit: 'border-violet-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-violet-950)] [--t-l:var(--color-violet-500)] text-violet-100',
 };
 
 /** גוון ואייקון תג ההחלטה, נגזר מ-outcomeTone. */
 const OUTCOME_TONE: Record<OutcomeTone, { badge: string; Icon: LucideIcon }> = {
-    ask: { badge: 'border-amber-400/50 bg-amber-950/25 text-amber-100', Icon: HelpCircle },
-    allow: { badge: 'border-emerald-400/50 bg-emerald-950/25 text-emerald-100', Icon: CheckCircle2 },
-    draft: { badge: 'border-sky-400/50 bg-sky-950/25 text-sky-100', Icon: PenLine },
-    approval: { badge: 'border-orange-400/50 bg-orange-950/25 text-orange-100', Icon: ShieldAlert },
-    stop: { badge: 'border-rose-400/50 bg-rose-950/25 text-rose-100', Icon: Ban },
-    limit: { badge: 'border-violet-400/50 bg-violet-950/25 text-violet-100', Icon: Ban },
+    ask: { badge: 'border-amber-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] text-amber-100', Icon: HelpCircle },
+    allow: { badge: 'border-emerald-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] text-emerald-100', Icon: CheckCircle2 },
+    draft: { badge: 'border-sky-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-sky-950)] [--t-l:var(--color-sky-500)] text-sky-100', Icon: PenLine },
+    approval: { badge: 'border-orange-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-orange-950)] [--t-l:var(--color-orange-500)] text-orange-100', Icon: ShieldAlert },
+    stop: { badge: 'border-rose-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] text-rose-100', Icon: Ban },
+    limit: { badge: 'border-violet-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-violet-950)] [--t-l:var(--color-violet-500)] text-violet-100', Icon: Ban },
 };
 
 /** אייקון וגוון לכל מצב בדיקה, נגזר מ-state. */
@@ -106,27 +106,27 @@ export const GuardrailsLab: React.FC<GuardrailsLabProps> = ({ data, dir, speechL
     );
 
     return (
-        <div className="rounded-2xl border border-indigo-500/25 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-2xl border border-indigo-500/25 bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             {/* כותרת הרכיב */}
             <div className="mb-4 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <ShieldAlert size={18} className="text-indigo-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-100">{data.heading}</div>
-                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">{data.kicker}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-bright)]">{data.heading}</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]" dir="ltr">{data.kicker}</div>
                     </div>
                 </div>
                 <SpeakButton text={stateSpeech} speechLocale={speechLocale} />
             </div>
 
             {/* ── כרטיס המשימה הקבוע ── */}
-            <div className="mb-4 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3.5">
-                <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">{data.taskLabel}</div>
-                <p className="text-[15px] font-bold leading-relaxed text-slate-100">{data.task}</p>
+            <div className="mb-4 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3.5">
+                <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">{data.taskLabel}</div>
+                <p className="text-[15px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{data.task}</p>
             </div>
 
             {/* ── בורר הפעולות ── */}
-            <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-slate-400">{data.actionSelectLabel}</div>
+            <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">{data.actionSelectLabel}</div>
             <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6" role="group" aria-label={data.sr.actionGroup}>
                 {data.actions.map((a) => {
                     const activeBtn = a.id === actionId;
@@ -138,8 +138,8 @@ export const GuardrailsLab: React.FC<GuardrailsLabProps> = ({ data, dir, speechL
                             onClick={() => setActionId(a.id)}
                             aria-pressed={activeBtn}
                             className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-2.5 text-start text-[13px] font-bold leading-tight break-words transition-colors ${activeBtn
-                                ? 'border-indigo-400/60 bg-indigo-900/25 text-indigo-100'
-                                : 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600'
+                                ? 'border-indigo-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-indigo-900)] [--t-l:var(--color-indigo-500)] text-indigo-100'
+                                : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                 }`}
                         >
                             <Icon size={15} className="shrink-0" aria-hidden />
@@ -152,7 +152,7 @@ export const GuardrailsLab: React.FC<GuardrailsLabProps> = ({ data, dir, speechL
             {/* ── הפעולה הפעילה ── */}
             <motion.div
                 key={active.id}
-                initial={reduce ? false : { opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { duration: DUR.quick }}
                 className="space-y-3"
@@ -160,11 +160,11 @@ export const GuardrailsLab: React.FC<GuardrailsLabProps> = ({ data, dir, speechL
                 aria-label={data.sr.actionDetail}
             >
                 {/* פעולה מבוקשת */}
-                <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                    <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3">
+                    <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">
                         <ActionIcon size={13} className="text-indigo-300" aria-hidden /> {data.requestLabel}
                     </div>
-                    <p className="text-[15px] font-bold leading-snug text-slate-100">{active.request}</p>
+                    <p className="text-[15px] font-bold leading-snug text-[var(--bts-text-bright)]">{active.request}</p>
                 </div>
 
                 {/* שני התגים: רמת סיכון + החלטת המערכת */}
@@ -184,9 +184,9 @@ export const GuardrailsLab: React.FC<GuardrailsLabProps> = ({ data, dir, speechL
                 </div>
 
                 {/* פאנל בדיקת בקרה */}
-                <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                    <div className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                        <ListChecks size={13} className="text-slate-300" aria-hidden /> {data.checksLabel}
+                <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3">
+                    <div className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">
+                        <ListChecks size={13} className="text-[var(--bts-text-secondary)]" aria-hidden /> {data.checksLabel}
                     </div>
                     <ul className="space-y-2">
                         {active.checks.map((c) => {
@@ -195,8 +195,8 @@ export const GuardrailsLab: React.FC<GuardrailsLabProps> = ({ data, dir, speechL
                             return (
                                 <li key={c.label} className="flex items-start gap-2">
                                     <CheckIcon size={16} className={`mt-0.5 shrink-0 ${cs.color}`} aria-hidden />
-                                    <span className="text-[13px] leading-relaxed text-slate-200">
-                                        <span className="font-bold text-slate-100">{c.label}: </span>
+                                    <span className="text-[13px] leading-relaxed text-[var(--bts-text-body)]">
+                                        <span className="font-bold text-[var(--bts-text-bright)]">{c.label}: </span>
                                         {c.note}
                                     </span>
                                 </li>
@@ -207,14 +207,14 @@ export const GuardrailsLab: React.FC<GuardrailsLabProps> = ({ data, dir, speechL
 
                 {/* תוצאה או טיוטה, רק כשהפעולה כוללת פלט */}
                 {active.result && (
-                    <div className="rounded-xl border border-indigo-500/30 bg-indigo-950/15 p-3">
+                    <div className="rounded-xl border border-indigo-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-indigo-950)] [--t-l:var(--color-indigo-500)] p-3">
                         <div className="mb-1.5 flex items-center justify-between gap-2">
                             <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-200">{active.result.label}</span>
                             <SpeakButton text={`${active.result.label}. ${active.result.rows.join(', ')}`} speechLocale={speechLocale} />
                         </div>
                         <ul className="space-y-1">
                             {active.result.rows.map((row) => (
-                                <li key={row} className="flex items-start gap-2 text-[13px] leading-relaxed text-slate-200">
+                                <li key={row} className="flex items-start gap-2 text-[13px] leading-relaxed text-[var(--bts-text-body)]">
                                     <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400" aria-hidden />
                                     <span>{row}</span>
                                 </li>
@@ -225,47 +225,47 @@ export const GuardrailsLab: React.FC<GuardrailsLabProps> = ({ data, dir, speechL
 
                 {/* מותר / אסור */}
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/10 p-3">
+                    <div className="rounded-xl border border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(10%_-_var(--bts-tint-mix)_*_0.05),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] p-3">
                         <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-200">
                             <Check size={13} aria-hidden /> {data.mayLabel}
                         </div>
-                        <p className="text-[13px] leading-relaxed text-slate-200">{active.mayDo}</p>
+                        <p className="text-[13px] leading-relaxed text-[var(--bts-text-body)]">{active.mayDo}</p>
                     </div>
-                    <div className="rounded-xl border border-rose-500/30 bg-rose-950/10 p-3">
+                    <div className="rounded-xl border border-rose-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(10%_-_var(--bts-tint-mix)_*_0.05),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] p-3">
                         <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-rose-200">
                             <XCircle size={13} aria-hidden /> {data.mustNotLabel}
                         </div>
-                        <p className="text-[13px] leading-relaxed text-slate-200">{active.mustNot}</p>
+                        <p className="text-[13px] leading-relaxed text-[var(--bts-text-body)]">{active.mustNot}</p>
                     </div>
                 </div>
 
                 {/* הערת בקרה */}
-                <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                    <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                        <ScrollText size={13} className="text-slate-300" aria-hidden /> {data.auditLabel}
+                <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3">
+                    <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">
+                        <ScrollText size={13} className="text-[var(--bts-text-secondary)]" aria-hidden /> {data.auditLabel}
                     </div>
-                    <p className="text-[13px] leading-relaxed text-slate-300">{active.auditNote}</p>
+                    <p className="text-[13px] leading-relaxed text-[var(--bts-text-secondary)]">{active.auditNote}</p>
                 </div>
 
                 {/* Verification is separate from authorization and from the decision to run. */}
-                <div className="rounded-xl border border-cyan-500/30 bg-cyan-950/10 p-3">
+                <div className="rounded-xl border border-cyan-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(10%_-_var(--bts-tint-mix)_*_0.05),transparent)] [--t-d:var(--color-cyan-950)] [--t-l:var(--color-cyan-500)] p-3">
                     <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-cyan-200">
                         <ShieldCheck size={13} aria-hidden /> {data.verifyLabel}
                     </div>
-                    <p className="text-[13px] leading-relaxed text-slate-200">{active.verification}</p>
+                    <p className="text-[13px] leading-relaxed text-[var(--bts-text-body)]">{active.verification}</p>
                 </div>
 
                 {/* השורה התחתונה */}
-                <div className="rounded-xl border border-indigo-500/30 bg-slate-950/40 p-3.5">
+                <div className="rounded-xl border border-indigo-500/30 bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3.5">
                     <div className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-indigo-200">
                         <Lightbulb size={13} className="text-indigo-300" aria-hidden /> {data.takeawayLabel}
                     </div>
-                    <p className="text-[13px] font-bold leading-relaxed text-slate-100">{active.takeaway}</p>
+                    <p className="text-[13px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{active.takeaway}</p>
                 </div>
             </motion.div>
 
             {/* הבהרה: כל הדוגמאות לימודיות בלבד */}
-            <p className="mt-4 text-[13px] leading-relaxed text-slate-500">{data.disclaimer}</p>
+            <p className="mt-4 text-[13px] leading-relaxed text-[var(--bts-text-faint)]">{data.disclaimer}</p>
         </div>
     );
 };

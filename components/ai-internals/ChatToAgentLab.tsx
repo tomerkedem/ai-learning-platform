@@ -40,18 +40,18 @@ interface ChatToAgentLabProps {
 
 /** אייקון וגוון לכל סוג מצב. מבני, נגזר מ-modeType. */
 const MODE_TONE: Record<AgentModeType, { Icon: LucideIcon; badge: string; step: string; dot: string }> = {
-    chat: { Icon: MessageSquare, badge: 'border-sky-400/50 bg-sky-950/25 text-sky-100', step: 'border-sky-500/30 bg-sky-950/15 text-sky-100', dot: 'bg-sky-400' },
-    askInfo: { Icon: HelpCircle, badge: 'border-amber-400/50 bg-amber-950/25 text-amber-100', step: 'border-amber-500/30 bg-amber-950/15 text-amber-100', dot: 'bg-amber-400' },
-    toolLookup: { Icon: Wrench, badge: 'border-teal-400/50 bg-teal-950/25 text-teal-100', step: 'border-teal-500/30 bg-teal-950/15 text-teal-100', dot: 'bg-teal-400' },
-    approval: { Icon: ShieldCheck, badge: 'border-rose-400/50 bg-rose-950/25 text-rose-100', step: 'border-rose-500/30 bg-rose-950/15 text-rose-100', dot: 'bg-rose-400' },
-    toolError: { Icon: AlertTriangle, badge: 'border-orange-400/50 bg-orange-950/25 text-orange-100', step: 'border-orange-500/30 bg-orange-950/15 text-orange-100', dot: 'bg-orange-400' },
+    chat: { Icon: MessageSquare, badge: 'border-sky-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-sky-950)] [--t-l:var(--color-sky-500)] text-sky-100', step: 'border-sky-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-sky-950)] [--t-l:var(--color-sky-500)] text-sky-100', dot: 'bg-sky-400' },
+    askInfo: { Icon: HelpCircle, badge: 'border-amber-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] text-amber-100', step: 'border-amber-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] text-amber-100', dot: 'bg-amber-400' },
+    toolLookup: { Icon: Wrench, badge: 'border-teal-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-teal-950)] [--t-l:var(--color-teal-500)] text-teal-100', step: 'border-teal-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-teal-950)] [--t-l:var(--color-teal-500)] text-teal-100', dot: 'bg-teal-400' },
+    approval: { Icon: ShieldCheck, badge: 'border-rose-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] text-rose-100', step: 'border-rose-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] text-rose-100', dot: 'bg-rose-400' },
+    toolError: { Icon: AlertTriangle, badge: 'border-orange-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-orange-950)] [--t-l:var(--color-orange-500)] text-orange-100', step: 'border-orange-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-orange-950)] [--t-l:var(--color-orange-500)] text-orange-100', dot: 'bg-orange-400' },
 };
 
 /** אייקון וגוון לכל סטטוס אימות. מבני, נגזר מ-VerificationStatus. */
 const VERIFY_TONE: Record<VerificationStatus, { Icon: LucideIcon; cls: string }> = {
-    passed: { Icon: CheckCircle2, cls: 'border-emerald-500/30 bg-emerald-950/15 text-emerald-100' },
-    pending: { Icon: Clock, cls: 'border-amber-500/30 bg-amber-950/15 text-amber-100' },
-    failed: { Icon: AlertTriangle, cls: 'border-rose-500/30 bg-rose-950/15 text-rose-100' },
+    passed: { Icon: CheckCircle2, cls: 'border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] text-emerald-100' },
+    pending: { Icon: Clock, cls: 'border-amber-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] text-amber-100' },
+    failed: { Icon: AlertTriangle, cls: 'border-rose-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] text-rose-100' },
 };
 
 export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speechLocale }) => {
@@ -81,27 +81,27 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
     );
 
     return (
-        <div className="rounded-2xl border border-teal-500/25 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-2xl border border-teal-500/25 bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             {/* כותרת הרכיב */}
             <div className="mb-4 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <ListChecks size={18} className="text-teal-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-100">{data.heading}</div>
-                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">{data.kicker}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-bright)]">{data.heading}</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]" dir="ltr">{data.kicker}</div>
                     </div>
                 </div>
                 <SpeakButton text={stateSpeech} speechLocale={speechLocale} />
             </div>
 
             {/* ── כרטיס הבקשה הקבוע ── */}
-            <div className="mb-4 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3.5">
-                <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">{data.requestLabel}</div>
-                <p className="text-[15px] font-bold leading-relaxed text-slate-100">{data.request}</p>
+            <div className="mb-4 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3.5">
+                <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">{data.requestLabel}</div>
+                <p className="text-[15px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{data.request}</p>
             </div>
 
             {/* ── בורר המצבים ── */}
-            <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-slate-400">{data.modeSelectLabel}</div>
+            <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">{data.modeSelectLabel}</div>
             <div className="mb-4 grid grid-cols-2 gap-2 lg:grid-cols-5" role="group" aria-label={data.sr.modeGroup}>
                 {data.modes.map((m) => {
                     const activeBtn = m.id === modeId;
@@ -113,8 +113,8 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
                             onClick={() => setModeId(m.id)}
                             aria-pressed={activeBtn}
                             className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-2.5 text-start text-[13px] font-bold leading-tight break-words transition-colors ${activeBtn
-                                ? 'border-teal-400/60 bg-teal-900/25 text-teal-100'
-                                : 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600'
+                                ? 'border-teal-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-teal-900)] [--t-l:var(--color-teal-500)] text-teal-100'
+                                : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                 }`}
                         >
                             <Icon size={15} className="shrink-0" aria-hidden />
@@ -127,7 +127,7 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
             {/* ── המצב הפעיל ── */}
             <motion.div
                 key={active.id}
-                initial={reduce ? false : { opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { duration: DUR.quick }}
                 className="space-y-3"
@@ -141,14 +141,14 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
                         <span className="text-[11px] font-bold uppercase tracking-wider opacity-90" dir={dir}>{data.permissionLabel}</span>
                         <span className="text-sm font-black">{active.badgeLabel}</span>
                     </span>
-                    <div className="mt-1.5 text-[15px] font-bold leading-snug text-slate-100">{active.title}</div>
-                    <p className="mt-1 text-[13px] leading-relaxed text-slate-300">{active.summary}</p>
+                    <div className="mt-1.5 text-[15px] font-bold leading-snug text-[var(--bts-text-bright)]">{active.title}</div>
+                    <p className="mt-1 text-[13px] leading-relaxed text-[var(--bts-text-secondary)]">{active.summary}</p>
                 </div>
 
                 {/* מסלול הצעדים */}
-                <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                    <div className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                        <ListChecks size={13} className="text-slate-300" aria-hidden /> {data.stepsLabel}
+                <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3">
+                    <div className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">
+                        <ListChecks size={13} className="text-[var(--bts-text-secondary)]" aria-hidden /> {data.stepsLabel}
                     </div>
                     <ol className="flex flex-wrap items-center gap-2">
                         {active.steps.map((step, i) => (
@@ -158,7 +158,7 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
                                     {step}
                                 </li>
                                 {i < active.steps.length - 1 && (
-                                    <StepArrow size={13} className="shrink-0 text-slate-500" aria-hidden />
+                                    <StepArrow size={13} className="shrink-0 text-[var(--bts-text-faint)]" aria-hidden />
                                 )}
                             </React.Fragment>
                         ))}
@@ -167,19 +167,19 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
 
                 {/* כרטיס כלי ותוצאה, רק כשהמצב כולל שימוש בכלי */}
                 {active.tool && (
-                    <div className="rounded-xl border border-teal-500/30 bg-teal-950/15 p-3">
+                    <div className="rounded-xl border border-teal-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-teal-950)] [--t-l:var(--color-teal-500)] p-3">
                         <div className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-teal-200">
                             <Wrench size={13} className="text-teal-300" aria-hidden /> {active.tool.name}
                         </div>
-                        <p className="text-[13px] leading-relaxed text-slate-300">
-                            <span className="font-bold text-slate-200">{active.tool.inputLabel}: </span>
+                        <p className="text-[13px] leading-relaxed text-[var(--bts-text-secondary)]">
+                            <span className="font-bold text-[var(--bts-text-body)]">{active.tool.inputLabel}: </span>
                             <span dir="ltr" className="font-mono">{active.tool.input}</span>
                         </p>
-                        <div className="mt-2 rounded-lg border border-slate-700/50 bg-slate-950/50 p-2.5">
-                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">{active.tool.resultLabel}</div>
+                        <div className="mt-2 rounded-lg border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_50%,transparent)] p-2.5">
+                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">{active.tool.resultLabel}</div>
                             <ul className="space-y-1">
                                 {active.tool.result.map((row) => (
-                                    <li key={row} className="flex items-start gap-2 text-[13px] leading-relaxed text-slate-200">
+                                    <li key={row} className="flex items-start gap-2 text-[13px] leading-relaxed text-[var(--bts-text-body)]">
                                         <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" aria-hidden />
                                         <span>{row}</span>
                                     </li>
@@ -191,20 +191,20 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
 
                 {/* ניסיון חוזר וגבול, רק כשהכלי נכשל. מבחין בין תקלת כלי, החלטת התכנון והגבול. */}
                 {active.retry && (
-                    <div className="rounded-xl border border-orange-500/30 bg-orange-950/15 p-3">
+                    <div className="rounded-xl border border-orange-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-orange-950)] [--t-l:var(--color-orange-500)] p-3">
                         <div className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-orange-200">
                             <RotateCw size={13} className="text-orange-300" aria-hidden /> {active.retry.attemptsLabel}
                         </div>
                         <ul className="space-y-1">
                             {active.retry.attempts.map((row) => (
-                                <li key={row} className="flex items-start gap-2 text-[13px] leading-relaxed text-slate-200">
+                                <li key={row} className="flex items-start gap-2 text-[13px] leading-relaxed text-[var(--bts-text-body)]">
                                     <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-400" aria-hidden />
                                     <span>{row}</span>
                                 </li>
                             ))}
                         </ul>
                         <p className="mt-2 text-[13px] font-bold leading-relaxed text-orange-100">{active.retry.limitNote}</p>
-                        <p className="mt-1 text-[13px] leading-relaxed text-slate-300">{active.retry.stopReason}</p>
+                        <p className="mt-1 text-[13px] leading-relaxed text-[var(--bts-text-secondary)]">{active.retry.stopReason}</p>
                     </div>
                 )}
 
@@ -216,9 +216,9 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
                         </span>
                         <SpeakButton text={`${active.outputLabel}. ${active.output}`} speechLocale={speechLocale} />
                     </div>
-                    <p className="text-[14px] font-bold leading-relaxed text-slate-100">{active.output}</p>
+                    <p className="text-[14px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{active.output}</p>
                     {active.note && (
-                        <p className="mt-2 border-t border-white/10 pt-2 text-[13px] leading-relaxed text-slate-300">{active.note}</p>
+                        <p className="mt-2 border-t border-[var(--bts-divider-soft)] pt-2 text-[13px] leading-relaxed text-[var(--bts-text-secondary)]">{active.note}</p>
                     )}
                 </div>
 
@@ -233,22 +233,22 @@ export const ChatToAgentLab: React.FC<ChatToAgentLabProps> = ({ data, dir, speec
                                 <span dir={dir}>{data.verificationLabel}</span>
                                 <span className="font-black">{data.verificationStatusLabels[verify.status]}</span>
                             </div>
-                            <p className="mt-1.5 text-[13px] leading-relaxed text-slate-200">{verify.text}</p>
+                            <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--bts-text-body)]">{verify.text}</p>
                         </div>
                     );
                 })()}
 
                 {/* השורה התחתונה */}
-                <div className="rounded-xl border border-teal-500/30 bg-slate-950/40 p-3.5">
+                <div className="rounded-xl border border-teal-500/30 bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3.5">
                     <div className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-teal-200">
                         <Lightbulb size={13} className="text-teal-300" aria-hidden /> {data.takeawayLabel}
                     </div>
-                    <p className="text-[13px] font-bold leading-relaxed text-slate-100">{active.takeaway}</p>
+                    <p className="text-[13px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{active.takeaway}</p>
                 </div>
             </motion.div>
 
             {/* הבהרה: כל הדוגמאות לימודיות בלבד */}
-            <p className="mt-4 text-[13px] leading-relaxed text-slate-500">{data.disclaimer}</p>
+            <p className="mt-4 text-[13px] leading-relaxed text-[var(--bts-text-faint)]">{data.disclaimer}</p>
         </div>
     );
 };

@@ -184,7 +184,7 @@ export const OpeningGuess: React.FC<{
                                     </span>
                                     {state === 'correct' && (
                                         <motion.span
-                                            initial={reduce ? false : { scale: 0 }}
+                                            initial={{ scale: 0 }}
                                             animate={{ scale: 1 }}
                                             transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 15 }}
                                             className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-400 text-slate-950"

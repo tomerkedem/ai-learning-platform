@@ -53,8 +53,8 @@ const TypingDots: React.FC<{ accent: Accent }> = ({ accent }) => {
                 <motion.span
                     key={i}
                     className={`h-1.5 w-1.5 rounded-full ${a.dot}`}
-                    animate={reduce ? undefined : { y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
-                    transition={reduce ? undefined : { duration: 0.9, repeat: Infinity, delay: i * 0.15, ease: 'easeInOut' }}
+                    animate={{ y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
+                    transition={reduce ? { duration: 0 } : { duration: 0.9, repeat: Infinity, delay: i * 0.15, ease: 'easeInOut' }}
                 />
             ))}
         </div>
@@ -161,7 +161,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                 <div className="flex items-center justify-between gap-2.5">
                     <div className="flex items-center gap-2.5">
                         <span className="relative flex h-2.5 w-2.5">
-                            {!reduce && <span className={`absolute inline-flex h-full w-full rounded-full ${a.dot} opacity-60 animate-ping`} />}
+                            <span className={`absolute inline-flex h-full w-full rounded-full ${a.dot} opacity-60 animate-ping motion-reduce:hidden`} />
                             <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${a.dot}`} />
                         </span>
                         <div>
@@ -174,7 +174,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                         className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-widest border ${live ? `${a.border} ${a.bgSoft} ${a.text}` : 'border-white/10 bg-slate-800/60 text-slate-400'}`}
                     >
                         <span className="relative flex h-1.5 w-1.5">
-                            {!reduce && live && <span className={`absolute inline-flex h-full w-full rounded-full ${a.dot} opacity-75 animate-ping`} />}
+                            {live && <span className={`absolute inline-flex h-full w-full rounded-full ${a.dot} opacity-75 animate-ping motion-reduce:hidden`} />}
                             <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${live ? a.dot : 'bg-slate-500'}`} />
                         </span>
                         {live ? 'Live' : ci.demoBadge}
@@ -195,10 +195,10 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                         <motion.div
                             key={m.id}
                             layout
-                            initial={reduce ? false : { opacity: 0, y: 12, scale: 0.96 }}
+                            initial={{ opacity: 0, y: 12, scale: 0.96 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={reduce ? undefined : { opacity: 0, scale: 0.96 }}
-                            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                            transition={{ duration: reduce ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
                             className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-lg
                                 ${m.role === 'user'
                                     ? `self-start ${isRtl ? 'rounded-br-md' : 'rounded-bl-md'} ${a.solid} ${a.solidText} ${a.glow}`
@@ -226,10 +226,10 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                         <motion.div
                             key="typing"
                             layout
-                            initial={reduce ? false : { opacity: 0, y: 12, scale: 0.96 }}
+                            initial={{ opacity: 0, y: 12, scale: 0.96 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.96 }}
-                            transition={{ duration: 0.3 }}
+                            transition={{ duration: reduce ? 0 : 0.3 }}
                             className="self-end rounded-2xl px-4 py-3 bg-slate-800 border border-white/10"
                         >
                             <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-1.5">
@@ -288,8 +288,8 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                         type="button"
                         onClick={onSend}
                         aria-label={sendLabel ?? 'Send'}
-                        whileHover={reduce ? undefined : { scale: 1.06 }}
-                        whileTap={reduce ? undefined : { scale: 0.92 }}
+                        whileHover={{ scale: reduce ? 1 : 1.06 }}
+                        whileTap={{ scale: reduce ? 1 : 0.92 }}
                         className={`shrink-0 p-2.5 rounded-xl ${a.solid} ${a.solidText} ${a.glow}`}
                     >
                         <Send size={18} />

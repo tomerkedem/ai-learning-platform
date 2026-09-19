@@ -221,15 +221,15 @@ export default function BehindTheScenesChapter1() {
     };
 
     return (
-        <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={1}>
+        <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={1} themeAware>
 
             {/* ══════════ HERO ══════════ */}
             <motion.section
                 data-chapter1-hero
-                initial={reduce ? false : { opacity: 0, y: 18 }}
+                initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="relative overflow-hidden rounded-[2.5rem] border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 text-start"
+                transition={reduce ? { duration: 0 } : { duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="relative overflow-hidden rounded-[2.5rem] border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_60%,transparent)] backdrop-blur-xl p-8 md:p-10 text-start"
                 dir={dir}
             >
                 <div className={`absolute -top-16 ${isRtl ? '-right-16' : '-left-16'} w-56 h-56 bg-cyan-500/10 blur-[80px] rounded-full pointer-events-none`} />
@@ -237,28 +237,28 @@ export default function BehindTheScenesChapter1() {
 
                 {/* ב-lg+ דוק ההאזנה מעוגן בפינה מעל הכותרת; הכותרת וה-lede מתפזרים לרוחב מלא מתחתיו */}
                 <div className="relative z-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/70 border border-cyan-500/30 mb-5">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(70%_+_var(--bts-tint-mix)_*_0.3),transparent)] border border-cyan-500/30 mb-5">
                         <Terminal size={14} className="text-cyan-400" />
                         <span className="font-mono text-xs tracking-widest uppercase text-cyan-300">{c1.hero.badge}</span>
                     </div>
 
-                    <h1 className="text-4xl md:text-5xl font-black text-white leading-[1.1] mb-4">
+                    <h1 className="text-4xl md:text-5xl font-black text-[var(--bts-text-primary)] leading-[1.1] mb-4">
                         {c1.hero.titleLead}{' '}
-                        <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent`}>
+                        <span className={`${isRtl ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[color-mix(in_oklab,var(--color-cyan-400)_calc(100%_-_var(--bts-tint-mix)_*_0.4),black)] via-[color-mix(in_oklab,var(--color-blue-400)_calc(100%_-_var(--bts-tint-mix)_*_0.4),black)] to-[color-mix(in_oklab,var(--color-purple-400)_calc(100%_-_var(--bts-tint-mix)_*_0.4),black)] bg-clip-text text-transparent`}>
                             {c1.hero.titleHighlight}
                         </span>
                         ?
                     </h1>
 
                     <div className="flex items-start gap-2.5">
-                        <p className="text-lg text-slate-300 leading-relaxed">
+                        <p className="text-lg text-[var(--bts-text-secondary)] leading-relaxed">
                             {c1.hero.ledeLead}
-                            <span className="text-white font-semibold">{c1.hero.ledeHighlight}</span>{c1.hero.ledeRest}
+                            <span className="text-[var(--bts-text-primary)] font-semibold">{c1.hero.ledeHighlight}</span>{c1.hero.ledeRest}
                         </p>
                         <SpeakButton text={`${c1.hero.titleLead} ${c1.hero.titleHighlight}. ${c1Lede}`} className="mt-1" />
                     </div>
 
-                    <div className="flex flex-wrap gap-3 mt-5 text-xs text-slate-400">
+                    <div className="flex flex-wrap gap-3 mt-5 text-xs text-[var(--bts-text-muted)]">
                         <span className="inline-flex items-center gap-1.5">
                             <Terminal size={14} className="text-cyan-400" /> {c1.hero.chips[0]}
                         </span>
@@ -305,10 +305,10 @@ export default function BehindTheScenesChapter1() {
                 <div className="min-w-0 max-w-3xl">
                     <div className="flex items-start gap-2.5">
                         <div>
-                            <h2 className="text-[22px] font-black leading-tight text-white md:text-[28px]">
+                            <h2 className="text-[22px] font-black leading-tight text-[var(--bts-text-primary)] md:text-[28px]">
                                 {c1.mentorGuide.title}
                             </h2>
-                            <p className="mt-2 text-base leading-[1.7] text-slate-200 md:text-[18px]">
+                            <p className="mt-2 text-base leading-[1.7] text-[var(--bts-text-body)] md:text-[18px]">
                                 {c1.mentorGuide.body}
                             </p>
                         </div>
@@ -322,13 +322,13 @@ export default function BehindTheScenesChapter1() {
                 <div className="flex items-center gap-3">
                     <ScanSearch size={24} className="text-cyan-400" />
                     <div>
-                        <h2 className="text-2xl font-bold text-white">{c1.lab.title}</h2>
+                        <h2 className="text-2xl font-bold text-[var(--bts-text-primary)]">{c1.lab.title}</h2>
                         <div className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">{c1.lab.eyebrow}</div>
                     </div>
                 </div>
 
                 <div className="flex items-start gap-2.5">
-                    <p className="flex items-start gap-2.5 text-base leading-relaxed text-slate-200">
+                    <p className="flex items-start gap-2.5 text-base leading-relaxed text-[var(--bts-text-body)]">
                         <Eye size={18} className="mt-0.5 shrink-0 text-cyan-400" />
                         {c1.lab.intro}
                     </p>
@@ -336,10 +336,10 @@ export default function BehindTheScenesChapter1() {
                 </div>
 
                 <div className="grid gap-3 md:grid-cols-2">
-                    <p className="rounded-2xl border border-cyan-400/20 bg-cyan-950/15 px-4 py-3 text-base leading-[1.65] text-slate-100">
+                    <p className="rounded-2xl border border-cyan-400/20 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-cyan-950)] [--t-l:var(--color-cyan-500)] px-4 py-3 text-base leading-[1.65] text-[var(--bts-text-bright)]">
                         {c1.lab.observationInstruction}
                     </p>
-                    <p className="rounded-2xl border border-amber-400/20 bg-amber-950/10 px-4 py-3 text-base leading-[1.65] text-slate-200">
+                    <p className="rounded-2xl border border-amber-400/20 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(10%_-_var(--bts-tint-mix)_*_0.05),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] px-4 py-3 text-base leading-[1.65] text-[var(--bts-text-body)]">
                         {c1.lab.simulationDisclosure}
                     </p>
                 </div>
@@ -347,16 +347,16 @@ export default function BehindTheScenesChapter1() {
                 {/* גשר-זיהוי אל מפת המבוא: רצועת 14 התחנות בדיוק בצבעי המפה, כדי שהלומד
                     יזהה "אלה התחנות שראיתי, עכשיו חיות". הרצועה נושאת משמעות (המשפט), לא
                     דקורציה בלבד. aria-hidden על הנקודות; המשמעות בטקסט. */}
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] px-4 py-3">
                     <span className="flex items-center gap-1" dir="ltr" aria-hidden>
                         {Object.values(STATION_PALETTE).map((s, i) => (
                             <React.Fragment key={i}>
-                                {i > 0 && <span className="h-px w-1.5 bg-white/15" />}
+                                {i > 0 && <span className="h-px w-1.5 bg-[color-mix(in_oklab,var(--bts-fill-strong)_75%,transparent)]" />}
                                 <span className={`h-2 w-2 rounded-full ${s.solid}`} />
                             </React.Fragment>
                         ))}
                     </span>
-                    <span className="text-sm font-bold text-slate-200 md:text-base">{c1.lab.mapBridge}</span>
+                    <span className="text-sm font-bold text-[var(--bts-text-body)] md:text-base">{c1.lab.mapBridge}</span>
                 </div>
 
                 <div className="relative">
@@ -426,7 +426,7 @@ export default function BehindTheScenesChapter1() {
             </section>
 
             {/* ══════════ התובנה המרכזית של הפרק ══════════ */}
-            <section data-chapter1-takeaway className="mt-10 rounded-2xl border border-indigo-400/25 bg-indigo-950/15 px-5 py-5 text-start md:px-7 md:py-6" dir={dir}>
+            <section data-chapter1-takeaway className="mt-10 rounded-2xl border border-indigo-400/25 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-indigo-950)] [--t-l:var(--color-indigo-500)] px-5 py-5 text-start md:px-7 md:py-6" dir={dir}>
                 <div className="flex items-start gap-3">
                     <Lightbulb className="mt-1 shrink-0 text-indigo-300" size={22} aria-hidden />
                     <div className="min-w-0 max-w-4xl flex-1">
@@ -435,7 +435,7 @@ export default function BehindTheScenesChapter1() {
                                 <h2 className="text-[22px] font-black leading-tight text-indigo-200 md:text-[26px]">
                                     {c1.insightIdea.title}
                                 </h2>
-                                <p className="mt-2 text-base leading-[1.7] text-slate-100 md:text-[18px]">
+                                <p className="mt-2 text-base leading-[1.7] text-[var(--bts-text-bright)] md:text-[18px]">
                                     {c1.insightIdea.body}
                                 </p>
                             </div>
@@ -445,9 +445,9 @@ export default function BehindTheScenesChapter1() {
                 </div>
             </section>
 
-            <section data-chapter1-summary className="mt-8 rounded-3xl border border-emerald-400/25 bg-emerald-950/15 p-6 text-start md:p-8" dir={dir}>
-                <h2 className="text-[22px] font-black leading-tight text-white md:text-[26px]">{c.summary.title}</h2>
-                <ol className="mt-5 max-w-4xl space-y-3 text-base leading-[1.7] text-slate-100 md:text-[17px]">
+            <section data-chapter1-summary className="mt-8 rounded-3xl border border-emerald-400/25 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] p-6 text-start md:p-8" dir={dir}>
+                <h2 className="text-[22px] font-black leading-tight text-[var(--bts-text-primary)] md:text-[26px]">{c.summary.title}</h2>
+                <ol className="mt-5 max-w-4xl space-y-3 text-base leading-[1.7] text-[var(--bts-text-bright)] md:text-[17px]">
                     {c.summary.points.map((point, index) => (
                         <li key={point} className="flex gap-3"><CheckCircle2 className="mt-1 shrink-0 text-emerald-300" size={19} aria-hidden /><span><span className="sr-only">{index + 1}. </span>{point}</span></li>
                     ))}
