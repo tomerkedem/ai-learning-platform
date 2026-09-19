@@ -154,3 +154,7 @@ Never report a check as passed unless it was actually run and passed. Report fai
 Do not preserve raw investigation history between sessions. When a task must continue in a new session, preserve only: goal, confirmed findings, decisions already made, files changed, validation completed, known blockers or unresolved questions, and the exact next step.
 
 Do not carry forward raw tool output, abandoned hypotheses, repeated file contents, or exploratory search history. Stable project knowledge belongs in CLAUDE.md, a relevant Skill, or project documentation rather than a task handoff.
+
+## Local dev server
+
+Agents must use `npm run dev:safe` (never `npm run dev` or `next dev`) for local Next.js development servers, and must terminate servers they start after validation.
