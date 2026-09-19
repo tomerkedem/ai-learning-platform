@@ -406,6 +406,12 @@
   .text-rose-400\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-rose-400) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
   .text-cyan-300\/70 { color: color-mix(in oklab, color-mix(in oklab, var(--color-cyan-300) calc(100% - var(--bts-ink-darken)), black) 70%, transparent); }
   .text-amber-200\/90 { color: color-mix(in oklab, color-mix(in oklab, var(--color-amber-200) calc(100% - var(--bts-ink-darken)), black) 90%, transparent); }
+  /* T3.4: אותו מנגנון לטקסט-מצב שנשאר בפרקי Batch 2 (Dark: ללא שינוי, --bts-ink-darken=0%). */
+  .text-purple-100 { color: color-mix(in oklab, var(--color-purple-100) calc(100% - var(--bts-ink-darken)), black); }
+  .text-purple-200 { color: color-mix(in oklab, var(--color-purple-200) calc(100% - var(--bts-ink-darken)), black); }
+  .text-emerald-200\/80 { color: color-mix(in oklab, color-mix(in oklab, var(--color-emerald-200) calc(100% - var(--bts-ink-darken)), black) 80%, transparent); }
+  .text-rose-200\/80 { color: color-mix(in oklab, color-mix(in oklab, var(--color-rose-200) calc(100% - var(--bts-ink-darken)), black) 80%, transparent); }
+  .text-teal-200\/80 { color: color-mix(in oklab, color-mix(in oklab, var(--color-teal-200) calc(100% - var(--bts-ink-darken)), black) 80%, transparent); }
 }
 
 /* Final Exam gate: טקסט-מצב amber/rose כהה-מדי ב-Light (65% הכהיה כמעט שחור, זהות הגוון אובדת).

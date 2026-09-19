@@ -97,21 +97,21 @@ export const LogitsSoftmaxLab: React.FC<LogitsSoftmaxLabProps> = ({ data, dir, s
     );
 
     return (
-        <div className="rounded-2xl border border-purple-500/30 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-2xl border border-purple-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             {/* כותרת */}
             <div className="mb-4 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <Percent size={18} className="text-purple-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-100">{data.heading}</div>
-                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">{data.kicker}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-bright)]">{data.heading}</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]" dir="ltr">{data.kicker}</div>
                     </div>
                 </div>
                 <SpeakButton text={stateSpeech} speechLocale={speechLocale} />
             </div>
 
             {/* בורר נתון ההקשר (מצב A) */}
-            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">{data.pickContextLabel}</div>
+            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-faint)]">{data.pickContextLabel}</div>
             <div className="mb-4 flex flex-wrap gap-2" role="group" aria-label={data.sr.contextGroup}>
                 {data.contexts.map((c) => {
                     const active = c.id === contextId;
@@ -122,8 +122,8 @@ export const LogitsSoftmaxLab: React.FC<LogitsSoftmaxLabProps> = ({ data, dir, s
                             onClick={() => selectContext(c.id)}
                             aria-pressed={active}
                             className={`rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${active
-                                ? 'border-purple-400/60 bg-purple-900/30 text-purple-100'
-                                : 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600'
+                                ? 'border-purple-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(30%_-_var(--bts-tint-mix)_*_0.15),transparent)] [--t-d:var(--color-purple-900)] [--t-l:var(--color-purple-500)] text-purple-100'
+                                : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                 }`}
                         >
                             {c.control}
@@ -133,25 +133,25 @@ export const LogitsSoftmaxLab: React.FC<LogitsSoftmaxLabProps> = ({ data, dir, s
             </div>
 
             {/* הפרומפט המלא */}
-            <div className="mb-3 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
-                <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{data.promptLabel}</div>
-                <p className="text-sm font-bold text-slate-100">{fullPrompt}</p>
+            <div className="mb-3 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3">
+                <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">{data.promptLabel}</div>
+                <p className="text-sm font-bold text-[var(--bts-text-bright)]">{fullPrompt}</p>
             </div>
 
             {/* הערת ההקשר */}
             <motion.div
                 key={ctx.id}
-                initial={reduce ? false : { opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { duration: DUR.quick }}
-                className="mb-5 flex items-start gap-2 rounded-xl border border-purple-500/25 bg-purple-950/15 p-3 text-sm leading-relaxed text-slate-200"
+                className="mb-5 flex items-start gap-2 rounded-xl border border-purple-500/25 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-purple-950)] [--t-l:var(--color-purple-500)] p-3 text-sm leading-relaxed text-[var(--bts-text-body)]"
             >
                 <Sparkles size={15} className="mt-0.5 shrink-0 text-purple-300" />
                 <span>{ctx.note}</span>
             </motion.div>
 
             {/* שורות ההמשכים: ציון גולמי (עם פלוס/מינוס) והסתברות */}
-            <div className="mb-2 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            <div className="mb-2 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-faint)]">
                 <span>{data.scoreLabel}</span>
                 <span>{data.probabilityLabel}</span>
             </div>
@@ -164,17 +164,17 @@ export const LogitsSoftmaxLab: React.FC<LogitsSoftmaxLabProps> = ({ data, dir, s
                         <div
                             key={c.id}
                             className={`rounded-xl border p-3 transition-colors ${isLeader
-                                ? 'border-emerald-400/50 bg-emerald-950/15'
-                                : 'border-slate-700/50 bg-slate-950/30'
+                                ? 'border-emerald-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)]'
+                                : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)]'
                                 }`}
                         >
                             <div className="mb-2 flex items-center justify-between gap-2">
-                                <span className={`inline-flex items-center gap-1.5 text-sm font-bold ${isLeader ? 'text-emerald-200' : 'text-slate-200'}`}>
+                                <span className={`inline-flex items-center gap-1.5 text-sm font-bold ${isLeader ? 'text-emerald-200' : 'text-[var(--bts-text-body)]'}`}>
                                     {isLeader && <Crown size={14} className="text-emerald-300" aria-hidden />}
                                     {c.label}
                                 </span>
                                 {isLeader && (
-                                    <span className="rounded-full border border-emerald-400/50 bg-emerald-900/25 px-2 py-0.5 text-[10px] font-bold text-emerald-200">
+                                    <span className="rounded-full border border-emerald-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-emerald-900)] [--t-l:var(--color-emerald-500)] px-2 py-0.5 text-[10px] font-bold text-emerald-200">
                                         {data.topLabel}
                                     </span>
                                 )}
@@ -188,17 +188,17 @@ export const LogitsSoftmaxLab: React.FC<LogitsSoftmaxLabProps> = ({ data, dir, s
                                         onClick={() => nudge(c.id, -1)}
                                         disabled={score <= SCORE_MIN}
                                         aria-label={`${data.sr.decrease} ${c.label}`}
-                                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-900/60 text-slate-200 transition-colors hover:border-purple-400/50 hover:text-white disabled:opacity-35"
+                                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,var(--bts-panel-from)_60%,transparent)] text-[var(--bts-text-body)] transition-colors hover:border-purple-400/50 hover:text-[var(--bts-text-primary)] disabled:opacity-35"
                                     >
                                         <Minus size={16} aria-hidden />
                                     </button>
-                                    <span className="w-6 text-center font-mono text-base font-bold tabular-nums text-slate-100" aria-hidden>{score}</span>
+                                    <span className="w-6 text-center font-mono text-base font-bold tabular-nums text-[var(--bts-text-bright)]" aria-hidden>{score}</span>
                                     <button
                                         type="button"
                                         onClick={() => nudge(c.id, 1)}
                                         disabled={score >= SCORE_MAX}
                                         aria-label={`${data.sr.increase} ${c.label}`}
-                                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-900/60 text-slate-200 transition-colors hover:border-purple-400/50 hover:text-white disabled:opacity-35"
+                                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,var(--bts-panel-from)_60%,transparent)] text-[var(--bts-text-body)] transition-colors hover:border-purple-400/50 hover:text-[var(--bts-text-primary)] disabled:opacity-35"
                                     >
                                         <Plus size={16} aria-hidden />
                                     </button>
@@ -208,14 +208,14 @@ export const LogitsSoftmaxLab: React.FC<LogitsSoftmaxLabProps> = ({ data, dir, s
                                     ובכותרת העמודה, ולכן כאן נשאר רק האחוז, ליד הבר. */}
                                 <div className="min-w-0 flex-1">
                                     <div className="mb-1 flex justify-end text-xs">
-                                        <span className={`font-mono tabular-nums ${isLeader ? 'font-bold text-emerald-200' : 'text-slate-300'}`} dir="ltr">{pct}%</span>
+                                        <span className={`font-mono tabular-nums ${isLeader ? 'font-bold text-emerald-200' : 'text-[var(--bts-text-secondary)]'}`} dir="ltr">{pct}%</span>
                                     </div>
-                                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-800/80">
+                                    <div className="h-2.5 w-full overflow-hidden rounded-full bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_80%,transparent)]">
                                         <motion.div
                                             initial={false}
                                             animate={{ width: `${pct}%` }}
                                             transition={reduce ? { duration: 0 } : { duration: DUR.data, ease: EASE.inter }}
-                                            className={`h-full rounded-full ${isLeader ? 'bg-emerald-400' : 'bg-slate-500'}`}
+                                            className={`h-full rounded-full ${isLeader ? 'bg-emerald-400' : 'bg-[color-mix(in_oklab,var(--bts-text-muted)_var(--bts-tint-mix),var(--color-slate-500))]'}`}
                                         />
                                     </div>
                                 </div>
@@ -226,17 +226,17 @@ export const LogitsSoftmaxLab: React.FC<LogitsSoftmaxLabProps> = ({ data, dir, s
             </div>
 
             {/* מצב B: כיוון ידני + איפוס */}
-            <div className="mt-4 rounded-xl border border-slate-700/50 bg-slate-950/30 p-3">
+            <div className="mt-4 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-3">
                 <div className="flex items-start justify-between gap-2">
                     <div>
-                        <div className="text-sm font-bold text-slate-200">{data.adjustTitle}</div>
-                        <p className="mt-1 text-xs leading-relaxed text-slate-400">{data.adjustHint}</p>
+                        <div className="text-sm font-bold text-[var(--bts-text-body)]">{data.adjustTitle}</div>
+                        <p className="mt-1 text-xs leading-relaxed text-[var(--bts-text-muted)]">{data.adjustHint}</p>
                     </div>
                     {dirty && (
                         <button
                             type="button"
                             onClick={resetScores}
-                            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-slate-700/60 bg-slate-800/40 px-3 py-1.5 text-xs font-bold text-slate-300 transition-colors hover:border-purple-400/40 hover:text-purple-200"
+                            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-800))_40%,transparent)] px-3 py-1.5 text-xs font-bold text-[var(--bts-text-secondary)] transition-colors hover:border-purple-400/40 hover:text-[color-mix(in_oklab,var(--color-purple-200)_calc(100%_-_var(--bts-ink-darken)),black)]"
                         >
                             <RotateCcw size={12} aria-hidden /> {data.resetScores}
                         </button>
@@ -245,14 +245,14 @@ export const LogitsSoftmaxLab: React.FC<LogitsSoftmaxLabProps> = ({ data, dir, s
             </div>
 
             {/* איך ציונים הופכים לאחוזים */}
-            <div className="mt-4 rounded-xl border border-purple-500/20 bg-purple-950/10 p-3">
+            <div className="mt-4 rounded-xl border border-purple-500/20 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(10%_-_var(--bts-tint-mix)_*_0.05),transparent)] [--t-d:var(--color-purple-950)] [--t-l:var(--color-purple-500)] p-3">
                 <div className="mb-1 text-sm font-bold text-purple-200">{data.softmaxNoteTitle}</div>
-                <p className="text-[13px] leading-relaxed text-slate-300">{data.softmaxNote}</p>
+                <p className="text-[13px] leading-relaxed text-[var(--bts-text-secondary)]">{data.softmaxNote}</p>
             </div>
 
             {/* הבהרות: ההמשכים כביטויים שלמים, והמספרים כהמחשה בלבד */}
-            <p className="mt-3 text-[13px] leading-relaxed text-slate-500">{data.continuationNote}</p>
-            <p className="mt-2 text-[13px] leading-relaxed text-slate-500">{data.disclaimer}</p>
+            <p className="mt-3 text-[13px] leading-relaxed text-[var(--bts-text-faint)]">{data.continuationNote}</p>
+            <p className="mt-2 text-[13px] leading-relaxed text-[var(--bts-text-faint)]">{data.disclaimer}</p>
         </div>
     );
 };

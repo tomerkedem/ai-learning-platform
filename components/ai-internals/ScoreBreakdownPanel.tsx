@@ -93,9 +93,9 @@ const ChoiceList: React.FC<{
             {options.map((opt, i) => {
                 const isCorrect = i === correctIndex;
                 const isChosen = i === choice;
-                let cls = 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600';
-                if (answered && isCorrect) cls = 'border-emerald-400/70 bg-emerald-900/25 text-emerald-100';
-                else if (answered && isChosen && !isCorrect) cls = 'border-rose-400/70 bg-rose-900/20 text-rose-100';
+                let cls = 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]';
+                if (answered && isCorrect) cls = 'border-emerald-400/70 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-emerald-900)] [--t-l:var(--color-emerald-500)] text-[color-mix(in_oklab,var(--color-emerald-100)_calc(100%_-_var(--bts-tint-mix)),var(--color-emerald-700))]';
+                else if (answered && isChosen && !isCorrect) cls = 'border-rose-400/70 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-rose-900)] [--t-l:var(--color-rose-500)] text-[color-mix(in_oklab,var(--color-rose-100)_calc(100%_-_var(--bts-tint-mix)),var(--color-rose-700))]';
                 return (
                     <button
                         key={opt}
@@ -105,8 +105,8 @@ const ChoiceList: React.FC<{
                         className={`flex items-start justify-between gap-2 rounded-xl border px-3 py-2.5 text-start text-[13px] font-bold leading-relaxed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 ${cls}`}
                     >
                         <span dir={dir}>{opt}</span>
-                        {answered && isCorrect && <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-emerald-300" aria-hidden />}
-                        {answered && isChosen && !isCorrect && <XCircle size={16} className="mt-0.5 shrink-0 text-rose-300" aria-hidden />}
+                        {answered && isCorrect && <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-[color-mix(in_oklab,var(--color-emerald-300)_calc(100%_-_var(--bts-tint-mix)),var(--color-emerald-700))]" aria-hidden />}
+                        {answered && isChosen && !isCorrect && <XCircle size={16} className="mt-0.5 shrink-0 text-[color-mix(in_oklab,var(--color-rose-300)_calc(100%_-_var(--bts-tint-mix)),var(--color-rose-700))]" aria-hidden />}
                     </button>
                 );
             })}
@@ -141,50 +141,50 @@ export const ScoreBreakdownPanel: React.FC<ScoreBreakdownPanelProps> = ({ data, 
     );
 
     return (
-        <div className="rounded-2xl border border-teal-500/25 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-2xl border border-teal-500/25 bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             {/* כותרת הרכיב */}
             <div className="mb-4 flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2">
-                    <PieChart size={18} className="shrink-0 text-teal-300" aria-hidden />
+                    <PieChart size={18} className="shrink-0 text-[color-mix(in_oklab,var(--color-teal-300)_calc(100%_-_var(--bts-tint-mix)),var(--color-teal-700))]" aria-hidden />
                     <div className="leading-tight">
-                        <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-teal-300">{data.eyebrow}</div>
-                        <div className="text-sm font-bold text-slate-100">{data.title}</div>
+                        <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-[color-mix(in_oklab,var(--color-teal-300)_calc(100%_-_var(--bts-tint-mix)),var(--color-teal-700))]">{data.eyebrow}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-bright)]">{data.title}</div>
                     </div>
                 </div>
                 <SpeakButton text={stateSpeech} speechLocale={speechLocale} />
             </div>
 
-            <p className="mb-4 text-[14px] leading-relaxed text-slate-300">{data.intro}</p>
+            <p className="mb-4 text-[14px] leading-relaxed text-[var(--bts-text-secondary)]">{data.intro}</p>
 
             {/* ── הכותרת המספרית: ציון כולל, מקרים, עברו ── */}
             <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="rounded-xl border border-teal-500/35 bg-teal-950/20 p-2 sm:p-3">
+                <div className="rounded-xl border border-teal-500/35 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-teal-950)] [--t-l:var(--color-teal-500)] p-2 sm:p-3">
                     <motion.div
                         key={score}
-                        initial={reduce ? false : { opacity: 0, y: -4 }}
+                        initial={{ opacity: 0, y: -4 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={reduce ? { duration: 0 } : { duration: DUR.quick }}
-                        className="font-mono text-3xl font-black text-teal-200"
+                        className="font-mono text-3xl font-black text-[color-mix(in_oklab,var(--color-teal-200)_calc(100%_-_var(--bts-tint-mix)),var(--color-teal-700))]"
                         dir="ltr"
                     >
                         {score}%
                     </motion.div>
-                    <div className="mt-0.5 text-[11px] font-bold text-teal-200/80">{data.headlineLabel}</div>
+                    <div className="mt-0.5 text-[11px] font-bold text-[color-mix(in_oklab,color-mix(in_oklab,var(--color-teal-200)_calc(100%_-_var(--bts-tint-mix)),var(--color-teal-700))_80%,transparent)]">{data.headlineLabel}</div>
                 </div>
-                <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-2 sm:p-3">
-                    <div className="font-mono text-3xl font-black text-slate-200" dir="ltr">{total}</div>
-                    <div className="mt-0.5 text-[11px] text-slate-500">{data.totalLabel}</div>
+                <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-2 sm:p-3">
+                    <div className="font-mono text-3xl font-black text-[var(--bts-text-body)]" dir="ltr">{total}</div>
+                    <div className="mt-0.5 text-[11px] text-[var(--bts-text-faint)]">{data.totalLabel}</div>
                 </div>
-                <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-2 sm:p-3">
-                    <div className="font-mono text-3xl font-black text-slate-200" dir="ltr">{passed}</div>
-                    <div className="mt-0.5 text-[11px] text-slate-500">{data.passedLabel}</div>
+                <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-2 sm:p-3">
+                    <div className="font-mono text-3xl font-black text-[var(--bts-text-body)]" dir="ltr">{passed}</div>
+                    <div className="mt-0.5 text-[11px] text-[var(--bts-text-faint)]">{data.passedLabel}</div>
                 </div>
             </div>
 
             {/* ── הניחוש שלפני החשיפה ── */}
             {!revealed && (
-                <div className="mt-4 rounded-xl border border-slate-700/50 bg-slate-950/30 p-3.5">
-                    <p className="mb-3 text-[14px] font-bold leading-relaxed text-slate-100">{data.guess.question}</p>
+                <div className="mt-4 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-3.5">
+                    <p className="mb-3 text-[14px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{data.guess.question}</p>
                     <ChoiceList
                         options={data.guess.options}
                         correctIndex={GUESS_CORRECT}
@@ -194,17 +194,17 @@ export const ScoreBreakdownPanel: React.FC<ScoreBreakdownPanelProps> = ({ data, 
                     />
                     {guessChoice !== null && (
                         <motion.div
-                            initial={reduce ? false : { opacity: 0, y: 6 }}
+                            initial={{ opacity: 0, y: 6 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={reduce ? { duration: 0 } : { duration: DUR.quick }}
                         >
-                            <p className="mt-3 rounded-xl border border-teal-500/30 bg-teal-950/15 p-3 text-[13px] leading-relaxed text-slate-200">
+                            <p className="mt-3 rounded-xl border border-teal-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-teal-950)] [--t-l:var(--color-teal-500)] p-3 text-[13px] leading-relaxed text-[var(--bts-text-body)]">
                                 {data.guessExplain}
                             </p>
                             <button
                                 type="button"
                                 onClick={() => setRevealed(true)}
-                                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-teal-400/60 bg-teal-900/30 px-4 py-2.5 text-sm font-bold text-teal-100 transition-colors hover:bg-teal-900/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70 sm:w-auto"
+                                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-teal-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(30%_-_var(--bts-tint-mix)_*_0.15),transparent)] [--t-d:var(--color-teal-900)] [--t-l:var(--color-teal-500)] px-4 py-2.5 text-sm font-bold text-[color-mix(in_oklab,var(--color-teal-100)_calc(100%_-_var(--bts-tint-mix)),var(--color-teal-700))] transition-colors hover:bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(50%_-_var(--bts-tint-mix)_*_0.25),transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70 sm:w-auto"
                             >
                                 <Layers size={15} aria-hidden /> {data.revealButton}
                             </button>
@@ -216,12 +216,12 @@ export const ScoreBreakdownPanel: React.FC<ScoreBreakdownPanelProps> = ({ data, 
             {/* ── הפירוק לפי סוג מקרה ── */}
             {revealed && (
                 <motion.div
-                    initial={reduce ? false : { opacity: 0, y: 8 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={reduce ? { duration: 0 } : { duration: DUR.base }}
                     className="mt-4 space-y-3"
                 >
-                    <div className="text-[13px] font-bold uppercase tracking-wider text-slate-400">{data.breakdownLabel}</div>
+                    <div className="text-[13px] font-bold uppercase tracking-wider text-[var(--bts-text-muted)]">{data.breakdownLabel}</div>
 
                     <div className="grid gap-2 sm:grid-cols-2" role="group" aria-label={data.sr.breakdown}>
                         {CASE_STATS.map((stat) => {
@@ -231,49 +231,49 @@ export const ScoreBreakdownPanel: React.FC<ScoreBreakdownPanelProps> = ({ data, 
                             const isWeak = stat.id === WEAK_TYPE_ID;
                             const isExcluded = thin && isWeak;
                             const box = isExcluded
-                                ? 'border-slate-700/50 bg-slate-950/60 opacity-70'
+                                ? 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_60%,transparent)] opacity-70'
                                 : isWeak
-                                    ? 'border-rose-500/40 bg-rose-950/15'
-                                    : 'border-slate-700/50 bg-slate-950/30';
+                                    ? 'border-rose-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)]'
+                                    : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)]';
                             return (
                                 <div key={stat.id} className={`rounded-xl border p-3 ${box}`}>
                                     <div className="flex items-start gap-2">
-                                        <Icon size={15} className={`mt-0.5 shrink-0 ${isWeak ? 'text-rose-300' : 'text-slate-400'}`} aria-hidden />
+                                        <Icon size={15} className={`mt-0.5 shrink-0 ${isWeak ? 'text-[color-mix(in_oklab,var(--color-rose-300)_calc(100%_-_var(--bts-tint-mix)),var(--color-rose-700))]' : 'text-[var(--bts-text-muted)]'}`} aria-hidden />
                                         <div className="min-w-0 flex-1">
-                                            <div className="text-[13px] font-bold leading-snug text-slate-100">{text.name}</div>
-                                            <p className="mt-0.5 text-[12px] leading-relaxed text-slate-400">{text.note}</p>
+                                            <div className="text-[13px] font-bold leading-snug text-[var(--bts-text-bright)]">{text.name}</div>
+                                            <p className="mt-0.5 text-[12px] leading-relaxed text-[var(--bts-text-muted)]">{text.note}</p>
                                         </div>
                                     </div>
 
                                     {/* תגיות מצב: סוג חלש, ואם רלוונטי גם אי-הכללה. שתיהן טקסט, לא צבע בלבד. */}
                                     <div className="mt-2 flex flex-wrap gap-1.5">
                                         {isWeak && (
-                                            <span className="inline-flex items-center gap-1 rounded-full border border-rose-400/50 bg-rose-900/25 px-2 py-0.5 text-[11px] font-bold text-rose-100">
+                                            <span className="inline-flex items-center gap-1 rounded-full border border-rose-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-rose-900)] [--t-l:var(--color-rose-500)] px-2 py-0.5 text-[11px] font-bold text-[color-mix(in_oklab,var(--color-rose-100)_calc(100%_-_var(--bts-tint-mix)),var(--color-rose-700))]">
                                                 <AlertTriangle size={11} aria-hidden /> {data.weakTypeLabel}
                                             </span>
                                         )}
                                         {isExcluded && (
-                                            <span className="inline-flex items-center rounded-full border border-amber-400/50 bg-amber-900/25 px-2 py-0.5 text-[11px] font-bold text-amber-100">
+                                            <span className="inline-flex items-center rounded-full border border-amber-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-amber-900)] [--t-l:var(--color-amber-500)] px-2 py-0.5 text-[11px] font-bold text-[color-mix(in_oklab,var(--color-amber-100)_calc(100%_-_var(--bts-tint-mix)),var(--color-amber-800))]">
                                                 {data.excludedLabel}
                                             </span>
                                         )}
                                     </div>
 
-                                    <div className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[12px] text-slate-400">
+                                    <div className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[12px] text-[var(--bts-text-muted)]">
                                         <span>
-                                            {data.casesLabel}: <span className="font-mono font-bold text-slate-200" dir="ltr">{stat.cases}</span>
+                                            {data.casesLabel}: <span className="font-mono font-bold text-[var(--bts-text-body)]" dir="ltr">{stat.cases}</span>
                                         </span>
                                         <span>
-                                            {data.passedLabel}: <span className="font-mono font-bold text-slate-200" dir="ltr">{stat.passed}</span>
+                                            {data.passedLabel}: <span className="font-mono font-bold text-[var(--bts-text-body)]" dir="ltr">{stat.passed}</span>
                                         </span>
                                         <span>
-                                            {data.rateLabel}: <span className={`font-mono font-bold ${isWeak ? 'text-rose-200' : 'text-emerald-200'}`} dir="ltr">{rate}%</span>
+                                            {data.rateLabel}: <span className={`font-mono font-bold ${isWeak ? 'text-[color-mix(in_oklab,var(--color-rose-200)_calc(100%_-_var(--bts-tint-mix)),var(--color-rose-700))]' : 'text-[color-mix(in_oklab,var(--color-emerald-200)_calc(100%_-_var(--bts-tint-mix)),var(--color-emerald-700))]'}`} dir="ltr">{rate}%</span>
                                         </span>
                                     </div>
 
-                                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-800" aria-hidden>
+                                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))]" aria-hidden>
                                         <motion.div
-                                            initial={reduce ? false : { width: 0 }}
+                                            initial={{ width: 0 }}
                                             animate={{ width: `${rate}%` }}
                                             transition={reduce ? { duration: 0 } : { duration: DUR.data }}
                                             className={`h-full rounded-full ${isWeak ? 'bg-rose-400/70' : 'bg-emerald-400/70'}`}
@@ -285,9 +285,9 @@ export const ScoreBreakdownPanel: React.FC<ScoreBreakdownPanelProps> = ({ data, 
                     </div>
 
                     {/* ── בקרת היקף סט הבדיקה ── */}
-                    <div className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-3.5">
-                        <div className="mb-2 flex items-center gap-1.5 text-[13px] font-bold text-slate-200">
-                            <ArrowLeftRight size={14} className="shrink-0 text-teal-300" aria-hidden /> {data.coverageLabel}
+                    <div className="rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3.5">
+                        <div className="mb-2 flex items-center gap-1.5 text-[13px] font-bold text-[var(--bts-text-body)]">
+                            <ArrowLeftRight size={14} className="shrink-0 text-[color-mix(in_oklab,var(--color-teal-300)_calc(100%_-_var(--bts-tint-mix)),var(--color-teal-700))]" aria-hidden /> {data.coverageLabel}
                         </div>
                         <div className="grid gap-2 sm:grid-cols-2" role="group" aria-label={data.sr.coverageGroup}>
                             <button
@@ -295,8 +295,8 @@ export const ScoreBreakdownPanel: React.FC<ScoreBreakdownPanelProps> = ({ data, 
                                 onClick={() => setThin(false)}
                                 aria-pressed={!thin}
                                 className={`rounded-xl border px-3 py-2.5 text-start text-[13px] font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70 ${!thin
-                                    ? 'border-teal-400/60 bg-teal-900/30 text-teal-100'
-                                    : 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600'
+                                    ? 'border-teal-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(30%_-_var(--bts-tint-mix)_*_0.15),transparent)] [--t-d:var(--color-teal-900)] [--t-l:var(--color-teal-500)] text-[color-mix(in_oklab,var(--color-teal-100)_calc(100%_-_var(--bts-tint-mix)),var(--color-teal-700))]'
+                                    : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                     }`}
                             >
                                 {data.coverageWide}
@@ -306,37 +306,37 @@ export const ScoreBreakdownPanel: React.FC<ScoreBreakdownPanelProps> = ({ data, 
                                 onClick={() => { setThin(true); setSeenThin(true); }}
                                 aria-pressed={thin}
                                 className={`rounded-xl border px-3 py-2.5 text-start text-[13px] font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70 ${thin
-                                    ? 'border-teal-400/60 bg-teal-900/30 text-teal-100'
-                                    : 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600'
+                                    ? 'border-teal-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(30%_-_var(--bts-tint-mix)_*_0.15),transparent)] [--t-d:var(--color-teal-900)] [--t-l:var(--color-teal-500)] text-[color-mix(in_oklab,var(--color-teal-100)_calc(100%_-_var(--bts-tint-mix)),var(--color-teal-700))]'
+                                    : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                     }`}
                             >
                                 {data.coverageThin}
                             </button>
                         </div>
-                        <p className="mt-2.5 text-[12px] leading-relaxed text-slate-400">{data.coverageNote}</p>
+                        <p className="mt-2.5 text-[12px] leading-relaxed text-[var(--bts-text-muted)]">{data.coverageNote}</p>
                     </div>
 
                     {/* ── מה השתנה ומה לא. גלוי מכאן והלאה, זה הרגע המרכזי ── */}
                     <div className="grid gap-2 sm:grid-cols-2">
-                        <div className="rounded-xl border border-amber-500/30 bg-amber-950/12 p-3">
-                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-amber-200">{data.changedLabel}</div>
-                            <p className="text-[13px] leading-relaxed text-slate-200">{data.changed}</p>
+                        <div className="rounded-xl border border-amber-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(12%_-_var(--bts-tint-mix)_*_0.06),transparent)] [--t-d:var(--color-amber-950)] [--t-l:var(--color-amber-500)] p-3">
+                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[color-mix(in_oklab,var(--color-amber-200)_calc(100%_-_var(--bts-tint-mix)),var(--color-amber-800))]">{data.changedLabel}</div>
+                            <p className="text-[13px] leading-relaxed text-[var(--bts-text-body)]">{data.changed}</p>
                         </div>
-                        <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/12 p-3">
-                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-emerald-200">{data.unchangedLabel}</div>
-                            <p className="text-[13px] leading-relaxed text-slate-200">{data.unchanged}</p>
+                        <div className="rounded-xl border border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(12%_-_var(--bts-tint-mix)_*_0.06),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] p-3">
+                            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[color-mix(in_oklab,var(--color-emerald-200)_calc(100%_-_var(--bts-tint-mix)),var(--color-emerald-700))]">{data.unchangedLabel}</div>
+                            <p className="text-[13px] leading-relaxed text-[var(--bts-text-body)]">{data.unchanged}</p>
                         </div>
                     </div>
 
                     {/* ── בדיקת ההבנה: נפתחת רק אחרי שהלומד ראה את המצב המצומצם ── */}
                     {seenThin && (
                         <motion.div
-                            initial={reduce ? false : { opacity: 0, y: 6 }}
+                            initial={{ opacity: 0, y: 6 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={reduce ? { duration: 0 } : { duration: DUR.quick }}
-                            className="rounded-xl border border-teal-500/30 bg-slate-950/40 p-3.5"
+                            className="rounded-xl border border-teal-500/30 bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3.5"
                         >
-                            <p className="mb-3 text-[14px] font-bold leading-relaxed text-slate-100">{data.lock.question}</p>
+                            <p className="mb-3 text-[14px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{data.lock.question}</p>
                             <ChoiceList
                                 options={data.lock.options}
                                 correctIndex={LOCK_CORRECT}
@@ -346,18 +346,18 @@ export const ScoreBreakdownPanel: React.FC<ScoreBreakdownPanelProps> = ({ data, 
                             />
                             {lockChoice !== null && (
                                 <motion.div
-                                    initial={reduce ? false : { opacity: 0, y: 6 }}
+                                    initial={{ opacity: 0, y: 6 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={reduce ? { duration: 0 } : { duration: DUR.quick }}
                                 >
-                                    <p className="mt-3 rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-3 text-[13px] leading-relaxed text-slate-200">
+                                    <p className="mt-3 rounded-xl border border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] p-3 text-[13px] leading-relaxed text-[var(--bts-text-body)]">
                                         {data.lockSuccess}
                                     </p>
-                                    <div className="mt-3 rounded-xl border border-teal-500/30 bg-slate-950/40 p-3.5">
-                                        <div className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-teal-200">
-                                            <Lightbulb size={13} className="text-teal-300" aria-hidden /> {data.headlineLabel}
+                                    <div className="mt-3 rounded-xl border border-teal-500/30 bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-3.5">
+                                        <div className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[color-mix(in_oklab,var(--color-teal-200)_calc(100%_-_var(--bts-tint-mix)),var(--color-teal-700))]">
+                                            <Lightbulb size={13} className="text-[color-mix(in_oklab,var(--color-teal-300)_calc(100%_-_var(--bts-tint-mix)),var(--color-teal-700))]" aria-hidden /> {data.headlineLabel}
                                         </div>
-                                        <p className="text-[13px] font-bold leading-relaxed text-slate-100">{data.insight}</p>
+                                        <p className="text-[13px] font-bold leading-relaxed text-[var(--bts-text-bright)]">{data.insight}</p>
                                     </div>
                                 </motion.div>
                             )}
@@ -366,7 +366,7 @@ export const ScoreBreakdownPanel: React.FC<ScoreBreakdownPanelProps> = ({ data, 
                 </motion.div>
             )}
 
-            <p className="mt-4 text-[12px] leading-relaxed text-slate-500">{data.note}</p>
+            <p className="mt-4 text-[12px] leading-relaxed text-[var(--bts-text-faint)]">{data.note}</p>
         </div>
     );
 };

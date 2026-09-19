@@ -23,10 +23,10 @@ const FitBar: React.FC<{ value: number; accent: keyof typeof ACCENTS; muted?: bo
     const reduce = useReducedMotion();
     const a = ACCENTS[accent];
     return (
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800/70">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_70%,transparent)]">
             <motion.div
-                className={`h-full rounded-full ${muted ? 'bg-slate-600' : a.barFill}`}
-                initial={reduce ? false : { width: 0 }}
+                className={`h-full rounded-full ${muted ? 'bg-[color-mix(in_oklab,var(--bts-text-muted)_var(--bts-tint-mix),var(--color-slate-600))]' : a.barFill}`}
+                initial={{ width: 0 }}
                 animate={{ width: `${value}%` }}
                 transition={reduce ? { duration: 0 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             />
@@ -43,11 +43,11 @@ const CandidateRow: React.FC<{ cand: FragmentCandidate; accent: keyof typeof ACC
     return (
         <div
             className={`rounded-xl border p-3 transition-colors ${
-                lead ? `${a.border} ${a.bgSoft}` : 'border-slate-700/50 bg-slate-950/30'
+                lead ? `${a.border} ${a.bgTint}` : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)]'
             }`}
         >
             <div className="mb-2 flex items-center justify-between gap-2">
-                <span className={`text-sm font-bold ${lead ? a.text : 'text-slate-300'}`}>{cand.text}</span>
+                <span className={`text-sm font-bold ${lead ? a.text : 'text-[var(--bts-text-secondary)]'}`}>{cand.text}</span>
                 {lead && (
                     <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${a.border} ${a.text}`}>
                         <Check size={11} /> {lab.leading}
@@ -109,22 +109,22 @@ const WatchBuildMode: React.FC = () => {
     return (
         <div className="space-y-4">
             {/* תרשים הלולאה: קבוע, מסביר את הרעיון של כל המעבדה */}
-            <div className="flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-3 text-center text-xs font-bold">
-                <span className="rounded-full border border-slate-600/60 bg-slate-950/40 px-3 py-1 text-slate-200">{lab.loop.contextSoFar}</span>
-                <CornerLeftDown size={14} className="rotate-90 text-slate-500" />
-                <span className="rounded-full border border-slate-600/60 bg-slate-950/40 px-3 py-1 text-slate-200">{lab.loop.candidates}</span>
-                <CornerLeftDown size={14} className="rotate-90 text-slate-500" />
-                <span className="rounded-full border border-slate-600/60 bg-slate-950/40 px-3 py-1 text-slate-200">{lab.loop.chosen}</span>
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-900/15 px-3 py-1 text-emerald-300">
+            <div className="flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-3 text-center text-xs font-bold">
+                <span className="rounded-full border border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))_60%,transparent)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] px-3 py-1 text-[var(--bts-text-body)]">{lab.loop.contextSoFar}</span>
+                <CornerLeftDown size={14} className="rotate-90 text-[var(--bts-text-faint)]" />
+                <span className="rounded-full border border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))_60%,transparent)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] px-3 py-1 text-[var(--bts-text-body)]">{lab.loop.candidates}</span>
+                <CornerLeftDown size={14} className="rotate-90 text-[var(--bts-text-faint)]" />
+                <span className="rounded-full border border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))_60%,transparent)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] px-3 py-1 text-[var(--bts-text-body)]">{lab.loop.chosen}</span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-900)] [--t-l:var(--color-emerald-500)] px-3 py-1 text-emerald-300">
                     <Repeat size={12} /> {lab.loop.backToContext}
                 </span>
             </div>
 
             {/* ההקשר המצטבר: הפרומפט ומה שנבנה עד כה */}
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4">
-                <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{lab.contextLabel}</div>
-                <p className="text-sm font-bold leading-relaxed text-slate-100">
-                    <span className="text-slate-400">{lab.promptLabel}</span>
+            <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-4">
+                <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">{lab.contextLabel}</div>
+                <p className="text-sm font-bold leading-relaxed text-[var(--bts-text-bright)]">
+                    <span className="text-[var(--bts-text-muted)]">{lab.promptLabel}</span>
                     &quot;{scenario.prompt}&quot;
                 </p>
 
@@ -137,11 +137,11 @@ const WatchBuildMode: React.FC = () => {
                                 return (
                                     <motion.span
                                         key={`${branchId}-${i}`}
-                                        initial={reduce ? false : { opacity: 0, y: -8, scale: 0.96 }}
+                                        initial={{ opacity: 0, y: -8, scale: 0.96 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         transition={reduce ? { duration: 0 } : { duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                                         className={`rounded-lg border px-2.5 py-1 text-xs font-bold ${
-                                            latest ? `${a.border} ${a.bgSoft} ${a.text}` : 'border-slate-700/60 bg-slate-900/50 text-slate-300'
+                                            latest ? `${a.border} ${a.bgTint} ${a.text}` : 'border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] text-[var(--bts-text-secondary)]'
                                         }`}
                                     >
                                         {frag}
@@ -155,9 +155,9 @@ const WatchBuildMode: React.FC = () => {
 
             {/* בחירת פתיחה (צעד ראשון) או התקדמות במסלול */}
             {!branch && (
-                <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4">
-                    <div className="mb-1 text-sm font-bold text-slate-200">{lab.howToOpen}</div>
-                    <p className="mb-4 text-xs leading-relaxed text-slate-400">{scenario.firstStepIntro}</p>
+                <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-4">
+                    <div className="mb-1 text-sm font-bold text-[var(--bts-text-body)]">{lab.howToOpen}</div>
+                    <p className="mb-4 text-xs leading-relaxed text-[var(--bts-text-muted)]">{scenario.firstStepIntro}</p>
 
                     <div className="grid gap-3 sm:grid-cols-2">
                         {[aBranch, bBranch].map((br) => {
@@ -167,18 +167,18 @@ const WatchBuildMode: React.FC = () => {
                                     key={br.id}
                                     type="button"
                                     onClick={() => chooseBranch(br.id)}
-                                    className={`rounded-xl border p-3 text-start transition-colors ${a.border} bg-slate-950/30 hover:brightness-110`}
+                                    className={`rounded-xl border p-3 text-start transition-colors ${a.border} bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] hover:brightness-110`}
                                 >
                                     <div className="mb-2 flex items-center justify-between gap-2">
                                         <span className={`text-sm font-bold ${a.text}`}>{br.opener}</span>
-                                        <span className="text-[10px] font-bold text-slate-500">{br.label}</span>
+                                        <span className="text-[10px] font-bold text-[var(--bts-text-faint)]">{br.label}</span>
                                     </div>
                                     <FitBar value={br.openerFit} accent={br.accent} />
                                 </button>
                             );
                         })}
                     </div>
-                    <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
+                    <p className="mt-3 text-[11px] leading-relaxed text-[var(--bts-text-faint)]">
                         {lab.openersNote}
                     </p>
                 </div>
@@ -191,21 +191,21 @@ const WatchBuildMode: React.FC = () => {
                         {nextStep ? (
                             <motion.div
                                 key={`${branch.id}-${stepCount}`}
-                                initial={reduce ? false : { opacity: 0, y: 8 }}
+                                initial={{ opacity: 0, y: 8 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={reduce ? undefined : { opacity: 0, y: -8 }}
                                 transition={reduce ? { duration: 0 } : { duration: 0.25 }}
                                 className="space-y-3"
                             >
-                                <div className={`flex items-start gap-2 rounded-xl border ${ACCENTS[accent].border} ${ACCENTS[accent].bgSoft} p-3`}>
+                                <div className={`flex items-start gap-2 rounded-xl border ${ACCENTS[accent].border} ${ACCENTS[accent].bgTint} p-3`}>
                                     <Sparkles size={15} className={`mt-0.5 shrink-0 ${ACCENTS[accent].text}`} />
-                                    <span className="text-sm leading-relaxed text-slate-200">
+                                    <span className="text-sm leading-relaxed text-[var(--bts-text-body)]">
                                         <span className={`font-bold ${ACCENTS[accent].text}`}>{lab.changedPrefix}</span>
                                         {stepCount === 1 ? branch.openerChanged : nextStep.changed}
                                     </span>
                                 </div>
 
-                                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+                                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">
                                     {lab.candidatesConsidered}
                                 </div>
                                 <div className="grid gap-2 sm:grid-cols-3">
@@ -220,19 +220,19 @@ const WatchBuildMode: React.FC = () => {
                     {/* תוצאה סופית כשהמסלול הושלם */}
                     {done && (
                         <motion.div
-                            initial={reduce ? false : { opacity: 0, y: 8 }}
+                            initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={reduce ? { duration: 0 } : { duration: 0.3 }}
-                            className={`rounded-2xl border ${ACCENTS[accent].border} ${ACCENTS[accent].bgSoft} p-4`}
+                            className={`rounded-2xl border ${ACCENTS[accent].border} ${ACCENTS[accent].bgTint} p-4`}
                         >
                             <div className={`mb-1 text-[10px] font-bold uppercase tracking-[0.2em] ${ACCENTS[accent].text}`}>
                                 {lab.builtAnswer}
                             </div>
-                            <p className="text-sm font-bold leading-relaxed text-slate-100">{assembleLocalizedAnswer(contentLocale, fragments)}</p>
-                            <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                            <p className="text-sm font-bold leading-relaxed text-[var(--bts-text-bright)]">{assembleLocalizedAnswer(contentLocale, fragments)}</p>
+                            <p className="mt-2 text-xs leading-relaxed text-[var(--bts-text-muted)]">
                                 {lab.builtAnswerNote}
                             </p>
-                            <p className="mt-2 border-t border-slate-700/50 pt-2 text-xs leading-relaxed text-slate-400">
+                            <p className="mt-2 border-t border-[var(--bts-border)] pt-2 text-xs leading-relaxed text-[var(--bts-text-muted)]">
                                 {lab.demoEndNote}
                             </p>
                         </motion.div>
@@ -244,7 +244,7 @@ const WatchBuildMode: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={advance}
-                                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold transition-colors ${ACCENTS[accent].border} ${ACCENTS[accent].bgSoft} ${ACCENTS[accent].text} hover:brightness-110`}
+                                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold transition-colors ${ACCENTS[accent].border} ${ACCENTS[accent].bgTint} ${ACCENTS[accent].text} hover:brightness-110`}
                             >
                                 <CornerLeftDown size={15} /> {lab.nextStep}
                             </button>
@@ -252,12 +252,12 @@ const WatchBuildMode: React.FC = () => {
                         <button
                             type="button"
                             onClick={reset}
-                            className="inline-flex items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-900/40 px-4 py-2 text-sm font-bold text-slate-300 transition-colors hover:border-slate-600"
+                            className="inline-flex items-center gap-2 rounded-xl border border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] px-4 py-2 text-sm font-bold text-[var(--bts-text-secondary)] transition-colors hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]"
                         >
                             <RotateCcw size={15} /> {lab.restart}
                         </button>
                         {!done && (
-                            <span className="text-xs font-bold text-slate-500">
+                            <span className="text-xs font-bold text-[var(--bts-text-faint)]">
                                 {formatStepOnly(contentLocale, stepCount)}
                             </span>
                         )}
@@ -266,10 +266,10 @@ const WatchBuildMode: React.FC = () => {
             )}
 
             {/* כרטיס ההשוואה: אותו פרומפט, שתי פתיחות, שתי תשובות */}
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-4">
+            <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-4">
                 <div className="mb-3 flex items-center gap-2">
-                    <ArrowLeftRight size={16} className="text-slate-300" />
-                    <div className="text-sm font-bold text-slate-200">{lab.comparisonTitle}</div>
+                    <ArrowLeftRight size={16} className="text-[var(--bts-text-secondary)]" />
+                    <div className="text-sm font-bold text-[var(--bts-text-body)]">{lab.comparisonTitle}</div>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                     {[aBranch, bBranch].map((br) => {
@@ -278,10 +278,10 @@ const WatchBuildMode: React.FC = () => {
                         return (
                             <div
                                 key={br.id}
-                                className={`rounded-xl border p-3 ${active ? `${a.border} ${a.bgSoft}` : 'border-slate-700/50 bg-slate-950/30'}`}
+                                className={`rounded-xl border p-3 ${active ? `${a.border} ${a.bgTint}` : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)]'}`}
                             >
-                                <div className={`mb-1 text-sm font-bold ${active ? a.text : 'text-slate-300'}`}>{br.opener}</div>
-                                <p className="text-xs leading-relaxed text-slate-400">{br.summary}</p>
+                                <div className={`mb-1 text-sm font-bold ${active ? a.text : 'text-[var(--bts-text-secondary)]'}`}>{br.opener}</div>
+                                <p className="text-xs leading-relaxed text-[var(--bts-text-muted)]">{br.summary}</p>
                             </div>
                         );
                     })}
@@ -289,7 +289,7 @@ const WatchBuildMode: React.FC = () => {
             </div>
 
             {/* הערת שקיפות (המחשה לימודית) */}
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500">
+            <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-4 text-[11px] leading-relaxed text-[var(--bts-text-faint)]">
                 {lab.transparencyNote}
             </div>
         </div>
@@ -314,11 +314,11 @@ const InstructionMode: React.FC = () => {
 
     return (
         <div className="space-y-4">
-            <p className="text-sm leading-relaxed text-slate-300">{v.intro}</p>
+            <p className="text-sm leading-relaxed text-[var(--bts-text-secondary)]">{v.intro}</p>
 
             {/* בורר ההוראה */}
             <div>
-                <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{v.pickLabel}</div>
+                <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">{v.pickLabel}</div>
                 <div className="grid grid-cols-2 gap-2">
                     {variants.map((item) => {
                         const ia = ACCENTS[item.accent];
@@ -329,10 +329,10 @@ const InstructionMode: React.FC = () => {
                                 type="button"
                                 onClick={() => setVariantId(item.id)}
                                 aria-pressed={active}
-                                className={`rounded-xl border p-3 text-start transition-colors ${active ? `${ia.border} ${ia.bgSoft}` : 'border-slate-700/50 bg-slate-950/30 hover:border-slate-600'}`}
+                                className={`rounded-xl border p-3 text-start transition-colors ${active ? `${ia.border} ${ia.bgTint}` : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'}`}
                             >
-                                <div className={`text-sm font-bold ${active ? ia.text : 'text-slate-200'}`}>{item.label}</div>
-                                <div className="mt-1 text-[11px] leading-snug text-slate-400">&quot;{item.prompt}&quot;</div>
+                                <div className={`text-sm font-bold ${active ? ia.text : 'text-[var(--bts-text-body)]'}`}>{item.label}</div>
+                                <div className="mt-1 text-[11px] leading-snug text-[var(--bts-text-muted)]">&quot;{item.prompt}&quot;</div>
                             </button>
                         );
                     })}
@@ -343,52 +343,52 @@ const InstructionMode: React.FC = () => {
             <AnimatePresence mode="wait">
                 <motion.div
                     key={variantId}
-                    initial={reduce ? false : { opacity: 0, y: 8 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={reduce ? undefined : { opacity: 0, y: -8 }}
                     transition={reduce ? { duration: 0 } : { duration: 0.25 }}
                     className="space-y-3"
                 >
                     {/* ההוראה שנבחרה */}
-                    <div className="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4">
-                        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{v.promptLabel}</div>
-                        <p className="mt-1 text-sm font-bold text-slate-100">&quot;{selected.prompt}&quot;</p>
+                    <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-4">
+                        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">{v.promptLabel}</div>
+                        <p className="mt-1 text-sm font-bold text-[var(--bts-text-bright)]">&quot;{selected.prompt}&quot;</p>
                     </div>
 
                     {/* איך זה נבנה: חלק אחרי חלק */}
                     <div>
-                        <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{v.buildsLabel}</div>
+                        <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--bts-text-faint)]">{v.buildsLabel}</div>
                         <div className="space-y-1.5">
                             {selected.chunks.map((c, i) => (
                                 <motion.div
                                     key={`${variantId}-${i}`}
-                                    initial={reduce ? false : { opacity: 0, x: dir === 'rtl' ? 8 : -8 }}
+                                    initial={{ opacity: 0, x: dir === 'rtl' ? 8 : -8 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={reduce ? { duration: 0 } : { duration: 0.25, delay: i * 0.12 }}
-                                    className="flex items-center gap-2 rounded-lg border border-slate-700/50 bg-slate-900/40 px-3 py-2"
+                                    className="flex items-center gap-2 rounded-lg border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] px-3 py-2"
                                 >
-                                    <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${a.bgSoft} ${a.text} text-[11px] font-bold`} dir="ltr">{i + 1}</span>
-                                    <span className="text-sm text-slate-200">{c}</span>
+                                    <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${a.bgTint} ${a.text} text-[11px] font-bold`} dir="ltr">{i + 1}</span>
+                                    <span className="text-sm text-[var(--bts-text-body)]">{c}</span>
                                 </motion.div>
                             ))}
                         </div>
                     </div>
 
                     {/* התשובה שנבנתה */}
-                    <div className={`rounded-2xl border ${a.border} ${a.bgSoft} p-4`}>
+                    <div className={`rounded-2xl border ${a.border} ${a.bgTint} p-4`}>
                         <div className={`mb-1 text-[10px] font-bold uppercase tracking-[0.2em] ${a.text}`}>{v.finalLabel}</div>
-                        <p className="text-sm font-bold leading-relaxed text-slate-100">{selected.finalAnswer}</p>
+                        <p className="text-sm font-bold leading-relaxed text-[var(--bts-text-bright)]">{selected.finalAnswer}</p>
                     </div>
 
                     {/* מה קרה במסלול הזה */}
-                    <div className="flex items-start gap-2 rounded-xl border border-slate-700/50 bg-slate-900/40 p-3">
+                    <div className="flex items-start gap-2 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-3">
                         <span className={`mt-0.5 inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 text-[10px] font-bold ${a.border} ${a.text}`}>{selected.outcomeLabel}</span>
-                        <span className="text-sm leading-relaxed text-slate-300">{selected.outcomeNote}</span>
+                        <span className="text-sm leading-relaxed text-[var(--bts-text-secondary)]">{selected.outcomeNote}</span>
                     </div>
 
                     {/* אזהרה, רק לוריאנט שדוחף לוודאות שלא נבדקה */}
                     {selected.caution && (
-                        <div className="flex items-start gap-2 rounded-xl border border-rose-500/40 bg-rose-950/15 p-3">
+                        <div className="flex items-start gap-2 rounded-xl border border-rose-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] p-3">
                             <AlertTriangle size={16} className="mt-0.5 shrink-0 text-rose-300" />
                             <span className="text-sm leading-relaxed text-rose-100">
                                 <span className="font-bold text-rose-200">{v.cautionLabel} </span>
@@ -400,7 +400,7 @@ const InstructionMode: React.FC = () => {
             </AnimatePresence>
 
             {/* הערת שקיפות (המחשה לימודית) */}
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-950/40 p-4 text-[11px] leading-relaxed text-slate-500">
+            <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-4 text-[11px] leading-relaxed text-[var(--bts-text-faint)]">
                 {v.disclaimer}
             </div>
         </div>
@@ -428,7 +428,7 @@ export const GenerationLoopLab: React.FC = () => {
     return (
         <div className="space-y-4" dir={dir}>
             {/* בורר מצב המעבדה */}
-            <div className="flex gap-1 rounded-2xl border border-slate-700/50 bg-slate-950/40 p-1" role="tablist" aria-label={lab.modeToggleLabel}>
+            <div className="flex gap-1 rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-1" role="tablist" aria-label={lab.modeToggleLabel}>
                 {tabs.map((tab) => {
                     const active = tab.id === mode;
                     const Icon = tab.icon;
@@ -440,7 +440,7 @@ export const GenerationLoopLab: React.FC = () => {
                             aria-selected={active}
                             onClick={() => setMode(tab.id)}
                             className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold transition-colors ${
-                                active ? 'border border-violet-500/40 bg-violet-500/20 text-violet-100' : 'border border-transparent text-slate-400 hover:text-slate-200'
+                                active ? 'border border-violet-500/40 bg-violet-500/20 text-violet-100' : 'border border-transparent text-[var(--bts-text-muted)] hover:text-[var(--bts-text-body)]'
                             }`}
                         >
                             <Icon size={15} aria-hidden /> {tab.label}

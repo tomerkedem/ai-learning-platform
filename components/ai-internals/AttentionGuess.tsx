@@ -193,8 +193,8 @@ export const AttentionGuess: React.FC<AttentionGuessProps> = ({ content, cards, 
                                 onClick={() => { setChosenId(card.id); setRevealed(false); }}
                                 aria-pressed={card.id === chosenId}
                                 aria-label={`${card.title}. ${card.desc}`}
-                                whileHover={reduce ? undefined : { scale: 1.015 }}
-                                whileTap={reduce ? undefined : { scale: 0.985 }}
+                                whileHover={{ scale: reduce ? 1 : 1.015 }}
+                                whileTap={{ scale: reduce ? 1 : 0.985 }}
                                 className={`relative flex h-full w-full flex-col gap-2.5 rounded-2xl border p-4 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-violet-400)_60%,transparent))] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bts-focus-ring-offset)] ${cardClasses(card.id)}`}
                             >
                                 <span className="w-fit rounded-xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-to)_50%,transparent)] px-2.5 py-2">

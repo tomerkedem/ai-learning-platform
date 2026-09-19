@@ -35,7 +35,7 @@ import { speakJoin } from './GuessVerdict';
 const TENSION_COLORS: Record<LabTension, { bar: string; text: string }> = {
     high: { bar: 'bg-emerald-400', text: 'text-emerald-200' },
     medium: { bar: 'bg-amber-400', text: 'text-amber-200' },
-    low: { bar: 'bg-slate-500', text: 'text-slate-300' },
+    low: { bar: 'bg-[color-mix(in_oklab,var(--bts-text-muted)_var(--bts-tint-mix),var(--color-slate-500))]', text: 'text-[var(--bts-text-secondary)]' },
     shifted: { bar: 'bg-sky-400', text: 'text-sky-200' },
 };
 
@@ -64,12 +64,12 @@ const TokenChips: React.FC<{
                         animate={reduce ? undefined : { scale: inPair ? 1.04 : 1 }}
                         transition={reduce ? { duration: 0 } : { duration: 0.25 }}
                         aria-label={`${tok}, ${sr.attention} ${pct} ${sr.percent}${inPair ? `, ${sr.inPair}` : ''}`}
-                        className={`relative flex flex-col items-center gap-1 rounded-xl border px-3 py-2 text-center ${inPair ? 'border-emerald-400/70 ring-1 ring-emerald-400/50' : 'border-white/10'
+                        className={`relative flex flex-col items-center gap-1 rounded-xl border px-3 py-2 text-center ${inPair ? 'border-emerald-400/70 ring-1 ring-emerald-400/50' : 'border-[var(--bts-divider-soft)]'
                             }`}
                         style={{ backgroundColor: bg }}
                     >
-                        <span className="text-base font-bold leading-none text-slate-100">{tok}</span>
-                        <span className="font-mono text-[13px] leading-none text-slate-300/80" dir="ltr">{pct}%</span>
+                        <span className="text-base font-bold leading-none text-[var(--bts-text-bright)]">{tok}</span>
+                        <span className="font-mono text-[13px] leading-none text-[color-mix(in_oklab,var(--bts-text-secondary)_80%,transparent)]" dir="ltr">{pct}%</span>
                     </motion.div>
                 );
             })}
@@ -91,18 +91,18 @@ const RelationMeter: React.FC<{
     const toneLabel = data.tensionLabels[tension];
     const pairPct = Math.round(pairStrength * 100);
     return (
-        <div className="mt-5 rounded-xl border border-slate-700/50 bg-slate-950/30 p-3.5">
+        <div className="mt-5 rounded-xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] p-3.5">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
-                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] font-bold text-slate-300">
+                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] font-bold text-[var(--bts-text-secondary)]">
                     <ArrowLeftRight size={14} className="shrink-0 text-violet-300" />
                     {data.relationLabel}
-                    <span className="text-slate-100">&quot;{tokens[pairA]}&quot;</span>
-                    <span className="text-slate-500">↔</span>
-                    <span className="text-slate-100">&quot;{tokens[pairB]}&quot;</span>
+                    <span className="text-[var(--bts-text-bright)]">&quot;{tokens[pairA]}&quot;</span>
+                    <span className="text-[var(--bts-text-faint)]">↔</span>
+                    <span className="text-[var(--bts-text-bright)]">&quot;{tokens[pairB]}&quot;</span>
                 </span>
                 <span className={`text-[13px] font-bold ${tone.text}`}>{toneLabel}</span>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-white/10" role="img" aria-label={`${data.sr.strength} ${pairPct} ${data.sr.percent}, ${toneLabel}`}>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--bts-fill-track)]" role="img" aria-label={`${data.sr.strength} ${pairPct} ${data.sr.percent}, ${toneLabel}`}>
                 <motion.div
                     className={`h-full rounded-full ${tone.bar}`}
                     initial={false}
@@ -129,24 +129,24 @@ const FocusPanel: React.FC<{
     const s = focus.states.find((x) => x.id === stateId) ?? focus.states[0];
 
     return (
-        <div className="mt-5 rounded-2xl border border-sky-500/30 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="mt-5 rounded-2xl border border-sky-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             <div className="mb-3 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <Crosshair size={18} className="text-sky-300" />
-                    <div className="text-sm font-bold text-slate-100">{focus.title}</div>
+                    <div className="text-sm font-bold text-[var(--bts-text-bright)]">{focus.title}</div>
                 </div>
                 <SpeakButton text={speakJoin(focus.sentence, s.caption)} speechLocale={speechLocale} />
             </div>
 
-            <p className="text-[15px] leading-relaxed text-slate-300">{focus.intro}</p>
+            <p className="text-[15px] leading-relaxed text-[var(--bts-text-secondary)]">{focus.intro}</p>
 
             {/* שני הצירים הסיבתיים במפורש: תזכורת מול הציר החדש */}
             <div className="mt-3 grid gap-1.5 sm:grid-cols-2">
-                <div className="rounded-lg border border-slate-700/50 bg-slate-950/30 px-3 py-2 text-[13px] text-slate-400">{focus.axisChangedLabel}</div>
-                <div className="rounded-lg border border-sky-500/40 bg-sky-950/20 px-3 py-2 text-[13px] font-bold text-sky-200">{focus.axisSameLabel}</div>
+                <div className="rounded-lg border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] px-3 py-2 text-[13px] text-[var(--bts-text-muted)]">{focus.axisChangedLabel}</div>
+                <div className="rounded-lg border border-sky-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(20%_-_var(--bts-tint-mix)_*_0.1),transparent)] [--t-d:var(--color-sky-950)] [--t-l:var(--color-sky-500)] px-3 py-2 text-[13px] font-bold text-sky-200">{focus.axisSameLabel}</div>
             </div>
 
-            <p className="mt-4 mb-2 flex items-center gap-1.5 text-[13px] font-bold text-slate-300">
+            <p className="mt-4 mb-2 flex items-center gap-1.5 text-[13px] font-bold text-[var(--bts-text-secondary)]">
                 <Crosshair size={13} className="text-sky-400" />
                 {focus.prompt}
             </p>
@@ -160,8 +160,8 @@ const FocusPanel: React.FC<{
                             onClick={() => setStateId(item.id)}
                             aria-pressed={active}
                             className={`rounded-xl border px-3 py-1.5 text-sm font-bold transition-colors ${active
-                                ? 'border-sky-400/60 bg-sky-900/30 text-sky-100'
-                                : 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600'
+                                ? 'border-sky-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(30%_-_var(--bts-tint-mix)_*_0.15),transparent)] [--t-d:var(--color-sky-900)] [--t-l:var(--color-sky-500)] text-sky-100'
+                                : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                 }`}
                         >
                             {item.label}
@@ -171,22 +171,22 @@ const FocusPanel: React.FC<{
             </div>
 
             {/* המוקד הנוכחי מוצג במפורש, גם לפני החלפה */}
-            <div className="mb-3 flex flex-wrap items-center gap-2 text-[13px] text-slate-400">
+            <div className="mb-3 flex flex-wrap items-center gap-2 text-[13px] text-[var(--bts-text-muted)]">
                 <span>{focus.nowFocusLabel}</span>
-                <span className="rounded-full border border-sky-500/40 bg-sky-950/30 px-2.5 py-0.5 font-bold text-sky-200">{s.label}</span>
+                <span className="rounded-full border border-sky-500/40 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(30%_-_var(--bts-tint-mix)_*_0.15),transparent)] [--t-d:var(--color-sky-950)] [--t-l:var(--color-sky-500)] px-2.5 py-0.5 font-bold text-sky-200">{s.label}</span>
             </div>
 
-            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">{data.nowLabel}</div>
+            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-faint)]">{data.nowLabel}</div>
             <TokenChips tokens={focus.tokens} weights={s.weights} pair={s.pair} dir={dir} reduce={reduce} sr={data.sr} />
 
             <RelationMeter tokens={focus.tokens} pair={s.pair} pairStrength={s.pairStrength} tension={s.tension} data={data} reduce={reduce} />
 
             <motion.p
                 key={s.id}
-                initial={reduce ? false : { opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { duration: 0.25 }}
-                className="mt-4 rounded-xl border border-sky-500/30 bg-sky-950/15 p-3 text-[15px] leading-relaxed text-slate-200"
+                className="mt-4 rounded-xl border border-sky-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-sky-950)] [--t-l:var(--color-sky-500)] p-3 text-[15px] leading-relaxed text-[var(--bts-text-body)]"
             >
                 <span className="inline-flex items-center gap-1.5 font-bold text-sky-200">
                     <Sparkles size={14} /> {s.label}
@@ -210,21 +210,21 @@ export const AttentionSentenceLab: React.FC<AttentionSentenceLabProps> = ({ data
     const v = data.variants.find((x) => x.id === variantId) ?? data.variants[0];
 
     return (
-        <div className="rounded-2xl border border-violet-500/30 bg-slate-900/50 p-5 text-start" dir={dir}>
+        <div className="rounded-2xl border border-violet-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-5 text-start" dir={dir}>
             {/* כותרת */}
             <div className="mb-4 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                     <Link2 size={18} className="text-violet-300" />
                     <div className="leading-tight">
-                        <div className="text-sm font-bold text-slate-100">{data.heading}</div>
-                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-slate-500" dir="ltr">{data.kicker}</div>
+                        <div className="text-sm font-bold text-[var(--bts-text-bright)]">{data.heading}</div>
+                        <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--bts-text-faint)]" dir="ltr">{data.kicker}</div>
                     </div>
                 </div>
                 <SpeakButton text={speakJoin(v.sentence, v.caption)} speechLocale={speechLocale} />
             </div>
 
             {/* ציר 1: בורר עריכות - שינוי במשפט משנה קשב */}
-            <p className="mb-2 flex items-center gap-1.5 text-[13px] text-slate-400">
+            <p className="mb-2 flex items-center gap-1.5 text-[13px] text-[var(--bts-text-muted)]">
                 <Pencil size={13} className="text-violet-400" />
                 {data.pickHint}
             </p>
@@ -238,8 +238,8 @@ export const AttentionSentenceLab: React.FC<AttentionSentenceLabProps> = ({ data
                             onClick={() => setVariantId(item.id)}
                             aria-pressed={active}
                             className={`rounded-xl border px-3 py-1.5 text-sm font-bold transition-colors ${active
-                                ? 'border-violet-400/60 bg-violet-900/30 text-violet-100'
-                                : 'border-slate-700/50 bg-slate-950/30 text-slate-300 hover:border-slate-600'
+                                ? 'border-violet-400/60 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(30%_-_var(--bts-tint-mix)_*_0.15),transparent)] [--t-d:var(--color-violet-900)] [--t-l:var(--color-violet-500)] text-violet-100'
+                                : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-to)_30%,transparent)] text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                 }`}
                         >
                             {item.control}
@@ -249,7 +249,7 @@ export const AttentionSentenceLab: React.FC<AttentionSentenceLabProps> = ({ data
             </div>
 
             {/* המשפט כמילים, עוצמת רקע לפי המשקל, טבעת על זוג הקשר */}
-            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">{data.nowLabel}</div>
+            <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[var(--bts-text-faint)]">{data.nowLabel}</div>
             <TokenChips tokens={v.tokens} weights={v.weights} pair={v.pair} dir={dir} reduce={reduce} sr={data.sr} />
 
             {/* מד עוצמת הקשר בין שני החלקים המרכזיים */}
@@ -258,10 +258,10 @@ export const AttentionSentenceLab: React.FC<AttentionSentenceLabProps> = ({ data
             {/* כיתוב דינמי למצב הנבחר */}
             <motion.p
                 key={v.id}
-                initial={reduce ? false : { opacity: 0, y: 6 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { duration: 0.25 }}
-                className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-950/15 p-3 text-[15px] leading-relaxed text-slate-200"
+                className="mt-4 rounded-xl border border-emerald-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] p-3 text-[15px] leading-relaxed text-[var(--bts-text-body)]"
             >
                 <span className="inline-flex items-center gap-1.5 font-bold text-emerald-200">
                     <Sparkles size={14} /> {v.control}
@@ -272,7 +272,7 @@ export const AttentionSentenceLab: React.FC<AttentionSentenceLabProps> = ({ data
             {/* ציר 2: מוקד עיבוד - אותו משפט בדיוק, קשב אחר */}
             <FocusPanel focus={data.focus} data={data} dir={dir} reduce={reduce} speechLocale={speechLocale} />
 
-            <p className="mt-3 text-[13px] leading-relaxed text-slate-500">{data.disclaimer}</p>
+            <p className="mt-3 text-[13px] leading-relaxed text-[var(--bts-text-faint)]">{data.disclaimer}</p>
         </div>
     );
 };
