@@ -40,38 +40,38 @@ export const EngineReveal: React.FC<EngineRevealProps> = ({
             dir={dir}
             className="relative overflow-hidden rounded-[2rem] border border-[var(--bts-border)] bg-[var(--bts-surface-elevated)] p-5 backdrop-blur-2xl shadow-2xl md:p-7"
         >
-            {/* הילות רקע: נשארות כרמז עומק, בעוצמה נמוכה יותר */}
-            <div className="pointer-events-none absolute -top-20 -right-16 h-64 w-64 rounded-full bg-cyan-500/6 blur-[90px]" />
-            <div className="pointer-events-none absolute -bottom-20 -left-12 h-72 w-72 rounded-full bg-indigo-500/6 blur-[100px]" />
+            {/* הילות רקע: נשארות כרמז עומק, בעוצמה נמוכה יותר.. */}
+            <div className="pointer-events-none absolute -top-20 -right-16 h-64 w-64 rounded-full bg-[var(--bts-brand-primary)]/6 blur-[90px]" />
+            <div className="pointer-events-none absolute -bottom-20 -left-12 h-72 w-72 rounded-full bg-[var(--bts-brand-secondary)]/6 blur-[100px]" />
 
             <div className="relative">
                 {/* ── בקשה (משתמש) ── */}
                 <div className="flex items-start justify-end gap-2.5">
-                    <div className="max-w-[80%] rounded-2xl rounded-tr-sm border border-cyan-500/30 bg-cyan-900/20 px-4 py-3">
-                        <div className="mb-1 text-[11px] font-bold text-cyan-300/80">{promptRole}</div>
-                        <p className="text-sm leading-relaxed text-slate-100 md:text-base">{prompt}</p>
+                    <div className="max-w-[80%] rounded-2xl rounded-tr-sm border border-[var(--bts-brand-primary)]/30 bg-[var(--bts-surface)] px-4 py-3">
+                        <div className="mb-1 text-[11px] font-bold text-[var(--bts-brand-primary-strong)]/80">{promptRole}</div>
+                        <p className="text-sm leading-relaxed text-[var(--bts-text-primary)] md:text-base">{prompt}</p>
                     </div>
-                    <div className="mt-0.5 shrink-0 rounded-full border border-cyan-500/30 bg-slate-800 p-2">
-                        <User size={16} className="text-cyan-300" />
+                    <div className="mt-0.5 shrink-0 rounded-full border border-[var(--bts-brand-primary)]/30 bg-[var(--bts-surface-inset)] p-2">
+                        <User size={16} className="text-[var(--bts-brand-primary-strong)]" />
                     </div>
                 </div>
 
                 {/* ── הרווח שביניהן: כאן מסתתר המנוע ── */}
                 <div className="my-3">
-                    <div className="relative flex flex-col items-center gap-2 rounded-2xl border border-dashed border-slate-600/50 bg-slate-950/40 px-4 py-4">
-                        {!reduce && (
-                            <motion.div
+                    <div className="relative flex flex-col items-center gap-2 rounded-2xl border border-dashed border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-inset)] px-4 py-4">
+                        {/* תמיד ברינדור (זהה בשרת ובלקוח); ב-reduced-motion מוסתר ב-CSS ולא מונפש. */}
+                        <motion.div
                                 // סריקת-האור שרומזת שמשהו פועל באמצע. הוחלשה: היא רצה
                                 // ברציפות מתחת לטקסט הקריאה, ולא נדרשת בעוצמה מלאה.
-                                className="pointer-events-none absolute inset-x-6 h-px bg-gradient-to-l from-transparent via-cyan-400/35 to-transparent"
+                                // נראית גם ב-Light (צבע דרך --bts-scan-line).
+                                className="pointer-events-none absolute inset-x-6 h-px bg-gradient-to-l from-transparent via-[var(--bts-scan-line)] to-transparent motion-reduce:hidden"
                                 initial={{ top: '0%' }}
-                                animate={{ top: ['0%', '100%', '0%'] }}
+                                animate={reduce ? undefined : { top: ['0%', '100%', '0%'] }}
                                 transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
                                 aria-hidden
                             />
-                        )}
                         <p className="text-center text-sm leading-relaxed text-[var(--bts-text-muted)]">{outsideLine}</p>
-                        <p className="text-center text-base font-bold leading-relaxed text-cyan-200 md:text-lg">{curiosityLine}</p>
+                        <p className="text-center text-base font-bold leading-relaxed text-[var(--bts-brand-primary-strong)] md:text-lg">{curiosityLine}</p>
                         {/* הקראת סיפור הכרטיס כולו בסדר הקריאה: בקשה, הרווח שבאמצע, תשובה */}
                         <SpeakButton
                             text={speakJoin(`${promptRole}: ${prompt}`, outsideLine, curiosityLine, `${answerRole}: ${answer}`)}
@@ -82,18 +82,18 @@ export const EngineReveal: React.FC<EngineRevealProps> = ({
 
                 {/* ── תשובה (מודל) ── */}
                 <div className="flex items-start gap-2.5">
-                    <div className="mt-0.5 shrink-0 rounded-full border border-[var(--bts-brand-secondary)]/30 bg-slate-800 p-2">
-                        <Sparkles size={16} className="text-indigo-300" />
+                    <div className="mt-0.5 shrink-0 rounded-full border border-[var(--bts-brand-secondary)]/30 bg-[var(--bts-surface-inset)] p-2">
+                        <Sparkles size={16} className="text-[var(--bts-brand-secondary)]" />
                     </div>
-                    <div className="max-w-[80%] rounded-2xl rounded-tl-sm border border-[var(--bts-brand-secondary)]/30 bg-indigo-900/15 px-4 py-3">
-                        <div className="mb-1 text-[11px] font-bold text-indigo-300/80">{answerRole}</div>
-                        <p className="text-sm leading-relaxed text-slate-100 md:text-base">{answer}</p>
+                    <div className="max-w-[80%] rounded-2xl rounded-tl-sm border border-[var(--bts-brand-secondary)]/30 bg-[var(--bts-surface)] px-4 py-3">
+                        <div className="mb-1 text-[11px] font-bold text-[var(--bts-brand-secondary)]/80">{answerRole}</div>
+                        <p className="text-sm leading-relaxed text-[var(--bts-text-primary)] md:text-base">{answer}</p>
                     </div>
                 </div>
 
                 {/* ── שורת ההקלדה (תחתית): כמו בצ׳אט אמיתי, הקלט למטה וההודעות מעליו.
                     דהויה ולא-פעילה בכוונה - היא רק ממחישה איפה מקלידים. ── */}
-                <div className="mt-4 flex items-center gap-2 rounded-2xl border border-slate-600/50 bg-[var(--bts-surface-inset)] py-2 pr-4 pl-2">
+                <div className="mt-4 flex items-center gap-2 rounded-2xl border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-inset)] py-2 pr-4 pl-2">
                     {/* slate-500 נמדד ב-4.09:1 מול משטח הקלט. slate-400 מחזיר את המראה
                         הדהוי ועובר את סף AA. */}
                     <span className="flex-1 text-sm text-[var(--bts-text-muted)]">{inputPlaceholder}</span>

@@ -55,14 +55,14 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
             className={`
                 sticky top-0 z-40 w-full transition-all duration-500
                 border-b border-amber-400/20
-                ${isScrolled 
-                    ? 'py-3 bg-[#0B1121]/95 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.5)]' 
-                    : 'py-6 bg-[#0F172A]' 
+                ${isScrolled
+                    ? 'py-3 bg-[var(--bts-surface-elevated)] backdrop-blur-xl shadow-[var(--bts-shadow-elevation)]'
+                    : 'py-6 bg-[var(--bts-surface-elevated)] backdrop-blur-xl'
                 }
             `}
         >
             {/* רקע עם אפקטים */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/20 via-[#0F172A] to-[#02040a]"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-[var(--bts-brand-secondary)]/20 via-[var(--bts-surface-elevated)] to-[var(--bts-page)]"></div>
 
             <div className="absolute inset-0 pointer-events-none opacity-60"> 
                 <div 
@@ -78,7 +78,7 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
             </div>
 
             {/* פס התקדמות תחתון */}
-            <div className={`absolute bottom-0 left-0 w-full h-0.75 bg-slate-900/80 transition-opacity duration-300 ${safeProgress > 0 ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`absolute bottom-0 left-0 w-full h-0.75 bg-[var(--bts-surface-inset)] transition-opacity duration-300 ${safeProgress > 0 ? 'opacity-100' : 'opacity-0'}`}>
                 <div 
                     className={`relative h-full bg-linear-to-r ${colorFrom} via-cyan-400 ${colorTo} shadow-[0_0_20px_currentColor] transition-all duration-100 ease-out`}
                     style={{ width: `${safeProgress}%` }} 
@@ -95,7 +95,7 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
                     
                     {/* שורת הפרק והתווית */}
                     <div className="flex items-center gap-3 text-[11px] font-mono font-bold tracking-widest mb-2">
-                        <span className={`flex items-center gap-1.5 bg-[#0F172A] px-3 py-1.5 rounded border ${borderColorClass}/40 shadow-lg shadow-indigo-900/20`}>
+                        <span className={`flex items-center gap-1.5 bg-[var(--bts-surface-elevated)] px-3 py-1.5 rounded border ${borderColorClass}/40 shadow-lg shadow-indigo-900/20`}>
                             <Terminal size={12} className={textColorClass} />
                             <span className={textColorClass}>{chapterNum}</span>
                         </span>
@@ -114,7 +114,7 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
                         שורות וניפחה את הסרגל ל-329px. מ-sm ומעלה הגדלים נשארים כשהיו. */}
                     {/* כותרת הסרגל במנוחה: קנה-מידה נזיל (clamp) מ-sm ומעלה במקום קפיצות בנקודות-שבירה,
                         כך שהיא מתכווצת בהדרגה כשהחלון מצטמצם בדסקטופ/טאבלט. במובייל נשמר text-xl. */}
-                    <TitleTag className={`font-black text-white leading-tight transition-all duration-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] ${isScrolled ? 'text-lg sm:text-2xl' : 'text-xl sm:text-[clamp(1.7rem,1.1rem+1.6vw,2.25rem)]'}`}>
+                    <TitleTag className={`font-black text-[var(--bts-text-primary)] leading-tight transition-all duration-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] ${isScrolled ? 'text-lg sm:text-2xl' : 'text-xl sm:text-[clamp(1.7rem,1.1rem+1.6vw,2.25rem)]'}`}>
                         {title}
                     </TitleTag>
                 </div>
@@ -125,21 +125,21 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
                         relative overflow-hidden
                         flex items-center gap-[clamp(0.6rem,0.3rem+0.9vw,1rem)] px-[clamp(0.85rem,0.4rem+1.1vw,1.5rem)] py-3
                         rounded-xl transition-all duration-500
-                        ${isScrolled 
-                            ? 'bg-[#0f172a] border border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.15)]' 
-                            : 'bg-[#1E293B] border border-slate-600/50 shadow-xl' 
+                        ${isScrolled
+                            ? 'bg-[var(--bts-surface-inset)] border border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+                            : 'bg-[var(--bts-surface-elevated)] border border-[var(--bts-border-emphasis)] shadow-xl'
                         }
                     `}>
                         <div className="flex flex-col items-end relative z-10">
-                            <span className={`text-[10px] font-mono uppercase tracking-wider mb-0.5 whitespace-nowrap ${isScrolled ? 'text-emerald-400' : 'text-slate-400'}`}>
+                            <span className={`text-[10px] font-mono uppercase tracking-wider mb-0.5 whitespace-nowrap ${isScrolled ? 'text-[var(--bts-status-positive)]' : 'text-[var(--bts-text-muted)]'}`}>
                                 {isScrolled ? t.chrome.header.progress : t.chrome.header.readTime}
                             </span>
-                            
+
                             <div className="flex items-center gap-2">
-                                <span className={`text-lg font-bold font-mono whitespace-nowrap transition-colors duration-300 ${isScrolled ? 'text-emerald-400' : 'text-white'}`}>
+                                <span className={`text-lg font-bold font-mono whitespace-nowrap transition-colors duration-300 ${isScrolled ? 'text-[var(--bts-status-positive)]' : 'text-[var(--bts-text-primary)]'}`}>
                                     {isScrolled ? safeProgress : readTime}
                                 </span>
-                                
+
                                 {isScrolled ? (
                                     <Percent size={16} className="text-emerald-500" />
                                 ) : (
@@ -148,7 +148,7 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({
                             </div>
                         </div>
 
-                        <div className={`w-px h-10 mx-2 hidden sm:block transition-colors ${isScrolled ? 'bg-emerald-900' : 'bg-slate-600'}`}></div>
+                        <div className={`w-px h-10 mx-2 hidden sm:block transition-colors ${isScrolled ? 'bg-emerald-900' : 'bg-[var(--bts-border-emphasis)]'}`}></div>
 
                         {isScrolled ? (
                              <Activity size={20} className="text-emerald-500" />

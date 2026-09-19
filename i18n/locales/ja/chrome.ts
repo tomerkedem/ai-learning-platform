@@ -33,6 +33,13 @@ export const chrome: typeof heChrome = {
         toExit: 'で終了',
     },
 
+    theme: {
+        label: 'テーマ',
+        system: 'システム',
+        light: 'ライト',
+        dark: 'ダーク',
+    },
+
     footer: {
         defaultLabel: 'AI 開発者のためのインタラクティブコース',
         copyright: '© 2026 トメル・ケデム. 無断複製を禁じます。',

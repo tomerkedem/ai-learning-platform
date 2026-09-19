@@ -33,6 +33,13 @@ export const chrome: typeof heChrome = {
         toExit: 'для выхода',
     },
 
+    theme: {
+        label: 'Тема',
+        system: 'Системная',
+        light: 'Светлая',
+        dark: 'Тёмная',
+    },
+
     footer: {
         defaultLabel: 'Интерактивные курсы для разработчиков ИИ',
         copyright: '© 2026 Томер Кедем. Все права защищены.',

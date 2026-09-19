@@ -33,6 +33,13 @@ export const chrome: typeof heChrome = {
         toExit: 'للخروج',
     },
 
+    theme: {
+        label: 'المظهر',
+        system: 'النظام',
+        light: 'فاتح',
+        dark: 'داكن',
+    },
+
     footer: {
         defaultLabel: 'دورات تفاعلية لمطوّري الذكاء الاصطناعي',
         copyright: '© 2026 تومر كيدم. جميع الحقوق محفوظة.',

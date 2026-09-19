@@ -39,7 +39,7 @@ export const ResponseNote: React.FC<{
 }> = ({ line, className = '' }) => {
     if (!line) return null;
     return (
-        <p className={`mt-4 border-t border-white/10 pt-3.5 text-start text-[13px] leading-relaxed text-slate-300 ${className}`}>
+        <p className={`mt-4 border-t border-[var(--bts-divider-soft)] pt-3.5 text-start text-[13px] leading-relaxed text-[var(--bts-text-secondary)] ${className}`}>
             {line}
         </p>
     );

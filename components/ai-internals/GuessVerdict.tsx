@@ -147,7 +147,12 @@ export const ShimmerFrame: React.FC<{
 }> = ({ rgb, reduce, innerClassName = '', children }) => {
     const conic = conicFor(rgb);
     return (
-        <div className="relative rounded-[1.2rem]" style={reduce ? undefined : { boxShadow: `0 0 60px -14px rgba(${rgb},0.6)` }}>
+        // data-theme="dark": פאנל-ההצלחה הוא שבב זכוכית כהה מכוון (כמו GuessButton),
+        // אטום בכוונה מאחורי טבעת ה-conic המסתובבת. הטקסט בפנים (cyan-100/emerald-300
+        // וכו') נבחר להיקרא על רקע כהה קבוע, לא על ה-Light/Dark של הדף שסביבו. בלי
+        // הנעילה הזו, אסימוני --bts-* (ובכללם --bts-ink-darken שמכהה טקסט-זהות-תחנה
+        // ב-Light) היו זולגים לכאן ב-Light ומכהים טקסט שכבר כהה מספיק - כמעט בלתי-נראה.
+        <div data-theme="dark" className="relative rounded-[1.2rem]" style={reduce ? undefined : { boxShadow: `0 0 60px -14px rgba(${rgb},0.6)` }}>
             {/* מסגרת גרדיאנט מלאה ואטומה כבסיס (כמו בכפתור): לעולם לא חושפת רקע כהה
                 בפינות. ה-conic המסתובב מרצד מעליה בלבד. */}
             <div
@@ -185,7 +190,7 @@ export const ShimmerFrame: React.FC<{
 export const GuessInvite: React.FC<{ line?: string }> = ({ line }) => {
     if (!line) return null;
     return (
-        <p className="mx-auto mb-5 max-w-md text-center text-[13px] font-medium leading-snug text-slate-400">{line}</p>
+        <p className="mx-auto mb-5 max-w-md text-center text-[13px] font-medium leading-snug text-[var(--bts-text-muted)]">{line}</p>
     );
 };
 
@@ -348,7 +353,7 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                         </div>
                     </ShimmerFrame>
                 ) : (
-                    <div className="relative overflow-hidden rounded-2xl border border-amber-400/45 bg-gradient-to-b from-amber-900/[0.16] to-slate-950/60 p-5 md:p-6">
+                    <div className="relative overflow-hidden rounded-2xl border border-amber-400/45 bg-gradient-to-b from-amber-900/[0.16] to-[var(--bts-surface)] p-5 md:p-6">
                         {!reduce && (
                             <motion.div
                                 aria-hidden
@@ -368,14 +373,14 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                         transition={reduce ? {} : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
                                         className="inline-flex"
                                     >
-                                        <Lightbulb size={20} className="shrink-0 text-amber-300" />
+                                        <Lightbulb size={20} className="shrink-0 text-[var(--bts-status-caution)]" />
                                     </motion.span>
-                                    <span className="text-lg font-black text-amber-200 md:text-xl">{wrongTitle}</span>
+                                    <span className="text-lg font-black text-[var(--bts-status-caution)] md:text-xl">{wrongTitle}</span>
                                     <SpeakButton text={wrongSpeak} className="ms-auto" />
                                 </div>
-                                <p className="mt-2.5 text-sm leading-relaxed text-slate-200">{wrongExplain}</p>
+                                <p className="mt-2.5 text-sm leading-relaxed text-[var(--bts-text-secondary)]">{wrongExplain}</p>
                                 {wrongExplainMore && (
-                                    <p className="mt-1.5 text-sm leading-relaxed text-slate-400">{wrongExplainMore}</p>
+                                    <p className="mt-1.5 text-sm leading-relaxed text-[var(--bts-text-muted)]">{wrongExplainMore}</p>
                                 )}
 
                                 <ResponseNote line={respondWrong} />
@@ -388,13 +393,13 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                         className="mt-4 rounded-xl border border-emerald-400/35 bg-emerald-900/15 p-3.5"
                                     >
                                         <div className="flex items-start justify-between gap-2">
-                                            <p className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-200">
-                                                <CheckCircle2 size={15} className="text-emerald-300" /> {reveal.title}
+                                            <p className="inline-flex items-center gap-1.5 text-sm font-bold text-[var(--bts-status-positive)]">
+                                                <CheckCircle2 size={15} className="text-[var(--bts-status-positive)]" /> {reveal.title}
                                             </p>
                                             {/* הקראת ההסבר המדויק הנחשף, בנפרד משאר הכרטיס */}
                                             <SpeakButton text={speakJoin(reveal.title, reveal.body)} />
                                         </div>
-                                        <p className="mt-1 text-sm leading-relaxed text-slate-300">{reveal.body}</p>
+                                        <p className="mt-1 text-sm leading-relaxed text-[var(--bts-text-secondary)]">{reveal.body}</p>
                                     </motion.div>
                                 )}
 

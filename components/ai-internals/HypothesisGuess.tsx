@@ -30,10 +30,10 @@ function CueIllustration({ cue }: { cue: HypothesisCue }) {
     if (cue === 'read') {
         return (
             <div className="flex items-center gap-2">
-                <Eye size={18} className="text-slate-300" aria-hidden />
+                <Eye size={18} className="text-[var(--bts-text-secondary)]" aria-hidden />
                 <div className="flex flex-col gap-1" aria-hidden>
-                    <span className="block h-1 w-8 rounded-full bg-slate-500/70" />
-                    <span className="block h-1 w-5 rounded-full bg-slate-600/70" />
+                    <span className="block h-1 w-8 rounded-full bg-[var(--bts-border-emphasis)]" />
+                    <span className="block h-1 w-5 rounded-full bg-[var(--bts-border)]" />
                 </div>
             </div>
         );
@@ -41,10 +41,10 @@ function CueIllustration({ cue }: { cue: HypothesisCue }) {
     if (cue === 'rail') {
         return (
             <div className="flex items-center gap-1.5" aria-hidden>
-                <Lock size={16} className="text-slate-300" />
+                <Lock size={16} className="text-[var(--bts-text-secondary)]" />
                 <div className="flex items-center gap-1">
                     {[0, 1, 2, 3].map((i) => (
-                        <span key={i} className="h-1.5 w-3 rounded-sm bg-slate-500/70" />
+                        <span key={i} className="h-1.5 w-3 rounded-sm bg-[var(--bts-border-emphasis)]" />
                     ))}
                 </div>
             </div>
@@ -55,21 +55,21 @@ function CueIllustration({ cue }: { cue: HypothesisCue }) {
             <div className="flex items-center gap-1" aria-hidden>
                 {tokenCue.map((t, i) => (
                     <React.Fragment key={i}>
-                        <span className="rounded-md border border-cyan-500/40 bg-cyan-950/40 px-1.5 py-0.5 text-[9px] font-bold text-cyan-200">{t}</span>
-                        <span className="h-1 w-1 rounded-full bg-cyan-400/70" />
+                        <span className="rounded-md border border-[var(--bts-brand-primary)]/40 bg-[var(--bts-brand-primary)]/15 px-1.5 py-0.5 text-[9px] font-bold text-[var(--bts-brand-primary-strong)]">{t}</span>
+                        <span className="h-1 w-1 rounded-full bg-[var(--bts-brand-primary-strong)]/70" />
                     </React.Fragment>
                 ))}
-                <span className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--bts-brand-primary-strong)]" />
             </div>
         );
     }
     // archive
     return (
         <div className="flex items-center gap-2" aria-hidden>
-            <Database size={18} className="text-slate-300" />
+            <Database size={18} className="text-[var(--bts-text-secondary)]" />
             <div className="flex flex-col gap-0.5">
-                <span className="block h-1 w-6 rounded-sm bg-slate-500/70" />
-                <span className="block h-1 w-6 rounded-sm bg-slate-600/70" />
+                <span className="block h-1 w-6 rounded-sm bg-[var(--bts-border-emphasis)]" />
+                <span className="block h-1 w-6 rounded-sm bg-[var(--bts-border)]" />
             </div>
         </div>
     );
@@ -83,15 +83,15 @@ type CardState = 'idle' | 'correct' | 'wrong' | 'revealed' | 'dim';
 function stateClasses(state: CardState, reduce: boolean): string {
     switch (state) {
         case 'correct':
-            return `border-cyan-400/60 bg-cyan-900/20 ${reduce ? '' : 'shadow-[0_0_20px_-14px_rgba(34,211,238,0.5)]'}`;
+            return `border-[var(--bts-brand-primary-strong)]/60 bg-[var(--bts-brand-primary)]/10 ${reduce ? '' : 'shadow-[0_0_20px_-14px_rgba(34,211,238,0.5)]'}`;
         case 'wrong':
-            return 'border-amber-400/45 bg-amber-900/12';
+            return 'border-amber-400/45 bg-amber-500/10';
         case 'revealed':
-            return 'border-cyan-400/45 bg-cyan-900/12';
+            return 'border-[var(--bts-brand-primary-strong)]/45 bg-[var(--bts-brand-primary)]/6';
         case 'dim':
-            return 'border-white/5 bg-slate-900/40 opacity-60';
+            return 'border-[var(--bts-border)] bg-[var(--bts-surface-inset)] opacity-60';
         default:
-            return 'border-slate-700/60 bg-slate-900/50 hover:border-cyan-500/50 hover:bg-cyan-900/10';
+            return 'border-[var(--bts-border-emphasis)] bg-[var(--bts-surface)] hover:border-[var(--bts-brand-primary)]/50 hover:bg-[var(--bts-brand-primary)]/10';
     }
 }
 
@@ -134,7 +134,7 @@ export const HypothesisGuess: React.FC<{
             dir={dir}
             className="relative overflow-hidden rounded-[2rem] border border-[var(--bts-border)] bg-[var(--bts-surface)] p-6 backdrop-blur-xl md:p-8"
         >
-            <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[80px]" />
+            <div className="pointer-events-none absolute -top-16 left-1/2 h-32 w-72 -translate-x-1/2 rounded-full bg-[var(--bts-brand-primary)]/10 blur-[80px]" />
 
             <div className="relative">
                 <div className="text-center">
@@ -163,8 +163,8 @@ export const HypothesisGuess: React.FC<{
                                 }}
                                 aria-pressed={selected}
                                 aria-label={`${h.title}. ${h.concept}`}
-                                whileHover={reduce ? undefined : { scale: 1.015 }}
-                                whileTap={reduce ? undefined : { scale: 0.985 }}
+                                whileHover={{ scale: reduce ? 1 : 1.015 }}
+                                whileTap={{ scale: reduce ? 1 : 0.985 }}
                                 className={`relative flex h-full w-full flex-col gap-2.5 rounded-2xl border p-4 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bts-focus-ring-offset)] ${stateClasses(state, reduce)}`}
                             >
                                 {/* פעימת-אישור חד-פעמית בבחירה נכונה */}
@@ -179,7 +179,7 @@ export const HypothesisGuess: React.FC<{
                                 )}
                                 {/* pe-8 שומר את הפינה לכפתור ההקראה (אח של הכרטיס, ממוקם absolute) */}
                                 <div className="flex items-center justify-between gap-2 pe-8">
-                                    <span className="rounded-xl border border-white/10 bg-slate-950/50 px-2.5 py-2">
+                                    <span className="rounded-xl border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] px-2.5 py-2">
                                         <CueIllustration cue={h.cue} />
                                     </span>
                                     {(state === 'correct' || state === 'revealed') && (
@@ -187,15 +187,15 @@ export const HypothesisGuess: React.FC<{
                                             initial={reduce ? false : { scale: 0 }}
                                             animate={{ scale: 1 }}
                                             transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 15 }}
-                                            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-cyan-400 text-slate-950"
+                                            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--bts-brand-primary-strong)] text-slate-950"
                                         >
                                             <Check size={14} strokeWidth={3} />
                                         </motion.span>
                                     )}
                                 </div>
                                 <div>
-                                    <div className="text-base font-black text-white">{h.title}</div>
-                                    <p className="mt-1 text-sm leading-relaxed text-slate-300">{h.concept}</p>
+                                    <div className="text-base font-black text-[var(--bts-text-primary)]">{h.title}</div>
+                                    <p className="mt-1 text-sm leading-relaxed text-[var(--bts-text-secondary)]">{h.concept}</p>
                                     {selected && <span className="mt-2 inline-flex rounded-full border border-current/30 px-2 py-0.5 text-xs font-black text-current">{h.status ?? content.wrongLead}</span>}
                                 </div>
                             </motion.button>

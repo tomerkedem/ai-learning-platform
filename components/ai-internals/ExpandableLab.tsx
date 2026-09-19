@@ -15,6 +15,7 @@ import { createPortal } from 'react-dom';
 import { Maximize2, Minimize2 } from 'lucide-react';
 
 import { useT } from '@/i18n/useT';
+import { usePortalTheme } from './usePortalTheme';
 
 // אלמנטים שאפשר למקד עליהם. משמש למלכודת הפוקוס במסך מלא.
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -130,6 +131,9 @@ export const ExpandableLab: React.FC<ExpandableLabProps> = ({ children, title })
     // שתישאר מפורשת. שניהם שומרים aria-label לנגישות.
     // compact = כפתור ההגדלה שיושב בעמוד. אחרת = כפתור החזרה שבתוך מסך מלא.
     // שניהם יעד מגע מלא (44px) וכיתוב קריא, כמו בשאר פקדי הלומדה.
+    // ערכת-הנושא של ה-Portal: ראו components/ai-internals/usePortalTheme.ts.
+    const dialogTheme = usePortalTheme(rootRef, expanded && mounted);
+
     const button = (compact: boolean) => (
         <button
             type="button"
@@ -138,7 +142,7 @@ export const ExpandableLab: React.FC<ExpandableLabProps> = ({ children, title })
             aria-label={compact ? z.expandAria : z.collapseAria}
             title={compact ? z.expand : undefined}
             aria-expanded={expanded}
-            className={`inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg border border-slate-600/60 bg-slate-900/85 ${compact ? 'min-w-[44px] px-2' : 'px-3'} text-sm font-bold text-slate-200 backdrop-blur transition-colors hover:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60`}
+            className={`inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-elevated)] ${compact ? 'min-w-[44px] px-2' : 'px-3'} text-sm font-bold text-[var(--bts-text-secondary)] backdrop-blur transition-colors hover:border-[var(--bts-brand-primary-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)]`}
         >
             {compact ? <Maximize2 size={16} /> : <Minimize2 size={14} />}
             {!compact && z.collapse}
@@ -161,15 +165,16 @@ export const ExpandableLab: React.FC<ExpandableLabProps> = ({ children, title })
                 createPortal(
                     <div
                         dir={dir}
+                        data-theme={dialogTheme}
                         ref={dialogRef}
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby={title ? titleId : undefined}
                         aria-label={title ? undefined : z.expandAria}
-                        className="fixed inset-0 z-[9999] flex flex-col bg-slate-950/96 backdrop-blur-sm"
+                        className="fixed inset-0 z-[9999] flex flex-col bg-[var(--bts-page)] backdrop-blur-sm"
                     >
-                        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-800/70 px-3 py-2.5 sm:px-5">
-                            <span id={titleId} className="truncate text-sm font-bold text-slate-200">{title}</span>
+                        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--bts-border)] px-3 py-2.5 sm:px-5">
+                            <span id={titleId} className="truncate text-sm font-bold text-[var(--bts-text-secondary)]">{title}</span>
                             {button(false)}
                         </div>
                         {/* overscroll-contain: גלילה בקצה המעבדה לא נשפכת לעמוד שמאחורי ה-overlay */}

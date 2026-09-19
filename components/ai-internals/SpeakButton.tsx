@@ -154,10 +154,10 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({ text, className = '', 
             aria-pressed={active}
             tabIndex={phase === 'ready' ? 0 : -1}
             aria-hidden={phase === 'boot' || undefined}
-            className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${hitArea} ${
+            className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] ${hitArea} ${
                 active
-                    ? 'border-cyan-400/60 bg-cyan-500/15 text-cyan-300'
-                    : 'border-white/10 bg-slate-950/60 text-slate-400 hover:border-cyan-400/40 hover:text-cyan-200'
+                    ? 'border-[var(--bts-brand-primary-strong)]/60 bg-[var(--bts-brand-primary)]/15 text-[var(--bts-brand-primary-strong)]'
+                    : 'border-[var(--bts-border)] bg-[var(--bts-surface-inset)] text-[var(--bts-text-muted)] hover:border-[var(--bts-brand-primary-strong)]/40 hover:text-[var(--bts-brand-primary-strong)]'
             } ${phase === 'boot' ? 'invisible' : ''} ${className}`}
         >
             {active ? <Square size={12} aria-hidden /> : <Volume2 size={14} aria-hidden />}

@@ -25,6 +25,7 @@ import {
 import { ACCENTS, type AccentStyle } from './accents';
 import type { Accent } from './types';
 import { StationViz, STATION_PALETTE, STATION_RGB, haptic } from './IntroStationViz';
+import { usePortalTheme } from './usePortalTheme';
 import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
 import { useT } from '@/i18n/useT';
@@ -119,8 +120,8 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
             // קריאה בלי להיכנס מתחת למסילת-הקצה הצפה שיושבת בצד הסוף.
             style={{
                 scrollMarginTop: 'calc(var(--bts-sticky-top, 6rem) + 1.75rem)',
-                borderColor: open ? 'rgba(71 85 105 / 0.55)' : candidate ? `rgba(${rgb} / 0.3)` : 'rgba(51 65 85 / 0.5)',
-                backgroundColor: open ? 'rgba(15 23 42 / 0.92)' : 'rgba(15 23 42 / 0.4)',
+                borderColor: open ? 'var(--bts-border-emphasis)' : candidate ? `rgba(${rgb} / 0.3)` : 'var(--bts-border)',
+                backgroundColor: open ? 'var(--bts-surface-elevated)' : 'var(--bts-surface)',
                 boxShadow: open ? 'var(--bts-shadow-elevation)' : 'none',
             }}
             className={open
@@ -132,18 +133,19 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                 onClick={onToggle}
                 aria-expanded={open}
                 aria-controls={panelId}
-                className="flex w-full items-start gap-3.5 p-3.5 text-start transition-colors hover:bg-white/[0.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--bts-focus-ring-offset)] md:p-4"
+                className="flex w-full items-start gap-3.5 p-3.5 text-start transition-colors hover:bg-[var(--bts-text-primary)]/[0.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--bts-focus-ring-offset)] md:p-4"
             >
                 {/* תג מספר רץ. עד כאן היה מילוי רווי בגוון התחנה עם טקסט לבן, שנמדד
                     ב-3.19:1 עד 3.61:1 בגוונים הבהירים. עכשיו: משטח כהה ניטרלי, המספר
                     עצמו בגוון התחנה (שם נשארת הזהות), וטבעת פנימית דקה במקום המילוי. */}
                 <span
-                    className="relative mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                    className="bts-ink relative mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold"
                     style={{
-                        backgroundColor: 'rgba(2 6 23 / 0.7)',
+                        backgroundColor: 'var(--bts-surface-inset)',
                         color: `rgb(${ink})`,
+                        '--ink': ink,
                         boxShadow: `inset 0 0 0 1px rgba(${rgb} / ${open ? 0.4 : 0.35})`,
-                    }}
+                    } as React.CSSProperties}
                     dir="ltr"
                 >
                     {n}
@@ -159,7 +161,7 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                     <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
                         <span className={open ? 'text-lg font-bold leading-tight text-[var(--bts-text-primary)] md:text-xl' : 'text-base font-bold leading-tight text-[var(--bts-text-primary)]'}>{station.title}</span>
                         {isLoop && (
-                            <span className="inline-flex items-center gap-1 text-xs font-bold" style={{ color: `rgb(${ink})` }}>
+                            <span className="bts-ink inline-flex items-center gap-1 text-xs font-bold" style={{ color: `rgb(${ink})`, '--ink': ink } as React.CSSProperties}>
                                 <CornerDownLeft size={13} aria-hidden />
                                 {roadmapLabels.loopBadge}
                             </span>
@@ -169,21 +171,22 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
 
                 {/* מחוון פתיחה: רמז ברור שאפשר להציץ פנימה */}
                 <span className="mt-0.5 flex shrink-0 items-center gap-1.5">
-                    {!open && <span className="hidden text-xs font-bold sm:inline" style={{ color: `rgb(${ink})` }}>{roadmapLabels.peek}</span>}
+                    {!open && <span className="bts-ink hidden text-xs font-bold sm:inline" style={{ color: `rgb(${ink})`, '--ink': ink } as React.CSSProperties}>{roadmapLabels.peek}</span>}
                     <motion.span
                         aria-hidden
                         animate={{ rotate: open ? 180 : 0 }}
                         transition={reduce ? { duration: 0 } : { duration: 0.25 }}
-                        className="flex h-6 w-6 items-center justify-center rounded-full border"
-                        style={open ? {
-                            borderColor: 'rgba(100 116 139 / 0.5)',
+                        className={`flex h-6 w-6 items-center justify-center rounded-full border ${open ? '' : 'bts-ink'}`}
+                        style={(open ? {
+                            borderColor: 'var(--bts-border-emphasis)',
                             backgroundColor: 'transparent',
-                            color: 'rgb(203 213 225)',
+                            color: 'var(--bts-text-secondary)',
                         } : {
                             borderColor: `rgba(${rgb} / 0.28)`,
-                            backgroundColor: 'rgba(2 6 23 / 0.4)',
+                            backgroundColor: 'var(--bts-surface-inset)',
                             color: `rgb(${ink})`,
-                        }}
+                            '--ink': ink,
+                        }) as React.CSSProperties}
                     >
                         <ChevronDown size={15} />
                     </motion.span>
@@ -209,7 +212,7 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                         <div className="@container px-4 pb-5 pt-1 md:px-5">
                             <div className="grid gap-4 @min-[560px]:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] @min-[560px]:gap-6">
                                 <div className="min-w-0">
-                                    {hint && <p className="text-base font-semibold leading-relaxed text-slate-50">{hint}</p>}
+                                    {hint && <p className="text-base font-semibold leading-relaxed text-[var(--bts-text-primary)]">{hint}</p>}
                                     <div className="mt-3 flex items-center justify-between gap-2.5">
                                         {station.term && <code dir="ltr" className="rounded-md border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-inset)] px-1.5 py-0.5 font-mono text-[11px] font-bold text-[var(--bts-text-secondary)]">{station.term}</code>}
                                         <SpeakButton
@@ -230,7 +233,7 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                                     </motion.div>
                                 )}
                             </div>
-                            <div ref={setCaptionSlot} className="mt-5 border-t border-slate-700/60 pt-4" />
+                            <div ref={setCaptionSlot} className="mt-5 border-t border-[var(--bts-border)] pt-4" />
                         </div>
                     </motion.div>
                 )}
@@ -276,6 +279,9 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
     }, []);
     const openIdRef = useRef<string | null>(null);
     useEffect(() => { openIdRef.current = openId; }, [openId]);
+    // עוגן לא-מפורטל לגזירת נעילת-ההיקף (data-theme) של דוק הניווט המפורטל למטה.
+    // ראו components/ai-internals/usePortalTheme.ts.
+    const rootRef = useRef<HTMLDivElement>(null);
     const candidateRef = useRef<string | null>(null);
     const cardEls = useRef<Map<string, HTMLElement>>(new Map());
     const holdUntil = useRef(0);
@@ -286,6 +292,8 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
     // העצמאי (כשמכובה) נשארת כפי שהיא. הבר הצף מרונדר ב-Portal ל-body רק כש-demo פעיל,
     // מצב שמתרחש רק אחרי לחיצת משתמש בצד הלקוח, ולכן document.body קיים (בטוח ב-SSR).
     const [demo, setDemo] = useState(false);
+    // נגזר רק כש-demo נדלק (זה הרגע היחיד שבו דוק הניווט המפורטל בכלל מרונדר).
+    const dockTheme = usePortalTheme(rootRef, demo);
 
     // גלילה יציבה אל התחנה: ראש הכרטיס נוחת באותו מקום בכל צעד (scroll-mt-24), כך
     // שהתחנה הפעילה לא "קופצת". אחרי הפריים כי הפתיחה במצב הדגמה מיידית (snap).
@@ -478,14 +486,14 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
     const atEnd = currentIndex >= total - 1;
 
     return (
-        <div dir={dir} className="relative flex flex-col gap-4">
+        <div dir={dir} ref={rootRef} className="relative flex flex-col gap-4">
             {/* מתג מצב הדגמה: קטן ולא פולשני, נשאר מחוץ לחוויית הלומד העצמאי כשמכובה */}
             <div className="flex justify-end">
                 <button
                     type="button"
                     onClick={toggleDemo}
                     aria-pressed={demo}
-                    className={`inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${demo ? 'border-cyan-400/70 bg-cyan-500/20 text-cyan-100' : 'border-slate-600/60 bg-slate-900/70 text-slate-300 hover:border-slate-400'}`}
+                    className={`inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] ${demo ? 'border-[var(--bts-brand-primary-strong)]/70 bg-[var(--bts-brand-primary)]/20 text-[var(--bts-brand-primary-strong)]' : 'border-[var(--bts-border-emphasis)] bg-[var(--bts-surface)] text-[var(--bts-text-secondary)] hover:border-[var(--bts-brand-primary-strong)]/40'}`}
                 >
                     <Presentation size={15} aria-hidden />
                     {demo ? demoLabels.exit : demoLabels.start}
@@ -500,25 +508,26 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                 return (
                     <React.Fragment key={zone.id}>
                         <motion.section
-                            initial={reduce ? false : { opacity: 0, y: 22 }}
+                            initial={{ opacity: 0, y: 22 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: '-60px' }}
-                            transition={{ duration: 0.5, delay: reduce ? 0 : zi * 0.05 }}
-                            className={`relative overflow-hidden rounded-[1.75rem] border ${a.border} bg-slate-900/55 p-5 backdrop-blur-xl md:p-6`}
+                            transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : zi * 0.05 }}
+                            className={`relative overflow-hidden rounded-[1.75rem] border ${a.border} bg-[var(--bts-surface)] p-5 backdrop-blur-xl md:p-6`}
                         >
-                            {/* הילת-אזור: נשארת כרמז עומק בלבד. הוחלשה כדי שהאזור ייקרא
-                                כמשטח קריאה רגוע ולא כמשטח מואר. */}
+                            {/* הילת-אזור: נשארת כרמז עומק בלבד ב-Dark. אווירה בלבד. */}
                             <div className={`pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full ${a.bgSoft} opacity-50 blur-[70px]`} />
 
-                            {/* כותרת האזור */}
+                            {/* כותרת האזור. טקסט התג ניטרלי בכוונה (לא a.text): הגוון הרך של הצבע
+                                (300-series) נכשל בניגודיות על משטח בהיר, וזהות האזור נשמרת דרך
+                                המסגרת והרקע הרך (a.border/a.bgSoft) שעובדים היטב בשתי הערכות. */}
                             <header className="relative mb-5 flex items-start gap-3">
-                                <span className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-black ${a.border} ${a.bgSoft} ${a.text}`}>
+                                <span className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-black ${a.border} ${a.bgSoft} text-[var(--bts-text-secondary)]`}>
                                     <span>{roadmapLabels.zone}</span>
                                     <span dir="ltr">{zi + 1}/{zones.length}</span>
                                 </span>
                                 <div className="min-w-0">
-                                    <h3 className="text-lg font-black text-white md:text-xl">{zone.title}</h3>
-                                    <p className="mt-0.5 text-sm leading-relaxed text-slate-400">{zone.caption}</p>
+                                    <h3 className="text-lg font-black text-[var(--bts-text-primary)] md:text-xl">{zone.title}</h3>
+                                    <p className="mt-0.5 text-sm leading-relaxed text-[var(--bts-text-muted)]">{zone.caption}</p>
                                 </div>
                                 {/* הקראת כותרת האזור והכיתוב שלו */}
                                 <SpeakButton text={speakJoin(zone.title, zone.caption)} className="ms-auto shrink-0" />
@@ -547,10 +556,10 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
 
                         {/* מחבר בין אזורים */}
                         {zi < zones.length - 1 && (
-                            <div className="flex items-center justify-center gap-2 py-0.5 text-slate-600" aria-hidden>
-                                <span className="h-5 w-px bg-gradient-to-b from-transparent to-slate-600/60" />
+                            <div className="flex items-center justify-center gap-2 py-0.5 text-[var(--bts-text-muted)]" aria-hidden>
+                                <span className="h-5 w-px bg-gradient-to-b from-transparent to-[var(--bts-border-emphasis)]" />
                                 <span className="text-xs font-bold">▼</span>
-                                <span className="h-5 w-px bg-gradient-to-t from-transparent to-slate-600/60" />
+                                <span className="h-5 w-px bg-gradient-to-t from-transparent to-[var(--bts-border-emphasis)]" />
                             </div>
                         )}
                     </React.Fragment>
@@ -564,19 +573,20 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
             {demo && createPortal(
                 <motion.div
                     dir={dir}
+                    data-theme={dockTheme}
                     initial={reduce ? false : { opacity: 0, x: isRtl ? -12 : 12 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={reduce ? { duration: 0 } : { duration: 0.25 }}
                     className={`fixed top-1/2 z-[10000] -translate-y-1/2 ${isRtl ? 'left-2 sm:left-3' : 'right-2 sm:right-3'}`}
                 >
-                    <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-cyan-500/40 bg-slate-900/95 p-1.5 shadow-2xl backdrop-blur-xl">
+                    <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-[var(--bts-brand-primary-strong)]/40 bg-[var(--bts-surface-elevated)] p-1.5 shadow-2xl backdrop-blur-xl">
                         <button
                             type="button"
                             onClick={() => step(-1)}
                             disabled={atStart}
                             aria-label={demoLabels.prev}
                             title={demoLabels.prev}
-                            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-600/60 bg-slate-800/70 text-slate-100 transition-colors hover:border-cyan-400/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 disabled:opacity-40 disabled:hover:border-slate-600/60"
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface)] text-[var(--bts-text-primary)] transition-colors hover:border-[var(--bts-brand-primary-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] disabled:opacity-40 disabled:hover:border-[var(--bts-border-emphasis)]"
                         >
                             <ChevronUp size={20} aria-hidden />
                         </button>
@@ -584,9 +594,9 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                         {/* מונה קומפקטי: מספר נוכחי מעל הסך-הכל. הטקסט המלא זמין לקוראי-מסך. */}
                         <div className="flex flex-col items-center py-0.5" aria-live="polite">
                             <span className="sr-only">{demoLabels.counter(Math.max(1, currentIndex + 1), total)}</span>
-                            <span aria-hidden className="text-base font-black leading-none text-cyan-100">{Math.max(1, currentIndex + 1)}</span>
-                            <span aria-hidden className="my-1 h-px w-4 bg-cyan-500/40" />
-                            <span aria-hidden className="text-xs font-bold leading-none text-slate-400" dir="ltr">{total}</span>
+                            <span aria-hidden className="text-base font-black leading-none text-[var(--bts-brand-primary-strong)]">{Math.max(1, currentIndex + 1)}</span>
+                            <span aria-hidden className="my-1 h-px w-4 bg-[var(--bts-brand-primary-strong)]/40" />
+                            <span aria-hidden className="text-xs font-bold leading-none text-[var(--bts-text-muted)]" dir="ltr">{total}</span>
                         </div>
 
                         <button
@@ -595,19 +605,19 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
                             disabled={atEnd}
                             aria-label={demoLabels.next}
                             title={demoLabels.next}
-                            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-500/50 bg-cyan-500/15 text-cyan-50 transition-colors hover:border-cyan-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 disabled:opacity-40"
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--bts-brand-primary-strong)]/50 bg-[var(--bts-brand-primary)]/15 text-[var(--bts-brand-primary-strong)] transition-colors hover:border-[var(--bts-brand-primary-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] disabled:opacity-40"
                         >
                             <ChevronDown size={20} aria-hidden />
                         </button>
 
-                        <span className="my-0.5 h-px w-6 bg-slate-700" aria-hidden />
+                        <span className="my-0.5 h-px w-6 bg-[var(--bts-border-emphasis)]" aria-hidden />
 
                         <button
                             type="button"
                             onClick={() => setDemo(false)}
                             aria-label={demoLabels.exit}
                             title={demoLabels.exit}
-                            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-600/60 bg-slate-800/70 text-slate-300 transition-colors hover:border-slate-400 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60"
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface)] text-[var(--bts-text-secondary)] transition-colors hover:border-[var(--bts-brand-primary-strong)] hover:text-[var(--bts-text-primary)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)]"
                         >
                             <X size={18} aria-hidden />
                         </button>

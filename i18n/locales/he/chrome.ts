@@ -42,6 +42,14 @@ export const chrome = {
         toExit: 'ליציאה',
     },
 
+    // בורר ערכת-נושא (System/Light/Dark). ראה components/ThemeProvider.tsx.
+    theme: {
+        label: 'ערכת נושא',
+        system: 'מערכת',
+        light: 'בהיר',
+        dark: 'כהה',
+    },
+
     // פוטר
     footer: {
         defaultLabel: 'לומדות אינטראקטיביות למפתחי AI',

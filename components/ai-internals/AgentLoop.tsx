@@ -66,6 +66,16 @@ type Positioned = Stage & { x: number; y: number };
 
 /* ═══════════════════════ רכיבי-סצנה פנימיים ═══════════════════════ */
 
+// T2B - החלטת עיצוב מכוונת: הבמה החיה כולה (EngineCore + ChatStraightPath +
+// AgentControlRoom) נשארת "שבב זכוכית כהה" קבוע בשתי הערכות, בדיוק כמו GuessButton
+// הקנוני (components/ai-internals/GuessButton.tsx) ופאנל ההצלחה של GuessVerdict
+// (ShimmerFrame): מבטא-פרימיום מכוון, לא כרום-דף שאמור להתהפך עם הערכה. הבמה היא
+// "מסך" בתוך הדף (כמו נגן וידאו או עורך קוד בתוך אפליקציה בהירה) ולא משטח תוכן.
+// לכן: אין המרה ל-var(--bts-*) כאן, ואין על ההילות/הטבעות שנותנות
+// לבמה את הגוף שלה (המסדרון ב-ChatStraightPath, הדיסק/הטבעות ב-AgentControlRoom) -
+// אלה חלק מהזהות החזותית של הבמה, לא אווירה מיותרת שיש לצמצם ב-Light. הכרום
+// שמסביב לבמה (כותרת, מתג המצב, ה-slot החי, תוויות התחנות) כן הפך ל-tokens.
+
 // ── EngineCore: הליבה המשותפת. זהה בגודל ובמיקום בשני המצבים (רציפות ויזואלית).
 //    הצבע הניטרלי-תכלת נשמר גם ב-Agent; מה שמתחלף הוא העולם *סביב* הליבה, לא היא. ──
 const EngineCore: React.FC<{
@@ -76,27 +86,22 @@ const EngineCore: React.FC<{
     // מסגרת ועומק פנימי, ולא כמקור אור שמתחרה בהסבר שלידה.
     <div className="relative flex h-48 w-48 flex-col items-center justify-center rounded-full border border-cyan-400/35 bg-slate-900/70 backdrop-blur-xl shadow-[0_0_48px_-22px_rgba(34,211,238,0.4),inset_0_0_40px_-22px_rgba(34,211,238,0.4)]">
         {/* מערבולת-אנרגיה מסתובבת: תחושת ליבה חיה. הוחלשה כדי שתישאר מרקם ולא תאורה. */}
-        {!reduce && (
-            <motion.div
-                className="pointer-events-none absolute inset-1.5 rounded-full opacity-40"
-                aria-hidden
-                style={{ background: 'conic-gradient(from 0deg, transparent 0deg, rgba(34,211,238,0.20) 55deg, transparent 150deg, rgba(168,85,247,0.14) 250deg, transparent 340deg)' }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 16, repeat: Infinity, ease: 'linear' }}
-            />
-        )}
+        {/* תמיד ברינדור (זהה בשרת ובלקוח); ב-reduced-motion מוסתר ב-CSS ולא מונפש. */}
+        <motion.div
+            className="pointer-events-none absolute inset-1.5 rounded-full opacity-40 motion-reduce:hidden"
+            aria-hidden
+            style={{ background: 'conic-gradient(from 0deg, transparent 0deg, rgba(34,211,238,0.20) 55deg, transparent 150deg, rgba(168,85,247,0.14) 250deg, transparent 340deg)' }}
+            animate={reduce ? undefined : { rotate: 360 }}
+            transition={{ duration: 16, repeat: Infinity, ease: 'linear' }}
+        />
         {/* פעימת-נשימה: שכבת זוהר פנימית שנושמת. משרעת האטימות צומצמה, כך שהנשימה
             נשארת מורגשת אך אינה מהבהבת ברקע לאורך כל זמן הקריאה. */}
-        {reduce ? (
-            <div className="pointer-events-none absolute inset-4 rounded-full bg-gradient-to-br from-cyan-400/8 to-purple-400/8 blur-md" aria-hidden />
-        ) : (
-            <motion.div
-                className="pointer-events-none absolute inset-4 rounded-full bg-gradient-to-br from-cyan-400/10 to-purple-400/10 blur-lg"
-                aria-hidden
-                animate={{ opacity: [0.45, 0.7, 0.45], scale: [0.92, 1.05, 0.92] }}
-                transition={{ duration: 3.4, repeat: Infinity, ease: 'easeInOut' }}
-            />
-        )}
+        <motion.div
+            className="pointer-events-none absolute inset-4 rounded-full bg-gradient-to-br from-cyan-400/10 to-purple-400/10 blur-lg motion-reduce:from-cyan-400/8 motion-reduce:to-purple-400/8 motion-reduce:blur-md"
+            aria-hidden
+            animate={reduce ? undefined : { opacity: [0.45, 0.7, 0.45], scale: [0.92, 1.05, 0.92] }}
+            transition={{ duration: 3.4, repeat: Infinity, ease: 'easeInOut' }}
+        />
         {/* טבעת-זכוכית פנימית דקה: הגדרה וחדות */}
         <div className="pointer-events-none absolute inset-2 rounded-full border border-white/[0.07] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]" aria-hidden />
         <div className="relative mb-2.5 inline-flex items-center gap-2 rounded-full border border-cyan-500/50 bg-slate-950/70 px-4 py-1.5">
@@ -164,37 +169,34 @@ const AgentControlRoom: React.FC<{ reduce: boolean }> = ({ reduce }) => (
         <div className="absolute left-1/2 top-1/2 h-[46%] w-[46%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-500/10 blur-3xl" />
         {/* דיסק-רקע עדין בתוך טבעת התחנות, נותן עומק */}
         <div className="absolute inset-[12%] rounded-full bg-gradient-to-b from-purple-500/[0.05] via-transparent to-slate-950/20" />
-        {/* טבעת התחנות המקווקוות (עוברת דרך מרכזי התחנות) */}
+        {/* טבעת התחנות המקווקוות (עוברת דרך מרכזי התחנות) - נשארת: מסמנת את מסלול התחנות */}
         <div className="absolute inset-[12%] rounded-full border border-dashed border-purple-400/28" />
         {/* טבעת דקה נוספת בפנים: שכבתיות של חדר בקרה */}
         <div className="absolute inset-[30%] rounded-full border border-purple-300/10" />
-        {!reduce ? (
-            <>
+        <>
                 <motion.div
-                    className="absolute inset-[4%] rounded-full"
+                    className="absolute inset-[4%] rounded-full motion-reduce:hidden"
                     style={{
                         background: 'conic-gradient(from 0deg, rgba(168,85,247,0), rgba(168,85,247,0.3), rgba(34,211,238,0.16), rgba(168,85,247,0))',
                         WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
                         mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
                     }}
-                    animate={{ rotate: 360 }}
+                    animate={reduce ? undefined : { rotate: 360 }}
                     transition={{ duration: 34, repeat: Infinity, ease: 'linear' }}
                 />
                 {/* טבעת פנימית נגדית, דקה מאוד - עומק של חדר בקרה */}
                 <motion.div
-                    className="absolute inset-[22%] rounded-full"
+                    className="absolute inset-[22%] rounded-full motion-reduce:hidden"
                     style={{
                         background: 'conic-gradient(from 180deg, rgba(34,211,238,0), rgba(34,211,238,0.16), rgba(168,85,247,0))',
                         WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 1px), #000 calc(100% - 1px))',
                         mask: 'radial-gradient(farthest-side, transparent calc(100% - 1px), #000 calc(100% - 1px))',
                     }}
-                    animate={{ rotate: -360 }}
+                    animate={reduce ? undefined : { rotate: -360 }}
                     transition={{ duration: 48, repeat: Infinity, ease: 'linear' }}
                 />
-            </>
-        ) : (
-            <div className="absolute inset-[4%] rounded-full border border-purple-400/25" />
-        )}
+                <div className="absolute inset-[4%] hidden rounded-full border border-purple-400/25 motion-reduce:block" />
+        </>
     </div>
 );
 
@@ -211,7 +213,7 @@ const LiveStatusSlot: React.FC<{
     <div
         role="status"
         aria-live="polite"
-        className={`flex min-h-[2.75rem] w-full flex-col items-center justify-center rounded-xl border px-4 py-2.5 text-center text-base leading-relaxed transition-colors ${showClosing ? 'border-indigo-500/30 bg-indigo-900/15 text-slate-200' : 'border-purple-500/20 bg-purple-900/10 text-slate-300'}`}
+        className={`flex min-h-[2.75rem] w-full flex-col items-center justify-center rounded-xl border px-4 py-2.5 text-center text-base leading-relaxed transition-colors ${showClosing ? 'border-[var(--bts-brand-secondary)]/30 bg-[var(--bts-brand-secondary)]/10 text-[var(--bts-text-secondary)]' : 'border-purple-500/20 bg-purple-500/8 text-[var(--bts-text-secondary)]'}`}
     >
         <AnimatePresence mode="wait" initial={false}>
             <motion.div
@@ -223,7 +225,7 @@ const LiveStatusSlot: React.FC<{
             >
                 {showClosing ? (
                     <>
-                        <p className="font-bold text-indigo-100">{closing}</p>
+                        <p className="font-bold text-[var(--bts-brand-secondary)]">{closing}</p>
                         {/* התשובה עצמה נוחתת כאן, בתוך אותו כרטיס: שורת-תוצאה ירוקה קומפקטית
                             (אינסו + תווית + הטקסט) במקום כרטיס נפרד מתחת למנוע. גובה הכרטיס
                             לא גדל: הסגירה קצרה מגוף-המנוחה, והשורה יושבת במרווח שהתפנה. */}
@@ -252,18 +254,18 @@ const LiveStatusSlot: React.FC<{
                                     />
                                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 8px rgba(52,211,153,0.85)' }} />
                                 </span>
-                                {answerLabel && <span className="text-sm font-black uppercase tracking-[0.18em] text-emerald-300">{answerLabel}</span>}
-                                <span className="text-[15px] font-bold leading-snug text-emerald-50">{answerText}</span>
+                                {answerLabel && <span className="text-sm font-black uppercase tracking-[0.18em] text-[var(--bts-status-positive)]">{answerLabel}</span>}
+                                <span className="text-[15px] font-bold leading-snug text-[var(--bts-status-positive)]">{answerText}</span>
                             </span>
                         )}
                     </>
                 ) : activeStage ? (
                     <div>
-                        <span><span className="font-bold text-purple-200">{activeStage.label}: </span>{activeStage.hint}</span>
+                        <span><span className="font-bold text-[var(--bts-brand-secondary)]">{activeStage.label}: </span>{activeStage.hint}</span>
                         {/* ערך-ההחלטה של התחנה (כוונה/כלי/סיכון/הצעד) עולה לכאן, מעל המנוע, במקום
                             קונסולה נפרדת מתחת לקפל. מוצג רק בתחנות שיש להן ערך (Agent). */}
                         {(activeStage.intent ?? activeStage.tool ?? activeStage.risk ?? activeStage.next) ? (
-                            <div className="mt-2 ms-2.5 inline-flex items-center rounded-full border border-purple-400/45 bg-purple-500/15 px-3.5 py-1 text-sm font-black text-purple-100">
+                            <div className="mt-2 ms-2.5 inline-flex items-center rounded-full border border-purple-400/45 bg-purple-500/15 px-3.5 py-1 text-sm font-black text-[var(--bts-text-primary)]">
                                 {activeStage.intent ?? activeStage.tool ?? activeStage.risk ?? activeStage.next}
                             </div>
                         ) : null}
@@ -274,8 +276,8 @@ const LiveStatusSlot: React.FC<{
                     <div className="space-y-2.5 text-start">
                         {(inputLabel || inputText) && (
                             <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/[0.07] px-3 py-2">
-                                <div className="text-xs font-black uppercase tracking-[0.15em] text-cyan-300/90">{inputLabel}</div>
-                                <div className="mt-0.5 text-base font-bold leading-snug text-white">{inputText}</div>
+                                <div className="text-xs font-black uppercase tracking-[0.15em] text-[var(--bts-brand-primary-strong)]">{inputLabel}</div>
+                                <div className="mt-0.5 text-base font-bold leading-snug text-[var(--bts-text-primary)]">{inputText}</div>
                             </div>
                         )}
                         {body && <p className="text-[15px] leading-relaxed text-[var(--bts-text-secondary)]">{body}</p>}
@@ -441,17 +443,17 @@ export const AgentLoop: React.FC<{
                     {/* זהות: eyebrow דק עם מרווח-אותיות רחב + כותרת שמתחלפת בהנפשה */}
                     <div className="min-w-0 flex-1">
                         {eyebrow && (
-                            <div className={`mb-1.5 text-sm font-black uppercase tracking-[0.22em] transition-colors duration-500 ${isAgent ? 'text-purple-300/85' : 'text-cyan-300/85'}`}>{eyebrow}</div>
+                            <div className={`mb-1.5 text-sm font-black uppercase tracking-[0.22em] transition-colors duration-500 ${isAgent ? 'text-[var(--bts-brand-secondary)]' : 'text-[var(--bts-brand-primary-strong)]'}`}>{eyebrow}</div>
                         )}
                         <div className="flex items-center gap-2.5">
                             <AnimatePresence mode="wait">
                                 <motion.h3
                                     key={`title-${mode}`}
-                                    initial={reduce ? false : { opacity: 0, y: 10 }}
+                                    initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={reduce ? { opacity: 0 } : { opacity: 0, y: -10 }}
                                     transition={reduce ? { duration: 0 } : { duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                                    className="line-clamp-2 text-base font-black leading-tight tracking-tight text-white sm:line-clamp-1 sm:text-lg"
+                                    className="line-clamp-2 text-base font-black leading-tight tracking-tight text-[var(--bts-text-primary)] sm:line-clamp-1 sm:text-lg"
                                 >
                                     {title}
                                 </motion.h3>
@@ -463,7 +465,7 @@ export const AgentLoop: React.FC<{
 
                     {/* בקרות: מתג-נוזל + הרצה */}
                     <div className="flex shrink-0 items-center gap-3">
-                        <div className="relative inline-flex items-center rounded-full border border-white/10 bg-[var(--bts-surface-inset)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
+                        <div className="relative inline-flex items-center rounded-full border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
                             {(['chat', 'agent'] as const).map((m) => {
                                 const on = mode === m;
                                 const isA = m === 'agent';
@@ -473,7 +475,7 @@ export const AgentLoop: React.FC<{
                                         type="button"
                                         onClick={() => switchMode(m)}
                                         aria-pressed={on}
-                                        className={`relative z-10 flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-bold transition-colors duration-300 focus:outline-none focus-visible:ring-2 ${isA ? 'focus-visible:ring-purple-400/50' : 'focus-visible:ring-cyan-400/50'} ${on ? (isA ? 'text-[var(--bts-text-primary)]' : 'text-slate-950') : 'text-[var(--bts-text-muted)] hover:text-slate-200'}`}
+                                        className={`relative z-10 flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-bold transition-colors duration-300 focus:outline-none focus-visible:ring-2 ${isA ? 'focus-visible:ring-purple-400/50' : 'focus-visible:ring-cyan-400/50'} ${on ? (isA ? 'text-[var(--bts-text-primary)]' : 'text-slate-950') : 'text-[var(--bts-text-muted)] hover:text-[var(--bts-text-secondary)]'}`}
                                     >
                                         {on && (
                                             <motion.span
@@ -587,14 +589,14 @@ export const AgentLoop: React.FC<{
                         >
                             {/* תחנה = סמן ויזואלי בלבד. לא אינטראקטיבית: מוארת רק כשהפולס עובר בה בזמן סבב. */}
                             <motion.div
-                                initial={reduce ? false : { opacity: 0, scale: 0.7 }}
+                                initial={{ opacity: 0, scale: 0.7 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
                                 transition={reduce ? { duration: 0 } : { duration: 0.3 }}
-                                className="relative flex h-14 w-14 items-center justify-center rounded-2xl border transition-all duration-300"
                                 // התחנה הפעילה נשארת האות הברור: מסגרת מלאה, מילוי בגוון והילה.
                                 // התחנות במנוחה ירדו למסגרת עדינה על משטח סלייט, כדי שרק אחת
                                 // תיראה "דולקת" בכל רגע.
+                                className="relative flex h-14 w-14 items-center justify-center rounded-2xl border transition-all duration-300"
                                 style={{
                                     borderColor: isActive ? `rgb(${rgb})` : `rgba(${rgb},0.3)`,
                                     background: isActive ? `rgba(${rgb},0.2)` : 'rgba(15,23,42,0.8)',

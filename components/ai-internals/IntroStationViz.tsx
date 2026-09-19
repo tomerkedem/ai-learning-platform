@@ -33,6 +33,7 @@ import {
 import type { AccentStyle } from './accents';
 import { SpeakButton } from './SpeakButton';
 import { useT } from '@/i18n/useT';
+import { useTheme } from '@/components/ThemeProvider';
 import type { Direction } from '@/i18n/config';
 import type { Dictionary } from '@/i18n/dictionary';
 import type { StationVizKind } from '@/app/behind-the-scenes-ai/introduction/introContent';
@@ -44,6 +45,12 @@ type IntroViz = Dictionary['behindAi']['introVisuals']['viz'];
 // תחנה שונה קיצונית מזו שלפניה. אלה אינם חלק ממערכת ה-Accent הכללית של הקורס,
 // אלא פלטה ייעודית למפת המבוא, עם ערכי צבע מותאמים (arbitrary) כדי לאפשר גוונים
 // שלא קיימים בפלטה הרגילה. מחלקות ליטרליות בלבד כדי ש-Tailwind יזהה אותן.
+//
+// ponytail: 14 הגוונים חוזרים גם כטקסט-מילולי (לא var()) ב-app/globals.css, בבלוק
+// שמכהה אותם עבור Light (.text-\[#hex\] { color: color-mix(...) }). CSS לא יכול
+// לייבא מ-TS, אז אין דרך זולה למנוע כפילות אמיתית; אם גוון כאן משתנה/נוסף/יורד -
+// יש לעדכן את הבלוק המקביל שם. שדרוג: לגזור את שני הצדדים מקובץ JSON/צבעים משותף
+// בזמן build אם הפלטה תתחיל להשתנות בתדירות.
 export const STATION_PALETTE: Record<string, AccentStyle> = {
     // 1 · הבקשה נכנסת - מגנטה פלזמה
     request: {
@@ -180,7 +187,7 @@ function Caption({ children, local }: { children: React.ReactNode; local?: boole
         // כיתוב אחד בלבד: עד שהיעד קיים לא מרונדר דבר, ואז הוא עובר לשם כמשפט הסיכום.
         return slot && createPortal(
             <div className="flex items-start gap-3">
-                <p className="flex-1 text-[15px] font-medium leading-relaxed text-slate-100">{children}</p>
+                <p className="flex-1 text-[15px] font-medium leading-relaxed text-[var(--bts-text-primary)]">{children}</p>
                 {text && <SpeakButton text={text} className="shrink-0" />}
             </div>,
             slot,
@@ -188,7 +195,7 @@ function Caption({ children, local }: { children: React.ReactNode; local?: boole
     }
     return (
         <div className="mt-3 flex items-start gap-2">
-            <p className="flex-1 text-[13px] leading-relaxed text-slate-400">{children}</p>
+            <p className="flex-1 text-[13px] leading-relaxed text-[var(--bts-text-muted)]">{children}</p>
             {text && <SpeakButton text={text} className="shrink-0" />}
         </div>
     );
@@ -197,8 +204,8 @@ function Caption({ children, local }: { children: React.ReactNode; local?: boole
 // חץ זרימה תלוי-כיוון: בעברית וערבית הזרימה שמאלה, בשאר השפות ימינה.
 function FlowArrow({ dir }: { dir: Direction }) {
     return dir === 'rtl'
-        ? <ArrowLeft size={14} className="shrink-0 text-slate-600" aria-hidden />
-        : <ArrowRight size={14} className="shrink-0 text-slate-600" aria-hidden />;
+        ? <ArrowLeft size={14} className="shrink-0 text-[var(--bts-text-muted)]" aria-hidden />
+        : <ArrowRight size={14} className="shrink-0 text-[var(--bts-text-muted)]" aria-hidden />;
 }
 
 // טיימרים עם ניקוי אוטומטי: כמה סצנות מריצות רצף פתיחה קצוב, וכולן חייבות לבטל
@@ -278,15 +285,15 @@ function VizButton({ onClick, active, disabled, children, a, focus, action }: {
             disabled={disabled}
             aria-pressed={active}
             className={segment
-                ? `relative inline-flex min-h-[44px] flex-1 items-center justify-center rounded-lg px-3 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active
-                    ? 'bg-slate-700/70 text-white'
-                    : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'
+                ? `relative inline-flex min-h-[44px] flex-1 items-center justify-center rounded-lg px-3 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] ${active
+                    ? 'bg-[var(--bts-surface-elevated)] text-[var(--bts-text-primary)]'
+                    : 'text-[var(--bts-text-secondary)] hover:bg-[var(--bts-text-primary)]/[0.04] hover:text-[var(--bts-text-primary)]'
                     } ${disabled ? 'opacity-40' : ''}`
                 : focus
-                    ? `inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-slate-600/70 px-3.5 py-1 text-sm font-bold transition-colors hover:bg-slate-700/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active ? 'bg-slate-700/70 text-white' : 'bg-slate-800/60 text-slate-100'} ${disabled ? 'opacity-40' : ''}`
-                    : `inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${active
+                    ? `inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-[var(--bts-border-emphasis)] px-3.5 py-1 text-sm font-bold transition-colors hover:bg-[var(--bts-surface-elevated)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] ${active ? 'bg-[var(--bts-surface-elevated)] text-[var(--bts-text-primary)]' : 'bg-[var(--bts-surface)] text-[var(--bts-text-primary)]'} ${disabled ? 'opacity-40' : ''}`
+                    : `inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] ${active
                 ? `${a.border} ${a.solid} ${a.solidText}`
-                : `${a.border} bg-slate-950/50 ${a.text} hover:bg-white/[0.04]`
+                : `${a.border} bg-[var(--bts-surface-inset)] ${a.text} hover:bg-[var(--bts-text-primary)]/[0.04]`
                 } ${disabled ? 'opacity-40' : ''}`}
         >
             {children}
@@ -333,9 +340,9 @@ function RequestViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                 ב-Focus Stage אלה שורות בתוך מכשיר אחד: בלי משטח ומסגרת לכל שורה, קו מפריד דק,
                 והקטגוריה נשמרת בנקודה ובסימן-קצה דק ומעומעם. */}
             {([
-                ['system', v.systemLabel, v.systemText, 'border-violet-500/40 bg-violet-900/20 text-violet-100', 'bg-violet-400'],
-                ['history', v.historyLabel, v.historyText, 'border-amber-500/40 bg-amber-900/15 text-amber-100', 'bg-amber-400'],
-                ['user', v.userLabel, v.userText, `${a.border} ${a.bgSoft} text-white`, ''],
+                ['system', v.systemLabel, v.systemText, 'border-violet-500/40 bg-violet-500/10 text-violet-100', 'bg-violet-400'],
+                ['history', v.historyLabel, v.historyText, 'border-amber-500/40 bg-amber-500/10 text-amber-100', 'bg-amber-400'],
+                ['user', v.userLabel, v.userText, `${a.border} ${a.bgSoft} ${a.text}`, ''],
             ] as const).map(([key, label, text, cls, dotCls], i) => (
                 <motion.div
                     key={key}
@@ -343,12 +350,12 @@ function RequestViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={reduce ? { duration: 0 } : { duration: 0.3, delay: i * 0.22 }}
                     className={focus
-                        ? `relative overflow-hidden border border-transparent py-2 pe-3 ps-4 text-slate-100 ${i > 0 ? 'border-t-slate-700/50' : ''}`
+                        ? `relative overflow-hidden border border-transparent py-2 pe-3 ps-4 text-[var(--bts-text-primary)] ${i > 0 ? 'border-t-slate-700/50' : ''}`
                         : `rounded-xl border px-3 py-2 ${cls}`}
                 >
                     {focus && <span className={`absolute inset-y-2 start-0 w-0.5 rounded-full opacity-50 ${key === 'user' ? a.dot : dotCls}`} aria-hidden />}
                     <span className={focus
-                        ? 'flex items-center gap-1.5 text-xs font-black uppercase tracking-wide text-slate-300'
+                        ? 'flex items-center gap-1.5 text-xs font-black uppercase tracking-wide text-[var(--bts-text-secondary)]'
                         : 'flex items-center gap-1.5 text-xs font-black uppercase tracking-wide opacity-80'}>
                         <span className={`h-1.5 w-1.5 rounded-full ${key === 'user' ? a.dot : dotCls}`} aria-hidden />
                         {label}
@@ -365,7 +372,7 @@ function RequestViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                 transition={reduce ? { duration: 0 } : { duration: 0.3, delay: 0.8 }}
                 className="mt-1.5"
             >
-                <span className={`mb-1 flex items-center gap-1 text-sm font-bold ${focus ? 'text-slate-300' : a.text}`}>
+                <span className={`mb-1 flex items-center gap-1 text-sm font-bold ${focus ? 'text-[var(--bts-text-secondary)]' : a.text}`}>
                     <motion.span
                         aria-hidden
                         animate={reduce ? undefined : { y: [0, 3, 0] }}
@@ -392,7 +399,7 @@ function RequestViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                     {!reduce && !focus && (
                         <motion.span
                             aria-hidden
-                            className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent"
+                            className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-[var(--bts-sweep)] to-transparent"
                             initial={{ left: '-33%', opacity: 0 }}
                             animate={{ left: ['-33%', '100%'], opacity: [0, 1, 0] }}
                             transition={{ duration: 0.6, delay: 1.5, ease: 'easeInOut' }}
@@ -405,7 +412,7 @@ function RequestViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
 
     return (
         <div dir={dir}>
-            <div className={focus ? 'mb-3 flex gap-1 rounded-xl border border-slate-700/70 bg-slate-900/40 p-1' : 'mb-3 flex flex-wrap gap-1.5'}>
+            <div className={focus ? 'mb-3 flex gap-1 rounded-xl border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-inset)] p-1' : 'mb-3 flex flex-wrap gap-1.5'}>
                 <VizButton a={a} focus={focus} active={view === 'you'} onClick={() => pick('you')}>{v.youTab}</VizButton>
                 <VizButton a={a} focus={focus} active={view === 'model'} onClick={() => pick('model')}>{v.modelTab}</VizButton>
             </div>
@@ -425,13 +432,13 @@ function RequestViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                             className={`${cell}${focus ? 'self-center ' : ''}flex justify-end pt-4`}
                         >
                             <div className="max-w-[85%]">
-                                <span className={`mb-1 block text-end text-xs font-bold ${focus ? 'text-slate-300' : a.softText}`}>{v.userLabel}</span>
+                                <span className={`mb-1 block text-end text-xs font-bold ${focus ? 'text-[var(--bts-text-secondary)]' : a.softText}`}>{v.userLabel}</span>
                                 <motion.div
                                     initial={reduce ? false : { scale: 0.9, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 22, delay: 0.15 }}
                                     className={focus
-                                        ? 'rounded-2xl border border-slate-600/60 bg-slate-800 px-4 py-2.5 text-sm font-bold text-slate-50'
+                                        ? 'rounded-2xl border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-inset)] px-4 py-2.5 text-sm font-bold text-[var(--bts-text-primary)]'
                                         : `rounded-2xl ${a.solid} ${a.solidText} px-4 py-2.5 text-sm font-bold`}
                                 >
                                     {v.userText}
@@ -476,9 +483,7 @@ function TokenizeViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
         <div dir={dir}>
             {/* key=variant: החלפת משפט מריצה את סצנת החיתוך מחדש */}
             <div key={variant}>
-                <div className={focus
-                    ? 'relative mb-3 overflow-hidden rounded-lg border border-slate-700/50 bg-slate-900/50 px-3 py-2 text-sm text-slate-200'
-                    : 'relative mb-3 overflow-hidden rounded-lg border border-white/5 bg-slate-950/50 px-3 py-2 text-sm text-slate-300'}>
+                <div className="relative mb-3 overflow-hidden rounded-lg border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] px-3 py-2 text-sm text-[var(--bts-text-secondary)]">
                     {data.sentence}
                     {/* קו החיתוך: לייזר שחולף על המשפט בכיוון הקריאה. ב-Focus Stage הקו נשאר
                         (הוא החיתוך עצמו) בלי ההילה הלבנה שסביבו. */}
@@ -486,7 +491,7 @@ function TokenizeViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                         <motion.span
                             aria-hidden
                             className={`absolute inset-y-0 w-0.5 ${a.solid}`}
-                            style={focus ? undefined : { boxShadow: `0 0 10px 2px rgb(255 255 255 / 0.5)` }}
+                            style={focus ? undefined : { boxShadow: `0 0 10px 2px color-mix(in oklab, var(--bts-text-primary) 50%, transparent)` }}
                             initial={{ left: dir === 'rtl' ? '100%' : '0%', opacity: 1 }}
                             animate={{ left: dir === 'rtl' ? '0%' : '100%', opacity: [1, 1, 0] }}
                             transition={{ duration: 0.7, ease: 'easeInOut' }}
@@ -548,9 +553,9 @@ function TokenizeViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                                         initial={reduce ? false : { opacity: 0, y: -14, scale: 0.6, rotate: i % 2 === 0 ? -8 : 8 }}
                                         animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
                                         transition={reduce ? { duration: 0 } : { delay: dropDelay, type: 'spring', stiffness: 360, damping: 15 }}
-                                        className={`relative inline-flex items-center gap-1.5 rounded-lg border ${piece.border} bg-slate-950/60 px-2.5 py-1.5`}
+                                        className={`relative inline-flex items-center gap-1.5 rounded-lg border ${piece.border} bg-[var(--bts-surface)] px-2.5 py-1.5`}
                                     >
-                                        <span className="font-mono text-[10px] text-slate-500" dir="ltr">{i + 1}</span>
+                                        <span className="font-mono text-[10px] text-[var(--bts-text-muted)]" dir="ltr">{i + 1}</span>
                                         <span className={`text-sm font-bold ${piece.text}`}>{tok}</span>
                                     </motion.span>
                                 </span>
@@ -561,7 +566,7 @@ function TokenizeViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                 <Caption>{data.caption}</Caption>
             </div>
             {/* שני המשפטים הם בחירה בין דוגמאות, ולכן ב-Focus Stage זו קבוצת-בחירה אחת */}
-            <div className={focus ? 'mt-2 flex gap-1 rounded-xl border border-slate-700/70 bg-slate-900/40 p-1' : 'mt-2 flex flex-wrap gap-1.5'}>
+            <div className={focus ? 'mt-2 flex gap-1 rounded-xl border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-inset)] p-1' : 'mt-2 flex flex-wrap gap-1.5'}>
                 <VizButton a={a} focus={focus} active={variant === 'a'} onClick={() => { sound.tick(0); setVariant('a'); }}>{v.variantA}</VizButton>
                 <VizButton a={a} focus={focus} active={variant === 'b'} onClick={() => { sound.tick(0); setVariant('b'); }}>{v.variantB}</VizButton>
             </div>
@@ -607,12 +612,12 @@ function IdsViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                             animate={{ rotateY: flipped[i] ? 180 : 0 }}
                             transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 260, damping: 24 }}
                         >
-                            <span className={`[grid-area:1/1] [backface-visibility:hidden] inline-flex items-center justify-center rounded-lg border ${a.border} bg-slate-950/60 px-2.5 py-1.5 text-sm font-bold ${a.text}`}>
+                            <span className={`[grid-area:1/1] [backface-visibility:hidden] inline-flex items-center justify-center rounded-lg border ${a.border} bg-[var(--bts-surface)] px-2.5 py-1.5 text-sm font-bold ${a.text}`}>
                                 {tok}
                             </span>
                             <span
                                 dir="ltr"
-                                className={`[grid-area:1/1] [backface-visibility:hidden] [transform:rotateY(180deg)] inline-flex items-center justify-center rounded-lg border border-white/10 bg-slate-900 px-2.5 py-1.5 font-mono text-sm font-bold text-slate-200`}
+                                className={`[grid-area:1/1] [backface-visibility:hidden] [transform:rotateY(180deg)] inline-flex items-center justify-center rounded-lg border border-[var(--bts-border)] bg-[var(--bts-surface-elevated)] px-2.5 py-1.5 font-mono text-sm font-bold text-[var(--bts-text-secondary)]`}
                             >
                                 {TOKEN_IDS[i % TOKEN_IDS.length]}
                             </span>
@@ -620,7 +625,7 @@ function IdsViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                     </button>
                 ))}
             </div>
-            <p className={focus ? 'mt-2.5 text-sm font-bold text-slate-200' : `mt-2.5 text-sm font-bold ${a.text}`}>{v.hint}</p>
+            <p className={focus ? 'mt-2.5 text-sm font-bold text-[var(--bts-text-secondary)]' : `mt-2.5 text-sm font-bold ${a.text}`}>{v.hint}</p>
             <Caption>{v.caption}</Caption>
         </div>
     );
@@ -670,7 +675,7 @@ function EmbeddingViz({ a, reduce, viz, dir, focus }: VizProps) {
                     initial={reduce ? false : { opacity: 0, scale: 0.85 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: reduce ? 0 : 0.3 }}
-                    className={`rounded-lg border ${a.border} bg-slate-950/60 px-2.5 py-1.5 text-sm font-bold ${a.text}`}
+                    className={`rounded-lg border ${a.border} bg-[var(--bts-surface)] px-2.5 py-1.5 text-sm font-bold ${a.text}`}
                 >
                     {viz.embedding.token}
                 </motion.span>
@@ -679,7 +684,7 @@ function EmbeddingViz({ a, reduce, viz, dir, focus }: VizProps) {
                     initial={reduce ? false : { opacity: 0, scale: 0.85 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: reduce ? 0 : 0.3, delay: reduce ? 0 : 0.25 }}
-                    className="rounded-lg border border-white/10 bg-slate-950/60 px-2.5 py-1.5 font-mono text-xs font-bold text-slate-300"
+                    className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-surface)] px-2.5 py-1.5 font-mono text-xs font-bold text-[var(--bts-text-secondary)]"
                     dir="ltr"
                 >
                     ID 4812
@@ -692,12 +697,12 @@ function EmbeddingViz({ a, reduce, viz, dir, focus }: VizProps) {
                             initial={reduce ? false : { opacity: 0, y: 6 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: reduce ? 0 : 0.25, delay: reduce ? 0 : 0.5 + i * 0.08 }}
-                            className="rounded-md border border-white/10 bg-slate-950/60 px-1.5 py-1 font-mono text-[10px] text-slate-300"
+                            className="rounded-md border border-[var(--bts-border)] bg-[var(--bts-surface)] px-1.5 py-1 font-mono text-[10px] text-[var(--bts-text-secondary)]"
                         >
                             {val}
                         </motion.span>
                     ))}
-                    <span className="px-1 font-mono text-[10px] text-slate-600">...</span>
+                    <span className="px-1 font-mono text-[10px] text-[var(--bts-text-muted)]">...</span>
                 </div>
             </div>
             {/* כיתוב השרשרת יושב מתחת לשרשרת (במקום wall אחד גדול למטה). local: הוא מסביר
@@ -711,8 +716,8 @@ function EmbeddingViz({ a, reduce, viz, dir, focus }: VizProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { duration: 0.4, delay: 0.7 }}
                 className={focus
-                    ? 'relative mt-3 h-36 overflow-hidden rounded-xl border border-slate-700/50 bg-slate-900/40 sm:h-44'
-                    : 'relative mt-3 h-36 overflow-hidden rounded-xl border border-white/5 bg-slate-950/60 sm:h-44'}
+                    ? 'relative mt-3 h-36 overflow-hidden rounded-xl border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] sm:h-44'
+                    : 'relative mt-3 h-36 overflow-hidden rounded-xl border border-[var(--bts-border)] bg-[var(--bts-surface)] sm:h-44'}
                 dir="ltr"
             >
                 {/* רשת קואורדינטות עדינה: הופכת את הכרטיס למרחב, כך שברור שהמיקום נושא משמעות */}
@@ -754,10 +759,10 @@ function EmbeddingViz({ a, reduce, viz, dir, focus }: VizProps) {
                         >
                             <span
                                 className={`rounded-full border px-2.5 py-1 text-sm font-bold transition-all ${c.border} ${c.text} ${isSel
-                                    ? `bg-slate-950/90 ring-2 ${c.ring}`
+                                    ? `bg-[var(--bts-surface-elevated)] ring-2 ${c.ring}`
                                     : isNear
-                                        ? 'bg-slate-950/80'
-                                        : 'bg-slate-950/70 opacity-60'
+                                        ? 'bg-[var(--bts-surface)]'
+                                        : 'bg-[var(--bts-surface-inset)] opacity-60'
                                     }`}
                             >
                                 {w}
@@ -770,7 +775,7 @@ function EmbeddingViz({ a, reduce, viz, dir, focus }: VizProps) {
                     );
                 })}
             </motion.div>
-            <p className={focus ? 'mt-2 text-sm font-bold text-slate-200' : `mt-2 text-sm font-bold ${a.text}`}>
+            <p className={focus ? 'mt-2 text-sm font-bold text-[var(--bts-text-secondary)]' : `mt-2 text-sm font-bold ${a.text}`}>
                 {viz.embedding.nearLabel}: {viz.embedding.mapWords[sel]} + {viz.embedding.mapWords[near]} · {viz.embedding.mapHint}
             </p>
             {/* כיתוב המפה בלבד (הערת השרשרת עברה למעלה, מתחת לשרשרת) */}
@@ -811,7 +816,7 @@ function PositionViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                         animate={{ scale: 1 }}
                         transition={reduce ? { duration: 0 } : { delay: 0.2 + i * 0.12, type: 'spring', stiffness: 340, damping: 18 }}
                         className={focus
-                            ? 'mx-auto flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-slate-200 ring-1 ring-slate-600/70'
+                            ? 'mx-auto flex h-6 w-6 items-center justify-center rounded-full bg-[var(--bts-surface-inset)] text-xs font-bold text-[var(--bts-text-secondary)] ring-1 ring-[var(--bts-border-emphasis)]'
                             : `mx-auto flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${a.solid} ${a.solidText}`}
                         dir="ltr"
                     >
@@ -826,10 +831,10 @@ function PositionViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                         // שתי המילים שמתחלפות צבועות כל אחת בצבע קבוע משלה, כדי שרואים
                         // אותן נוסעות בין התגים. מחלקות סטטיות בלבד.
                         className={`mt-1 flex min-h-[34px] items-center justify-center rounded-lg border px-1 py-1.5 text-center text-xs font-bold sm:text-sm ${tokenIdx === POS_SWAP[0]
-                            ? 'border-amber-500/40 bg-slate-950/70 text-amber-300'
+                            ? 'border-amber-500/40 bg-[var(--bts-surface)] text-amber-300'
                             : tokenIdx === POS_SWAP[1]
-                                ? 'border-emerald-500/40 bg-slate-950/70 text-emerald-300'
-                                : 'border-white/10 bg-slate-950/50 text-slate-300'
+                                ? 'border-emerald-500/40 bg-[var(--bts-surface)] text-emerald-300'
+                                : 'border-[var(--bts-border)] bg-[var(--bts-surface-inset)] text-[var(--bts-text-secondary)]'
                             }`}
                     >
                         {v.tokens[tokenIdx]}
@@ -871,8 +876,8 @@ function PositionViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: reduce ? 0 : 0.2 }}
                                 className={`relative rounded-full border px-3 py-1 text-sm font-bold ${focus ? 'col-start-1 row-start-1 justify-self-start ' : ''}${swapped
-                                    ? focus ? 'border-amber-500/35 bg-slate-900/70 text-amber-200' : 'border-amber-500/40 bg-amber-900/15 text-amber-300'
-                                    : focus ? 'border-emerald-500/35 bg-slate-900/70 text-emerald-200' : 'border-emerald-500/40 bg-emerald-900/15 text-emerald-300'
+                                    ? focus ? 'border-amber-500/35 bg-[var(--bts-surface)] text-amber-200' : 'border-amber-500/40 bg-amber-500/10 text-amber-300'
+                                    : focus ? 'border-emerald-500/35 bg-[var(--bts-surface)] text-emerald-200' : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
                                     }`}
                             >
                                 {swapped ? v.meaningB : v.meaningA}
@@ -891,6 +896,8 @@ function PositionViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
 const CTX_WINDOW = 3;
 
 function ContextViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
+    // הבזק-החלון: לבן ב-Dark (זהה לקודם), כחול-מותג כהה ב-Light (לבן על משטח בהיר אינו נראה).
+    const flash = useTheme().resolvedTheme === 'light' ? '8,145,178' : '255,255,255';
     const v = viz.context;
     const msgs = v.messages;
     const [count, setCount] = useState(CTX_WINDOW);
@@ -922,13 +929,13 @@ function ContextViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                 )}
                 {outside.length > 0 && (
                     <div className={focus ? 'col-start-1 row-start-1 flex flex-col gap-1' : 'flex flex-col gap-1'}>
-                        <span className="text-xs font-bold text-slate-500">{v.outLabel} · <span dir="ltr">{outside.length}</span></span>
+                        <span className="text-xs font-bold text-[var(--bts-text-muted)]">{v.outLabel} · <span dir="ltr">{outside.length}</span></span>
                         {outside.map((m, i) => (
                             <motion.div
                                 key={`m-${i}`}
                                 layoutId={`ctx-${i}`}
                                 transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 30 }}
-                                className="w-fit max-w-[80%] rounded-lg border border-white/5 bg-slate-950/40 px-2 py-0.5 text-xs text-slate-500 line-through decoration-slate-600"
+                                className="w-fit max-w-[80%] rounded-lg border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] px-2 py-0.5 text-xs text-[var(--bts-text-muted)] line-through decoration-[var(--bts-border-emphasis)]"
                             >
                                 {m}
                             </motion.div>
@@ -942,10 +949,10 @@ function ContextViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                 נושאת את גוון התחנה. ההבזק נשאר: הוא משוב על "משהו נדחף החוצה". */}
             <motion.div
                 key={`win-${count}`}
-                animate={reduce ? undefined : { boxShadow: ['0 0 0 0 rgba(255,255,255,0)', '0 0 22px 2px rgba(255,255,255,0.18)', '0 0 0 0 rgba(255,255,255,0)'] }}
+                animate={reduce ? undefined : { boxShadow: [`0 0 0 0 rgba(${flash},0)`, `0 0 22px 2px rgba(${flash},${flash === '255,255,255' ? 0.18 : 0.32})`, `0 0 0 0 rgba(${flash},0)`] }}
                 transition={reduce ? undefined : { duration: 0.6, ease: 'easeOut' }}
                 className={focus
-                    ? 'rounded-xl border-2 border-slate-600/70 bg-slate-900/50 p-2.5'
+                    ? 'rounded-xl border-2 border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-inset)] p-2.5'
                     : `rounded-xl border-2 ${a.border} ${a.bgSoft} p-2.5 ring-1 ${a.ringSoft}`}
             >
                 <span className={`mb-1.5 block text-xs font-black uppercase tracking-wide ${a.text}`}>
@@ -973,8 +980,8 @@ function ContextViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 30 }}
                                     className={`w-fit max-w-[85%] rounded-lg border px-2.5 py-1 text-sm ${gi % 2 === 0
-                                        ? `self-start ${focus ? 'border-slate-600/70' : a.border} bg-slate-950/60 text-slate-200`
-                                        : 'self-end border-white/10 bg-slate-800/60 text-slate-300'
+                                        ? `self-start ${focus ? 'border-[var(--bts-border-emphasis)]' : a.border} bg-[var(--bts-surface)] text-[var(--bts-text-secondary)]`
+                                        : 'self-end border-[var(--bts-border)] bg-[var(--bts-surface-inset)] text-[var(--bts-text-secondary)]'
                                         }`}
                                 >
                                     {m}
@@ -1095,13 +1102,13 @@ function AttentionViz({ a, reduce, viz, dir, focus: stage }: VizProps) {
                 {geo && (
                     <>
                         <span
-                            className={`pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-full border ${a.border} bg-slate-950/80 px-2 py-0.5 text-[11px] font-bold ${a.text}`}
+                            className={`pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-full border ${a.border} bg-[var(--bts-surface-elevated)] px-2 py-0.5 text-[11px] font-bold ${a.text}`}
                             style={{ left: geo.strong.lx, top: geo.strong.ly }}
                         >
                             {v.strongLabel}
                         </span>
                         <span
-                            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-full border border-white/10 bg-slate-950/70 px-2 py-0.5 text-[11px] font-bold text-slate-400"
+                            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-full border border-[var(--bts-border)] bg-[var(--bts-surface)] px-2 py-0.5 text-[11px] font-bold text-[var(--bts-text-muted)]"
                             style={{ left: geo.weak.lx, top: geo.weak.ly }}
                         >
                             {v.weakLabel}
@@ -1113,10 +1120,10 @@ function AttentionViz({ a, reduce, viz, dir, focus: stage }: VizProps) {
                     {v.tokens.map((tok, i) => {
                         const map = FOCUS_MAP[focus];
                         const cls =
-                            i === focus ? `${a.border} bg-slate-950/70 ${a.text} ring-1 ${a.ringSoft}`
-                                : i === map.s ? `${a.border} bg-slate-950/60 ${a.text}`
-                                    : i === map.w ? 'border-white/10 bg-slate-950/50 text-slate-300'
-                                        : 'border-white/5 bg-slate-950/40 text-slate-500';
+                            i === focus ? `${a.border} bg-[var(--bts-surface-elevated)] ${a.text} ring-1 ${a.ringSoft}`
+                                : i === map.s ? `${a.border} bg-[var(--bts-surface)] ${a.text}`
+                                    : i === map.w ? 'border-[var(--bts-border)] bg-[var(--bts-surface-inset)] text-[var(--bts-text-secondary)]'
+                                        : 'border-[var(--bts-border)] bg-[var(--bts-surface-inset)] text-[var(--bts-text-muted)]';
                         return (
                             <button
                                 key={tok}
@@ -1161,7 +1168,7 @@ function AttentionViz({ a, reduce, viz, dir, focus: stage }: VizProps) {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: reduce ? 0 : 0.2 }}
-                        className={stage ? 'col-start-1 row-start-1 text-sm font-bold text-slate-100' : `text-sm font-bold ${a.text}`}
+                        className={stage ? 'col-start-1 row-start-1 text-sm font-bold text-[var(--bts-text-primary)]' : `text-sm font-bold ${a.text}`}
                     >
                         {v.stories[focus]}
                     </motion.p>
@@ -1190,8 +1197,8 @@ const MIX_STYLE = {
 // Focus Stage: אותם שני צבעי-הקשר, אבל על משטח ניטרלי. הצבע נשאר הסימן שמקשר בין
 // הטוקן שנכנס לטוקן שיוצא, ולא הופך את הכרטיס למשטח צבוע.
 const MIX_STAGE_CHIP = {
-    a: 'border-cyan-500/35 bg-slate-900/70 text-cyan-100',
-    b: 'border-amber-500/35 bg-slate-900/70 text-amber-100',
+    a: 'border-cyan-500/35 bg-[var(--bts-surface)] text-cyan-100',
+    b: 'border-amber-500/35 bg-[var(--bts-surface)] text-amber-100',
 } as const;
 
 // בנק המומחים: 8 מומחים, ורק תת-קבוצה נדלקת לכל טוקן. זו החתימה של מודלי 2026
@@ -1236,7 +1243,7 @@ function MixViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
         <div dir={dir}>
             {/* בחירת טוקן: שני טוקנים לדוגמה, כל אחד מנותב למומחים אחרים.
                 ב-Focus Stage זו קבוצת-בחירה ניטרלית, וצבע ההקשר נשאר כנקודה קטנה. */}
-            <div className={focus ? 'flex gap-1 rounded-xl border border-slate-700/70 bg-slate-900/40 p-1' : 'flex gap-2'}>
+            <div className={focus ? 'flex gap-1 rounded-xl border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-inset)] p-1' : 'flex gap-2'}>
                 {(['a', 'b'] as const).map((k) => {
                     const on = tok === k;
                     return (
@@ -1246,8 +1253,8 @@ function MixViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                             onClick={() => { haptic(); touched.current = true; route(k, true); }}
                             aria-pressed={on}
                             className={focus
-                                ? `inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${on ? 'bg-slate-700/70 text-white' : 'text-slate-300 hover:bg-white/[0.04] hover:text-white'}`
-                                : `flex-1 rounded-xl border px-3 py-2 text-center text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${on ? MIX_STYLE[k].chip : 'border-white/10 bg-slate-950/50 text-slate-400 hover:bg-white/[0.03]'}`}
+                                ? `inline-flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] ${on ? 'bg-[var(--bts-surface-elevated)] text-[var(--bts-text-primary)]' : 'text-[var(--bts-text-secondary)] hover:bg-[var(--bts-text-primary)]/[0.04] hover:text-[var(--bts-text-primary)]'}`
+                                : `flex-1 rounded-xl border px-3 py-2 text-center text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] ${on ? MIX_STYLE[k].chip : 'border-[var(--bts-border)] bg-[var(--bts-surface-inset)] text-[var(--bts-text-muted)] hover:bg-[var(--bts-text-primary)]/[0.03]'}`}
                         >
                             {focus && <span className={`h-1.5 w-1.5 rounded-full ${MIX_STYLE[k].dot} ${on ? '' : 'opacity-50'}`} aria-hidden />}
                             {k === 'a' ? v.tokenA : v.tokenB}
@@ -1276,7 +1283,7 @@ function MixViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                 </div>
 
                 {/* מוליך זורם מהטוקן אל הראוטר */}
-                <span aria-hidden className="relative h-3 w-0.5 overflow-hidden bg-white/15">
+                <span aria-hidden className="relative h-3 w-0.5 overflow-hidden bg-[var(--bts-border-emphasis)]">
                     {!reduce && (
                         <motion.span
                             key={`wire-${tok}`}
@@ -1290,10 +1297,10 @@ function MixViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
 
                 {/* ראוטר */}
                 <div className={focus
-                    ? 'flex items-center gap-1.5 rounded-lg border border-slate-700/60 bg-slate-900/60 px-2.5 py-1'
+                    ? 'flex items-center gap-1.5 rounded-lg border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface)] px-2.5 py-1'
                     : `flex items-center gap-1.5 rounded-lg border ${a.border} ${a.bgSoft} px-2.5 py-1`}>
                     <span className={`h-2 w-2 rounded-sm ${a.solid}`} aria-hidden />
-                    <span className={focus ? 'text-xs font-bold text-slate-200' : `text-xs font-bold ${a.text}`}>{v.routerLabel}</span>
+                    <span className={focus ? 'text-xs font-bold text-[var(--bts-text-secondary)]' : `text-xs font-bold ${a.text}`}>{v.routerLabel}</span>
                 </div>
 
                 {/* בנק מומחים: 8, ורק active נדלקים בפעימה מדורגת */}
@@ -1306,7 +1313,7 @@ function MixViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                                 initial={reduce ? false : { scale: on ? 0.8 : 1, opacity: on ? 0.5 : 0.35 }}
                                 animate={on ? { scale: [0.8, 1.12, 1], opacity: 1 } : { scale: 1, opacity: 0.35 }}
                                 transition={reduce ? { duration: 0 } : { duration: 0.4, delay: on ? 0.3 + active.indexOf(i) * 0.14 : 0, ease: 'easeOut' }}
-                                className={`flex h-9 w-9 items-center justify-center rounded-lg border text-[11px] font-black ${on ? `${a.border} ${a.bgSoft} ${a.text}${focus ? '' : ` ${a.glow}`}` : 'border-white/10 bg-slate-950/50 text-slate-600'}`}
+                                className={`flex h-9 w-9 items-center justify-center rounded-lg border text-[11px] font-black ${on ? `${a.border} ${a.bgSoft} ${a.text}${focus ? '' : ` ${a.glow}`}` : 'border-[var(--bts-border)] bg-[var(--bts-surface-inset)] text-[var(--bts-text-muted)]'}`}
                             >
                                 <span dir="ltr">{i + 1}</span>
                             </motion.div>
@@ -1315,7 +1322,7 @@ function MixViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                 </div>
 
                 {/* כמה מומחים מתוך כמה רצים */}
-                <span className={focus ? 'text-xs font-bold text-slate-300' : `text-xs font-bold ${a.text}`} dir="auto">{v.activeNote(active.length, NUM_EXPERTS)}</span>
+                <span className={focus ? 'text-xs font-bold text-[var(--bts-text-secondary)]' : `text-xs font-bold ${a.text}`} dir="auto">{v.activeNote(active.length, NUM_EXPERTS)}</span>
 
                 {/* טוקן מועשר יוצא */}
                 <div className={focus ? 'grid justify-items-center' : ''}>
@@ -1341,7 +1348,7 @@ function MixViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                 </div>
             </div>
 
-            <p className={focus ? 'mt-2.5 text-sm font-bold text-slate-200' : `mt-2.5 text-sm font-bold ${a.text}`}>{v.hint}</p>
+            <p className={focus ? 'mt-2.5 text-sm font-bold text-[var(--bts-text-secondary)]' : `mt-2.5 text-sm font-bold ${a.text}`}>{v.hint}</p>
             <Caption>{v.caption}</Caption>
         </div>
     );
@@ -1383,9 +1390,7 @@ function LayersViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
             <motion.div
                 animate={{ filter: `blur(${FLOOR_BLUR[phase]}px)`, opacity: FLOOR_OPACITY[phase] }}
                 transition={{ duration: reduce ? 0 : 0.45 }}
-                className={focus
-                    ? 'mb-3 rounded-lg border border-slate-700/50 bg-slate-900/50 px-3 py-2 text-center text-sm font-bold text-slate-100'
-                    : 'mb-3 rounded-lg border border-white/5 bg-slate-950/50 px-3 py-2 text-center text-sm font-bold text-slate-100'}
+                className="mb-3 rounded-lg border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] px-3 py-2 text-center text-sm font-bold text-[var(--bts-text-primary)]"
             >
                 {v.sentence}
             </motion.div>
@@ -1394,7 +1399,7 @@ function LayersViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                 {/* מגדל העומק: אותו בלוק חוזר בשכבות רבות. הסמן ממלא עד העומק הנוכחי,
                     וה-"⋮" למעלה מרמז שיש עוד הרבה מעבר למה שמוצג. */}
                 <div className="flex w-14 shrink-0 flex-col items-center">
-                    <span aria-hidden className="mb-1 text-base font-black leading-none text-slate-600">⋮</span>
+                    <span aria-hidden className="mb-1 text-base font-black leading-none text-[var(--bts-text-muted)]">⋮</span>
                     <div className="flex flex-col-reverse gap-1">
                         {Array.from({ length: NUM_LAYERS }).map((_, i) => {
                             const reached = i <= depth;
@@ -1408,7 +1413,7 @@ function LayersViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                                     transition={{ duration: reduce ? 0 : 0.3, delay: reduce ? 0 : (reached ? i * 0.03 : 0) }}
                                     // הסמן הנוכחי סומן עד כה בהילה רחבה. ב-Focus Stage הוא מסומן
                                     // בהתרחבות ובטבעת דקה בלבד, בלי אור דקורטיבי.
-                                    className={`h-2 w-9 rounded-sm ${reached ? a.solid : 'bg-slate-700/50'} ${cur ? (focus ? 'ring-1 ring-slate-300/50' : a.glow) : ''}`}
+                                    className={`h-2 w-9 rounded-sm ${reached ? a.solid : 'bg-[var(--bts-border-emphasis)]'} ${cur ? (focus ? 'ring-1 ring-[var(--bts-border-emphasis)]' : a.glow) : ''}`}
                                 />
                             );
                         })}
@@ -1428,11 +1433,11 @@ function LayersViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                                 // שלושת השלבים הם קבוצת-בחירה אנכית: ב-Focus Stage השלב הנבחר
                                 // מסומן במשטח ניטרלי בהיר יותר ובפס-בחירה דק בגוון התחנה.
                                 className={`relative w-full overflow-hidden rounded-xl border px-3 py-2 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 ${focus
-                                    ? active ? 'border-slate-600/70 bg-slate-800/50' : 'border-slate-700/40 bg-slate-950/40 hover:bg-white/[0.03]'
-                                    : active ? `${a.border} ${a.bgSoft}` : 'border-white/5 bg-slate-950/40 hover:bg-white/[0.03]'}`}
+                                    ? active ? 'border-[var(--bts-border-emphasis)] bg-[var(--bts-surface)]' : 'border-[var(--bts-border)] bg-[var(--bts-surface-inset)] hover:bg-[var(--bts-text-primary)]/[0.03]'
+                                    : active ? `${a.border} ${a.bgSoft}` : 'border-[var(--bts-border)] bg-[var(--bts-surface-inset)] hover:bg-[var(--bts-text-primary)]/[0.03]'}`}
                             >
                                 {focus && active && <span className={`absolute inset-y-1.5 start-0 w-0.5 rounded-full opacity-70 ${a.solid}`} aria-hidden />}
-                                <span className={`block text-sm font-bold ${active ? (focus ? 'text-slate-50' : a.text) : 'text-slate-400'}`}>
+                                <span className={`block text-sm font-bold ${active ? (focus ? 'text-[var(--bts-text-primary)]' : a.text) : 'text-[var(--bts-text-muted)]'}`}>
                                     {v.floors[i]}
                                 </span>
                                 <AnimatePresence initial={false}>
@@ -1442,7 +1447,7 @@ function LayersViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                                             animate={{ opacity: 1, height: 'auto' }}
                                             exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
                                             transition={{ duration: reduce ? 0 : 0.25 }}
-                                            className="block overflow-hidden text-[13px] leading-relaxed text-slate-300"
+                                            className="block overflow-hidden text-[13px] leading-relaxed text-[var(--bts-text-secondary)]"
                                         >
                                             {/* ב-Focus Stage שלוש ההערות נערמות בתא אחד של grid (השתיים
                                                 שאינן פעילות שקופות), כי הן נבדלות בגובה: בלי זה מעבר בין
@@ -1471,8 +1476,8 @@ function LayersViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
             </div>
 
             {/* מה חוזר בכל שכבה (קשב + feed-forward), ורמז אינטראקציה */}
-            <p className={focus ? 'mt-2.5 text-center text-[13px] font-bold text-slate-200' : `mt-2.5 text-center text-[13px] font-bold ${a.text}`} dir="auto">{v.blockLabel}</p>
-            <p className="mt-1 text-center text-[13px] font-bold text-slate-400">{v.hint}</p>
+            <p className={focus ? 'mt-2.5 text-center text-[13px] font-bold text-[var(--bts-text-secondary)]' : `mt-2.5 text-center text-[13px] font-bold ${a.text}`} dir="auto">{v.blockLabel}</p>
+            <p className="mt-1 text-center text-[13px] font-bold text-[var(--bts-text-muted)]">{v.hint}</p>
             <Caption>{v.caption}</Caption>
         </div>
     );
@@ -1518,7 +1523,7 @@ function StateViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.12, duration: 0.3 }}
-                            className={`rounded-md border ${a.border} bg-slate-950/60 px-2 py-1 text-xs font-bold ${a.text}`}
+                            className={`rounded-md border ${a.border} bg-[var(--bts-surface)] px-2 py-1 text-xs font-bold ${a.text}`}
                         >
                             {tok}
                         </motion.span>
@@ -1548,7 +1553,7 @@ function StateViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                             exit={{ opacity: 0 }}
                             transition={{ duration: reduce ? 0 : 0.4, delay: reduce ? 0 : i * 0.08 }}
                             style={GHOST_POS[i]}
-                            className="absolute text-sm font-bold text-slate-400"
+                            className="absolute text-sm font-bold text-[var(--bts-text-muted)]"
                         >
                             {tok}
                         </motion.span>
@@ -1570,7 +1575,7 @@ function StateViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                         aria-hidden
                     />
                 </motion.div>
-                <span className={`absolute bottom-0 left-1/2 w-full -translate-x-1/2 text-center text-sm font-bold leading-tight ${focus ? 'text-slate-200' : a.text}`}>
+                <span className={`absolute bottom-0 left-1/2 w-full -translate-x-1/2 text-center text-sm font-bold leading-tight ${focus ? 'text-[var(--bts-text-secondary)]' : a.text}`}>
                     {v.orbLabel}
                 </span>
             </div>
@@ -1609,9 +1614,7 @@ function LogitsViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
 
     return (
         <div dir={dir}>
-            <div className={focus
-                ? 'mb-2.5 w-fit rounded-lg border border-slate-700/50 bg-slate-900/50 px-3 py-1.5 text-sm text-slate-200'
-                : 'mb-2.5 w-fit rounded-lg border border-white/5 bg-slate-950/50 px-3 py-1.5 text-sm text-slate-300'}>
+            <div className="mb-2.5 w-fit rounded-lg border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] px-3 py-1.5 text-sm text-[var(--bts-text-secondary)]">
                 {v.prompt}
             </div>
             <div className="flex flex-col gap-1.5">
@@ -1624,7 +1627,7 @@ function LogitsViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                             transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 30 }}
                             // שורת המוביל מסומנת. ב-Focus Stage הסימון הוא משטח ניטרלי בהיר
                             // יותר: הגוון נשאר על שם המוביל ועל העמודה שלו, שם הוא נתון.
-                            className={`flex items-center gap-2 rounded-md px-1.5 py-0.5 ${isLeader ? (focus ? 'bg-slate-800/50 ring-1 ring-slate-600/60' : `ring-1 ${a.ringSoft} ${a.bgSoft}`) : ''}`}
+                            className={`flex items-center gap-2 rounded-md px-1.5 py-0.5 ${isLeader ? (focus ? 'bg-[var(--bts-surface)] ring-1 ring-[var(--bts-border-emphasis)]' : `ring-1 ${a.ringSoft} ${a.bgSoft}`) : ''}`}
                         >
                             {/* מדליית פודיום לשלושת המובילים, מופיעה כשהרשימה מסתדרת */}
                             <span className="flex h-5 w-5 shrink-0 items-center justify-center" dir="ltr">
@@ -1639,21 +1642,21 @@ function LogitsViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                                     </motion.span>
                                 )}
                             </span>
-                            <span className={`w-16 shrink-0 truncate text-sm font-bold ${isLeader ? a.text : 'text-slate-300'}`}>{w}</span>
-                            <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-800/70">
+                            <span className={`w-16 shrink-0 truncate text-sm font-bold ${isLeader ? a.text : 'text-[var(--bts-text-secondary)]'}`}>{w}</span>
+                            <div className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--bts-surface-inset)]">
                                 <motion.div
-                                    className={`h-full rounded-full ${isLeader ? a.barGradient : 'bg-slate-500'}`}
+                                    className={`h-full rounded-full ${isLeader ? a.barGradient : 'bg-[var(--bts-border-emphasis)]'}`}
                                     initial={reduce ? false : { width: 0 }}
                                     animate={{ width: `${(s / LOGIT_MAX) * 100}%` }}
                                     transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.15 + i * 0.08 }}
                                 />
                             </div>
-                            <span className="w-8 shrink-0 text-left font-mono text-xs text-slate-400" dir="ltr">{s}</span>
+                            <span className="w-8 shrink-0 text-left font-mono text-xs text-[var(--bts-text-muted)]" dir="ltr">{s}</span>
                         </motion.div>
                     );
                 })}
             </div>
-            <p className="mt-2 text-[13px] font-bold text-slate-400">{v.note}</p>
+            <p className="mt-2 text-[13px] font-bold text-[var(--bts-text-muted)]">{v.note}</p>
             <Caption>{v.caption(viz.sharedNote)}</Caption>
         </div>
     );
@@ -1697,7 +1700,7 @@ function ScoresViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
             {/* כותרות שתי העמודות: ציון גולמי (אפור) מול סיכוי (צבעוני) */}
             <div className="flex items-center gap-2.5" dir={dir}>
                 <span className="w-12 shrink-0" />
-                <span className="flex-1 text-center text-xs font-bold text-slate-500">{viz.scores.rawHeader}</span>
+                <span className="flex-1 text-center text-xs font-bold text-[var(--bts-text-muted)]">{viz.scores.rawHeader}</span>
                 <span className="w-8 shrink-0" />
                 <span className="w-3 shrink-0" />
                 <span className={`flex-1 text-center text-xs font-bold ${a.text}`}>{viz.scores.probHeader}</span>
@@ -1705,20 +1708,20 @@ function ScoresViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
             </div>
             {SCORE_DATA.map((row, i) => (
                 <div key={i} className="flex items-center gap-2.5" dir={dir}>
-                    <span className="w-12 shrink-0 truncate text-sm font-bold text-slate-300">{viz.scores.rowLabels[i]}</span>
+                    <span className="w-12 shrink-0 truncate text-sm font-bold text-[var(--bts-text-secondary)]">{viz.scores.rowLabels[i]}</span>
                     {/* ציון גולמי */}
-                    <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-800/70">
+                    <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-[var(--bts-surface-inset)]">
                         <motion.div
-                            className="h-full rounded-full bg-slate-500"
+                            className="h-full rounded-full bg-[var(--bts-border-emphasis)]"
                             initial={reduce ? false : { width: 0 }}
                             animate={{ width: `${(row.raw / maxRaw) * 100}%` }}
                             transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : i * 0.1 }}
                         />
                     </div>
-                    <span className="w-8 shrink-0 text-left font-mono text-xs text-slate-400" dir="ltr">{row.raw}</span>
-                    <CornerDownLeft size={12} className="shrink-0 text-slate-600" aria-hidden />
+                    <span className="w-8 shrink-0 text-left font-mono text-xs text-[var(--bts-text-muted)]" dir="ltr">{row.raw}</span>
+                    <CornerDownLeft size={12} className="shrink-0 text-[var(--bts-text-muted)]" aria-hidden />
                     {/* הסתברות */}
-                    <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-800/70">
+                    <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-[var(--bts-surface-inset)]">
                         <motion.div
                             className={`h-full rounded-full ${a.barGradient}`}
                             initial={reduce ? false : { width: 0 }}
@@ -1732,15 +1735,15 @@ function ScoresViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
 
             {/* רגע הנעילה: ביחד תמיד 100% */}
             <div className="flex items-center justify-end gap-2" dir={dir}>
-                <span className="text-sm font-bold text-slate-400">{viz.scores.totalLabel}</span>
+                <span className="text-sm font-bold text-[var(--bts-text-muted)]">{viz.scores.totalLabel}</span>
                 {/* רגע הנעילה מסומן בגוון התחנה על משטח ניטרלי ב-Focus Stage: הצבע אומר
                     "ננעל", ולא צובע עוד כרטיס. */}
                 <motion.span
                     animate={total === 100 && !reduce ? { scale: [1, 1.18, 1] } : { scale: 1 }}
                     transition={{ duration: 0.35 }}
                     className={`rounded-full border px-2.5 py-0.5 font-mono text-sm font-black ${total === 100
-                        ? focus ? `border-slate-600/70 bg-slate-800/60 ${a.text}` : `${a.border} ${a.text} ${a.bgSoft}`
-                        : 'border-white/10 text-slate-400'}`}
+                        ? focus ? `border-[var(--bts-border-emphasis)] bg-[var(--bts-surface)] ${a.text}` : `${a.border} ${a.text} ${a.bgSoft}`
+                        : 'border-[var(--bts-border)] text-[var(--bts-text-muted)]'}`}
                     dir="ltr"
                 >
                     {total}%
@@ -1816,7 +1819,7 @@ function DecodingViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                 מראש (ממדד שקוף באותו תא), כדי שההגרלה הראשונה והמעברים בין ההגרלות
                 לא יגדילו ולא יכווצו את התחנה. */}
             <div className="mb-3 flex flex-wrap items-center gap-1.5">
-                <span className="rounded-lg border border-white/5 bg-slate-950/50 px-3 py-1.5 text-sm text-slate-300">{v.prompt}</span>
+                <span className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] px-3 py-1.5 text-sm text-[var(--bts-text-secondary)]">{v.prompt}</span>
                 <div className={focus ? 'grid' : ''}>
                     {focus && (
                         <span aria-hidden className="invisible col-start-1 row-start-1 rounded-lg border px-3 py-1.5 text-base font-black">
@@ -1848,19 +1851,19 @@ function DecodingViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                     return (
                         <div
                             key={w}
-                            className={`flex items-center gap-2.5 rounded-lg border px-2.5 py-1.5 transition-all ${isChosen ? `${a.border} ${a.bgSoft} ring-1 ${a.ringSoft}` : isHl ? `${a.border} bg-slate-950/70` : 'border-white/5 bg-slate-950/40'
+                            className={`flex items-center gap-2.5 rounded-lg border px-2.5 py-1.5 transition-all ${isChosen ? `${a.border} ${a.bgSoft} ring-1 ${a.ringSoft}` : isHl ? `${a.border} bg-[var(--bts-surface)]` : 'border-[var(--bts-border)] bg-[var(--bts-surface-inset)]'
                                 }`}
                         >
-                            <span className={`w-16 shrink-0 truncate text-sm font-bold ${isChosen || isHl ? a.text : 'text-slate-300'}`}>{w}</span>
-                            <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-800/70">
+                            <span className={`w-16 shrink-0 truncate text-sm font-bold ${isChosen || isHl ? a.text : 'text-[var(--bts-text-secondary)]'}`}>{w}</span>
+                            <div className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--bts-surface-inset)]">
                                 <motion.div
-                                    className={`h-full rounded-full ${isChosen ? a.barGradient : 'bg-slate-500'}`}
+                                    className={`h-full rounded-full ${isChosen ? a.barGradient : 'bg-[var(--bts-border-emphasis)]'}`}
                                     initial={reduce ? false : { width: 0 }}
                                     animate={{ width: `${DECODE_PROBS[i]}%` }}
                                     transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : i * 0.1 }}
                                 />
                             </div>
-                            <span className="w-10 shrink-0 text-left font-mono text-xs text-slate-400" dir="ltr">{DECODE_PROBS[i]}%</span>
+                            <span className="w-10 shrink-0 text-left font-mono text-xs text-[var(--bts-text-muted)]" dir="ltr">{DECODE_PROBS[i]}%</span>
                         </div>
                     );
                 })}
@@ -1869,7 +1872,7 @@ function DecodingViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
             {/* מגע: מצב, הגרלה, ותוצאות מצטברות. ב-Focus Stage שני המצבים הם קבוצת-בחירה
                 אחת וההגרלה היא פעולה נפרדת לידה, כי אלה שני תפקידים שונים. */}
             <div className={focus ? 'mt-3 flex flex-wrap items-center gap-2' : 'mt-3 flex flex-wrap items-center gap-1.5'}>
-                <div className={focus ? 'flex min-w-0 grow basis-[220px] gap-1 rounded-xl border border-slate-700/70 bg-slate-900/40 p-1' : 'contents'}>
+                <div className={focus ? 'flex min-w-0 grow basis-[220px] gap-1 rounded-xl border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-inset)] p-1' : 'contents'}>
                     <VizButton a={a} focus={focus} active={mode === 'sure'} onClick={() => setMode('sure')}>{v.sure}</VizButton>
                     <VizButton a={a} focus={focus} active={mode === 'surprise'} onClick={() => setMode('surprise')}>{v.surprise}</VizButton>
                 </div>
@@ -1881,11 +1884,11 @@ function DecodingViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
             {/* שורת התוצאות המצטברות מופיעה רק מההגרלה השנייה. ב-Focus Stage מקומה שמור
                 מראש, כדי שהופעתה לא תקפיץ את התחנה באמצע ההתנסות. */}
             {focus ? (
-                <p className={`mt-2 text-[13px] font-bold text-slate-400 ${rolls > 1 ? '' : 'invisible'}`} aria-hidden={rolls > 1 ? undefined : true}>
+                <p className={`mt-2 text-[13px] font-bold text-[var(--bts-text-muted)] ${rolls > 1 ? '' : 'invisible'}`} aria-hidden={rolls > 1 ? undefined : true}>
                     {v.tally}: {labels.map((w, i) => `${w} ${tally[i]}`).join(' · ')}
                 </p>
             ) : rolls > 1 && (
-                <p className="mt-2 text-[13px] font-bold text-slate-400">
+                <p className="mt-2 text-[13px] font-bold text-[var(--bts-text-muted)]">
                     {v.tally}: {labels.map((w, i) => `${w} ${tally[i]}`).join(' · ')}
                 </p>
             )}
@@ -1935,7 +1938,7 @@ function LoopViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                         />
                     )}
                 </span>
-                <span className={`text-sm font-bold ${focus ? 'text-slate-200' : a.text}`}>
+                <span className={`text-sm font-bold ${focus ? 'text-[var(--bts-text-secondary)]' : a.text}`}>
                     {v.tokenLabel} <span className="font-mono" dir="ltr">{n}/{v.words.length}</span>
                 </span>
                 {/* השהיה/המשך היא פעולה, ולכן טיפול-פעולה שקט ב-Focus Stage */}
@@ -1968,15 +1971,15 @@ function LoopViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                     </div>
                 )}
                 <div className={focus
-                    ? 'col-start-1 row-start-1 flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-lg border border-slate-700/50 bg-slate-900/50 px-3 py-2'
-                    : 'flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-lg border border-white/5 bg-slate-950/50 px-3 py-2'}>
+                    ? 'col-start-1 row-start-1 flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-lg border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] px-3 py-2'
+                    : 'flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-lg border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] px-3 py-2'}>
                     {v.words.slice(0, n).map((w, i) => (
                         <motion.span
                             key={i}
                             initial={reduce ? false : { opacity: 0, y: 6, scale: 0.8 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 340, damping: 20 }}
-                            className={`rounded-md border ${a.border} bg-slate-950/60 px-2 py-0.5 text-sm font-bold ${a.text}`}
+                            className={`rounded-md border ${a.border} bg-[var(--bts-surface)] px-2 py-0.5 text-sm font-bold ${a.text}`}
                         >
                             {w}
                         </motion.span>
@@ -1994,7 +1997,7 @@ function LoopViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                             initial={reduce ? false : { opacity: 0, scale: 0.7 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 18 }}
-                            className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-slate-900 px-2 py-0.5 text-xs font-bold text-slate-400"
+                            className="inline-flex items-center gap-1 rounded-md border border-[var(--bts-border)] bg-[var(--bts-surface-elevated)] px-2 py-0.5 text-xs font-bold text-[var(--bts-text-muted)]"
                         >
                             <Square size={9} fill="currentColor" aria-hidden />
                             {v.stopLabel}
@@ -2095,12 +2098,12 @@ export const StationViz: React.FC<{ kind: StationVizKind; a: AccentStyle; reduce
     const stopLoop = () => setLooping(false);
     const Cmp = VIZ_MAP[kind];
     return (
-        <div className={focusStage ? 'rounded-2xl border border-slate-700/50 bg-slate-950/60 p-3.5 md:p-4' : 'mt-3 rounded-xl border border-white/5 bg-slate-950/40 p-3.5'} dir={dir}>
+        <div className={focusStage ? 'rounded-2xl border border-[var(--bts-border)] bg-[var(--bts-surface)] p-3.5 md:p-4' : 'mt-3 rounded-xl border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] p-3.5'} dir={dir}>
             <div className="mb-1.5 flex justify-end">
                 <button
                     type="button"
                     onClick={() => { setAutoReplay(false); setLooping(!reduce); setRunId((r) => r + 1); }}
-                    className="inline-flex min-h-[30px] items-center gap-1.5 rounded-full border border-white/10 bg-slate-950/60 px-2.5 py-0.5 text-xs font-bold text-slate-300 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60"
+                    className="inline-flex min-h-[30px] items-center gap-1.5 rounded-full border border-[var(--bts-border)] bg-[var(--bts-surface)] px-2.5 py-0.5 text-xs font-bold text-[var(--bts-text-secondary)] transition-colors hover:text-[var(--bts-text-primary)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)]"
                 >
                     <RotateCcw size={12} aria-hidden />
                     {viz.replay}

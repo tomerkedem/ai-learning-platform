@@ -29,6 +29,14 @@ const heebo = Heebo({
 // הסקריפט קורא את bts-theme, מקבל רק system/light/dark, פותר system מהעדפת מערכת
 // ההפעלה, וחותם data-theme (ל-CSS) ו-color-scheme (לממשק הדפדפן) על <html>.
 // כל כשל נבלע: אחסון חסום נופל ל-system, וכשל ב-matchMedia נופל ל-dark.
+//
+// המחרוזת 'bts-theme' כתובה כאן פשוטה בכוונה (לא THEME_STORAGE_KEY מיובא מ-
+// ThemeProvider): layout.tsx הוא Server Component, ו-ThemeProvider הוא "use client".
+// ב-Next.js, import של ערך מקובץ "use client" לתוך קוד שמופעל בצד השרת מוחלף
+// ב-client reference (stub) ולא בערך האמיתי - הניסיון הקודם לעשות זאת ריסק את
+// הסקריפט הזה (client reference stringify-ל-JS שבור, SyntaxError בדפדפן, והבזקת
+// ערכה כי data-theme מעולם לא נחתם לפני הציור). bts-theme מופיע גם ב-ThemeProvider.tsx
+// כ-THEME_STORAGE_KEY; אם המפתח משתנה אי-פעם יש לעדכן את שני המקומות.
 const THEME_INIT = `(function(){var e=document.documentElement,m='system';try{var s=localStorage.getItem('bts-theme');if(s==='light'||s==='dark'||s==='system'){m=s;}}catch(x){}var t;try{t=m==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;}catch(x){t=m==='system'?'dark':m;}e.setAttribute('data-theme',t);e.style.colorScheme=t;})();`;
 
 export const metadata: Metadata = {

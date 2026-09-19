@@ -262,7 +262,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
 
     return (
         <div
-            className="flex min-h-[100dvh] bg-[var(--bts-page)] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-hidden relative"
+            className="flex min-h-[100dvh] bg-[var(--bts-page)] font-sans text-[var(--bts-text-primary)] selection:bg-indigo-500/30 overflow-hidden relative"
             dir={dir}
             // נעילת-היקף: ראה themeAware למעלה.
             data-theme={themeAware ? undefined : 'dark'}
@@ -292,8 +292,8 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                  {/* motion-reduce:animate-none - ההילה הסביבתית פועמת ברציפות; מכובה כשהמשתמש
                      ביקש הפחתת תנועה. וריאנט CSS בלבד, בלי JS ובלי סיכון hydration.
                      צבע ההילה מגיע מהמפה הסטטית (themeAccent), לא מאינטרפולציה. */}
-                 <div className={`absolute top-[-20%] ${isRTL ? 'right-[-10%]' : 'left-[-10%]'} w-150 h-150 ${themeAccent.glowTop} blur-[120px] rounded-full mix-blend-screen animate-pulse motion-reduce:animate-none`}></div>
-                 <div className={`absolute bottom-[-20%] ${isRTL ? 'left-[-10%]' : 'right-[-10%]'} w-125 h-125 ${themeAccent.glowBottom} blur-[100px] rounded-full mix-blend-screen`}></div>
+                 <div className={`absolute top-[-20%] ${isRTL ? 'right-[-10%]' : 'left-[-10%]'} w-150 h-150 ${themeAccent.glowTop} blur-[120px] rounded-full [mix-blend-mode:var(--bts-ambient-blend)] animate-pulse motion-reduce:animate-none`}></div>
+                 <div className={`absolute bottom-[-20%] ${isRTL ? 'left-[-10%]' : 'right-[-10%]'} w-125 h-125 ${themeAccent.glowBottom} blur-[100px] rounded-full [mix-blend-mode:var(--bts-ambient-blend)]`}></div>
                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,var(--bts-page)_120%)]"></div>
             </div>
 
@@ -420,17 +420,17 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                         </div>
 
                         {/* --- Footer ניווט --- */}
-                        <div className="border-t border-slate-800/60 pt-12 mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-                            
+                        <div className="border-t border-[var(--bts-border)] pt-12 mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+
                             {/* אחורה */}
                             {prevChapter ? (
-                                <Link href={prevChapter.href || "#"} className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:bg-slate-800 hover:border-slate-700">
+                                <Link href={prevChapter.href || "#"} className="group relative overflow-hidden rounded-2xl border border-[var(--bts-border)] bg-[var(--bts-surface)] p-6 transition-all hover:bg-[var(--bts-surface-elevated)] hover:border-[var(--bts-border-emphasis)]">
                                     <div className="flex flex-col items-start gap-2 relative z-10">
-                                        <span className="text-xs font-mono text-slate-500 group-hover:text-slate-400 transition-colors flex items-center gap-2">
+                                        <span className="text-xs font-mono text-[var(--bts-text-muted)] group-hover:text-[var(--bts-text-secondary)] transition-colors flex items-center gap-2">
                                             {isRTL ? <ChevronRight size={14} /> : <ChevronLeft size={14} />} {t.chrome.nav.prev}
-                                            <kbd className="rounded border border-slate-700 bg-slate-800/80 px-1.5 py-0.5 text-[10px] leading-none text-slate-400">{isRTL ? '→' : '←'}</kbd>
+                                            <kbd className="rounded border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-elevated)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--bts-text-muted)]">{isRTL ? '→' : '←'}</kbd>
                                         </span>
-                                        <div className="font-bold text-lg text-slate-300 group-hover:text-white transition-colors">
+                                        <div className="font-bold text-lg text-[var(--bts-text-secondary)] group-hover:text-[var(--bts-text-primary)] transition-colors">
                                             {tField(prevChapter.title, locale)}
                                         </div>
                                     </div>
@@ -451,10 +451,10 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                                                     {isRTL ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
                                                     <kbd className={`rounded border ${nextAccent.kbd} px-1.5 py-0.5 text-[10px] leading-none`}>{isRTL ? '←' : '→'}</kbd>
                                                 </span>
-                                                <div className={`font-bold text-xl text-white group-hover:scale-[1.02] transition-transform ${isRTL ? 'origin-right' : 'origin-left'}`}>
+                                                <div className={`font-bold text-xl text-[var(--bts-text-primary)] group-hover:scale-[1.02] transition-transform ${isRTL ? 'origin-right' : 'origin-left'}`}>
                                                     {tField(nextChapter.title, locale)}
                                                 </div>
-                                                <div className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
+                                                <div className="text-xs text-[var(--bts-text-muted)] mt-1 flex items-center gap-1.5">
                                                     <BookOpen size={12} />
                                                     {formatReadTime(locale, parseReadTimeMinutes(nextChapter.readTime))}
                                                 </div>

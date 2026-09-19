@@ -227,12 +227,12 @@ export default function BehindTheScenesIntroPage() {
                 עובר לטיפוגרפיה ולמה שקורה בכרטיס עצמו. דוק ההאזנה צף (portal ל-body)
                 ואינו משפיע על הזרימה כאן. */}
             <div className="mb-8 text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-cyan-500/30 mb-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--bts-surface-elevated)] border border-[var(--bts-brand-primary)]/30 mb-3">
                 <span className="relative flex h-2 w-2">
-                  {!reduce && <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping" />}
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--bts-brand-primary-strong)] opacity-75 animate-ping motion-reduce:hidden" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--bts-brand-primary)]" />
                 </span>
-                <span className="text-cyan-300 text-xs font-bold tracking-wide">{intro.hero.badge}</span>
+                <span className="text-[var(--bts-brand-primary-strong)] text-xs font-bold tracking-wide">{intro.hero.badge}</span>
               </div>
 
               <h1 className="mx-auto max-w-4xl text-3xl md:text-5xl font-black text-[var(--bts-text-primary)] tracking-tight leading-tight mb-4">
@@ -260,9 +260,9 @@ export default function BehindTheScenesIntroPage() {
             </div>
 
             <motion.div
-              initial={reduce ? false : { opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: reduce ? 0 : 0.6 }}
             >
               <EngineReveal
                 reduce={!!reduce}
@@ -281,10 +281,10 @@ export default function BehindTheScenesIntroPage() {
           {/* ══════════ 2 · QUICK GUESS: FOUR COMPETING HYPOTHESES ══════════ */}
           {/* בחירת מודל חשיבה (לא שאלון), לפני שהשער חושף את התשובה. */}
           <motion.section
-            initial={reduce ? false : { opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: reduce ? 0 : 0.6 }}
             className="mt-20"
           >
             <ExpandableLab title={intro.quickGuess.question}>
@@ -298,7 +298,7 @@ export default function BehindTheScenesIntroPage() {
             </ExpandableLab>
           </motion.section>
 
-          <p className="mt-10 text-center text-base font-bold leading-relaxed text-slate-200 md:text-lg">
+          <p className="mt-10 text-center text-base font-bold leading-relaxed text-[var(--bts-text-secondary)] md:text-lg">
             {intro.chat.gateLead}
           </p>
 
@@ -311,7 +311,7 @@ export default function BehindTheScenesIntroPage() {
 
             {/* רמז עדין שהכרטיסים נפתחים + מתג השתקה גלובלי אחד לכל הסצנות */}
             <div className="mb-8 flex flex-wrap items-center justify-center gap-2">
-              <span className="inline-flex min-h-[32px] items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-900/15 px-3.5 py-1.5 text-xs font-bold text-cyan-200">
+              <span className="inline-flex min-h-[32px] items-center gap-1.5 rounded-full border border-[var(--bts-brand-primary)]/30 bg-[var(--bts-surface)] px-3.5 py-1.5 text-xs font-bold text-[var(--bts-brand-primary-strong)]">
                 <MousePointerClick size={13} aria-hidden />
                 {intro.roadmapHeading.hint}
               </span>
@@ -325,8 +325,8 @@ export default function BehindTheScenesIntroPage() {
             </ExpandableLab>
 
             {/* ── 7 · TRUTH NOTE (near the roadmap) ── */}
-            <div className="mt-6 flex items-start gap-2.5 rounded-2xl border border-cyan-500/20 bg-cyan-900/10 p-4 backdrop-blur-xl">
-              <Info size={16} className="mt-0.5 shrink-0 text-cyan-400/80" />
+            <div className="mt-6 flex items-start gap-2.5 rounded-2xl border border-[var(--bts-brand-primary)]/20 bg-[var(--bts-surface)] p-4 backdrop-blur-xl">
+              <Info size={16} className="mt-0.5 shrink-0 text-[var(--bts-brand-primary-strong)]/80" />
               <p className="text-[13px] leading-relaxed text-[var(--bts-text-secondary)] md:text-sm">{intro.truthNote}</p>
             </div>
           </section>
@@ -336,8 +336,8 @@ export default function BehindTheScenesIntroPage() {
             <div className="mx-auto mb-7 max-w-3xl text-center">
               {/* מפריד דק לפני מקטע ה-Agent. הגרדיאנט הצבעוני ירד: המרווח כבר מפריד,
                   והצבע כאן לא נשא משמעות. נשאר קו סלייט שקט. */}
-              <div className="mx-auto mb-4 h-px w-20 bg-gradient-to-r from-transparent via-slate-600/50 to-transparent" />
-              <p className="text-lg font-bold leading-relaxed tracking-tight text-slate-100 md:text-2xl">{intro.agent.intro}</p>
+              <div className="mx-auto mb-4 h-px w-20 bg-gradient-to-r from-transparent via-[var(--bts-border-emphasis)] to-transparent" />
+              <p className="text-lg font-bold leading-relaxed tracking-tight text-[var(--bts-text-primary)] md:text-2xl">{intro.agent.intro}</p>
             </div>
             <ExpandableLab title={agentCard.title}>
               <div className={`relative overflow-hidden rounded-[2rem] border bg-[var(--bts-surface)] p-4 backdrop-blur-xl md:p-6 ${agentMode === 'agent' ? 'border-purple-500/30' : 'border-cyan-500/30'}`}>
@@ -352,13 +352,13 @@ export default function BehindTheScenesIntroPage() {
 
           {/* ══════════ 6 · CTA TO CHAPTER 1 ══════════ */}
           <motion.section
-            initial={reduce ? false : { opacity: 0, scale: 0.97 }}
+            initial={{ opacity: 0, scale: 0.97 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.5 }}
-            className="mt-20 relative overflow-hidden rounded-[2.5rem] border border-cyan-500/30 bg-gradient-to-br from-slate-900 to-slate-900/60 p-10 md:p-14 text-center shadow-2xl"
+            transition={{ duration: reduce ? 0 : 0.5 }}
+            className="mt-20 relative overflow-hidden rounded-[2.5rem] border border-[var(--bts-brand-primary)]/30 bg-[var(--bts-surface-elevated)] p-10 md:p-14 text-center shadow-2xl"
           >
-            <div className="absolute -top-20 right-1/2 translate-x-1/2 w-80 h-40 bg-cyan-500/8 blur-[80px] rounded-full pointer-events-none" />
+            <div className="pointer-events-none absolute -top-20 right-1/2 h-40 w-80 translate-x-1/2 rounded-full bg-[var(--bts-brand-primary)]/8 blur-[80px]" />
             <span className="relative text-[var(--bts-brand-primary-strong)] text-[11px] font-bold uppercase tracking-[0.25em] block mb-3">
               {intro.cta.eyebrow}
             </span>

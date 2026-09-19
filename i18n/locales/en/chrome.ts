@@ -33,6 +33,13 @@ export const chrome: typeof heChrome = {
         toExit: 'to exit',
     },
 
+    theme: {
+        label: 'Theme',
+        system: 'System',
+        light: 'Light',
+        dark: 'Dark',
+    },
+
     footer: {
         defaultLabel: 'Interactive courses for AI developers',
         copyright: '© 2026 Tomer Kedem. All rights reserved.',

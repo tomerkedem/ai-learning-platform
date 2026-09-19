@@ -164,38 +164,135 @@
   /* ערך מילולי מאושר. אינו נגזר מ--color-slate-950 (020618) כי הגוון הכתוב כאן
      (2 6 23) שונה ממנו, והחלפה הייתה משנה פיקסלים. */
   --bts-shadow-elevation: 0 24px 48px -32px rgba(2 6 23 / 0.9);
+
+  /* מצב "התקדמות קריאה" בכותרת הפרק (CourseHeader, גלילה): טקסט אחוזים חי, לא
+     מסגרת/משטח, ולכן טוקן נפרד מ-brand. Dark זהה לערך המילולי הקודם (emerald-400). */
+  --bts-status-positive: var(--color-emerald-400);
+  /* כפתור "עצור הקראה" (ReadAloudControls): אייקון/טקסט על משטח ורוד-רוז עדין.
+     Dark זהה לערך המילולי הקודם (rose-200). */
+  --bts-status-danger: var(--color-rose-200);
+  /* מצב "טעות תומכת" (GuessVerdict): כותרת ואייקון על משטח ענבר רך.
+     Dark זהה לערך המילולי הקודם (amber-200). */
+  --bts-status-caution: var(--color-amber-200);
+
+  /* T2B: שני "מתגי-עצמה" שחלים ללא תנאי בקבצי CSS למטה (.bts-ink),
+     ומקבלים את ערכם רק דרך ירושת המשתנה הזו - בדיוק כמו כל אסימון --bts-* אחר.
+     חשוב: קביעה עם סלקטור [data-theme="light"] absolute (למשל "[data-theme=light] .foo")
+     הייתה תואמת לכל צאצא שיש לו איזשהו אב עם data-theme="light" - גם עמוק בתוך תת-עץ
+     שנעל את עצמו ל-dark (data-theme="dark" על שורש הפרק, כש-html עצמו light). משתנה
+     CSS מותאם לעומת זאת יורש לפי "הקרוב ביותר מנצח" בדיוק כמו --bts-page, ולכן הוא
+     הדרך הבטוחה היחידה: כל תת-עץ נעול-Dark מצהיר data-theme="dark" על השורש שלו,
+     מה שגם מאפס כאן את שני המשתנים בחזרה לערכי Dark, בלי קשר למה ש-html פותר גלובלית. */
+  --bts-ink-darken: 0%;
+  --bts-ambient-blend: screen;
+  /* Effect parity: קו-סריקה ופס-הבהוב זהים בשני ההיערכים; רק הצבע/העוצמה מותאמים. */
+  --bts-scan-line: color-mix(in srgb, var(--bts-brand-primary-strong) 35%, transparent);
+  --bts-sweep: rgb(255 255 255 / 0.6);
+  --bts-divider-soft: rgb(255 255 255 / 0.1);
 }
 
-/* T2A בלבד: Light נפתר לאותם ערכים כמו Dark. אין כאן עדיין שום החלטת עיצוב. */
+/* T2B: פלטת Light אמיתית. לא היפוך מכני של Dark - ראה docs/behind-ai-visual-rules.md
+   ואת החלטת המוצר ב-T2B (עמוד קריר-ניטרלי ולא לבן טהור, משטחים מאופקים, טקסט פחם,
+   מסגרות מאופקות, אין זוהר אווירתי מתמשך). ערכי המותג (cyan) הוכהו במדרגה אחת עד
+   שתיים כדי לעמוד ב-WCAG AA כטקסט/מסגרת על משטח בהיר; כמילוי כפתור (עם טקסט כהה
+   מעליו) ה-AA לא חל, וההכהיה שומרת על הזהות הכחולה-ירקרקה של המותג. */
 [data-theme="light"] {
-  --bts-page: #050B14;
+  --bts-page: var(--color-slate-100);
 
-  --bts-surface: #0f172b99;
-  --bts-surface: color-mix(in oklab, var(--color-slate-900) 60%, transparent);
-  --bts-surface-elevated: #0f172bb3;
-  --bts-surface-elevated: color-mix(in oklab, var(--color-slate-900) 70%, transparent);
-  --bts-surface-inset: #02061899;
-  --bts-surface-inset: color-mix(in oklab, var(--color-slate-950) 60%, transparent);
+  --bts-surface: #ffffffcc;
+  --bts-surface: color-mix(in oklab, var(--color-white) 80%, transparent);
+  --bts-surface-elevated: #ffffffe0;
+  --bts-surface-elevated: color-mix(in oklab, var(--color-white) 88%, transparent);
+  --bts-surface-inset: #e2e8f0b3;
+  --bts-surface-inset: color-mix(in oklab, var(--color-slate-200) 70%, transparent);
 
-  --bts-text-primary: var(--color-white);
-  --bts-text-secondary: var(--color-slate-300);
-  --bts-text-muted: var(--color-slate-400);
+  --bts-text-primary: var(--color-slate-900);
+  --bts-text-secondary: var(--color-slate-600);
+  --bts-text-muted: var(--color-slate-500);
 
-  --bts-border: #31415880;
-  --bts-border: color-mix(in oklab, var(--color-slate-700) 50%, transparent);
-  --bts-border-emphasis: #45556c99;
-  --bts-border-emphasis: color-mix(in oklab, var(--color-slate-600) 60%, transparent);
+  --bts-border: #cbd5e199;
+  --bts-border: color-mix(in oklab, var(--color-slate-300) 60%, transparent);
+  --bts-border-emphasis: #94a3b899;
+  --bts-border-emphasis: color-mix(in oklab, var(--color-slate-400) 60%, transparent);
 
-  --bts-brand-primary: var(--color-cyan-500);
-  --bts-brand-primary-strong: var(--color-cyan-400);
-  --bts-brand-secondary: var(--color-indigo-500);
+  --bts-brand-primary: var(--color-cyan-600);
+  --bts-brand-primary-strong: var(--color-cyan-700);
+  --bts-brand-secondary: var(--color-indigo-600);
 
-  --bts-focus-ring: #00d2ef99;
-  --bts-focus-ring: color-mix(in oklab, var(--color-cyan-400) 60%, transparent);
-  --bts-focus-ring-offset: var(--color-slate-900);
+  --bts-focus-ring: #0891b299;
+  --bts-focus-ring: color-mix(in oklab, var(--color-cyan-600) 60%, transparent);
+  --bts-focus-ring-offset: var(--color-white);
 
-  --bts-shadow-elevation: 0 24px 48px -32px rgba(2 6 23 / 0.9);
+  --bts-shadow-elevation: 0 20px 40px -26px rgba(30 41 59 / 0.18);
+
+  /* emerald-400 המקורי נכשל ב-AA על משטח בהיר (כ-1.9:1); emerald-700 עומד ב-AA
+     כטקסט (5.5:1 לפחות מול לבן). */
+  --bts-status-positive: var(--color-emerald-700);
+  /* rose-200 המקורי נכשל כמעט לחלוטין על משטח בהיר; rose-700 עומד ב-AA (כ-6.3:1). */
+  --bts-status-danger: var(--color-rose-700);
+  /* amber-200 המקורי נכשל כמעט לחלוטין על משטח בהיר; amber-800 עומד ב-AA (כ-7.1:1). */
+  --bts-status-caution: var(--color-amber-800);
+
+  --bts-ink-darken: 65%;
+  --bts-ambient-blend: normal;
+  --bts-scan-line: color-mix(in srgb, var(--bts-brand-primary-strong) 100%, transparent);
+  --bts-sweep: color-mix(in srgb, var(--bts-brand-primary-strong) 40%, transparent);
+  --bts-divider-soft: var(--bts-border);
 }
+
+/* T2B: דיו-זהות-תחנה כטקסט (StationCard, IntroStationViz). STATION_RGB/ink הם צבעי
+   accent שנבחרו להיראות היטב על משטח כהה (Dark) - בהירים ורוויים. כטקסט על משטח
+   בהיר הם נכשלים ב-AA כמעט תמיד. .bts-ink מגדיר את הצבע דרך --ink (משתנה inline
+   שכל רכיב קובע לזהות התחנה שלו), מוכהה כלפי שחור לפי --bts-ink-darken (oklab).
+
+   הכלל הזה חל ללא-תנאי (לא [data-theme="light"] ...): --bts-ink-darken עצמו הוא
+   שיורש 0% תחת Dark ו-65% תחת Light, בדיוק כמו כל אסימון --bts-* אחר - "הקרוב
+   ביותר מנצח". ב-Dark, calc(100% - 0%) עם oklab נותן בחזרה בדיוק rgb(${ink}), אז
+   אין שינוי פיקסלים. גרסת [data-theme="light"] .bts-ink הקודמת הייתה תואמת לכל
+   תת-עץ עם *איזשהו* אב data-theme="light" - כולל תת-עץ שנעל את עצמו ל-Dark כש-html
+   הגלובלי הוא light - ולכן הוחלפה. גרפיקה דקורטיבית (אייקונים) לא עוברת דרך
+   .bts-ink ונשארת רוויה במלואה גם ב-Light. */
+.bts-ink {
+  color: color-mix(in oklab, rgb(var(--ink)) calc(100% - var(--bts-ink-darken)), black) !important;
+}
+
+/* T2B: אותו מנגנון (ואותו --bts-ink-darken) בשביל STATION_PALETTE - פלטת 14 צבעי-
+   זהות-תחנה (a.text / a.softText). בניגוד ל-.bts-ink (הצבע מגיע כ-inline style),
+   כאן a.text/a.softText הן מחלקות Tailwind ליטרליות קבועות ('text-[#hex]'), ולכן
+   הדריסה חלה ישירות על אותן מחלקות, בלי לגעת ב-14 הסצנות. גם כאן ללא-תנאי, מאותה
+   סיבה בדיוק. a.border / a.bgSoft / a.dot / a.solid / a.glow אינם טקסט ונשארים
+   רוויים במלואה בשתי הערכות - הם accent (Phase 4), לא טקסט שחייב AA. */
+.text-\[\#ff3cac\], .text-\[\#ff3cac\]\/70 { color: color-mix(in oklab, #ff3cac calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#b6ff2e\], .text-\[\#b6ff2e\]\/70 { color: color-mix(in oklab, #b6ff2e calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#1fe0ff\], .text-\[\#1fe0ff\]\/70 { color: color-mix(in oklab, #1fe0ff calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#ffb020\], .text-\[\#ffb020\]\/70 { color: color-mix(in oklab, #ffb020 calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#a24bff\], .text-\[\#a24bff\]\/70 { color: color-mix(in oklab, #a24bff calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#22ffb0\], .text-\[\#22ffb0\]\/70 { color: color-mix(in oklab, #22ffb0 calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#ff5a3c\], .text-\[\#ff5a3c\]\/70 { color: color-mix(in oklab, #ff5a3c calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#3b7bff\], .text-\[\#3b7bff\]\/70 { color: color-mix(in oklab, #3b7bff calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#d8ff33\], .text-\[\#d8ff33\]\/70 { color: color-mix(in oklab, #d8ff33 calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#ff2dd4\], .text-\[\#ff2dd4\]\/70 { color: color-mix(in oklab, #ff2dd4 calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#ff8a00\], .text-\[\#ff8a00\]\/70 { color: color-mix(in oklab, #ff8a00 calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#00f0c8\], .text-\[\#00f0c8\]\/70 { color: color-mix(in oklab, #00f0c8 calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#6c4dff\], .text-\[\#6c4dff\]\/70 { color: color-mix(in oklab, #6c4dff calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-\[\#ff2e63\], .text-\[\#ff2e63\]\/70 { color: color-mix(in oklab, #ff2e63 calc(100% - var(--bts-ink-darken)), black) !important; }
+
+/* RequestViz (station 1, "request"): תפקידי system/history בתוך הרצף. אותו מנגנון,
+   שתי מחלקות Tailwind נוספות (לא חלק מ-STATION_PALETTE). */
+.text-violet-100 { color: color-mix(in oklab, #ede9fe calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-amber-100 { color: color-mix(in oklab, #fef3c7 calc(100% - var(--bts-ink-darken)), black) !important; }
+
+/* EmbeddingViz (station 4): שני אשכולות-משמעות (blue/rose) - אותו מנגנון. */
+.text-blue-300 { color: color-mix(in oklab, #93c5fd calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-rose-300 { color: color-mix(in oklab, #fda4af calc(100% - var(--bts-ink-darken)), black) !important; }
+
+/* PositionViz (station 5) - זוג "היפוך משמעות" (amber/emerald), ו-MixViz (station 8)
+   צ׳יפ cyan/amber. אותו מנגנון. */
+.text-amber-300 { color: color-mix(in oklab, #fcd34d calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-amber-200 { color: color-mix(in oklab, #fde68a calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-emerald-300 { color: color-mix(in oklab, #6ee7b7 calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-emerald-200 { color: color-mix(in oklab, #a7f3d0 calc(100% - var(--bts-ink-darken)), black) !important; }
+.text-cyan-100 { color: color-mix(in oklab, #cffafe calc(100% - var(--bts-ink-darken)), black) !important; }
 
 @layer base {
   * { @apply border-border outline-ring/50; }
