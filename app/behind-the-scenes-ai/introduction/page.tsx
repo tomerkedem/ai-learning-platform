@@ -60,7 +60,7 @@ const ROADMAP_STATION_META = [
   { id: 'loop', zone: 'D', viz: 'loop' },
 ] as const;
 
-const AGENT_STAGE_META = ['in', 'task', 'tool', 'risk', 'act', 'answer'] as const;
+const AGENT_STAGE_META = ['in', 'task', 'tool', 'act', 'risk', 'answer'] as const;
 const CHAT_STAGE_META = ['in', 'model', 'out'] as const;
 
 const CTA_HREF = '/behind-the-scenes-ai/chapter-1';
@@ -170,7 +170,7 @@ export default function BehindTheScenesIntroPage() {
   // Agent), ומשפט המעבר אל המפה, כדי שכל הטקסט סביב הכרטיס יהיה בפס ההקראה.
   const sAgent: ReadAloudSegment = {
     id: 'agent', label: intro.agent.card.agent.title,
-    text: `${intro.agent.intro} ${intro.agent.card.chat.title}. ${intro.agent.card.chat.body} ${intro.agent.card.chat.closing} ${intro.agent.card.agent.title}. ${intro.agent.card.agent.body} ${intro.agent.card.agent.closing}`,
+    text: `${intro.agent.intro} ${intro.agent.card.chat.narration} ${intro.agent.card.agent.narration}`,
   };
   const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
     short: [sTitle, sOutside, sRoadmapSubtitle, sCta],
@@ -370,7 +370,7 @@ export default function BehindTheScenesIntroPage() {
             <ExpandableLab title={agentCard.title}>
               <div className={`relative overflow-hidden rounded-[2rem] border bg-[var(--bts-surface)] p-4 backdrop-blur-xl md:p-6 ${agentMode === 'agent' ? 'border-purple-500/30' : 'border-cyan-500/30'}`}>
                 <AgentLoop reduce={!!reduce} demo={agentDemo} mode={agentMode} onModeChange={setAgentMode}
-                  dir={dir} eyebrow={agentCard.eyebrow} title={agentCard.title} body={agentCard.body} closing={agentCard.closing} />
+                  dir={dir} eyebrow={agentCard.eyebrow} title={agentCard.title} body={agentCard.body} closing={agentCard.closing} narration={agentCard.narration} />
               </div>
             </ExpandableLab>
             <p className="mx-auto mt-8 max-w-2xl text-center text-base leading-relaxed text-[var(--bts-text-muted)] md:text-lg">

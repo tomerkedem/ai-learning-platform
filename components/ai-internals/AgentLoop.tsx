@@ -299,7 +299,9 @@ export const AgentLoop: React.FC<{
     body?: string;
     /** הפאנץ' שנוחת ב-slot החי במצב סיום. מגיע מהכרטיס לפי המצב הפעיל (page). */
     closing?: string;
-}> = ({ reduce, demo, dir, mode: modeProp, onModeChange, eyebrow, title, body, closing }) => {
+    /** הסיפור המוקרא של המצב הפעיל (goal, tools, approval, result). מחליף הקראת הגדרות הכרטיס. */
+    narration?: string;
+}> = ({ reduce, demo, dir, mode: modeProp, onModeChange, eyebrow, title, body, closing, narration }) => {
     const isRtl = dir === 'rtl';
     // המתג יכול להיות נשלט מבחוץ (כדי שהקופי שמסביב יתחלף יחד איתו) או פנימי.
     const [modeInternal, setModeInternal] = useState<Mode>('chat');
@@ -453,7 +455,7 @@ export const AgentLoop: React.FC<{
                                 </motion.h3>
                             </AnimatePresence>
                             {/* הקראת הקופי של המצב הפעיל (מתחלף יחד עם מתג Chat/Agent) */}
-                            <SpeakButton text={speakJoin(eyebrow, title, body, closing)} />
+                            <SpeakButton text={narration ?? speakJoin(eyebrow, title, body, closing)} />
                         </div>
                     </div>
 
