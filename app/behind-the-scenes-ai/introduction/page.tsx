@@ -10,6 +10,9 @@ import { IntroRoadmap } from "@/components/ai-internals/IntroRoadmap";
 import { VizSoundToggle } from "@/components/ai-internals/IntroStationViz";
 import { ExpandableLab } from "@/components/ai-internals/ExpandableLab";
 import { EngineReveal } from "@/components/ai-internals/EngineReveal";
+import {
+  IntroLandscape, buildLandscapeSegments, type LandscapeMoment, type LandscapeSpeech,
+} from "@/components/ai-internals/IntroLandscape";
 import { HypothesisGuess } from "@/components/ai-internals/HypothesisGuess";
 import { AgentLoop } from "@/components/ai-internals/AgentLoop";
 import { ReadAloudControls, type ReadAloudMode } from "@/components/ai-internals/ReadAloudControls";
@@ -94,6 +97,20 @@ export default function BehindTheScenesIntroPage() {
   const intro = t.behindAi.introduction;
   const [guessNarration, setGuessNarration] = React.useState<string | null>(null);
 
+  // מפת ה-AI מול ההקראה: הדוק מדווח מה מוקרא (speech), והמפה מדווחת על הרגע החזותי (moment).
+  // moment.text = משוב הבחירה שמוצג כרגע ברגע הבחירה (מחליף את הקופי של המקטע ההוא);
+  // playN מפעיל הקראה מחדש של הרגע, releaseN משחרר את המקטע שהסתיים וממשיך לרגע הבא.
+  const [speech, setSpeech] = React.useState<LandscapeSpeech>({ id: null, status: 'idle', held: false });
+  const [moment, setMoment] = React.useState({ step: 0, text: null as string | null, playN: 0, releaseN: 0 });
+  const [landscapeStartN, setLandscapeStartN] = React.useState(0);
+  const onMoment = React.useCallback<LandscapeMoment>((step, text, action) => {
+    setMoment((m) => ({
+      step, text,
+      playN: m.playN + (action === 'play' ? 1 : 0),
+      releaseN: m.releaseN + (action === 'release' ? 1 : 0),
+    }));
+  }, []);
+
   // ── פסי ההקראה לפי מצב היקף (scope). רק טקסט למידה משמעותי, מאותם מפתחות מילון
   // שכבר מרונדרים, בלי לשכפל קופי. לא נכללים כפתורים, ניווט, מונים, תוויות, באדג׳ים,
   // צ׳יפים, פרטי-תחנה נסתרים, משפטי מנטור דקורטיביים, או מכונת הדמו של ה-Agent.
@@ -127,6 +144,7 @@ export default function BehindTheScenesIntroPage() {
     });
     return [zoneSeg, ...stationSegs];
   });
+  const sLandscape = buildLandscapeSegments(intro.landscape, locale, moment.text);
   const sTruth: ReadAloudSegment = { id: 'truth', label: intro.truthNote, text: intro.truthNote };
   const sCta: ReadAloudSegment = {
     id: 'cta', label: intro.cta.title,
@@ -156,11 +174,11 @@ export default function BehindTheScenesIntroPage() {
   };
   const readAloudByMode: Record<ReadAloudMode, ReadAloudSegment[]> = {
     short: [sTitle, sOutside, sRoadmapSubtitle, sCta],
-    regular: [sTitle, sOutside, sQuickGuessQ, ...sHypotheses,
+    regular: [sTitle, sOutside, ...sLandscape, sQuickGuessQ, ...sHypotheses,
       ...(sGuessFeedback ? [sGuessFeedback] : []), sGate,
       sRoadmapHeading, ...sStations, sTruth, sAgent, sCta],
     full: [
-      sTitle, sOutside, sQuickGuessQ, ...sHypotheses,
+      sTitle, sOutside, ...sLandscape, sQuickGuessQ, ...sHypotheses,
       ...(sGuessFeedback ? [sGuessFeedback] : []), sGate,
       sRoadmapHeading, ...sStations, sTruth, sAgent, sCta,
     ],
@@ -255,6 +273,13 @@ export default function BehindTheScenesIntroPage() {
                   labels={intro.readAloud}
                   reduce={!!reduce}
                   compact
+                  playSegmentId={`landscape-${moment.step}`}
+                  playSignal={moment.playN ? String(moment.playN) : ''}
+                  releaseSignal={moment.releaseN ? String(moment.releaseN) : ''}
+                  startSegmentId="landscape-intro"
+                  startSignal={landscapeStartN ? String(landscapeStartN) : ''}
+                  startSegments={sLandscape}
+                  onSpeech={setSpeech}
                 />
               </FloatingReadAloud>
             </div>
@@ -277,6 +302,9 @@ export default function BehindTheScenesIntroPage() {
               />
             </motion.div>
           </div>
+
+          {/* ══════════ 1.5 · מפת ה-AI ══════════ */}
+          <IntroLandscape reduce={!!reduce} dir={dir} speech={speech} onMoment={onMoment} onReadAloud={() => setLandscapeStartN((n) => n + 1)} />
 
           {/* ══════════ 2 · QUICK GUESS: FOUR COMPETING HYPOTHESES ══════════ */}
           {/* בחירת מודל חשיבה (לא שאלון), לפני שהשער חושף את התשובה. */}

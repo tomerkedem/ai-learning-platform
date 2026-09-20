@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Headphones, Volume2, Pause, Play, Square, ChevronLeft, ChevronRight, SlidersHorizontal, ListMusic } from 'lucide-react';
 import type { Direction } from '@/i18n/config';
 import { DUR, EASE, withReduced } from './motionTokens';
-import { useReadAloud, type ReadAloudSegment } from './useReadAloud';
+import { useReadAloud, type ReadAloudSegment, type ReadAloudStatus } from './useReadAloud';
 import { useReadAloudPin } from './FloatingReadAloud';
 
 /** מצב היקף ההקראה: קצר / רגיל / מלא. רגיל = ה-Core spine (ברירת מחדל). */
@@ -25,6 +25,13 @@ export type ReadAloudMode = 'short' | 'regular' | 'full';
 const SPEED_OPTIONS = [0.85, 1, 1.15, 1.3] as const;
 
 const MODE_ORDER: ReadAloudMode[] = ['short', 'regular', 'full'];
+
+/** מצב ההקראה כפי שמדווח החוצה: איזה מקטע נוכחי, הסטטוס, והאם מקטע hold הסתיים וממתין. */
+export interface ReadAloudSpeech {
+    id: string | null;
+    status: ReadAloudStatus;
+    held: boolean;
+}
 
 export interface ReadAloudLabels {
     /** כותרת הדוק במצב סגור ("האזנה מודרכת"). */
@@ -67,6 +74,19 @@ interface ReadAloudControlsProps {
     playSegmentId?: string;
     /** שינוי החתימה מפעיל את playSegmentId. יש לשנותה רק בעקבות פעולת משתמש. */
     playSignal?: string;
+    /** דיווח על מצב ההקראה (מקטע נוכחי, סטטוס, hold). מדווח רק כשאחד מהם משתנה. */
+    onSpeech?: (speech: ReadAloudSpeech) => void;
+    /** שינוי החתימה משחרר מקטע hold שהסתיים, וההקראה ממשיכה למקטע הבא. */
+    releaseSignal?: string;
+    /** בקשת התחלת הקראה רציפה (start, לא startSingle) ממקטע מסוים, למשל מפת ה-AI מההקדמה שלה. */
+    startSegmentId?: string;
+    /** שינוי החתימה מפעיל את startSegmentId. יש לשנותה רק בעקבות פעולת משתמש. */
+    startSignal?: string;
+    /**
+     * רשימת המקטעים של הבקשה. אם startSegmentId אינו ברשימת מצב ההיקף הפעיל (למשל Short),
+     * ההקראה רצה על רשימה זו בלבד עד שהיא נגמרת או נעצרת, בלי לשנות את מצב ההיקף הגלובלי.
+     */
+    startSegments?: ReadAloudSegment[];
 }
 
 export function ReadAloudControls({
@@ -80,18 +100,59 @@ export function ReadAloudControls({
     resetSignal: externalResetSignal = '',
     playSegmentId,
     playSignal = '',
+    onSpeech,
+    releaseSignal = '',
+    startSegmentId,
+    startSignal = '',
+    startSegments,
 }: ReadAloudControlsProps) {
     const [mode, setMode] = useState<ReadAloudMode>('regular');
     const [showSettings, setShowSettings] = useState(false);
     const [showSections, setShowSections] = useState(false);
     const isRtl = dir === 'rtl';
 
-    const segments = segmentsByMode[mode];
+    const [ownList, setOwnList] = useState<ReadAloudSegment[] | null>(null);
+    const [startTick, setStartTick] = useState(0);
+    const pendingStartRef = useRef<string | null>(null);
+    const segments = ownList ?? segmentsByMode[mode];
     // חתימת איפוס: שינוי ב-locale / שפת דיבור / מצב היקף עוצר הקראה פעילה (תיקון נכונות).
     const resetSignal = `${locale}|${lang}|${mode}|${externalResetSignal}`;
     const ra = useReadAloud({ segments, lang, locale, resetSignal });
-    const { startSingle } = ra;
+    const { startSingle, release, start } = ra;
+    const previousStartSignalRef = useRef(startSignal);
+    const wasActiveRef = useRef(false);
+
+    // בקשת התחלה: בוחרים את הרשימה (של המצב הפעיל, או הרשימה של הבקשה) ואז, אחרי הרינדור
+    // שבו ה-hook כבר מחזיק אותה, מתחילים ב-start(index).
+    useEffect(() => {
+        if (previousStartSignalRef.current === startSignal) return;
+        previousStartSignalRef.current = startSignal;
+        if (!startSignal || !startSegmentId) return;
+        pendingStartRef.current = startSegmentId;
+        const inMode = segmentsByMode[mode].some((s) => s.id === startSegmentId);
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- תגובה לבקשת התחלה של המשתמש (חתימה): בחירת הרשימה להקראה
+        setOwnList(inMode ? null : startSegments ?? null);
+        setStartTick((n) => n + 1);
+    }, [startSignal, startSegmentId, startSegments, segmentsByMode, mode]);
+    useEffect(() => {
+        const id = pendingStartRef.current;
+        if (!id) return;
+        const index = segments.findIndex((s) => s.id === id);
+        if (index < 0) return; // הרשימה של הבקשה עוד לא נכנסה (הרינדור הבא)
+        pendingStartRef.current = null;
+        start(index);
+    }, [startTick, segments, start]);
+    // הרשימה של הבקשה חיה רק כל עוד ההקראה פעילה; אחרי עצירה/סיום חוזרים לרשימת המצב.
+    useEffect(() => {
+        if (ra.status === 'speaking' || ra.status === 'paused') { wasActiveRef.current = true; return; }
+        if (wasActiveRef.current) {
+            wasActiveRef.current = false;
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- חזרה לרשימת מצב ההיקף בסיום הקראה
+            setOwnList(null);
+        }
+    }, [ra.status]);
     const previousPlaySignalRef = useRef(playSignal);
+    const previousReleaseSignalRef = useRef(releaseSignal);
 
     useEffect(() => {
         if (previousPlaySignalRef.current === playSignal) return;
@@ -100,6 +161,17 @@ export function ReadAloudControls({
         const index = playSegmentId ? segments.findIndex((segment) => segment.id === playSegmentId) : -1;
         if (index >= 0) startSingle(index);
     }, [playSegmentId, playSignal, segments, startSingle]);
+
+    useEffect(() => {
+        if (previousReleaseSignalRef.current === releaseSignal) return;
+        previousReleaseSignalRef.current = releaseSignal;
+        if (releaseSignal) release();
+    }, [releaseSignal, release]);
+
+    const currentId = ra.currentIndex >= 0 ? segments[ra.currentIndex]?.id ?? null : null;
+    useEffect(() => {
+        onSpeech?.({ id: currentId, status: ra.status, held: ra.held });
+    }, [onSpeech, currentId, ra.status, ra.held]);
 
     const isActive = ra.status === 'speaking' || ra.status === 'paused';
     const current = ra.currentIndex >= 0 ? segments[ra.currentIndex] : null;

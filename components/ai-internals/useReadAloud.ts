@@ -28,6 +28,11 @@ export interface ReadAloudSegment {
     label: string;
     /** הטקסט המלא שיוקרא בקול. */
     text: string;
+    /**
+     * אחרי סיום המקטע ההקראה ממתינה (held) ואינה עוברת למקטע הבא עד release().
+     * משמש כשהצגה חזותית קובעת מתי להמשיך (למשל מפת ה-AI בהצגה אוטומטית).
+     */
+    hold?: boolean;
 }
 
 export interface UseReadAloudParams {
@@ -50,6 +55,10 @@ export interface UseReadAloud {
     /** האם בוצעה כבר בדיקת תמיכה בצד הלקוח (למניעת הבהוב/אי-התאמת hydration). */
     ready: boolean;
     pauseSupported: boolean;
+    /** המקטע הנוכחי (hold) הסתיים וממתין ל-release(). */
+    held: boolean;
+    /** ממשיך למקטע שאחרי מקטע ממתין. no-op כשאין מקטע ממתין. */
+    release: () => void;
     /** הקולות התואמים ל-locale הפעיל (אם יש). */
     voices: SpeechSynthesisVoice[];
     selectedVoiceURI: string | null;
@@ -103,6 +112,8 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
     const [supported, setSupported] = useState(false);
     const [status, setStatus] = useState<ReadAloudStatus>('idle');
     const [pauseSupported, setPauseSupported] = useState(true);
+    const [held, setHeld] = useState(false);
+    const heldRef = useRef(-1);
     const [allVoices, setAllVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
     const [currentIndex, setCurrentIndex] = useState(-1);
@@ -208,7 +219,10 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
             const runId = runRef.current.id + 1;
             runRef.current.stopped = true; // לבטל onend של אמירה קודמת
             synth.cancel();
+            if (synth.paused) synth.resume(); // מנוע שנשאר מושהה אחרי pause()+cancel() לא ידבר
             runRef.current = { stopped: false, index, id: runId };
+            heldRef.current = -1;
+            setHeld(false);
 
             const text = list[index].text;
             const utt = new SpeechSynthesisUtterance(text);
@@ -230,6 +244,13 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
 
             utt.onend = () => {
                 if (runRef.current.stopped || runRef.current.index !== index || runRef.current.id !== runId) return;
+                if (segmentsRef.current[index]?.hold) {
+                    singleSegmentRef.current = false;
+                    heldRef.current = index;
+                    setHeld(true);
+                    setWordRange(null);
+                    return;
+                }
                 if (singleSegmentRef.current) {
                     singleSegmentRef.current = false;
                     setStatus('idle');
@@ -286,6 +307,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
 
     const pause = useCallback(() => {
         if (!supported) return;
+        if (heldRef.current >= 0) { setStatus('paused'); return; } // אין דיבור פעיל להשהות
         const synth = window.speechSynthesis;
         synth.pause();
         setStatus('paused');
@@ -302,6 +324,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
 
     const resume = useCallback(() => {
         if (!supported) return;
+        if (heldRef.current >= 0) { setStatus('speaking'); return; }
         window.speechSynthesis.resume();
         setStatus('speaking');
     }, [supported]);
@@ -310,11 +333,20 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
         if (!supported) return;
         singleSegmentRef.current = false;
         runRef.current.stopped = true;
+        heldRef.current = -1;
+        setHeld(false);
         window.speechSynthesis.cancel();
         setStatus('idle');
         setCurrentIndex(-1);
         setWordRange(null);
     }, [supported]);
+
+    const release = useCallback(() => {
+        const i = heldRef.current;
+        if (i < 0) return;
+        if (i + 1 < segmentsRef.current.length) speakIndex(i + 1);
+        else stop();
+    }, [speakIndex, stop]);
 
     // בלעדיות מול הקראה נקודתית (SpeakButton): כשהיא מתחילה, הדוק עוצר מיד.
     useEffect(() => {
@@ -365,6 +397,8 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
         supported,
         ready,
         pauseSupported,
+        held,
+        release,
         voices,
         selectedVoiceURI,
         selectVoice,
