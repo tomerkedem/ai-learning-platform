@@ -133,22 +133,44 @@ Do not expose secrets or print environment variables that may contain secrets. D
 
 ## Validation contract
 
-This is the only canonical validation checklist. Validate only what is relevant to the change.
+This is the only canonical validation policy. Match validation effort to the
+risk and scope of the change. Validate only what is relevant.
 
 Default code validation:
 
 - `npx tsc --noEmit`
 - ESLint on changed TS/TSX files
 - `git diff --check`
-- `npm run build` (only when shared code, routing, build behavior, or locale structure changed, or the user requested it)
+- `npm run build` only when shared code, routing, build behavior, locale
+  structure changed, or the user requested it
 
-Learner-facing UI changes additionally use the `visual-qa` skill and real-browser validation.
+For small, localized or cosmetic changes, run only the cheapest checks needed
+to catch likely regressions. Do not run broad validation merely for
+completeness.
 
-Learner-visible copy changes additionally use the `i18n-six-locales` skill.
+Learner-facing UI changes use the `visual-qa` skill only when browser
+validation is materially needed for the changed behavior. For small UI polish,
+prefer one focused browser check over a broad visual-QA pass.
 
-Do not create, modify, or run unit tests unless the task explicitly requires them. Do not run unrelated validation suites merely for completeness.
+Learner-visible copy changes use the `i18n-six-locales` skill.
 
-Never report a check as passed unless it was actually run and passed. Report failures exactly.
+Meaningful logic or behavior changes require targeted validation of the
+affected behavior.
+
+Full feature completion or a pre-commit gate may use broader validation such
+as build, visual QA, regression checks, and `code-reviewer`.
+
+Do not repeat expensive checks that already passed unless subsequent changes
+could invalidate them.
+
+Do not create, modify, or run unit tests unless the task explicitly requires
+them. Do not run unrelated validation suites.
+
+When the relevant checks pass, stop. Do not continue adding validation that
+was not requested or justified by the change.
+
+Never report a check as passed unless it was actually run and passed. Report
+failures exactly.
 
 ## Session handoff
 
