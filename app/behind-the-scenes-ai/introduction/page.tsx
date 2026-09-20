@@ -164,7 +164,7 @@ export default function BehindTheScenesIntroPage() {
     : null;
   const sGate: ReadAloudSegment = {
     id: 'gate', label: intro.chat.gateLead,
-    text: `${intro.chat.gateLead} ${intro.chat.bridge}`,
+    text: intro.chat.gateLead,
   };
   // כרטיס Chat מול Agent: משפט המסגור שלפני הכרטיס, הקופי של שני המצבים (לא רק
   // Agent), ומשפט המעבר אל המפה, כדי שכל הטקסט סביב הכרטיס יהיה בפס ההקראה.

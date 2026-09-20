@@ -38,7 +38,7 @@ export const introduction = {
         answer: "I'm sorry to hear that. It's worth checking the shipping status to see if there's an update from the logistics center.",
         outsideLine: 'From the outside it looks like two steps: you wrote a request and got an answer.',
         curiosityLine: 'But the real question is what happened in between.',
-        gateLead: "Now let's open up what happened between the request and the answer.",
+        gateLead: 'Now we open the box and see the route from the inside.',
         revealLabel: 'Open the engine between the question and the answer',
         closeLabel: 'Close the view',
         revealedLabel: 'This is what the engine looks like from the inside',
@@ -52,12 +52,12 @@ export const introduction = {
     // ── Quick guess: four competing explanations (HypothesisGuess) ──
     quickGuess: {
         eyebrow: 'Quick guess · Four competing explanations',
-        question: 'Which explanation is closest to what happens in between?',
+        question: 'Back to our chat. What do you think the LLM does between the request and the answer?',
         hint: 'Pick the explanation that feels closest to reality. There is no score here, just a choice of a mental model.',
         correctTitle: 'The closest explanation',
         correctLead: 'This is the closest learning map, and it is still simplified.',
         correctBody: 'The model works on tokens and numeric representations, computes context, then chooses or samples the next token using the distribution and decoding rules.',
-        correctBridge: "That is exactly what we'll open up now, in the station map just below.",
+        correctBridge: '',
         wrongLead: 'This is a common misconception, but it is not what actually happens.',
         retry: 'Choose again',
         revealCorrect: 'Show the accurate explanation',
@@ -98,7 +98,7 @@ export const introduction = {
     roadmapHeading: {
         eyebrow: '14 stations inside response generation',
         title: 'A map of the main stations on the way from text to answer',
-        subtitle: 'A learning map of an autoregressive language model, from assembled input to generated response.',
+        subtitle: 'A learning map of an autoregressive language model, from assembled input to generated response. You do not need to remember all 14 stations now. This is the map of the journey we will take together, step by step.',
         hint: 'Click a station to peek inside: a short explanation and an example.',
     },
 
@@ -170,7 +170,7 @@ export const introduction = {
     cta: {
         eyebrow: 'Next step',
         title: 'Now we begin with the first step',
-        body: 'You have seen the big picture. You do not need to remember every station yet. In Chapter 1, we will open the transparent chat together.',
+        body: 'You have seen the big picture. In Chapter 1, we will open the transparent chat together.',
         button: 'Start Chapter 1',
     },
 
@@ -228,7 +228,7 @@ export const introduction = {
             { t: 'Which path is the chat experience?', b: 'You can tap each path and check what kind of content our chat creates.' },
             { t: 'LLM - Large Language Model', b: 'A neural network that learned patterns in language and can work with context and generate text. This is the kind of model at the heart of our chat.' },
             { t: 'An Agent is not a bigger LLM.', b: 'An Agent is a system built around a model: it works toward a goal and sometimes uses tools and their results.' },
-            { t: 'Now we know where the LLM sits.', b: 'Next, we will open it and see what happens inside.' },
+            { t: 'Now we know where the LLM sits.', b: 'Before we open it, what do you think happens inside?' },
         ],
         agentNote: 'Agentic AI is a broad term for AI systems that work toward goals with some degree of independence, and not everyone defines it in exactly the same way.',
         textFocus: { t: 'Our chat creates text', b: 'So we continue along the text path, and from there we reach the LLM.' },
@@ -245,7 +245,7 @@ export const introduction = {
         goal: 'Goal',
         tools: 'Tools',
         results: 'Results',
-        openLlm: 'Open the LLM',
+        openLlm: 'Take a quick guess',
         replay: 'Watch again from the start',
     },
 

@@ -39,7 +39,7 @@ export const introduction = {
         answer: 'Lamento lo ocurrido. Conviene revisar el estado del envío para ver si hay alguna actualización del centro logístico.',
         outsideLine: 'Desde fuera parece que son dos pasos: escribiste una solicitud y recibiste una respuesta.',
         curiosityLine: 'Pero la verdadera pregunta es qué ocurrió en el medio.',
-        gateLead: 'Ahora vamos a abrir lo que ocurrió entre la solicitud y la respuesta.',
+        gateLead: 'Ahora abrimos la caja y vemos el recorrido por dentro.',
         revealLabel: 'Abre el motor entre la pregunta y la respuesta',
         closeLabel: 'Cerrar la vista',
         revealedLabel: 'Así se ve el motor por dentro',
@@ -53,12 +53,12 @@ export const introduction = {
     // ── Adivinanza rápida: cuatro explicaciones que compiten (HypothesisGuess) ──
     quickGuess: {
         eyebrow: 'Adivinanza rápida · Cuatro explicaciones que compiten',
-        question: '¿Qué explicación está más cerca de lo que ocurre en el medio?',
+        question: 'Volvamos a nuestro chat. ¿Qué crees que hace el LLM entre la solicitud y la respuesta?',
         hint: 'Elige la explicación que te parezca más cercana a la realidad. Aquí no hay puntuación, solo la elección de un modelo mental.',
         correctTitle: 'La explicación más cercana',
         correctLead: 'Es el mapa de aprendizaje más cercano, aunque sigue siendo una simplificación.',
         correctBody: 'El modelo trabaja con tokens y representaciones numéricas, calcula el contexto y luego elige o muestrea el siguiente token según la distribución y las reglas de decodificación.',
-        correctBridge: 'Eso es exactamente lo que vamos a abrir ahora, en el mapa de estaciones que está justo abajo.',
+        correctBridge: '',
         wrongLead: 'Es un error de razonamiento común, pero no es lo que ocurre en realidad.',
         retry: 'Elegir de nuevo',
         revealCorrect: 'Mostrar la explicación precisa',
@@ -99,7 +99,7 @@ export const introduction = {
     roadmapHeading: {
         eyebrow: '14 estaciones dentro de la generación de una respuesta',
         title: 'Un mapa de las estaciones principales en el camino del texto a la respuesta',
-        subtitle: 'Un mapa de aprendizaje de un modelo de lenguaje autorregresivo, desde la entrada preparada hasta la respuesta generada.',
+        subtitle: 'Un mapa de aprendizaje de un modelo de lenguaje autorregresivo, desde la entrada preparada hasta la respuesta generada. No necesitas recordar las 14 estaciones ahora. Es el mapa del viaje que haremos juntos, paso a paso.',
         hint: 'Haz clic en una estación para mirar dentro: una explicación breve y un ejemplo.',
     },
 
@@ -171,7 +171,7 @@ export const introduction = {
     cta: {
         eyebrow: 'Siguiente paso',
         title: 'Ahora empezamos por el primer paso',
-        body: 'Ya viste la imagen general. Todavía no necesitas recordar todas las estaciones. En el capítulo 1 abriremos juntos el chat transparente.',
+        body: 'Ya viste la imagen general. En el capítulo 1 abriremos juntos el chat transparente.',
         button: 'Empezar el capítulo 1',
     },
 
@@ -229,7 +229,7 @@ export const introduction = {
             { t: '¿Qué camino es la experiencia del chat?', b: 'Puedes tocar cada camino y comprobar qué tipo de contenido crea nuestro chat.' },
             { t: 'LLM - Large Language Model (modelo de lenguaje grande)', b: 'Una red neuronal que aprendió patrones del lenguaje y puede trabajar con contexto y generar texto. Es el tipo de modelo que está en el corazón de nuestro chat.' },
             { t: 'Un Agent no es un LLM más grande.', b: 'Un Agent es un sistema construido alrededor de un modelo: trabaja hacia un objetivo y, a veces, usa herramientas y sus resultados.' },
-            { t: 'Ahora sabemos dónde encaja el LLM.', b: 'A continuación lo abriremos para ver qué ocurre dentro.' },
+            { t: 'Ahora sabemos dónde encaja el LLM.', b: 'Antes de abrirlo, ¿qué crees que ocurre dentro?' },
         ],
         agentNote: 'Agentic AI es un término amplio para sistemas de IA que actúan para lograr objetivos con cierto grado de autonomía, y no todos lo definen exactamente igual.',
         textFocus: { t: 'Nuestro chat crea texto', b: 'Por eso seguimos por el camino del texto, y desde allí llegamos al LLM.' },
@@ -246,7 +246,7 @@ export const introduction = {
         goal: 'Objetivo',
         tools: 'Herramientas',
         results: 'Resultados',
-        openLlm: 'Abrir el LLM',
+        openLlm: 'Una predicción rápida',
         replay: 'Ver de nuevo desde el principio',
     },
 
