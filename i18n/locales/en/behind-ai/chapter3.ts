@@ -3,7 +3,7 @@
 // Shape source: ../../he/behind-ai/chapter3 (Hebrew is canonical).
 //
 // Real translation, natural English (not literal). Phone-first and TTS-ready: short
-// sentences, no dense paragraphs. The package and delivery anchor is preserved.
+// sentences, no dense paragraphs. Examples must preserve the tokenization behavior each exercise teaches.
 // Fixed terms kept: Tokenization, token, model, context, prompt. No em dash (U+2014)
 // and no en dash (U+2013). Mentor bubble text carries no emoji.
 //

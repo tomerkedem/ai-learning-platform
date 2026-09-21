@@ -109,6 +109,10 @@ Do not mix unrelated changes in one implementation. Do not combine chapter reord
 
 When proposing a change, state why the chosen solution is the smallest safe option. When uncertain, stop and report the risk before editing.
 
+## Course examples
+
+Learner-facing examples default to universal, profession-neutral scenarios understood without industry context. The learning objective picks the example; use varied examples, not one course-wide running scenario, and do not replace the old postal anchor with a new one. Avoid postal/logistics/package/delivery and other unnecessary domain contexts (healthcare, finance, political, legal, emergency, sensitive-personal) unless the concept genuinely needs that domain. When replacing an example, preserve the semantic/technical property it teaches (tokens, distances, coordinates, tests, answer keys). The approved scenario map and invariants are in `docs/behind-ai-final-chapter-plan.md`.
+
 ## Dependency discipline
 
 Do not install a new package unless all of the following are true: the need is real and current; no native browser, React, Next.js, TypeScript, or CSS solution, and no existing project code, solves it cleanly; no existing installed dependency solves it safely; the package meaningfully reduces complexity; and it does not create unnecessary security, bundle size, maintenance, or i18n risk.

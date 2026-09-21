@@ -52,7 +52,7 @@ export const chapter1 = {
         eyebrow: 'Transparent Chat Lab',
         intro: 'تعرض لوحة الدردشة الطلب والإجابة. وتفتح لوحة المحرك توضيحا للمسار بينهما.',
         panelTitle: 'Transparent Chat Lab',
-        // Recognition bridge to the intro map (package anchor): same stations, now live.
+        // Recognition bridge to the intro map: same stations, now live.
         mapBridge: 'تعمل الآن محطات الخريطة الأربع عشرة على الطلب الذي أرسلته.',
         chatSubtitle: 'Chat Mode · محادثة',
         agentSubtitle: 'Agent Mode · مهمة',

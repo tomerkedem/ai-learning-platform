@@ -8,7 +8,7 @@
 // belongs to Chapter 5, not here.
 //
 // Real translation, natural English (not literal). Phone-first and TTS-ready: short
-// sentences, no dense paragraphs. The package and delivery anchor is preserved. Fixed
+// sentences, no dense paragraphs. Examples must preserve the semantic relationships each exercise teaches. Fixed
 // terms kept: Embedding, Token ID, RAG, Agent, model. No em dash (U+2014) and no en
 // dash (U+2013). Mentor bubble text carries no emoji.
 

@@ -3,7 +3,7 @@
 // Shape source: ../../he/behind-ai/chapter3 (Hebrew is canonical).
 //
 // Real translation, natural Japanese (not literal). Phone-first and TTS-ready: short
-// sentences, no dense paragraphs. The package and delivery anchor is preserved.
+// sentences, no dense paragraphs. Examples must preserve the tokenization behavior each exercise teaches.
 //
 // IMPORTANT (Japanese is space-free): tokenization is never described as "splitting
 // words separated by spaces". Where the Hebrew/English copy mentions removing spaces,

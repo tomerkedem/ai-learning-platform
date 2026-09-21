@@ -3,8 +3,8 @@
 // Shape source: ../../he/behind-ai/chapter3 (Hebrew is canonical).
 //
 // Real translation, natural educational Russian (not literal). Phone-first and
-// TTS-ready: short sentences, no dense paragraphs. The package and delivery anchor
-// is preserved. Stable terms: токен, модель, промпт, контекст. No em dash (U+2014)
+// TTS-ready: short sentences, no dense paragraphs. Examples must preserve the
+// tokenization behavior each exercise teaches. Stable terms: токен, модель, промпт, контекст. No em dash (U+2014)
 // and no en dash (U+2013): the Russian dash (тире) is avoided by rewriting. Mentor
 // bubble text carries no emoji.
 //

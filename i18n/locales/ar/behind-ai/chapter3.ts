@@ -3,8 +3,8 @@
 // Shape source: ../../he/behind-ai/chapter3 (Hebrew is canonical).
 //
 // Real translation, natural RTL Arabic (not a mechanical copy of Hebrew word order).
-// Phone-first and TTS-ready: short sentences, no dense paragraphs. The package and
-// delivery anchor is preserved with natural Arabic examples. Stable terms kept
+// Phone-first and TTS-ready: short sentences, no dense paragraphs. Examples must preserve the
+// tokenization behavior each exercise teaches, in natural Arabic. Stable terms kept
 // recognizable: توكن/توكنز, النموذج, المُجزِّئ, السياق (context). No em dash (U+2014)
 // and no en dash (U+2013). Mentor bubble text carries no emoji.
 //

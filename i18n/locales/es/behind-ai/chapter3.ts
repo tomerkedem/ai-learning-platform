@@ -3,8 +3,8 @@
 // Shape source: ../../he/behind-ai/chapter3 (Hebrew is canonical).
 //
 // Real translation, natural educational Spanish (not literal). Phone-first and
-// TTS-ready: short sentences, no dense paragraphs. The package and delivery anchor
-// is preserved. Stable terms kept: token, modelo, prompt, contexto. No em dash
+// TTS-ready: short sentences, no dense paragraphs. Examples must preserve the
+// tokenization behavior each exercise teaches. Stable terms kept: token, modelo, prompt, contexto. No em dash
 // (U+2014) and no en dash (U+2013). Mentor bubble text carries no emoji.
 //
 // The lab strings (TokenizationLab and friends) come from labContent, so they are
