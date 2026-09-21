@@ -26,7 +26,7 @@ export const contextWindow = {
 
     // El dato crítico que se dijo al principio de la conversación, y en torno al cual se
     // construye todo el capítulo.
-    criticalFact: 'El paquete está destinado a recogida en la sucursal de Jerusalén.',
+    criticalFact: 'La reunión es el jueves a las 18:00.',
 
     // ── Hero ──
     hero: {
@@ -71,7 +71,7 @@ export const contextWindow = {
         title: 'El punto sorprendente',
         lead: 'El mismo modelo, la misma pregunta, pero dos respuestas distintas. La diferencia es solo si el dato crítico está dentro de la ventana o fuera de ella.',
         body:
-            'El modelo no se volvió más tonto ni olvidó a propósito. Simplemente, cuando el dato sobre la sucursal de Jerusalén ya no está en la ventana, no tiene en qué apoyarse, así que responde de forma genérica. La información no desapareció del mundo, solo salió de lo que el modelo procesa ahora.',
+            'El modelo no se volvió más tonto ni olvidó a propósito. Simplemente, cuando el dato sobre la reunión del jueves ya no está en la ventana, no tiene en qué apoyarse, así que responde de forma genérica. La información no desapareció del mundo, solo salió de lo que el modelo procesa ahora.',
     },
 
     // ── Ejemplo cotidiano ──
@@ -110,11 +110,11 @@ export const contextWindow = {
         options: [
             '¿Qué responderle?',
             'Siguiendo con lo que escribí antes, redacta una respuesta.',
-            'El paquete está esperando para recogida en la sucursal de Jerusalén. El cliente pregunta qué hacer. Redacta una respuesta corta y clara.',
+            'La reunión es el jueves a las 18:00. Un participante pregunta qué hacer. Redacta una respuesta corta y clara.',
             'Encárgate de esto.',
         ],
         explanationLead: 'El prompt independiente es',
-        explanationPair: '"El paquete está esperando para recogida en la sucursal de Jerusalén. El cliente pregunta qué hacer..."',
+        explanationPair: '"La reunión es el jueves a las 18:00. Un participante pregunta qué hacer..."',
         explanationRest:
             '. Lleva dentro de sí el dato crítico y el objetivo, y por eso no depende de lo que quizá ya salió de la ventana de contexto. Las demás formulaciones se apoyan en una conversación anterior que quizá ya no está ahí.',
     },
@@ -125,7 +125,7 @@ export const contextWindow = {
         lead: 'Para tareas importantes, no confíes en que el modelo recuerda. Devuelve el contexto crítico dentro del prompt.',
         uses: [
             'El objetivo: qué quieres que ocurra al final.',
-            'Los datos críticos: hechos como la sucursal de recogida, el estado o el número de seguimiento.',
+            'Los datos críticos: hechos como el día, la hora o el lugar.',
             'Qué se decidió ya antes, y qué no se debe cambiar.',
             'El formato deseado para la respuesta, y una fuente o un estado si hace falta.',
         ],

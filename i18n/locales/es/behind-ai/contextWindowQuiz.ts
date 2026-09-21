@@ -48,7 +48,7 @@ export const contextWindowQuiz = {
         },
         3: {
             question:
-                'Al principio de una conversación larga se escribió "el paquete está destinado a recogida en la sucursal de Jerusalén". Después de muchos mensajes el usuario pregunta qué responder, y el modelo responde de forma genérica. ¿Qué es lo más correcto?',
+                'Al principio de una conversación larga se escribió "la reunión es el jueves a las 18:00". Después de muchos mensajes el usuario pregunta qué responder, y el modelo responde de forma genérica. ¿Qué es lo más correcto?',
             options: [
                 'El modelo recuerda el dato, pero eligió a propósito no usarlo',
                 'El dato probablemente salió de la ventana de contexto, y por eso el modelo ya no se apoya en él',

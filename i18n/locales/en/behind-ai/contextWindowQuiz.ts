@@ -48,7 +48,7 @@ export const contextWindowQuiz = {
         },
         3: {
             question:
-                'At the start of a long conversation it was written "the package is set for pickup at the Jerusalem branch". After many messages the user asks what to reply, and the model answers generically. What is most accurate?',
+                'At the start of a long conversation it was written "the meeting is on Thursday at 18:00". After many messages the user asks what to reply, and the model answers generically. What is most accurate?',
             options: [
                 'The model remembers the detail but chose deliberately not to use it',
                 'The detail probably fell out of the context window, so the model no longer relies on it',

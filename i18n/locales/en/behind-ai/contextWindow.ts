@@ -29,7 +29,7 @@ export const contextWindow = {
 
     // The critical detail said at the start of the conversation, around which the whole
     // chapter is built.
-    criticalFact: 'The package is set for pickup at the Jerusalem branch.',
+    criticalFact: 'The meeting is on Thursday at 18:00.',
 
     // -- Hero --
     hero: {
@@ -74,7 +74,7 @@ export const contextWindow = {
         title: 'The surprising point',
         lead: 'The same model, the same question, but two different answers. The only difference is whether the critical detail is inside the window or outside it.',
         body:
-            'The model did not get any dumber and did not forget on purpose. It is simply that once the detail about the Jerusalem branch is no longer in the window, it has nothing to rely on, so it answers in general terms. The information did not vanish from the world, it just left what the model is processing right now.',
+            'The model did not get any dumber and did not forget on purpose. It is simply that once the detail about the Thursday meeting is no longer in the window, it has nothing to rely on, so it answers in general terms. The information did not vanish from the world, it just left what the model is processing right now.',
     },
 
     // -- Everyday example --
@@ -113,11 +113,11 @@ export const contextWindow = {
         options: [
             'What should I reply to him?',
             'Following up on what I wrote earlier, phrase a reply.',
-            'The package is waiting for pickup at the Jerusalem branch. The customer is asking what to do. Write a short, clear answer.',
+            'The meeting is on Thursday at 18:00. A participant is asking what to do. Write a short, clear answer.',
             'Handle this.',
         ],
         explanationLead: 'The standalone prompt is',
-        explanationPair: '"The package is waiting for pickup at the Jerusalem branch. The customer is asking what to do..."',
+        explanationPair: '"The meeting is on Thursday at 18:00. A participant is asking what to do..."',
         explanationRest:
             '. It carries the critical detail and the goal within itself, so it does not depend on what may have already left the context window. The other options rely on an earlier conversation that may no longer be there.',
     },
@@ -128,7 +128,7 @@ export const contextWindow = {
         lead: 'For important tasks, do not count on the model to remember. Bring the critical context back into the prompt.',
         uses: [
             'The goal: what you want to happen in the end.',
-            'The critical details: facts like the pickup branch, the status or a tracking number.',
+            'The critical details: facts like the day, the time or the location.',
             'What was already decided earlier, and what must not change.',
             'The desired answer format, and a source or status if needed.',
         ],

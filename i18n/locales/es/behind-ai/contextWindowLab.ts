@@ -22,7 +22,7 @@ export const contextWindowLab: ContextWindowLabContent = {
     sectionEyebrow: 'Context Window Lab',
     sectionTitle: 'Mueve la ventana de contexto y descubre qué más ve el modelo',
     sectionIntro:
-        'Al principio de la conversación se dijo que el paquete está destinado a recogida en la sucursal de Jerusalén. Ahora, después de muchos mensajes, el cliente vuelve a preguntar. Cambia el estado de la ventana y observa cómo cambia la respuesta del modelo cuando el dato crítico está dentro, cuando queda fuera, y cuando lo devuelves al prompt.',
+        'Al principio de la conversación se dijo que la reunión es el jueves a las 18:00. Ahora, después de muchos mensajes, un participante vuelve a preguntar. Cambia el estado de la ventana y observa cómo cambia la respuesta del modelo cuando el dato crítico está dentro, cuando queda fuera, y cuando lo devuelves al prompt.',
     heading: 'Qué hay ahora dentro de la ventana de contexto',
     kicker: 'Context window lab',
     pickHint: 'Elige un estado. Veremos qué entra en la ventana y qué se queda fuera.',
@@ -51,8 +51,8 @@ export const contextWindowLab: ContextWindowLabContent = {
         outside: 'Fuera de la ventana',
     },
     messages: [
-        { id: 'm1', role: 'user', critical: true, text: 'El paquete está destinado a recogida en la sucursal de Jerusalén.' },
-        { id: 'm2', role: 'user', text: 'El cliente escribió que ya lleva varios días esperándolo.' },
+        { id: 'm1', role: 'user', critical: true, text: 'La reunión es el jueves a las 18:00.' },
+        { id: 'm2', role: 'user', text: 'Uno de los participantes escribió que está organizando su semana en torno a ella.' },
         { id: 'm3', role: 'agent', text: 'Entendido. Reviso la solicitud y vuelvo contigo.' },
         { id: 'm4', role: 'user', text: 'Ahora envió otro mensaje y pide una respuesta.' },
         { id: 'm5', role: 'user', text: '¿Qué conviene responderle?' },
@@ -63,17 +63,17 @@ export const contextWindowLab: ContextWindowLabContent = {
             control: 'El dato dentro de la ventana',
             visibleIds: ['m1', 'm2', 'm3', 'm4', 'm5'],
             answer:
-                'Avísale de que el paquete está esperando para recogida en la sucursal de Jerusalén, y de que puede pasar con un documento de identidad en el horario de atención.',
+                'Avísale de que la reunión es el jueves a las 18:00, y de que puede incorporarse unos minutos antes.',
             answerTone: 'specific',
             caption:
-                'El dato crítico, que el paquete está destinado a recogida en la sucursal de Jerusalén, se encuentra dentro de la ventana. El modelo lo ve ahora, así que puede dar una respuesta concreta que dirige al cliente a la sucursal correcta.',
+                'El dato crítico, que la reunión es el jueves a las 18:00, se encuentra dentro de la ventana. El modelo lo ve ahora, así que puede dar una respuesta concreta que indica al participante el día y la hora correctos.',
         },
         {
             id: 'grew',
             control: 'La conversación se alargó',
             visibleIds: ['m3', 'm4', 'm5'],
             answer:
-                'Me falta información sobre la ubicación del paquete o el estado de la recogida, así que solo puedo responder de forma general. Conviene averiguar dónde está esperando el paquete antes de redactar una respuesta precisa.',
+                'Me falta información sobre el día o la hora de la reunión, así que solo puedo responder de forma general. Conviene comprobar cuándo está fijada la reunión antes de redactar una respuesta precisa.',
             answerTone: 'generic',
             caption:
                 'La conversación se alargó, y el mensaje con el dato crítico ya salió de la ventana de contexto. El mensaje antiguo quizá siga visible en la pantalla, en el hilo de la conversación, pero no necesariamente se incluye en el input que se envía al modelo en este turno. El modelo no lo ve ahora, así que se ve obligado a responder de forma genérica o a pedir la información que falta. El dato existe en el historial, pero no dentro de lo que el modelo procesa en este momento.',
@@ -83,12 +83,12 @@ export const contextWindowLab: ContextWindowLabContent = {
             control: 'Prompt independiente',
             visibleIds: [],
             standalonePrompt:
-                'El paquete está destinado a recogida en la sucursal de Jerusalén. El cliente pregunta qué conviene responderle. Redacta una respuesta corta y clara.',
+                'La reunión es el jueves a las 18:00. Un participante pregunta qué conviene responderle. Redacta una respuesta corta y clara.',
             answer:
-                'Como el paquete está esperando para recogida en la sucursal de Jerusalén, puedes responderle al cliente: tu paquete está esperando para recogida en la sucursal de Jerusalén, puedes recogerlo con un documento de identidad en el horario de atención.',
+                'Como la reunión es el jueves a las 18:00, puedes responderle al participante: la reunión es el jueves a las 18:00, y puedes incorporarte unos minutos antes.',
             answerTone: 'restored',
             caption:
-                'En lugar de apoyarnos en una conversación larga y desordenada, escribimos un único prompt independiente que incluye el dato crítico. Ahora el modelo vuelve a ver la sucursal dentro del input actual, y puede dar una buena respuesta, sin depender de lo que se dijo antes.',
+                'En lugar de apoyarnos en una conversación larga y desordenada, escribimos un único prompt independiente que incluye el dato crítico. Ahora el modelo vuelve a ver el día y la hora dentro del input actual, y puede dar una buena respuesta, sin depender de lo que se dijo antes.',
         },
     ],
 };
