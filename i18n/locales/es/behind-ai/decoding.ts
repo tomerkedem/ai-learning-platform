@@ -24,7 +24,7 @@ import { decodingQuiz } from './decodingQuiz';
 export const decoding = {
     contentLocale: 'es' as Locale,
 
-    prompt: 'Tu paquete...',
+    prompt: 'La puerta vieja...',
 
     // -- Hero --
     hero: {
@@ -41,7 +41,7 @@ export const decoding = {
     // -- Adivinanza inicial --
     guess: {
         eyebrow: 'Adivinanza rapida · como se elige el token',
-        title: 'El modelo ya calculo probabilidades para "Tu paquete...". Tiene que elegir siempre la opcion con la probabilidad mas alta?',
+        title: 'El modelo ya calculo probabilidades para "La puerta vieja...". Tiene que elegir siempre la opcion con la probabilidad mas alta?',
         subtitle:
             'Elige la interpretacion que te parezca correcta. Esto no es un examen, y aqui no hay una unica respuesta perfecta. Elige una suposicion, y en un momento veremos que pasa por debajo.',
         invite: 'Las probabilidades ya existen. Justo antes de la explicacion, adivina como se elige de ellas el siguiente token.',
@@ -198,7 +198,7 @@ export const decoding = {
             'Hay dos maneras distintas de influir en la salida. Una es el estilo de decodificacion y la temperatura, que son controles de configuracion del modelo o del producto. La otra es como formulas la peticion, que cambia el contexto y puede cambiar la propia distribucion de probabilidad. Como usuario, la formulacion suele ser la herramienta en tus manos. Asi que si quieres precision y estabilidad, pide una respuesta enfocada, acotada y respaldada por fuentes, y si quieres ideas o alternativas, pide varias opciones o una redaccion mas abierta:',
         uses: [
             'Para una tarea factual: "No adivines. Si no hay fuente de seguimiento, di que hay que comprobar el estado."',
-            'Para redaccion: "Dame tres versiones educadas de un mensaje a un cliente sobre un paquete retrasado."',
+            'Para redaccion: "Dame tres inicios distintos para un relato corto sobre una puerta vieja."',
             'Para una tarea estable: pide una sola respuesta enfocada, no varias alternativas abiertas.',
             'Para una tarea creativa: pide varias opciones o una redaccion mas variada.',
         ],

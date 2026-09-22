@@ -76,7 +76,7 @@ export const decodingQuiz = {
                 'El fallo es que la continuacion no obtuvo una probabilidad suficientemente alta',
             ],
             explanation:
-                'El acto de elegir no verifica nada. El estilo de decodificacion solo decide como se elige de las probabilidades existentes, no acude a ninguna fuente externa. Para saber si el paquete de verdad se retraso o se entrego necesitas una herramienta de seguimiento o una fuente verificada, no el acto de elegir.',
+                'El acto de elegir no verifica nada. El estilo de decodificacion solo decide como se elige de las probabilidades existentes, no acude a ninguna fuente externa. Para saber que pasa de verdad despues en la historia, si la puerta se abrio con un crujido o llevaba a un cuarto secreto, hace falta revisar el texto mismo, no el acto de elegir.',
         },
     } satisfies Record<DecodingQuizId, DecodingQuizText>,
 };

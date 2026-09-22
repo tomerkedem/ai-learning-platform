@@ -27,7 +27,7 @@ export const decoding = {
 
     // The start of the sentence the model completes, shared by the hero, the guess and the
     // lab. Deliberately different from Chapter 8 to signal a new step in the process.
-    prompt: 'Your package...',
+    prompt: 'The old door...',
 
     // -- Hero --
     hero: {
@@ -44,7 +44,7 @@ export const decoding = {
     // -- Opening guess --
     guess: {
         eyebrow: 'Quick guess · how the token is chosen',
-        title: 'The model has already computed probabilities for "Your package...". Does it always have to choose the option with the highest probability?',
+        title: 'The model has already computed probabilities for "The old door...". Does it always have to choose the option with the highest probability?',
         subtitle:
             'Pick the interpretation that seems right to you. This is not a test, and there is no single perfect answer here. Choose a guess, and in a moment we will see what happens underneath.',
         invite: 'The probabilities already exist. Just before the explanation, guess how the next token is chosen from them.',
@@ -201,7 +201,7 @@ export const decoding = {
             'There are two different ways to influence the output. One is the decoding style and the temperature, which are model or product configuration controls. The other is how you word the request, which changes the context and can change the probability distribution itself. As a user, the wording is usually the tool in your hands. So if you want accuracy and stability, ask for a focused, constrained, source-backed answer, and if you want ideas or alternatives, ask for several options or a more open wording:',
         uses: [
             'For a factual task: "Do not guess. If there is no tracking source, say that the status must be checked."',
-            'For wording: "Give me three polite versions of a message to a customer about a delayed package."',
+            'For wording: "Give me three different opening lines for a short story about an old door."',
             'For a stable task: ask for one focused answer, not several open alternatives.',
             'For a creative task: ask for several options or a more varied wording.',
         ],

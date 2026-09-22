@@ -75,7 +75,7 @@ export const decodingQuiz = {
                 'The flaw is that the continuation did not get a high enough probability',
             ],
             explanation:
-                'The act of choosing verifies nothing. The decoding style only decides how you choose from the existing probabilities, it does not reach out to any external source. To know whether the package really was delayed or delivered you need a tracking tool or a verified source, not the act of choosing.',
+                'The act of choosing verifies nothing. The decoding style only decides how you choose from the existing probabilities, it does not reach out to any external source. To know what really happens next in the story, whether the door creaked open or led to a hidden room, you need to check the actual text, not the act of choosing.',
         },
     } satisfies Record<DecodingQuizId, DecodingQuizText>,
 };
