@@ -29,7 +29,7 @@ export const chatToAgent = {
         titleHighlight: 'becomes a task',
         lede: 'A chat receives input and returns an answer. An agent receives a goal and starts to work toward it: it spots what is missing, may choose a tool, checks a result, and decides whether to continue, stop, or ask for approval. The same request can be answered as text, or handled as a task.',
         hook: 'You wrote: "Arrange a 30-minute project planning meeting and send the invitation." Is that a question for a chat, or a task for an agent?',
-        chipTry: 'Move between four modes: answer, ask for info, use a tool, and approval',
+        chipTry: 'Move between five modes: answer, ask for info, use a tool, approval, and tool failure',
         chipCompare: 'See how the same request is answered once as text and once as a task',
     },
 
@@ -43,7 +43,7 @@ export const chatToAgent = {
         quizPass:
             'You can tell when a request needs a work route and not just a reply. That is what lets you set a goal, a boundary and an approval point before anything runs.',
         quizFail:
-            'The difference here is not smarter versus less smart, but answer versus task. Go back to the lab, move through the four modes, and see what each one adds to the system.',
+            'The difference here is not smarter versus less smart, but answer versus task. Go back to the lab, move through the five modes, and see what each one adds to the system.',
     },
 
     primer: {

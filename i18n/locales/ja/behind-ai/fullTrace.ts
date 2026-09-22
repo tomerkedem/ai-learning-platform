@@ -82,7 +82,7 @@ export const fullTrace = {
 
     see: {
         title: '駅ごとに: コース全体を一つの経路で',
-        intro: '各章を詳しく繰り返すことはしません。経路全体を五つのグループで見て、一目で道のりをたどれるようにします。',
+        intro: '各章を詳しく繰り返すことはしません。経路全体を六つのグループで見て、一目で道のりをたどれるようにします。',
         groups: [
             { title: 'プロダクトが入力を組む', stations: ['ユーザー依頼', 'システム規則', '現在のcontext', '任意memory / RAG', 'モデル入力'] },
             { title: 'モデルが処理・生成', stations: ['Tokens と IDs', 'Embeddings', 'Attention と window', 'Logits', 'Softmax', 'Decoding と loop'] },

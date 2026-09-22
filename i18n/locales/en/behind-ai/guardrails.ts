@@ -29,7 +29,7 @@ export const guardrails = {
         titleHighlight: 'is not allowed to act',
         lede: 'A good agent does not only move toward a task. It also checks: is the action allowed? What is the risk level? Does it need approval? Guardrails are the rules and checks that decide when to continue, when to ask, when to prepare a draft only, and when to stop.',
         hook: 'The agent found a free slot on the calendar, and it can draft an invitation for it. Is it also allowed to send it right away?',
-        chipTry: 'Move between five actions: ask for info, read, draft, send, and mark',
+        chipTry: 'Move between six actions: ask for info, read, draft, send, mark, and retry limit',
         chipCompare: 'See how the same capability leads to a different decision depending on risk',
     },
 
@@ -43,7 +43,7 @@ export const guardrails = {
         quizPass:
             'You ask not only what the system can do, but what it is allowed to do right now. That question turns a stop from a malfunction into a sign of a designed system.',
         quizFail:
-            'The point here is not that AI is dangerous, but that an action leaving the system needs a gate. Go back to the lab, move through the five actions, and see which one stops and why.',
+            'The point here is not that AI is dangerous, but that an action leaving the system needs a gate. Go back to the lab, move through the six actions, and see which one stops and why.',
     },
 
     primer: {

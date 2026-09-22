@@ -83,7 +83,7 @@ export const fullTrace = {
 
     see: {
         title: 'Station by station: the whole course in one route',
-        intro: 'We will not repeat each chapter in full. We will see the whole route in five groups, so you can follow the path at a glance.',
+        intro: 'We will not repeat each chapter in full. We will see the whole route in six groups, so you can follow the path at a glance.',
         groups: [
             { title: 'Product assembles input', stations: ['User request', 'System rules', 'Current context', 'Optional memory / RAG', 'Model input'] },
             { title: 'Model processes and generates', stations: ['Tokens and IDs', 'Embeddings', 'Attention and context window', 'Logits', 'Softmax', 'Decoding and loop'] },

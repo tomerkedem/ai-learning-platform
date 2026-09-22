@@ -30,7 +30,7 @@ export const chatToAgent = {
         titleHighlight: 'se convierte en tarea',
         lede: 'Un chat recibe una entrada y devuelve una respuesta. Un agente recibe un objetivo y empieza a trabajar hacia el: detecta lo que falta, puede elegir una herramienta, revisa un resultado y decide si continuar, detenerse o pedir aprobacion. La misma solicitud puede responderse como texto, o gestionarse como una tarea.',
         hook: 'Escribiste: "Organiza una reunion de planificacion de proyecto de 30 minutos y envia la invitacion." Es una pregunta para un chat, o una tarea para un agente?',
-        chipTry: 'Muevete entre cuatro modos: respuesta, pedir informacion, usar una herramienta, y aprobacion',
+        chipTry: 'Muevete entre cinco modos: respuesta, pedir informacion, usar una herramienta, aprobacion, y fallo de herramienta',
         chipCompare: 'Observa como la misma solicitud se responde una vez como texto y una vez como tarea',
     },
 
@@ -44,7 +44,7 @@ export const chatToAgent = {
         quizPass:
             'Distingues cuándo una petición necesita un recorrido de trabajo y no solo una respuesta. Eso te permite fijar objetivo, límite y punto de aprobación antes de que algo se ejecute.',
         quizFail:
-            'La diferencia no es más listo o menos listo, sino respuesta frente a tarea. Vuelve al laboratorio, recorre los cuatro modos y observa qué añade cada uno al sistema.',
+            'La diferencia no es más listo o menos listo, sino respuesta frente a tarea. Vuelve al laboratorio, recorre los cinco modos y observa qué añade cada uno al sistema.',
     },
 
     primer: {

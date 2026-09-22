@@ -29,7 +29,7 @@ export const guardrails = {
         titleHighlight: 'no es tener permiso',
         lede: 'Un buen agente no solo avanza hacia una tarea. Tambien comprueba: esta permitida la accion? Cual es el nivel de riesgo? Hace falta aprobacion? Los guardrails son las reglas y comprobaciones que deciden cuando continuar, cuando preguntar, cuando preparar solo un borrador, y cuando detenerse.',
         hook: 'El agente encontro un horario libre en el calendario, y puede redactar una invitacion para el. Tambien esta permitido enviarla de inmediato?',
-        chipTry: 'Muevete entre cinco acciones: pedir informacion, leer, redactar, enviar, y marcar',
+        chipTry: 'Muevete entre seis acciones: pedir informacion, leer, redactar, enviar, marcar, y limite de reintentos',
         chipCompare: 'Observa como la misma capacidad lleva a una decision distinta segun el riesgo',
     },
 
@@ -43,7 +43,7 @@ export const guardrails = {
         quizPass:
             'No preguntas solo qué puede hacer el sistema, sino qué le está permitido hacer ahora. Esa pregunta convierte una parada en señal de un sistema diseñado, y no en un fallo.',
         quizFail:
-            'La cuestión no es que la IA sea peligrosa, sino que una acción que sale del sistema necesita una compuerta. Vuelve al laboratorio, recorre las cinco acciones y observa cuál se detiene y por qué.',
+            'La cuestión no es que la IA sea peligrosa, sino que una acción que sale del sistema necesita una compuerta. Vuelve al laboratorio, recorre las seis acciones y observa cuál se detiene y por qué.',
     },
 
     primer: {

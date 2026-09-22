@@ -83,7 +83,7 @@ export const fullTrace = {
 
     see: {
         title: 'Estacion por estacion: todo el curso en un camino',
-        intro: 'No repetiremos cada capitulo en detalle. Veremos todo el camino en cinco grupos, para poder seguirlo de un vistazo.',
+        intro: 'No repetiremos cada capitulo en detalle. Veremos todo el camino en seis grupos, para poder seguirlo de un vistazo.',
         groups: [
             { title: 'El producto ensambla', stations: ['Solicitud', 'Reglas', 'Contexto actual', 'Memoria / RAG opcional', 'Entrada del modelo'] },
             { title: 'El modelo procesa', stations: ['Tokens e IDs', 'Embeddings', 'Attention y ventana', 'Logits', 'Softmax', 'Decoding y ciclo'] },
