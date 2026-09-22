@@ -26,7 +26,7 @@ export const logitsSoftmax = {
     contentLocale: 'es' as Locale,
 
     // El inicio de la frase que el modelo completa, compartido por el hero, la conjetura y el laboratorio.
-    prompt: 'El paquete probablemente...',
+    prompt: 'El tiempo hoy probablemente...',
 
     // ── Hero ──
     hero: {
@@ -43,7 +43,7 @@ export const logitsSoftmax = {
     // ── Conjetura inicial ──
     guess: {
         eyebrow: 'Conjetura rápida · qué continuación va por delante',
-        title: '¿Qué continuación de "El paquete probablemente..." recibirá la mayor probabilidad?',
+        title: '¿Qué continuación de "El tiempo hoy probablemente..." recibirá la mayor probabilidad?',
         subtitle:
             'Elige la continuación que te parezca la líder. Esto no es un examen, y aquí no hay una única continuación correcta en el mundo. Elige una conjetura, y enseguida veremos qué ocurre por debajo.',
         invite: 'Varias continuaciones compiten por la misma frase. Justo antes de la explicación, adivina cuál va por delante.',
@@ -52,41 +52,41 @@ export const logitsSoftmax = {
         resetButton: 'Elegir de nuevo',
         revealTitle: 'Entonces, ¿qué ocurre de verdad?',
         revealCopy:
-            'No hay una única continuación "correcta". El modelo le da a cada continuación una puntuación en bruto según el input y el contexto, y Softmax convierte las puntuaciones en probabilidades. En una formulación sin contexto, "se retrasó" suele recibir la puntuación más alta, pero un solo detalle de contexto puede pasar el liderazgo a otra continuación. Una probabilidad alta significa más probable según el texto, no más correcta en el mundo.',
+            'No hay una única continuación "correcta". El modelo le da a cada continuación una puntuación en bruto según el input y el contexto, y Softmax convierte las puntuaciones en probabilidades. En una formulación sin contexto, "esté nublado" suele recibir la puntuación más alta, pero un solo detalle de contexto puede pasar el liderazgo a otra continuación. Una probabilidad alta significa más probable según el texto, no más correcta en el mundo.',
         cta: 'Veámoslo en el laboratorio',
         cards: {
             delayed: {
-                title: 'se retrasó',
-                desc: 'El paquete va en camino, solo llega con retraso.',
+                title: 'esté nublado',
+                desc: 'Cielo gris, sin una señal clara de sol ni de lluvia.',
                 statusLabel: 'Suele ir por delante',
-                getsRight: 'Buena conjetura. En una formulación sin contexto, "se retrasó" de verdad suele recibir la puntuación más alta.',
+                getsRight: 'Buena conjetura. En una formulación sin contexto, "esté nublado" de verdad suele recibir la puntuación más alta.',
                 missesLabel: 'Qué queda por ver',
-                misses: 'Es el líder por defecto, no la verdad. Las puntuaciones en bruto están cerca, pero Softmax ya separa las probabilidades de forma notable, y el modelo no comprobó el paquete.',
+                misses: 'Es el líder por defecto, no el pronóstico. Las puntuaciones en bruto están cerca, pero Softmax ya separa las probabilidades de forma notable, y el modelo no comprobó el cielo real.',
                 bridge: 'Enseguida veremos que un solo detalle de contexto puede pasar el liderazgo a otra continuación.',
             },
             delivered: {
-                title: 'se entregó',
-                desc: 'El paquete ya llegó a su destino.',
+                title: 'haga sol',
+                desc: 'Cielo despejado y sol agradable.',
                 statusLabel: 'Depende del contexto',
-                getsRight: 'Una continuación totalmente razonable. Si hay una pista de entrega, su puntuación puede subir e incluso ir por delante.',
+                getsRight: 'Una continuación totalmente razonable. Si hay una pista de cielo despejado, su puntuación puede subir e incluso ir por delante.',
                 missesLabel: 'Qué queda por ver',
-                misses: 'Sin una pista así, "se entregó" recibe una puntuación más baja que "se retrasó". Es el contexto el que decide.',
-                bridge: 'En el laboratorio añadiremos "confirmación de entrega" y veremos su puntuación saltar.',
+                misses: 'Sin una pista así, "haga sol" recibe una puntuación más baja que "esté nublado". Es el contexto el que decide.',
+                bridge: 'En el laboratorio añadiremos un "pronóstico de cielo despejado" y veremos su puntuación saltar.',
             },
             pickup: {
-                title: 'espera recogida',
-                desc: 'El paquete está en un punto de recogida y espera a que lo vengan a buscar.',
+                title: 'llueva',
+                desc: 'Lluvia acercándose, quizás de forma intermitente durante el día.',
                 statusLabel: 'Depende del contexto',
-                getsRight: 'Una conjetura sensata. Con el estado adecuado, esta continuación puede recibir la puntuación más alta.',
+                getsRight: 'Una conjetura sensata. Con el detalle adecuado, esta continuación puede recibir la puntuación más alta.',
                 missesLabel: 'Qué queda por ver',
-                misses: 'Sin un estado de recogida en el contexto, su puntuación se mantiene baja respecto a las demás.',
-                bridge: 'En el laboratorio elegiremos el estado "espera recogida" y lo veremos subir al primer puesto.',
+                misses: 'Sin una señal de lluvia en el contexto, su puntuación se mantiene baja respecto a las demás.',
+                bridge: 'En el laboratorio elegiremos el detalle "lluvia en el radar" y lo veremos subir al primer puesto.',
             },
             lost: {
-                title: 'se perdió',
-                desc: 'El paquete desapareció y no está claro dónde está.',
+                title: 'haya tormenta',
+                desc: 'Viento fuerte y lluvia intensa, un cambio claro respecto al tiempo tranquilo.',
                 statusLabel: 'Menos probable',
-                getsRight: 'Una opción que viene a la mente, porque un paquete que no llegó despierta el temor de que se haya perdido.',
+                getsRight: 'Una opción que viene a la mente, porque un cielo nublado durante mucho tiempo aumenta la posibilidad de algo más severo.',
                 missesLabel: 'Qué queda por ver',
                 misses: 'Suele ser la continuación menos probable. Recibe una puntuación baja a menos que el contexto apunte de verdad hacia ahí.',
                 bridge: 'Fíjate en cómo la puntuación baja se convierte en un porcentaje pequeño, pero no en cero.',
@@ -115,7 +115,7 @@ export const logitsSoftmax = {
             },
             {
                 title: 'Una probabilidad no es una verdad',
-                body: 'Una continuación puede recibir un porcentaje alto porque encaja con el patrón del texto. "El paquete probablemente se retrasó" puede sonar razonable, pero el modelo no consultó el sistema de seguimiento. Probable no es correcto.',
+                body: 'Una continuación puede recibir un porcentaje alto porque encaja con el patrón del texto. "El tiempo hoy probablemente esté nublado" puede sonar razonable, pero el modelo no consultó un pronóstico real. Probable no es correcto.',
             },
             {
                 title: 'En el laboratorio controlarás las puntuaciones',
@@ -137,7 +137,7 @@ export const logitsSoftmax = {
         title: 'El punto sorprendente',
         lead: 'La continuación con el porcentaje más alto es la más probable según el texto, no la más correcta en el mundo.',
         body:
-            'Softmax solo ordena las puntuaciones en porcentajes y construye la distribución, no elige por sí mismo qué token sale. La elección real llega en el próximo capítulo. De todos modos, nadie comprobó si el paquete de verdad se retrasó o se entregó, y por eso una respuesta puede sonar del todo segura y aun así errar la realidad.',
+            'Softmax solo ordena las puntuaciones en porcentajes y construye la distribución, no elige por sí mismo qué token sale. La elección real llega en el próximo capítulo. De todos modos, nadie comprobó qué haría el cielo en realidad, y por eso una respuesta puede sonar del todo segura y aun así errar la realidad.',
     },
 
     // ── Ejemplo cotidiano ──
@@ -171,12 +171,12 @@ export const logitsSoftmax = {
         trueText: 'Una probabilidad alta significa que la continuación es la más probable según el contexto, entre las mostradas. No es una prueba de que sea correcta en el mundo.',
         falseLabel: 'Falso',
         falseText: '"El porcentaje más alto prueba que la continuación es correcta o que se comprobó."',
-        question: 'En el laboratorio, la continuación "se retrasó" recibió la probabilidad más alta. ¿Qué se puede deducir?',
+        question: 'En el laboratorio, la continuación "esté nublado" recibió la probabilidad más alta. ¿Qué se puede deducir?',
         options: [
-            'Que el paquete seguro que se retrasó',
-            'Que el modelo comprobó y confirmó que el paquete se retrasó',
+            'Que el tiempo seguro que estará nublado',
+            'Que el modelo comprobó un pronóstico en vivo y confirmó que estará nublado',
             'Que, dado el contexto actual, es la continuación más probable entre las mostradas',
-            'Que Softmax consultó el sistema de seguimiento',
+            'Que Softmax consultó un servicio meteorológico',
         ],
         explanationLead: 'La respuesta correcta es',
         explanationPair: '"Dado el contexto actual, es la continuación más probable entre las mostradas."',
@@ -192,7 +192,7 @@ export const logitsSoftmax = {
         uses: [
             'Que separe la suposición del hecho.',
             'Que diga qué le falta para responder con confianza.',
-            'Que no fije el estado de un paquete sin una fuente.',
+            'Que no afirme un pronóstico del tiempo sin una fuente.',
             'Que indique su grado de incertidumbre.',
             'Que pida datos de seguimiento o una fuente sólida cuando haga falta precisión factual.',
         ],
@@ -204,13 +204,13 @@ export const logitsSoftmax = {
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {
         guessCorrect:
-            'Clasificaste el ajuste a la frase, no lo que de verdad le pasó al paquete. Esa es justo la separación sobre la que se apoya este capítulo. Fíjate en lo frágil que es esa ventaja: un solo dato de contexto basta para cedérsela a otra continuación.',
+            'Clasificaste el ajuste a la frase, no lo que el tiempo de verdad resultó ser. Esa es justo la separación sobre la que se apoya este capítulo. Fíjate en lo frágil que es esa ventaja: un solo dato de contexto basta para cedérsela a otra continuación.',
         guessWrong:
-            'Esa elección es del todo razonable, porque preguntaste qué le pudo pasar al paquete. El modelo hace una pregunta más estrecha: qué encaja con la frase que ya existe. Vale la pena releer las líneas de arriba preguntando hacia dónde tira el contexto actual, no qué es cierto en el mundo.',
+            'Esa elección es del todo razonable, porque preguntaste qué podía ser el tiempo en realidad. El modelo hace una pregunta más estrecha: qué encaja con la frase que ya existe. Vale la pena releer las líneas de arriba preguntando hacia dónde tira el contexto actual, no qué es cierto en el mundo.',
         quizPass:
             'Estás leyendo un porcentaje como una clasificación de ajuste, no como un grado de certeza. Esa lectura es la que te sostendrá en el próximo capítulo, cuando la misma distribución se enfrente a otra pregunta: cuál de las opciones se elige.',
         quizFail:
-            'La confusión habitual aquí es entre lo más alto y lo correcto. Vuelve al laboratorio, añade un solo dato de contexto y observa qué continuación pasa a liderar. Cuando el liderazgo se mueve y el paquete no, la diferencia se ve.',
+            'La confusión habitual aquí es entre lo más alto y lo correcto. Vuelve al laboratorio, añade un solo dato de contexto y observa qué continuación pasa a liderar. Cuando el liderazgo se mueve y el cielo de fuera no, la diferencia se ve.',
     },
 
     // Subespacios

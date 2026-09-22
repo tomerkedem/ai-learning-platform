@@ -65,26 +65,26 @@ export const logitsSoftmaxQuiz = {
                 'A high probability means the continuation is the most likely per the input, the context and the patterns the model learned. It is not proof that it is true in the world. Softmax arranges scores into percentages, it does not check whether the continuation is real.',
         },
         4: {
-            question: 'You added "delivery confirmation" to the context, and the probability of "was delivered" jumped. Why did that happen?',
+            question: 'You added "clear skies forecast" to the context, and the probability of "be sunny" jumped. Why did that happen?',
             options: [
-                'Because the model reached out to the tracking system and checked that the package was delivered',
+                'Because the model checked a live weather service and confirmed it will be sunny',
                 'Because the new context changed the raw scores, and so the probabilities moved too',
-                'Because "was delivered" always gets the highest score',
+                'Because "be sunny" always gets the highest score',
                 'Because Softmax picks the most positive continuation',
             ],
             explanation:
-                'The probabilities are derived from the scores, and the scores depend on the context. When you add "delivery confirmation", the score of "was delivered" rises, and so does its percentage. The model did not check reality, it only reweighed what is written.',
+                'The probabilities are derived from the scores, and the scores depend on the context. When you add "clear skies forecast", the score of "be sunny" rises, and so does its percentage. The model did not check the actual sky, it only reweighed what is written.',
         },
         5: {
-            question: 'The model gave "was delivered" a high probability, but the package was in fact not delivered. Where is the flaw in reasoning that "a high probability means it was checked"?',
+            question: 'The model gave "be sunny" a high probability, but the weather in fact turned out rainy. Where is the flaw in reasoning that "a high probability means it was checked"?',
             options: [
                 'There is no flaw, a high probability always means the information was verified',
                 'The flaw is that the model should not be giving probabilities at all',
                 'A high probability measures the fit to the text and the context, it did not check the world. Verification needs a source or a tool',
-                'The flaw is that "was delivered" cannot get a high probability',
+                'The flaw is that "be sunny" cannot get a high probability',
             ],
             explanation:
-                'A high probability means the continuation fits what was written, not that it is correct. The model did not reach out to any external source. To know whether the package was really delivered you need a tracking tool or a verified source, not the probability on its own.',
+                'A high probability means the continuation fits what was written, not that it is correct. The model did not reach out to any external source. To know what the weather actually did you need a real forecast or a verified source, not the probability on its own.',
         },
     } satisfies Record<LogitsSoftmaxQuizId, LogitsSoftmaxQuizText>,
 };

@@ -22,7 +22,7 @@
 export interface LabContinuation {
     /** Identificador estable, no se traduce. */
     id: string;
-    /** Etiqueta de la continuación, por ejemplo "se retrasó". */
+    /** Etiqueta de la continuación, por ejemplo "esté nublado". */
     label: string;
 }
 
@@ -32,7 +32,7 @@ export interface LabContext {
     id: string;
     /** Etiqueta del botón. */
     control: string;
-    /** El añadido de contexto que entra en el prompt antes de "El paquete probablemente...". Vacío en el estado neutral. */
+    /** El añadido de contexto que entra en el prompt antes de "El tiempo hoy probablemente...". Vacío en el estado neutral. */
     promptExtra?: string;
     /** Explicación breve: por qué este dato mueve las puntuaciones. */
     note: string;
@@ -76,7 +76,7 @@ export const logitsSoftmaxLab: LogitsSoftmaxLabContent = {
         'El mismo inicio de frase, varias continuaciones posibles. Cada continuación recibe una puntuación en bruto, y Softmax convierte esas puntuaciones en porcentajes que suman 100. Elige un dato de contexto, o ajusta tú mismo las puntuaciones, y observa quién va por delante y por cuánto.',
     heading: 'De puntuaciones en bruto a probabilidades',
     kicker: 'Logits & Softmax Lab',
-    promptBase: 'El paquete probablemente...',
+    promptBase: 'El tiempo hoy probablemente...',
     promptLabel: 'El prompt completo',
     pickContextLabel: 'Elige un dato de contexto',
     scoreLabel: 'Puntuación en bruto',
@@ -98,37 +98,37 @@ export const logitsSoftmaxLab: LogitsSoftmaxLabContent = {
         contextGroup: 'Elección del dato de contexto',
     },
     continuations: [
-        { id: 'delayed', label: 'se retrasó' },
-        { id: 'delivered', label: 'se entregó' },
-        { id: 'pickup', label: 'espera recogida' },
-        { id: 'lost', label: 'se perdió' },
+        { id: 'delayed', label: 'esté nublado' },
+        { id: 'delivered', label: 'haga sol' },
+        { id: 'pickup', label: 'llueva' },
+        { id: 'lost', label: 'haya tormenta' },
     ],
     contexts: [
         {
             id: 'neutral',
             control: 'Sin dato adicional',
-            note: 'Sin ningún dato adicional, "se retrasó" recibe la puntuación más alta. Las puntuaciones están cerca, pero Softmax ya separa las probabilidades de forma notable. Sigue siendo una estimación, no un dato comprobado.',
+            note: 'Sin ningún dato adicional, "esté nublado" recibe la puntuación más alta. Las puntuaciones están cerca, pero Softmax ya separa las probabilidades de forma notable. Sigue siendo una estimación, no un dato comprobado.',
             scores: { delayed: 4, delivered: 3, pickup: 2, lost: 1 },
         },
         {
             id: 'delay',
-            control: 'Aún no escaneado',
-            promptExtra: 'El paquete salió del centro ayer y aún no se ha escaneado.',
-            note: 'La pista "aún no se ha escaneado" refuerza "se retrasó" y afina la distribución a su alrededor. Exactamente las mismas continuaciones, otras puntuaciones.',
+            control: 'Nublado desde la mañana',
+            promptExtra: 'El cielo ha estado gris y nublado desde primera hora de la mañana.',
+            note: 'La pista "nublado desde la mañana" refuerza "esté nublado" y afina la distribución a su alrededor. Exactamente las mismas continuaciones, otras puntuaciones.',
             scores: { delayed: 5, delivered: 2, pickup: 2, lost: 3 },
         },
         {
             id: 'delivered',
-            control: 'Confirmación de entrega',
-            promptExtra: 'El sistema muestra una confirmación de entrega.',
-            note: 'Una confirmación de entrega pasa el liderazgo a "se entregó". El modelo no comprobó la realidad, solo ponderó lo que dice el contexto.',
+            control: 'Pronóstico de cielo despejado',
+            promptExtra: 'El pronóstico muestra cielo despejado y humedad en descenso.',
+            note: 'Un pronóstico de cielo despejado pasa el liderazgo a "haga sol". El modelo no comprobó el cielo real, solo ponderó lo que dice el contexto.',
             scores: { delayed: 3, delivered: 5, pickup: 2, lost: 2 },
         },
         {
             id: 'pickup',
-            control: 'Espera recogida',
-            promptExtra: 'El último estado es "espera recogida".',
-            note: 'El estado "espera recogida" sube al primer puesto la continuación correspondiente, sin cambiar el grupo de continuaciones. El contexto decide quién va por delante.',
+            control: 'Lluvia en el radar',
+            promptExtra: 'El radar más reciente muestra una banda de lluvia acercándose.',
+            note: 'El detalle "lluvia en el radar" sube al primer puesto la continuación correspondiente, sin cambiar el grupo de continuaciones. El contexto decide quién va por delante.',
             scores: { delayed: 2, delivered: 3, pickup: 5, lost: 2 },
         },
     ],

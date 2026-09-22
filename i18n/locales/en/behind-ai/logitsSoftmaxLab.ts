@@ -23,7 +23,7 @@
 export interface LabContinuation {
     /** Stable id, not translated. */
     id: string;
-    /** The continuation label, for example "was delayed". */
+    /** The continuation label, for example "be cloudy". */
     label: string;
 }
 
@@ -33,7 +33,7 @@ export interface LabContext {
     id: string;
     /** The button label. */
     control: string;
-    /** The context clue added to the prompt before "The package probably...". Empty in the neutral state. */
+    /** The context clue added to the prompt before "The weather today will probably...". Empty in the neutral state. */
     promptExtra?: string;
     /** A short note: why this detail moves the scores. */
     note: string;
@@ -77,7 +77,7 @@ export const logitsSoftmaxLab: LogitsSoftmaxLabContent = {
         'The same start of a sentence, several possible continuations. Each continuation gets a raw score, and Softmax turns the scores into percentages that add up to 100. Pick a context detail, or tune the scores yourself, and see who is leading and by how much.',
     heading: 'From raw scores to probabilities',
     kicker: 'Logits & Softmax Lab',
-    promptBase: 'The package probably...',
+    promptBase: 'The weather today will probably...',
     promptLabel: 'The full prompt',
     pickContextLabel: 'Pick a context detail',
     scoreLabel: 'Raw score',
@@ -99,37 +99,37 @@ export const logitsSoftmaxLab: LogitsSoftmaxLabContent = {
         contextGroup: 'Choosing a context detail',
     },
     continuations: [
-        { id: 'delayed', label: 'was delayed' },
-        { id: 'delivered', label: 'was delivered' },
-        { id: 'pickup', label: 'is awaiting pickup' },
-        { id: 'lost', label: 'was lost' },
+        { id: 'delayed', label: 'be cloudy' },
+        { id: 'delivered', label: 'be sunny' },
+        { id: 'pickup', label: 'be rainy' },
+        { id: 'lost', label: 'be stormy' },
     ],
     contexts: [
         {
             id: 'neutral',
             control: 'No extra detail',
-            note: 'With no extra detail, "was delayed" gets the highest score. The raw scores are close, but Softmax already spreads the probabilities noticeably. This is still an estimate, not knowledge.',
+            note: 'With no extra detail, "be cloudy" gets the highest score. The raw scores are close, but Softmax already spreads the probabilities noticeably. This is still an estimate, not knowledge.',
             scores: { delayed: 4, delivered: 3, pickup: 2, lost: 1 },
         },
         {
             id: 'delay',
-            control: 'Not scanned yet',
-            promptExtra: 'The package left the hub yesterday and has not been scanned yet.',
-            note: 'The clue "has not been scanned yet" strengthens "was delayed" and sharpens the distribution around it. The exact same continuations, different scores.',
+            control: 'Overcast since morning',
+            promptExtra: 'The sky has been gray and overcast since early morning.',
+            note: 'The clue "overcast since morning" strengthens "be cloudy" and sharpens the distribution around it. The exact same continuations, different scores.',
             scores: { delayed: 5, delivered: 2, pickup: 2, lost: 3 },
         },
         {
             id: 'delivered',
-            control: 'Delivery confirmation',
-            promptExtra: 'The system shows a delivery confirmation.',
-            note: 'A delivery confirmation hands the lead to "was delivered". The model did not check reality, it only weighed what is written in the context.',
+            control: 'Clear skies forecast',
+            promptExtra: 'The forecast shows clear skies and dropping humidity.',
+            note: 'A clear skies forecast hands the lead to "be sunny". The model did not check the actual sky, it only weighed what is written in the context.',
             scores: { delayed: 3, delivered: 5, pickup: 2, lost: 2 },
         },
         {
             id: 'pickup',
-            control: 'Awaiting pickup',
-            promptExtra: 'The latest status is "awaiting pickup".',
-            note: 'A status of "awaiting pickup" jumps the matching continuation to the top, without changing the set of continuations. The context decides who leads.',
+            control: 'Rain on the radar',
+            promptExtra: 'The latest radar shows a rain band moving in.',
+            note: 'A "rain on the radar" detail jumps the matching continuation to the top, without changing the set of continuations. The context decides who leads.',
             scores: { delayed: 2, delivered: 3, pickup: 5, lost: 2 },
         },
     ],

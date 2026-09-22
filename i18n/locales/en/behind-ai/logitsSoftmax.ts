@@ -29,7 +29,7 @@ export const logitsSoftmax = {
     contentLocale: 'en' as Locale,
 
     // The start of the sentence the model completes, shared by the hero, the guess and the lab.
-    prompt: 'The package probably...',
+    prompt: 'The weather today will probably...',
 
     // -- Hero --
     hero: {
@@ -46,7 +46,7 @@ export const logitsSoftmax = {
     // -- Opening guess --
     guess: {
         eyebrow: 'Quick guess · which continuation leads',
-        title: 'Which continuation of "The package probably..." will get the highest chance?',
+        title: 'Which continuation of "The weather today will probably..." will get the highest chance?',
         subtitle:
             'Pick the continuation that seems to you like the leader. This is not a test, and there is no single continuation here that is correct in the world. Choose a guess, and in a moment we will see what happens underneath.',
         invite: 'A few continuations compete over the same sentence. Just before the explanation, guess who leads.',
@@ -55,41 +55,41 @@ export const logitsSoftmax = {
         resetButton: 'Choose again',
         revealTitle: 'So what really happens?',
         revealCopy:
-            'There is no single "correct" continuation. The model gives every continuation a raw score based on the input and the context, and Softmax turns the scores into probabilities. With no context, "was delayed" usually gets the highest score, but a single context detail can hand the lead to another continuation. A high chance means more likely per the text, not more correct in the world.',
+            'There is no single "correct" continuation. The model gives every continuation a raw score based on the input and the context, and Softmax turns the scores into probabilities. With no context, "be cloudy" usually gets the highest score, but a single context detail can hand the lead to another continuation. A high chance means more likely per the text, not more correct in the world.',
         cta: 'Let us see it in the lab',
         cards: {
             delayed: {
-                title: 'was delayed',
-                desc: 'The package is on its way, just running late.',
+                title: 'be cloudy',
+                desc: 'Gray skies, with no clear sign of sun or rain either way.',
                 statusLabel: 'Usually the leader',
-                getsRight: 'A good guess. With no context, "was delayed" really does usually get the highest score.',
+                getsRight: 'A good guess. With no context, "be cloudy" really does usually get the highest score.',
                 missesLabel: 'What is left to see',
-                misses: 'This is the default leader, not the truth. The raw scores are close, but Softmax already spreads the probabilities noticeably, and the model did not check the package.',
+                misses: 'This is the default leader, not the forecast. The raw scores are close, but Softmax already spreads the probabilities noticeably, and the model did not check the actual sky.',
                 bridge: 'In a moment we will see that a single context detail can hand the lead to another continuation.',
             },
             delivered: {
-                title: 'was delivered',
-                desc: 'The package has already reached its destination.',
+                title: 'be sunny',
+                desc: 'Clear skies with plenty of sun.',
                 statusLabel: 'Depends on the context',
-                getsRight: 'A perfectly reasonable continuation. If there is a hint of delivery, its score can rise and even lead.',
+                getsRight: 'A perfectly reasonable continuation. If there is a hint of clear skies, its score can rise and even lead.',
                 missesLabel: 'What is left to see',
-                misses: 'Without such a hint, "was delivered" gets a lower score than "was delayed". The context is what decides.',
-                bridge: 'In the lab we will add "delivery confirmation" and watch its score jump.',
+                misses: 'Without such a hint, "be sunny" gets a lower score than "be cloudy". The context is what decides.',
+                bridge: 'In the lab we will add a "clear skies forecast" and watch its score jump.',
             },
             pickup: {
-                title: 'is awaiting pickup',
-                desc: 'The package is at a pickup point, waiting for someone to come collect it.',
+                title: 'be rainy',
+                desc: 'Rain moving in, maybe on and off through the day.',
                 statusLabel: 'Depends on the context',
-                getsRight: 'A sensible guess. With the right status, this continuation can get the highest score.',
+                getsRight: 'A sensible guess. With the right detail, this continuation can get the highest score.',
                 missesLabel: 'What is left to see',
-                misses: 'Without a pickup status in the context, its score stays relatively low compared to the rest.',
-                bridge: 'In the lab we will choose the "awaiting pickup" status and watch it rise to the top.',
+                misses: 'Without a rain signal in the context, its score stays relatively low compared to the rest.',
+                bridge: 'In the lab we will choose the "rain on the radar" detail and watch it rise to the top.',
             },
             lost: {
-                title: 'was lost',
-                desc: 'The package disappeared and it is not clear where it is.',
+                title: 'be stormy',
+                desc: 'Heavy wind and rain, a clear break from calm weather.',
                 statusLabel: 'Less likely',
-                getsRight: 'An option that comes to mind, because a package that did not arrive raises the worry that it was lost.',
+                getsRight: 'An option that comes to mind, because a long stretch of gray skies raises the chance of something more severe.',
                 missesLabel: 'What is left to see',
                 misses: 'Usually this is the least likely continuation. It gets a low score unless the context really points that way.',
                 bridge: 'Notice how the low score turns into a small percentage, but not into zero.',
@@ -118,7 +118,7 @@ export const logitsSoftmax = {
             },
             {
                 title: 'Probability is not truth',
-                body: 'A continuation can get a high percentage because it fits the text pattern. "The package probably was delayed" can sound reasonable, but the model did not check the tracking system. Likely is not correct.',
+                body: 'A continuation can get a high percentage because it fits the text pattern. "The weather today will probably be cloudy" can sound reasonable, but the model did not check an actual forecast. Likely is not correct.',
             },
             {
                 title: 'In the lab you will control the scores',
@@ -140,7 +140,7 @@ export const logitsSoftmax = {
         title: 'The surprising point',
         lead: 'The continuation with the highest percentage is the most likely per the text, not the most correct in the world.',
         body:
-            'Softmax only arranges the scores into percentages and builds the distribution, it does not itself pick which token comes out. The actual choice comes in the next chapter. Either way, no one checked whether the package really was delayed or delivered, which is why an answer can sound completely confident and still miss reality.',
+            'Softmax only arranges the scores into percentages and builds the distribution, it does not itself pick which token comes out. The actual choice comes in the next chapter. Either way, no one checked what the sky will really do, which is why an answer can sound completely confident and still miss reality.',
     },
 
     // -- Everyday example --
@@ -174,12 +174,12 @@ export const logitsSoftmax = {
         trueText: 'A high probability means the continuation is the most likely per the context, among the ones shown. It is not proof that it is true in the world.',
         falseLabel: 'False',
         falseText: '"The highest percentage proves the continuation is correct or was checked."',
-        question: 'In the lab, the continuation "was delayed" got the highest probability. What are you allowed to conclude?',
+        question: 'In the lab, the continuation "be cloudy" got the highest probability. What are you allowed to conclude?',
         options: [
-            'That the package was certainly delayed',
-            'That the model checked and confirmed the package was delayed',
+            'That the weather will certainly be cloudy',
+            'That the model checked a live forecast and confirmed it will be cloudy',
             'That given the current context, this is the most likely continuation among the ones shown',
-            'That Softmax checked the tracking system',
+            'That Softmax checked a weather service',
         ],
         explanationLead: 'The correct answer is',
         explanationPair: '"Given the current context, this is the most likely continuation among the ones shown."',
@@ -195,7 +195,7 @@ export const logitsSoftmax = {
         uses: [
             'Separate an assumption from a fact.',
             'Say what it is missing in order to answer with confidence.',
-            'Not state a package status without a source.',
+            'Not state a weather forecast without a source.',
             'State how uncertain it is.',
             'Ask for tracking data or a solid source when you need factual accuracy.',
         ],
@@ -207,13 +207,13 @@ export const logitsSoftmax = {
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {
         guessCorrect:
-            'You ranked fit to the sentence, not what actually happened to the package. That is the exact separation this chapter is built on. Notice how fragile the lead is: one detail of context is enough to hand it to a different continuation.',
+            'You ranked fit to the sentence, not what the weather actually turned out to be. That is the exact separation this chapter is built on. Notice how fragile the lead is: one detail of context is enough to hand it to a different continuation.',
         guessWrong:
-            'That choice is perfectly reasonable, because you asked what could have happened to the package. The model asks a narrower question: what fits the sentence that already exists. It is worth rereading the lines above and asking where the current context pulls, not what is true in the world.',
+            'That choice is perfectly reasonable, because you asked what the weather could actually be. The model asks a narrower question: what fits the sentence that already exists. It is worth rereading the lines above and asking where the current context pulls, not what is true in the world.',
         quizPass:
             'You are reading a percentage as a ranking of fit, not as a level of certainty. That reading is what will carry you into the next chapter, when the same distribution faces a completely different question: which option gets picked out of it.',
         quizFail:
-            'The usual confusion here is between highest and correct. Go back to the lab, add a single detail of context, and watch which continuation takes the lead. When the lead moves and the package has not, the difference becomes clear.',
+            'The usual confusion here is between highest and correct. Go back to the lab, add a single detail of context, and watch which continuation takes the lead. When the lead moves and the sky outside has not, the difference becomes clear.',
     },
 
     // Sub-spaces

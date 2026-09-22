@@ -65,26 +65,26 @@ export const logitsSoftmaxQuiz = {
                 'Una probabilidad alta significa que la continuación es la más probable según el input, el contexto y los patrones que el modelo aprendió. No es una prueba de que sea verdadera en el mundo. Softmax ordena puntuaciones en porcentajes, no comprueba si la continuación es real.',
         },
         4: {
-            question: 'Añadiste al contexto "confirmación de entrega", y la probabilidad de "se entregó" saltó. ¿Por qué ocurrió?',
+            question: 'Añadiste al contexto "pronóstico de cielo despejado", y la probabilidad de "haga sol" saltó. ¿Por qué ocurrió?',
             options: [
-                'Porque el modelo consultó el sistema de seguimiento y comprobó que el paquete se entregó',
+                'Porque el modelo consultó un servicio meteorológico en vivo y confirmó que hará sol',
                 'Porque el nuevo contexto cambió las puntuaciones en bruto, y por eso también se movieron las probabilidades',
-                'Porque "se entregó" siempre recibe la puntuación más alta',
+                'Porque "haga sol" siempre recibe la puntuación más alta',
                 'Porque Softmax elige la continuación más positiva',
             ],
             explanation:
-                'Las probabilidades se derivan de las puntuaciones, y las puntuaciones dependen del contexto. Cuando se añade "confirmación de entrega", la puntuación de "se entregó" sube, y por eso también su porcentaje. El modelo no comprobó la realidad, solo volvió a ponderar lo que está escrito.',
+                'Las probabilidades se derivan de las puntuaciones, y las puntuaciones dependen del contexto. Cuando se añade "pronóstico de cielo despejado", la puntuación de "haga sol" sube, y por eso también su porcentaje. El modelo no comprobó el cielo real, solo volvió a ponderar lo que está escrito.',
         },
         5: {
-            question: 'El modelo le dio a "se entregó" una probabilidad alta, pero en la práctica el paquete no se entregó. ¿Dónde está el fallo en deducir que "probabilidad alta significa que se comprobó"?',
+            question: 'El modelo le dio a "haga sol" una probabilidad alta, pero en la práctica el tiempo fue lluvioso. ¿Dónde está el fallo en deducir que "probabilidad alta significa que se comprobó"?',
             options: [
                 'No hay fallo, una probabilidad alta siempre significa que la información se verificó',
                 'El fallo es que el modelo no debería dar probabilidades en absoluto',
                 'Una probabilidad alta mide el ajuste al texto y al contexto, no comprobó el mundo. Para verificar hace falta una fuente o una herramienta',
-                'El fallo es que "se entregó" no puede recibir una probabilidad alta',
+                'El fallo es que "haga sol" no puede recibir una probabilidad alta',
             ],
             explanation:
-                'Una probabilidad alta significa que la continuación encaja con lo que se escribió, no que sea correcta. El modelo no consultó ninguna fuente externa. Para saber si el paquete se entregó de verdad hace falta una herramienta de seguimiento o una fuente verificada, no la probabilidad por sí sola.',
+                'Una probabilidad alta significa que la continuación encaja con lo que se escribió, no que sea correcta. El modelo no consultó ninguna fuente externa. Para saber qué hizo el tiempo de verdad hace falta un pronóstico real o una fuente verificada, no la probabilidad por sí sola.',
         },
     } satisfies Record<LogitsSoftmaxQuizId, LogitsSoftmaxQuizText>,
 };
