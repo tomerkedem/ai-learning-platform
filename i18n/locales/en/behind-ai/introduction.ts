@@ -32,10 +32,10 @@ export const introduction = {
     // ── The chat example and the gate into the engine (EngineReveal + EngineGate) ──
     chat: {
         promptRole: 'Your request',
-        prompt: "My package didn't arrive. What should I do?",
+        prompt: "I'm having friends over for dinner. What could I make?",
         inputPlaceholder: 'Type a message...',
         answerRole: 'The answer',
-        answer: "I'm sorry to hear that. It's worth checking the shipping status to see if there's an update from the logistics center.",
+        answer: 'You could make pasta with a simple salad. If you tell me what they like, I can suggest a more specific menu.',
         outsideLine: 'From the outside it looks like two steps: you wrote a request and got an answer.',
         curiosityLine: 'But the real question is what happened in between.',
         gateLead: 'Now we open the box and see the route from the inside.',

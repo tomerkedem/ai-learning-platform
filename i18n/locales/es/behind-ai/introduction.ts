@@ -33,10 +33,10 @@ export const introduction = {
     // ── El ejemplo de chat y la puerta hacia el motor (EngineReveal + EngineGate) ──
     chat: {
         promptRole: 'Tu solicitud',
-        prompt: 'Mi paquete no llegó. ¿Qué hago?',
+        prompt: 'Voy a tener amigos a cenar. ¿Qué podría preparar?',
         inputPlaceholder: 'Escribe un mensaje...',
         answerRole: 'La respuesta',
-        answer: 'Lamento lo ocurrido. Conviene revisar el estado del envío para ver si hay alguna actualización del centro logístico.',
+        answer: 'Podrías hacer pasta con una ensalada sencilla. Si me dices qué les gusta, puedo sugerirte un menú más concreto.',
         outsideLine: 'Desde fuera parece que son dos pasos: escribiste una solicitud y recibiste una respuesta.',
         curiosityLine: 'Pero la verdadera pregunta es qué ocurrió en el medio.',
         gateLead: 'Ahora abrimos la caja y vemos el recorrido por dentro.',
