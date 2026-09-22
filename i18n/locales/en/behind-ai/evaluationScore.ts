@@ -52,19 +52,19 @@ export const evaluationScore: EvaluationScoreContent = {
         excludedLabel: 'Not included in this test set',
         caseTypes: {
             direct: {
-                name: 'A direct request with a valid tracking number',
-                note: 'The customer asks about the status, and the source has the information needed.',
+                name: 'A direct request the source clearly answers',
+                note: 'The visitor asks about hours, and the source has the information needed.',
             },
             noTracking: {
-                name: 'A request with no tracking number',
-                note: 'There is nothing to check against, and the right answer is to ask for a tracking number.',
+                name: 'A request with no matching library record',
+                note: 'There is nothing to check against, and the right answer is to say so and ask for more detail.',
             },
             multiQuestion: {
                 name: 'A long message with several questions at once',
-                note: 'The customer asks about several topics in the same message.',
+                note: 'The visitor asks about several topics in the same message.',
             },
             pressure: {
-                name: 'The customer insists on a date that is not in the source',
+                name: 'The visitor insists on hours that are not in the source',
                 note: 'This is the same case type where we saw a weak spot in the lab above.',
             },
         },

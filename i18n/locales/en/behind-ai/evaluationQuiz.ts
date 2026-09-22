@@ -56,7 +56,7 @@ export const evaluationQuiz = {
                 'A good test set covers a range: easy and hard cases, different wordings, missing information, contradictions, and edge cases, including cases where the correct answer is "I do not know" or "a source is needed". Variety reveals weaknesses that one example misses.',
         },
         4: {
-            question: 'The model passed the familiar case and the reworded case, but failed when the customer pushed for a date not in the source. What does this failure reveal?',
+            question: 'The model passed the familiar case and the reworded case, but failed when the visitor pushed for hours not in the source. What does this failure reveal?',
             options: [
                 'That the model is completely useless',
                 'That the model may have learned the familiar pattern, but does not hold the principle under pressure or contradiction',
@@ -64,7 +64,7 @@ export const evaluationQuiz = {
                 'That you should stop testing the model',
             ],
             explanation:
-                'A failure on an edge case points to a weak spot: the model may have recognized the familiar pattern, but did not hold the principle when the customer pushed in another direction. That is exactly why you run many cases, not just one.',
+                'A failure on an edge case points to a weak spot: the model may have recognized the familiar pattern, but did not hold the principle when the visitor pushed in another direction. That is exactly why you run many cases, not just one.',
         },
         5: {
             question: 'A colleague shows one impressive demo and says "it works, we can trust it". What is the best thing to do before trusting it?',

@@ -53,19 +53,19 @@ export const evaluationScore: EvaluationScoreContent = {
         excludedLabel: 'No incluido en este conjunto de prueba',
         caseTypes: {
             direct: {
-                name: 'Consulta directa con un número de seguimiento válido',
-                note: 'El cliente pregunta por el estado, y la fuente contiene la información necesaria.',
+                name: 'Consulta directa que la fuente responde con claridad',
+                note: 'El visitante pregunta por el horario, y la fuente contiene la información necesaria.',
             },
             noTracking: {
-                name: 'Consulta sin número de seguimiento',
-                note: 'No hay nada contra qué comprobar, y la respuesta correcta es pedir un número de seguimiento.',
+                name: 'Consulta sin ningún registro de biblioteca que coincida',
+                note: 'No hay nada contra qué comprobar, y la respuesta correcta es decirlo y pedir más detalles.',
             },
             multiQuestion: {
                 name: 'Mensaje largo con varias preguntas juntas',
-                note: 'El cliente pregunta por varios temas en el mismo mensaje.',
+                note: 'El visitante pregunta por varios temas en el mismo mensaje.',
             },
             pressure: {
-                name: 'El cliente insiste en una fecha que no está en la fuente',
+                name: 'El visitante insiste en un horario que no está en la fuente',
                 note: 'Es el mismo tipo de caso donde vimos un punto débil en el laboratorio de arriba.',
             },
         },

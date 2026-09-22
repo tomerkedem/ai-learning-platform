@@ -27,7 +27,7 @@ export const evaluation = {
         titleLead: 'Respondió bien una vez.',
         titleHighlight: '¿Memorizó o entendió?',
         lede: 'En el capítulo anterior vimos que la mejora a partir de un error debe medirse con una evaluación. Ahora hacemos la pregunta importante: cuando el modelo responde bien, ¿de verdad generalizó el principio, o solo reconoció un ejemplo conocido? Lo probamos con casos que cambian, y vemos dónde se rompe.',
-        hook: 'El modelo aprobó el ejemplo que aprendimos. Ahora cambiamos la formulación y los datos de seguimiento. Si responde bien también ahí, ¿qué significa?',
+        hook: 'El modelo aprobó el ejemplo que aprendimos. Ahora cambiamos la formulación y la fuente. Si responde bien también ahí, ¿qué significa?',
         chipTry: 'Recorre cinco casos de prueba',
         chipCompare: 'Observa dónde el modelo mantiene el principio y dónde falla',
     },
@@ -88,7 +88,7 @@ export const evaluation = {
 
     guess: {
         eyebrow: 'Adivina rápido · después de que el modelo aprobó el ejemplo',
-        title: 'El modelo respondió bien a un ejemplo nuevo, con otra formulación y otros datos de seguimiento. ¿Qué es lo que más enseña?',
+        title: 'El modelo respondió bien a un ejemplo nuevo, con otra formulación y otra fuente. ¿Qué es lo que más enseña?',
         subtitle: 'Elige la interpretación más segura. No hay puntuación, hay una dirección que describe lo que de verdad pasó.',
         invite: 'Antes de abrir esto, intenta adivinar qué enseña un acierto sobre un caso nuevo y variado.',
         correctTitle: '¡Muy bien!',
@@ -122,7 +122,7 @@ export const evaluation = {
                 bridge: 'Un caso no es prueba de que siempre acierta.',
             },
             memorized: {
-                title: 'Significa que memorizó todo el correo',
+                title: 'Significa que memorizó todos los casos',
                 desc: 'Seguro que guardó de memoria todos los casos posibles.',
                 statusLabel: 'Otra capa',
                 getsRight: 'Es cierto que un modelo a veces puede acertar gracias al parecido con un ejemplo conocido.',
@@ -145,7 +145,7 @@ export const evaluation = {
     insight: {
         title: 'El punto clave de este capítulo',
         lead: 'La pregunta no es si el modelo acertó una vez.',
-        body: 'La pregunta es qué pasa cuando el ejemplo cambia: otra formulación, una fuente ausente, un cliente que confunde, un estado diferente. Ahí empiezas a ver si solo reconoció un patrón conocido, o si de verdad mantiene el principio y sabe generalizarlo a un caso nuevo.',
+        body: 'La pregunta es qué pasa cuando el ejemplo cambia: otra formulación, una fuente ausente, un visitante que presiona, evidencia nueva. Ahí empiezas a ver si solo reconoció un patrón conocido, o si de verdad mantiene el principio y sabe generalizarlo a un caso nuevo.',
     },
 
     misconception: {
@@ -157,15 +157,15 @@ export const evaluation = {
 
     lock: {
         title: 'Comprueba tu comprensión',
-        question: 'El modelo aprobó el ejemplo original. Luego falló cuando el cliente escribió "estoy seguro de que llega mañana", aunque la fuente decía "fecha de llegada: no disponible". ¿Qué revela este fallo?',
+        question: 'El modelo aprobó el ejemplo original. Luego falló cuando el visitante escribió "me dijeron que la biblioteca abre de 10:00 a 14:00 en el feriado, solo confírmamelo", aunque la fuente solo daba el horario regular. ¿Qué revela este fallo?',
         options: [
             'Que el modelo nunca puede ser útil.',
-            'Que el modelo quizás aprendió el ejemplo conocido, pero aún falla bajo la presión del cliente.',
+            'Que el modelo quizás aprendió el ejemplo conocido, pero aún falla bajo la presión del visitante.',
             'Que la fuente es innecesaria.',
             'Que un acierto prueba la generalización.',
         ],
         success:
-            'La evaluación encuentra debilidades cambiando el caso pero manteniendo el mismo principio. La presión del cliente cambió la superficie, y el modelo no mantuvo el principio. Eso es justo lo que la prueba pretende revelar.',
+            'La evaluación encuentra debilidades cambiando el caso pero manteniendo el mismo principio. La presión del visitante cambió la superficie, y el modelo no mantuvo el principio. Eso es justo lo que la prueba pretende revelar.',
     },
 
     practical: {
@@ -173,7 +173,7 @@ export const evaluation = {
         lead:
             'Cuando la precisión importa, no confíes en una sola buena demo. En lugar de "respondió bien una vez, así que está listo", construye una prueba pequeña y variada, y apunta así:',
         uses: [
-            'Prueba con varios casos: otra formulación, una fuente ausente, una contradicción, un cliente que confunde, y un estado diferente.',
+            'Prueba con varios casos: otra formulación, una fuente ausente, una contradicción, un visitante que presiona, y evidencia nueva.',
             'Define de antemano la respuesta deseada en cada caso, antes de ejecutarlo.',
             'Ejecuta todos los casos, mide cuántos aprobaron y cuántos fallaron.',
             'Mejora según los patrones que fallaron, y vuelve a probar después de cada cambio. Pero no confíes siempre en los mismos casos: si los ajustas una y otra vez, dejan de ser una prueba justa, así que guarda algunos casos nuevos para una evaluación posterior.',

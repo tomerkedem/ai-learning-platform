@@ -56,7 +56,7 @@ export const evaluationQuiz = {
                 'Un buen conjunto de prueba cubre variedad: casos fáciles y difíciles, distintas formulaciones, información ausente, contradicciones y casos límite, incluidos casos donde la respuesta correcta es "no lo sé" o "hace falta una fuente". La variedad revela debilidades que un solo ejemplo pasa por alto.',
         },
         4: {
-            question: 'El modelo aprobó el caso conocido y el reformulado, pero falló cuando el cliente presionó por una fecha que no está en la fuente. ¿Qué revela este fallo?',
+            question: 'El modelo aprobó el caso conocido y el reformulado, pero falló cuando el visitante presionó por un horario que no está en la fuente. ¿Qué revela este fallo?',
             options: [
                 'Que el modelo es completamente inútil',
                 'Que el modelo quizás aprendió el patrón conocido, pero no mantiene el principio bajo presión o contradicción',
@@ -64,7 +64,7 @@ export const evaluationQuiz = {
                 'Que conviene dejar de probar el modelo',
             ],
             explanation:
-                'Un fallo en un caso límite señala un punto débil: el modelo quizás reconoció el patrón conocido, pero no mantuvo el principio cuando el cliente presionó en otra dirección. Justo por eso se corren muchos casos, y no solo uno.',
+                'Un fallo en un caso límite señala un punto débil: el modelo quizás reconoció el patrón conocido, pero no mantuvo el principio cuando el visitante presionó en otra dirección. Justo por eso se corren muchos casos, y no solo uno.',
         },
         5: {
             question: 'Un colega muestra una demo impresionante y dice "funciona, podemos confiar". ¿Qué es lo más correcto antes de confiar?',

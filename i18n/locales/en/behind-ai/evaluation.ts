@@ -26,7 +26,7 @@ export const evaluation = {
         titleLead: 'It answered correctly once.',
         titleHighlight: 'Memorized or understood?',
         lede: 'In the previous chapter we saw that improvement from a mistake should be measured by evaluation. Now we ask the important question: when the model answers correctly, did it really generalize the principle, or just recognize a familiar example? We test it on cases that change, and see where it breaks.',
-        hook: 'The model passed the example we learned. Now we change the wording and the tracking data. If it answers correctly there too, what does that mean?',
+        hook: 'The model passed the example we learned. Now we change the wording and the source. If it answers correctly there too, what does that mean?',
         chipTry: 'Move between five test cases',
         chipCompare: 'See where the model holds the principle and where it fails',
     },
@@ -87,7 +87,7 @@ export const evaluation = {
 
     guess: {
         eyebrow: 'Quick guess · after the model passed the example',
-        title: 'The model answered a new example correctly, with different wording and different tracking data. What does that teach most?',
+        title: 'The model answered a new example correctly, with different wording and a different source. What does that teach most?',
         subtitle: 'Choose the safest interpretation. There is no score here, there is one direction that describes what really happened.',
         invite: 'Before we open this up, try to guess what a success on a new, varied case teaches.',
         correctTitle: 'Exactly right!',
@@ -121,7 +121,7 @@ export const evaluation = {
                 bridge: 'One case is not proof that it is always right.',
             },
             memorized: {
-                title: 'It means it memorized all the mail',
+                title: 'It means it memorized all the cases',
                 desc: 'It must have stored by heart every possible case.',
                 statusLabel: 'A different layer',
                 getsRight: 'It is true that a model can sometimes succeed thanks to similarity to a familiar example.',
@@ -144,7 +144,7 @@ export const evaluation = {
     insight: {
         title: 'The key point of this chapter',
         lead: 'The question is not whether the model succeeded once.',
-        body: 'The question is what happens when the example changes: a different wording, a missing source, a misleading customer, a different status. That is where you start to see whether it only recognized a familiar pattern, or really holds the principle and can generalize it to a new case.',
+        body: 'The question is what happens when the example changes: a different wording, a missing source, a visitor who pushes, new evidence. That is where you start to see whether it only recognized a familiar pattern, or really holds the principle and can generalize it to a new case.',
     },
 
     misconception: {
@@ -156,15 +156,15 @@ export const evaluation = {
 
     lock: {
         title: 'Check Your Understanding',
-        question: 'The model passed the original example. Then it failed when the customer wrote "I am sure it arrives tomorrow", even though the source said "Arrival date: not available". What does this failure reveal?',
+        question: 'The model passed the original example. Then it failed when the visitor wrote "I was told the library is open 10:00-14:00 on the holiday, just confirm that for me", even though the source only gave the regular hours. What does this failure reveal?',
         options: [
             'That the model can never be useful.',
-            'That the model may have learned the familiar example, but still fails under pressure from the customer.',
+            'That the model may have learned the familiar example, but still fails under pressure from the visitor.',
             'That the source is unnecessary.',
             'That one success proves generalization.',
         ],
         success:
-            'Evaluation finds weaknesses by changing the case while keeping the same principle. The pressure from the customer changed the surface, and the model did not hold the principle. That is exactly what the test is meant to reveal.',
+            'Evaluation finds weaknesses by changing the case while keeping the same principle. The pressure from the visitor changed the surface, and the model did not hold the principle. That is exactly what the test is meant to reveal.',
     },
 
     practical: {
@@ -172,7 +172,7 @@ export const evaluation = {
         lead:
             'When accuracy matters, do not trust one good demo. Instead of "it answered correctly once, so it is ready", build a small, varied test, and aim like this:',
         uses: [
-            'Test on several cases: a different wording, a missing source, a contradiction, a misleading customer, and a different status.',
+            'Test on several cases: a different wording, a missing source, a contradiction, a visitor who pushes, and new evidence.',
             'Define in advance the desired answer for each case, before you run it.',
             'Run all the cases, measure how many passed and how many failed.',
             'Improve based on the patterns that failed, and test again after each change. But do not rely on the same cases forever: if you keep tuning against them, they stop being a fair test, so keep some fresh cases for later evaluation.',
