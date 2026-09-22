@@ -26,7 +26,7 @@ export const doesAiLearn = {
         titleLead: 'You corrected the model.',
         titleHighlight: 'Did it really learn from you?',
         lede: 'In the previous chapter we tested whether real improvement happened. Now we ask the question from your point of view: when you correct the model in a chat, did it really learn from you, or did it just use what you wrote now? We separate context, memory, and training.',
-        hook: 'The model said "The package will arrive tomorrow", and you answered "No, according to tracking there is no confirmed date". What happens the next time you open a new chat?',
+        hook: 'The model said "The library is open from 10:00 to 14:00 on the holiday", and you answered "No, the available source does not list the holiday opening hours". What happens the next time you open a new chat?',
         chipTry: 'Move between four learning layers',
         chipCompare: 'See when the correction helps and when it disappears',
     },
@@ -162,7 +162,7 @@ export const doesAiLearn = {
 
     lock: {
         title: 'Check Your Understanding',
-        question: 'You corrected the model in one chat: "do not write an arrival date if there is no source". Then you opened a new chat. What is the safest assumption?',
+        question: 'You corrected the model in one chat: "do not state holiday opening hours if there is no source". Then you opened a new chat. What is the safest assumption?',
         options: [
             'The base model learned your rule forever.',
             'The new chat may not include the correction, unless memory or context provides it.',
@@ -179,7 +179,7 @@ export const doesAiLearn = {
             'When accuracy matters, do not rely on "the model already knows". Instead, aim like this:',
         uses: [
             'Provide the important rule or source again in each new chat, instead of assuming the model remembers.',
-            'Phrase the rule explicitly, for example: "Do not invent an arrival date if there is no source. If there is no date in tracking, write that there is no confirmed date."',
+            'Phrase the rule explicitly, for example: "Do not invent holiday opening hours if there is no source. If the source does not list holiday hours, write that there are no confirmed hours."',
             'If the product offers memory or saved preferences, use them for what needs to repeat.',
             'After every change, check again that the behavior really improved.',
         ],

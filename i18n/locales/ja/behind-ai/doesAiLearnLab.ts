@@ -3,8 +3,9 @@
 // Nihongo (ja, LTR) no "Does AI Learn Lab" (dai 16 sho: Does AI Learn From Me) no data.
 // Hepburu-go ga shinjitsu no gensen de, kata (DoesAiLearnLabContent) o teigi suru.
 //
-// Chushin no aidea: model wa "kozutsumi wa ashita todokimasu" to itte, user ga "iie. tsuiseki
-// ni yoreba kakutei shita touchaku bi wa arimasen" to teisei shita. Lab wa teisei no furumai ga
+// Chushin no aidea: model wa "toshokan wa shukujitsu, juji kara jyuuyoji made aite imasu" to
+// itte, user ga "iie. shutten ni wa shukujitsu no kaikan jikan ga shimesarete imasen" to teisei
+// shita. Lab wa teisei no furumai ga
 // kotonaru yottsu no soo o shimesu: onaji chat (genzai no bunmyaku), atarashii chat (bunmyaku
 // wa kara kara hajimaru), memory kino (product no rei), soshite kunren mata wa koushin (betsu
 // no process).
@@ -19,17 +20,17 @@ export const doesAiLearnLab: DoesAiLearnLabContent = {
     sectionEyebrow: 'Does AI Learn Lab',
     sectionTitle: '同じ訂正、四つの層',
     sectionIntro:
-        'モデルは「荷物は明日届きます」と言い、あなたは訂正した。四つの層を切り替えて、訂正がいつ役立ち、いつ消えるのか、そして文脈・記憶・訓練の違いを見てみよう。',
+        'モデルは「図書館は祝日、10時から14時まで開いています」と言い、あなたは訂正した。四つの層を切り替えて、訂正がいつ役立ち、いつ消えるのか、そして文脈・記憶・訓練の違いを見てみよう。',
     heading: '学習の裏側',
     kicker: 'Does AI Learn Lab',
     scenario: {
         label: 'シナリオ',
         aiSaidLabel: 'モデルが言った',
-        aiSaid: '荷物は明日届きます。',
+        aiSaid: '図書館は祝日、10時から14時まで開いています。',
         userCorrectionLabel: 'あなたが訂正する',
-        userCorrection: 'いいえ。追跡によれば、確定した到着予定はありません。',
+        userCorrection: 'いいえ。出典には祝日の開館時間が示されていません。',
         aiRevisedLabel: '同じチャットでモデルが訂正する',
-        aiRevised: 'その通りです。追跡によれば、確定した到着予定はありません。',
+        aiRevised: 'その通りです。出典には祝日の開館時間が示されていません。',
     },
     layerSelectLabel: '層を選ぶ',
     seesLabel: 'モデルが今見ているもの',
@@ -52,11 +53,11 @@ export const doesAiLearnLab: DoesAiLearnLabContent = {
             title: '訂正すると、モデルは訂正に従う',
             summary: '同じチャットで似た質問をもう一度した。訂正はまだ文脈の中にあるので、モデルはそれに頼れる。',
             sees: [
-                'モデルの最初のメッセージ：荷物は明日届きます。',
-                'あなたの訂正：いいえ。追跡によれば、確定した到着予定はありません。',
+                'モデルの最初のメッセージ：図書館は祝日、10時から14時まで開いています。',
+                'あなたの訂正：いいえ。出典には祝日の開館時間が示されていません。',
                 '同じチャットでの、あなたの続きの質問。',
             ],
-            answer: '追跡によれば、確定した到着予定はありません。分かり次第お知らせします。',
+            answer: '出典には祝日の開館時間が示されていないので、確定した時間はお伝えできません。',
             changed: '答えは今、訂正に従っている。訂正が会話の文脈の中にあるからだ。',
             unchanged: '基盤モデルは変わっていない。訂正はこのチャットの中だけで生きている。',
             takeaway: '現在の会話に書かれていることは、現在の答えに影響しうる。',
@@ -73,7 +74,7 @@ export const doesAiLearnLab: DoesAiLearnLabContent = {
                 '今のあなたの質問。',
                 '前のチャットの訂正はここにはない。',
             ],
-            answer: '通常の見込みでは、荷物は明日届くはずです。',
+            answer: '図書館は祝日、10時から14時まで開いています。',
             changed: '訂正が文脈にないと、モデルは元の答えに戻りうる。訂正を覚えていると決めつけないこと。',
             unchanged: '基盤モデルは訂正を永久に学んだわけではなく、新しいチャットでは単に文脈にないだけだ。前の会話は、製品と設定によっては履歴に見えたり保存されたりしているかもしれないが、履歴があることは、モデルが今それを使っているという意味ではない。',
             takeaway: '新しいチャットは以前の訂正を自動的には含まない。製品が記憶を保持するか、あなたが文脈を再び渡さない限り。保存された履歴は記憶でも訓練でもない。',
@@ -86,11 +87,11 @@ export const doesAiLearnLab: DoesAiLearnLabContent = {
             title: '保存された設定は文脈に戻りうる',
             summary: '一部の製品では設定を保存できる。これは製品機能の一例であって、常に成り立つ規則ではない。',
             sees: [
-                '保存された設定（製品機能の一例）：情報源なしに到着予定を作らない。',
+                '保存された設定（製品機能の一例）：出典なしに祝日の開館時間を示さない。',
                 '今のあなたの質問。',
                 '設定は質問とともに文脈に読み込まれる。',
             ],
-            answer: '保存された設定により、予定を作りません。追跡によれば、確定した到着予定はありません。',
+            answer: '保存された設定により、出典なしに時間はお伝えしません。出典には祝日の開館時間が示されていません。',
             changed: '製品が記憶を提供すると、設定は文脈に戻るので、新しいチャットでも答えがそれに従える。',
             unchanged: 'ここでも基盤モデルは変わっていない。記憶は情報を文脈に戻すのであって、訓練ではない。機能がオフか使えない場合、情報はそれを通じて再利用されないだけで、履歴や保存されたデータがないという意味ではない。',
             takeaway: '記憶は情報を保存して戻す製品機能であり、訓練とは異なる。また、不完全だったり古かったり誤っていたりすることもあり、製品によっては見直し・訂正・オフ・削除ができる。製品による。',

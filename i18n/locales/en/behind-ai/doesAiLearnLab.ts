@@ -3,8 +3,8 @@
 // English (en, LTR) data for the "Does AI Learn Lab" of Chapter 16 (Does AI Learn From Me).
 // Hebrew is the source of truth and defines the type (DoesAiLearnLabContent).
 //
-// Core idea: the model said "The package will arrive tomorrow", and the user corrected it:
-// "No. According to tracking, there is no confirmed arrival date." The lab shows four layers
+// Core idea: the model said "The library is open from 10:00 to 14:00 on the holiday", and the
+// user corrected it: "No. The available source does not list the holiday opening hours." The lab shows four layers
 // where the correction behaves differently: the same chat (current context), a new chat (the
 // context starts empty), a memory feature (a product example), and training or an update (a
 // separate process).
@@ -23,17 +23,17 @@ export const doesAiLearnLab: DoesAiLearnLabContent = {
     sectionEyebrow: 'Does AI Learn Lab',
     sectionTitle: 'The same correction, four layers',
     sectionIntro:
-        'The model said "The package will arrive tomorrow", and you corrected it. Move between the four layers and see when the correction helps, when it disappears, and the difference between context, memory, and training.',
+        'The model said "The library is open from 10:00 to 14:00 on the holiday", and you corrected it. Move between the four layers and see when the correction helps, when it disappears, and the difference between context, memory, and training.',
     heading: 'Behind the learning',
     kicker: 'Does AI Learn Lab',
     scenario: {
         label: 'The scenario',
         aiSaidLabel: 'The model said',
-        aiSaid: 'The package will arrive tomorrow.',
+        aiSaid: 'The library is open from 10:00 to 14:00 on the holiday.',
         userCorrectionLabel: 'You correct',
-        userCorrection: 'No. According to tracking, there is no confirmed arrival date.',
+        userCorrection: 'No. The available source does not list the holiday opening hours.',
         aiRevisedLabel: 'In the same chat, the model revises',
-        aiRevised: 'Right. According to tracking, there is no confirmed arrival date.',
+        aiRevised: 'Right. The available source does not list the holiday opening hours.',
     },
     layerSelectLabel: 'Choose a layer',
     seesLabel: 'What the model sees now',
@@ -56,11 +56,11 @@ export const doesAiLearnLab: DoesAiLearnLabContent = {
             title: 'You corrected it, and the model follows the correction',
             summary: 'In the same chat you asked a similar question again. The correction is still in context, so the model can rely on it.',
             sees: [
-                'The model opening message: The package will arrive tomorrow.',
-                'Your correction: No. According to tracking, there is no confirmed arrival date.',
+                'The model opening message: The library is open from 10:00 to 14:00 on the holiday.',
+                'Your correction: No. The available source does not list the holiday opening hours.',
                 'Your follow-up question, in the same chat.',
             ],
-            answer: 'According to tracking, there is no confirmed arrival date. I will update as soon as there is one.',
+            answer: 'The available source does not list the holiday opening hours, so I do not have confirmed hours to give.',
             changed: 'The answer now follows the correction, because it is in the conversation context.',
             unchanged: 'The base model did not change. The correction lives in this chat only.',
             takeaway: 'What is written in the current conversation can influence the current answer.',
@@ -77,7 +77,7 @@ export const doesAiLearnLab: DoesAiLearnLabContent = {
                 'Your question now.',
                 'The correction from the previous chat is not here.',
             ],
-            answer: 'By the usual estimate, the package should arrive tomorrow.',
+            answer: 'The library is open from 10:00 to 14:00 on the holiday.',
             changed: 'Without the correction in context, the model can go back to the original answer. Do not assume it remembers the correction.',
             unchanged: 'The base model did not learn the correction forever, and in the new chat it simply is not in context. The earlier conversation may still be visible or stored in history, depending on the product and settings, but history existing does not mean the model is using it now.',
             takeaway: 'A new chat does not automatically include previous corrections, unless the product keeps memory or you provide the context again. Stored history is not memory and not training.',
@@ -90,11 +90,11 @@ export const doesAiLearnLab: DoesAiLearnLabContent = {
             title: 'A saved preference can return to context',
             summary: 'Some products let you save a preference. This is an example of a product feature, not a rule that always holds.',
             sees: [
-                'Saved preference (example of a product feature): do not invent an arrival date without a source.',
+                'Saved preference (example of a product feature): do not state holiday opening hours without a source.',
                 'Your question now.',
                 'The preference is loaded into the context together with the question.',
             ],
-            answer: 'By the saved preference, I will not invent a date. According to tracking, there is no confirmed arrival date.',
+            answer: 'By the saved preference, I will not state hours without a source. The available source does not list the holiday opening hours.',
             changed: 'When the product provides memory, the preference returns to the context, so answers can follow it even in a new chat.',
             unchanged: 'Here too the base model did not change. Memory returns information to the context, it is not training. If the feature is off or unavailable, the information simply is not reused through it, but that does not mean there is no history or stored data.',
             takeaway: 'Memory is a product feature that saves and returns information, and it is different from training. It may also be incomplete, outdated, or wrong, and some products let you review, correct, turn off, or remove it, depending on the product.',

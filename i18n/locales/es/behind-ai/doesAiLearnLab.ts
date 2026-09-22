@@ -3,8 +3,8 @@
 // Espanol (es, LTR) para el "Does AI Learn Lab" del Capitulo 16 (Does AI Learn From Me).
 // El hebreo es la fuente de verdad y define el tipo (DoesAiLearnLabContent).
 //
-// Idea central: el modelo dijo "El paquete llegara manana", y el usuario lo corrigio: "No.
-// Segun el seguimiento, no hay fecha de llegada confirmada." El laboratorio muestra cuatro
+// Idea central: el modelo dijo "La biblioteca abre de 10:00 a 14:00 en el feriado", y el usuario
+// lo corrigio: "No. La fuente disponible no indica el horario del feriado." El laboratorio muestra cuatro
 // capas donde la correccion se comporta distinto: el mismo chat (contexto actual), un chat
 // nuevo (el contexto empieza vacio), una funcion de memoria (ejemplo de producto), y
 // entrenamiento o actualizacion (un proceso aparte).
@@ -19,17 +19,17 @@ export const doesAiLearnLab: DoesAiLearnLabContent = {
     sectionEyebrow: 'Does AI Learn Lab',
     sectionTitle: 'La misma correccion, cuatro capas',
     sectionIntro:
-        'El modelo dijo "El paquete llegara manana", y tu lo corregiste. Muevete entre las cuatro capas y ve cuando ayuda la correccion, cuando desaparece, y la diferencia entre contexto, memoria y entrenamiento.',
+        'El modelo dijo "La biblioteca abre de 10:00 a 14:00 en el feriado", y tu lo corregiste. Muevete entre las cuatro capas y ve cuando ayuda la correccion, cuando desaparece, y la diferencia entre contexto, memoria y entrenamiento.',
     heading: 'Detras del aprendizaje',
     kicker: 'Does AI Learn Lab',
     scenario: {
         label: 'El escenario',
         aiSaidLabel: 'El modelo dijo',
-        aiSaid: 'El paquete llegara manana.',
+        aiSaid: 'La biblioteca abre de 10:00 a 14:00 en el feriado.',
         userCorrectionLabel: 'Tu corriges',
-        userCorrection: 'No. Segun el seguimiento, no hay fecha de llegada confirmada.',
+        userCorrection: 'No. La fuente disponible no indica el horario del feriado.',
         aiRevisedLabel: 'En el mismo chat, el modelo se corrige',
-        aiRevised: 'Correcto. Segun el seguimiento, no hay fecha de llegada confirmada.',
+        aiRevised: 'Correcto. La fuente disponible no indica el horario del feriado.',
     },
     layerSelectLabel: 'Elige una capa',
     seesLabel: 'Lo que el modelo ve ahora',
@@ -52,11 +52,11 @@ export const doesAiLearnLab: DoesAiLearnLabContent = {
             title: 'Lo corregiste, y el modelo sigue la correccion',
             summary: 'En el mismo chat volviste a preguntar algo parecido. La correccion sigue en el contexto, asi que el modelo puede apoyarse en ella.',
             sees: [
-                'El mensaje inicial del modelo: El paquete llegara manana.',
-                'Tu correccion: No. Segun el seguimiento, no hay fecha de llegada confirmada.',
+                'El mensaje inicial del modelo: La biblioteca abre de 10:00 a 14:00 en el feriado.',
+                'Tu correccion: No. La fuente disponible no indica el horario del feriado.',
                 'Tu pregunta de seguimiento, en el mismo chat.',
             ],
-            answer: 'Segun el seguimiento, no hay fecha de llegada confirmada. Te avisare en cuanto la haya.',
+            answer: 'La fuente disponible no indica el horario del feriado, asi que no tengo un horario confirmado para darte.',
             changed: 'La respuesta ahora sigue la correccion, porque esta en el contexto de la conversacion.',
             unchanged: 'El modelo base no cambio. La correccion vive solo en este chat.',
             takeaway: 'Lo que esta escrito en la conversacion actual puede influir en la respuesta actual.',
@@ -73,7 +73,7 @@ export const doesAiLearnLab: DoesAiLearnLabContent = {
                 'Tu pregunta ahora.',
                 'La correccion del chat anterior no esta aqui.',
             ],
-            answer: 'Segun la estimacion habitual, el paquete deberia llegar manana.',
+            answer: 'La biblioteca abre de 10:00 a 14:00 en el feriado.',
             changed: 'Sin la correccion en el contexto, el modelo puede volver a la respuesta original. No supongas que recuerda la correccion.',
             unchanged: 'El modelo base no aprendio la correccion para siempre, y en el chat nuevo simplemente no esta en el contexto. La conversacion anterior puede seguir visible o guardada en el historial, segun el producto y la configuracion, pero que exista historial no significa que el modelo lo este usando ahora.',
             takeaway: 'Un chat nuevo no incluye automaticamente correcciones anteriores, salvo que el producto guarde memoria o que aportes de nuevo el contexto. El historial guardado no es memoria ni entrenamiento.',
@@ -86,11 +86,11 @@ export const doesAiLearnLab: DoesAiLearnLabContent = {
             title: 'Una preferencia guardada puede volver al contexto',
             summary: 'Algunos productos permiten guardar una preferencia. Es un ejemplo de una funcion de producto, no una regla que se cumpla siempre.',
             sees: [
-                'Preferencia guardada (ejemplo de funcion de producto): no inventes una fecha de llegada sin una fuente.',
+                'Preferencia guardada (ejemplo de funcion de producto): no indiques el horario del feriado sin una fuente.',
                 'Tu pregunta ahora.',
                 'La preferencia se carga en el contexto junto con la pregunta.',
             ],
-            answer: 'Por la preferencia guardada, no inventare una fecha. Segun el seguimiento, no hay fecha de llegada confirmada.',
+            answer: 'Por la preferencia guardada, no indicare un horario sin fuente. La fuente disponible no indica el horario del feriado.',
             changed: 'Cuando el producto ofrece memoria, la preferencia vuelve al contexto, asi que las respuestas pueden seguirla incluso en un chat nuevo.',
             unchanged: 'Tambien aqui el modelo base no cambio. La memoria devuelve informacion al contexto, no es un entrenamiento. Si la funcion esta desactivada o no esta disponible, la informacion simplemente no se reutiliza a traves de ella, pero eso no significa que no haya historial ni datos guardados.',
             takeaway: 'La memoria es una funcion de producto que guarda y devuelve informacion, y es distinta del entrenamiento. Tambien puede ser incompleta, desactualizada o incorrecta, y algunos productos permiten revisarla, corregirla, desactivarla o eliminarla, segun el producto.',

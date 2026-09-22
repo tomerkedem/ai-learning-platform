@@ -27,7 +27,7 @@ export const doesAiLearn = {
         titleLead: 'Corregiste el modelo.',
         titleHighlight: 'De verdad aprendio de ti?',
         lede: 'En el capitulo anterior comprobamos si hubo una mejora real. Ahora hacemos la pregunta desde tu punto de vista: cuando corriges el modelo en un chat, aprendio de verdad de ti, o solo uso lo que escribiste ahora? Separamos contexto, memoria y entrenamiento.',
-        hook: 'El modelo dijo "El paquete llegara manana", y tu respondiste "No, segun el seguimiento no hay fecha confirmada". Que pasa la proxima vez que abras un chat nuevo?',
+        hook: 'El modelo dijo "La biblioteca abre de 10:00 a 14:00 en el feriado", y tu respondiste "No, la fuente disponible no indica el horario del feriado". Que pasa la proxima vez que abras un chat nuevo?',
         chipTry: 'Muevete entre cuatro capas de aprendizaje',
         chipCompare: 'Ve cuando ayuda la correccion y cuando desaparece',
     },
@@ -163,7 +163,7 @@ export const doesAiLearn = {
 
     lock: {
         title: 'Comprueba tu comprensión',
-        question: 'Corregiste el modelo en un chat: "no escribas una fecha de llegada si no hay fuente". Luego abriste un chat nuevo. Cual es la suposicion mas segura?',
+        question: 'Corregiste el modelo en un chat: "no indiques el horario del feriado si no hay fuente". Luego abriste un chat nuevo. Cual es la suposicion mas segura?',
         options: [
             'El modelo base aprendio tu regla para siempre.',
             'El chat nuevo quiza no incluya la correccion, salvo que la memoria o el contexto la aporten.',
@@ -180,7 +180,7 @@ export const doesAiLearn = {
             'Cuando la exactitud importa, no confies en "el modelo ya lo sabe". En su lugar, apunta asi:',
         uses: [
             'Aporta de nuevo la regla o la fuente importante en cada chat nuevo, en vez de suponer que el modelo la recuerda.',
-            'Formula la regla de forma explicita, por ejemplo: "No inventes una fecha de llegada si no hay fuente. Si no hay fecha en el seguimiento, escribe que no hay fecha confirmada."',
+            'Formula la regla de forma explicita, por ejemplo: "No inventes el horario del feriado si no hay fuente. Si la fuente no indica el horario del feriado, escribe que no hay horario confirmado."',
             'Si el producto ofrece memoria o preferencias guardadas, usalas para lo que deba repetirse.',
             'Despues de cada cambio, comprueba de nuevo que el comportamiento mejoro de verdad.',
         ],
