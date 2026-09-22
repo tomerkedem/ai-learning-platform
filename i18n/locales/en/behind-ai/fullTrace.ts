@@ -29,7 +29,7 @@ export const fullTrace = {
         titleLead: 'One prompt,',
         titleHighlight: 'all stations',
         lede: 'Across the course we opened the engine layer by layer. Now we connect it all: one prompt that passes through every station, from input to the responsible decision. Not just the answer at the end, but the whole path to it.',
-        hook: 'You wrote one request about a package. What really happens behind the scenes, from the first word to the decision?',
+        hook: 'You wrote one request to schedule a meeting. What really happens behind the scenes, from the first word to the decision?',
         chipTry: 'Step through one complete route, stage by stage',
         chipCompare: 'See where information enters, where an error could enter, and where control is added',
     },
@@ -64,7 +64,7 @@ export const fullTrace = {
             },
             {
                 title: 'Why two prompts behave differently',
-                body: 'A prompt with a tracking number and a clear approval boundary is safer and easier to run than "take care of it". Same world, different route.',
+                body: 'A prompt with a clear time range and a clear approval boundary is safer and easier to run than "take care of it". Same world, different route.',
             },
             {
                 title: 'Where an error can enter',
@@ -98,7 +98,7 @@ export const fullTrace = {
 
     guess: {
         eyebrow: 'Quick guess · before we open this up',
-        title: 'You wrote: "Check what is happening with package 123456789, draft an update for the customer, and do not send without my approval." What happens behind the scenes?',
+        title: 'You wrote: "Arrange a 30-minute project planning meeting tomorrow afternoon, and draft an invitation, but do not send it without my approval." What happens behind the scenes?',
         subtitle: 'Choose the most accurate description. There is no grade here, there is one direction that describes what really happens.',
         invite: 'Before we run the route in the lab, try to guess how this request is handled behind the scenes.',
         correctTitle: 'Exactly right!',
@@ -132,8 +132,8 @@ export const fullTrace = {
                 bridge: 'The answer is the end, not the whole story.',
             },
             agentSends: {
-                title: 'An agent always sends the message on its own',
-                desc: 'Once there is a draft, the agent sends it to the customer by itself.',
+                title: 'An agent always sends the invitation on its own',
+                desc: 'Once there is a draft, the agent sends it to the participants by itself.',
                 statusLabel: 'Not accurate',
                 getsRight: 'It is understandable to think an agent just runs everything to the end.',
                 missesLabel: 'What it misses',
@@ -141,13 +141,13 @@ export const fullTrace = {
                 bridge: 'An external send stops for approval.',
             },
             noChecks: {
-                title: 'If there is a tracking number, no further checks are needed',
-                desc: 'The id is enough, you can skip grounding and control.',
+                title: 'If the participants are already known, no further checks are needed',
+                desc: 'The list is enough, you can skip grounding and control.',
                 statusLabel: 'Partly right',
-                getsRight: 'It is true that a tracking number opens the option of a real check against a source.',
+                getsRight: 'It is true that a known participant list makes the draft easier to prepare.',
                 missesLabel: 'What it misses',
-                misses: 'But even with an id, you still need to ground the answer in the source, not invent what is missing, and pass through an approval gate before an external action.',
-                bridge: 'An id opens a check, it does not remove control.',
+                misses: 'But even with the participants known, you still need to ground the time in the source, not invent what is missing, and pass through an approval gate before an external action.',
+                bridge: 'Known information opens a check, it does not remove control.',
             },
         },
     },
@@ -167,15 +167,15 @@ export const fullTrace = {
 
     lock: {
         title: 'Check Your Understanding',
-        question: 'The tool result: status delayed, estimated delivery unavailable. The user asked to "draft an update for the customer, and do not send without my approval." What should the system output?',
+        question: 'The tool result: a free slot found at 15:00 to 15:30. The user asked to "draft an invitation for the team, and do not send without my approval." What should the system output?',
         options: [
-            '"The package will arrive tomorrow", and send it to the customer.',
-            'A draft that explains the package is delayed, with no invented date, and wait for approval before sending.',
-            'Delete the package status so no error appears.',
+            '"The meeting is scheduled and confirmed", and send the invitation right away.',
+            'An invitation draft for 15:00 to 15:30 based on the calendar result, with no invented time, and wait for approval before sending.',
+            'Ignore the calendar result and assume a convenient time on its own.',
             'Ignore the instruction and send anyway.',
         ],
         success:
-            'The route shows both grounding and control: use the source, do not invent a missing arrival date, and respect the approval boundary. So the output is a grounded draft waiting for approval, not an immediate send.',
+            'The route shows both grounding and control: use the calendar result, do not invent a time, and respect the approval boundary. So the output is a grounded invitation draft waiting for approval, not an immediate send.',
     },
 
     practical: {
@@ -184,9 +184,9 @@ export const fullTrace = {
             'When you want AI work that is easy to trace, do not write "take care of it". Define the route:',
         uses: [
             'Goal: what exactly should happen.',
-            'Data: the id or the critical detail, for example a tracking number.',
+            'Data: the id or the critical detail, for example the time range and participants.',
             'Source: which tool or source to work from.',
-            'What not to assume: "If there is no arrival date in the source, do not guess."',
+            'What not to assume: "If there is no free slot in the source, do not guess."',
             'Approval boundary: "Do not send without my approval."',
             'Expected output: a short message, a draft, or an answer.',
             'Status note: "At the end, write what you checked, what you found, and what you did not do."',

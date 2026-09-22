@@ -29,7 +29,7 @@ export const fullTrace = {
         titleLead: 'Un prompt,',
         titleHighlight: 'todas las estaciones',
         lede: 'A lo largo del curso abrimos el motor capa por capa. Ahora lo conectamos todo: un prompt que pasa por todas las estaciones, desde la entrada hasta la decision responsable. No solo la respuesta al final, sino todo el camino hacia ella.',
-        hook: 'Escribiste una solicitud sobre un paquete. Que pasa de verdad detras de escena, desde la primera palabra hasta la decision?',
+        hook: 'Escribiste una solicitud para coordinar una reunion. Que pasa de verdad detras de escena, desde la primera palabra hasta la decision?',
         chipTry: 'Recorre un unico camino completo, etapa por etapa',
         chipCompare: 'Observa donde entra la informacion, donde podria entrar un error y donde se agrega control',
     },
@@ -64,7 +64,7 @@ export const fullTrace = {
             },
             {
                 title: 'Por que dos prompts se comportan distinto',
-                body: 'Un prompt con un numero de seguimiento y un limite de aprobacion claro es mas seguro y facil de ejecutar que "encargate de esto". El mismo mundo, otro camino.',
+                body: 'Un prompt con un horario claro y un limite de aprobacion claro es mas seguro y facil de ejecutar que "encargate de esto". El mismo mundo, otro camino.',
             },
             {
                 title: 'Donde puede entrar un error',
@@ -98,7 +98,7 @@ export const fullTrace = {
 
     guess: {
         eyebrow: 'Adivinanza rapida · antes de abrir esto',
-        title: 'Escribiste: "Revisa que pasa con el paquete 123456789, redacta una actualizacion para el cliente y no la envies sin mi aprobacion." Que pasa detras de escena?',
+        title: 'Escribiste: "Organiza una reunion de planificacion de proyecto de 30 minutos manana por la tarde, y redacta una invitacion, pero no la envies sin mi aprobacion." Que pasa detras de escena?',
         subtitle: 'Elige la descripcion mas precisa. Aqui no hay nota, hay una direccion que describe lo que de verdad ocurre.',
         invite: 'Antes de recorrer el camino en el laboratorio, intenta adivinar como se maneja esta solicitud detras de escena.',
         correctTitle: 'Exactamente!',
@@ -132,8 +132,8 @@ export const fullTrace = {
                 bridge: 'La respuesta es el final, no toda la historia.',
             },
             agentSends: {
-                title: 'Un agente siempre envia el mensaje por su cuenta',
-                desc: 'En cuanto hay un borrador, el agente se lo envia al cliente por si mismo.',
+                title: 'Un agente siempre envia la invitacion por su cuenta',
+                desc: 'En cuanto hay un borrador, el agente se lo envia a los participantes por si mismo.',
                 statusLabel: 'No es preciso',
                 getsRight: 'Es comprensible pensar que un agente simplemente ejecuta todo hasta el final.',
                 missesLabel: 'Que se pierde',
@@ -141,13 +141,13 @@ export const fullTrace = {
                 bridge: 'Un envio externo se detiene para aprobacion.',
             },
             noChecks: {
-                title: 'Si hay numero de seguimiento, no hacen falta mas chequeos',
-                desc: 'El id basta, puedes saltarte el anclaje y el control.',
+                title: 'Si los participantes ya son conocidos, no hacen falta mas chequeos',
+                desc: 'La lista basta, puedes saltarte el anclaje y el control.',
                 statusLabel: 'Parcialmente correcto',
-                getsRight: 'Es cierto que un numero de seguimiento abre la opcion de un chequeo real contra una fuente.',
+                getsRight: 'Es cierto que una lista de participantes conocida facilita preparar el borrador.',
                 missesLabel: 'Que se pierde',
-                misses: 'Pero incluso con un id, todavia hay que anclar la respuesta en la fuente, no inventar lo que falta y pasar por una puerta de aprobacion antes de una accion externa.',
-                bridge: 'Un id abre un chequeo, no elimina el control.',
+                misses: 'Pero incluso con los participantes conocidos, todavia hay que anclar el horario en la fuente, no inventar lo que falta y pasar por una puerta de aprobacion antes de una accion externa.',
+                bridge: 'Un dato conocido abre un chequeo, no elimina el control.',
             },
         },
     },
@@ -167,15 +167,15 @@ export const fullTrace = {
 
     lock: {
         title: 'Comprueba tu comprensión',
-        question: 'El resultado de la herramienta: estado con retraso, fecha estimada de entrega no disponible. El usuario pidio "redacta una actualizacion para el cliente y no la envies sin mi aprobacion." Que debe producir el sistema?',
+        question: 'El resultado de la herramienta: horario libre encontrado de 15:00 a 15:30. El usuario pidio "redacta una invitacion para el equipo y no la envies sin mi aprobacion." Que debe producir el sistema?',
         options: [
-            '"El paquete llegara manana", y enviarlo al cliente.',
-            'Un borrador que explique que el paquete esta con retraso, sin inventar una fecha, y esperar la aprobacion antes de enviar.',
-            'Borrar el estado del paquete para que no aparezca un error.',
+            '"La reunion quedo agendada y confirmada", y enviar la invitacion de inmediato.',
+            'Un borrador de invitacion para el horario de 15:00 a 15:30 segun el resultado del calendario, sin inventar un horario, y esperar la aprobacion antes de enviar.',
+            'Ignorar el resultado del calendario y asumir un horario conveniente por su cuenta.',
             'Ignorar la instruccion y enviar de todos modos.',
         ],
         success:
-            'El camino muestra anclaje y control: usa la fuente, no inventa una fecha de llegada que falta y respeta el limite de aprobacion. Por eso la salida es un borrador anclado a la espera de aprobacion, no un envio inmediato.',
+            'El camino muestra anclaje y control: usa el resultado del calendario, no inventa un horario y respeta el limite de aprobacion. Por eso la salida es un borrador de invitacion anclado a la espera de aprobacion, no un envio inmediato.',
     },
 
     practical: {
@@ -184,9 +184,9 @@ export const fullTrace = {
             'Cuando quieras un trabajo de AI facil de seguir, no escribas "encargate de esto". Define el camino:',
         uses: [
             'Objetivo: que debe pasar exactamente.',
-            'Datos: el id o el detalle critico, por ejemplo un numero de seguimiento.',
+            'Datos: el id o el detalle critico, por ejemplo el horario y los participantes.',
             'Fuente: de que herramienta o fuente trabajar.',
-            'Que no suponer: "Si no hay fecha de llegada en la fuente, no adivines."',
+            'Que no suponer: "Si no hay horario libre en la fuente, no adivines."',
             'Limite de aprobacion: "No la envies sin mi aprobacion."',
             'Salida esperada: un mensaje breve, un borrador o una respuesta.',
             'Nota de estado: "Al final, escribe que revisaste, que encontraste y que no hiciste."',
