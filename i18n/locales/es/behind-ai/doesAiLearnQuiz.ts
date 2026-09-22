@@ -45,7 +45,7 @@ export const doesAiLearnQuiz = {
                 'Un chat nuevo empieza sin el contexto del anterior. Salvo que el producto tenga una funcion de memoria, o que aportes de nuevo la informacion, no supongas que la correccion sigue ahi. No significa que el modelo "olvido" todo, solo que la correccion del chat anterior no esta en el contexto actual.',
         },
         3: {
-            question: 'Un producto guarda una preferencia: "no inventes una fecha de llegada sin una fuente". En que se diferencia eso de entrenar el modelo?',
+            question: 'Un producto guarda una preferencia: "no indiques el horario del feriado sin una fuente". En que se diferencia eso de entrenar el modelo?',
             options: [
                 'No hay diferencia, memoria y entrenamiento son lo mismo',
                 'La memoria es una funcion de producto que guarda informacion y la devuelve al contexto; el entrenamiento es un proceso aparte que cambio el modelo en si',

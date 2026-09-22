@@ -87,7 +87,7 @@ export const mistakeLearningLab: MistakeLearningLabContent = {
             control: 'En el sistema alrededor del modelo',
             badgeLabel: 'Mejora del sistema',
             title: 'El mismo error se repite, el equipo cambia el sistema',
-            summary: 'Cuando muchas respuestas inventan una fecha de entrega, se puede corregir el sistema que envuelve al modelo.',
+            summary: 'Cuando muchas respuestas inventan un horario de feriado, se puede corregir el sistema que envuelve al modelo.',
             steps: [
                 { id: 'system-1', label: 'Patrón repetido', text: 'El sistema inventa un horario de feriado cuando no hay horario en la fuente, una y otra vez.', tone: 'wrong' },
                 { id: 'system-2', label: 'Mejorar la instrucción', text: 'Se añade una regla a la instrucción: no inventes un horario de feriado que no aparezca en la fuente.', tone: 'system' },

@@ -45,7 +45,7 @@ export const doesAiLearnQuiz = {
                 'A new chat starts without the context of the previous one. Unless the product has a memory feature, or you provide the information again, do not assume the correction is still there. It does not mean the model "forgot" everything, only that the correction from the previous chat is not in the current context.',
         },
         3: {
-            question: 'A certain product saves a preference: "do not invent an arrival date without a source". How is that different from training the model?',
+            question: 'A certain product saves a preference: "do not state holiday opening hours without a source". How is that different from training the model?',
             options: [
                 'There is no difference, memory and training are the same thing',
                 'Memory is a product feature that saves information and returns it to the context; training is a separate process that changed the model itself',

@@ -78,7 +78,7 @@ export const mistakeLearningLab: MistakeLearningLabContent = {
             control: 'モデルを囲むシステムで',
             badgeLabel: 'システムの改善',
             title: '同じ間違いが繰り返され、チームがシステムを変える',
-            summary: '多くの答えが配達日をでっち上げるとき、モデルを包むシステムを直せる。',
+            summary: '多くの答えが祝日の開館時間をでっち上げるとき、モデルを包むシステムを直せる。',
             steps: [
                 { id: 'system-1', label: '繰り返すパターン', text: '出典に祝日の時間がないのに、システムが祝日の開館時間を何度もでっち上げる。', tone: 'wrong' },
                 { id: 'system-2', label: '指示の改善', text: '指示にルールを加える。出典にない祝日の開館時間をでっち上げないこと。', tone: 'system' },

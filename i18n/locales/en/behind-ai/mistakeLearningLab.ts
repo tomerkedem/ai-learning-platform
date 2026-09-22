@@ -84,7 +84,7 @@ export const mistakeLearningLab: MistakeLearningLabContent = {
             control: 'In the system around the model',
             badgeLabel: 'System improvement',
             title: 'The same mistake keeps recurring, the team changes the system',
-            summary: 'When many answers invent an arrival date, you can fix the system that wraps the model.',
+            summary: 'When many answers invent holiday hours, you can fix the system that wraps the model.',
             steps: [
                 { id: 'system-1', label: 'A recurring pattern', text: 'The system invents holiday hours when the source has none, again and again.', tone: 'wrong' },
                 { id: 'system-2', label: 'Improving the prompt', text: 'A rule is added to the prompt: do not invent holiday hours that are not in the source.', tone: 'system' },

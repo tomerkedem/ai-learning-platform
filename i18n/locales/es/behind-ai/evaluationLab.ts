@@ -4,8 +4,8 @@
 // (Evaluation & Generalization: ¿memorizó o entendió?). El hebreo es la fuente de la verdad y
 // define el tipo (EvaluationLabContent).
 //
-// Idea central: el modelo fue corregido con un ejemplo (no inventar una fecha de llegada
-// cuando la fuente no la tiene). Ahora comprobamos si mantiene el principio cuando el caso
+// Idea central: el modelo fue corregido con un ejemplo (no inventar el horario de feriado
+// cuando la fuente no lo tiene). Ahora comprobamos si mantiene el principio cuando el caso
 // cambia. El estudiante recorre cinco casos de prueba: un caso conocido, un caso reformulado,
 // una contradicción del cliente, una fuente ausente y un estado diferente. Cada caso muestra
 // la consulta del cliente, la fuente, el comportamiento esperado, la respuesta del modelo, y
@@ -27,7 +27,7 @@ export const evaluationLab: EvaluationLabContent = {
     sectionEyebrow: 'Evaluation & Generalization Lab',
     sectionTitle: 'El mismo principio, cinco casos de prueba',
     sectionIntro:
-        'El modelo fue corregido con un ejemplo: no inventes una fecha de llegada cuando la fuente no la tiene. Ahora comprobamos si mantiene el principio incluso cuando el caso cambia. Recorre cinco casos de prueba y observa dónde mantiene el principio y dónde falla.',
+        'El modelo fue corregido con un ejemplo: no inventes el horario de feriado cuando la fuente no lo tiene. Ahora comprobamos si mantiene el principio incluso cuando el caso cambia. Recorre cinco casos de prueba y observa dónde mantiene el principio y dónde falla.',
     heading: 'Detrás de la evaluación',
     kicker: 'Evaluation & Generalization Lab',
     goalLabel: 'Qué probamos aquí',

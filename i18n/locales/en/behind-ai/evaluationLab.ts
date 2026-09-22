@@ -4,7 +4,7 @@
 // (Evaluation & Generalization: memorized or understood). Hebrew is the source of truth and
 // defines the type (EvaluationLabContent).
 //
-// Core idea: the model was corrected on one example (do not invent an arrival date when the
+// Core idea: the model was corrected on one example (do not invent holiday hours when the
 // source has none). Now we check whether it holds the principle when the case changes. The
 // learner moves between five test cases: a familiar case, a reworded case, a contradiction
 // from the customer, a missing source, and a different status. Each case shows the customer
@@ -25,7 +25,7 @@ export const evaluationLab: EvaluationLabContent = {
     sectionEyebrow: 'Evaluation & Generalization Lab',
     sectionTitle: 'The same principle, five test cases',
     sectionIntro:
-        'The model was corrected on one example: do not invent an arrival date when the source has none. Now we check whether it holds the principle even when the case changes. Move between five test cases and see where it holds the principle, and where it fails.',
+        'The model was corrected on one example: do not invent holiday hours when the source has none. Now we check whether it holds the principle even when the case changes. Move between five test cases and see where it holds the principle, and where it fails.',
     heading: 'Behind the evaluation',
     kicker: 'Evaluation & Generalization Lab',
     goalLabel: 'What we test here',
