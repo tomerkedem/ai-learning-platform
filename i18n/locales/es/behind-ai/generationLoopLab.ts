@@ -40,7 +40,7 @@ export const generationLoopLab = {
 
     // ── Modo B: cambia la instrucción (prompt variants) ──
     variants: {
-        intro: 'La misma tarea: el modelo escribe una respuesta a un cliente sobre un paquete retrasado. Cambia la instrucción y observa cómo entra en el contexto y da forma a toda la respuesta que se construye después. La instrucción está en el contexto en cada paso, así que sigue influyendo en la siguiente elección durante toda la construcción.',
+        intro: 'La misma tarea: el modelo te da un consejo para que la pasta te salga mejor. Cambia la instrucción y observa cómo entra en el contexto y da forma a toda la respuesta que se construye después. La instrucción está en el contexto en cada paso, así que sigue influyendo en la siguiente elección durante toda la construcción.',
         pickLabel: 'Elige una instrucción',
         promptLabel: 'La instrucción',
         buildsLabel: 'Cómo se construye la respuesta, parte a parte',
@@ -50,34 +50,34 @@ export const generationLoopLab = {
         items: {
             vague: {
                 label: 'Vaga',
-                prompt: 'Contéstale.',
-                chunks: ['Lamentamos la espera', 'lo revisaremos', 'y te avisaremos pronto'],
-                finalAnswer: 'Lamentamos la espera. Lo revisaremos y te avisaremos pronto.',
+                prompt: 'Ayúdame.',
+                chunks: ['Qué pena que no te esté saliendo bien', 'vamos a resolverlo', 'y lo intentas de nuevo la próxima vez'],
+                finalAnswer: 'Qué pena que no te esté saliendo bien. Vamos a resolverlo y lo intentas de nuevo la próxima vez.',
                 outcomeLabel: 'Genérica',
-                outcomeNote: 'La instrucción no dio dirección, así que el bucle construyó una respuesta genérica y segura que no ayuda de verdad al cliente. Sin estructura, sin detalles y sin un paso práctico.',
+                outcomeNote: 'La instrucción no dio dirección, así que el bucle construyó una respuesta genérica y segura que no te ayuda de verdad. Sin estructura, sin detalles y sin un paso práctico.',
             },
             confident: {
                 label: 'Demasiado segura',
-                prompt: 'Dile que el paquete llegará mañana.',
-                chunks: ['Tu paquete está en camino', 'llegará mañana', 'no te preocupes', 'y lamentamos el retraso'],
-                finalAnswer: 'Tu paquete está en camino y llegará mañana. No te preocupes, y lamentamos el retraso.',
+                prompt: 'Dime que esta vez me va a salir perfecta.',
+                chunks: ['Esta pasta te va a salir perfecta', 'seguro que esta vez sí', 'no te preocupes', 'y felicidades por seguir intentándolo'],
+                finalAnswer: 'Esta pasta te va a salir perfecta, seguro que esta vez sí. No te preocupes, y felicidades por seguir intentándolo.',
                 outcomeLabel: 'Certeza no fundamentada',
-                outcomeNote: 'La instrucción empujó al bucle a una apertura segura, y una vez escrita, el resto se construyó en torno a la certeza. La respuesta es fluida y convincente, pero promete una fecha que nunca se comprobó.',
-                caution: 'Ningún paso del bucle comprobó el estado del paquete. La fluidez no es verdad, y una respuesta así puede engañar al cliente.',
+                outcomeNote: 'La instrucción empujó al bucle a una apertura segura, y una vez escrita, el resto se construyó en torno a la certeza. La respuesta es fluida y convincente, pero promete un resultado que nunca se comprobó.',
+                caution: 'Ningún paso del bucle comprobó tu cocina, tu olla ni tu receta. La fluidez no es verdad, y una respuesta así puede engañarte.',
             },
             careful: {
                 label: 'Prudente',
-                prompt: 'Escribe una respuesta breve y amable, sin adivinar un estado que no se ha comprobado.',
-                chunks: ['Lamentamos el retraso', 'no podemos confirmar una fecha de llegada', 'sin comprobar el estado', 'y con gusto lo comprobamos por ti'],
-                finalAnswer: 'Lamentamos el retraso. No podemos confirmar una fecha de llegada sin comprobar el estado, y con gusto lo comprobamos por ti.',
+                prompt: 'Escribe una respuesta breve y útil, sin adivinar un resultado que no se ha comprobado.',
+                chunks: ['Lamentamos que no te esté saliendo como quieres', 'no podemos prometer un resultado perfecto', 'sin comprobar tu cocina y tu olla', 'pero con gusto te ayudamos a comprobarlo'],
+                finalAnswer: 'Lamentamos que no te esté saliendo como quieres. No podemos prometer un resultado perfecto sin comprobar tu cocina y tu olla, pero con gusto te ayudamos a comprobarlo.',
                 outcomeLabel: 'Prudente',
                 outcomeNote: 'La instrucción pidió explícitamente no adivinar, y esa indicación entró en el contexto. Así el bucle evitó una promesa infundada y construyó una respuesta útil y precisa.',
             },
             structured: {
                 label: 'Estructurada',
                 prompt: 'Escribe la respuesta en tres partes: empatía, lo que se sabe y lo que hay que comprobar.',
-                chunks: ['Empatía: lamentamos el retraso', 'Lo que se sabe: el pedido se recibió y se envió', 'Lo que hay que comprobar: el estado actual con la empresa de transporte', 'y te avisaremos en cuanto sepamos'],
-                finalAnswer: 'Lamentamos el retraso. Lo que se sabe: el pedido se recibió y se envió. Lo que hay que comprobar: el estado actual con la empresa de transporte. Te avisaremos en cuanto tengamos información.',
+                chunks: ['Empatía: lamentamos que no te esté saliendo como quieres', 'Lo que se sabe: la pasta necesita suficiente agua hirviendo y salada, y un tiempo de cocción preciso', 'Lo que hay que comprobar: cuánto tiempo exacto la herviste y a qué temperatura', 'y seguimos desde ahí en cuanto lo compruebes'],
+                finalAnswer: 'Lamentamos que no te esté saliendo como quieres. Lo que se sabe: la pasta necesita suficiente agua hirviendo y salada, y un tiempo de cocción preciso. Lo que hay que comprobar: cuánto tiempo exacto la herviste y a qué temperatura. Seguimos desde ahí en cuanto lo compruebes.',
                 outcomeLabel: 'Estructurada y estable',
                 outcomeNote: 'La instrucción fijó una estructura de tres partes, y cada parte entró en el contexto y dio forma al siguiente paso. Así el bucle construyó una respuesta estable que mantiene la estructura que pediste y separa lo que se sabe de lo que hay que comprobar.',
             },
@@ -85,65 +85,65 @@ export const generationLoopLab = {
     },
 
     scenario: {
-        prompt: 'Mi paquete no llegó. ¿Qué hago?',
+        prompt: 'Siempre intento cocinar pasta y nunca me sale bien. ¿Qué hago?',
         firstStepIntro:
             'El mismo Prompt exacto, pero hay varias formas razonables de abrir la respuesta. Elige la primera parte y observa cómo marca todo lo que se construye después.',
         branches: {
             'self-service': {
                 label: 'Autoverificación',
-                opener: 'Revisa el número de seguimiento',
+                opener: 'Revisa cuánto tiempo la herviste',
                 openerChanged:
                     'El inicio elegido marca en el contexto una dirección de autoverificación. A partir de aquí, las continuaciones que reciben más peso tratan de qué hacer con el resultado de esa comprobación.',
-                summary: 'La respuesta se construye en torno a una autoverificación del estado, y solo acude a soporte si no hay novedad.',
+                summary: 'La respuesta se construye en torno a una autoverificación de la cocción, y solo pasa a pedir ayuda si eso no lo soluciona.',
                 steps: [
                     {
                         changed:
-                            'El contexto ya incluye revisar el número de seguimiento. Por eso la continuación natural hace que el siguiente paso dependa del resultado de la comprobación, en lugar de saltar directamente a la acción.',
-                        candidates: ['Si no hay una novedad clara', 'Si el estado muestra entregado', 'Si el paquete sigue en camino'],
+                            'El contexto ya incluye revisar el tiempo de cocción. Por eso la continuación natural hace que el siguiente paso dependa del resultado de la comprobación, en lugar de saltar directamente a la acción.',
+                        candidates: ['Si todavía no te está saliendo bien', 'Si te salió perfecta', 'Si es difícil saberlo con certeza'],
                     },
                     {
                         changed:
-                            'Tras «Si no hay una novedad clara», el contexto apunta a un callejón sin salida en la autoverificación. Ahora contactar con soporte se vuelve la parte más probable.',
-                        candidates: ['contacta con atención al cliente', 'espera un día más y vuelve a comprobar', 'revisa el buzón y la oficina local'],
+                            'Tras «Si todavía no te está saliendo bien», el contexto apunta a un callejón sin salida en la autoverificación. Ahora pedir ayuda se vuelve la parte más probable.',
+                        candidates: ['pide ayuda a alguien con experiencia', 'inténtalo de nuevo mañana por tu cuenta', 'busca una receta completamente distinta'],
                     },
                     {
                         changed:
-                            'Una vez que el contexto trata de contactar con soporte, la continuación probable es equipar la solicitud con algo que la identifique. El número de pedido pasa al primer lugar.',
-                        candidates: ['adjunta el número de pedido', 'indica la fecha del pedido', 'adjunta una captura del pedido'],
+                            'Una vez que el contexto trata de pedir ayuda, la continuación probable es equipar la petición con algo que identifique qué salió mal. Lo que falló exactamente pasa al primer lugar.',
+                        candidates: ['indica exactamente qué salió mal', 'indica cuánto tiempo la cociste', 'adjunta una foto del resultado'],
                     },
                     {
                         changed:
-                            'Todo el contexto trata de averiguar dónde está el paquete. Por eso el cierre probable es pedir una comprobación de estado, no pedir una compensación o un nuevo envío.',
-                        candidates: ['y pide una comprobación de estado', 'y pide un reembolso', 'y pide que envíen un paquete nuevo'],
+                            'Todo el contexto trata de entender qué salió mal en la cocción. Por eso el cierre probable es pedir consejos concretos, no pedir una receta totalmente nueva.',
+                        candidates: ['y pide consejos concretos para arreglarlo', 'y pide una receta completamente nueva', 'y pide que te la preparen ellos'],
                     },
                 ],
             },
             support: {
-                label: 'Contacto con soporte',
-                opener: 'Contacta con atención al cliente',
+                label: 'Pedir ayuda',
+                opener: 'Pide ayuda a alguien con experiencia',
                 openerChanged:
-                    'El inicio elegido marca una dirección de llegar a una persona en soporte. A partir de aquí, las continuaciones probables tratan de gestionar ese contacto, no de una autoverificación.',
-                summary: 'La respuesta se construye en torno a gestionar un contacto con atención al cliente, hasta abrir una reclamación y guardar un número de caso.',
+                    'El inicio elegido marca una dirección de pedir ayuda a otra persona. A partir de aquí, las continuaciones probables tratan de gestionar esa petición, no de una autoverificación.',
+                summary: 'La respuesta se construye en torno a obtener ayuda de alguien con experiencia, hasta recibir una explicación ordenada y guardarla para la próxima vez.',
                 steps: [
                     {
                         changed:
-                            'El contexto ya incluye contactar con soporte. El paso probable es darle al agente lo que permite gestionarlo, es decir, los datos del pedido.',
-                        candidates: ['Da los datos de tu pedido', 'Llama a la línea telefónica', 'Escribe un correo detallado'],
+                            'El contexto ya incluye pedir ayuda a alguien. El paso probable es darle lo que le permite ayudar, es decir, describir el plato.',
+                        candidates: ['Describe qué pasta intentas preparar', 'Llama a alguien de inmediato', 'Escribe un mensaje largo y detallado'],
                     },
                     {
                         changed:
-                            'Tras dar los datos del pedido, el contexto está listo para describir el problema en sí. Por eso la continuación probable es indicar con claridad que el paquete no llegó.',
-                        candidates: ['indica que el paquete no llegó', 'pide que agilicen la gestión', 'pregunta por la política de devoluciones'],
+                            'Tras describir el plato, el contexto está listo para describir el problema en sí. Por eso la continuación probable es indicar con claridad que siempre sale mal.',
+                        candidates: ['indica que siempre te sale mal', 'pide que se dé prisa y explique rápido', 'pregunta si deberías rendirte con la pasta'],
                     },
                     {
                         changed:
-                            'El contexto describe un problema reportado a soporte. El siguiente paso probable es una escalada ordenada, es decir, pedir que abran una reclamación con la empresa de mensajería.',
-                        candidates: ['pide que abran una reclamación con la mensajería', 'pide hablar con un responsable', 'pide una compensación inmediata'],
+                            'El contexto describe un problema compartido con alguien con experiencia. El siguiente paso probable es una petición ordenada de orientación, es decir, pedir repasar el proceso juntos paso a paso.',
+                        candidates: ['pide repasar el proceso juntos paso a paso', 'pide hablar con un chef profesional', 'pide que te lo preparen ellos'],
                     },
                     {
                         changed:
-                            'Una vez abierta la reclamación, el contexto apunta a un proceso que hay que seguir. Por eso el cierre probable es guardar el número de caso, no terminar sin registro.',
-                        candidates: ['y guarda el número de caso para el seguimiento', 'y termina el contacto', 'y pide una confirmación por escrito'],
+                            'Una vez recibida la explicación, el contexto apunta a algo que vale la pena guardar para la próxima vez. Por eso el cierre probable es guardar los pasos, no terminar sin anotarlos.',
+                        candidates: ['y guarda los pasos para la próxima vez', 'y termina la conversación', 'y pide que te lo escriban'],
                     },
                 ],
             },

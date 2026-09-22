@@ -25,19 +25,19 @@ export const generationLoopQuiz = {
                 'The answer is not born all at once and is not pulled ready-made. The model generates a small part, joins it to the context, and then moves to the next part. It is a loop that repeats until the answer is complete.',
         },
         2: {
-            question: "The model just wrote the part 'Check the tracking number'. What is true about this part now?",
+            question: "The model just wrote the part 'Check how long you boiled it'. What is true about this part now?",
             options: [
                 'It is set aside and does not affect what gets written after it',
                 'It became part of the context and affects which continuations get high weight in the next step',
-                'It forced the model to check the package status in the real world',
+                'It forced the model to check the cooking time in the real world',
                 'It resets the context and makes the model start over',
             ],
             explanation:
-                "Every part that is written loops back in and joins the context. The updated context is what shapes the next choice, so after 'Check the tracking number' the plausible continuations are about what to do with the result of the check.",
+                "Every part that is written loops back in and joins the context. The updated context is what shapes the next choice, so after 'Check how long you boiled it' the plausible continuations are about what to do with the result of the check.",
         },
         3: {
             question:
-                "The exact same prompt, 'My package hasn't arrived. What should I do?', is built once from the opener 'Check the tracking number' and once from 'Contact customer service'. Why do the answers come out completely different?",
+                "The exact same prompt, 'I keep trying to cook pasta, and it never turns out right. What should I do?', is built once from the opener 'Check how long you boiled it' and once from 'Ask someone experienced for help'. Why do the answers come out completely different?",
             options: [
                 'Because the model picks a random answer each time',
                 'Because the first part chosen changed the context, so the whole continuation was built differently',
@@ -49,7 +49,7 @@ export const generationLoopQuiz = {
         },
         4: {
             question:
-                "The model built a smooth, confident answer claiming a certain package was delivered. In reality it was not. Where is the flaw in the reasoning 'if it built the answer step by step, then surely it checked it was right'?",
+                "The model built a smooth, confident answer claiming a certain dish turned out perfectly. In reality it did not. Where is the flaw in the reasoning 'if it built the answer step by step, then surely it checked it was right'?",
             options: [
                 'There is no flaw, step-by-step building always checks the facts',
                 'Step-by-step building assembles a continuation that fits the context, it does not check the world. Verification needs a tool or an external source',
@@ -57,11 +57,11 @@ export const generationLoopQuiz = {
                 'The flaw is that the model built the answer too fast',
             ],
             explanation:
-                'The loop produces a coherent continuation based on the context and the patterns it learned, but coherence is not verification. Step-by-step building does not turn to any external source, so to know whether the package was really delivered you need a tracking tool or a verified source.',
+                'The loop produces a coherent continuation based on the context and the patterns it learned, but coherence is not verification. Step-by-step building does not turn to any external source, so to know whether the dish really turned out well you need to check it yourself, not just trust a fluent answer.',
         },
         5: {
             question:
-                "You asked for a reply 'in three parts: empathy, what is known, and what needs checking', instead of just 'answer him'. Why does the structured instruction give a more stable answer?",
+                "You asked for a reply 'in three parts: empathy, what is known, and what needs checking', instead of just 'just help me'. Why does the structured instruction give a more stable answer?",
             options: [
                 'Because a structured instruction makes the model check the facts against the world',
                 'Because each part of the instruction enters the context and constrains the next steps, so the loop is built along the structure you asked for',

@@ -166,9 +166,9 @@ export const generationLoop = {
             'If you want a stable, useful answer, it helps to steer the generation loop before it even starts. The opening, the structure, and the wording of your request shape everything that gets built after them. For an important task, ask explicitly for:',
         uses: [
             'A clear structure: "Write the reply in three parts: empathy, what is known, and what needs checking."',
-            'Cautious wording: "Do not guess an arrival time that was not checked. If the tracking number is missing, ask for it."',
+            'Cautious wording: "Do not promise a result that was not checked. If an important detail is missing, ask for it."',
             'A split between known and assumed: ask it to mark what is fact and what is an assumption.',
-            'A source check when status matters: "If the status cannot be confirmed, say so instead of guessing."',
+            'A source check when the outcome matters: "If you cannot guarantee a result, say so instead of guessing."',
         ],
         caveat:
             'Even so, no wording turns fluency into truth. A good prompt does not only pick a topic, it shapes how the answer will be built. But to verify against the world you still need an external source or a tool.',
@@ -176,11 +176,11 @@ export const generationLoop = {
 
     lock: {
         title: 'Check Your Understanding',
-        question: 'The model just wrote the part "Contact customer service". What changes now, heading into the next step?',
+        question: 'The model just wrote the part "Ask someone experienced for help". What changes now, heading into the next step?',
         options: [
             'Nothing changes, the model continues from the same place',
             'This part joins the context and changes the options for the next step',
-            'The model just contacted customer service for real',
+            'The model just asked someone for help for real',
             'The model starts over from the original question only',
         ],
         success:

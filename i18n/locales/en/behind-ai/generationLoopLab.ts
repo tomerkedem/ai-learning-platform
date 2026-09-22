@@ -41,7 +41,7 @@ export const generationLoopLab = {
 
     // ── Mode B: change the instruction (prompt variants) ──
     variants: {
-        intro: 'Same task: the model writes a reply to a customer about a delayed package. Change the instruction, and watch how it enters the context and shapes the whole answer built after it. The instruction sits in the context at every step, so it keeps influencing the next choice throughout the build.',
+        intro: 'Same task: the model gives you a tip to help your pasta turn out better. Change the instruction, and watch how it enters the context and shapes the whole answer built after it. The instruction sits in the context at every step, so it keeps influencing the next choice throughout the build.',
         pickLabel: 'Pick an instruction',
         promptLabel: 'The instruction',
         buildsLabel: 'How the answer is built, part by part',
@@ -51,34 +51,34 @@ export const generationLoopLab = {
         items: {
             vague: {
                 label: 'Vague',
-                prompt: 'Just answer him.',
-                chunks: ['Sorry for the wait', 'we will look into it', 'and update you soon'],
-                finalAnswer: 'Sorry for the wait. We will look into it and update you soon.',
+                prompt: 'Just help me.',
+                chunks: ['Sorry it is not working out', "let's figure it out", 'and try again next time'],
+                finalAnswer: "Sorry it is not working out. Let's figure it out and try again next time.",
                 outcomeLabel: 'Generic',
-                outcomeNote: 'The instruction gave no direction, so the loop built a generic, safe answer that does not really help the customer. No structure, no details, and no practical step.',
+                outcomeNote: 'The instruction gave no direction, so the loop built a generic, safe answer that does not really help you. No structure, no details, and no practical step.',
             },
             confident: {
                 label: 'Too confident',
-                prompt: 'Tell him the package will arrive tomorrow.',
-                chunks: ['Your package is on the way', 'it will arrive tomorrow', 'no need to worry', 'and sorry for the delay'],
-                finalAnswer: 'Your package is on the way and will arrive tomorrow. No need to worry, and sorry for the delay.',
+                prompt: "Tell me it'll turn out perfect this time.",
+                chunks: ['This pasta is going to turn out perfect', 'this time for sure', 'no need to worry', 'and great job sticking with it'],
+                finalAnswer: 'This pasta is going to turn out perfect this time for sure. No need to worry, and great job sticking with it.',
                 outcomeLabel: 'Unsupported certainty',
-                outcomeNote: 'The instruction pushed the loop into a confident opening, and once that was written, the rest was built around certainty. The answer is fluent and convincing, but it promises a time that was never checked.',
-                caution: 'No step in the loop checked the package status. Fluency is not truth, and an answer like this can mislead the customer.',
+                outcomeNote: 'The instruction pushed the loop into a confident opening, and once that was written, the rest was built around certainty. The answer is fluent and convincing, but it promises a result that was never checked.',
+                caution: 'No step in the loop actually checked your stove, your pot, or your recipe. Fluency is not truth, and an answer like this can mislead you.',
             },
             careful: {
                 label: 'Careful',
-                prompt: 'Write a short, helpful reply, without guessing a status that was not checked.',
-                chunks: ['Sorry for the delay', 'we cannot confirm an arrival time', 'without checking the status', 'and we would be glad to check for you'],
-                finalAnswer: 'Sorry for the delay. We cannot confirm an arrival time without checking the status, and we would be glad to check for you.',
+                prompt: 'Write a short, helpful reply, without guessing a result that was not checked.',
+                chunks: ['Sorry it is not turning out the way you want', 'we cannot promise a perfect result', 'without checking your stove and pot', 'but we would be glad to help you check'],
+                finalAnswer: 'Sorry it is not turning out the way you want. We cannot promise a perfect result without checking your stove and pot, but we would be glad to help you check.',
                 outcomeLabel: 'Careful',
                 outcomeNote: 'The instruction explicitly asked not to guess, and that guidance entered the context. So the loop avoided an unsupported promise and built a helpful, accurate reply.',
             },
             structured: {
                 label: 'Structured',
                 prompt: 'Write the reply in three parts: empathy, what is known, and what needs checking.',
-                chunks: ['Empathy: sorry for the delay', 'What is known: the order was received and shipped', 'What to check: the current status with the carrier', 'and we will update you as soon as we know'],
-                finalAnswer: 'Sorry for the delay. What is known: the order was received and shipped. What to check: the current status with the carrier. We will update you as soon as we have information.',
+                chunks: ['Empathy: sorry it is not turning out the way you want', 'What is known: pasta needs enough salted, boiling water and precise timing', 'What to check: exactly how long you boiled it and at what heat', 'and we can go from there once you check'],
+                finalAnswer: 'Sorry it is not turning out the way you want. What is known: pasta needs enough salted, boiling water and precise timing. What to check: exactly how long you boiled it and at what heat. We can go from there once you check.',
                 outcomeLabel: 'Structured and stable',
                 outcomeNote: 'The instruction set a three-part structure, and each part entered the context and shaped the next step. So the loop built a stable reply that keeps the structure you asked for and separates what is known from what needs checking.',
             },
@@ -86,65 +86,65 @@ export const generationLoopLab = {
     },
 
     scenario: {
-        prompt: "My package hasn't arrived. What should I do?",
+        prompt: "I keep trying to cook pasta, and it never turns out right. What should I do?",
         firstStepIntro:
             'The exact same prompt, but there are a few plausible ways to open the answer. Pick the first part, and watch how it sets everything that gets built after it.',
         branches: {
             'self-service': {
                 label: 'Self-check',
-                opener: 'Check the tracking number',
+                opener: 'Check how long you boiled it',
                 openerChanged:
                     'The chosen opener sets a self-check direction in the context. From here, the continuations that get high weight are about what to do with the result of that check.',
-                summary: 'The answer is built around a self-check of the status, and it turns to support only if there is no update.',
+                summary: 'The answer is built around a self-check of the cooking, and it turns to asking for help only if that does not fix it.',
                 steps: [
                     {
                         changed:
-                            'The context already includes checking the tracking number. So the natural continuation makes the next step depend on the result of the check, instead of jumping straight to action.',
-                        candidates: ['If there is no clear update', 'If the status shows delivered', 'If the package is still in transit'],
+                            'The context already includes checking the cooking time. So the natural continuation makes the next step depend on the result of the check, instead of jumping straight to action.',
+                        candidates: ["If it's still not turning out right", "If it turned out perfect", "If it's hard to tell"],
                     },
                     {
                         changed:
-                            'After "If there is no clear update", the context points to a dead end in the self-check. Now contacting support becomes the most plausible part.',
-                        candidates: ['contact customer service', 'wait another day and check again', 'check your mailbox and the local branch'],
+                            'After "If it\'s still not turning out right", the context points to a dead end in the self-check. Now asking for help becomes the most plausible part.',
+                        candidates: ['ask someone experienced for help', 'try again tomorrow on your own', 'look for a completely different recipe'],
                     },
                     {
                         changed:
-                            'Once the context is about contacting support, the plausible continuation is to equip the request with something that identifies it. The order number rises to the top.',
-                        candidates: ['attach the order number', 'mention the order date', 'attach a screenshot of the order'],
+                            'Once the context is about asking for help, the plausible continuation is to equip the request with something that identifies what went wrong. The exact problem rises to the top.',
+                        candidates: ['mention exactly what went wrong', 'mention how long you cooked it', 'attach a photo of the result'],
                     },
                     {
                         changed:
-                            'The whole context is about finding where the package is. So the plausible ending is a request for a status check, not a request for compensation or a new shipment.',
-                        candidates: ['and ask for a status check', 'and ask for a refund', 'and ask to send a new package'],
+                            'The whole context is about understanding what went wrong in the cooking. So the plausible ending is a request for focused tips, not a request for a whole new recipe.',
+                        candidates: ['and ask for focused tips to fix it', 'and ask for a completely new recipe', 'and ask them to just cook it for you'],
                     },
                 ],
             },
             support: {
-                label: 'Contacting support',
-                opener: 'Contact customer service',
+                label: 'Asking for help',
+                opener: 'Ask someone experienced for help',
                 openerChanged:
-                    'The chosen opener sets a direction of reaching a human at support. From here, the plausible continuations are about managing that contact, not a self-check.',
-                summary: 'The answer is built around managing a contact with customer service, up to opening an inquiry and saving a case number.',
+                    'The chosen opener sets a direction of reaching someone for help. From here, the plausible continuations are about managing that request, not a self-check.',
+                summary: 'The answer is built around getting help from someone experienced, up to a full walkthrough and saving it for next time.',
                 steps: [
                     {
                         changed:
-                            'The context already includes contacting support. The plausible step is to give the agent what makes handling possible, that is, the order details.',
-                        candidates: ['Give them your order details', 'Call the phone line', 'Write a detailed email'],
+                            'The context already includes asking for help. The plausible step is to give them what makes helping possible, that is, describing the dish.',
+                        candidates: ["Describe what pasta you're trying to make", 'Call someone right away', 'Write a long, detailed message'],
                     },
                     {
                         changed:
-                            'After the order details are given, the context is ready to describe the problem itself. So the plausible continuation is to state clearly that the package never arrived.',
-                        candidates: ['say the package never arrived', 'ask to speed up handling', 'ask about the return policy'],
+                            'After the dish is described, the context is ready to describe the problem itself. So the plausible continuation is to state clearly that it always turns out wrong.',
+                        candidates: ['mention that it always turns out wrong', 'ask them to hurry and explain fast', 'ask if you should just give up on pasta'],
                     },
                     {
                         changed:
-                            'The context describes a problem reported to support. The next plausible step is an orderly escalation, that is, asking to open an inquiry with the courier.',
-                        candidates: ['ask to open an inquiry with the courier', 'ask to speak with a manager', 'ask for immediate compensation'],
+                            'The context describes a problem shared with someone experienced. The next plausible step is an orderly request for guidance, that is, asking to go through it together step by step.',
+                        candidates: ['ask to go through it together step by step', 'ask to speak with a professional chef', 'ask them to just make it for you'],
                     },
                     {
                         changed:
-                            'Once an inquiry is open, the context points to a process that needs follow-up. So the plausible ending is to save the case number, not to end without a record.',
-                        candidates: ['and save the case number for tracking', 'and end the contact', 'and ask for written confirmation'],
+                            'Once a walkthrough is given, the context points to something worth keeping for next time. So the plausible ending is to save the steps, not to end without notes.',
+                        candidates: ['and save the steps for next time', 'and end the conversation', 'and ask them to write it down for you'],
                     },
                 ],
             },

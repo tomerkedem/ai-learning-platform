@@ -23,19 +23,19 @@ export const generationLoopQuiz = {
                 'La respuesta no nace de golpe ni se saca ya hecha. El modelo genera una parte pequeña, la suma al contexto y luego pasa a la siguiente parte. Es un bucle que se repite hasta que la respuesta está completa.',
         },
         2: {
-            question: 'El modelo acaba de escribir la parte «Revisa el número de seguimiento». ¿Qué es cierto sobre esta parte ahora?',
+            question: 'El modelo acaba de escribir la parte «Revisa cuánto tiempo la herviste». ¿Qué es cierto sobre esta parte ahora?',
             options: [
                 'Queda apartada y no influye en lo que se escriba después',
                 'Pasó a formar parte del contexto e influye en qué continuaciones reciben más peso en el siguiente paso',
-                'Obligó al modelo a comprobar el estado del paquete en la realidad',
+                'Obligó al modelo a comprobar el tiempo de cocción en la realidad',
                 'Reinicia el contexto y hace que el modelo empiece de nuevo',
             ],
             explanation:
-                'Cada parte que se escribe vuelve hacia dentro y se suma al contexto. El contexto actualizado es lo que moldea la siguiente elección, por eso tras «Revisa el número de seguimiento» las continuaciones probables tratan de qué hacer con el resultado de la comprobación.',
+                'Cada parte que se escribe vuelve hacia dentro y se suma al contexto. El contexto actualizado es lo que moldea la siguiente elección, por eso tras «Revisa cuánto tiempo la herviste» las continuaciones probables tratan de qué hacer con el resultado de la comprobación.',
         },
         3: {
             question:
-                'El mismo Prompt exacto, «Mi paquete no llegó. ¿Qué hago?», se construye una vez desde el inicio «Revisa el número de seguimiento» y otra vez desde «Contacta con atención al cliente». ¿Por qué salen respuestas completamente distintas?',
+                'El mismo Prompt exacto, «Siempre intento cocinar pasta y nunca me sale bien. ¿Qué hago?», se construye una vez desde el inicio «Revisa cuánto tiempo la herviste» y otra vez desde «Pide ayuda a alguien con experiencia». ¿Por qué salen respuestas completamente distintas?',
             options: [
                 'Porque el modelo elige una respuesta al azar cada vez',
                 'Porque la primera parte elegida cambió el contexto, así que toda la continuación se construyó de otra manera',
@@ -47,7 +47,7 @@ export const generationLoopQuiz = {
         },
         4: {
             question:
-                'El modelo construyó una respuesta fluida y segura que afirmaba que cierto paquete fue entregado. En realidad no lo fue. ¿Dónde está el fallo en el razonamiento «si la construyó paso a paso, seguro que comprobó que era correcta»?',
+                'El modelo construyó una respuesta fluida y segura que afirmaba que cierto plato había salido perfecto. En realidad no fue así. ¿Dónde está el fallo en el razonamiento «si la construyó paso a paso, seguro que comprobó que era correcta»?',
             options: [
                 'No hay fallo, construir paso a paso siempre comprueba los hechos',
                 'Construir paso a paso arma una continuación que encaja con el contexto, no comprueba el mundo. La verificación necesita una herramienta o una fuente externa',
@@ -55,11 +55,11 @@ export const generationLoopQuiz = {
                 'El fallo es que el modelo construyó la respuesta demasiado rápido',
             ],
             explanation:
-                'El bucle produce una continuación coherente a partir del contexto y los patrones aprendidos, pero la coherencia no es verificación. Construir paso a paso no acude a ninguna fuente externa, así que para saber si el paquete se entregó de verdad hace falta una herramienta de seguimiento o una fuente verificada.',
+                'El bucle produce una continuación coherente a partir del contexto y los patrones aprendidos, pero la coherencia no es verificación. Construir paso a paso no acude a ninguna fuente externa, así que para saber si el plato realmente salió bien hay que comprobarlo tú mismo, no solo confiar en una respuesta fluida.',
         },
         5: {
             question:
-                'Pediste una respuesta «en tres partes: empatía, lo que se sabe y lo que hay que comprobar», en lugar de solo «contéstale». ¿Por qué la instrucción estructurada da una respuesta más estable?',
+                'Pediste una respuesta «en tres partes: empatía, lo que se sabe y lo que hay que comprobar», en lugar de solo «ayúdame». ¿Por qué la instrucción estructurada da una respuesta más estable?',
             options: [
                 'Porque una instrucción estructurada hace que el modelo compruebe los hechos contra el mundo',
                 'Porque cada parte de la instrucción entra en el contexto y limita los pasos siguientes, así el bucle se construye siguiendo la estructura que pediste',

@@ -164,9 +164,9 @@ export const generationLoop = {
             'Si quieres una respuesta estable y útil, ayuda orientar el bucle de generación antes incluso de que empiece. La apertura, la estructura y la redacción de tu petición moldean todo lo que se construye después. Para una tarea importante, pide de forma explícita:',
         uses: [
             'Una estructura clara: «Escribe la respuesta en tres partes: empatía, lo que se sabe y lo que hay que comprobar.»',
-            'Una redacción prudente: «No adivines una fecha de llegada que no se ha comprobado. Si falta el número de seguimiento, pídelo.»',
+            'Una redacción prudente: «No prometas un resultado que no se ha comprobado. Si falta un dato importante, pídelo.»',
             'Una separación entre lo conocido y lo supuesto: pídele que marque qué es un hecho y qué es una suposición.',
-            'Una comprobación de fuente cuando el estado importa: «Si no se puede confirmar el estado, dilo en lugar de adivinar.»',
+            'Una comprobación de fuente cuando el resultado importa: «Si no puedes garantizar un resultado, dilo en lugar de adivinar.»',
         ],
         caveat:
             'Aun así, ninguna redacción convierte la fluidez en verdad. Un buen Prompt no solo elige un tema, moldea cómo se construirá la respuesta. Pero para verificar contra el mundo sigues necesitando una fuente externa o una herramienta.',
@@ -174,11 +174,11 @@ export const generationLoop = {
 
     lock: {
         title: 'Comprueba tu comprensión',
-        question: 'El modelo acaba de escribir la parte «Contacta con atención al cliente». ¿Qué cambia ahora, de cara al siguiente paso?',
+        question: 'El modelo acaba de escribir la parte «Pide ayuda a alguien con experiencia». ¿Qué cambia ahora, de cara al siguiente paso?',
         options: [
             'No cambia nada, el modelo continúa desde el mismo lugar',
             'Esta parte se suma al contexto y cambia las opciones para el siguiente paso',
-            'El modelo acaba de contactar con atención al cliente de verdad',
+            'El modelo acaba de pedirle ayuda a alguien de verdad',
             'El modelo empieza de nuevo solo desde la pregunta original',
         ],
         success:
