@@ -40,7 +40,7 @@ export const mistakeLearning = {
         titleLead: 'El mismo error vuelve una y otra vez.',
         titleHighlight: '¿Cómo se convierte en una mejora?',
         lede: 'En los capítulos anteriores vimos que una respuesta fluida puede equivocarse, que una fuente reduce las suposiciones, y que la autocomprobación detecta afirmaciones sin respaldo. Ahora hacemos otra pregunta: cuando el mismo error se repite una y otra vez, ¿cómo lo convierte un equipo en una mejora real, y cómo se sabe que la mejora funcionó de verdad?',
-        hook: 'El modelo inventa una fecha de entrega que no tiene fuente, una y otra vez. Una corrección ayuda ahora, pero ¿qué tiene que pasar para que ese error se detenga de verdad?',
+        hook: 'El modelo inventa un horario de feriado que no tiene fuente, una y otra vez. Una corrección ayuda ahora, pero ¿qué tiene que pasar para que ese error se detenga de verdad?',
         chipTry: 'Muévete entre los cuatro niveles de mejora',
         chipCompare: 'Compara qué mejoró frente a qué no',
     },
@@ -91,7 +91,7 @@ export const mistakeLearning = {
     // ── Adivinanza de apertura (OpeningGuess) ──
     guess: {
         eyebrow: 'Adivina rápido · un error que se repite',
-        title: 'El modelo inventa una fecha de entrega que no tiene fuente, y tú lo corriges. ¿Qué hace de verdad esa corrección?',
+        title: 'El modelo inventa un horario de feriado que no tiene fuente, y tú lo corriges. ¿Qué hace de verdad esa corrección?',
         subtitle: 'Elige la interpretación más segura. Aquí no hay nota, hay una dirección que describe lo que pasó de verdad.',
         invite: 'Antes de abrir esto, intenta adivinar qué hace exactamente una sola corrección así.',
         correctTitle: '¡Exacto!',
@@ -164,7 +164,7 @@ export const mistakeLearning = {
     // ── Fija la comprensión ──
     lock: {
         title: 'Comprueba tu comprensión',
-        question: 'El mismo error ("El paquete llegará mañana" sin fuente) se repite con muchos usuarios. ¿Qué es lo correcto para que mejore de verdad?',
+        question: 'El mismo error ("La biblioteca abre de 10:00 a 14:00 en el feriado" sin fuente) se repite con muchos usuarios. ¿Qué es lo correcto para que mejore de verdad?',
         options: [
             'La corrección de un solo usuario ya cambió el modelo para todos los usuarios.',
             'Recoger el error como ejemplo, revisar, corregir en el sistema o en el entrenamiento, y medir con una evaluación antes de publicar.',
@@ -181,10 +181,10 @@ export const mistakeLearning = {
         lead:
             'Una buena corrección no es solo "es incorrecto". Una corrección útil le dice al modelo exactamente qué cambiar, para que pueda corregir la respuesta ahora según el contexto. En lugar de "es incorrecto", apunta así:',
         uses: [
-            'Di qué está mal: "No es correcto. No hay una fecha de entrega confirmada en la fuente."',
-            'Señala la fuente: "La fuente dice que el paquete está retrasado, pero no indica una fecha."',
-            'Pide el cambio: "Corrige la respuesta para que se apoye solo en la fuente, y quita la fecha de entrega inventada."',
-            'Fija una regla para el resto de la conversación: "A partir de ahora, no añadas una fecha de entrega que no aparezca en la fuente."',
+            'Di qué está mal: "No es correcto. El horario de feriado no está confirmado en la fuente."',
+            'Señala la fuente: "La fuente da el horario regular, pero no indica un horario de feriado."',
+            'Pide el cambio: "Corrige la respuesta para que se apoye solo en la fuente, y quita el horario de feriado inventado."',
+            'Fija una regla para el resto de la conversación: "A partir de ahora, no añadas un horario de feriado que no aparezca en la fuente."',
             'Para equipos que construyen sistemas: un error que se repite debe convertirse en un caso de prueba, en una mejora de la instrucción, en una corrección de la fuente o la herramienta, y en una métrica de la evaluación.',
         ],
         caveat:

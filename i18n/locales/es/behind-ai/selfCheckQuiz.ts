@@ -45,15 +45,15 @@ export const selfCheckQuiz = {
                 'Una fuente reduce las suposiciones, pero la respuesta todavía la redacta el modelo y puede añadir un detalle que no aparece en la fuente. La autocomprobación compara el borrador con la fuente y detecta justamente esa desviación.',
         },
         3: {
-            question: 'La fuente dice: estado retrasado, entrega estimada no disponible. El borrador: "El paquete está retrasado y llegará mañana." ¿Qué afirmación debe señalar la comprobación?',
+            question: 'La fuente dice: horario regular de 09:00 a 18:00, horario de feriado no disponible. El borrador: "La biblioteca abre de 09:00 a 18:00 en días regulares, y de 10:00 a 14:00 en el feriado." ¿Qué afirmación debe señalar la comprobación?',
             options: [
-                '"El paquete está retrasado", porque aparece en la fuente',
-                '"Llegará mañana", porque la fuente no da una fecha de entrega',
+                '"Abre de 09:00 a 18:00 en días regulares", porque aparece en la fuente',
+                '"Abre de 10:00 a 14:00 en el feriado", porque la fuente no da un horario de feriado',
                 'Toda la respuesta, porque la IA nunca debería responder',
                 'Ninguna afirmación, porque la respuesta suena segura',
             ],
             explanation:
-                '"Retrasado" tiene respaldo en la fuente, así que se mantiene. "Llegará mañana" es una fecha que la fuente marca como no disponible, así que es una afirmación sin respaldo que hay que quitar o suavizar. La autocomprobación separa una afirmación con respaldo de una inventada.',
+                '"De 09:00 a 18:00" tiene respaldo en la fuente, así que se mantiene. "De 10:00 a 14:00" es un horario que la fuente marca como no disponible, así que es una afirmación sin respaldo que hay que quitar o suavizar. La autocomprobación separa una afirmación con respaldo de una inventada.',
         },
         4: {
             question: '¿Qué no puede garantizar la autocomprobación?',

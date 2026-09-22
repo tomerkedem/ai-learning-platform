@@ -45,7 +45,7 @@ export const mistakeLearningQuiz = {
                 'Using a correction inside a conversation happens in the context. Training or a permanent change to the model is a completely different process, separate and slow, that does not happen on its own from a single message.',
         },
         3: {
-            question: 'A team notices the model keeps inventing an arrival date with no source. How can it improve the system without changing the base model?',
+            question: 'A team notices the model keeps inventing holiday hours with no source. How can it improve the system without changing the base model?',
             options: [
                 'Wait for the model to fix itself on its own',
                 'Change the prompt, improve the source, add a rule, and add a check',
@@ -70,7 +70,7 @@ export const mistakeLearningQuiz = {
             question: 'You want the model to fix the answer in the most helpful way. Which correction is better?',
             options: [
                 '"Not right."',
-                '"Not right. The source says the package is delayed, but does not state an arrival date. Fix it so it relies only on the source."',
+                '"Not right. The source gives regular hours, but does not state holiday hours. Fix it so it relies only on the source."',
                 '"Write a nicer answer."',
                 '"Delete everything and start over."',
             ],

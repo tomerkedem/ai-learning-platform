@@ -45,15 +45,15 @@ export const selfCheckQuiz = {
                 'A source reduces guessing, but the answer is still written by the model and can add a detail that does not appear in the source. A self-check compares the draft to the source and catches exactly that drift.',
         },
         3: {
-            question: 'The source says: status delayed, estimated delivery not available. The draft: "The package is delayed and will arrive tomorrow." Which claim should the check flag?',
+            question: 'The source says: regular hours 09:00-18:00, holiday hours not available. The draft: "The library is open from 09:00 to 18:00 on regular days, and from 10:00 to 14:00 on the holiday." Which claim should the check flag?',
             options: [
-                '"The package is delayed", because it appears in the source',
-                '"Will arrive tomorrow", because the source gives no arrival date',
+                '"Open from 09:00 to 18:00 on regular days", because it appears in the source',
+                '"Open from 10:00 to 14:00 on the holiday", because the source gives no holiday hours',
                 'The whole answer, because AI should never answer',
                 'No claim, because the answer sounds confident',
             ],
             explanation:
-                '"Delayed" is supported by the source, so it stays. "Will arrive tomorrow" is a date the source lists as not available, so it is an unsupported claim that should be removed or softened. A self-check separates a supported claim from an invented one.',
+                '"09:00 to 18:00" is supported by the source, so it stays. "10:00 to 14:00" is a time the source lists as not available, so it is an unsupported claim that should be removed or softened. A self-check separates a supported claim from an invented one.',
         },
         4: {
             question: 'What can a self-check not guarantee?',

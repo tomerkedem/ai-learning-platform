@@ -25,7 +25,7 @@ export const selfCheck = {
         titleLead: 'Una buena respuesta',
         titleHighlight: 'se comprueba a sí misma',
         lede: 'En el capítulo anterior conectamos la respuesta a una fuente. Pero incluso cuando hay una fuente, el modelo sigue redactando la respuesta por su cuenta, y puede decir más de lo que la fuente dice. La autocomprobación es un paso antes del final: se toma el borrador y se compara con la pregunta y con la fuente, antes de que salga al cliente.',
-        hook: 'El modelo escribió "El paquete está retrasado y llegará mañana". ¿Qué debe pasar antes de enviarlo?',
+        hook: 'El modelo escribió "La biblioteca abre de 10:00 a 14:00 en el feriado". ¿Qué debe pasar antes de que esta respuesta salga?',
         chipTry: 'Muévete entre los borradores',
         chipCompare: 'Compara una afirmación con respaldo y una inventada',
     },
@@ -86,8 +86,8 @@ export const selfCheck = {
 
     guess: {
         eyebrow: 'Adivina rápido · antes de que la respuesta salga',
-        title: 'El modelo redactó: "El paquete está retrasado y llegará mañana". ¿Qué debe pasar ahora?',
-        subtitle: 'En la fuente solo pone: estado retrasado, entrega estimada no disponible. Elige el paso correcto. Aquí no hay nota, hay una dirección que describe una buena comprobación.',
+        title: 'El modelo redactó: "La biblioteca abre de 10:00 a 14:00 en el feriado". ¿Qué debe pasar ahora?',
+        subtitle: 'En la fuente solo pone: horario regular de 09:00 a 18:00, horario de feriado no disponible. Elige el paso correcto. Aquí no hay nota, hay una dirección que describe una buena comprobación.',
         invite: 'Antes de abrir esto, intenta adivinar qué debe pasarle al borrador antes de enviarlo.',
         correctTitle: '¡Exacto!',
         wrongTitle: '¡Casi!',
@@ -95,7 +95,7 @@ export const selfCheck = {
         revealButton: 'Revela la idea principal',
         revealTitle: '¿Y qué debe pasar en realidad?',
         revealCopy:
-            'Antes de que la respuesta salga, se comprueba: qué partes se apoyan en la fuente y cuáles no. "Retrasado" tiene respaldo, "llegará mañana" no, porque la fuente no da una fecha. La afirmación sin respaldo se quita, y el vacío se dice de forma explícita.',
+            'Antes de que la respuesta salga, se comprueba: qué partes se apoyan en la fuente y cuáles no. "De 09:00 a 18:00" tiene respaldo, "de 10:00 a 14:00" no, porque la fuente no da un horario de feriado. La afirmación sin respaldo se quita, y el vacío se dice de forma explícita.',
         cta: 'Veámoslo en el laboratorio',
         resetButton: 'Elegir de nuevo',
         exploreHint: 'También puedes elegir otra opción y ver cómo suena.',
@@ -107,7 +107,7 @@ export const selfCheck = {
                 statusLabel: 'Elegiste bien',
                 getsRight: 'Exacto. La autocomprobación compara cada afirmación con la fuente, y señala lo que no tiene respaldo.',
                 missesLabel: 'Qué queda por ver',
-                misses: 'En el laboratorio veremos cómo "llegará mañana" se señala, se quita, y la respuesta indica que no hay una fecha confirmada.',
+                misses: 'En el laboratorio veremos cómo "de 10:00 a 14:00" se señala, se quita, y la respuesta indica que el horario de feriado no está disponible en la fuente.',
                 bridge: 'Se comprueba antes de enviar.',
             },
             send: {
@@ -116,7 +116,7 @@ export const selfCheck = {
                 statusLabel: 'Error común',
                 getsRight: 'Es comprensible pensarlo, porque la respuesta suena de verdad bien.',
                 missesLabel: 'Qué se pierde',
-                misses: '"Suena bien" no es "tiene respaldo en la fuente". "Llegará mañana" suena servicial, pero ningún dato lo respalda.',
+                misses: '"Suena bien" no es "tiene respaldo en la fuente". "De 10:00 a 14:00" suena servicial, pero ningún dato lo respalda.',
                 bridge: 'La fluidez no es respaldo.',
             },
             add: {
@@ -134,7 +134,7 @@ export const selfCheck = {
                 statusLabel: 'Parcialmente cierto',
                 getsRight: 'Es cierto que una respuesta corta y cauta es mejor que una suposición segura.',
                 missesLabel: 'Qué se pierde',
-                misses: 'Pero acortar sin comprobar puede tirar también "retrasado", que sí tiene respaldo. El objetivo es comprobar, no solo acortar.',
+                misses: 'Pero acortar sin comprobar puede tirar también "de 09:00 a 18:00", que sí tiene respaldo. El objetivo es comprobar, no solo acortar.',
                 bridge: 'Comprobar, no solo recortar.',
             },
         },
@@ -160,15 +160,15 @@ export const selfCheck = {
 
     lock: {
         title: 'Comprueba tu comprensión',
-        question: 'La fuente dice: estado retrasado, entrega estimada no disponible. El borrador: "El paquete está retrasado y llegará mañana." ¿Qué parte debe señalar la comprobación?',
+        question: 'La fuente dice: horario regular de 09:00 a 18:00, horario de feriado no disponible. El borrador: "La biblioteca abre de 09:00 a 18:00 en días regulares, y de 10:00 a 14:00 en el feriado." ¿Qué parte debe señalar la comprobación?',
         options: [
-            '"El paquete está retrasado", porque aparece en la fuente.',
-            '"Llegará mañana", porque la fuente no da una fecha de entrega.',
+            '"Abre de 09:00 a 18:00 en días regulares", porque aparece en la fuente.',
+            '"Abre de 10:00 a 14:00 en el feriado", porque la fuente no da un horario de feriado.',
             'Toda la respuesta, porque la IA no debería responder.',
             'Nada, porque la respuesta suena segura.',
         ],
         success:
-            'La autocomprobación separa una afirmación con respaldo de una sin respaldo. "Retrasado" tiene respaldo en la fuente y se mantiene, "llegará mañana" no está en la fuente y por eso se señala. La respuesta corregida quita la fecha inventada e indica que no hay una fecha confirmada.',
+            'La autocomprobación separa una afirmación con respaldo de una sin respaldo. "De 09:00 a 18:00" tiene respaldo en la fuente y se mantiene, "de 10:00 a 14:00" no está en la fuente y por eso se señala. La respuesta corregida quita el horario de feriado inventado e indica que el horario de feriado no está disponible en la fuente.',
     },
 
     practical: {

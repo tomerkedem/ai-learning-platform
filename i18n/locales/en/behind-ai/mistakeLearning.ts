@@ -39,7 +39,7 @@ export const mistakeLearning = {
         titleLead: 'The same mistake keeps coming back.',
         titleHighlight: 'How does it become an improvement?',
         lede: 'In the previous chapters we saw that a fluent answer can be wrong, that a source reduces guessing, and that a self-check catches unsupported claims. Now we ask a different question: when the same mistake keeps recurring, how does a team turn it into a real improvement, and how do you know the improvement really worked?',
-        hook: 'The model invents an arrival date that has no source, again and again. One correction helps now, but what has to happen for this mistake to really stop?',
+        hook: 'The model invents holiday hours that have no source, again and again. One correction helps now, but what has to happen for this mistake to really stop?',
         chipTry: 'Move between the four levels of improvement',
         chipCompare: 'Compare what improved with what did not',
     },
@@ -87,7 +87,7 @@ export const mistakeLearning = {
 
     guess: {
         eyebrow: 'Quick guess · a recurring mistake',
-        title: 'The model invents an arrival date that has no source, and you correct it. What does that correction really do?',
+        title: 'The model invents holiday hours that have no source, and you correct it. What does that correction really do?',
         subtitle: 'Pick the safest interpretation. There is no score here, there is one direction that describes what really happened.',
         invite: 'Before we open this up, try to guess what exactly one correction like this does.',
         correctTitle: 'Exactly right!',
@@ -156,7 +156,7 @@ export const mistakeLearning = {
 
     lock: {
         title: 'Check Your Understanding',
-        question: 'The same mistake ("The package will arrive tomorrow" with no source) keeps recurring for many users. What is the right way to make it really improve?',
+        question: 'The same mistake ("The library is open from 10:00 to 14:00 on the holiday" with no source) keeps recurring for many users. What is the right way to make it really improve?',
         options: [
             'One user\'s correction already changed the model for all users.',
             'Collect the mistake as an example, review it, fix the system or the training, and measure in an evaluation before releasing.',
@@ -172,10 +172,10 @@ export const mistakeLearning = {
         lead:
             'A good correction is not only "not right". A helpful correction tells the model exactly what to change, so it can fix the answer now based on the context. Instead of "not right", aim like this:',
         uses: [
-            'Say what is wrong: "Not right. There is no confirmed arrival date in the source."',
-            'Point to the source: "The source says the package is delayed, but does not state a date."',
-            'Ask for the change: "Fix the answer so it relies only on the source, and remove the invented arrival date."',
-            'Set a rule for the rest of the conversation: "From now on, do not add an arrival date that is not in the source."',
+            'Say what is wrong: "Not right. The holiday hours are not confirmed in the source."',
+            'Point to the source: "The source gives regular hours, but does not state holiday hours."',
+            'Ask for the change: "Fix the answer so it relies only on the source, and remove the invented holiday hours."',
+            'Set a rule for the rest of the conversation: "From now on, do not add holiday hours that are not in the source."',
             'For teams that build systems: a recurring mistake should become a test case, a prompt improvement, a fix to a source or a tool, and a metric in evaluation.',
         ],
         caveat:

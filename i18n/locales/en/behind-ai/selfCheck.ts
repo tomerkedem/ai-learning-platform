@@ -25,7 +25,7 @@ export const selfCheck = {
         titleLead: 'A good answer',
         titleHighlight: 'checks itself',
         lede: 'In the previous chapter we connected the answer to a source. But even when there is a source, the model still writes the answer itself, and it can say more than the source says. A self-check is one step before the end: we take the draft and compare it to the question and the source, before it goes out to the customer.',
-        hook: 'The model wrote "The package is delayed and will arrive tomorrow." What needs to happen before this is sent?',
+        hook: 'The model wrote "The library is open from 10:00 to 14:00 on the holiday." What needs to happen before this answer goes out?',
         chipTry: 'Move between the drafts',
         chipCompare: 'Compare a supported claim with an invented claim',
     },
@@ -86,8 +86,8 @@ export const selfCheck = {
 
     guess: {
         eyebrow: 'Quick guess · before the answer goes out',
-        title: 'The model wrote: "The package is delayed and will arrive tomorrow." What needs to happen now?',
-        subtitle: 'The source only says: status delayed, estimated delivery not available. Pick the right step. There is no score here, there is one direction that describes a good check.',
+        title: 'The model wrote: "The library is open from 10:00 to 14:00 on the holiday." What needs to happen now?',
+        subtitle: 'The source only says: regular hours 09:00-18:00, holiday hours not available. Pick the right step. There is no score here, there is one direction that describes a good check.',
         invite: 'Before we open this up, try to guess what should happen to the draft before it is sent.',
         correctTitle: 'Exactly right!',
         wrongTitle: 'Almost!',
@@ -95,7 +95,7 @@ export const selfCheck = {
         revealButton: 'Reveal the core idea',
         revealTitle: 'So what really needs to happen?',
         revealCopy:
-            'Before the answer goes out, we check it: which parts are supported by the source and which are not. "Delayed" is supported, "will arrive tomorrow" is not, because the source gives no date. The unsupported claim is removed, and the gap is stated explicitly.',
+            'Before the answer goes out, we check it: which parts are supported by the source and which are not. "09:00 to 18:00" is supported, "10:00 to 14:00" is not, because the source gives no holiday hours. The unsupported claim is removed, and the gap is stated explicitly.',
         cta: 'Let us see it in the lab',
         resetButton: 'Choose again',
         exploreHint: 'You can pick another option too and see how it sounds.',
@@ -107,7 +107,7 @@ export const selfCheck = {
                 statusLabel: 'You chose right',
                 getsRight: 'Exactly. A self-check compares each claim to the source, and flags what has no support.',
                 missesLabel: 'What is left to see',
-                misses: 'In the lab we will see how "will arrive tomorrow" is flagged, removed, and the answer states that there is no confirmed date.',
+                misses: 'In the lab we will see how "10:00 to 14:00" is flagged, removed, and the answer states that the holiday hours are not available in the source.',
                 bridge: 'Check before you send.',
             },
             send: {
@@ -116,7 +116,7 @@ export const selfCheck = {
                 statusLabel: 'Common mistake',
                 getsRight: 'It is understandable to think so, because the answer really does sound good.',
                 missesLabel: 'What it misses',
-                misses: '"Sounds good" is not "supported by the source". "Will arrive tomorrow" sounds helpful, but no data supports it.',
+                misses: '"Sounds good" is not "supported by the source". "10:00 to 14:00" sounds helpful, but no data supports it.',
                 bridge: 'Fluency is not support.',
             },
             add: {
@@ -134,7 +134,7 @@ export const selfCheck = {
                 statusLabel: 'Partly right',
                 getsRight: 'It is true that a short, careful answer is better than a confident guess.',
                 missesLabel: 'What it misses',
-                misses: 'But shortening without checking may throw away "delayed" too, which is supported. The goal is to check, not just to shorten.',
+                misses: 'But shortening without checking may throw away "09:00 to 18:00" too, which is supported. The goal is to check, not just to shorten.',
                 bridge: 'Check, do not just cut.',
             },
         },
@@ -160,15 +160,15 @@ export const selfCheck = {
 
     lock: {
         title: 'Check Your Understanding',
-        question: 'The source says: status delayed, estimated delivery not available. The draft: "The package is delayed and will arrive tomorrow." Which part should the check flag?',
+        question: 'The source says: regular hours 09:00-18:00, holiday hours not available. The draft: "The library is open from 09:00 to 18:00 on regular days, and from 10:00 to 14:00 on the holiday." Which part should the check flag?',
         options: [
-            '"The package is delayed", because it appears in the source.',
-            '"Will arrive tomorrow", because the source gives no arrival date.',
+            '"Open from 09:00 to 18:00 on regular days", because it appears in the source.',
+            '"Open from 10:00 to 14:00 on the holiday", because the source gives no holiday hours.',
             'The whole answer, because AI should not answer.',
             'Nothing, because the answer sounds confident.',
         ],
         success:
-            'A self-check separates a supported claim from an unsupported one. "Delayed" is supported by the source and stays, "will arrive tomorrow" is not in the source and so it is flagged. The revised answer removes the invented date and states that there is no confirmed date.',
+            'A self-check separates a supported claim from an unsupported one. "09:00 to 18:00" is supported by the source and stays, "10:00 to 14:00" is not in the source and so it is flagged. The revised answer removes the invented holiday hours and states that the holiday hours are not available in the source.',
     },
 
     practical: {
