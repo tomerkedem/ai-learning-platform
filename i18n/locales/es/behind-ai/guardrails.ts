@@ -28,7 +28,7 @@ export const guardrails = {
         titleLead: 'Poder actuar',
         titleHighlight: 'no es tener permiso',
         lede: 'Un buen agente no solo avanza hacia una tarea. Tambien comprueba: esta permitida la accion? Cual es el nivel de riesgo? Hace falta aprobacion? Los guardrails son las reglas y comprobaciones que deciden cuando continuar, cuando preguntar, cuando preparar solo un borrador, y cuando detenerse.',
-        hook: 'El agente descubrio que el paquete esta retrasado, y puede redactar un mensaje para el cliente. Tambien esta permitido enviarlo de inmediato?',
+        hook: 'El agente encontro un horario libre en el calendario, y puede redactar una invitacion para el. Tambien esta permitido enviarla de inmediato?',
         chipTry: 'Muevete entre cinco acciones: pedir informacion, leer, redactar, enviar, y marcar',
         chipCompare: 'Observa como la misma capacidad lleva a una decision distinta segun el riesgo',
     },
@@ -63,7 +63,7 @@ export const guardrails = {
             },
             {
                 title: 'La informacion que falta detiene',
-                body: 'Si falta informacion critica, una accion segura pregunta en lugar de adivinar. Sin un numero de seguimiento o una fuente, el agente pide lo que falta antes de actuar.',
+                body: 'Si falta informacion critica, una accion segura pregunta en lugar de adivinar. Sin un horario aceptable o una fuente, el agente pide lo que falta antes de actuar.',
             },
             {
                 title: 'Puerta de aprobacion',
@@ -83,7 +83,7 @@ export const guardrails = {
     see: {
         title: 'Antes de que el agente actue, la solicitud pasa por una capa de control',
         goalLabel: 'Objetivo',
-        goal: 'Comprueba el paquete y actualiza al cliente',
+        goal: 'Organiza la reunion y envia la invitacion',
         flowLabel: 'La capa de control',
         flow: ['Accion propuesta', 'Comprobacion de riesgo', 'Comprobacion de permiso', 'Decision'],
         outcomesLabel: 'Resultado posible',
@@ -94,7 +94,7 @@ export const guardrails = {
 
     guess: {
         eyebrow: 'Adivinanza rapida · antes de abrir esto',
-        title: 'El agente puede redactar un mensaje para el cliente sobre el retraso. Tambien esta permitido enviarlo de inmediato?',
+        title: 'El agente puede redactar una invitacion para un horario que encontro libre. Tambien esta permitido enviarla de inmediato?',
         subtitle: 'Elige la descripcion mas precisa. No hay nota aqui, hay una direccion que describe lo que de verdad ocurre.',
         invite: 'Antes de probarlo en el laboratorio, intenta adivinar como tratara la capa de control el envio.',
         correctTitle: 'Muy bien!',
@@ -103,7 +103,7 @@ export const guardrails = {
         revealButton: 'Revela la idea central',
         revealTitle: 'Entonces, que ocurre de verdad?',
         revealCopy:
-            'La capacidad de redactar un mensaje no es permiso para enviarlo. Enviar a un cliente es una accion externa y sensible, asi que normalmente se detiene para aprobacion. La capacidad no es permiso, y el riesgo de la accion es lo que decide si continuar, preparar un borrador, o detenerse.',
+            'La capacidad de redactar una invitacion no es permiso para enviarla. Enviar a los participantes es una accion externa y sensible, asi que normalmente se detiene para aprobacion. La capacidad no es permiso, y el riesgo de la accion es lo que decide si continuar, preparar un borrador, o detenerse.',
         cta: 'Veamoslo en el laboratorio',
         resetButton: 'Elegir de nuevo',
         exploreHint: 'Tambien puedes elegir otra opcion y ver como suena.',
@@ -111,20 +111,20 @@ export const guardrails = {
         cards: {
             needsApproval: {
                 title: 'No necesariamente. Enviar puede requerir aprobacion',
-                desc: 'Enviar a un cliente es una accion externa y sensible, asi que se detiene para aprobacion antes de ejecutarse.',
+                desc: 'Enviar a los participantes es una accion externa y sensible, asi que se detiene para aprobacion antes de ejecutarse.',
                 statusLabel: 'Elegiste bien',
-                getsRight: 'Exacto. Redactar es una cosa, enviar a un cliente real es otra. Una accion externa pasa por una puerta de aprobacion.',
+                getsRight: 'Exacto. Redactar es una cosa, enviar a participantes reales es otra. Una accion externa pasa por una puerta de aprobacion.',
                 missesLabel: 'Que queda por ver',
                 misses: 'En el laboratorio veremos cuando una accion se permite, cuando solo se prepara un borrador, cuando se detiene para aprobacion, y cuando se bloquea.',
                 bridge: 'Puede redactar, pero no enviar sin aprobacion.',
             },
             canSend: {
-                title: 'Si, siempre que sepa redactar un mensaje',
-                desc: 'Si es capaz de redactar el mensaje, tambien puede enviarlo de inmediato.',
+                title: 'Si, siempre que sepa redactar una invitacion',
+                desc: 'Si es capaz de redactar la invitacion, tambien puede enviarla de inmediato.',
                 statusLabel: 'Error comun',
                 getsRight: 'Es cierto que el agente es tecnicamente capaz de redactar y tambien de enviar.',
                 missesLabel: 'Que se le escapa',
-                misses: 'Pero la capacidad no es permiso. Enviar a un cliente es una accion externa, asi que se detiene para aprobacion, aunque el agente sea capaz de hacerlo.',
+                misses: 'Pero la capacidad no es permiso. Enviar una invitacion es una accion externa, asi que se detiene para aprobacion, aunque el agente sea capaz de hacerlo.',
                 bridge: 'Poder actuar no es permiso para actuar.',
             },
             alwaysAlone: {
@@ -163,15 +163,15 @@ export const guardrails = {
 
     lock: {
         title: 'Comprueba tu comprensión',
-        question: 'El agente tiene un borrador de mensaje listo y tecnicamente puede enviarlo. El usuario pidio "actualiza al cliente" pero no aprobo el envio. Que deberia hacer?',
+        question: 'El calendario devolvio 15:00 a 15:30 y el agente preparo un borrador de invitacion. El sistema esta autorizado a usar la herramienta de envio. El usuario pidio "organiza la reunion" pero no aprobo enviar la invitacion. Que deberia hacer?',
         options: [
             'Enviar de inmediato, porque esa es la tarea.',
-            'Preparar un borrador y pedir aprobacion antes de enviar.',
-            'Borrar los datos de seguimiento.',
-            'Inventar una fecha de llegada para que el mensaje quede completo.',
+            'Mostrar el borrador y pedir aprobacion explicita antes de enviar.',
+            'Borrar los datos de disponibilidad del calendario.',
+            'Inventar otro horario de reunion para que la invitacion quede completa.',
         ],
         success:
-            '"Actualiza al cliente" no es una aprobacion explicita para enviar. Enviar a un cliente es una accion externa, asi que el paso seguro es preparar un borrador y detenerse para aprobacion. Las acciones externas normalmente pasan por una puerta de aprobacion.',
+            '"Organiza la reunion" no es una aprobacion explicita para enviar. Enviar una invitacion a los participantes es una accion externa, asi que el paso seguro es mostrar el borrador y detenerse para una aprobacion explicita. La autorizacion del sistema para usar la herramienta de envio no equivale a la aprobacion humana para este envio en concreto.',
     },
 
     practical: {
@@ -179,16 +179,16 @@ export const guardrails = {
         lead:
             'Cuando pidas a un agente que trabaje, no escribas "encargate de esto". Define sus limites de control:',
         uses: [
-            'Lo permitido: "Puedes comprobar un estado y redactar un borrador de mensaje."',
-            'Lo prohibido: "No envies un mensaje ni cambies datos sin aprobacion."',
-            'Lo que requiere aprobacion: "Si necesitas enviar al cliente, prepara solo un borrador y espera mi aprobacion."',
-            'Que hacer si falta informacion: "Si falta un numero de seguimiento, preguntame."',
-            'De que fuente trabajar: "Si no hay fecha de llegada en la fuente, no adivines."',
-            'Cual es la condicion de parada: "No marques un paquete como entregado sin un fundamento en la fuente."',
+            'Lo permitido: "Puedes comprobar disponibilidad y redactar una invitacion."',
+            'Lo prohibido: "No envies una invitacion ni cambies datos del calendario sin aprobacion."',
+            'Lo que requiere aprobacion: "Si necesitas enviar la invitacion, prepara solo un borrador y espera mi aprobacion."',
+            'Que hacer si falta informacion: "Si falta el horario aceptable, preguntame."',
+            'De que fuente trabajar: "Si la herramienta de calendario no confirmo un horario, no adivines."',
+            'Cual es la condicion de parada: "No marques la reunion como reservada sin un horario confirmado por la herramienta de calendario."',
             'Antes: comprueba autorizacion, alcance, entrada valida, politica y aprobacion humana por separado.',
             'Durante: aplica limites de reintentos o pasos y, si corresponde, aislamiento.',
             'Despues: verifica y registra la salida e informa con honestidad exito, fallo, parada o resultado parcial.',
-            'En el seguimiento, la forma esperada del resultado ayuda al paso siguiente, pero no garantiza la verdad semantica.',
+            'En una consulta de calendario, la forma esperada del resultado ayuda al paso siguiente, pero no garantiza la verdad semantica.',
         ],
         caveat:
             'Una accion autorizada aun puede ser incorrecta o fallar, y una accion bloqueada no tiene que ser maliciosa: puede superar limites de identidad, recurso, politica o aprobacion. Una confianza alta nunca anula el riesgo, la autorizacion, la politica ni la aprobacion humana. Los agentes pueden repetir acciones y afectar sistemas externos a escala, por eso mas autonomia exige limites mas fuertes. El monitoreo y los registros ayudan a detectar, revisar e investigar, pero no evitan dano por si solos. Ningun guardrail basta; varios controles imperfectos reducen juntos el riesgo sin garantizar seguridad perfecta.',

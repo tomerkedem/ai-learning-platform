@@ -23,7 +23,7 @@ export const guardrailsQuiz = {
 
     byId: {
         1: {
-            question: 'The agent has access to send a message to the customer and knows how to write it. What does that mean about permission to send?',
+            question: 'The agent has access to send an invitation to participants and knows how to draft it. What does that mean about permission to send?',
             options: [
                 'If it is able to send, that means it is allowed to send',
                 'The ability to send is not permission to send. Sending is an action that can require approval',
@@ -31,51 +31,51 @@ export const guardrailsQuiz = {
                 'Permission is decided only by how fast the action is',
             ],
             explanation:
-                'Capability is not permission. Even when the agent is technically able to perform an action, the question is whether it is allowed to do it now. An external action such as sending to a customer can require approval, regardless of ability.',
+                'Capability is not permission, and system authorization is not human approval. Even when the identity is authorized to use the send tool, an external action such as sending an invitation can wait for human approval before execution.',
         },
         2: {
-            question: 'The same agent can perform three actions: check a tracking status, prepare a message draft, and send it. What is true about the risk level?',
+            question: 'The same agent can perform three actions: check calendar availability, prepare an invitation draft, and send it. What is true about the risk level?',
             options: [
                 'All three actions carry exactly the same risk',
-                'Reading a status is low risk, drafting is medium, and sending is high. Risk decides what is allowed',
+                'Checking availability is low risk, drafting is medium, and sending is high. Risk decides what is allowed',
                 'Sending is the safest action because it completes the task',
                 'A draft is riskier than sending because it is saved',
             ],
             explanation:
-                'Not every action is equal. Reading information changes nothing, so it is low risk. Drafting gets closer to the customer but still does not go out. Sending is an external action and therefore high risk. The risk level is what decides what may be done.',
+                'Not every action is equal. Checking availability changes nothing, so it is low risk. Drafting gets closer to participants but still does not go out. Sending is an external action and therefore high risk. The risk level is what decides what may be done.',
         },
         3: {
-            question: 'The user asked "Check the package and update the customer", but there is no tracking number. What is the best thing for the agent to do?',
+            question: 'The user asked "Set up the meeting and send the invitation", but there is no acceptable time range. What is the best thing for the agent to do?',
             options: [
-                'Guess a plausible tracking number to get started',
-                'Stop and ask for the tracking number before acting',
-                'Send the customer a generic message without checking anything',
-                'Mark the package as delivered to close the task',
+                'Guess a plausible time range to get started',
+                'Stop and ask for the acceptable time range before acting',
+                'Send participants a generic invitation without checking anything',
+                'Mark the meeting as confirmed to close the task',
             ],
             explanation:
-                'When critical information is missing, a safe action stops and asks instead of guessing. Without a tracking number a real status cannot be checked, so the professional step is to ask for what is missing. A guess builds everything that follows on an unstable base.',
+                'When critical information is missing, a safe action stops and asks instead of guessing. Without an acceptable time range, real availability cannot be checked, so the professional step is to ask for what is missing. A guess builds everything that follows on an unstable base.',
         },
         4: {
-            question: 'The agent prepared an excellent message draft for the customer. Why is it right to stop for approval before sending?',
+            question: 'The agent prepared an excellent invitation draft for the participants. Why is it right to stop for approval before sending?',
             options: [
                 'Because the draft is surely wrong',
-                'Because sending to a customer is an external and sensitive action, and such an action passes through an approval gate',
+                'Because sending an invitation to participants is an external and sensitive action, and such an action passes through an approval gate',
                 'Because the agent has no ability to actually send',
                 'Because the agent is not allowed to write text at all',
             ],
             explanation:
-                'Preparing a draft is one thing, sending it to a real customer is another. An external and sensitive action passes through an approval gate, so a person approves before it goes out. Stopping for approval is the responsible step, not a lack of ability.',
+                'Preparing a draft is one thing, sending a real invitation is another. An external and sensitive action passes through an approval gate, so a person approves before it goes out. Stopping for approval is the responsible step, not a lack of ability.',
         },
         5: {
-            question: 'The agent is asked to mark the package as delivered, but the source shows it is still delayed. What is correct?',
+            question: 'The agent is asked to mark the meeting as confirmed and booked, but the calendar tool has not confirmed availability. What is correct?',
             options: [
-                'Mark it as delivered, because the user asked',
-                'Refuse to mark it. Changing an official status with no basis in the source is a blocked action',
-                'Mark it as delivered and add a note that it might be a mistake',
-                'Invent proof of delivery so the action is complete',
+                'Mark it as confirmed, because the user asked',
+                'Refuse to mark it. Booking a meeting with no confirmed availability from the calendar is a blocked action',
+                'Mark it as confirmed and add a note that it might be a mistake',
+                'Invent confirmed availability so the action is complete',
             ],
             explanation:
-                'Some actions stay blocked even when the agent can describe them. Marking a package as delivered with no basis in the source changes an official record and harms reliability. The right step is to stop, refuse the action, and explain why. Not everything that can be requested may be done.',
+                'Some actions stay blocked even when the agent can describe them. Booking a meeting with no confirmed availability changes an official record and harms reliability. Human approval cannot override this block or manufacture the missing evidence. The right step is to stop, refuse the action, and explain why.',
         },
     } satisfies Record<GuardrailsQuizId, GuardrailsQuizText>,
 };

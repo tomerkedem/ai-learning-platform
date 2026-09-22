@@ -28,7 +28,7 @@ export const guardrails = {
         titleLead: 'Able to act',
         titleHighlight: 'is not allowed to act',
         lede: 'A good agent does not only move toward a task. It also checks: is the action allowed? What is the risk level? Does it need approval? Guardrails are the rules and checks that decide when to continue, when to ask, when to prepare a draft only, and when to stop.',
-        hook: 'The agent found that the package is delayed, and it can write a message to the customer. Is it also allowed to send it right away?',
+        hook: 'The agent found a free slot on the calendar, and it can draft an invitation for it. Is it also allowed to send it right away?',
         chipTry: 'Move between five actions: ask for info, read, draft, send, and mark',
         chipCompare: 'See how the same capability leads to a different decision depending on risk',
     },
@@ -63,7 +63,7 @@ export const guardrails = {
             },
             {
                 title: 'Missing info stops',
-                body: 'If critical information is missing, a safe action asks instead of guessing. Without a tracking number or a source, the agent asks for what is missing before it acts.',
+                body: 'If critical information is missing, a safe action asks instead of guessing. Without an acceptable time range or a source, the agent asks for what is missing before it acts.',
             },
             {
                 title: 'Approval gate',
@@ -83,7 +83,7 @@ export const guardrails = {
     see: {
         title: 'Before the agent acts, the request passes through a control layer',
         goalLabel: 'Goal',
-        goal: 'Check the package and update the customer',
+        goal: 'Arrange the meeting and send the invitation',
         flowLabel: 'The control layer',
         flow: ['Proposed action', 'Risk check', 'Permission check', 'Decision'],
         outcomesLabel: 'Possible outcome',
@@ -94,7 +94,7 @@ export const guardrails = {
 
     guess: {
         eyebrow: 'Quick guess · before we open this up',
-        title: 'The agent can write a message to the customer about the delay. Is it also allowed to send it right away?',
+        title: 'The agent can draft an invitation for a meeting slot it found. Is it also allowed to send it right away?',
         subtitle: 'Choose the most accurate description. There is no grade here, there is one direction that describes what really happens.',
         invite: 'Before we test it in the lab, try to guess how the control layer will treat sending.',
         correctTitle: 'Exactly right!',
@@ -103,7 +103,7 @@ export const guardrails = {
         revealButton: 'Reveal the main idea',
         revealTitle: 'So what really happens?',
         revealCopy:
-            'The ability to write a message is not permission to send it. Sending to a customer is an external and sensitive action, so it usually stops for approval. Capability is not permission, and the risk of the action is what decides whether to continue, prepare a draft, or stop.',
+            'The ability to draft an invitation is not permission to send it. Sending to participants is an external and sensitive action, so it usually stops for approval. Capability is not permission, and the risk of the action is what decides whether to continue, prepare a draft, or stop.',
         cta: 'Let us see it in the lab',
         resetButton: 'Choose again',
         exploreHint: 'You can also choose another option and see how it sounds.',
@@ -111,20 +111,20 @@ export const guardrails = {
         cards: {
             needsApproval: {
                 title: 'Not necessarily. Sending can require approval',
-                desc: 'Sending to a customer is an external and sensitive action, so it stops for approval before it runs.',
+                desc: 'Sending to participants is an external and sensitive action, so it stops for approval before it runs.',
                 statusLabel: 'You chose right',
-                getsRight: 'Exactly. Writing is one thing, sending to a real customer is another. An external action passes through an approval gate.',
+                getsRight: 'Exactly. Drafting is one thing, sending to real participants is another. An external action passes through an approval gate.',
                 missesLabel: 'What is left to see',
                 misses: 'In the lab we will see when an action is allowed, when only a draft is prepared, when it stops for approval, and when it is blocked.',
                 bridge: 'Can write, but not send without approval.',
             },
             canSend: {
-                title: 'Yes, if it knows how to write a message',
-                desc: 'If it is able to write the message, it can also send it right away.',
+                title: 'Yes, if it knows how to draft an invitation',
+                desc: 'If it is able to draft the invitation, it can also send it right away.',
                 statusLabel: 'Common mistake',
-                getsRight: 'It is true that the agent is technically able to write and also to send.',
+                getsRight: 'It is true that the agent is technically able to draft and also to send.',
                 missesLabel: 'What it misses',
-                misses: 'But capability is not permission. Sending to a customer is an external action, so it stops for approval, even if the agent is able to do it.',
+                misses: 'But capability is not permission. Sending an invitation is an external action, so it stops for approval, even if the agent is able to do it.',
                 bridge: 'Being able to act is not permission to act.',
             },
             alwaysAlone: {
@@ -163,15 +163,15 @@ export const guardrails = {
 
     lock: {
         title: 'Check Your Understanding',
-        question: 'The agent has a ready message draft and can technically send it. The user asked to "update the customer" but did not approve sending. What should it do?',
+        question: 'The calendar returned 15:00-15:30 and the agent prepared an invitation draft. The system is authorized to use the send tool. The user asked to "set up the meeting" but has not approved sending the invitation. What should it do?',
         options: [
             'Send immediately, because that is the task.',
-            'Prepare a draft and ask for approval before sending.',
-            'Delete the tracking data.',
-            'Invent an arrival date so the message is complete.',
+            'Show the draft and ask for explicit approval before sending.',
+            'Delete the calendar availability data.',
+            'Invent another meeting time so the invitation is complete.',
         ],
         success:
-            '"Update the customer" is not explicit approval to send. Sending to a customer is an external action, so the safe step is to prepare a draft and stop for approval. External actions usually pass through an approval gate.',
+            '"Set up the meeting" is not explicit approval to send. Sending an invitation to participants is an external action, so the safe step is to show the draft and stop for explicit approval. System authorization to use the send tool is not the same as human approval for this specific send.',
     },
 
     practical: {
@@ -179,16 +179,16 @@ export const guardrails = {
         lead:
             'When you ask an agent to work, do not write "take care of it". Define its control boundaries:',
         uses: [
-            'What is allowed: "You may check a status and draft a message."',
-            'What is forbidden: "Do not send a message or change data without approval."',
-            'What requires approval: "If you need to send to the customer, prepare a draft only and wait for my approval."',
-            'What to do if info is missing: "If a tracking number is missing, ask me."',
-            'Which source to work from: "If there is no arrival date in the source, do not guess."',
-            'What the stop condition is: "Do not mark a package as delivered without a basis in the source."',
+            'What is allowed: "You may check availability and draft an invitation."',
+            'What is forbidden: "Do not send an invitation or change calendar data without approval."',
+            'What requires approval: "If you need to send the invitation, prepare a draft only and wait for my approval."',
+            'What to do if info is missing: "If the acceptable time range is missing, ask me."',
+            'Which source to work from: "If the calendar tool has not confirmed a slot, do not guess."',
+            'What the stop condition is: "Do not mark the meeting as booked without a confirmed slot from the calendar tool."',
             'Before: check authorization, resource scope, input validation, policy, and separate human approval when required.',
             'During: enforce retry or step limits, with isolation when appropriate.',
             'After: verify output, record it, and honestly report success, failure, stop, or partial outcome.',
-            'For tracking, expected output form can support the next step, but validation does not guarantee semantic truth.',
+            'For a calendar lookup, expected output form can support the next step, but validation does not guarantee semantic truth.',
         ],
         caveat:
             'An authorized action can still be wrong or fail, and a blocked action need not be malicious: it may exceed identity, resource, policy, or approval boundaries. High model confidence never overrides risk, authorization, policy, or human approval. Agents can repeat actions and affect external systems at scale, so stronger autonomy needs stronger boundaries. Monitoring and logs help detect, review, and investigate, but do not prevent harm by themselves. No single guardrail is enough; several imperfect controls reduce risk together, without guaranteeing perfect safety.',
