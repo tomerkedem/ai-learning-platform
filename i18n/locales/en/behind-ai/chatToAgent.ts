@@ -28,7 +28,7 @@ export const chatToAgent = {
         titleLead: 'When a question',
         titleHighlight: 'becomes a task',
         lede: 'A chat receives input and returns an answer. An agent receives a goal and starts to work toward it: it spots what is missing, may choose a tool, checks a result, and decides whether to continue, stop, or ask for approval. The same request can be answered as text, or handled as a task.',
-        hook: 'You wrote: "Check what is happening with the package and update the customer." Is that a question for a chat, or a task for an agent?',
+        hook: 'You wrote: "Arrange a 30-minute project planning meeting and send the invitation." Is that a question for a chat, or a task for an agent?',
         chipTry: 'Move between four modes: answer, ask for info, use a tool, and approval',
         chipCompare: 'See how the same request is answered once as text and once as a task',
     },
@@ -63,11 +63,11 @@ export const chatToAgent = {
             },
             {
                 title: 'Tools',
-            body: 'An Agent can use tools only when they are available and allowed: tracking lookup, document search, drafting, sending a message, and more. A tool has defined input and output, while the application controls access and permissions. A tool can fail, and it extends capability without making the model smarter.',
+            body: 'An Agent can use tools only when they are available and allowed: calendar lookup, document search, drafting, sending a message, and more. A tool has defined input and output, while the application controls access and permissions. A tool can fail, and it extends capability without making the model smarter.',
             },
             {
                 title: 'Missing information',
-                body: 'A good agent does not pretend it has what is missing. If a tracking number, permission, or source is missing, it asks for them instead of guessing.',
+                body: 'A good agent does not pretend it has what is missing. If an acceptable time range, permission, or source is missing, it asks for them instead of guessing.',
             },
             {
                 title: 'Task state',
@@ -87,9 +87,9 @@ export const chatToAgent = {
     see: {
         title: 'Same request, two paths',
         goalLabel: 'The request',
-        goal: 'Check what is happening with the package and update the customer',
+        goal: 'Arrange a 30-minute project planning meeting and send the invitation',
         chatLabel: 'Chat path',
-        chat: 'You should check the tracking status and then write the customer a suitable update.',
+        chat: 'You would need the acceptable time range, then check availability and send an invitation.',
         agentLabel: 'Agent path',
         agent: ['Understand the goal', 'Check info and permissions', 'Decide the next step', 'Tool or question', 'Result or error', 'Update task state', 'Verify and report'],
         caption:
@@ -98,7 +98,7 @@ export const chatToAgent = {
 
     guess: {
         eyebrow: 'Quick guess · before we open this up',
-        title: 'You wrote: "Check what is happening with the package and update the customer." Is that a question for a chat, or a task for an agent?',
+        title: 'You wrote: "Arrange a 30-minute project planning meeting and send the invitation." Is that a question for a chat, or a task for an agent?',
         subtitle: 'Choose the most accurate description. There is no grade here, there is one direction that describes what really happens.',
         invite: 'Before we test it in the lab, try to guess how the system will treat this request.',
         correctTitle: 'Exactly right!',
@@ -167,15 +167,15 @@ export const chatToAgent = {
 
     lock: {
         title: 'Check Your Understanding',
-        question: 'A user writes: "Check the status and send a message to the customer." The system has no tracking number. What should a good agent do first?',
+        question: 'A user writes: "Arrange the meeting and send the invitation." The participants are already known, but the system does not know when the meeting may take place. What should a good agent do first?',
         options: [
-            'Invent a status to move forward.',
-            'Ask for the tracking number, or ask for the source.',
-            'Immediately send a generic message to the customer.',
+            'Invent a time to move forward.',
+            'Ask for the acceptable time range, or ask for the source.',
+            'Immediately send a generic invitation to everyone.',
             'Explain what an agent is.',
         ],
         success:
-            'An agent should move the task forward, but not by inventing missing information. The professional step is to ask for the tracking number or the source. And even once the information is complete, sending a message to the customer is a sensitive action that stops for approval.',
+            'An agent should move the task forward, but not by inventing missing information. The professional step is to ask for the acceptable time range or the source. And even once the information is complete, sending the invitation is a sensitive action that stops for approval.',
     },
 
     practical: {
@@ -183,15 +183,15 @@ export const chatToAgent = {
         lead:
             'When you ask an agent to work, do not write "take care of it". Define the task like this:',
         uses: [
-            'Goal: what exactly should happen in the end. For example: "Check the package status by this tracking number and write the customer an update."',
-            'Available information: give the tracking number, the order, or the source, so it does not have to guess.',
+            'Goal: what exactly should happen in the end. For example: "Arrange a 30-minute meeting with the project team and send them an invitation for a time that works."',
+            'Available information: give the acceptable time range or the source, so it does not have to guess.',
             'Allowed tools: make clear what it may do and what it may not.',
-            'What to do if information is missing: "If information is missing, ask me. Do not guess an arrival date without a source."',
-            'What requires approval: "If you need to send a message to the customer, prepare a draft only and wait for my approval."',
+            'What to do if information is missing: "If information is missing, ask me. Do not invent an acceptable time range."',
+            'What requires approval: "If you need to send an invitation, prepare a draft only and wait for my approval."',
             'Expected output: say in what format you want the result.',
         ],
         caveat:
-            'An agent does not act alone without limits. A tool call that succeeded only means one step finished, not that the whole task is done. If the goal includes updating the customer, the task ends only after approval, sending, and verifying that the send succeeded. If approval is denied, the agent stops. A clear definition of goal, boundaries, and approval is what makes a task for an agent safe.',
+            'An agent does not act alone without limits. A tool call that succeeded only means one step finished, not that the whole task is done. If the goal includes sending an invitation, the task ends only after approval, sending, and verifying that the send succeeded. If approval is denied, the agent stops. A clear definition of goal, boundaries, and approval is what makes a task for an agent safe.',
     },
 
     bridge: {

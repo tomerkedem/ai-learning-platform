@@ -43,36 +43,36 @@ export const chatToAgentQuiz = {
                 'Eliminan la necesidad de informacion del usuario',
             ],
             explanation:
-                'Una herramienta como una consulta de seguimiento o una busqueda en un documento amplia lo que el sistema puede hacer mas alla de redactar texto. Pero una herramienta funciona solo cuando esta disponible y permitida, tambien puede fallar, y no hace al modelo mas inteligente ni garantiza que la respuesta sea correcta. Una llamada a una herramienta que funciono es un paso, no el final de la tarea.',
+                'Una herramienta como una consulta de calendario o una busqueda en un documento amplia lo que el sistema puede hacer mas alla de redactar texto. Pero una herramienta funciona solo cuando esta disponible y permitida, tambien puede fallar, y no hace al modelo mas inteligente ni garantiza que la respuesta sea correcta. Una llamada a una herramienta que funciono es un paso, no el final de la tarea.',
         },
         3: {
-            question: 'El agente no tiene el numero de seguimiento necesario para comprobar el paquete. Cual es el paso correcto?',
+            question: 'El agente no tiene el horario aceptable necesario para comprobar el calendario. Cual es el paso correcto?',
             options: [
-                'Inventar un numero plausible para avanzar',
-                'Pedir al usuario el numero de seguimiento antes de actuar',
-                'Enviar al cliente un mensaje generico de todos modos',
+                'Inventar un horario plausible para avanzar',
+                'Pedir al usuario el horario aceptable antes de actuar',
+                'Enviar a todos una invitacion generica de todos modos',
                 'Detener la tarea y no volver a ella',
             ],
             explanation:
-                'Un buen agente no inventa informacion que falta ni usa una herramienta sin los datos necesarios. Cuando falta un numero de seguimiento, el paso profesional es pedirlo. Pedir informacion que falta no es un fallo, es la conducta correcta.',
+                'Un buen agente no inventa informacion que falta ni usa una herramienta sin los datos necesarios. Cuando falta el horario aceptable, el paso profesional es pedirlo. Pedir informacion que falta no es un fallo, es la conducta correcta.',
         },
         4: {
-            question: 'El agente tiene un borrador de mensaje listo y acceso para enviarlo. Por que sigue siendo correcto detenerse antes de enviar?',
+            question: 'El agente tiene un borrador de invitacion listo y acceso para enviarlo. Por que sigue siendo correcto detenerse antes de enviar?',
             options: [
-                'Porque en realidad no sabe enviar un mensaje',
-                'Porque enviar un mensaje a un cliente es una accion real y sensible, y una accion asi requiere aprobacion',
+                'Porque en realidad no sabe enviar una invitacion',
+                'Porque enviar una invitacion es una accion real y sensible, y una accion asi requiere aprobacion',
                 'Porque el borrador siempre esta equivocado',
                 'Porque no tiene permiso para redactar texto',
             ],
             explanation:
-                'Preparar un borrador es una cosa, enviarlo a un cliente real es otra. Una accion que cambia algo en el mundo o llega a un cliente es sensible, y la capacidad de hacerlo no es permiso para hacerlo. El patron completo es redactar, aprobacion, y luego ejecutar y verificar el resultado. Si la aprobacion se deniega, el agente se detiene y no envia.',
+                'Preparar un borrador es una cosa, enviarlo a participantes reales es otra. Una accion que cambia algo en el mundo o llega a otras personas es sensible, y la capacidad de hacerlo no es permiso para hacerlo. El patron completo es redactar, aprobacion, y luego ejecutar y verificar el resultado. Si la aprobacion se deniega, el agente se detiene y no envia.',
         },
         5: {
-            question: 'Que instruccion es la mas segura para dar a un agente que gestiona un paquete?',
+            question: 'Que instruccion es la mas segura para dar a un agente que gestiona una invitacion a una reunion?',
             options: [
                 '"Encargate de esto."',
-                '"Comprueba el estado del paquete con este numero de seguimiento. Si falta informacion, preguntame. Si necesitas escribir al cliente, prepara solo un borrador y espera aprobacion."',
-                '"Envia al cliente lo que te parezca mas correcto."',
+                '"Organiza la reunion con los participantes conocidos. Si falta el horario, preguntame. Si necesitas enviar una invitacion, prepara solo un borrador y espera aprobacion."',
+                '"Envia lo que te parezca mas correcto."',
                 '"Sigue hasta terminar, sin preguntarme nada."',
             ],
             explanation:

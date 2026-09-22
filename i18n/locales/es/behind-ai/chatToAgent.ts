@@ -29,7 +29,7 @@ export const chatToAgent = {
         titleLead: 'Cuando una pregunta',
         titleHighlight: 'se convierte en tarea',
         lede: 'Un chat recibe una entrada y devuelve una respuesta. Un agente recibe un objetivo y empieza a trabajar hacia el: detecta lo que falta, puede elegir una herramienta, revisa un resultado y decide si continuar, detenerse o pedir aprobacion. La misma solicitud puede responderse como texto, o gestionarse como una tarea.',
-        hook: 'Escribiste: "Comprueba que pasa con el paquete y actualiza al cliente." Es una pregunta para un chat, o una tarea para un agente?',
+        hook: 'Escribiste: "Organiza una reunion de planificacion de proyecto de 30 minutos y envia la invitacion." Es una pregunta para un chat, o una tarea para un agente?',
         chipTry: 'Muevete entre cuatro modos: respuesta, pedir informacion, usar una herramienta, y aprobacion',
         chipCompare: 'Observa como la misma solicitud se responde una vez como texto y una vez como tarea',
     },
@@ -68,7 +68,7 @@ export const chatToAgent = {
             },
             {
                 title: 'Informacion que falta',
-                body: 'Un buen agente no finge tener lo que falta. Si falta un numero de seguimiento, un permiso o una fuente, los pide en lugar de adivinar.',
+                body: 'Un buen agente no finge tener lo que falta. Si falta un horario aceptable, un permiso o una fuente, los pide en lugar de adivinar.',
             },
             {
                 title: 'Estado de la tarea',
@@ -88,9 +88,9 @@ export const chatToAgent = {
     see: {
         title: 'La misma solicitud, dos rutas',
         goalLabel: 'La solicitud',
-        goal: 'Comprueba que pasa con el paquete y actualiza al cliente',
+        goal: 'Organiza una reunion de planificacion de proyecto de 30 minutos y envia la invitacion',
         chatLabel: 'Ruta de chat',
-        chat: 'Conviene comprobar el estado de seguimiento y luego redactar al cliente una actualizacion adecuada.',
+        chat: 'Harian falta el horario aceptable, luego comprobar disponibilidad y enviar una invitacion.',
         agentLabel: 'Ruta de agente',
         agent: ['Entender el objetivo', 'Comprobar informacion y permisos', 'Decidir el siguiente paso', 'Herramienta o pregunta', 'Resultado o error', 'Actualizar el estado de la tarea', 'Verificar e informar'],
         caption:
@@ -99,7 +99,7 @@ export const chatToAgent = {
 
     guess: {
         eyebrow: 'Adivinanza rapida · antes de abrir esto',
-        title: 'Escribiste: "Comprueba que pasa con el paquete y actualiza al cliente." Es una pregunta para un chat, o una tarea para un agente?',
+        title: 'Escribiste: "Organiza una reunion de planificacion de proyecto de 30 minutos y envia la invitacion." Es una pregunta para un chat, o una tarea para un agente?',
         subtitle: 'Elige la descripcion mas precisa. No hay nota aqui, hay una direccion que describe lo que de verdad ocurre.',
         invite: 'Antes de probarlo en el laboratorio, intenta adivinar como tratara el sistema esta solicitud.',
         correctTitle: 'Muy bien!',
@@ -168,15 +168,15 @@ export const chatToAgent = {
 
     lock: {
         title: 'Comprueba tu comprensión',
-        question: 'Un usuario escribe: "Comprueba el estado y envia un mensaje al cliente." El sistema no tiene numero de seguimiento. Que deberia hacer primero un buen agente?',
+        question: 'Un usuario escribe: "Organiza la reunion y envia la invitacion." Los participantes ya se conocen, pero el sistema no sabe cuando puede tener lugar la reunion. Que deberia hacer primero un buen agente?',
         options: [
-            'Inventar un estado para avanzar.',
-            'Preguntar cual es el numero de seguimiento, o pedir la fuente.',
-            'Enviar de inmediato un mensaje generico al cliente.',
+            'Inventar un horario para avanzar.',
+            'Pedir el horario aceptable, o pedir la fuente.',
+            'Enviar de inmediato una invitacion generica a todos.',
             'Explicar que es un agente.',
         ],
         success:
-            'Un agente debe hacer avanzar la tarea, pero no inventando informacion que falta. El paso profesional es pedir el numero de seguimiento o la fuente. Y aun cuando la informacion este completa, enviar un mensaje al cliente es una accion sensible que se detiene para aprobacion.',
+            'Un agente debe hacer avanzar la tarea, pero no inventando informacion que falta. El paso profesional es pedir el horario aceptable o la fuente. Y aun cuando la informacion este completa, enviar la invitacion es una accion sensible que se detiene para aprobacion.',
     },
 
     practical: {
@@ -184,15 +184,15 @@ export const chatToAgent = {
         lead:
             'Cuando pidas a un agente que trabaje, no escribas "encargate de esto". Define la tarea asi:',
         uses: [
-            'Objetivo: que debe pasar exactamente al final. Por ejemplo: "Comprueba el estado del paquete con este numero de seguimiento y redacta al cliente una actualizacion."',
-            'Informacion disponible: da el numero de seguimiento, el pedido o la fuente, para que no tenga que adivinar.',
+            'Objetivo: que debe pasar exactamente al final. Por ejemplo: "Organiza una reunion de 30 minutos con el equipo del proyecto y enviales una invitacion para un horario que funcione."',
+            'Informacion disponible: da el horario aceptable o la fuente, para que no tenga que adivinar.',
             'Herramientas permitidas: deja claro que puede hacer y que no.',
-            'Que hacer si falta informacion: "Si falta informacion, preguntame. No adivines una fecha de llegada sin una fuente."',
-            'Que requiere aprobacion: "Si necesitas enviar un mensaje al cliente, prepara solo un borrador y espera mi aprobacion."',
+            'Que hacer si falta informacion: "Si falta informacion, preguntame. No inventes un horario aceptable."',
+            'Que requiere aprobacion: "Si necesitas enviar una invitacion, prepara solo un borrador y espera mi aprobacion."',
             'Salida esperada: di en que formato quieres el resultado.',
         ],
         caveat:
-            'Un agente no actua solo sin limites. Una llamada a una herramienta que funciono solo significa que un paso termino, no que toda la tarea este hecha. Si el objetivo incluye actualizar al cliente, la tarea termina solo despues de la aprobacion, el envio, y la verificacion de que el envio funciono. Si la aprobacion se deniega, el agente se detiene. Una definicion clara de objetivo, limites y aprobacion es lo que hace segura una tarea para un agente.',
+            'Un agente no actua solo sin limites. Una llamada a una herramienta que funciono solo significa que un paso termino, no que toda la tarea este hecha. Si el objetivo incluye enviar una invitacion, la tarea termina solo despues de la aprobacion, el envio, y la verificacion de que el envio funciono. Si la aprobacion se deniega, el agente se detiene. Una definicion clara de objetivo, limites y aprobacion es lo que hace segura una tarea para un agente.',
     },
 
     bridge: {

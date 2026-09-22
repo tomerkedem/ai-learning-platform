@@ -42,36 +42,36 @@ export const chatToAgentQuiz = {
                 'They remove the need for information from the user',
             ],
             explanation:
-                'A tool such as a tracking lookup or a document search extends what the system can do beyond writing text. But a tool works only when it is available and allowed, it can also fail, and it does not make the model smarter and does not guarantee the answer is correct. A tool call that succeeded is one step, not the end of the task.',
+                'A tool such as a calendar lookup or a document search extends what the system can do beyond writing text. But a tool works only when it is available and allowed, it can also fail, and it does not make the model smarter and does not guarantee the answer is correct. A tool call that succeeded is one step, not the end of the task.',
         },
         3: {
-            question: 'The agent does not have the tracking number needed to check the package. What is the right step?',
+            question: 'The agent does not have the acceptable time range needed to check the calendar. What is the right step?',
             options: [
-                'Invent a plausible number to move forward',
-                'Ask the user for the tracking number before acting',
-                'Send the customer a generic message anyway',
+                'Invent a plausible time range to move forward',
+                'Ask the user for the acceptable time range before acting',
+                'Send everyone a generic invitation anyway',
                 'Stop the task and never return to it',
             ],
             explanation:
-                'A good agent does not invent missing information and does not use a tool without the required data. When a tracking number is missing, the professional step is to ask for it. Asking for missing information is not a failure, it is the correct behavior.',
+                'A good agent does not invent missing information and does not use a tool without the required data. When the acceptable time range is missing, the professional step is to ask for it. Asking for missing information is not a failure, it is the correct behavior.',
         },
         4: {
-            question: 'The agent has a ready message draft and access to send it. Why is it still right to stop before sending?',
+            question: 'The agent has a ready invitation draft and access to send it. Why is it still right to stop before sending?',
             options: [
-                'Because it cannot really send a message',
-                'Because sending a message to a customer is a real and sensitive action, and such an action requires approval',
+                'Because it cannot really send an invitation',
+                'Because sending an invitation is a real and sensitive action, and such an action requires approval',
                 'Because the draft is always wrong',
                 'Because it has no permission to write text',
             ],
             explanation:
-                'Preparing a draft is one thing, sending it to a real customer is another. An action that changes something in the world or reaches a customer is sensitive, and the ability to do it is not permission to do it. The full pattern is draft, approval, then execute and verify the result. If approval is denied, the agent stops and does not send.',
+                'Preparing a draft is one thing, sending it to real participants is another. An action that changes something in the world or reaches other people is sensitive, and the ability to do it is not permission to do it. The full pattern is draft, approval, then execute and verify the result. If approval is denied, the agent stops and does not send.',
         },
         5: {
-            question: 'Which instruction is the safest to give an agent handling a package?',
+            question: 'Which instruction is the safest to give an agent handling a meeting invitation?',
             options: [
                 '"Take care of it."',
-                '"Check the package status by this tracking number. If information is missing, ask me. If you need to message the customer, prepare a draft only and wait for approval."',
-                '"Send the customer whatever seems most right to you."',
+                '"Arrange the meeting with the known participants. If the time range is missing, ask me. If you need to send an invitation, prepare a draft only and wait for approval."',
+                '"Send whatever seems most right to you."',
                 '"Keep going until you finish, without asking me anything."',
             ],
             explanation:
