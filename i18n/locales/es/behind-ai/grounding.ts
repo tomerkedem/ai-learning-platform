@@ -20,7 +20,7 @@ export const grounding = {
         titleLead: 'Una respuesta mejor',
         titleHighlight: 'empieza con una fuente',
         lede: 'En el capítulo anterior vimos que una respuesta puede sonar segura y aun así estar equivocada. La forma de bajar ese riesgo es conectar la respuesta a una fuente: una tarjeta de estado, un documento o el resultado de una comprobación. En lugar de apoyarse solo en la continuación del lenguaje, el modelo se apoya en información que se le dio.',
-        hook: '¿Qué le pasa a la respuesta cuando le añadimos al modelo datos reales de seguimiento?',
+        hook: '¿Qué le pasa a la respuesta cuando le añadimos al modelo información real del horario?',
         chipTry: 'Muévete entre los estados de fuente',
         chipCompare: 'Compara una respuesta sin fuente y con una fuente',
     },
@@ -67,7 +67,7 @@ export const grounding = {
             },
             {
                 title: 'La fuente recuperada no siempre es la correcta',
-                body: 'La recuperación puede devolver varios pasajes candidatos, y el pasaje mejor clasificado no es necesariamente el correcto. A veces se recupera una fuente que existe pero se refiere a otro paquete o a un suceso que no viene al caso. Por eso hay que elegir la evidencia que de verdad encaja con la pregunta, y no dar por hecho que toda fuente recuperada encaja.',
+                body: 'La recuperación puede devolver varios pasajes candidatos, y el pasaje mejor clasificado no es necesariamente el correcto. A veces se recupera una fuente que existe pero se refiere a otra sucursal o a un suceso que no viene al caso. Por eso hay que elegir la evidencia que de verdad encaja con la pregunta, y no dar por hecho que toda fuente recuperada encaja.',
             },
         ],
     },
@@ -81,7 +81,7 @@ export const grounding = {
 
     guess: {
         eyebrow: 'Adivina rápido · añadir una fuente',
-        title: 'Le añadimos al modelo datos reales de seguimiento. ¿Qué cambia en la respuesta?',
+        title: 'Le añadimos al modelo información real del horario. ¿Qué cambia en la respuesta?',
         subtitle: 'Elige el modelo mental que te parezca más cercano. Aquí no hay nota, hay una dirección que describe lo que de verdad ocurre.',
         invite: 'Antes de abrir esto, intenta adivinar qué le hace una fuente a la respuesta del modelo.',
         correctTitle: '¡Exacto!',
@@ -115,13 +115,13 @@ export const grounding = {
                 bridge: 'Una fuente ayuda ahora, no de forma permanente.',
             },
             knowsAll: {
-                title: 'El modelo ya conoce todos los sistemas postales',
-                desc: 'El modelo ya tiene todos los estados, así que una fuente es innecesaria.',
+                title: 'El modelo ya conoce el horario de todas las bibliotecas',
+                desc: 'El modelo ya tiene todos los horarios, así que una fuente es innecesaria.',
                 statusLabel: 'Otra capa',
-                getsRight: 'Es cierto que el modelo ha visto mucho texto sobre envíos y correo.',
+                getsRight: 'Es cierto que el modelo ha visto mucho texto sobre bibliotecas y horarios.',
                 missesLabel: 'Qué se pierde',
-                misses: 'El conocimiento general sobre el correo no es el estado en vivo de un paquete concreto. Eso necesita una fuente o un sistema real, no la memoria del entrenamiento.',
-                bridge: 'El conocimiento general no es un estado actual.',
+                misses: 'El conocimiento general sobre bibliotecas no es el horario actual de una biblioteca concreta en un feriado concreto. Eso necesita una fuente o un horario real, no la memoria del entrenamiento.',
+                bridge: 'El conocimiento general no es información actual.',
             },
             autoTrue: {
                 title: 'Si hay una fuente, cada respuesta es automáticamente correcta',
@@ -138,12 +138,12 @@ export const grounding = {
     insight: {
         title: 'Lo clave que hay que entender aquí',
         lead: 'La fuente no convierte al modelo en un mago.',
-        body: 'Simplemente le da algo en qué apoyarse. Si la fuente dice poco, la respuesta también debería decir poco. Si la fuente no da una fecha de entrega, la respuesta no debería inventar una.',
+        body: 'Simplemente le da algo en qué apoyarse. Si la fuente dice poco, la respuesta también debería decir poco. Si la fuente no da un horario de feriado, la respuesta no debería inventar uno.',
     },
 
     analogy: {
         title: 'Un momento de la vida real',
-        body: 'Un buen agente de atención no se inventa dónde está tu paquete. Abre la pantalla de seguimiento, lee lo que hay, y te dice exactamente eso. Si la pantalla no tiene una fecha de entrega, no la inventará. Una fuente funciona para el modelo igual que esa pantalla funciona para el agente.',
+        body: 'Un buen empleado de biblioteca no se inventa el horario del feriado. Abre el horario, lee lo que hay, y te dice exactamente eso. Si el horario no tiene información del feriado, no la inventará. Una fuente funciona para el modelo igual que ese horario funciona para el empleado.',
     },
 
     misconception: {
@@ -155,27 +155,27 @@ export const grounding = {
 
     lock: {
         title: 'Comprueba tu comprensión',
-        question: 'La fuente dice: estado retrasado, entrega estimada no disponible. ¿Qué respuesta está mejor fundamentada en la fuente?',
+        question: 'La fuente dice: horario regular de 09:00 a 18:00, horario de feriado no disponible. ¿Qué respuesta está mejor fundamentada en la fuente?',
         options: [
-            'El paquete llegará mañana.',
-            'El paquete está retrasado, y no hay una fecha de entrega confirmada en la fuente aportada.',
-            'El paquete está perdido.',
-            'El paquete ya se ha entregado.',
+            'La biblioteca abre de 10:00 a 14:00 en el feriado.',
+            'El horario regular es de 09:00 a 18:00, y no hay un horario de feriado confirmado en la fuente aportada.',
+            'La biblioteca está cerrada de forma permanente.',
+            'La biblioteca abre las 24 horas del día.',
         ],
         success:
-            'Una respuesta fundamentada usa lo que dice la fuente, y también señala lo que la fuente no dice. La fuente dice retrasado y no da una fecha, así que la respuesta dice exactamente eso sin inventar una fecha.',
+            'Una respuesta fundamentada usa lo que dice la fuente, y también señala lo que la fuente no dice. La fuente da el horario regular y no da un horario de feriado, así que la respuesta dice exactamente eso sin inventar un horario.',
     },
 
     practical: {
         title: 'Idea práctica',
         lead:
-            'Cuando la exactitud importa, no pidas solo una respuesta. Pide una respuesta a partir de una fuente, y pide al modelo que muestre los límites de esa fuente. En lugar de "dime dónde está el paquete", apunta así:',
+            'Cuando la exactitud importa, no pidas solo una respuesta. Pide una respuesta a partir de una fuente, y pide al modelo que muestre los límites de esa fuente. En lugar de "dime el horario del feriado", apunta así:',
         uses: [
-            'Fundaméntala en una fuente: "Basándote solo en los siguientes datos de seguimiento, redacta una respuesta para el cliente."',
-            'Pide que señale los vacíos: "Si no hay una fecha de entrega confirmada, dilo de forma explícita y no inventes una fecha."',
+            'Fundaméntala en una fuente: "Basándote solo en el siguiente horario, redacta una respuesta para el visitante."',
+            'Pide que señale los vacíos: "Si no hay un horario de feriado confirmado, dilo de forma explícita y no inventes un horario."',
             'Separa lo conocido de lo desconocido: "Escribe qué se sabe a partir de la fuente, qué no se sabe, y qué hay que comprobar ahora."',
             'No vayas más allá de la fuente: "No añadas información que no aparezca en los datos aportados."',
-            'Recuerda que la fuente también se comprueba: para un estado real, asegúrate de que la fuente misma esté actualizada y sea fiable.',
+            'Recuerda que la fuente también se comprueba: para un horario real, asegúrate de que la fuente misma esté actualizada y sea fiable.',
         ],
         caveat:
             'Este es un capítulo que presenta la idea, no una guía completa de ingeniería de RAG. El mensaje simple: recuperar, añadir al contexto y responder con fundamento, siendo honestos sobre lo que la fuente no dice. Y recuerda que una referencia a una fuente solo sirve si apunta a una fuente real que de verdad respalda la afirmación; no toda mención es prueba por sí sola.',

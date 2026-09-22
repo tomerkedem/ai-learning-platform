@@ -42,7 +42,7 @@ export const hallucinationsQuiz = {
                 'Una redacción segura y detallada es una propiedad de cómo se escribe la respuesta, no una prueba de que sea correcta. Una fluidez fuerte puede hacer que incluso una respuesta equivocada suene profesional. La confianza no es evidencia.',
         },
         3: {
-            question: "Un cliente pregunta '¿dónde está mi paquete?' sin número de seguimiento, y el modelo no está conectado a un sistema de estado. ¿Cuándo crece el riesgo de una alucinación?",
+            question: "Un visitante pregunta '¿cuál es el horario de la biblioteca en el feriado?' y el modelo no está conectado al horario oficial. ¿Cuándo crece el riesgo de una alucinación?",
             options: [
                 'El riesgo es pequeño, porque una pregunta corta siempre es fácil de responder',
                 'El riesgo crece, porque falta la información necesaria y el modelo puede rellenarla con un texto plausible',
@@ -53,7 +53,7 @@ export const hallucinationsQuiz = {
                 'Cuando falta la información necesaria y no hay acceso a una fuente, el modelo puede rellenar el vacío con una continuación plausible en lugar de decir que no lo sabe. La información faltante, un prompt vago y la falta de fundamento aumentan el riesgo de una alucinación.',
         },
         4: {
-            question: 'Necesitas una respuesta sobre el estado real de un envío. ¿Qué reduce de verdad el riesgo de una alucinación?',
+            question: 'Necesitas una respuesta que se apoye en información real y actualizada. ¿Qué reduce de verdad el riesgo de una alucinación?',
             options: [
                 'Pedir al modelo que redacte la respuesta con más seguridad',
                 'Pedir una respuesta más larga y detallada',
@@ -64,15 +64,15 @@ export const hallucinationsQuiz = {
                 'La seguridad en la redacción, la longitud o la repetición no hacen que una respuesta esté fundamentada. Lo que reduce el riesgo es el fundamento: aportar una fuente, pedir que separe lo conocido de lo supuesto, y pedir al modelo que diga qué falta. Una situación real necesita una fuente o una herramienta. Cómo entra de verdad una fuente en la respuesta es el tema del próximo capítulo.',
         },
         5: {
-            question: "Tres respuestas a la misma pregunta: (a) 'El paquete llegará mañana', (b) 'No se puede confirmar una fecha sin comprobar el estado', (c) 'Lo que se sabe: la fecha prometida ya pasó. Lo que no se sabe: cuándo llegará. Hay que comprobar el estado'. ¿Cuál es la más exacta?",
+            question: "Tres respuestas a la misma pregunta: (a) 'La biblioteca abre de 10:00 a 14:00 en el feriado', (b) 'No se puede confirmar el horario de feriado sin comprobar el horario oficial', (c) 'Lo que se sabe: el horario regular es de 09:00 a 18:00. Lo que no se sabe: el horario de feriado. Hay que comprobar el horario oficial'. ¿Cuál es la más exacta?",
             options: [
                 '(a) es la mejor, porque es la más clara y segura',
-                '(b) y (c) son más seguras que (a), porque no inventan una fecha, y (c) además separa lo que se sabe de lo que no',
+                '(b) y (c) son más seguras que (a), porque no inventan un horario, y (c) además separa lo que se sabe de lo que no',
                 'Las tres son iguales, porque todas están bien redactadas',
                 '(c) es mala, porque admite que hay cosas que no se saben',
             ],
             explanation:
-                '(a) es fluida pero inventa una fecha sin comprobar, por lo que es la arriesgada. (b) es prudente y no inventa nada. (c) marca de forma explícita qué se sabe, qué no y qué hay que comprobar. Una respuesta que marca los límites de lo que sabe supera a una suposición segura. Admitir lo que no se sabe es una fortaleza, no una debilidad. Dicho esto, una redacción prudente reduce el riesgo de inventar pero no garantiza que el contenido sea correcto. Cuando el hecho importa, aún hay que comprobarlo con una fuente.',
+                '(a) es fluida pero inventa un horario sin comprobar, por lo que es la arriesgada. (b) es prudente y no inventa nada. (c) marca de forma explícita qué se sabe, qué no y qué hay que comprobar. Una respuesta que marca los límites de lo que sabe supera a una suposición segura. Admitir lo que no se sabe es una fortaleza, no una debilidad. Dicho esto, una redacción prudente reduce el riesgo de inventar pero no garantiza que el contenido sea correcto. Cuando el hecho importa, aún hay que comprobarlo con una fuente.',
         },
     } satisfies Record<HallucinationsQuizId, HallucinationsQuizText>,
 };

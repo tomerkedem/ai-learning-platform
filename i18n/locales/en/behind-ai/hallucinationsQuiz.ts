@@ -41,7 +41,7 @@ export const hallucinationsQuiz = {
                 'Confident, detailed phrasing is a property of how the answer is written, not evidence that it is correct. Strong language fluency can make even a wrong answer sound professional. Confidence is not evidence.',
         },
         3: {
-            question: "A customer asks 'Where is my package?' with no tracking number, and the model is not connected to a status system. When does the risk of a hallucination grow?",
+            question: "A visitor asks 'What are the library's holiday hours?' and the model is not connected to the official schedule. When does the risk of a hallucination grow?",
             options: [
                 'The risk is small, because a short question is always easy to answer',
                 'The risk grows, because the needed information is missing and the model may fill it in with plausible text',
@@ -52,7 +52,7 @@ export const hallucinationsQuiz = {
                 'When the needed information is missing and there is no access to a source, the model may fill the gap with a plausible continuation instead of saying it does not know. Missing information, a vague prompt and a lack of grounding all raise the risk of a hallucination.',
         },
         4: {
-            question: 'You need an answer about the real status of a shipment. What actually reduces the risk of a hallucination?',
+            question: 'You need an answer that rests on real, up to date information. What actually reduces the risk of a hallucination?',
             options: [
                 'Asking the model to phrase the answer with more confidence',
                 'Asking for a longer, more detailed answer',
@@ -63,15 +63,15 @@ export const hallucinationsQuiz = {
                 'Confidence in phrasing, length or repetition do not make an answer grounded. What lowers risk is grounding: provide a source, ask it to separate known from assumed, and ask the model to say what is missing. A real situation needs a source or a tool. How a source actually enters an answer is the topic of the next chapter.',
         },
         5: {
-            question: "Three answers to the same question: (a) 'The package will arrive tomorrow', (b) 'A date cannot be confirmed without checking the status', (c) 'What is known: the promised date has passed. What is not known: when it will arrive. The status needs checking'. Which is most accurate?",
+            question: "Three answers to the same question: (a) 'The library is open from 10:00 to 14:00 on the holiday', (b) 'Holiday hours cannot be confirmed without checking the schedule', (c) 'What is known: the regular hours are 09:00 to 18:00. What is not known: the holiday hours. The official schedule needs checking'. Which is most accurate?",
             options: [
                 '(a) is best, because it is the clearest and most confident',
-                '(b) and (c) are safer than (a), because they do not invent a date, and (c) also separates what is known from what is not',
+                '(b) and (c) are safer than (a), because they do not invent hours, and (c) also separates what is known from what is not',
                 'All three are equal, because they are all well phrased',
                 '(c) is poor, because it admits there are things it does not know',
             ],
             explanation:
-                '(a) is fluent but invents an unchecked date, which makes it the risky one. (b) is careful and invents nothing. (c) explicitly marks what is known, what is not, and what needs checking. An answer that marks the limits of what it knows beats a confident guess. Admitting what is unknown is a strength, not a weakness. That said, cautious phrasing lowers the risk of inventing but does not guarantee the content is correct. When the fact matters you still need to check against a source.',
+                '(a) is fluent but invents unchecked hours, which makes it the risky one. (b) is careful and invents nothing. (c) explicitly marks what is known, what is not, and what needs checking. An answer that marks the limits of what it knows beats a confident guess. Admitting what is unknown is a strength, not a weakness. That said, cautious phrasing lowers the risk of inventing but does not guarantee the content is correct. When the fact matters you still need to check against a source.',
         },
     } satisfies Record<HallucinationsQuizId, HallucinationsQuizText>,
 };

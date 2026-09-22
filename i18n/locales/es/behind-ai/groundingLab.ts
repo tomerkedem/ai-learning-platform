@@ -4,13 +4,13 @@
 // IA se conecta a fuentes). El hebreo es la fuente de la verdad y define el tipo
 // (GroundingLabContent).
 //
-// Idea central: exactamente la misma pregunta del cliente, y cuatro estados de fuente. El
-// aprendiz se mueve entre ellos, sin fuente, con una fuente, una fuente incompleta y una
-// fuente contradictoria, y ve cómo una fuente cambia lo que la respuesta puede decir: en qué
-// se apoya, qué puede decir y qué no debe inventar.
+// Idea central: exactamente la misma pregunta del visitante, y cinco estados de fuente. El
+// aprendiz se mueve entre ellos, sin fuente, con una fuente, una fuente incompleta, una
+// fuente que no coincide y una fuente contradictoria, y ve cómo una fuente cambia lo que la
+// respuesta puede decir: en qué se apoya, qué puede decir y qué no debe inventar.
 //
 // Totalmente determinista: sin azar, sin una llamada real a un modelo y sin afirmar que la
-// recuperación viene de un sistema de seguimiento real. Cada ejemplo aquí es solo un ejemplo
+// recuperación viene de un horario real. Cada ejemplo aquí es solo un ejemplo
 // didáctico.
 //
 // Traducción de primera pasada, pendiente de revisión por un hablante nativo.
@@ -21,13 +21,13 @@ import type { GroundingLabContent } from '../../he/behind-ai/groundingLab';
 
 export const groundingLab: GroundingLabContent = {
     sectionEyebrow: 'Grounding Lab',
-    sectionTitle: 'La misma pregunta, cuatro estados de fuente: ¿qué puede decir la respuesta?',
+    sectionTitle: 'La misma pregunta, cinco estados de fuente: ¿qué puede decir la respuesta?',
     sectionIntro:
-        'Un cliente pregunta dónde está su paquete. Muévete entre los estados de fuente, sin fuente, con una fuente, una fuente incompleta y una fuente contradictoria, y observa cómo la misma pregunta recibe una respuesta distinta. Una buena fuente mantiene la respuesta ligada a lo que se conoce, y señala lo que no.',
+        'Un visitante pregunta cuál es el horario de la biblioteca en el feriado. Muévete entre los estados de fuente, sin fuente, con una fuente, una fuente incompleta, una fuente que no coincide y una fuente contradictoria, y observa cómo la misma pregunta recibe una respuesta distinta. Una buena fuente mantiene la respuesta ligada a lo que se conoce, y señala lo que no.',
     heading: 'Detrás de la respuesta fundamentada',
     kicker: 'Grounding Lab',
-    questionLabel: 'Pregunta del cliente',
-    question: 'Mi paquete tenía que llegar ayer. ¿Dónde está?',
+    questionLabel: 'Pregunta del visitante',
+    question: '¿Cuál es el horario de la biblioteca en el feriado?',
     modeLabel: 'Elige un estado de fuente',
     answerLabel: 'La respuesta generada',
     groundingCheckLabel: 'Comprobación de fundamento',
@@ -37,7 +37,7 @@ export const groundingLab: GroundingLabContent = {
     noSourceLabel: 'Sin fuente',
     noSourceNote: 'No se aportó ninguna fuente. La respuesta se apoya solo en la continuación del lenguaje, sin datos con los que contrastar.',
     disclaimer:
-        'Todas las respuestas y fuentes aquí son un ejemplo didáctico, no una consulta real a un sistema de seguimiento. Sirven para mostrar cómo una fuente cambia lo que la respuesta puede decir. Una respuesta fundamentada es más fuerte, pero solo es tan buena como la fuente que la respalda.',
+        'Todas las respuestas y fuentes aquí son un ejemplo didáctico, no una consulta real a un horario. Sirven para mostrar cómo una fuente cambia lo que la respuesta puede decir. Una respuesta fundamentada es más fuerte, pero solo es tan buena como la fuente que la respalda.',
     sr: {
         modeGroup: 'Elección del estado de fuente',
         checks: 'Comprobación de fundamento de la respuesta seleccionada',
@@ -49,15 +49,15 @@ export const groundingLab: GroundingLabContent = {
             badge: 'ungrounded',
             badgeLabel: 'Sin fundamento',
             summary: 'Sin fuente, la respuesta suena servicial pero se apoya solo en la continuación del lenguaje.',
-            answer: 'Tu paquete probablemente llegue mañana.',
-            answerSummary: 'Fluida y tranquilizadora, pero ningún dato respalda "mañana".',
+            answer: 'La biblioteca probablemente abre de 10:00 a 14:00 en el feriado.',
+            answerSummary: 'Fluida y tranquilizadora, pero ningún dato respalda ese horario.',
             checks: [
-                { id: 'based', state: 'fail', label: '¿Se apoya en una fuente?', note: 'No. No se aportaron datos de seguimiento, así que no hay nada en qué apoyarse.' },
-                { id: 'invents', state: 'fail', label: '¿Inventa una fecha?', note: 'Sí. "Mañana" es una suposición plausible, no un dato comprobado en una fuente.' },
+                { id: 'based', state: 'fail', label: '¿Se apoya en una fuente?', note: 'No. No se aportó ningún horario, así que no hay nada en qué apoyarse.' },
+                { id: 'invents', state: 'fail', label: '¿Inventa un horario?', note: 'Sí. Ese horario es una suposición plausible, no un dato comprobado en una fuente.' },
                 { id: 'limits', state: 'warn', label: '¿Señala lo que falta?', note: 'No. La respuesta no deja claro que no tiene ningún dato.' },
             ],
-            maySay: 'Sin fuente, la respuesta como mucho puede decir que no tiene datos, y pedir un número de seguimiento.',
-            mustNotInvent: 'No debe dar una fecha de entrega, ni "mañana" ni ninguna otra, porque ningún dato la respalda.',
+            maySay: 'Sin fuente, la respuesta como mucho puede decir que no tiene datos, y sugerir comprobar el horario oficial.',
+            mustNotInvent: 'No debe dar un horario de feriado, ni este ni ningún otro, porque ningún dato lo respalda.',
             takeaway: 'Sin fuente, una respuesta fluida puede inventar el dato más importante.',
         },
         {
@@ -65,27 +65,25 @@ export const groundingLab: GroundingLabContent = {
             control: 'Con una fuente',
             badge: 'grounded',
             badgeLabel: 'Fundamentada',
-            summary: 'Con una tarjeta de estado en el contexto, cada afirmación se apoya en datos reales.',
+            summary: 'Con una tarjeta de información en el contexto, cada afirmación se apoya en datos reales.',
             source: {
-                label: 'Estado de seguimiento (datos de ejemplo)',
+                label: 'Información de la biblioteca (datos de ejemplo)',
                 caption: 'Solo una tarjeta de ejemplo, para ilustrar. No son datos reales.',
                 rows: [
-                    { label: 'Código de barras', value: 'RR123456789IL' },
-                    { label: 'Último escaneo', value: 'Centro de clasificación' },
-                    { label: 'Estado', value: 'Retrasado' },
-                    { label: 'Entrega estimada', value: 'No disponible', missing: true },
+                    { label: 'Horario regular', value: '09:00-18:00' },
+                    { label: 'Horario de feriado', value: 'No disponible', missing: true },
                 ],
-                note: 'Nota: la fuente dice "Retrasado", pero no da una fecha de entrega. Una buena respuesta no inventará una.',
+                note: 'Nota: la fuente da el horario regular, pero no da un horario de feriado. Una buena respuesta no inventará uno.',
             },
-            answer: 'Según los datos de seguimiento mostrados aquí, el paquete está retrasado en el centro de clasificación. Ahora mismo no hay una fecha de entrega confirmada, así que no me comprometeré a una fecha.',
+            answer: 'Según la información disponible, el horario regular es de 09:00 a 18:00, pero el horario de feriado no aparece en la fuente.',
             answerSummary: 'Menos dramática, pero cada afirmación se apoya en la fuente.',
             checks: [
-                { id: 'based', state: 'pass', label: '¿Se apoya en una fuente?', note: 'Sí. El retraso y la ubicación se toman directamente de la tarjeta de estado.' },
-                { id: 'invents', state: 'pass', label: '¿Inventa una fecha?', note: 'No. La fuente dice "No disponible", y la respuesta lo deja abierto.' },
-                { id: 'limits', state: 'pass', label: '¿Señala lo que falta?', note: 'Sí. Dice con claridad que no hay una fecha de entrega confirmada.' },
+                { id: 'based', state: 'pass', label: '¿Se apoya en una fuente?', note: 'Sí. El horario regular se toma directamente de la tarjeta de información.' },
+                { id: 'invents', state: 'pass', label: '¿Inventa un horario de feriado?', note: 'No. La fuente dice "No disponible", y la respuesta lo deja abierto.' },
+                { id: 'limits', state: 'pass', label: '¿Señala lo que falta?', note: 'Sí. Dice con claridad que no hay un horario de feriado confirmado.' },
             ],
-            maySay: 'La respuesta puede informar del estado y la ubicación que aparecen en la fuente, y decir que no hay una fecha de entrega confirmada.',
-            mustNotInvent: 'No debe añadir una fecha de entrega, porque la fuente la marca como "No disponible".',
+            maySay: 'La respuesta puede informar del horario regular que aparece en la fuente, y decir que no hay un horario de feriado confirmado.',
+            mustNotInvent: 'No debe añadir un horario de feriado, porque la fuente lo marca como "No disponible".',
             takeaway: 'Una respuesta fundamentada es menos dramática, pero mucho más fiable. La fuerza está en el fundamento, no en la redacción.',
         },
         {
@@ -95,25 +93,24 @@ export const groundingLab: GroundingLabContent = {
             badgeLabel: 'Fuente incompleta',
             summary: 'La fuente existe pero está casi vacía. El fundamento revela exactamente lo que falta.',
             source: {
-                label: 'Estado de seguimiento (datos de ejemplo)',
+                label: 'Información de la biblioteca (datos de ejemplo)',
                 caption: 'Solo una tarjeta de ejemplo, para ilustrar. No son datos reales.',
                 rows: [
-                    { label: 'Código de barras', value: 'RR123456789IL' },
-                    { label: 'Último escaneo', value: 'No disponible', missing: true },
-                    { label: 'Estado', value: 'No disponible', missing: true },
-                    { label: 'Entrega estimada', value: 'No disponible', missing: true },
+                    { label: 'Dirección', value: 'Calle Biblioteca 5' },
+                    { label: 'Horario regular', value: 'No disponible', missing: true },
+                    { label: 'Horario de feriado', value: 'No disponible', missing: true },
                 ],
-                note: 'La fuente está casi vacía. Hay un código de barras, pero ningún estado, ningún escaneo y ninguna fecha.',
+                note: 'La fuente está casi vacía. Hay una dirección, pero ningún horario regular y ningún horario de feriado.',
             },
-            answer: 'Ahora mismo no hay datos suficientes para saber dónde está el paquete. Hay un código de barras, pero ningún estado actual. Hay que consultar una fuente más actualizada antes de responder.',
+            answer: 'Ahora mismo no hay datos suficientes para saber cuándo abre la biblioteca en el feriado. Hay una dirección, pero ningún horario. Hay que consultar una fuente más actualizada antes de responder.',
             answerSummary: 'El fundamento no inventa los datos que faltan, los revela.',
             checks: [
                 { id: 'based', state: 'warn', label: '¿Se apoya en una fuente?', note: 'La fuente existe, pero sus campos importantes están vacíos.' },
-                { id: 'invents', state: 'pass', label: '¿Inventa un estado?', note: 'No. La respuesta dice claramente que no hay datos suficientes.' },
+                { id: 'invents', state: 'pass', label: '¿Inventa un horario?', note: 'No. La respuesta dice claramente que no hay datos suficientes.' },
                 { id: 'limits', state: 'pass', label: '¿Señala lo que falta?', note: 'Sí. Dice qué falta y qué hay que comprobar.' },
             ],
             maySay: 'La respuesta puede decir que no hay datos suficientes, y pedir una fuente más actualizada.',
-            mustNotInvent: 'No debe inventar un estado ni una fecha solo para sonar completa.',
+            mustNotInvent: 'No debe inventar un horario solo para sonar completa.',
             takeaway: 'El fundamento puede revelar la información que falta. A veces la respuesta correcta es detenerse y pedir datos.',
         },
         {
@@ -121,27 +118,25 @@ export const groundingLab: GroundingLabContent = {
             control: 'Fuente que no coincide',
             badge: 'ungrounded',
             badgeLabel: 'Fuente que no coincide',
-            summary: 'La fuente se recuperó y parece correcta, pero se refiere a otro paquete. No responde a la pregunta del cliente.',
+            summary: 'La fuente se recuperó y parece correcta, pero se refiere a otra biblioteca. No responde a la pregunta del visitante.',
             source: {
-                label: 'Estado de seguimiento (datos de ejemplo)',
+                label: 'Información de la biblioteca, sucursal 9 (datos de ejemplo)',
                 caption: 'Solo una tarjeta de ejemplo, para ilustrar. No son datos reales.',
                 rows: [
-                    { label: 'Código de barras', value: 'RR987654321IL' },
-                    { label: 'Estado', value: 'Entregado' },
-                    { label: 'Hora de entrega', value: '09:14' },
-                    { label: 'Destino', value: 'Otra ciudad' },
+                    { label: 'Horario regular', value: '08:00-16:00' },
+                    { label: 'Horario de feriado', value: 'Cerrado' },
                 ],
-                note: 'Nota: el código de barras de aquí es distinto del del cliente, y el destino es otra ciudad. La fuente se recuperó, pero es de otro paquete.',
+                note: 'Nota: esta es la sucursal 9, no la biblioteca del barrio del visitante (sucursal 14). La fuente se recuperó, pero es de otra biblioteca.',
             },
-            answer: 'La fuente recuperada se refiere a otro paquete, con otro código de barras y otro destino, así que no responde a tu pregunta. Necesito los datos de seguimiento de tu paquete antes de poder responder.',
+            answer: 'La fuente recuperada se refiere a la sucursal 9, no a la sucursal 14 sobre la que preguntaste, así que no responde a tu pregunta. Necesito la información de la biblioteca correcta antes de poder responder.',
             answerSummary: 'La fuente existe pero no encaja, así que no se usa como base de la respuesta.',
             checks: [
-                { id: 'based', state: 'fail', label: '¿Se apoya en una fuente que coincide?', note: 'No. La fuente recuperada es de otro paquete, así que no puede fundamentar una respuesta a esta pregunta.' },
-                { id: 'invents', state: 'pass', label: '¿Inventa un estado?', note: 'No. La respuesta no atribuye al cliente el estado del otro paquete.' },
+                { id: 'based', state: 'fail', label: '¿Se apoya en una fuente que coincide?', note: 'No. La fuente recuperada es de otra sucursal, así que no puede fundamentar una respuesta a esta pregunta.' },
+                { id: 'invents', state: 'pass', label: '¿Inventa un horario?', note: 'No. La respuesta no atribuye al visitante el horario de la otra sucursal.' },
                 { id: 'limits', state: 'pass', label: '¿Señala que la fuente no coincide?', note: 'Sí. Dice de forma explícita que la fuente recuperada no encaja, y pide los datos correctos.' },
             ],
-            maySay: 'La respuesta puede decir que la fuente recuperada no coincide con la pregunta, y pedir los datos de seguimiento correctos del cliente.',
-            mustNotInvent: 'No debe usar el estado del otro paquete como si fuera el del cliente.',
+            maySay: 'La respuesta puede decir que la fuente recuperada pertenece a otra sucursal, y pedir la información correcta de la sucursal del visitante.',
+            mustNotInvent: 'No debe usar el horario de la otra sucursal como si fuera el de la sucursal consultada.',
             takeaway: 'A veces la recuperación devuelve una fuente que existe pero no encaja. Una fuente recuperada no es necesariamente la fuente correcta.',
         },
         {
@@ -149,28 +144,26 @@ export const groundingLab: GroundingLabContent = {
             control: 'Fuente contradictoria',
             badge: 'contradiction',
             badgeLabel: 'Fuente contradictoria',
-            summary: 'El cliente dice que el paquete no llegó, pero la fuente lo marca como entregado.',
+            summary: 'El visitante dice que escuchó que la biblioteca abre en el feriado, pero la fuente la marca como cerrada.',
             source: {
-                label: 'Estado de seguimiento (datos de ejemplo)',
+                label: 'Información de la biblioteca (datos de ejemplo)',
                 caption: 'Solo una tarjeta de ejemplo, para ilustrar. No son datos reales.',
                 rows: [
-                    { label: 'Código de barras', value: 'RR123456789IL' },
-                    { label: 'Estado', value: 'Entregado' },
-                    { label: 'Hora de entrega', value: '10:32' },
-                    { label: 'Punto de entrega', value: 'Centro de entrega' },
+                    { label: 'Horario regular', value: '09:00-18:00' },
+                    { label: 'Horario de feriado', value: 'Cerrado' },
                 ],
-                note: 'El cliente dice que no lo recibió, pero la fuente lo marca como "Entregado". Es un conflicto que hay que manejar con cuidado.',
+                note: 'El visitante afirma que escuchó que la biblioteca abre en el feriado, pero la fuente la marca como "Cerrado". Es un conflicto que hay que manejar con cuidado.',
             },
-            answer: 'Según los datos de seguimiento mostrados aquí, el paquete figura como entregado a las 10:32 en el centro de entrega. Si sientes que no lo recibiste, abriremos una investigación para averiguar qué pasó.',
+            answer: 'Según la información mostrada aquí, la biblioteca figura como cerrada en el feriado. Si escuchaste que está abierta, lo averiguaremos para entender qué pasó.',
             answerSummary: 'La respuesta se mantiene fiel a la fuente, y maneja el conflicto sin culpar a nadie.',
             checks: [
-                { id: 'based', state: 'pass', label: '¿Se apoya en una fuente?', note: 'Sí. El estado, la hora y el lugar se toman de la fuente.' },
+                { id: 'based', state: 'pass', label: '¿Se apoya en una fuente?', note: 'Sí. El horario regular y el de feriado se toman de la fuente.' },
                 { id: 'invents', state: 'pass', label: '¿Inventa detalles?', note: 'No. La respuesta no añade ninguna razón ni culpa que no esté en la fuente.' },
-                { id: 'limits', state: 'warn', label: '¿Maneja el conflicto?', note: 'Sí, con cuidado. Muestra lo que dice la fuente y ofrece una investigación, sin desestimar al cliente.' },
+                { id: 'limits', state: 'warn', label: '¿Maneja el conflicto?', note: 'Sí, con cuidado. Muestra lo que dice la fuente y ofrece averiguarlo, sin desestimar al visitante.' },
             ],
-            maySay: 'La respuesta puede informar de lo que dice la fuente, y ofrecer abrir una investigación sobre el conflicto.',
-            mustNotInvent: 'No debe culpar al cliente, ni inventar una razón de por qué el estado y la realidad no coinciden.',
-            takeaway: 'Cuando la fuente entra en conflicto con el cliente, muestra con cuidado lo que dice y abre una investigación, sin culpar a nadie.',
+            maySay: 'La respuesta puede informar de lo que dice la fuente, y ofrecer averiguar sobre el conflicto.',
+            mustNotInvent: 'No debe culpar al visitante, ni inventar una razón de por qué la fuente y lo que escuchó no coinciden.',
+            takeaway: 'Cuando la fuente entra en conflicto con el visitante, muestra con cuidado lo que dice y ofrece averiguarlo, sin culpar a nadie.',
         },
     ],
 };

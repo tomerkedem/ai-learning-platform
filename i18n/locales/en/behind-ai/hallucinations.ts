@@ -80,7 +80,7 @@ export const hallucinations = {
 
     guess: {
         eyebrow: 'Quick guess · a confident answer',
-        title: 'A customer asks where the package is, and the model immediately answers "it arrives tomorrow". What is the problem?',
+        title: 'A visitor asks what the library\'s holiday hours are, and the model immediately answers "the library is open from 10:00 to 14:00". What is the problem?',
         subtitle: 'Pick the mental model that feels closest to you. There is no score here, there is one direction that describes what really happens.',
         invite: 'Before we open this up, try to guess why an answer that sounds confident and helpful can still be wrong.',
         correctTitle: 'Exactly right!',
@@ -89,7 +89,7 @@ export const hallucinations = {
         revealButton: 'Reveal the main idea',
         revealTitle: 'So what really happens?',
         revealCopy:
-            'The model can phrase a plausible, convincing answer without knowing the real status. It continues a language pattern, so "it arrives tomorrow" can be a plausible continuation only, not a detail checked in a system. Confidence in phrasing is not evidence that the fact was verified.',
+            'The model can phrase a plausible, convincing answer without knowing the real hours. It continues a language pattern, so "10:00 to 14:00" can be a plausible continuation only, not a detail checked against a schedule. Confidence in phrasing is not evidence that the fact was verified.',
         cta: 'Let us see it in the lab',
         resetButton: 'Choose again',
         exploreHint: 'You can pick another option too and see how it sounds.',
@@ -101,7 +101,7 @@ export const hallucinations = {
                 statusLabel: 'You chose right',
                 getsRight: 'Exactly. Language fluency is enough to produce a convincing answer. It does not require that the fact be checked.',
                 missesLabel: 'What is left to see',
-                misses: 'In the lab we will see how the same question gets an answer that invents a date, and how to spot that this confidence rests on nothing.',
+                misses: 'In the lab we will see how the same question gets an answer that invents opening hours, and how to spot that this confidence rests on nothing.',
                 bridge: 'Confidence in phrasing is not evidence that the information is correct.',
             },
             confidentTrue: {
@@ -114,12 +114,12 @@ export const hallucinations = {
                 bridge: 'Confidence is not evidence.',
             },
             dateChecked: {
-                title: 'If there is a date in the answer, the model must have checked a system',
-                desc: 'A precise detail like a date shows the model went to a real source.',
+                title: 'If there are precise hours in the answer, the model must have checked a schedule',
+                desc: 'A precise detail like hours shows the model went to a real source.',
                 statusLabel: 'A different layer',
-                getsRight: 'It is true that a real date can come from a source or a tool.',
+                getsRight: 'It is true that precise hours can come from a source or a tool.',
                 missesLabel: 'What it misses',
-                misses: 'But without a connection to a source, even a precise date can be a plausible fill-in. Checking a source is a separate layer from the phrasing.',
+                misses: 'But without a connection to a source, even precise hours can be a plausible fill-in. Checking a source is a separate layer from the phrasing.',
                 bridge: 'A precise detail is not necessarily a checked detail.',
             },
             longerBetter: {
@@ -154,27 +154,27 @@ export const hallucinations = {
 
     lock: {
         title: 'Check Your Understanding',
-        question: 'The model says "the package will arrive tomorrow", but no tracking source was provided. What is the safest interpretation?',
+        question: 'The model says "the library is open from 10:00 to 14:00 on the holiday", but no official schedule was provided. What is the safest interpretation?',
         options: [
-            'The model checked the real delivery system',
-            'The answer is fluent, but the delivery date is unsupported',
+            'The model checked the library\'s real schedule',
+            'The answer is fluent, but the holiday hours are unsupported',
             'The answer is correct because it sounds confident',
-            'The model always knows the current package status',
+            'The model always knows the library\'s current opening hours',
         ],
         success:
-            'A generated answer can sound complete even when a key detail is missing. "Tomorrow" here is a plausible continuation, not a checked fact. Without a source, the delivery date is unsupported.',
+            'A generated answer can sound complete even when a key detail is missing. "10:00 to 14:00" here is a plausible continuation, not a checked fact. Without a source, the holiday hours are unsupported.',
     },
 
     practical: {
         title: 'Practical insight',
         lead:
-            'AI is very useful, but for factual claims it helps to know whether the answer is grounded. Instead of "tell me where the package is", steer the request so it separates what is known from what is not, and ask for a source when the status matters:',
+            'AI is very useful, but for factual claims it helps to know whether the answer is grounded. Instead of "tell me the holiday hours", steer the request so it separates what is known from what is not, and ask for a source when the status matters:',
         uses: [
             'Separate fact from assumption: "State what is known, what is missing, and what needs checking, and do not guess."',
-            'Ask it to say what is missing: "If there is no tracking data, do not invent a status, ask for the tracking number."',
-            'Stop at every precise detail: a date, a time or a status in the answer, and ask where it was checked before relying on it.',
-            'Require careful phrasing: "If there is no confirmed delivery date, state that explicitly."',
-            'Verify important facts before acting, and use a tool or source for real operational status.',
+            'Ask it to say what is missing: "If the holiday hours are not listed, do not invent hours, ask to check the official schedule."',
+            'Stop at every precise detail: an hour, a day or a status in the answer, and ask where it was checked before relying on it.',
+            'Require careful phrasing: "If there are no confirmed holiday hours, state that explicitly."',
+            'Verify important facts before acting, and use the official schedule or a reliable source.',
         ],
         caveat:
             'Connecting to sources of truth, known as Grounding or RAG, is the topic of the next step. Here we only identified the problem and the need to verify. The message is not "never trust AI", but "know when to verify".',

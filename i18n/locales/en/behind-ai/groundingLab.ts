@@ -4,13 +4,13 @@
 // Connects to Sources). Hebrew is the source of truth and defines the type
 // (GroundingLabContent).
 //
-// Core idea: the exact same customer question, and four source states. The learner moves
-// between them, no source, with a source, an incomplete source, and a conflicting source,
-// and sees how a source changes what the answer can say: what it rests on, what it may say,
-// and what it must not invent.
+// Core idea: the exact same visitor question, and five source states. The learner moves
+// between them, no source, with a source, an incomplete source, a mismatched source, and a
+// conflicting source, and sees how a source changes what the answer can say: what it rests
+// on, what it may say, and what it must not invent.
 //
 // Fully deterministic: no randomness, no real model call, and no claim that the retrieval
-// comes from a real tracking system. Every example here is a teaching example only.
+// comes from a real schedule. Every example here is a teaching example only.
 //
 // This is a first-pass translation to be reviewed by a native speaker later.
 //
@@ -20,13 +20,13 @@ import type { GroundingLabContent } from '../../he/behind-ai/groundingLab';
 
 export const groundingLab: GroundingLabContent = {
     sectionEyebrow: 'Grounding Lab',
-    sectionTitle: 'Same question, four source states: what can the answer say?',
+    sectionTitle: 'Same question, five source states: what can the answer say?',
     sectionIntro:
-        'A customer asks where their package is. Move between the source states, no source, with a source, an incomplete source, and a conflicting source, and see how the same question gets a different answer. A good source keeps the answer tied to what is known, and flags what is not.',
+        'A visitor asks what the library\'s holiday hours are. Move between the source states, no source, with a source, an incomplete source, a mismatched source, and a conflicting source, and see how the same question gets a different answer. A good source keeps the answer tied to what is known, and flags what is not.',
     heading: 'Behind the grounded answer',
     kicker: 'Grounding Lab',
-    questionLabel: 'Customer question',
-    question: 'My package was supposed to arrive yesterday. Where is it?',
+    questionLabel: 'Visitor question',
+    question: 'What are the library\'s opening hours on the holiday?',
     modeLabel: 'Choose a source state',
     answerLabel: 'The answer produced',
     groundingCheckLabel: 'Grounding check',
@@ -36,7 +36,7 @@ export const groundingLab: GroundingLabContent = {
     noSourceLabel: 'No source',
     noSourceNote: 'No source was provided. The answer rests only on language continuation, with no data to check against.',
     disclaimer:
-        'All answers and sources here are a teaching example, not a real lookup from a tracking system. They are meant to show how a source changes what the answer can say. A grounded answer is stronger, but it is only as good as the source behind it.',
+        'All answers and sources here are a teaching example, not a real lookup from a schedule. They are meant to show how a source changes what the answer can say. A grounded answer is stronger, but it is only as good as the source behind it.',
     sr: {
         modeGroup: 'Choosing the source state',
         checks: 'Grounding check of the selected answer',
@@ -48,15 +48,15 @@ export const groundingLab: GroundingLabContent = {
             badge: 'ungrounded',
             badgeLabel: 'Not grounded',
             summary: 'With no source, the answer sounds helpful but rests only on language continuation.',
-            answer: 'Your package will probably arrive tomorrow.',
-            answerSummary: 'Fluent and reassuring, but no data supports "tomorrow".',
+            answer: 'The library is probably open from 10:00 to 14:00 on the holiday.',
+            answerSummary: 'Fluent and reassuring, but no data supports those hours.',
             checks: [
-                { id: 'based', state: 'fail', label: 'Rests on a source?', note: 'No. No tracking data was provided, so there is nothing to rest on.' },
-                { id: 'invents', state: 'fail', label: 'Invents a date?', note: 'Yes. "Tomorrow" is a plausible guess, not a detail checked in a source.' },
+                { id: 'based', state: 'fail', label: 'Rests on a source?', note: 'No. No schedule was provided, so there is nothing to rest on.' },
+                { id: 'invents', state: 'fail', label: 'Invents hours?', note: 'Yes. Those hours are a plausible guess, not a detail checked in a source.' },
                 { id: 'limits', state: 'warn', label: 'Flags what is missing?', note: 'No. The answer does not make clear that it has no data at all.' },
             ],
-            maySay: 'With no source, the answer can at most say it has no data, and ask for a tracking number.',
-            mustNotInvent: 'It must not give an arrival date, "tomorrow" or any other, because no data supports it.',
+            maySay: 'With no source, the answer can at most say it has no data, and suggest checking the official schedule.',
+            mustNotInvent: 'It must not give holiday hours, these or any other, because no data supports them.',
             takeaway: 'With no source, a fluent answer can invent the most important detail.',
         },
         {
@@ -64,27 +64,25 @@ export const groundingLab: GroundingLabContent = {
             control: 'With a source',
             badge: 'grounded',
             badgeLabel: 'Grounded',
-            summary: 'With a status card in context, every claim rests on real data.',
+            summary: 'With an information card in context, every claim rests on real data.',
             source: {
-                label: 'Tracking status (sample data)',
+                label: 'Library information (sample data)',
                 caption: 'Sample card only, for illustration. This is not real data.',
                 rows: [
-                    { label: 'Barcode', value: 'RR123456789IL' },
-                    { label: 'Last scan', value: 'Sorting center' },
-                    { label: 'Status', value: 'Delayed' },
-                    { label: 'Estimated delivery', value: 'Not available', missing: true },
+                    { label: 'Regular hours', value: '09:00-18:00' },
+                    { label: 'Holiday hours', value: 'Not available', missing: true },
                 ],
-                note: 'Note: the source says "Delayed", but gives no arrival date. A good answer will not invent one.',
+                note: 'Note: the source gives regular hours, but no holiday hours. A good answer will not invent any.',
             },
-            answer: 'According to the tracking data provided here, the package is delayed at the sorting center. There is no confirmed arrival date right now, so I will not commit to a date.',
+            answer: 'According to the available information, the regular opening hours are 09:00 to 18:00, but the source does not list the holiday opening hours.',
             answerSummary: 'Less dramatic, but every claim in it rests on the source.',
             checks: [
-                { id: 'based', state: 'pass', label: 'Rests on a source?', note: 'Yes. The delay and the location are taken straight from the status card.' },
-                { id: 'invents', state: 'pass', label: 'Invents a date?', note: 'No. The source says "Not available", and the answer leaves it open.' },
-                { id: 'limits', state: 'pass', label: 'Flags what is missing?', note: 'Yes. It states clearly that there is no confirmed arrival date.' },
+                { id: 'based', state: 'pass', label: 'Rests on a source?', note: 'Yes. The regular hours are taken straight from the information card.' },
+                { id: 'invents', state: 'pass', label: 'Invents holiday hours?', note: 'No. The source says "Not available", and the answer leaves it open.' },
+                { id: 'limits', state: 'pass', label: 'Flags what is missing?', note: 'Yes. It states clearly that there is no confirmed holiday hours.' },
             ],
-            maySay: 'The answer can report the status and location from the source, and say there is no confirmed arrival date.',
-            mustNotInvent: 'It must not add an arrival date, because the source lists it as "Not available".',
+            maySay: 'The answer can report the regular hours from the source, and say there is no confirmed holiday hours.',
+            mustNotInvent: 'It must not add holiday hours, because the source lists them as "Not available".',
             takeaway: 'A grounded answer is less dramatic, but far more reliable. The power is in the grounding, not the wording.',
         },
         {
@@ -94,25 +92,24 @@ export const groundingLab: GroundingLabContent = {
             badgeLabel: 'Incomplete source',
             summary: 'The source exists but is nearly empty. Grounding reveals exactly what is missing.',
             source: {
-                label: 'Tracking status (sample data)',
+                label: 'Library information (sample data)',
                 caption: 'Sample card only, for illustration. This is not real data.',
                 rows: [
-                    { label: 'Barcode', value: 'RR123456789IL' },
-                    { label: 'Last scan', value: 'Not available', missing: true },
-                    { label: 'Status', value: 'Not available', missing: true },
-                    { label: 'Estimated delivery', value: 'Not available', missing: true },
+                    { label: 'Address', value: '5 Library Street' },
+                    { label: 'Regular hours', value: 'Not available', missing: true },
+                    { label: 'Holiday hours', value: 'Not available', missing: true },
                 ],
-                note: 'The source is nearly empty. There is a barcode, but no status, no scan, and no date.',
+                note: 'The source is nearly empty. There is an address, but no regular hours and no holiday hours.',
             },
-            answer: 'There is not enough data right now to know where the package is. There is a barcode, but no current status. A more up to date source needs to be checked before answering.',
+            answer: 'There is not enough data right now to know when the library is open on the holiday. There is an address, but no opening hours. A more up to date source needs to be checked before answering.',
             answerSummary: 'Grounding does not invent missing data, it reveals it.',
             checks: [
                 { id: 'based', state: 'warn', label: 'Rests on a source?', note: 'The source exists, but its important fields are empty.' },
-                { id: 'invents', state: 'pass', label: 'Invents a status?', note: 'No. The answer says plainly that there is not enough data.' },
+                { id: 'invents', state: 'pass', label: 'Invents hours?', note: 'No. The answer says plainly that there is not enough data.' },
                 { id: 'limits', state: 'pass', label: 'Flags what is missing?', note: 'Yes. It says what is missing and what needs to be checked.' },
             ],
             maySay: 'The answer can say there is not enough data, and ask for a more up to date source.',
-            mustNotInvent: 'It must not invent a status or a date just to sound complete.',
+            mustNotInvent: 'It must not invent hours just to sound complete.',
             takeaway: 'Grounding can reveal missing information. Sometimes the right answer is to stop and ask for data.',
         },
         {
@@ -120,27 +117,25 @@ export const groundingLab: GroundingLabContent = {
             control: 'Mismatched source',
             badge: 'ungrounded',
             badgeLabel: 'Mismatched source',
-            summary: 'The source was retrieved and looks fine, but it refers to a different package. It does not support the customer question.',
+            summary: 'The source was retrieved and looks fine, but it refers to a different library. It does not support the visitor question.',
             source: {
-                label: 'Tracking status (sample data)',
+                label: 'Library information, Branch 9 (sample data)',
                 caption: 'Sample card only, for illustration. This is not real data.',
                 rows: [
-                    { label: 'Barcode', value: 'RR987654321IL' },
-                    { label: 'Status', value: 'Delivered' },
-                    { label: 'Delivery time', value: '09:14' },
-                    { label: 'Destination', value: 'Another city' },
+                    { label: 'Regular hours', value: '08:00-16:00' },
+                    { label: 'Holiday hours', value: 'Closed' },
                 ],
-                note: 'Note: the barcode here is different from the customer, and the destination is another city. The source was retrieved, but it is for a different package.',
+                note: 'Note: this is Branch 9, not the visitor\'s neighborhood library (Branch 14). The source was retrieved, but it is for a different library.',
             },
-            answer: 'The retrieved source refers to a different package, a different barcode and a different destination, so it does not answer your question. I need the tracking data for your package before I can answer.',
+            answer: 'The retrieved source refers to Branch 9, not Branch 14 that you asked about, so it does not answer your question. I need the correct library\'s information before I can answer.',
             answerSummary: 'The source exists but does not fit, so it is not used as a basis for the answer.',
             checks: [
-                { id: 'based', state: 'fail', label: 'Is it based on a matching source?', note: 'No. The retrieved source is for a different package, so it cannot ground an answer to this question.' },
-                { id: 'invents', state: 'pass', label: 'Does it invent a status?', note: 'No. The answer does not attribute the other package status to the customer.' },
+                { id: 'based', state: 'fail', label: 'Is it based on a matching source?', note: 'No. The retrieved source is for a different branch, so it cannot ground an answer to this question.' },
+                { id: 'invents', state: 'pass', label: 'Does it invent hours?', note: 'No. The answer does not attribute the other branch\'s hours to the visitor.' },
                 { id: 'limits', state: 'pass', label: 'Does it flag that the source does not match?', note: 'Yes. It states explicitly that the retrieved source does not fit, and asks for the correct data.' },
             ],
-            maySay: 'The answer can say that the retrieved source does not match the question, and ask for the customer correct tracking data.',
-            mustNotInvent: 'It must not use the other package status as if it were the customer own.',
+            maySay: 'The answer can say that the retrieved source belongs to a different branch, and ask for the visitor\'s correct branch information.',
+            mustNotInvent: 'It must not use the other branch\'s hours as if they were the branch asked about.',
             takeaway: 'Sometimes retrieval returns a source that exists but does not fit. A retrieved source is not necessarily the correct source.',
         },
         {
@@ -148,28 +143,26 @@ export const groundingLab: GroundingLabContent = {
             control: 'Conflicting source',
             badge: 'contradiction',
             badgeLabel: 'Conflicting source',
-            summary: 'The customer says the package did not arrive, but the source marks it as delivered.',
+            summary: 'The visitor says they heard the library is open on the holiday, but the source marks it as closed.',
             source: {
-                label: 'Tracking status (sample data)',
+                label: 'Library information (sample data)',
                 caption: 'Sample card only, for illustration. This is not real data.',
                 rows: [
-                    { label: 'Barcode', value: 'RR123456789IL' },
-                    { label: 'Status', value: 'Delivered' },
-                    { label: 'Delivery time', value: '10:32' },
-                    { label: 'Delivery point', value: 'Delivery center' },
+                    { label: 'Regular hours', value: '09:00-18:00' },
+                    { label: 'Holiday hours', value: 'Closed' },
                 ],
-                note: 'The customer says they did not receive it, but the source marks it "Delivered". This is a conflict to handle carefully.',
+                note: 'The visitor claims they heard the library is open on the holiday, but the source marks it "Closed". This is a conflict to handle carefully.',
             },
-            answer: 'According to the tracking data provided here, the package is marked as delivered at 10:32 at the delivery center. If you feel you did not receive it, we will open an inquiry to find out what happened.',
+            answer: 'According to the information provided here, the library is marked as closed on the holiday. If you heard it is open, we will look into it to find out what happened.',
             answerSummary: 'The answer stays faithful to the source, and handles the conflict without blame.',
             checks: [
-                { id: 'based', state: 'pass', label: 'Rests on a source?', note: 'Yes. The status, time, and place are taken from the source.' },
+                { id: 'based', state: 'pass', label: 'Rests on a source?', note: 'Yes. The regular and holiday hours are taken from the source.' },
                 { id: 'invents', state: 'pass', label: 'Invents details?', note: 'No. The answer adds no reason or blame that is not in the source.' },
-                { id: 'limits', state: 'warn', label: 'Handles the conflict?', note: 'Yes, carefully. It shows what the source says and offers an inquiry, without dismissing the customer.' },
+                { id: 'limits', state: 'warn', label: 'Handles the conflict?', note: 'Yes, carefully. It shows what the source says and offers to look into it, without dismissing the visitor.' },
             ],
-            maySay: 'The answer can report what the source says, and offer to open an inquiry into the conflict.',
-            mustNotInvent: 'It must not blame the customer, or invent a reason why the status and reality differ.',
-            takeaway: 'When the source conflicts with the customer, show what it says carefully and open an inquiry, without blame.',
+            maySay: 'The answer can report what the source says, and offer to look into the conflict.',
+            mustNotInvent: 'It must not blame the visitor, or invent a reason why the source and what they heard differ.',
+            takeaway: 'When the source conflicts with the visitor, show what it says carefully and offer to look into it, without blame.',
         },
     ],
 };

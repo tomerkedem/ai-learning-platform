@@ -20,7 +20,7 @@ export const grounding = {
         titleLead: 'A better answer',
         titleHighlight: 'starts with a source',
         lede: 'In the previous chapter we saw that an answer can sound confident and still be wrong. The way to lower that risk is to connect the answer to a source: a status card, a document, or the result of a check. Instead of resting only on language continuation, the model rests on information it was given.',
-        hook: 'What happens to the answer when we add real tracking data to the model?',
+        hook: 'What happens to the answer when we add real information from the schedule to the model?',
         chipTry: 'Move between the source states',
         chipCompare: 'Compare an answer with no source and with a source',
     },
@@ -67,7 +67,7 @@ export const grounding = {
             },
             {
                 title: 'The retrieved source is not always the right one',
-                body: 'Retrieval may return several candidate passages, and the top-ranked passage is not necessarily the correct one. Sometimes a source is retrieved that exists but refers to a different package or an unrelated event. So you have to choose the evidence that truly fits the question, and not assume that every retrieved source fits.',
+                body: 'Retrieval may return several candidate passages, and the top-ranked passage is not necessarily the correct one. Sometimes a source is retrieved that exists but refers to a different branch or an unrelated event. So you have to choose the evidence that truly fits the question, and not assume that every retrieved source fits.',
             },
         ],
     },
@@ -81,7 +81,7 @@ export const grounding = {
 
     guess: {
         eyebrow: 'Quick guess · adding a source',
-        title: 'We added real tracking data to the model. What changes in the answer?',
+        title: 'We added real information from the schedule to the model. What changes in the answer?',
         subtitle: 'Pick the mental model that feels closest. There is no score here, there is one direction that describes what really happens.',
         invite: 'Before we open this up, try to guess what a source does to the model answer.',
         correctTitle: 'Exactly right!',
@@ -115,13 +115,13 @@ export const grounding = {
                 bridge: 'A source helps now, not for good.',
             },
             knowsAll: {
-                title: 'The model already knows every postal system',
-                desc: 'The model already has all the statuses, so a source is unnecessary.',
+                title: 'The model already knows every library\'s hours',
+                desc: 'The model already has all the opening hours, so a source is unnecessary.',
                 statusLabel: 'A different layer',
-                getsRight: 'It is true that the model has seen a lot of text about shipping and mail.',
+                getsRight: 'It is true that the model has seen a lot of text about libraries and opening hours.',
                 missesLabel: 'What it misses',
-                misses: 'General knowledge about mail is not the live status of a specific package. That needs a source or a real system, not memory from training.',
-                bridge: 'General knowledge is not a current status.',
+                misses: 'General knowledge about libraries is not the current opening hours of a specific library on a specific holiday. That needs a source or a real schedule, not memory from training.',
+                bridge: 'General knowledge is not current information.',
             },
             autoTrue: {
                 title: 'If there is a source, every answer is automatically correct',
@@ -138,12 +138,12 @@ export const grounding = {
     insight: {
         title: 'The key thing to understand here',
         lead: 'The source does not turn the model into a magician.',
-        body: 'It simply gives it something to rest on. If the source says little, the answer should say little too. If the source gives no arrival date, the answer should not invent one.',
+        body: 'It simply gives it something to rest on. If the source says little, the answer should say little too. If the source gives no holiday hours, the answer should not invent any.',
     },
 
     analogy: {
         title: 'A moment from real life',
-        body: 'A good service rep does not make up where your package is. They open the tracking screen, read what is there, and tell you exactly that. If the screen has no arrival date, they will not invent one. A source works for the model just like that screen works for the rep.',
+        body: 'A good library clerk does not make up the holiday hours. They open the schedule, read what is there, and tell you exactly that. If the schedule has no holiday hours, they will not invent any. A source works for the model just like that schedule works for the clerk.',
     },
 
     misconception: {
@@ -155,27 +155,27 @@ export const grounding = {
 
     lock: {
         title: 'Check Your Understanding',
-        question: 'The source says: status delayed, estimated delivery not available. Which answer is best grounded in the source?',
+        question: 'The source says: regular hours 09:00 to 18:00, holiday hours not available. Which answer is best grounded in the source?',
         options: [
-            'The package will arrive tomorrow.',
-            'The package is delayed, and there is no confirmed arrival date in the source provided.',
-            'The package is lost.',
-            'The package has already been delivered.',
+            'The library is open from 10:00 to 14:00 on the holiday.',
+            'The regular hours are 09:00 to 18:00, and there are no confirmed holiday hours in the source provided.',
+            'The library is closed permanently.',
+            'The library is open 24 hours a day.',
         ],
         success:
-            'A grounded answer uses what the source says, and also marks what the source does not say. The source says delayed and gives no date, so the answer says exactly that without inventing a date.',
+            'A grounded answer uses what the source says, and also marks what the source does not say. The source gives regular hours and no holiday hours, so the answer says exactly that without inventing hours.',
     },
 
     practical: {
         title: 'Practical takeaway',
         lead:
-            'When accuracy matters, do not just ask for an answer. Ask for an answer from a source, and ask the model to show the limits of that source. Instead of "tell me where the package is", aim like this:',
+            'When accuracy matters, do not just ask for an answer. Ask for an answer from a source, and ask the model to show the limits of that source. Instead of "tell me the holiday hours", aim like this:',
         uses: [
-            'Ground it in a source: "Based only on the following tracking data, write an answer for the customer."',
-            'Ask it to flag gaps: "If there is no confirmed arrival date, say so explicitly and do not invent a date."',
+            'Ground it in a source: "Based only on the following schedule, write an answer for the visitor."',
+            'Ask it to flag gaps: "If there are no confirmed holiday hours, say so explicitly and do not invent hours."',
             'Separate known from unknown: "Write what is known from the source, what is not known, and what needs to be checked now."',
             'Do not go beyond the source: "Do not add information that does not appear in the data provided."',
-            'Remember the source is checked too: for a real status, make sure the source itself is current and reliable.',
+            'Remember the source is checked too: for real hours, make sure the source itself is current and reliable.',
         ],
         caveat:
             'This is a chapter that presents the idea, not a full engineering guide to RAG. The simple message: retrieve, add to context, grounded generation, with honesty about what the source does not say. And remember that a reference to a source is useful only if it points to a real source that actually supports the claim; not every mention is proof by itself.',

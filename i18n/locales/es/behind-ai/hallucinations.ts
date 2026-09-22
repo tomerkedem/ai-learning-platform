@@ -80,7 +80,7 @@ export const hallucinations = {
 
     guess: {
         eyebrow: 'Adivina rápido · una respuesta segura',
-        title: 'Un cliente pregunta dónde está el paquete, y el modelo responde de inmediato "llega mañana". ¿Cuál es el problema?',
+        title: 'Un visitante pregunta cuál es el horario de la biblioteca en el feriado, y el modelo responde de inmediato "la biblioteca abre de 10:00 a 14:00". ¿Cuál es el problema?',
         subtitle: 'Elige el modelo mental que te parezca más cercano. Aquí no hay nota, hay una dirección que describe lo que de verdad ocurre.',
         invite: 'Antes de abrir esto, intenta adivinar por qué una respuesta que suena segura y servicial puede aun así estar equivocada.',
         correctTitle: '¡Exacto!',
@@ -89,7 +89,7 @@ export const hallucinations = {
         revealButton: 'Revela la idea principal',
         revealTitle: '¿Y qué ocurre en realidad?',
         revealCopy:
-            'El modelo puede redactar una respuesta plausible y convincente sin conocer el estado real. Continúa un patrón de lenguaje, así que "llega mañana" puede ser solo una continuación plausible, no un dato comprobado en un sistema. La confianza en la redacción no es prueba de que el hecho se verificó.',
+            'El modelo puede redactar una respuesta plausible y convincente sin conocer el horario real. Continúa un patrón de lenguaje, así que "de 10:00 a 14:00" puede ser solo una continuación plausible, no un dato comprobado en un horario. La confianza en la redacción no es prueba de que el hecho se verificó.',
         cta: 'Veámoslo en el laboratorio',
         resetButton: 'Elegir de nuevo',
         exploreHint: 'También puedes elegir otra opción y ver cómo suena.',
@@ -101,7 +101,7 @@ export const hallucinations = {
                 statusLabel: 'Elegiste bien',
                 getsRight: 'Exacto. La fluidez del lenguaje basta para producir una respuesta convincente. No exige que el hecho se compruebe.',
                 missesLabel: 'Qué queda por ver',
-                misses: 'En el laboratorio veremos cómo la misma pregunta recibe una respuesta que inventa una fecha, y cómo reconocer que esa seguridad no se apoya en nada.',
+                misses: 'En el laboratorio veremos cómo la misma pregunta recibe una respuesta que inventa un horario, y cómo reconocer que esa seguridad no se apoya en nada.',
                 bridge: 'La confianza en la redacción no es prueba de que la información sea correcta.',
             },
             confidentTrue: {
@@ -114,12 +114,12 @@ export const hallucinations = {
                 bridge: 'La confianza no es evidencia.',
             },
             dateChecked: {
-                title: 'Si hay una fecha en la respuesta, el modelo seguro consultó un sistema',
-                desc: 'Un dato preciso como una fecha demuestra que el modelo fue a una fuente real.',
+                title: 'Si hay un horario preciso en la respuesta, el modelo seguro consultó un horario oficial',
+                desc: 'Un dato preciso como un horario demuestra que el modelo fue a una fuente real.',
                 statusLabel: 'Otra capa',
-                getsRight: 'Es cierto que una fecha real puede venir de una fuente o una herramienta.',
+                getsRight: 'Es cierto que un horario real puede venir de una fuente o una herramienta.',
                 missesLabel: 'Qué se pierde',
-                misses: 'Pero sin conexión a una fuente, incluso una fecha precisa puede ser un relleno plausible. Comprobar una fuente es una capa aparte de la redacción.',
+                misses: 'Pero sin conexión a una fuente, incluso un horario preciso puede ser un relleno plausible. Comprobar una fuente es una capa aparte de la redacción.',
                 bridge: 'Un dato preciso no es necesariamente un dato comprobado.',
             },
             longerBetter: {
@@ -154,27 +154,27 @@ export const hallucinations = {
 
     lock: {
         title: 'Comprueba tu comprensión',
-        question: 'El modelo dice "el paquete llegará mañana", pero no se aportó ninguna fuente de seguimiento. ¿Cuál es la interpretación más segura?',
+        question: 'El modelo dice "la biblioteca abre de 10:00 a 14:00 en el feriado", pero no se aportó ningún horario oficial. ¿Cuál es la interpretación más segura?',
         options: [
-            'El modelo comprobó el sistema de entregas real',
-            'La respuesta es fluida, pero la fecha de entrega no está respaldada',
+            'El modelo comprobó el horario real de la biblioteca',
+            'La respuesta es fluida, pero el horario del feriado no está respaldado',
             'La respuesta es correcta porque suena segura',
-            'El modelo siempre sabe el estado actual del paquete',
+            'El modelo siempre sabe el horario actual de la biblioteca',
         ],
         success:
-            'Una respuesta generada puede sonar completa aunque falte un dato clave. "Mañana" aquí es una continuación plausible, no un hecho comprobado. Sin una fuente, la fecha de entrega no está respaldada.',
+            'Una respuesta generada puede sonar completa aunque falte un dato clave. "De 10:00 a 14:00" aquí es una continuación plausible, no un hecho comprobado. Sin una fuente, el horario del feriado no está respaldado.',
     },
 
     practical: {
         title: 'Idea práctica',
         lead:
-            'La IA es muy útil, pero para afirmaciones de hecho conviene saber si la respuesta está fundamentada. En lugar de "dime dónde está el paquete", orienta la petición para que separe lo que se sabe de lo que no, y pide una fuente cuando el estado importa:',
+            'La IA es muy útil, pero para afirmaciones de hecho conviene saber si la respuesta está fundamentada. En lugar de "dime el horario del feriado", orienta la petición para que separe lo que se sabe de lo que no, y pide una fuente cuando el estado importa:',
         uses: [
             'Separa hecho de suposición: "Indica qué se sabe, qué falta y qué hay que comprobar, y no adivines."',
-            'Pide que diga qué falta: "Si no hay datos de seguimiento, no inventes un estado, pide el número de seguimiento."',
-            'Detente en cada dato preciso: una fecha, una hora o un estado en la respuesta, y pregunta dónde se comprobó antes de confiar en él.',
-            'Exige una redacción prudente: "Si no hay fecha de entrega confirmada, dilo de forma explícita."',
-            'Verifica los hechos importantes antes de actuar, y usa una herramienta o fuente para el estado operativo real.',
+            'Pide que diga qué falta: "Si el horario del feriado no aparece, no inventes uno, pide comprobar el horario oficial."',
+            'Detente en cada dato preciso: una hora, un día o un estado en la respuesta, y pregunta dónde se comprobó antes de confiar en él.',
+            'Exige una redacción prudente: "Si no hay horario de feriado confirmado, dilo de forma explícita."',
+            'Verifica los hechos importantes antes de actuar, y usa el horario oficial o una fuente confiable.',
         ],
         caveat:
             'Conectar a fuentes de verdad, lo que se llama Grounding o RAG, es el tema del siguiente paso. Aquí solo identificamos el problema y la necesidad de verificar. El mensaje no es "nunca confíes en la IA", sino "sabe cuándo verificar".',
