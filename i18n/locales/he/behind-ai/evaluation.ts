@@ -103,7 +103,7 @@ export const evaluation = {
         invite: 'לפני שנפתח את זה, נסו לנחש מה מלמדת הצלחה על מקרה חדש ומגוון.',
         correctTitle: 'נכון מאוד!',
         wrongTitle: 'כמעט!',
-        getsRightLabel: 'מה זה תופס נכון',
+        getsRightLabel: 'שימו לב',
         revealButton: 'חשפו את הרעיון המרכזי',
         revealTitle: 'אז מה זה באמת מלמד?',
         revealCopy:

@@ -105,7 +105,7 @@ export const fullTrace = {
         invite: 'לפני שנעבור על המסלול במעבדה, נסו לנחש איך הבקשה הזאת מטופלת מאחורי הקלעים.',
         correctTitle: 'נכון מאוד!',
         wrongTitle: 'כמעט!',
-        getsRightLabel: 'מה זה תופס נכון',
+        getsRightLabel: 'שימו לב',
         revealButton: 'חשפו את הרעיון המרכזי',
         revealTitle: 'אז מה באמת קורה?',
         revealCopy:

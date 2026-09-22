@@ -154,7 +154,7 @@ export const contextWindow = {
         subtitle:
             'בחרו את ההסבר שנראה לכם הכי קרוב למה שקורה. זו לא בחינה. בחרו השערה, ותכף נבדוק אותה יחד.',
         invite: 'יש כאן כמה השערות הגיוניות. רגע לפני ההסבר, בואו נבחר אחת.',
-        getsRightLabel: 'מה זה תופס נכון',
+        getsRightLabel: 'שימו לב',
         revealButton: 'חשפו את הרעיון המרכזי',
         resetButton: 'בחרו מחדש',
         revealTitle: 'אז מה באמת קורה?',

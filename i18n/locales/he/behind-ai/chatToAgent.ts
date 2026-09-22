@@ -111,7 +111,7 @@ export const chatToAgent = {
         invite: 'לפני שנבדוק במעבדה, נסו לנחש איך המערכת תתייחס לבקשה הזאת.',
         correctTitle: 'נכון מאוד!',
         wrongTitle: 'כמעט!',
-        getsRightLabel: 'מה זה תופס נכון',
+        getsRightLabel: 'שימו לב',
         revealButton: 'חשפו את הרעיון המרכזי',
         revealTitle: 'אז מה באמת קורה?',
         revealCopy:

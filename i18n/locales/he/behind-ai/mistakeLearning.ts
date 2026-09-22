@@ -103,7 +103,7 @@ export const mistakeLearning = {
         invite: 'לפני שנפתח את זה, נסו לנחש מה בדיוק עושה תיקון אחד כזה.',
         correctTitle: 'נכון מאוד!',
         wrongTitle: 'כמעט!',
-        getsRightLabel: 'מה זה תופס נכון',
+        getsRightLabel: 'שימו לב',
         revealButton: 'חשפו את הרעיון המרכזי',
         revealTitle: 'אז מה באמת מביא לשיפור?',
         revealCopy:

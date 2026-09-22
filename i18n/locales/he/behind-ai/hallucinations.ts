@@ -97,7 +97,7 @@ export const hallucinations = {
         invite: 'לפני שנפתח את זה, נסו לנחש למה תשובה שנשמעת בטוחה ושירותית עדיין יכולה להיות שגויה.',
         correctTitle: 'נכון מאוד!',
         wrongTitle: 'כמעט!',
-        getsRightLabel: 'מה זה תופס נכון',
+        getsRightLabel: 'שימו לב',
         revealButton: 'חשפו את הרעיון המרכזי',
         revealTitle: 'אז מה באמת קורה?',
         revealCopy:

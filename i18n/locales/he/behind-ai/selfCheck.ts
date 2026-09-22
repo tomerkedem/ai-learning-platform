@@ -102,7 +102,7 @@ export const selfCheck = {
         invite: 'לפני שנפתח את זה, נסו לנחש מה צריך לקרות לטיוטה לפני שהיא נשלחת.',
         correctTitle: 'נכון מאוד!',
         wrongTitle: 'כמעט!',
-        getsRightLabel: 'מה זה תופס נכון',
+        getsRightLabel: 'שימו לב',
         revealButton: 'חשפו את הרעיון המרכזי',
         revealTitle: 'אז מה באמת צריך לקרות?',
         revealCopy:

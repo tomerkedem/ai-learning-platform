@@ -110,7 +110,7 @@ export const generationLoop = {
         invite: 'לפני שנפתח את זה, נסו לנחש מה קורה בין צעד אחד לצעד הבא בזמן שהתשובה נבנית.',
         correctTitle: 'נכון מאוד!',
         wrongTitle: 'כמעט!',
-        getsRightLabel: 'מה זה תופס נכון',
+        getsRightLabel: 'שימו לב',
         revealButton: 'חשפו את הרעיון המרכזי',
         revealTitle: 'אז מה באמת קורה?',
         revealCopy:

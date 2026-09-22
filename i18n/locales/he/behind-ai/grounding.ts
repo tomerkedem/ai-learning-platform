@@ -97,7 +97,7 @@ export const grounding = {
         invite: 'לפני שנפתח את זה, נסו לנחש מה עושה מקור לתשובה של המודל.',
         correctTitle: 'נכון מאוד!',
         wrongTitle: 'כמעט!',
-        getsRightLabel: 'מה זה תופס נכון',
+        getsRightLabel: 'שימו לב',
         revealButton: 'חשפו את הרעיון המרכזי',
         revealTitle: 'אז מה באמת קורה?',
         revealCopy:

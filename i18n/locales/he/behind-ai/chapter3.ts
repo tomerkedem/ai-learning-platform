@@ -47,7 +47,7 @@ export const chapter3 = {
         invite: 'לפני שנפתח את זה, נסו לנחש: מה הדבר הראשון שקורה לטקסט?',
         correctTitle: 'נכון מאוד!',
         wrongTitle: 'כמעט!',
-        getsRightLabel: 'מה זה תופס נכון',
+        getsRightLabel: 'שימו לב',
         revealButton: 'חשפו את הרעיון המרכזי',
         revealTitle: 'אז מה באמת קורה?',
         revealCopy:
