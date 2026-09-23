@@ -124,14 +124,22 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     // מצב מיקוד: שחזור ההעדפה לאורך ה-session. נטען רק אחרי mount בצד הלקוח (ולא ב-initial state)
     // כדי למנוע אי-התאמת hydration - השרת תמיד מרנדר מצב רגיל.
     useEffect(() => {
-        if (sessionStorage.getItem('lesson-focus-mode') === '1') {
-            // eslint-disable-next-line react-hooks/set-state-in-effect -- הסנכרון עם sessionStorage חייב לקרות אחרי mount בצד הלקוח
-            setIsFocusMode(true);
+        try {
+            if (sessionStorage.getItem('lesson-focus-mode') === '1') {
+                // eslint-disable-next-line react-hooks/set-state-in-effect -- הסנכרון עם sessionStorage חייב לקרות אחרי mount בצד הלקוח
+                setIsFocusMode(true);
+            }
+        } catch {
+            // אחסון חסום: נשארים במצב רגיל.
         }
     }, []);
 
     useEffect(() => {
-        sessionStorage.setItem('lesson-focus-mode', isFocusMode ? '1' : '0');
+        try {
+            sessionStorage.setItem('lesson-focus-mode', isFocusMode ? '1' : '0');
+        } catch {
+            // אחסון חסום או מלא: ההעדפה תקפה לעמוד הנוכחי בלבד.
+        }
     }, [isFocusMode]);
 
     // קיצורי מקלדת למצב מיקוד: Esc יוצא, F מחליף מצב.

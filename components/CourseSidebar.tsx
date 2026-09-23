@@ -64,15 +64,24 @@ export function CourseSidebar({ isFocusMode = false }: { isFocusMode?: boolean }
   // פתרון הריצוד: שימוש ב-useLayoutEffect לביצוע הגלילה לפני הציור על המסך
   // פתרון שגיאת ה-Lint: אנחנו מוותרים על ה-isReady state ומשתמשים במיקום ה-Scroll בלבד
   useLayoutEffect(() => {
-    const savedScrollPos = sessionStorage.getItem('sidebar-scroll-pos');
-    if (savedScrollPos && scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = parseInt(savedScrollPos, 10);
+    try {
+      const savedScrollPos = sessionStorage.getItem('sidebar-scroll-pos');
+      if (savedScrollPos && scrollContainerRef.current) {
+        const pos = parseInt(savedScrollPos, 10);
+        if (Number.isFinite(pos)) scrollContainerRef.current.scrollTop = pos;
+      }
+    } catch {
+      // אחסון חסום: מתחילים מראש הרשימה.
     }
   }, []);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
-    sessionStorage.setItem('sidebar-scroll-pos', target.scrollTop.toString());
+    try {
+      sessionStorage.setItem('sidebar-scroll-pos', target.scrollTop.toString());
+    } catch {
+      // אחסון חסום או מלא: מיקום הגלילה פשוט לא נשמר.
+    }
   };
 
   // הלוגיקה החדשה והחכמה יותר:

@@ -37,22 +37,59 @@ interface MasteryStore {
 const EMPTY_STORE: MasteryStore = { version: 1, records: {} };
 
 function isBrowser(): boolean {
-    return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+    // גישה ל-window.localStorage עלולה לזרוק (אחסון חסום), ולכן בתוך try.
+    try {
+        return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+    } catch {
+        return false;
+    }
+}
+
+const isStringArray = (v: unknown): v is string[] =>
+    Array.isArray(v) && v.every(x => typeof x === "string");
+const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+
+/**
+ * מחזיר רשומה רק אם כל השדות שהקוד קורא קיימים ותקינים.
+ * רשומה חלקית או ישנה נזרקת (לא משלימים ערכים ולא ממציאים תוצאה).
+ */
+function parseRecord(quizId: string, v: unknown): QuizRecord | null {
+    if (!v || typeof v !== "object") return null;
+    const r = v as Record<string, unknown>;
+    if (
+        r.quizId !== quizId ||
+        !(r.chapterId === null || isNum(r.chapterId)) ||
+        !isNum(r.scorePercent) || !isNum(r.correctCount) || !isNum(r.totalQuestions) ||
+        typeof r.passed !== "boolean" ||
+        !isNum(r.attempts) || !isNum(r.bestScorePercent) || !isNum(r.lastCompletedAt) ||
+        !isStringArray(r.weakConcepts) || !isStringArray(r.strongConcepts)
+    ) return null;
+    return r as unknown as QuizRecord;
 }
 
 function loadStore(): MasteryStore {
-    if (!isBrowser()) return { ...EMPTY_STORE, records: {} };
+    const empty = (): MasteryStore => ({ ...EMPTY_STORE, records: {} });
+    if (!isBrowser()) return empty();
     try {
         const raw = window.localStorage.getItem(MASTERY_STORAGE_KEY);
-        if (!raw) return { ...EMPTY_STORE, records: {} };
-        const parsed = JSON.parse(raw) as Partial<MasteryStore>;
-        if (!parsed || typeof parsed !== "object" || !parsed.records) {
-            return { ...EMPTY_STORE, records: {} };
+        if (!raw) return empty();
+        const parsed: unknown = JSON.parse(raw);
+        // גרסה לא מוכרת (עתידית או חסרה) או צורה לא תקינה: מתחילים נקי.
+        if (
+            !parsed || typeof parsed !== "object" || Array.isArray(parsed) ||
+            (parsed as { version?: unknown }).version !== 1
+        ) return empty();
+        const rawRecords = (parsed as { records?: unknown }).records;
+        if (!rawRecords || typeof rawRecords !== "object" || Array.isArray(rawRecords)) return empty();
+        const records: Record<string, QuizRecord> = {};
+        for (const [id, v] of Object.entries(rawRecords)) {
+            const rec = parseRecord(id, v);
+            if (rec) records[id] = rec;
         }
-        return { version: 1, records: parsed.records };
+        return { version: 1, records };
     } catch {
         // נתונים פגומים או localStorage חסום: מתחילים נקי בלי לזרוק שגיאה.
-        return { ...EMPTY_STORE, records: {} };
+        return empty();
     }
 }
 

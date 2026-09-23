@@ -5,7 +5,7 @@
 // שבפריסה serverless (כמה מופעים / cold starts) הספירה מתפצלת ומתאפסת. זו רשת
 // ביטחון, לא ארנק. לאכיפה חוצת-מופעים צריך מאגר משותף (Redis/Upstash וכו').
 //
-// ה-routes שמפעילים את ה-API האמיתי (chat-reply, scenario) חולקים דלי אחד לכל IP,
+// ה-routes שמפעילים את ה-API האמיתי (scenario) חולקים דלי אחד לכל IP,
 // כדי שלולאה לא תעקוף את התקרה דרך route אחר.
 
 import { NextResponse } from 'next/server';
