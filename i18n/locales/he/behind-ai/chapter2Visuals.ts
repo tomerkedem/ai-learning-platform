@@ -6,7 +6,7 @@
 // מקף בינוני (U+2013).
 
 import type { Locale } from '@/i18n/config';
-import type { InputVariation } from '@/app/behind-the-scenes-ai/chapter-2/inputVariations';
+import type { InputVariation } from '@/app/(course)/behind-the-scenes-ai/chapter-2/inputVariations';
 
 export const chapter2Visuals = {
     contentLocale: 'he' as Locale,

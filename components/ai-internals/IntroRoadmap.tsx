@@ -31,7 +31,7 @@ import { speakJoin } from './GuessVerdict';
 import { useT } from '@/i18n/useT';
 import type {
     RoadmapStation, RoadmapZone, RoadmapZoneId,
-} from '@/app/behind-the-scenes-ai/introduction/introContent';
+} from '@/app/(course)/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
 
 // תוויות מסגרת קצרות של המפה, מהמילון (introVisuals.roadmap).

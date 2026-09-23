@@ -54,6 +54,13 @@ export const chrome = {
         light: 'בהיר',
         dark: 'כהה',
     },
+    language: {
+        label: 'שפה',
+        change: 'החלפת שפה',
+        dialogTitle: 'בחירת שפה',
+        close: 'סגירה',
+        imageCredit: 'תמונת כדור הארץ: NASA',
+    },
 
     // פוטר
     footer: {

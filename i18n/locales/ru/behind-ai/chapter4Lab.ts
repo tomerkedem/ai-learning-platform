@@ -10,7 +10,7 @@
 // остаются стабильными. Токены пишутся вручную, никогда не делением по пробелам.
 // Без длинного тире (U+2014) и среднего тире (U+2013).
 
-import type { Chapter4LabDict } from '@/app/behind-the-scenes-ai/chapter-4/labContent';
+import type { Chapter4LabDict } from '@/app/(course)/behind-the-scenes-ai/chapter-4/labContent';
 
 export const chapter4Lab: Chapter4LabDict = {
     sentences: {

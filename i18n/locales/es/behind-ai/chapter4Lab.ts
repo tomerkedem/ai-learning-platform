@@ -10,7 +10,7 @@
 // permanecen estables. Los tokens se escriben a mano, nunca por división de espacios.
 // Sin guion largo (U+2014) ni guion medio (U+2013).
 
-import type { Chapter4LabDict } from '@/app/behind-the-scenes-ai/chapter-4/labContent';
+import type { Chapter4LabDict } from '@/app/(course)/behind-the-scenes-ai/chapter-4/labContent';
 
 export const chapter4Lab: Chapter4LabDict = {
     sentences: {

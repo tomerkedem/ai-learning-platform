@@ -3,8 +3,8 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { ROLE_STYLE, type TokenRole } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
-import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { ROLE_STYLE, type TokenRole } from '@/app/(course)/behind-the-scenes-ai/chapter-3/tokenRoles';
+import { useChapter3Lab } from '@/app/(course)/behind-the-scenes-ai/chapter-3/labContent';
 import { useT } from '@/i18n/useT';
 
 interface TokenRoleCardProps {

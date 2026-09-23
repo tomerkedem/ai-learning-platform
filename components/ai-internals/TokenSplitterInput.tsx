@@ -4,8 +4,8 @@ import React from 'react';
 import { Keyboard, RotateCcw } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
-import type { TokenExample } from '@/app/behind-the-scenes-ai/chapter-3/tokenizer';
-import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import type { TokenExample } from '@/app/(course)/behind-the-scenes-ai/chapter-3/tokenizer';
+import { useChapter3Lab } from '@/app/(course)/behind-the-scenes-ai/chapter-3/labContent';
 import { useT } from '@/i18n/useT';
 
 interface TokenSplitterInputProps {

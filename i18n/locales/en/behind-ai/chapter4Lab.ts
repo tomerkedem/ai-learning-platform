@@ -10,7 +10,7 @@
 // stay stable. Tokens are authored by hand, never split on spaces. No em dash (U+2014)
 // and no en dash (U+2013).
 
-import type { Chapter4LabDict } from '@/app/behind-the-scenes-ai/chapter-4/labContent';
+import type { Chapter4LabDict } from '@/app/(course)/behind-the-scenes-ai/chapter-4/labContent';
 
 export const chapter4Lab: Chapter4LabDict = {
     sentences: {

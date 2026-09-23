@@ -1,0 +1,47 @@
+Earth texture for the language globe (components/language/earthRenderingCore.ts)
+===============================================================================
+
+File:            earth-day-2k.webp
+
+1. Provenance statement (from the project owner; NOT independently verified)
+-----------------------------------------------------------------------------
+Statement by Tomer Kedem, 2026-09-23:
+    "I downloaded BookForge's earth-day-2k.webp from NASA's website."
+
+2. Independently verified source
+--------------------------------
+Source page:     unknown - not recorded when the file was downloaded; not verified.
+Asset URL:       unknown - not recorded when the file was downloaded; not verified.
+NASA product:    not identified. No specific NASA product, dataset, month or processing
+                 step has been matched to this file.
+Usage rights:    not verified for this file. No NASA page describing this specific file
+                 has been checked, so no permission or license is claimed here.
+
+3. What was verified about the file itself (2026-09-23)
+-------------------------------------------------------
+Copied from:     ../bookforge/public/assets/globe/earth-day-2k.webp
+SHA-256:         49953bf2a3fefe5a5714f779339bdd9c83dfde69b55860096a73ea4554c220f5
+                 (identical for the BookForge original and this copy)
+Format:          WebP, 2048x1024, RGB, 2:1 equirectangular, north up.
+Rendering:       maps correctly onto the three.js sphere (continents upright, not
+                 mirrored), checked in the language dialog on desktop and mobile.
+
+4. Credit shown in the product
+------------------------------
+The language dialog shows a localized "Earth imagery: NASA" line. This credit follows
+the owner's statement in section 1; it is not based on a verified source page.
+No NASA insignia, logotype or identifiers are used.
+
+5. General NASA guidance (context only; not verified to cover this file)
+------------------------------------------------------------------------
+NASA Images and Media Usage Guidelines,
+https://www.nasa.gov/nasa-brand-center/images-and-media/ (read 2026-09-23), states that
+NASA content, including texture maps, generally is not subject to copyright in the
+United States; that NASA should be acknowledged as the source; that third-party
+copyrighted material on NASA sites is marked as such and is not covered; and that the
+NASA insignia, logotype and identifiers are not public domain. Whether this applies to
+earth-day-2k.webp depends on the unverified source in section 2.
+
+To do before relying on this asset: find and record the exact NASA source page and
+asset URL, confirm the image carries no third-party copyright notice there, and then
+update sections 2 and 4.

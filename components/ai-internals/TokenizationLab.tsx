@@ -23,8 +23,8 @@ import {
     hasNumber,
     looksLikeNoSpaceClump,
     type TokenizationMode,
-} from '@/app/behind-the-scenes-ai/chapter-3/tokenizer';
-import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+} from '@/app/(course)/behind-the-scenes-ai/chapter-3/tokenizer';
+import { useChapter3Lab } from '@/app/(course)/behind-the-scenes-ai/chapter-3/labContent';
 import { useT } from '@/i18n/useT';
 
 /**

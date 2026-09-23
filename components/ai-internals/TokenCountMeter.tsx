@@ -5,7 +5,7 @@ import { motion, useMotionValue, useTransform, animate, useReducedMotion } from 
 import { Hash, Info } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
-import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { useChapter3Lab } from '@/app/(course)/behind-the-scenes-ai/chapter-3/labContent';
 import { useT } from '@/i18n/useT';
 
 interface TokenCountMeterProps {

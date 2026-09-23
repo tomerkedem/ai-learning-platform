@@ -36,7 +36,7 @@ import { useT } from '@/i18n/useT';
 import { useTheme } from '@/components/ThemeProvider';
 import type { Direction } from '@/i18n/config';
 import type { Dictionary } from '@/i18n/dictionary';
-import type { StationVizKind } from '@/app/behind-the-scenes-ai/introduction/introContent';
+import type { StationVizKind } from '@/app/(course)/behind-the-scenes-ai/introduction/introContent';
 
 type IntroViz = Dictionary['behindAi']['introVisuals']['viz'];
 

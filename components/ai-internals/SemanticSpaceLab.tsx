@@ -21,7 +21,7 @@ import {
     type ClusterKey,
     type PhraseId,
     type Vec,
-} from '@/app/behind-the-scenes-ai/chapter-5/semanticSpace';
+} from '@/app/(course)/behind-the-scenes-ai/chapter-5/semanticSpace';
 import type { SemanticSpaceLabDict } from '@/i18n/locales/he/behind-ai/semanticSpaceLab';
 
 /**

@@ -46,6 +46,13 @@ export const chrome: typeof heChrome = {
         light: 'ライト',
         dark: 'ダーク',
     },
+    language: {
+        label: '言語',
+        change: '言語を変更',
+        dialogTitle: '言語を選択',
+        close: '閉じる',
+        imageCredit: '地球の画像: NASA',
+    },
 
     footer: {
         defaultLabel: 'AI 開発者のためのインタラクティブコース',

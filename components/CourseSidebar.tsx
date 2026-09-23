@@ -6,8 +6,9 @@ import { usePathname } from 'next/navigation';
 import { Circle, PlayCircle, Menu, X, Terminal, Sigma, BrainCircuit, ArrowRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { courses } from "@/lib/courseData";
-import { SidebarMastery } from "@/app/behind-the-scenes-ai/MasteryDashboard";
+import { SidebarMastery } from "@/app/(course)/behind-the-scenes-ai/MasteryDashboard";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageGlobe } from "@/components/language/LanguageGlobe";
 import { useT } from "@/i18n/useT";
 import { tField } from "@/lib/localize";
 import { formatChapterLabel } from "@/i18n/format";
@@ -258,8 +259,10 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
           <div className="p-4 border-t border-[var(--bts-border)] bg-[var(--bts-surface-inset)] text-[10px] text-[var(--bts-text-muted)] text-center shrink-0">
               {/* בורר ערכת-נושא: פקד-שירות שקט, לא תכונת-מוצר בולטת. גלובלי (חל על כל
                   הלומדות), אבל רק המבוא הצטרף בפועל לערכות - שאר הלומדה נשארת Dark. */}
-              <div className="mb-3 flex justify-center">
+              {/* בורר השפה רק בלומדה מאחורי הקלעים של AI: רק היא פותרת שפה בשרת. */}
+              <div className="mb-3 flex items-center justify-center gap-3">
                   <ThemeToggle />
+                  {pathname?.startsWith('/behind-the-scenes-ai') && <LanguageGlobe />}
               </div>
           </div>
       </div>

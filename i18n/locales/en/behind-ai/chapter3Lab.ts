@@ -10,7 +10,7 @@
 // roadmap active flags stay identical to Hebrew. English secondary captions (the small
 // uppercase labels) stay English on purpose. No em dash (U+2014), no en dash (U+2013).
 
-import type { Chapter3LabContent } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import type { Chapter3LabContent } from '@/app/(course)/behind-the-scenes-ai/chapter-3/labContent';
 
 export const chapter3Lab: Chapter3LabContent = {
     modeLabel: 'Mode:',

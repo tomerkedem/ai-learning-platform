@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
-import type { AgentDemo } from '@/app/behind-the-scenes-ai/introduction/introContent';
+import type { AgentDemo } from '@/app/(course)/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
 
 const STAGE_ICON: Record<string, React.ReactNode> = {

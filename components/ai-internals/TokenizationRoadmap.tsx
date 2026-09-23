@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, Lock, Map } from 'lucide-react';
-import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { useChapter3Lab } from '@/app/(course)/behind-the-scenes-ai/chapter-3/labContent';
 import { useT } from '@/i18n/useT';
 
 /**

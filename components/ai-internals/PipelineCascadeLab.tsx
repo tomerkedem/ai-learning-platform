@@ -30,7 +30,7 @@ import {
     type AnalysisResult,
     type RankItem,
     type ConfidenceLevel,
-} from '@/app/behind-the-scenes-ai/chapter-6/pipelineData';
+} from '@/app/(course)/behind-the-scenes-ai/chapter-6/pipelineData';
 
 /* ════════════════════════ עזרי תצוגה ═════════════════════════════════════ */
 

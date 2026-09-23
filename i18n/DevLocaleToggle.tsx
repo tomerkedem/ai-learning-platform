@@ -5,7 +5,7 @@
 // בורר שפה לפיתוח/בדיקות בלבד. מוצג רק כש-NODE_ENV === 'development', ולכן
 // אינו קיים בפרודקשן. אינו אמור להיראות כמו מחליף שפה רשמי: פקד קטן ומסומן
 // DEV בפינה. מקבל את ה-locale וה-setter כ-props (בלי context) כדי למנוע
-// תלות מעגלית עם ה-Provider.
+// תלות מעגלית עם ה-Provider. משתמש באותו setLocale כמו בורר הגלובוס (עוגייה, לא ?lang).
 
 import React from 'react';
 import { LOCALE_LIST, LOCALES, type Locale } from './config';

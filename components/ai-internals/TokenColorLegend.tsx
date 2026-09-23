@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Palette } from 'lucide-react';
-import { ROLE_ORDER, ROLE_STYLE } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
-import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { ROLE_ORDER, ROLE_STYLE } from '@/app/(course)/behind-the-scenes-ai/chapter-3/tokenRoles';
+import { useChapter3Lab } from '@/app/(course)/behind-the-scenes-ai/chapter-3/labContent';
 import { useT } from '@/i18n/useT';
 
 /**

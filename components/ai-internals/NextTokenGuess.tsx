@@ -13,7 +13,7 @@ import { Sparkles, Check, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-re
 import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
 import { useT } from '@/i18n/useT';
-import type { NextTokenContent } from '@/app/behind-the-scenes-ai/introduction/introContent';
+import type { NextTokenContent } from '@/app/(course)/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
 
 export const NextTokenGuess: React.FC<{ content: NextTokenContent; reduce: boolean; dir: Direction }> = ({ content, reduce, dir }) => {

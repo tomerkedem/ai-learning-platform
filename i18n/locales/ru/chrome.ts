@@ -46,6 +46,13 @@ export const chrome: typeof heChrome = {
         light: 'Светлая',
         dark: 'Тёмная',
     },
+    language: {
+        label: 'Язык',
+        change: 'Сменить язык',
+        dialogTitle: 'Выберите язык',
+        close: 'Закрыть',
+        imageCredit: 'Изображение Земли: NASA',
+    },
 
     footer: {
         defaultLabel: 'Интерактивные курсы для разработчиков ИИ',

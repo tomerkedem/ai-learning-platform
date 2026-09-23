@@ -11,7 +11,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test app/behind-the-scenes-ai/chapter-5/semanticSpace.test.ts"
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test \"app/(course)/behind-the-scenes-ai/chapter-5/semanticSpace.test.ts\" i18n/config.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",
@@ -36,6 +36,7 @@
     "react-tsparticles": "^2.12.2",
     "recharts": "^3.5.1",
     "tailwind-merge": "^3.4.0",
+    "three": "^0.184.0",
     "tsparticles-slim": "^2.12.0"
   },
   "devDependencies": {
@@ -45,6 +46,7 @@
     "@types/prismjs": "^1.26.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.184.1",
     "baseline-browser-mapping": "^2.11.25",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",

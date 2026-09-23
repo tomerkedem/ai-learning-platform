@@ -7,7 +7,7 @@
 // roadmap active flags) are NOT translated. English secondary captions stay English.
 // No em dash (U+2014), no en dash (U+2013).
 
-import type { Chapter3LabContent } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import type { Chapter3LabContent } from '@/app/(course)/behind-the-scenes-ai/chapter-3/labContent';
 
 export const chapter3Lab: Chapter3LabContent = {
     modeLabel: 'Modo:',

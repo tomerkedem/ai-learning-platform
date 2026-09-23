@@ -6,7 +6,7 @@
 // (id, ambiguity) تبقى حرفية؛ يُترجم النص الظاهر فقط.
 
 import type { Locale } from '@/i18n/config';
-import type { InputVariation } from '@/app/behind-the-scenes-ai/chapter-2/inputVariations';
+import type { InputVariation } from '@/app/(course)/behind-the-scenes-ai/chapter-2/inputVariations';
 
 export const chapter2Visuals = {
     contentLocale: 'ar' as Locale,

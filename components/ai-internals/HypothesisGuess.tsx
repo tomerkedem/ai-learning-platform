@@ -20,7 +20,7 @@ import { GuessVerdict } from './GuessVerdict';
 import { SpeakButton } from './SpeakButton';
 import { ExpandableLabContext } from './ExpandableLab';
 import { useT } from '@/i18n/useT';
-import type { Hypothesis, HypothesisCue, QuickGuessContent } from '@/app/behind-the-scenes-ai/introduction/introContent';
+import type { Hypothesis, HypothesisCue, QuickGuessContent } from '@/app/(course)/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
 
 /* ── איור-מיקרו לכל השערה ── */

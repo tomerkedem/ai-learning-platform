@@ -10,7 +10,7 @@
 // 空白がないため、各トークンは学習用の意味のまとまりとして手で区切っています。
 // 長いダッシュ（U+2014）や中ダッシュ（U+2013）は使いません。
 
-import type { Chapter4LabDict } from '@/app/behind-the-scenes-ai/chapter-4/labContent';
+import type { Chapter4LabDict } from '@/app/(course)/behind-the-scenes-ai/chapter-4/labContent';
 
 export const chapter4Lab: Chapter4LabDict = {
     sentences: {

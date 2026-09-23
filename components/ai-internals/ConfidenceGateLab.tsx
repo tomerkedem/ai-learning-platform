@@ -27,13 +27,13 @@ import {
     THRESHOLD_PRESETS,
     type Distribution,
     type RiskActionDef,
-} from '@/app/behind-the-scenes-ai/_parked/confidence/gateData';
+} from '@/app/(course)/behind-the-scenes-ai/_parked/confidence/gateData';
 import {
     evaluateGate,
     buildClarifyingQuestion,
     GATE_KIND_META,
-} from '@/app/behind-the-scenes-ai/_parked/confidence/gateLogic';
-import type { ConfidenceLevel } from '@/app/behind-the-scenes-ai/chapter-6/scoringEngine';
+} from '@/app/(course)/behind-the-scenes-ai/_parked/confidence/gateLogic';
+import type { ConfidenceLevel } from '@/app/(course)/behind-the-scenes-ai/chapter-6/scoringEngine';
 
 /* ════════════════════════ עזרי תצוגה ═════════════════════════════════════ */
 

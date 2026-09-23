@@ -9,7 +9,7 @@
 // ثابتة. التوكنز تُكتب يدويًا، وليس بالتقسيم حسب المسافات. بلا شَرطة طويلة (U+2014) ولا
 // شَرطة متوسطة (U+2013).
 
-import type { Chapter4LabDict } from '@/app/behind-the-scenes-ai/chapter-4/labContent';
+import type { Chapter4LabDict } from '@/app/(course)/behind-the-scenes-ai/chapter-4/labContent';
 
 export const chapter4Lab: Chapter4LabDict = {
     sentences: {

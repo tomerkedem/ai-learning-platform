@@ -16,7 +16,7 @@ import {
     type BuildBranch,
     type FragmentCandidate,
     type PromptVariantId,
-} from '@/app/behind-the-scenes-ai/chapter-10/answerBuildSteps';
+} from '@/app/(course)/behind-the-scenes-ai/chapter-10/answerBuildSteps';
 
 /** עמודת "מידת התאמה" להמחשה לימודית בלבד. */
 const FitBar: React.FC<{ value: number; accent: keyof typeof ACCENTS; muted?: boolean }> = ({ value, accent, muted }) => {

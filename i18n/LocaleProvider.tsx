@@ -2,18 +2,20 @@
 
 // i18n/LocaleProvider.tsx
 //
-// ספק ה-locale הגלובלי. עוטף את כל האפליקציה (ב-app/layout.tsx).
+// ספק ה-locale הגלובלי. עוטף את כל האפליקציה (components/RootDocument.tsx).
 //
 // פתרון ה-locale:
-//   1. ה-state ההתחלתי הוא תמיד DEFAULT_LOCALE ('he'), ולכן ה-SSR מרנדר עברית.
-//      כך התנהגות ברירת המחדל בעברית נשמרת ואין אי-התאמת hydration.
-//   2. אחרי mount בצד הלקוח קוראים את ?lang= מה-URL ומעדכנים אם הוא locale תקין.
+//   1. ה-state ההתחלתי הוא initialLocale שנפתר בשרת (בלומדה: עוגייה / שפת דפדפן / אנגלית;
+//      בשאר האתר: עברית). ה-SSR וה-hydration מרנדרים אותה שפה, ולכן אין הבזק שפה.
+//   2. בחירה (setLocale) מעדכנת מיד את הממשק ואת <html>, ושומרת רק את קוד השפה
+//      בעוגייה פונקציונלית. ריענון וניווט פנימי נפתרים בשרת מאותה עוגייה.
+//      ה-state יושב ב-root layout, ולכן החלפת שפה אינה מאפסת מבדקים או מעבדות פתוחים.
 //
-// הכיוון (dir) תמיד נגזר מהרישום (dirOf), לעולם לא מ-locale === 'he'.
-// אין שימוש ב-localStorage כמנגנון השפה הראשי, ואין ניתוב [locale] בשלב זה.
+// הכתובת אינה נושאת שפה (אין ?lang ואין ניתוב [locale]). הכיוון תמיד מהרישום (dirOf).
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import { LOCALES, DEFAULT_LOCALE, isLocale, dirOf, type Locale, type Direction } from './config';
+import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { LOCALES, LOCALE_COOKIE, dirOf, type Locale, type Direction } from './config';
 import { DevLocaleToggle } from './DevLocaleToggle';
 
 interface LocaleContextValue {
@@ -25,36 +27,35 @@ interface LocaleContextValue {
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
-export function LocaleProvider({ children }: { children: React.ReactNode }) {
-    const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
+const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
-    // קריאת ?lang= בצד הלקוח בלבד (אחרי mount), כדי לא לדרוש Suspense ולא לשבור
-    // את הרינדור הסטטי. ברירת המחדל (he) ללא ?lang נשארת זהה ל-SSR.
-    useEffect(() => {
-        const param = new URLSearchParams(window.location.search).get('lang');
-        if (isLocale(param) && param !== locale) {
-            setLocaleState(param);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- ריצה פעם אחת בעלייה
-    }, []);
-
-    // סנכרון אלמנט ה-<html>: lang, dir ו-data-locale. כך CSS תלוי-שפה (גלישת CJK,
-    // גופנים) וטכנולוגיות מסייעות רואים את השפה והכיוון הפעילים. הכיוון מהרישום.
-    useEffect(() => {
-        const el = document.documentElement;
-        el.lang = LOCALES[locale].htmlLang;
-        el.dir = dirOf(locale);
-        el.dataset.locale = locale;
-    }, [locale]);
+export function LocaleProvider({
+    initialLocale,
+    serverResolved,
+    children,
+}: {
+    initialLocale: Locale;
+    /** true כשהשרת פותר את השפה מהבקשה (הלומדה). במסלולים הסטטיים אין מה לרענן. */
+    serverResolved: boolean;
+    children: React.ReactNode;
+}) {
+    const [locale, setLocaleState] = useState<Locale>(initialLocale);
+    const router = useRouter();
 
     const setLocale = useCallback((l: Locale) => {
         setLocaleState(l);
-        // משקפים את הבחירה ב-?lang= (בלי ניווט מלא). ברירת המחדל מנקה את הפרמטר.
-        const url = new URL(window.location.href);
-        if (l === DEFAULT_LOCALE) url.searchParams.delete('lang');
-        else url.searchParams.set('lang', l);
-        window.history.replaceState(null, '', url.toString());
-    }, []);
+        // <html> מתעדכן מיד (לא אחרי render), כך שקוראי מסך, TTS ו-CSS תלוי-שפה רואים את
+        // השפה החדשה באותו רגע. lang/dir/data-locale כבר נכתבו בשרת לשפה ההתחלתית.
+        const el = document.documentElement;
+        el.lang = LOCALES[l].htmlLang;
+        el.dir = dirOf(l);
+        el.dataset.locale = l;
+        const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+        document.cookie = `${LOCALE_COOKIE}=${l}; Path=/; Max-Age=${ONE_YEAR_SECONDS}; SameSite=Lax${secure}`;
+        // רענון רכיבי השרת (כותרת המסמך, מטמון הניתוב) מול העוגייה החדשה. refresh שומר את
+        // ה-state של רכיבי הלקוח, ולכן מבדק או מעבדה באמצע נשארים כפי שהם.
+        if (serverResolved) router.refresh();
+    }, [router, serverResolved]);
 
     const value = useMemo<LocaleContextValue>(
         () => ({ locale, dir: dirOf(locale), htmlLang: LOCALES[locale].htmlLang, setLocale }),

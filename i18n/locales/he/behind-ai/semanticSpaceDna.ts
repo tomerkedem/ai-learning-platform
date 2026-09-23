@@ -8,7 +8,7 @@
 //
 // אין מקף ארוך (U+2014), אין מקף בינוני (U+2013) ואין נקודה-פסיק בעברית.
 
-import type { SemanticSpaceDnaDict } from '@/app/behind-the-scenes-ai/chapter-5/dnaModel';
+import type { SemanticSpaceDnaDict } from '@/app/(course)/behind-the-scenes-ai/chapter-5/dnaModel';
 
 export const semanticSpaceDna: SemanticSpaceDnaDict = {
     sentences: {

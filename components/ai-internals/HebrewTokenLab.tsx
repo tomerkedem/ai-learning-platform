@@ -4,8 +4,8 @@ import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { FlaskConical, Info, Layers, Scissors, Combine } from 'lucide-react';
 import { TokenChip } from './TokenChip';
-import { roleForWord } from '@/app/behind-the-scenes-ai/chapter-3/tokenRoles';
-import { useChapter3Lab } from '@/app/behind-the-scenes-ai/chapter-3/labContent';
+import { roleForWord } from '@/app/(course)/behind-the-scenes-ai/chapter-3/tokenRoles';
+import { useChapter3Lab } from '@/app/(course)/behind-the-scenes-ai/chapter-3/labContent';
 import { useT } from '@/i18n/useT';
 
 /**

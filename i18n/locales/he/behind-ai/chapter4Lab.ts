@@ -8,7 +8,7 @@
 // מפתחות מבניים אינם מתורגמים: sentence ids, chip ids, magnet ids וממדים נשארים יציבים.
 // הטוקנים מחברים ידנית ולעולם לא מפיצול לפי רווחים. אין שימוש בתו מקף ארוך או מקף בינוני.
 
-import type { Chapter4LabDict } from '@/app/behind-the-scenes-ai/chapter-4/labContent';
+import type { Chapter4LabDict } from '@/app/(course)/behind-the-scenes-ai/chapter-4/labContent';
 
 export const chapter4Lab: Chapter4LabDict = {
     sentences: {

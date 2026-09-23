@@ -15,12 +15,12 @@ import { useT } from '@/i18n/useT';
 import {
     activeStepIndex,
     type EngineMode,
-} from '@/app/behind-the-scenes-ai/chapter-4/embeddingEngine';
+} from '@/app/(course)/behind-the-scenes-ai/chapter-4/embeddingEngine';
 import {
     getWordDataset,
     getWordText,
     type WordLabText,
-} from '@/app/behind-the-scenes-ai/chapter-4/wordLabContent';
+} from '@/app/(course)/behind-the-scenes-ai/chapter-4/wordLabContent';
 
 /**
  * WordToNumberLab - מעבדת פרק 4, Embeddings: "ממספר חסר משמעות למשמעות".

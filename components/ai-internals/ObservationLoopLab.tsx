@@ -14,10 +14,10 @@ import {
     NARRATION, DECISION_META, PANEL_SLOTS, QUALITY_META, CONFIDENCE_META, RISK_META,
     LOOP_NODES,
     type LoopState, type SectionNarration, type DecisionTone,
-} from '@/app/behind-the-scenes-ai/_parked/tool-call/observationData';
+} from '@/app/(course)/behind-the-scenes-ai/_parked/tool-call/observationData';
 import {
     timelineStates, maxReplayStep, type StepState,
-} from '@/app/behind-the-scenes-ai/_parked/tool-call/loopEngine';
+} from '@/app/(course)/behind-the-scenes-ai/_parked/tool-call/loopEngine';
 
 /* ════════════════════════ טון צבעוני ═════════════════════════════════════ */
 // Answer ב-teal, Use another tool ב-violet, Ask ב-amber, Stop ב-crimson.

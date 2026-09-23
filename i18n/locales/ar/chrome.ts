@@ -46,6 +46,13 @@ export const chrome: typeof heChrome = {
         light: 'فاتح',
         dark: 'داكن',
     },
+    language: {
+        label: 'اللغة',
+        change: 'تغيير اللغة',
+        dialogTitle: 'اختر لغة',
+        close: 'إغلاق',
+        imageCredit: 'صورة الأرض: NASA',
+    },
 
     footer: {
         defaultLabel: 'دورات تفاعلية لمطوّري الذكاء الاصطناعي',

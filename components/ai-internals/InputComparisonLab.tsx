@@ -18,7 +18,7 @@ import { Check, MinusCircle, ArrowLeftRight, Gauge, Target, Info, MousePointerCl
 
 import { useT } from '@/i18n/useT';
 import { StickyContextBar, type ContextTone } from './StickyContextBar';
-import { BASE_ID, type Ambiguity } from '@/app/behind-the-scenes-ai/chapter-2/inputVariations';
+import { BASE_ID, type Ambiguity } from '@/app/(course)/behind-the-scenes-ai/chapter-2/inputVariations';
 
 // גוון הצ׳יפ של רמת העמימות (מבני; התווית עברה למילון chapter2Visuals.inputLab.ambiguityLabels).
 const AMBIGUITY_CHIP: Record<Ambiguity, string> = {

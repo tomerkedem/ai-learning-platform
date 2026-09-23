@@ -26,7 +26,7 @@ import { SpeakButton } from './SpeakButton';
 import { speakJoin } from './GuessVerdict';
 import type { Accent } from './types';
 import { useT } from '@/i18n/useT';
-import type { CourseSystem } from '@/app/behind-the-scenes-ai/introduction/introContent';
+import type { CourseSystem } from '@/app/(course)/behind-the-scenes-ai/introduction/introContent';
 import type { Direction } from '@/i18n/config';
 
 // גוון-זהות לכל תת-מערכת: מסע צבעוני לאורך המנוע.
