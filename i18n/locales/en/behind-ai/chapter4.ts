@@ -178,19 +178,19 @@ export const chapter4 = {
         viewNote: 'The engine never sees words. Only these numbers.',
         disclaimer: 'These numbers are illustrative only. A real vector has hundreds or thousands of dimensions that are not human-readable.',
         words: {
-            pkg: 'the package',
-            not: 'not',
-            arrived: 'arrived',
-            shipment: 'the shipment',
-            lost: 'lost',
-            tracking: 'tracking',
+            cat: 'cat',
+            dog: 'dog',
+            rain: 'rain',
+            music: 'music',
+            book: 'book',
+            running: 'running',
         },
     },
 
     // Check Your Understanding: where the vector numbers came from (training vs inference). Correct is index 0.
     lock: {
         title: 'Check Your Understanding',
-        question: 'The word "package" got a Token ID, and a vector was looked up from it. Where did the numbers in the vector come from?',
+        question: 'The word "cat" got a Token ID, and a vector was looked up from it. Where did the numbers in the vector come from?',
         options: [
             'They were learned in training, and the model only looks them up now',
             'The model computed them now from scratch, just for this chat',

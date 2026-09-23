@@ -22,7 +22,7 @@ export const chapter4Quiz = {
 
     byId: {
         1: {
-            question: 'What is true about the sentence "the package did not arrive" at the embedding stage?',
+            question: 'What is true about the sentence "The cat is sleeping" at the embedding stage?',
             options: [
                 'The sentence is split into tokens, and each token has its own Token ID and row in the table',
                 'The whole sentence gets one Token ID, and it pulls one row out of the table',

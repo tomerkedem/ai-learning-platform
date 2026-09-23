@@ -40,6 +40,7 @@ const EN_TOKEN_DICTIONARY: Record<string, number> = {
     Check: 51, why: 88,
     Send: 73, customer: 1190, message: 612, that: 145, was: 61, lost: 770,
     delivery: 1057, handed: 904, over: 210,
+    coffee: 340, too: 95, hot: 512, music: 670, loud: 825,
 };
 
 function enTokenId(word: string): number | null {
@@ -72,38 +73,38 @@ const enScenario = (id: string, prompt: string, steps: EngineStep[]): EngineScen
 });
 
 const EN_SCENARIOS: EngineScenario[] = [
-    enScenario('chat-delivery', 'The package did not arrive', [
+    enScenario('chat-delivery', 'The coffee is too hot', [
         enStep(scOf('chat-delivery').steps[0], {
-            text: 'The package',
-            tokens: ['The', 'package'],
-            main: 'The word "package" pushes the Delivery dimension hard.',
+            text: 'The coffee',
+            tokens: ['The', 'coffee'],
+            main: 'The word "coffee" becomes its own token, with its own Token ID.',
         }),
         enStep(scOf('chat-delivery').steps[1], {
-            text: 'The package did not',
-            tokens: ['The', 'package', 'did', 'not'],
-            main: 'The word "not" spikes Failure and Urgency.',
+            text: 'The coffee is',
+            tokens: ['The', 'coffee', 'is'],
+            main: 'Each new word adds one more token with its own address.',
         }),
         enStep(scOf('chat-delivery').steps[2], {
-            text: 'The package did not arrive',
-            tokens: ['The', 'package', 'did', 'not', 'arrive'],
-            main: '"did not arrive" locks in a delivery failure profile.',
+            text: 'The coffee is too hot',
+            tokens: ['The', 'coffee', 'is', 'too', 'hot'],
+            main: 'The full sentence is a sequence of tokens, each with its own row in the table.',
         }),
     ]),
-    enScenario('chat-system', 'The system is not showing the package', [
+    enScenario('chat-system', 'The music is too loud', [
         enStep(scOf('chat-system').steps[0], {
-            text: 'The system',
-            tokens: ['The', 'system'],
-            main: 'The word "system" shifts the weight to the System dimension.',
+            text: 'The music',
+            tokens: ['The', 'music'],
+            main: 'A different sentence, same idea: "music" gets its own token.',
         }),
         enStep(scOf('chat-system').steps[1], {
-            text: 'The system is not',
-            tokens: ['The', 'system', 'is', 'not'],
-            main: 'The word "not" adds Failure, but "system" still leads.',
+            text: 'The music is',
+            tokens: ['The', 'music', 'is'],
+            main: 'Each new word adds one more token with its own address.',
         }),
         enStep(scOf('chat-system').steps[2], {
-            text: 'The system is not showing the package',
-            tokens: ['The', 'system', 'is', 'not', 'showing', 'the', 'package'],
-            main: 'Same domain, different direction: the weight moves to a display glitch in the system.',
+            text: 'The music is too loud',
+            tokens: ['The', 'music', 'is', 'too', 'loud'],
+            main: 'The full sentence is a sequence of tokens, each with its own row in the table.',
         }),
     ]),
     enScenario('agent-investigate', 'Check why the package did not arrive', [
@@ -167,6 +168,7 @@ const ES_TOKEN_DICTIONARY: Record<string, number> = {
     Revisa: 51, por: 90, qué: 88,
     Envía: 73, un: 12, mensaje: 612, al: 15, cliente: 1190, de: 20, que: 145, se: 30, perdió: 770,
     envío: 1057, fue: 61, entregado: 904,
+    café: 345, está: 522, muy: 101, caliente: 633, La: 712, música: 847, alta: 958,
 };
 
 function esTokenId(word: string): number | null {
@@ -181,45 +183,45 @@ const esScenario = (id: string, prompt: string, steps: EngineStep[]): EngineScen
 });
 
 const ES_SCENARIO_LABEL: Record<string, string> = {
-    'chat-delivery': 'Sin entrega',
-    'chat-system': 'Fallo del sistema',
+    'chat-delivery': 'Café caliente',
+    'chat-system': 'Música alta',
     'agent-investigate': 'Investigación',
     'agent-notify': 'Acción con cliente',
 };
 
 const ES_SCENARIOS: EngineScenario[] = [
-    esScenario('chat-delivery', 'El paquete no llegó', [
+    esScenario('chat-delivery', 'El café está muy caliente', [
         enStep(scOf('chat-delivery').steps[0], {
-            text: 'El paquete',
-            tokens: ['El', 'paquete'],
-            main: 'La palabra "paquete" empuja con fuerza la dimensión de Entrega.',
+            text: 'El café',
+            tokens: ['El', 'café'],
+            main: 'La palabra "café" se convierte en su propio token, con su propio Token ID.',
         }),
         enStep(scOf('chat-delivery').steps[1], {
-            text: 'El paquete no',
-            tokens: ['El', 'paquete', 'no'],
-            main: 'La palabra "no" dispara Fallo y Urgencia.',
+            text: 'El café está',
+            tokens: ['El', 'café', 'está'],
+            main: 'Cada palabra nueva añade un token más, con su propia dirección.',
         }),
         enStep(scOf('chat-delivery').steps[2], {
-            text: 'El paquete no llegó',
-            tokens: ['El', 'paquete', 'no', 'llegó'],
-            main: '"no llegó" fija un perfil de fallo de entrega.',
+            text: 'El café está muy caliente',
+            tokens: ['El', 'café', 'está', 'muy', 'caliente'],
+            main: 'La frase completa es una secuencia de tokens, cada uno con su propia fila en la tabla.',
         }),
     ]),
-    esScenario('chat-system', 'El sistema no muestra el paquete', [
+    esScenario('chat-system', 'La música está muy alta', [
         enStep(scOf('chat-system').steps[0], {
-            text: 'El sistema',
-            tokens: ['El', 'sistema'],
-            main: 'La palabra "sistema" desplaza el peso a la dimensión de Sistema.',
+            text: 'La música',
+            tokens: ['La', 'música'],
+            main: 'Una frase distinta, misma idea: "música" recibe su propio token.',
         }),
         enStep(scOf('chat-system').steps[1], {
-            text: 'El sistema no',
-            tokens: ['El', 'sistema', 'no'],
-            main: 'La palabra "no" añade Fallo, pero "sistema" sigue liderando.',
+            text: 'La música está',
+            tokens: ['La', 'música', 'está'],
+            main: 'Cada palabra nueva añade un token más, con su propia dirección.',
         }),
         enStep(scOf('chat-system').steps[2], {
-            text: 'El sistema no muestra el paquete',
-            tokens: ['El', 'sistema', 'no', 'muestra', 'el', 'paquete'],
-            main: 'Mismo dominio, dirección distinta: el peso se mueve a un fallo de visualización en el sistema.',
+            text: 'La música está muy alta',
+            tokens: ['La', 'música', 'está', 'muy', 'alta'],
+            main: 'La frase completa es una secuencia de tokens, cada uno con su propia fila en la tabla.',
         }),
     ]),
     esScenario('agent-investigate', 'Revisa por qué el paquete no llegó', [
@@ -283,6 +285,7 @@ const RU_TOKEN_DICTIONARY: Record<string, number> = {
     Проверь: 51, почему: 88,
     Отправь: 73, клиенту: 1190, сообщение: 612, что: 145, потеряна: 770,
     Доставка: 1057, выполнена: 904,
+    Кофе: 355, слишком: 512, горячий: 640, Музыка: 718, громкая: 876,
 };
 
 function ruTokenId(word: string): number | null {
@@ -290,8 +293,8 @@ function ruTokenId(word: string): number | null {
 }
 
 const RU_SCENARIO_LABEL: Record<string, string> = {
-    'chat-delivery': 'Не доставлено',
-    'chat-system': 'Сбой системы',
+    'chat-delivery': 'Горячий кофе',
+    'chat-system': 'Громкая музыка',
     'agent-investigate': 'Расследование',
     'agent-notify': 'Письмо клиенту',
 };
@@ -304,38 +307,38 @@ const ruScenario = (id: string, prompt: string, steps: EngineStep[]): EngineScen
 });
 
 const RU_SCENARIOS: EngineScenario[] = [
-    ruScenario('chat-delivery', 'Посылка не пришла', [
+    ruScenario('chat-delivery', 'Кофе слишком горячий', [
         enStep(scOf('chat-delivery').steps[0], {
-            text: 'Посылка',
-            tokens: ['Посылка'],
-            main: 'Слово "Посылка" сильно поднимает измерение Доставка.',
+            text: 'Кофе',
+            tokens: ['Кофе'],
+            main: 'Слово "Кофе" становится отдельным токеном со своим Token ID.',
         }),
         enStep(scOf('chat-delivery').steps[1], {
-            text: 'Посылка не',
-            tokens: ['Посылка', 'не'],
-            main: 'Слово "не" резко поднимает Сбой и Срочность.',
+            text: 'Кофе слишком',
+            tokens: ['Кофе', 'слишком'],
+            main: 'Каждое новое слово добавляет ещё один токен со своим адресом.',
         }),
         enStep(scOf('chat-delivery').steps[2], {
-            text: 'Посылка не пришла',
-            tokens: ['Посылка', 'не', 'пришла'],
-            main: '"не пришла" закрепляет профиль сбоя доставки.',
+            text: 'Кофе слишком горячий',
+            tokens: ['Кофе', 'слишком', 'горячий'],
+            main: 'Всё предложение это последовательность токенов, у каждого своя строка в таблице.',
         }),
     ]),
-    ruScenario('chat-system', 'Система не показывает посылку', [
+    ruScenario('chat-system', 'Музыка слишком громкая', [
         enStep(scOf('chat-system').steps[0], {
-            text: 'Система',
-            tokens: ['Система'],
-            main: 'Слово "Система" смещает вес к измерению Система.',
+            text: 'Музыка',
+            tokens: ['Музыка'],
+            main: 'Другое предложение, та же идея: "Музыка" получает свой токен.',
         }),
         enStep(scOf('chat-system').steps[1], {
-            text: 'Система не',
-            tokens: ['Система', 'не'],
-            main: 'Слово "не" добавляет Сбой, но "Система" всё ещё ведёт.',
+            text: 'Музыка слишком',
+            tokens: ['Музыка', 'слишком'],
+            main: 'Каждое новое слово добавляет ещё один токен со своим адресом.',
         }),
         enStep(scOf('chat-system').steps[2], {
-            text: 'Система не показывает посылку',
-            tokens: ['Система', 'не', 'показывает', 'посылку'],
-            main: 'Та же область, другое направление: вес уходит к сбою отображения в системе.',
+            text: 'Музыка слишком громкая',
+            tokens: ['Музыка', 'слишком', 'громкая'],
+            main: 'Всё предложение это последовательность токенов, у каждого своя строка в таблице.',
         }),
     ]),
     ruScenario('agent-investigate', 'Проверь, почему посылка не пришла', [
@@ -400,6 +403,7 @@ const AR_TOKEN_DICTIONARY: Record<string, number> = {
     النظام: 2310, تحقّق: 51, لماذا: 88,
     أرسل: 73, للعميل: 1190, رسالة: 612, بأن: 145, ضاع: 770,
     الشحنة: 1057, 'تُسلَّم': 904,
+    القهوة: 365, ساخنة: 540, 'جدًا': 690, الموسيقى: 745, صاخبة: 820,
 };
 
 function arTokenId(word: string): number | null {
@@ -407,8 +411,8 @@ function arTokenId(word: string): number | null {
 }
 
 const AR_SCENARIO_LABEL: Record<string, string> = {
-    'chat-delivery': 'لم يُسلَّم',
-    'chat-system': 'خلل النظام',
+    'chat-delivery': 'قهوة ساخنة',
+    'chat-system': 'موسيقى صاخبة',
     'agent-investigate': 'تحقيق',
     'agent-notify': 'رسالة للعميل',
 };
@@ -421,38 +425,38 @@ const arScenario = (id: string, prompt: string, steps: EngineStep[]): EngineScen
 });
 
 const AR_SCENARIOS: EngineScenario[] = [
-    arScenario('chat-delivery', 'الطرد لم يصل', [
+    arScenario('chat-delivery', 'القهوة ساخنة جدًا', [
         enStep(scOf('chat-delivery').steps[0], {
-            text: 'الطرد',
-            tokens: ['الطرد'],
-            main: 'كلمة "الطرد" تدفع بقوة بُعد التسليم.',
+            text: 'القهوة',
+            tokens: ['القهوة'],
+            main: 'كلمة "القهوة" تصبح توكن خاص بها، بعنوان Token ID خاص به.',
         }),
         enStep(scOf('chat-delivery').steps[1], {
-            text: 'الطرد لم',
-            tokens: ['الطرد', 'لم'],
-            main: 'كلمة "لم" ترفع الفشل والإلحاح.',
+            text: 'القهوة ساخنة',
+            tokens: ['القهوة', 'ساخنة'],
+            main: 'كل كلمة جديدة تضيف توكن آخر بعنوانه الخاص.',
         }),
         enStep(scOf('chat-delivery').steps[2], {
-            text: 'الطرد لم يصل',
-            tokens: ['الطرد', 'لم', 'يصل'],
-            main: '"لم يصل" يثبّت ملف فشل التسليم.',
+            text: 'القهوة ساخنة جدًا',
+            tokens: ['القهوة', 'ساخنة', 'جدًا'],
+            main: 'الجملة الكاملة سلسلة من التوكنات، لكل واحد صف خاص به في الجدول.',
         }),
     ]),
-    arScenario('chat-system', 'النظام لا يعرض الطرد', [
+    arScenario('chat-system', 'الموسيقى صاخبة جدًا', [
         enStep(scOf('chat-system').steps[0], {
-            text: 'النظام',
-            tokens: ['النظام'],
-            main: 'كلمة "النظام" تنقل الثقل إلى بُعد النظام.',
+            text: 'الموسيقى',
+            tokens: ['الموسيقى'],
+            main: 'جملة مختلفة، نفس الفكرة: "الموسيقى" تحصل على توكن خاص بها.',
         }),
         enStep(scOf('chat-system').steps[1], {
-            text: 'النظام لا',
-            tokens: ['النظام', 'لا'],
-            main: 'كلمة "لا" تضيف الفشل، لكن "النظام" ما زال يقود.',
+            text: 'الموسيقى صاخبة',
+            tokens: ['الموسيقى', 'صاخبة'],
+            main: 'كل كلمة جديدة تضيف توكن آخر بعنوانه الخاص.',
         }),
         enStep(scOf('chat-system').steps[2], {
-            text: 'النظام لا يعرض الطرد',
-            tokens: ['النظام', 'لا', 'يعرض', 'الطرد'],
-            main: 'المجال نفسه، اتجاه آخر: ينتقل الثقل إلى خلل عرض في النظام.',
+            text: 'الموسيقى صاخبة جدًا',
+            tokens: ['الموسيقى', 'صاخبة', 'جدًا'],
+            main: 'الجملة الكاملة سلسلة من التوكنات، لكل واحد صف خاص به في الجدول.',
         }),
     ]),
     arScenario('agent-investigate', 'تحقّق لماذا لم يصل الطرد', [
@@ -523,6 +527,7 @@ const JA_TOKEN_DICTIONARY: Record<string, number> = {
     調べて: 51, '、': 5, なぜ: 88, か: 90,
     連絡して: 73, 顧客: 1190, に: 12, 紛失し: 770, た: 61, と: 145,
     配送: 1057, 完了し: 904,
+    コーヒー: 372, 熱: 558, すぎます: 640, 音楽: 715, うるさ: 860,
 };
 
 function jaTokenId(word: string): number | null {
@@ -530,8 +535,8 @@ function jaTokenId(word: string): number | null {
 }
 
 const JA_SCENARIO_LABEL: Record<string, string> = {
-    'chat-delivery': '未配達',
-    'chat-system': 'システム不具合',
+    'chat-delivery': '熱いコーヒー',
+    'chat-system': 'うるさい音楽',
     'agent-investigate': '調査',
     'agent-notify': '顧客への連絡',
 };
@@ -544,38 +549,38 @@ const jaScenario = (id: string, prompt: string, steps: EngineStep[]): EngineScen
 });
 
 const JA_SCENARIOS: EngineScenario[] = [
-    jaScenario('chat-delivery', '荷物が届きませんでした', [
+    jaScenario('chat-delivery', 'コーヒーが熱すぎます', [
         enStep(scOf('chat-delivery').steps[0], {
-            text: '荷物',
-            tokens: ['荷物'],
-            main: '「荷物」が配送の次元を強く押し上げます。',
+            text: 'コーヒー',
+            tokens: ['コーヒー'],
+            main: '「コーヒー」がそれ自身のトークンになり、専用の Token ID を持ちます。',
         }),
         enStep(scOf('chat-delivery').steps[1], {
-            text: '荷物が届き',
-            tokens: ['荷物', 'が', '届き'],
-            main: '「届き」までは配送の話とだけ分かり、届いたかどうかはまだ決まりません。',
+            text: 'コーヒーが熱',
+            tokens: ['コーヒー', 'が', '熱'],
+            main: '新しい語が増えるたびに、専用のアドレスを持つトークンが一つ増えます。',
         }),
         enStep(scOf('chat-delivery').steps[2], {
-            text: '荷物が届きませんでした',
-            tokens: ['荷物', 'が', '届き', 'ませんでした'],
-            main: '最後の「ませんでした」で過去の否定に変わり、配送失敗のプロファイルが固まります。',
+            text: 'コーヒーが熱すぎます',
+            tokens: ['コーヒー', 'が', '熱', 'すぎます'],
+            main: '文全体はトークンの並びで、それぞれが表の中に専用の行を持ちます。',
         }),
     ]),
-    jaScenario('chat-system', 'システムが荷物を表示しません', [
+    jaScenario('chat-system', '音楽がうるさすぎます', [
         enStep(scOf('chat-system').steps[0], {
-            text: 'システム',
-            tokens: ['システム'],
-            main: '「システム」が重心をシステムの次元へ移します。',
+            text: '音楽',
+            tokens: ['音楽'],
+            main: '別の文でも考え方は同じ:「音楽」が専用のトークンを持ちます。',
         }),
         enStep(scOf('chat-system').steps[1], {
-            text: 'システムが荷物を表示し',
-            tokens: ['システム', 'が', '荷物', 'を', '表示し'],
-            main: '「表示し」までは表示の話とだけ分かり、表示されるかどうかはまだ決まりません。ただし「システム」が主導。',
+            text: '音楽がうるさ',
+            tokens: ['音楽', 'が', 'うるさ'],
+            main: '新しい語が増えるたびに、専用のアドレスを持つトークンが一つ増えます。',
         }),
         enStep(scOf('chat-system').steps[2], {
-            text: 'システムが荷物を表示しません',
-            tokens: ['システム', 'が', '荷物', 'を', '表示し', 'ません'],
-            main: '最後の「ません」が否定を担い、重心はシステムの表示不具合へ移ります。同じ領域でも方向が違います。',
+            text: '音楽がうるさすぎます',
+            tokens: ['音楽', 'が', 'うるさ', 'すぎます'],
+            main: '文全体はトークンの並びで、それぞれが表の中に専用の行を持ちます。',
         }),
     ]),
     jaScenario('agent-investigate', '調べて、なぜ荷物が届かなかったか', [

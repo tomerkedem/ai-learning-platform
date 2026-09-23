@@ -22,7 +22,7 @@ export const chapter4Quiz = {
 
     byId: {
         1: {
-            question: '¿Qué es cierto sobre la frase "el paquete no llegó" en la etapa del embedding?',
+            question: '¿Qué es cierto sobre la frase "El gato está durmiendo" en la etapa del embedding?',
             options: [
                 'La frase se divide en tokens, y cada token tiene su propio Token ID y su propia fila en la tabla',
                 'La frase entera recibe un solo Token ID, y con él se saca una sola fila de la tabla',

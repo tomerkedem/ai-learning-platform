@@ -36,6 +36,11 @@ export const TOKEN_DICTIONARY: Record<string, number> = {
     'ללקוח': 1190,
     'שהחבילה': 1338,
     'אבדה': 770,
+    'הקפה': 250,
+    'חם': 460,
+    'מדי': 530,
+    'המוזיקה': 680,
+    'חזקה': 815,
 };
 
 /** מחזיר את ה-Token ID של מילה, או null אם אינה במילון. */
@@ -153,69 +158,67 @@ export interface EngineScenario {
 }
 
 export const SCENARIOS: EngineScenario[] = [
-    /* ── תרחיש A: Chat, "החבילה לא הגיעה" ──────────────────────────────── */
+    /* ── תרחיש A: Chat, "הקפה חם מדי" ──────────────────────────────── */
     {
         id: 'chat-delivery',
         mode: 'chat',
-        labelHe: 'אי מסירה',
-        labelEn: 'Not delivered',
-        prompt: 'החבילה לא הגיעה',
+        labelHe: 'קפה חם',
+        labelEn: 'Hot coffee',
+        prompt: 'הקפה חם מדי',
         accent: 'cyan',
         steps: [
             {
-                text: 'החבילה',
-                tokens: ['החבילה'],
+                text: 'הקפה',
+                tokens: ['הקפה'],
                 profile: { delivery: 0.80, system: 0.20, address: 0.10, payment: 0.05, urgency: 0.20, failure: 0.10 },
-                mainChangeHe: 'המילה "החבילה" דוחפת חזק את ממד המשלוח.',
+                mainChangeHe: 'המילה "הקפה" הופכת לטוקן ולכתובת משלה בטבלה.',
                 lead: 'delivery',
             },
             {
-                text: 'החבילה לא',
-                tokens: ['החבילה', 'לא'],
+                text: 'הקפה חם',
+                tokens: ['הקפה', 'חם'],
                 profile: { delivery: 0.85, system: 0.20, address: 0.10, payment: 0.05, urgency: 0.30, failure: 0.55 },
-                mainChangeHe: 'המילה "לא" מקפיצה את הכשל ואת הדחיפות.',
+                mainChangeHe: 'המילה "חם" מצטרפת כטוקן נפרד עם כתובת משלה.',
                 lead: 'delivery',
-                negation: true,
             },
             {
-                text: 'החבילה לא הגיעה',
-                tokens: ['החבילה', 'לא', 'הגיעה'],
+                text: 'הקפה חם מדי',
+                tokens: ['הקפה', 'חם', 'מדי'],
                 profile: { delivery: 0.95, system: 0.20, address: 0.10, payment: 0.05, urgency: 0.40, failure: 0.85 },
-                mainChangeHe: 'הצירוף "לא הגיעה" מקבע פרופיל של כשל במשלוח.',
+                mainChangeHe: 'המשפט השלם הוא רצף של שלושה טוקנים, כל אחד עם ה-Token ID שלו.',
                 lead: 'delivery',
             },
         ],
     },
 
-    /* ── תרחיש B: Chat, כיוון מנוגד "המערכת לא מציגה את החבילה" ─────────── */
+    /* ── תרחיש B: Chat, "המוזיקה חזקה מדי" ─────────── */
     {
         id: 'chat-system',
         mode: 'chat',
-        labelHe: 'תקלת מערכת',
-        labelEn: 'System issue',
-        prompt: 'המערכת לא מציגה את החבילה',
+        labelHe: 'מוזיקה חזקה',
+        labelEn: 'Loud music',
+        prompt: 'המוזיקה חזקה מדי',
         accent: 'indigo',
         steps: [
             {
-                text: 'המערכת',
-                tokens: ['המערכת'],
+                text: 'המוזיקה',
+                tokens: ['המוזיקה'],
                 profile: { system: 0.70, delivery: 0.20, address: 0.10, payment: 0.05, urgency: 0.15, failure: 0.10 },
-                mainChangeHe: 'המילה "המערכת" מסיטה את הכובד לממד המערכת.',
+                mainChangeHe: 'המילה "המוזיקה" הופכת לטוקן ולכתובת משלה בטבלה.',
                 lead: 'system',
             },
             {
-                text: 'המערכת לא',
-                tokens: ['המערכת', 'לא'],
+                text: 'המוזיקה חזקה',
+                tokens: ['המוזיקה', 'חזקה'],
                 profile: { system: 0.78, delivery: 0.25, address: 0.10, payment: 0.05, urgency: 0.30, failure: 0.40 },
-                mainChangeHe: 'המילה "לא" מוסיפה כשל, אך "מערכת" עדיין מובילה.',
+                mainChangeHe: 'המילה "חזקה" מצטרפת כטוקן נפרד עם כתובת משלה.',
                 lead: 'system',
-                negation: true,
             },
             {
-                text: 'המערכת לא מציגה את החבילה',
-                tokens: ['המערכת', 'לא', 'מציגה', 'את', 'החבילה'],
+                text: 'המוזיקה חזקה מדי',
+                tokens: ['המוזיקה', 'חזקה', 'מדי'],
                 profile: { system: 0.80, delivery: 0.45, address: 0.15, payment: 0.05, urgency: 0.30, failure: 0.45 },
-                mainChangeHe: 'אותו תחום, כיוון אחר: הכובד עובר לתקלת תצוגה במערכת.',
+                mainChangeHe: 'משפט שונה לגמרי, אותו עיקרון: רצף טוקנים, כל אחד עם השורה שלו.',
                 lead: 'system',
             },
         ],

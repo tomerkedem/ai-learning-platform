@@ -176,19 +176,19 @@ export const chapter4 = {
         viewNote: 'El motor nunca ve palabras. Solo estos números.',
         disclaimer: 'Estos números son solo ilustrativos. Un vector real tiene cientos o miles de dimensiones no legibles para una persona.',
         words: {
-            pkg: 'el paquete',
-            not: 'no',
-            arrived: 'llegó',
-            shipment: 'el envío',
-            lost: 'perdido',
-            tracking: 'seguimiento',
+            cat: 'el gato',
+            dog: 'el perro',
+            rain: 'la lluvia',
+            music: 'la música',
+            book: 'el libro',
+            running: 'correr',
         },
     },
 
     // Bloqueo de comprensión: de dónde vienen los números del vector (entrenamiento vs inferencia). Correcta es índice 0.
     lock: {
         title: 'Comprueba tu comprensión',
-        question: 'La palabra "paquete" recibió un Token ID, y de él se consultó un vector. ¿De dónde vienen los números del vector?',
+        question: 'La palabra "gato" recibió un Token ID, y de él se consultó un vector. ¿De dónde vienen los números del vector?',
         options: [
             'Se aprendieron en el entrenamiento, y el modelo solo los consulta ahora',
             'El modelo los calculó ahora desde cero, solo para este chat',

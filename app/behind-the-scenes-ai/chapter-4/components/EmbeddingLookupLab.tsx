@@ -21,12 +21,12 @@ import { useT } from '@/i18n/useT';
 
 // מבנה יציב (לא מתורגם): מזהה מילה + Token ID קבוע. הטקסט מגיע מהמילון לפי המזהה.
 const WORDS = [
-    { id: 'pkg', tokenId: 1042 },
-    { id: 'not', tokenId: 17 },
-    { id: 'arrived', tokenId: 883 },
-    { id: 'shipment', tokenId: 1057 },
-    { id: 'lost', tokenId: 770 },
-    { id: 'tracking', tokenId: 305 },
+    { id: 'cat', tokenId: 401 },
+    { id: 'dog', tokenId: 205 },
+    { id: 'rain', tokenId: 618 },
+    { id: 'music', tokenId: 732 },
+    { id: 'book', tokenId: 94 },
+    { id: 'running', tokenId: 350 },
 ] as const;
 
 type WordId = (typeof WORDS)[number]['id'];
@@ -58,7 +58,7 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
     const c = t.behindAi.chapter4.embeddingLookup;
     const reduce = useReducedMotion();
 
-    const [wordId, setWordId] = useState<WordId>('pkg');
+    const [wordId, setWordId] = useState<WordId>('cat');
     const [learned, setLearned] = useState(true);
 
     const active = WORDS.find((w) => w.id === wordId) ?? WORDS[0];
