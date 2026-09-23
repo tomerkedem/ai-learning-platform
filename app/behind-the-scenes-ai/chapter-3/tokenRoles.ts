@@ -60,12 +60,12 @@ export const ROLE_INFO: Record<TokenRole, RoleInfo> = {
     negation: { he: 'שלילה', en: 'Negation', whyHe: 'המילה הזאת יכולה להפוך את כיוון המשפט. בלעדיה המשמעות הפוכה לגמרי.' },
     action: { he: 'פעולה', en: 'Action', whyHe: 'מה קרה לאובייקט. הפועל קובע את מצב הדברים בפועל.' },
     'action-signal': { he: 'אות פעולה', en: 'Action signal', whyHe: 'המילה הזאת מסיטה את הקלט ממשפט תיאורי לבקשת פעולה. היא משנה את כל המסלול.' },
-    context: { he: 'הקשר', en: 'Context / Location', whyHe: 'מוסיף מיקום או הקשר שעוזר לדייק את התמונה, למשל לאן החבילה הייתה אמורה להגיע.' },
-    system: { he: 'מערכת', en: 'System', whyHe: 'מצביע על המערכת עצמה ולא על החבילה. אותו תחום, אבל כיוון אחר לגמרי.' },
+    context: { he: 'הקשר', en: 'Context / Location', whyHe: 'מוסיף מיקום או הקשר שעוזר לדייק את התמונה, למשל איפה שתית את הקפה שלך.' },
+    system: { he: 'מערכת', en: 'System', whyHe: 'מצביע על מערכת רחבה יותר ולא על האובייקט עצמו. אותו תחום, אבל כיוון אחר לגמרי.' },
     recipient: { he: 'נמען', en: 'Recipient', whyHe: 'מי מקבל את הפעולה. רלוונטי במיוחד כשמדובר בפעולה כלפי אדם אמיתי.' },
     'question-signal': { he: 'סימן שאלה', en: 'Question signal', whyHe: 'סימן השאלה הוא token בפני עצמו. הוא משנה את הצורה של המשפט משאלה לקביעה.' },
     'statement-signal': { he: 'סימן קביעה', en: 'Statement signal', whyHe: 'הנקודה היא token נפרד שמסמן סוף קביעה. גם הפיסוק נחשב יחידת עבודה.' },
-    number: { he: 'מספר', en: 'Number', whyHe: 'רצף ספרות הוא יחידה בפני עצמה. מספר מעקב, למשל, יכול להפוך בקשה כללית למשהו שאפשר לבדוק.' },
+    number: { he: 'מספר', en: 'Number', whyHe: 'רצף ספרות הוא יחידה בפני עצמה. כמות במתכון, למשל, הופכת בקשה כללית למשהו מדויק וניתן למדידה.' },
     noise: { he: 'רעש', en: 'Noise', whyHe: 'מילה כללית שמוסיפה מעט מאוד מידע. עדיין הופכת ל-token, גם אם משקלה נמוך.' },
     other: { he: 'כללי', en: 'Token', whyHe: 'מילה שלא מופתה לתפקיד מיוחד בטוקנייזר הלימודי הזה. עדיין נספרת כיחידת עבודה.' },
 };
@@ -76,19 +76,19 @@ export type RoleWordMap = Record<string, TokenRole>;
 /** מילה -> תפקיד. טבלה דטרמיניסטית קבועה (ברירת המחדל העברית). */
 export const WORD_ROLES: RoleWordMap = {
     // Object
-    'החבילה': 'object', 'חבילה': 'object', 'המשלוח': 'object', 'משלוח': 'object',
+    'הכביסה': 'object', 'כביסה': 'object', 'החתול': 'object', 'חתול': 'object',
     // Negation
     'לא': 'negation', 'אין': 'negation', 'בלי': 'negation', 'אינו': 'negation',
     // Action
-    'הגיעה': 'action', 'נמסרה': 'action', 'להגיע': 'action',
+    'התייבשה': 'action', 'התייבש': 'action', 'חזר': 'action', 'חזרה': 'action',
     // Action signal
     'בדוק': 'action-signal', 'תבדוק': 'action-signal', 'בדקי': 'action-signal',
-    // Context / Location
-    'למרכז': 'context', 'במרכז': 'context', 'המיון': 'context', 'מרכז': 'context',
+    // Context / Location (גם צירוף הדטקטור: "כוס קפה")
+    'כוס': 'context', 'לכוס': 'context', 'בכוס': 'context', 'קפה': 'context',
     // System
-    'המערכת': 'system', 'מערכת': 'system',
+    'הרשת': 'system', 'רשת': 'system',
     // Recipient
-    'ללקוח': 'recipient', 'לקוח': 'recipient',
+    'לילד': 'recipient', 'ילד': 'recipient',
     // Noise
     'אולי': 'noise', 'קצת': 'noise', 'משהו': 'noise',
 };

@@ -178,7 +178,7 @@ export const HE_LAB_CONTENT: Chapter3LabContent = {
 
     splitter: {
         hint: 'הקלידו משפט, והוא יתפרק לטוקנים בזמן אמת.',
-        placeholder: 'לדוגמה: החבילה לא הגיעה',
+        placeholder: 'לדוגמה: הכביסה לא התייבשה',
         aria: 'שדה הקלדה לפירוק טוקנים',
         quickLabel: 'ניסויים מהירים:',
         resetLabel: 'איפוס',
@@ -214,8 +214,8 @@ export const HE_LAB_CONTENT: Chapter3LabContent = {
     signals: {
         number: { label: 'טוקן מספר', en: 'Number token' },
         action: { label: 'אות פעולה', en: 'Action signal' },
-        deliveryFailure: { label: 'צירוף כשל מסירה', en: 'Delivery failure signal' },
-        sortingCenter: { label: 'צירוף הקשר: מרכז המיון', en: 'Sorting center' },
+        deliveryFailure: { label: 'צירוף שלילה ופעולה', en: 'Negation signal' },
+        sortingCenter: { label: 'צירוף הקשר: כוס קפה', en: 'Coffee cup phrase' },
     },
 
     noSpaceNote:

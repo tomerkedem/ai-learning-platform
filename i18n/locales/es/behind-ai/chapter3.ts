@@ -30,7 +30,7 @@ export const chapter3 = {
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {
         guessCorrect:
-            'Viste que la división ocurre antes de la comprensión, no después. Por eso cosas que a nosotros nos parecen idénticas, como un cambio de puntuación o un número de seguimiento, pueden verse muy distintas para el modelo.',
+            'Viste que la división ocurre antes de la comprensión, no después. Por eso cosas que a nosotros nos parecen idénticas, como un cambio de puntuación o un número añadido, pueden verse muy distintas para el modelo.',
         guessWrong:
             'Un error razonable, porque cuando leemos una frase la percibimos como un todo y no como piezas. Para el modelo el orden es el inverso: primero el corte en unidades y solo después el significado. Vale la pena mirar de nuevo las líneas de arriba y preguntarte qué se corta antes que qué.',
         quizPass:
@@ -103,7 +103,7 @@ export const chapter3 = {
     lab: {
         eyebrow: 'Tokenization Lab',
         title: 'Divide una frase en tokens',
-        intro: 'Elige un experimento rápido o escribe tu propia frase, por ejemplo "Mi paquete no llegó". Fíjate en qué cambia cuando añades un signo de exclamación, un número de seguimiento, quitas los espacios o cambias de idioma. Cada unidad recibe un color, y la puntuación y los números cuentan como unidades propias.',
+        intro: 'Elige un experimento rápido o escribe tu propia frase, por ejemplo "La ropa no se secó". Fíjate en qué cambia cuando añades un signo de exclamación, un número, quitas los espacios o cambias de idioma. Cada unidad recibe un color, y la puntuación y los números cuentan como unidades propias.',
     },
 
     lock: {
@@ -115,7 +115,7 @@ export const chapter3 = {
         question: '¿Qué cambio en el texto puede afectar la tokenización?',
         options: [
             'Añadir puntuación, como signos de exclamación',
-            'Añadir un número, como un número de seguimiento',
+            'Añadir un número, como una cantidad de receta',
             'Quitar los espacios entre palabras',
             'Cambiar de un idioma a otro',
             'Todas las anteriores',
@@ -132,7 +132,7 @@ export const chapter3 = {
         points: [
             'Una palabra no siempre es un token, así que no midas el largo ni el costo por el número de palabras.',
             'La misma petición puede volverse un número distinto de unidades según la puntuación, los números, los espacios y el idioma. Una redacción limpia tiende a ahorrar unidades.',
-            'Cuando importan el largo, el costo o la ventana de contexto, por ejemplo en un hilo largo sobre un paquete que no llegó, piensa en unidades, no en palabras.',
+            'Cuando importan el largo, el costo o la ventana de contexto, por ejemplo en un hilo largo sobre cómo planear un viaje, piensa en unidades, no en palabras.',
             'Una división limpia no significa que el modelo haya entendido. Es solo la primera conversión antes de cualquier procesamiento.',
         ],
     },

@@ -40,7 +40,7 @@ export const chapter3Quiz = {
         },
         3: {
             question:
-                'Una persona toma "Mi paquete no llegó" y prueba varias versiones: con tres signos de exclamación, con un número de seguimiento y sin espacios. ¿Qué le pasa a la tokenización?',
+                'Una persona toma "La ropa no se secó" y prueba varias versiones: con tres signos de exclamación, con un número y sin espacios. ¿Qué le pasa a la tokenización?',
             options: [
                 'La división queda igual, porque el significado no cambió',
                 'Solo un cambio de significado afecta la división, no la forma',

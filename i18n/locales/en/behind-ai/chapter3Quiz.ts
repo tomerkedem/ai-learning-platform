@@ -40,7 +40,7 @@ export const chapter3Quiz = {
         },
         3: {
             question:
-                "A user takes 'My package did not arrive' and tries a few versions: with three exclamation marks, with a tracking number, and with no spaces at all. What happens to the tokenization?",
+                "A user takes 'The laundry did not dry' and tries a few versions: with three exclamation marks, with a number, and with no spaces at all. What happens to the tokenization?",
             options: [
                 'The split stays the same, because the meaning did not change',
                 'Only a change in meaning affects the split, not the form',

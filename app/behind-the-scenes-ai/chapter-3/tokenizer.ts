@@ -3,7 +3,7 @@
 //
 // המנוע מבצע: (1) פיצול לפי רווחים, (2) קילוף פיסוק לטוקנים נפרדים,
 // (3) שיוך תפקיד מתוך WORD_ROLES, (4) ספירה. המקף אינו מפצל, ולכן הוא
-// מדגים איך הצורה משנה את הפירוק ("לא-הגיעה" הופך ליחידה אחת).
+// מדגים איך הצורה משנה את הפירוק ("לא-חזר" הופך ליחידה אחת).
 
 import { roleForWord, type TokenRole, type RoleWordMap } from './tokenRoles';
 
@@ -77,26 +77,26 @@ export interface PairSignal {
     second: string;
 }
 
-/** ברירת המחדל העברית: צירוף ההקשר "מרכז המיון". */
+/** ברירת המחדל העברית: צירוף ההקשר "כוס קפה". */
 export const HE_SORTING_CENTER: PhraseAfterSignal = {
-    leads: ['מרכז', 'למרכז', 'במרכז'],
-    follow: 'המיון',
+    leads: ['כוס', 'לכוס', 'בכוס'],
+    follow: 'קפה',
 };
 
-/** ברירת המחדל העברית: צירוף כשל מסירה "לא ... הגיעה". */
+/** ברירת המחדל העברית: צירוף שלילה ופעולה "לא ... לאכול". */
 export const HE_DELIVERY_FAILURE: PairSignal = {
     first: 'לא',
-    second: 'הגיעה',
+    second: 'לאכול',
 };
 
-/** האם הקלט מכיל את צירוף ההקשר (Sorting center). ברירת מחדל עברית. */
+/** האם הקלט מכיל את צירוף ההקשר (כוס קפה). ברירת מחדל עברית. */
 export function hasSortingCenter(tokens: Token[], cfg: PhraseAfterSignal = HE_SORTING_CENTER): boolean {
     const texts = tokens.map((t) => t.text);
     const i = texts.findIndex((t) => cfg.leads.includes(t));
     return i >= 0 && texts.slice(i + 1).includes(cfg.follow);
 }
 
-/** האם יש צירוף כשל מסירה (Delivery failure signal). ברירת מחדל עברית. */
+/** האם יש צירוף שלילה ופעולה (Negation + action signal). ברירת מחדל עברית. */
 export function hasDeliveryFailure(tokens: Token[], cfg: PairSignal = HE_DELIVERY_FAILURE): boolean {
     const texts = tokens.map((t) => t.text);
     const i = texts.indexOf(cfg.first);
@@ -108,7 +108,7 @@ export function hasActionSignal(tokens: Token[]): boolean {
     return tokens.some((t) => t.role === 'action-signal');
 }
 
-/** האם יש טוקן מספר (Number) בקלט, למשל מספר מעקב. */
+/** האם יש טוקן מספר (Number) בקלט, למשל כמות במתכון. */
 export function hasNumber(tokens: Token[]): boolean {
     return tokens.some((t) => t.role === 'number');
 }
@@ -144,36 +144,36 @@ export interface TokenScenario {
 
 export const TOKEN_SCENARIOS: TokenScenario[] = [
     {
-        id: 'chat-delivery',
+        id: 'chat-basics',
         mode: 'chat',
         labelHe: 'מצב צ׳אט',
         labelEn: 'Chat mode',
-        prompt: 'החבילה לא הגיעה',
+        prompt: 'הכביסה לא התייבשה',
         accent: 'emerald',
         routeHe: 'בניית תשובה',
         routeEn: 'Build answer',
         examples: [
-            { labelHe: 'בסיס', labelEn: 'Base', text: 'החבילה לא הגיעה' },
-            { labelHe: 'עם שאלה', labelEn: 'With question', text: 'החבילה לא הגיעה?' },
-            { labelHe: 'עם דגש', labelEn: 'With emphasis', text: 'החבילה שלי לא הגיעה!!!' },
-            { labelHe: 'מספר מעקב', labelEn: 'Tracking number', text: 'מספר המעקב הוא 12345' },
-            { labelHe: 'בלי רווחים', labelEn: 'No spaces', text: 'החבילהשלילאהגיעה' },
-            { labelHe: 'באנגלית', labelEn: 'In English', text: 'Package not arrived. What should I do?' },
-            { labelHe: 'תיקון בשיחה', labelEn: 'Correction', text: 'לא נעליים, הזמנתי ספר' },
+            { labelHe: 'בסיס', labelEn: 'Base', text: 'הכביסה לא התייבשה' },
+            { labelHe: 'עם שאלה', labelEn: 'With question', text: 'הכביסה לא התייבשה?' },
+            { labelHe: 'עם דגש', labelEn: 'With emphasis', text: 'הכביסה שלי לא התייבשה!!!' },
+            { labelHe: 'כמות במתכון', labelEn: 'Recipe quantity', text: 'המתכון דורש 250 גרם קמח' },
+            { labelHe: 'בלי רווחים', labelEn: 'No spaces', text: 'הכביסהלאהתייבשה' },
+            { labelHe: 'באנגלית', labelEn: 'In English', text: 'The laundry did not dry. What should I do?' },
+            { labelHe: 'תיקון בשיחה', labelEn: 'Correction', text: 'לא עוגיות, אפיתי עוגה' },
         ],
     },
     {
-        id: 'agent-investigate',
+        id: 'agent-check',
         mode: 'agent',
         labelHe: 'מצב Agent',
         labelEn: 'Agent mode',
-        prompt: 'בדוק למה החבילה לא הגיעה',
+        prompt: 'בדוק למה החתול לא חזר',
         accent: 'purple',
         routeHe: 'הבנת משימה',
         routeEn: 'Understand task',
         examples: [
-            { labelHe: 'בקשת בדיקה', labelEn: 'Investigation', text: 'בדוק למה החבילה לא הגיעה' },
-            { labelHe: 'בדיקה לנמען', labelEn: 'To recipient', text: 'בדוק למה החבילה לא הגיעה ללקוח' },
+            { labelHe: 'בקשת בדיקה', labelEn: 'Investigation', text: 'בדוק למה החתול לא חזר' },
+            { labelHe: 'בדיקה לנמען', labelEn: 'To recipient', text: 'בדוק למה החתול לא חזר לילד' },
         ],
     },
 ];

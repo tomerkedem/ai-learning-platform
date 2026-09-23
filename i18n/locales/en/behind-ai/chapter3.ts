@@ -31,7 +31,7 @@ export const chapter3 = {
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {
         guessCorrect:
-            'You spotted that the split happens before understanding, not after it. That is also why things that look identical to us, like a change in punctuation or a tracking number, can look completely different to the model.',
+            'You spotted that the split happens before understanding, not after it. That is also why things that look identical to us, like a change in punctuation or an added number, can look completely different to the model.',
         guessWrong:
             'A reasonable mistake, because when we read a sentence we take it in as one whole, not as pieces. For the model the order is reversed: first the cut into units, and only then meaning. It is worth looking at the lines above again and asking what gets cut before what.',
         quizPass:
@@ -107,7 +107,7 @@ export const chapter3 = {
     lab: {
         eyebrow: 'Tokenization Lab',
         title: 'Break a sentence into tokens',
-        intro: 'Pick a quick experiment or type your own sentence, for example "My package did not arrive". Notice what changes when you add an exclamation mark, a tracking number, remove the spaces, or switch to another language. Each unit gets a color, and punctuation and numbers count as units of their own.',
+        intro: 'Pick a quick experiment or type your own sentence, for example "The laundry did not dry". Notice what changes when you add an exclamation mark, a number, remove the spaces, or switch to another language. Each unit gets a color, and punctuation and numbers count as units of their own.',
     },
 
     // Check Your Understanding: true vs false + an active classification question
@@ -120,7 +120,7 @@ export const chapter3 = {
         question: 'Which change to the text is likely to affect the tokenization?',
         options: [
             'Adding punctuation, such as exclamation marks',
-            'Adding a number, such as a tracking number',
+            'Adding a number, such as a recipe quantity',
             'Removing the spaces between words',
             'Switching from one language to another',
             'All of the above',
@@ -138,7 +138,7 @@ export const chapter3 = {
         points: [
             'One word is not always one token, so do not measure length or cost by the number of words.',
             'The same request can become a different number of units depending on punctuation, numbers, spaces, and language. Clean phrasing tends to save units.',
-            'When length, cost, or the context window matter, for example in a long thread about a package that did not arrive, think in units, not words.',
+            'When length, cost, or the context window matter, for example in a long thread about planning a trip, think in units, not words.',
             'A clean split does not mean the model understood. It is only the first conversion before any processing.',
         ],
     },
