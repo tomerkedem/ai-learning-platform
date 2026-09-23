@@ -59,21 +59,21 @@ export const introVisuals = {
             youTab: 'What you see',
             modelTab: 'What the model gets',
             userLabel: 'Your message',
-            userText: 'Where is my package?',
+            userText: 'What can I make for dinner?',
             systemLabel: 'System instructions',
-            systemText: 'You are a support agent. Check the delivery status before you answer.',
+            systemText: 'You are a cooking assistant. Give practical, concise suggestions.',
             historyLabel: 'The chat so far',
-            historyText: 'I ordered yesterday and got a tracking number.',
+            historyText: 'Earlier I mentioned I have pasta and tomatoes at home.',
             stripLabel: 'Everything goes in as one sequence',
             caption: 'The instructions, the history and your request are glued into one long sequence, so all of them shape the answer.',
         },
 
         tokenize: {
-            sentence: 'My package did not arrive',
-            tokens: ['My', 'package', 'did not', 'arrive'] as string[],
+            sentence: 'The cat is sleeping',
+            tokens: ['The', 'cat', 'is', 'sleeping'] as string[],
             caption: 'In a real model the split sometimes lands inside a word, not only between words.',
-            altSentence: 'The deliveries are unbelievable',
-            altTokens: ['The', 'deliver', 'ies', 'are', 'un', 'believ', 'able'] as string[],
+            altSentence: 'The findings are unbelievable',
+            altTokens: ['The', 'find', 'ings', 'are', 'un', 'believ', 'able'] as string[],
             // Maps each piece to its original word (same-word pieces share a color).
             altGroups: [0, 1, 1, 2, 3, 3, 3] as number[],
             altCaption: 'Pieces in the same color used to be one word. The model also works on word pieces.',
@@ -87,22 +87,22 @@ export const introVisuals = {
         },
 
         embedding: {
-            token: 'package',
+            token: 'cat',
             caption: (note: string) =>
                 `The token becomes an ID in the vocabulary, then a vector of numbers that encodes meaning. ${note}`,
-            // Fixed order across locales (vector numbers are mapped by index): 0 package, 1 delivery, 2 cat, 3 dog.
-            mapWords: ['package', 'delivery', 'cat', 'dog'] as string[],
+            // Fixed order across locales (vector numbers are mapped by index): 0 cat, 1 dog, 2 car, 3 bicycle.
+            mapWords: ['cat', 'dog', 'car', 'bicycle'] as string[],
             mapHint: 'Tap a word on the map',
             nearLabel: 'Closest pair',
             mapCaption: 'Representations with similar meaning can end up close to each other in the space.',
         },
 
         position: {
-            tokens: ['First', 'payment', 'then', 'delivery'] as string[],
+            tokens: ['First', 'rain', 'then', 'sunshine'] as string[],
             swapLabel: 'Swap the order',
-            meaningA: 'You pay before the package ships.',
-            meaningB: 'You pay only after the package arrives.',
-            caption: 'The position tag is what separates "before" from "after" in this deal.',
+            meaningA: 'It rains first, and the sky clears up later.',
+            meaningB: 'It is sunny first, and rain comes later.',
+            caption: 'The position tag is what separates "before" from "after" here.',
         },
 
         context: {
@@ -110,12 +110,12 @@ export const introVisuals = {
             outLabel: 'Out of the window',
             addLabel: 'A new message arrives',
             messages: [
-                'I ordered a cordless vacuum',
-                'Order received, thanks!',
-                'When does it arrive?',
-                'Your delivery ships today',
-                'The package is still not here',
-                'What exactly did you order again?',
+                "My friend's birthday is on Saturday",
+                'Got it, good to know!',
+                'What should I get as a gift?',
+                'Maybe a book or a plant',
+                "I still haven't decided",
+                "Wait, what day was my friend's birthday again?",
             ] as string[],
             caption: 'The window does not grow: every new message that comes in pushes an old one out.',
         },
@@ -135,10 +135,10 @@ export const introVisuals = {
             caption: 'Each word attends to the others with different strength.',
         },
 
-        // Station 8: one ambiguous word, two contexts, the meaning flips.
+        // Station 8: two different tokens, each routed to different experts.
         mix: {
-            tokenA: 'delivery',
-            tokenB: 'payment',
+            tokenA: 'recipe',
+            tokenB: 'weather',
             routerLabel: 'Router picks',
             activeNote: (k: number, n: number) => `${k} of ${n} experts run`,
             outLabel: 'enriched',

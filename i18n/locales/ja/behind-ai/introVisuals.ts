@@ -59,21 +59,21 @@ export const introVisuals = {
             youTab: 'あなたに見えるもの',
             modelTab: 'モデルが受け取るもの',
             userLabel: 'あなたのメッセージ',
-            userText: '私の荷物はどこ?',
+            userText: '夕食に何を作れますか?',
             systemLabel: 'システム指示',
-            systemText: 'あなたはサポート担当です。回答の前に配送状況を確認してください。',
+            systemText: 'あなたは料理アシスタントです。実用的で簡潔な提案をしてください。',
             historyLabel: 'これまでの会話',
-            historyText: '昨日注文して、追跡番号を受け取りました。',
+            historyText: '以前、家にパスタとトマトがあると伝えました。',
             stripLabel: 'すべてが一つの列として入る',
             caption: '指示、履歴、依頼が一つの長い列につながるので、そのすべてが答えを左右します。',
         },
 
         tokenize: {
-            sentence: '私の荷物が届かない',
-            tokens: ['私の', '荷物', 'が', '届かない'] as string[],
+            sentence: '私の猫が眠っています',
+            tokens: ['私の', '猫', 'が', '眠っています'] as string[],
             caption: '実際のモデルでは、分割は単語の間だけでなく、単語の途中に入ることもあります。',
-            altSentence: '再配達をお願いします',
-            altTokens: ['再', '配達', 'を', 'お願い', 'します'] as string[],
+            altSentence: '再確認をお願いします',
+            altTokens: ['再', '確認', 'を', 'お願い', 'します'] as string[],
             // Maps each piece to its original word (same-word pieces share a color).
             altGroups: [0, 0, 1, 2, 2] as number[],
             altCaption: '同じ色のかけらは、もとは一つの言葉でした。モデルは言葉のかけらでも動きます。',
@@ -87,21 +87,21 @@ export const introVisuals = {
         },
 
         embedding: {
-            token: '荷物',
+            token: '猫',
             caption: (note: string) =>
                 `トークンは語彙のIDになり、次に意味を表す数値ベクトルになります。${note}`,
-            // Fixed order across locales (vector numbers are mapped by index): 0 package, 1 delivery, 2 cat, 3 dog.
-            mapWords: ['荷物', '配達', '猫', '犬'] as string[],
+            // Fixed order across locales (vector numbers are mapped by index): 0 cat, 1 dog, 2 car, 3 bicycle.
+            mapWords: ['猫', '犬', '車', '自転車'] as string[],
             mapHint: '地図の言葉をタップ',
             nearLabel: '一番近いペア',
             mapCaption: '意味が近い表現は、空間の中で近くに位置することがあります。',
         },
 
         position: {
-            tokens: ['まず', '支払い', 'それから', '配達'] as string[],
+            tokens: ['まず', '雨', 'それから', '晴れ'] as string[],
             swapLabel: '順番を入れ替える',
-            meaningA: '荷物が出る前に支払います。',
-            meaningB: '荷物が届いてから支払います。',
+            meaningA: '最初に雨が降り、あとで晴れます。',
+            meaningB: '最初は晴れていて、あとで雨が降ります。',
             caption: '位置タグが、ここで「前」と「後」を分けています。',
         },
 
@@ -110,12 +110,12 @@ export const introVisuals = {
             outLabel: 'ウィンドウの外',
             addLabel: '新しいメッセージが届く',
             messages: [
-                'コードレス掃除機を注文しました',
-                'ご注文を受け付けました',
-                'いつ届きますか?',
-                '本日発送します',
-                '荷物がまだ届きません',
-                '何をご注文でしたか?',
+                '友達の誕生日は土曜日です',
+                'なるほど、覚えておきます!',
+                '何をプレゼントすればいいですか?',
+                '本か植物はどうでしょう',
+                'まだ決めていません',
+                'ところで、友達の誕生日は何曜日でしたか?',
             ] as string[],
             caption: 'ウィンドウは大きくなりません。新しいメッセージが入るたび、古いものが押し出されます。',
         },
@@ -135,10 +135,10 @@ export const introVisuals = {
             caption: 'それぞれの言葉は異なる強さで他の言葉に注意を向けます。',
         },
 
-        // Station 8: one ambiguous word, two contexts, the meaning flips.
+        // Station 8: two different tokens, each routed to different experts.
         mix: {
-            tokenA: '配達',
-            tokenB: '支払い',
+            tokenA: 'レシピ',
+            tokenB: '天気',
             routerLabel: 'ルーターが選ぶ',
             activeNote: (k: number, n: number) => `${n}人中${k}人の専門家が動く`,
             outLabel: '強化済み',

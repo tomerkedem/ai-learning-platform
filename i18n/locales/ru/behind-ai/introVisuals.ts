@@ -59,23 +59,23 @@ export const introVisuals = {
             youTab: 'Что видите вы',
             modelTab: 'Что получает модель',
             userLabel: 'Ваше сообщение',
-            userText: 'Где моя посылка?',
+            userText: 'Что приготовить на ужин?',
             systemLabel: 'Системные инструкции',
-            systemText: 'Вы агент поддержки. Проверяйте статус доставки перед ответом.',
+            systemText: 'Вы кулинарный помощник. Давайте практичные и краткие советы.',
             historyLabel: 'Разговор до этого',
-            historyText: 'Я заказал вчера и получил трек-номер.',
+            historyText: 'Ранее я говорил, что дома есть паста и помидоры.',
             stripLabel: 'Всё входит одной последовательностью',
             caption: 'Инструкции, история и ваш запрос склеиваются в одну длинную последовательность, и поэтому все они влияют на ответ.',
         },
 
         tokenize: {
-            sentence: 'Моя посылка не пришла',
-            tokens: ['Моя', 'посылка', 'не', 'пришла'] as string[],
+            sentence: 'Мой кот спит сейчас',
+            tokens: ['Мой', 'кот', 'спит', 'сейчас'] as string[],
             caption: 'В реальной модели разрез иногда попадает внутрь слова, а не только между словами.',
-            altSentence: 'Доставки задерживаются',
-            altTokens: ['Достав', 'ки', 'задерж', 'ива', 'ются'] as string[],
+            altSentence: 'Находки впечатляют',
+            altTokens: ['Наход', 'ки', 'впечатл', 'яют'] as string[],
             // Maps each piece to its original word (same-word pieces share a color).
-            altGroups: [0, 0, 1, 1, 1] as number[],
+            altGroups: [0, 0, 1, 1] as number[],
             altCaption: 'Кусочки одного цвета были одним словом. Модель работает и с кусочками слов.',
             variantA: 'Простая фраза',
             variantB: 'Длинные слова',
@@ -87,21 +87,21 @@ export const introVisuals = {
         },
 
         embedding: {
-            token: 'посылка',
+            token: 'кот',
             caption: (note: string) =>
                 `Токен становится ID в словаре, а затем вектором чисел, который кодирует смысл. ${note}`,
-            // Fixed order across locales (vector numbers are mapped by index): 0 package, 1 delivery, 2 cat, 3 dog.
-            mapWords: ['посылка', 'доставка', 'кот', 'пёс'] as string[],
+            // Fixed order across locales (vector numbers are mapped by index): 0 cat, 1 dog, 2 car, 3 bicycle.
+            mapWords: ['кот', 'пёс', 'машина', 'велосипед'] as string[],
             mapHint: 'Нажмите на слово на карте',
             nearLabel: 'Ближайшая пара',
             mapCaption: 'Представления с близким смыслом могут оказаться рядом друг с другом в пространстве.',
         },
 
         position: {
-            tokens: ['Сначала', 'оплата', 'потом', 'доставка'] as string[],
+            tokens: ['Сначала', 'дождь', 'потом', 'солнце'] as string[],
             swapLabel: 'Поменяйте порядок',
-            meaningA: 'Вы платите до отправки посылки.',
-            meaningB: 'Вы платите только после получения посылки.',
+            meaningA: 'Сначала идёт дождь, а потом небо проясняется.',
+            meaningB: 'Сначала светит солнце, а потом идёт дождь.',
             caption: 'Метка позиции - это то, что отличает здесь «до» от «после».',
         },
 
@@ -110,12 +110,12 @@ export const introVisuals = {
             outLabel: 'За окном',
             addLabel: 'Приходит новое сообщение',
             messages: [
-                'Я заказал беспроводной пылесос',
-                'Заказ принят, спасибо!',
-                'Когда придёт доставка?',
-                'Ваша посылка отправляется сегодня',
-                'Посылка всё ещё не пришла',
-                'А что именно вы заказывали?',
+                'День рождения моего друга в субботу',
+                'Понял, хорошо знать!',
+                'Что подарить?',
+                'Может быть, книгу или растение',
+                'Я всё ещё не решил',
+                'Подожди, в какой день день рождения моего друга?',
             ] as string[],
             caption: 'Окно не растёт: каждое новое сообщение выталкивает одно старое.',
         },
@@ -135,10 +135,10 @@ export const introVisuals = {
             caption: 'Каждое слово обращает внимание на другие с разной силой.',
         },
 
-        // Station 8: one ambiguous word, two contexts, the meaning flips.
+        // Station 8: two different tokens, each routed to different experts.
         mix: {
-            tokenA: 'доставка',
-            tokenB: 'оплата',
+            tokenA: 'рецепт',
+            tokenB: 'погода',
             routerLabel: 'Роутер выбирает',
             activeNote: (k: number, n: number) => `${k} из ${n} экспертов работают`,
             outLabel: 'обогащён',

@@ -60,21 +60,21 @@ export const introVisuals = {
             youTab: 'ما ترونه أنتم',
             modelTab: 'ما يستقبله النموذج',
             userLabel: 'رسالتكم',
-            userText: 'أين طردي؟',
+            userText: 'ماذا يمكنني أن أحضّر للعشاء؟',
             systemLabel: 'تعليمات النظام',
-            systemText: 'أنتم وكيل دعم. تحققوا من حالة الشحنة قبل الرد.',
+            systemText: 'أنتم مساعد طهي. قدّموا اقتراحات عملية ومختصرة.',
             historyLabel: 'المحادثة حتى الآن',
-            historyText: 'طلبت أمس وحصلت على رقم تتبع.',
+            historyText: 'ذكرت سابقًا أن لديّ في البيت معكرونة وطماطم.',
             stripLabel: 'كل شيء يدخل كسلسلة واحدة',
             caption: 'التعليمات والمحادثة والطلب تلتصق في سلسلة واحدة طويلة، ولذلك تؤثر كلها في الإجابة.',
         },
 
         tokenize: {
-            sentence: 'طردي لم يصل بعد',
-            tokens: ['طردي', 'لم', 'يصل', 'بعد'] as string[],
+            sentence: 'قطتي نائمة على الأريكة',
+            tokens: ['قطتي', 'نائمة', 'على', 'الأريكة'] as string[],
             caption: 'في نموذج حقيقي قد يقع التقسيم أحيانًا داخل الكلمة، لا بين الكلمات فقط.',
-            altSentence: 'الشحنات المتأخرة',
-            altTokens: ['الشحن', 'ات', 'المتأخر', 'ة'] as string[],
+            altSentence: 'الاجتماعات المطولة',
+            altTokens: ['الاجتماع', 'ات', 'المطول', 'ة'] as string[],
             // Maps each piece to its original word (same-word pieces share a color).
             altGroups: [0, 0, 1, 1] as number[],
             altCaption: 'الأجزاء بنفس اللون كانت كلمة واحدة. النموذج يعمل أيضًا على أجزاء الكلمات.',
@@ -88,21 +88,21 @@ export const introVisuals = {
         },
 
         embedding: {
-            token: 'طردي',
+            token: 'قطة',
             caption: (note: string) =>
                 `يصبح الرمز معرّفًا في المفردات، ثم متجهًا من الأرقام يرمّز المعنى. ${note}`,
-            // Fixed order across locales (vector numbers are mapped by index): 0 package, 1 delivery, 2 cat, 3 dog.
-            mapWords: ['طرد', 'شحنة', 'قطة', 'كلب'] as string[],
+            // Fixed order across locales (vector numbers are mapped by index): 0 cat, 1 dog, 2 car, 3 bicycle.
+            mapWords: ['قطة', 'كلب', 'سيارة', 'دراجة'] as string[],
             mapHint: 'اضغطوا على كلمة في الخريطة',
             nearLabel: 'الزوج الأقرب',
             mapCaption: 'التمثيلات ذات المعنى المتقارب يمكن أن تقع قريبة من بعضها في الفضاء.',
         },
 
         position: {
-            tokens: ['أولاً', 'الدفع', 'ثم', 'التوصيل'] as string[],
+            tokens: ['أولاً', 'مطر', 'ثم', 'شمس'] as string[],
             swapLabel: 'بدّلوا الترتيب',
-            meaningA: 'تدفعون قبل خروج الطرد.',
-            meaningB: 'تدفعون فقط بعد وصول الطرد.',
+            meaningA: 'يهطل المطر أولاً، ثم تصفو السماء.',
+            meaningB: 'تشرق الشمس أولاً، ثم يهطل المطر.',
             caption: 'وسم الموقع هو ما يفصل هنا بين "قبل" و"بعد".',
         },
 
@@ -111,12 +111,12 @@ export const introVisuals = {
             outLabel: 'خارج النافذة',
             addLabel: 'تصل رسالة جديدة',
             messages: [
-                'طلبت مكنسة لاسلكية',
-                'تم استلام الطلب، شكرًا!',
-                'متى يصل الشحن؟',
-                'شحنتكم تخرج اليوم',
-                'الطرد لم يصل بعد',
-                'ماذا طلبتم بالضبط؟',
+                'عيد ميلاد صديقي يوم السبت',
+                'تمام، جيد أن أعرف!',
+                'ماذا يمكنني أن أشتري له كهدية؟',
+                'ربما كتابًا أو نبتة',
+                'لم أقرر بعد',
+                'لحظة، في أي يوم كان عيد ميلاد صديقي؟',
             ] as string[],
             caption: 'النافذة لا تكبر: كل رسالة جديدة تدخل تدفع رسالة قديمة إلى الخارج.',
         },
@@ -136,10 +136,10 @@ export const introVisuals = {
             caption: 'كل كلمة تنتبه إلى الأخريات بقوة مختلفة.',
         },
 
-        // Station 8: one ambiguous word, two contexts, the meaning flips.
+        // Station 8: two different tokens, each routed to different experts.
         mix: {
-            tokenA: 'التسليم',
-            tokenB: 'الدفع',
+            tokenA: 'وصفة',
+            tokenB: 'طقس',
             routerLabel: 'الراوتر يختار',
             activeNote: (k: number, n: number) => `${k} من ${n} خبراء يعملون`,
             outLabel: 'مُثرى',
