@@ -231,19 +231,11 @@ export function tokenize(text: string): string[] {
 // מצומדת לקלט-ההדגמה ב-ja/behind-ai/chapter1*.ts. ההתאמה דטרמיניסטית ולכן SSR
 // וה-hydration זהים, בלי תלות בגרסת ICU של הדפדפן.
 const JA_DEMO_SEGMENTS: Record<string, string[]> = {
-    '荷物が届きません': ['荷物', 'が', '届き', 'ません'],
-    '私の荷物はどこですか': ['私', 'の', '荷物', 'は', 'どこ', 'です', 'か'],
-    '荷物 123456789 を確認して': ['荷物', '123456789', 'を', '確認', 'して'],
-    '荷物が紛失したと顧客に伝えて': ['荷物', 'が', '紛失', 'した', 'と', '顧客', 'に', '伝えて'],
+    '曲が再生されません': ['曲', 'が', '再生', 'されません'],
+    '今の曲は何ですか': ['今', 'の', '曲', 'は', '何', 'です', 'か'],
+    'プレイリスト 123456 を見せて': ['プレイリスト', '123456', 'を', '見せて'],
+    'プレイリスト 123456 を削除して': ['プレイリスト', '123456', 'を', '削除', 'して'],
     'これを対応して': ['これ', 'を', '対応', 'して'],
-    '注文はどこ?システムに表示されません': ['注文', 'は', 'どこ', '?', 'システム', 'に', '表示され', 'ません'],
-    '私の支払いはどこ?': ['私', 'の', '支払い', 'は', 'どこ', '?'],
-    '荷物が届きました': ['荷物', 'が', '届き', 'ました'],
-    '支払いに問題があります': ['支払い', 'に', '問題', 'が', 'あります'],
-    'システムに問題があります': ['システム', 'に', '問題', 'が', 'あります'],
-    '荷物を確認して': ['荷物', 'を', '確認', 'して'],
-    '荷物が紛失したか確認して': ['荷物', 'が', '紛失', 'した', 'か', '確認', 'して'],
-    '営業時間は何時ですか': ['営業', '時間', 'は', '何時', 'です', 'か'],
 };
 
 // פיצול מתוסרט לפי מעבר בין מחלקות-כתב יפניות. איננו תלוי בגרסת ICU בדפדפן,
@@ -564,10 +556,10 @@ function decode(probabilities: ProbabilityCandidate[], strategy: DecodingStrateg
 
 function defaultResponse(replyKey: ChatReplyKey): string {
     const responses: Record<ChatReplyKey, string> = {
-        notDelivered: 'Check the delivery status with the tracking number.',
-        tracking: 'Please provide the tracking number so I can check the status.',
-        system: 'Refresh the product and try again.',
-        payment: 'Check the invoice and payment details.',
+        notDelivered: 'This looks like a playback problem. Try restarting the song.',
+        tracking: 'Let me check what is currently playing.',
+        system: 'This may be a glitch in the app. Try refreshing and playing again.',
+        payment: 'Here is a recommendation based on what you asked.',
         other: 'Please add a little more context.',
     };
     return responses[replyKey];
@@ -596,7 +588,7 @@ export const hasBarcode = (text: string) => /\d{6,}/.test(text);
 //
 // negation הוא מערך (כל שפה עשויה להזדקק לכמה סימני שלילה; לטיני מאחד en+es).
 export interface Vocab {
-    /** סימני שלילה (מחזקים את כוונת אי-המסירה). includesAny => חסר-רגישות לאותיות. */
+    /** סימני שלילה (מחזקים את כוונת בעיית הניגון). includesAny => חסר-רגישות לאותיות. */
     negation: string[];
     /** מילות-מפתח לכל כוונת Chat, לפי מפתח הכלל. */
     chatWords: Record<ChatRuleKey, string[]>;
@@ -609,14 +601,14 @@ export interface Vocab {
 const HE_VOCAB: Vocab = {
     negation: ['לא'],
     chatWords: {
-        notDelivered: ['לא הגיע', 'לא הגיעה', 'לא קיבלתי', 'לא נמסר', 'אבד', 'אבדה', 'חסר', 'איחור', 'מתעכב', 'עיכוב'],
-        tracking: ['איפה', 'היכן', 'מתי', 'סטטוס', 'מעקב', 'track', 'status'],
-        system: ['מערכת', 'אתר', 'אפליקציה', 'לא מופיע', 'לא מופיעה', 'תקלה', 'שגיאה', 'התחבר'],
-        payment: ['תשלום', 'חיוב', 'חשבונית', 'שילמתי', 'החזר', 'אשראי'],
+        notDelivered: ['לא מתנגן', 'לא מתנגנת', 'נתקע', 'נתקעה', 'מדלג', 'קופץ', 'הפסיק לנגן'],
+        tracking: ['איזה שיר', 'מה מתנגן', 'עכשיו מתנגן', 'מה מנגן'],
+        system: ['אפליקציה', 'קורסת', 'נתקעת', 'קפואה', 'לא נפתחת', 'תקלה', 'קורס'],
+        payment: ['המלץ', 'תמליץ', 'המלצה', 'הצע לי', 'שיר טוב ל', 'תציע'],
     },
     actionWords: ['בדוק', 'תבדוק', 'מצא', 'שלוף', 'עדכן', 'תעדכן', 'שלח', 'תשלח', 'פתח', 'סגור', 'תטפל', 'טפל'],
     sensitiveWords: ['שלח', 'תשלח', 'עדכן', 'תעדכן', 'מחק', 'תמחק'],
-    deliveryWords: ['חבילה', 'משלוח', 'הזמנה', 'מסירה'],
+    deliveryWords: ['פלייליסט', 'רשימת השמעה', 'רשימת ההשמעה'],
     vagueWords: ['תטפל בזה', 'תטפל', 'זה', 'אותו'],
 };
 
@@ -625,31 +617,34 @@ const HE_VOCAB: Vocab = {
 const LATIN_VOCAB: Vocab = {
     negation: ["n't", 'no '],
     chatWords: {
-        notDelivered: ["didn't arrive", 'did not arrive', "didn't receive", "hasn't arrived", 'never arrived', 'lost', 'missing', 'delayed', 'delay',
-            'no llegó', 'no llego', 'se perdió', 'se perdio', 'perdido', 'perdida', 'no recibí', 'no recibi', 'extraviado', 'retraso'],
-        tracking: ['where', 'when', 'status', 'track', 'tracking', 'dónde', 'donde', 'cuándo', 'cuando', 'estado', 'seguimiento', 'rastreo'],
-        system: ['system', 'not working', 'error', 'glitch', 'down', 'crash', 'sistema', 'aplicación', 'aplicacion', 'no aparece', 'falla', 'no funciona'],
-        payment: ['payment', 'charge', 'invoice', 'refund', 'billing', 'paid', 'pago', 'cobro', 'factura', 'reembolso', 'pagué', 'pague', 'tarjeta'],
+        notDelivered: ["isn't playing", "won't play", 'not playing', 'stopped playing', 'keeps stopping', "won't start", "doesn't play",
+            'no suena', 'no está sonando', 'no esta sonando', 'no se reproduce', 'dejó de sonar', 'dejo de sonar', 'no reproduce', 'no arranca'],
+        tracking: ['what song', 'now playing', "what's playing", 'what is playing', 'which song',
+            'qué canción', 'que cancion', 'qué está sonando', 'que esta sonando', 'qué suena', 'que suena'],
+        system: ['app', 'freezing', 'freezes', 'crashing', 'crashes', 'app keeps', 'not working', 'glitch',
+            'aplicación', 'aplicacion', 'se congela', 'se cuelga', 'no funciona', 'falla', 'se traba'],
+        payment: ['recommend', 'suggest', 'suggestion', 'recommendation', 'what should i listen',
+            'recomienda', 'recomiéndame', 'recomiendame', 'sugiere', 'sugerencia', 'recomendación', 'recomendacion'],
     },
     actionWords: ['check', 'find', 'look up', 'update', 'send', 'tell', 'handle',
         'revisa', 'revisar', 'busca', 'encuentra', 'actualiza', 'envía', 'envia', 'avisa', 'encárgate', 'encargate', 'gestiona'],
     sensitiveWords: ['send', 'tell', 'email', 'notify', 'update', 'delete', 'remove', 'envía', 'envia', 'avisa', 'notifica', 'actualiza', 'elimina', 'borra'],
-    deliveryWords: ['package', 'delivery', 'order', 'shipment', 'parcel', 'paquete', 'envío', 'envio', 'pedido', 'entrega', 'encomienda'],
+    deliveryWords: ['playlist', 'playlists', 'lista de reproducción', 'listas de reproducción'],
     vagueWords: ['handle it', 'take care of it', 'sort it out', 'deal with it', 'just handle', 'encárgate de esto', 'encárgate', 'ocúpate', 'de esto'],
 };
 
 // אוצר ערבית (MSA). מצומד לקלט-ההדגמה ב-ar/chapter1*.ts.
 const AR_VOCAB: Vocab = {
-    negation: ['لم '],
+    negation: ['لا '],
     chatWords: {
-        notDelivered: ['لم يصل', 'لم تصل', 'فُقد', 'فقد', 'ضاع', 'ضائع', 'مفقود', 'لم أستلم', 'تأخر', 'متأخر'],
-        tracking: ['أين', 'متى', 'حالة', 'تتبع', 'تعقب'],
-        system: ['النظام', 'نظام', 'الموقع', 'التطبيق', 'لا يظهر', 'خطأ', 'عطل', 'لا يعمل'],
-        payment: ['دفع', 'الدفع', 'دفعة', 'دفعتي', 'فاتورة', 'استرداد', 'بطاقة'],
+        notDelivered: ['لا تعمل', 'لا تشتغل', 'توقفت عن العمل', 'متوقفة'],
+        tracking: ['أي أغنية', 'ما الأغنية', 'ماذا يشتغل الآن', 'أي أغنية تعمل الآن'],
+        system: ['التطبيق', 'يتجمد', 'يتعطل', 'عطل', 'يتوقف فجأة'],
+        payment: ['اقترح', 'رشح لي', 'أوصي', 'توصية', 'اقتراح', 'ماذا أستمع'],
     },
     actionWords: ['تحقق', 'افحص', 'ابحث', 'حدّث', 'أرسل', 'أبلغ', 'تولَّ', 'تولى', 'عالج'],
     sensitiveWords: ['أرسل', 'أبلغ', 'حدّث', 'احذف', 'عدّل'],
-    deliveryWords: ['طرد', 'الطرد', 'طردي', 'شحنة', 'طلب', 'توصيل'],
+    deliveryWords: ['قائمة التشغيل', 'قائمة تشغيل', 'بلاي ليست'],
     vagueWords: ['تولَّ هذا', 'هذا الأمر', 'تولَّ', 'اعتنِ'],
 };
 
@@ -657,14 +652,14 @@ const AR_VOCAB: Vocab = {
 const RU_VOCAB: Vocab = {
     negation: ['не '],
     chatWords: {
-        notDelivered: ['не пришла', 'не пришёл', 'не пришел', 'потерял', 'потеряна', 'потерян', 'пропал', 'пропала', 'не получил', 'задержка', 'задерживается'],
-        tracking: ['где', 'когда', 'статус', 'отслеживание', 'трек'],
-        system: ['систем', 'сайт', 'приложение', 'нет в системе', 'ошибка', 'сбой', 'не работает'],
-        payment: ['платёж', 'платеж', 'оплата', 'счёт', 'счет', 'возврат', 'оплатил', 'карта'],
+        notDelivered: ['не играет', 'не воспроизводится', 'перестала играть', 'перестал играть', 'не звучит', 'не запускается'],
+        tracking: ['какая песня', 'что играет', 'что сейчас играет', 'какая сейчас песня'],
+        system: ['приложение', 'зависает', 'вылетает', 'глючит', 'зависло'],
+        payment: ['посоветуй', 'порекомендуй', 'рекомендация', 'предложи', 'что послушать'],
     },
     actionWords: ['проверь', 'проверить', 'найди', 'обнови', 'отправь', 'сообщи', 'разберись', 'займись'],
     sensitiveWords: ['отправь', 'сообщи', 'уведоми', 'обнови', 'удали'],
-    deliveryWords: ['посылка', 'посылку', 'посылки', 'доставка', 'заказ', 'отправление'],
+    deliveryWords: ['плейлист', 'плейлисты', 'плей-лист'],
     vagueWords: ['разберись с этим', 'разберись', 'займись этим', 'с этим'],
 };
 
@@ -674,14 +669,14 @@ const RU_VOCAB: Vocab = {
 const JA_VOCAB: Vocab = {
     negation: ['ません', 'ない'],
     chatWords: {
-        notDelivered: ['届きません', '届かない', '紛失', 'なくし', '失われ', '届いていません', '遅延', '遅れ'],
-        tracking: ['どこ', 'いつ', '状況', '追跡', 'ステータス'],
-        system: ['システム', 'サイト', 'アプリ', '表示されません', 'エラー', '不具合', '動かない'],
-        payment: ['支払い', '支払', '請求', '返金', '決済', 'カード'],
+        notDelivered: ['再生されません', '再生されない', '止まってしまいます', '流れません'],
+        tracking: ['今の曲', '今何の曲', '流れている曲', '何の曲が流れている'],
+        system: ['アプリ', 'フリーズ', '固まる', 'クラッシュ', '動かない', 'アプリが落ちる'],
+        payment: ['おすすめ', 'お勧め', '提案して', '何を聴けば', 'レコメンド'],
     },
     actionWords: ['確認', '調べ', '探し', '更新', '送信', '伝え', '対応', '処理'],
     sensitiveWords: ['送信', '送って', '伝え', '通知', '更新', '削除'],
-    deliveryWords: ['荷物', '小包', '配送', '注文', '発送'],
+    deliveryWords: ['プレイリスト'],
     vagueWords: ['これを対応', 'これを', '対応して', 'よろしく'],
 };
 
@@ -706,10 +701,10 @@ export interface ChatRule {
 
 // מבנה הכוונות (מפתח, תווית, משמעות) - לא תלוי-שפה. מילות-הזיהוי עברו ל-Vocab.
 export const CHAT_RULES: ChatRule[] = [
-    { key: 'notDelivered', label: 'Package not delivered', meaning: 'Delivery issue' },
-    { key: 'tracking', label: 'Tracking question', meaning: 'Tracking request' },
-    { key: 'system', label: 'System issue', meaning: 'System issue' },
-    { key: 'payment', label: 'Payment issue', meaning: 'Payment issue' },
+    { key: 'notDelivered', label: 'Playback problem', meaning: 'Playback issue' },
+    { key: 'tracking', label: 'Now-playing question', meaning: 'Now-playing request' },
+    { key: 'system', label: 'App problem', meaning: 'App issue' },
+    { key: 'payment', label: 'Recommendation request', meaning: 'Recommendation request' },
 ];
 
 export const UNMATCHED_BASE = 0.15;
@@ -953,82 +948,82 @@ export function runAgentEngine(text: string, options: AgentRunOptions = {}): Age
         observation: null,
     };
 
-    // 1. פעולה רגישה (משפיעה על לקוח/מערכת) -> עצירה לאישור
+    // 1. פעולה רגישה (משפיעה על הפלייליסט) -> עצירה לאישור
     if (sensitive) {
         const approvalStatus: AgentApprovalStatus = options.approval ?? 'pending';
         const mayExecute = authorized && approvalStatus === 'approved' && barcode;
         return {
             tokens,
-            task: 'Send / update on customer record',
-            missingInfo: barcode ? 'None' : 'Evidence: not verified',
-            toolNeed: { needed: true, tool: 'Email / CRM' },
+            task: 'Delete a playlist',
+            missingInfo: barcode ? 'None' : 'Playlist ID: not confirmed',
+            toolNeed: { needed: true, tool: 'Playlist deletion tool' },
             canActNow: mayExecute,
             risk: 'High',
             decision: mayExecute
-                ? { kind: 'tool', label: 'Use authorized customer tool' }
+                ? { kind: 'tool', label: 'Use the Playlist deletion tool' }
                 : { kind: 'stop', label: 'Stop for approval' },
             output: mayExecute ? 'Execute approved action' : 'Stop before action',
             replyKey: 'sensitive',
             authorization: {
                 required: true,
                 status: authorized ? 'authorized' : 'unauthorized',
-                tool: 'Email / CRM',
+                tool: 'Playlist deletion tool',
             },
             approval: { required: true, status: approvalStatus },
             execution: mayExecute ? {
                 attempted: true,
                 toolCalled: true,
-                tool: 'Email / CRM',
+                tool: 'Playlist deletion tool',
                 transport,
-                observation: 'Approved action completed',
+                observation: 'Playlist deleted',
             } : noExecution,
         };
     }
 
-    // 2. בדיקת משלוח עם ברקוד -> שימוש בכלי
+    // 2. בדיקת פלייליסט עם מזהה -> שימוש בכלי
     if (action && (delivery || barcode) && barcode) {
         const mayExecute = authorized;
         return {
             tokens,
-            task: 'Check delivery failure',
+            task: 'Look up a playlist',
             missingInfo: 'None',
-            toolNeed: { needed: true, tool: 'Tracking API' },
+            toolNeed: { needed: true, tool: 'Playlist API' },
             canActNow: mayExecute,
             risk: 'Low',
             decision: mayExecute
-                ? { kind: 'tool', label: 'Use Tracking API' }
+                ? { kind: 'tool', label: 'Use the Playlist API' }
                 : { kind: 'stop', label: 'Tool is not authorized' },
-            output: mayExecute ? 'Call Tracking API' : 'Stop before unauthorized tool call',
+            output: mayExecute ? 'Call the Playlist API' : 'Stop before unauthorized tool call',
             replyKey: 'tool',
             authorization: {
                 required: true,
                 status: authorized ? 'authorized' : 'unauthorized',
-                tool: 'Tracking API',
+                tool: 'Playlist API',
             },
             approval: { required: false, status: 'not-required' },
             execution: mayExecute ? {
                 attempted: true,
                 toolCalled: true,
-                tool: 'Tracking API',
+                tool: 'Playlist API',
                 transport,
-                observation: 'Tracking status received',
+                observation: 'Playlist details received',
             } : noExecution,
         };
     }
 
-    // 3. בדיקת משלוח בלי ברקוד -> בקשת מידע חסר
+    // 3. בדיקת פלייליסט בלי מזהה -> בקשת מידע חסר
     if (action && delivery) {
         return {
             tokens,
-            task: 'Check delivery failure',
-            missingInfo: 'Barcode: missing',
-            toolNeed: { needed: true, tool: 'Tracking API' },
+            task: 'Look up a playlist',
+            missingInfo: 'Playlist ID: missing',
+            toolNeed: { needed: true, tool: 'Playlist API' },
             canActNow: false,
             risk: 'Medium',
-            decision: { kind: 'ask', label: 'Ask for barcode before action' },
+            decision: { kind: 'ask', label: 'Ask for the Playlist ID before acting' },
             output: 'Ask user for required information',
             replyKey: 'askBarcode',
-            authorization: { required: true, status: authorized ? 'authorized' : 'unauthorized', tool: 'Tracking API' },
+            authorization: { required: true, status: authorized ? 'authorized' : 'unauthorized', tool: 'Playlist API' },
             approval: { required: false, status: 'not-required' },
             execution: noExecution,
         };
@@ -1052,31 +1047,31 @@ export function runAgentEngine(text: string, options: AgentRunOptions = {}): Age
         };
     }
 
-    // 5. תיאור בעיה בלי מילת פעולה (משלוח) -> עדיין צריך מזהה
+    // 5. תיאור בעיה בלי מילת פעולה (פלייליסט) -> עדיין צריך מזהה
     if (delivery) {
         const mayExecute = barcode && authorized;
         return {
             tokens,
-            task: 'Check delivery failure',
-            missingInfo: barcode ? 'None' : 'Barcode: missing',
-            toolNeed: { needed: true, tool: 'Tracking API' },
+            task: 'Look up a playlist',
+            missingInfo: barcode ? 'None' : 'Playlist ID: missing',
+            toolNeed: { needed: true, tool: 'Playlist API' },
             canActNow: mayExecute,
             risk: 'Medium',
             decision: mayExecute
-                ? { kind: 'tool', label: 'Use Tracking API' }
+                ? { kind: 'tool', label: 'Use the Playlist API' }
                 : barcode
                     ? { kind: 'stop', label: 'Tool is not authorized' }
-                    : { kind: 'ask', label: 'Ask for barcode before action' },
-            output: mayExecute ? 'Call Tracking API' : barcode ? 'Stop before unauthorized tool call' : 'Ask user for required information',
+                    : { kind: 'ask', label: 'Ask for the Playlist ID before acting' },
+            output: mayExecute ? 'Call the Playlist API' : barcode ? 'Stop before unauthorized tool call' : 'Ask user for required information',
             replyKey: barcode ? 'tool' : 'askBarcode',
-            authorization: { required: true, status: authorized ? 'authorized' : 'unauthorized', tool: 'Tracking API' },
+            authorization: { required: true, status: authorized ? 'authorized' : 'unauthorized', tool: 'Playlist API' },
             approval: { required: false, status: 'not-required' },
             execution: mayExecute ? {
                 attempted: true,
                 toolCalled: true,
-                tool: 'Tracking API',
+                tool: 'Playlist API',
                 transport,
-                observation: 'Tracking status received',
+                observation: 'Playlist details received',
             } : noExecution,
         };
     }

@@ -81,12 +81,12 @@ export const chapter1 = {
     // Note: these are demo inputs fed to the learning engine, coupled to the Arabic
     // detection vocabulary in chapter-1/mockEngine.ts.
     seed: {
-        defaultInput: 'طردي لم يصل',
+        defaultInput: 'الأغنية لا تعمل',
         suggestions: [
-            'طردي لم يصل',
-            'أين طردي؟',
-            'تحقق من الطرد 123456789',
-            'أبلغ العميل أن الطرد قد فُقد',
+            'الأغنية لا تعمل',
+            'أي أغنية تعمل الآن؟',
+            'أرني قائمة التشغيل 123456',
+            'احذف قائمة التشغيل 123456',
             'تولَّ هذا الأمر',
         ],
     },

@@ -11,7 +11,7 @@ export const chapter1Visuals = {
     enginePanel: {
         stationNavLabel: 'التنقل بين المحطات', previousStation: 'المحطة السابقة', nextStation: 'المحطة التالية', replayStation: 'إعادة المحطة الحالية', resetJourney: 'إعادة ضبط المسار',
         currentStationLabel: 'المحطة الحالية', completedStationLabel: 'محطة مكتملة', inputLabel: 'المدخل', transformationLabel: 'التحويل', outputLabel: 'المخرج', conclusionLabel: 'الخلاصة التعليمية', limitationLabel: 'حد التوضيح',
-        productEnvelope: { visibleRequest: 'طلب المستخدم الظاهر', systemInstruction: 'تعليمات نظام أضافها المنتج', selectedContext: 'السياق الحالي المختار', modelInput: 'مدخل النموذج الحالي', insideWindow: 'داخل النافذة الحالية', omitted: 'غير مشمول في المدخل الحالي', systemInstructionExample: 'أجب باختصار بالعربية عن أسئلة تتبع الشحنات.', selectedContextExample: 'السياق المختار: دعم الشحنات؛ لا توجد بيانات تتبع خارجية.', omittedExample: 'السجل غير المختار وذاكرة المنتج والاسترجاع والأدوات.' },
+        productEnvelope: { visibleRequest: 'طلب المستخدم الظاهر', systemInstruction: 'تعليمات نظام أضافها المنتج', selectedContext: 'السياق الحالي المختار', modelInput: 'مدخل النموذج الحالي', insideWindow: 'داخل النافذة الحالية', omitted: 'غير مشمول في المدخل الحالي', systemInstructionExample: 'أجب باختصار بالعربية عن أسئلة تشغيل الموسيقى.', selectedContextExample: 'السياق المختار: دعم تطبيق الموسيقى؛ لا توجد بيانات تشغيل خارجية.', omittedExample: 'السجل غير المختار وذاكرة المنتج والاسترجاع والأدوات.' },
         matrix: { token: 'التوكن', id: 'ID', embedding: 'مقتطف embedding', position: 'الموضع', positionAware: 'تمثيل مدرك للموضع', attention: 'بعد Attention', feedForward: 'بعد feed-forward', checkpoint: 'نقطة فحص', predictionPosition: 'موضع التنبؤ' },
         scores: { candidate: 'توكن مرشح', logit: 'Logit خام', total: 'المجموع', greedy: 'Greedy', sampling: 'Sampling', selectedToken: 'التوكن المختار' },
         generation: { step: 'خطوة توليد', appended: 'أضيف التوكن', updatedContext: 'تحدث السياق', nextDistribution: 'توزيع الخطوة التالية', stop: 'شرط التوقف' },
@@ -54,7 +54,7 @@ export const chapter1Visuals = {
             stations: {
                 a1: { title: 'يدخل الطلب', note: 'المهمة التي طلبتموها - من هنا تبدأ جولة الوكيل.' },
                 a2: { title: 'تحديد مهمة محتملة', note: 'يستنتج النظام مهمة محتملة من الطلب والسياق ولا يعرف النية مباشرة.' },
-                a3: { title: 'الأدوات المتاحة', note: 'قد يعرض المنتج أدوات مصرحا بها مثل التتبع أو الرسائل. MCP بروتوكول ممكن وليس شرطا.' },
+                a3: { title: 'الأدوات المتاحة', note: 'قد يعرض المنتج أدوات مصرحا بها مثل البحث عن قائمة تشغيل أو حذفها. MCP بروتوكول ممكن وليس شرطا.' },
                 a4: { title: 'خطة شرطية', note: 'لا ينظر النظام في أداة مصرح بها إلا إذا أفادت وتوفرت البيانات المطلوبة.' },
                 a5: { title: 'التحقق من نقص المعلومات', note: 'هل ينقص تفصيل للتنفيذ؟ الوكيل يتوقف ويسأل، بدلًا من التخمين.' },
                 a6: { title: 'التفويض والموافقة', note: 'يضبط تفويض النظام الوصول؛ والموافقة البشرية بوابة منفصلة قبل فعل خارجي حساس.' },
@@ -63,10 +63,10 @@ export const chapter1Visuals = {
                 a9: { title: 'حلقة شرطية', note: 'بعد ملاحظة حقيقية يمكن للنظام المتابعة أو السؤال أو التوقف أو الإنهاء.' },
                 a10: { title: 'إجابة أو فعل أو توقف', note: 'يعيد النظام إجابة أو يطلب معلومات أو موافقة أو ينفذ فعلا مصرحا أو يتوقف.' },
             },
-            toolNames: ['تتبع الشحنات', 'إرسال رسالة إلى العميل'],
+            toolNames: ['البحث عن قائمة تشغيل', 'حذف قائمة تشغيل'],
             mcp: 'MCP (اختياري)',
-            observation: 'مثال بعد استدعاء أداة: الطرد في الفرز',
-            missingOn: 'ينقص معرّف (باركود)',
+            observation: 'مثال بعد استدعاء أداة: تم استلام تفاصيل قائمة التشغيل',
+            missingOn: 'ينقص معرّف (Playlist ID)',
             missingOff: 'كل التفاصيل متوفرة',
             loopNodes: ['تخطيط', 'استدعاء أداة', 'ملاحظة', 'تفكير'],
             loopOutcomes: ['متابعة', 'سؤال', 'توقف', 'إنهاء'],
@@ -85,15 +85,16 @@ export const chapter1Visuals = {
     trace: {
         labels: {
             task: {
-                'Send / update on customer record': 'إرسال أو تحديث سجل عميل',
-                'Check delivery failure': 'التحقق من فشل التسليم',
+                'Delete a playlist': 'حذف قائمة تشغيل',
+                'Look up a playlist': 'البحث عن قائمة تشغيل',
                 'Unclear task': 'مهمة غير واضحة',
                 'General request': 'طلب عام',
             },
             decision: {
                 'Stop for approval': 'التوقف للموافقة',
-                'Use Tracking API': 'استخدام أداة التتبع',
-                'Ask for barcode before action': 'طلب الباركود قبل الفعل',
+                'Use the Playlist API': 'استخدام أداة قائمة التشغيل',
+                'Use the Playlist deletion tool': 'استخدام أداة حذف قائمة التشغيل',
+                'Ask for the Playlist ID before acting': 'طلب معرّف قائمة التشغيل قبل الفعل',
                 'Ask what to handle': 'السؤال عمّا يجب معالجته',
                 'Answer directly': 'الإجابة مباشرة',
             },
@@ -103,17 +104,17 @@ export const chapter1Visuals = {
     // mockEngine: demo replies (resolved by the replyKey the engine returns)
     mockEngine: {
         chatReplies: {
-            notDelivered: 'يبدو أن هذه حالة عدم تسليم. من المفيد التحقق من حالة الشحنة عبر الباركود.',
-            tracking: 'يمكننا التحقق من حالة الشحنة عبر رقم التتبع. ما هو رقم التتبع؟',
-            system: 'قد يكون هذا خللًا في عرض المعلومات في النظام. من المفيد التحديث والمحاولة مرة أخرى.',
-            payment: 'يبدو أن هذا السؤال متعلق بفاتورة أو دفعة. من المفيد التحقق من تفاصيل الفاتورة.',
+            notDelivered: 'يبدو أن هذه مشكلة تشغيل. من المفيد التحقق من الاتصال ومحاولة التشغيل مرة أخرى.',
+            tracking: 'يمكننا التحقق من الأغنية التي تعمل الآن. هل تريد أن أتحقق؟',
+            system: 'قد يكون هذا خللًا في التطبيق. من المفيد إغلاقه وإعادة فتحه.',
+            payment: 'إليك بعض توصيات الموسيقى التي تناسب طلبك.',
             other: 'لست متأكدًا أنني فهمت بالضبط. هل يمكنك وصف المشكلة؟',
         },
         agentReplies: {
-            sensitive: 'هذا فعل يؤثر على عميل. لن أنفّذه دون تحقق وموافقة - يمكنني إعداد مسودة للموافقة.',
-            tool: 'يوجد باركود. أتحقق من حالة الشحنة في نظام التتبع...',
-            askBarcode: 'للتحقق من هذا فعليًا، أحتاج إلى رقم باركود الطرد.',
-            vague: 'أحتاج إلى فهم ما المقصود - أي مهمة أو طرد يجب أن أتحقق منه؟',
+            sensitive: 'هذا فعل يحذف قائمة تشغيل. لن أنفّذه دون تحقق وموافقة - يمكنني إعداد مسودة للموافقة.',
+            tool: 'يوجد معرّف قائمة تشغيل. أتحقق من التفاصيل في أداة قائمة التشغيل...',
+            askBarcode: 'للتحقق من هذا فعليًا، أحتاج إلى معرّف قائمة التشغيل (Playlist ID).',
+            vague: 'أحتاج إلى فهم ما المقصود - أي مهمة أو قائمة تشغيل يجب أن أتحقق منها؟',
             general: 'يبدو هذا طلبًا عامًا. يمكن الإجابة عليه مباشرةً، دون أداة خارجية.',
         },
     },

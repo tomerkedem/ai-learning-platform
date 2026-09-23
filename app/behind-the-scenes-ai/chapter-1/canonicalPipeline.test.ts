@@ -21,8 +21,8 @@ import { chapter1Quiz as ruQuiz } from '../../../i18n/locales/ru/behind-ai/chapt
 import { chapter1Quiz as arQuiz } from '../../../i18n/locales/ar/behind-ai/chapter1Quiz.ts';
 import { chapter1Quiz as jaQuiz } from '../../../i18n/locales/ja/behind-ai/chapter1Quiz.ts';
 
-const REQUEST = 'החבילה לא הגיעה.';
-const RESPONSE = 'נראה שמדובר במקרה של אי מסירה.';
+const REQUEST = 'השיר לא מתנגן.';
+const RESPONSE = 'נראה שיש בעיית ניגון בשיר.';
 const VISUALS = [chapter1Visuals, enVisuals, esVisuals, ruVisuals, arVisuals, jaVisuals];
 const QUIZZES = [heQuiz, enQuiz, esQuiz, ruQuiz, arQuiz, jaQuiz];
 
@@ -138,22 +138,22 @@ test('generation appends two coherent tokens and updates the second distribution
 });
 
 test('Agent ask, stop and denied-approval branches never execute a tool', () => {
-    const ask = runAgentEngine('בדוק את החבילה');
+    const ask = runAgentEngine('תבדוק את הפלייליסט');
     assert.equal(ask.decision.kind, 'ask');
     assert.equal(ask.execution.toolCalled, false);
     assert.equal(ask.execution.observation, null);
 
-    const stop = runAgentEngine('שלח ללקוח שהחבילה אבדה');
+    const stop = runAgentEngine('תמחק את הפלייליסט של המשתמש');
     assert.equal(stop.decision.kind, 'stop');
     assert.equal(stop.approval.status, 'pending');
     assert.equal(stop.execution.toolCalled, false);
 
-    const denied = runAgentEngine('שלח ללקוח על חבילה 123456789', { approval: 'denied' });
+    const denied = runAgentEngine('תמחק את הפלייליסט 123456789', { approval: 'denied' });
     assert.equal(denied.approval.status, 'denied');
     assert.equal(denied.execution.toolCalled, false);
     assert.equal(denied.execution.observation, null);
 
-    const unauthorized = runAgentEngine('בדוק חבילה 123456789', { authorized: false });
+    const unauthorized = runAgentEngine('בדוק פלייליסט 123456789', { authorized: false });
     assert.equal(unauthorized.authorization.status, 'unauthorized');
     assert.equal(unauthorized.execution.toolCalled, false);
 });

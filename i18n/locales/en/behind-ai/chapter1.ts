@@ -81,12 +81,12 @@ export const chapter1 = {
     // Note: these are demo inputs fed to the learning engine, coupled to the English
     // detection vocabulary (EN_VOCAB) in chapter-1/mockEngine.ts.
     seed: {
-        defaultInput: "My package didn't arrive",
+        defaultInput: "The song isn't playing",
         suggestions: [
-            "My package didn't arrive",
-            'Where is my package?',
-            'Check package 123456789',
-            'Tell the customer the package was lost',
+            "The song isn't playing",
+            'What song is playing now?',
+            'Show me playlist 123456',
+            'Delete playlist 123456',
             'Just handle it',
         ],
     },

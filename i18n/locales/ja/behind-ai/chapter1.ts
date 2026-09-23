@@ -81,12 +81,12 @@ export const chapter1 = {
     // Note: these are demo inputs fed to the learning engine, coupled to the Japanese
     // detection vocabulary in chapter-1/mockEngine.ts.
     seed: {
-        defaultInput: "荷物が届きません",
+        defaultInput: "曲が再生されません",
         suggestions: [
-            "荷物が届きません",
-            "私の荷物はどこですか",
-            "荷物 123456789 を確認して",
-            "荷物が紛失したと顧客に伝えて",
+            "曲が再生されません",
+            "今の曲は何ですか",
+            "プレイリスト 123456 を見せて",
+            "プレイリスト 123456 を削除して",
             "これを対応して",
         ],
     },

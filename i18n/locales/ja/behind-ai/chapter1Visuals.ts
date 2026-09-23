@@ -11,7 +11,7 @@ export const chapter1Visuals = {
     enginePanel: {
         stationNavLabel: '駅のナビゲーション', previousStation: '前の駅', nextStation: '次の駅', replayStation: '現在の駅を再生', resetJourney: '経路をリセット',
         currentStationLabel: '現在の駅', completedStationLabel: '完了した駅', inputLabel: '入力', transformationLabel: '変換', outputLabel: '出力', conclusionLabel: '学習の結論', limitationLabel: 'イラストの限界',
-        productEnvelope: { visibleRequest: '見える利用者の依頼', systemInstruction: '製品が追加したシステム指示', selectedContext: '選択した現在の文脈', modelInput: '現在のモデル入力', insideWindow: '現在のウィンドウ内', omitted: '現在の入力に含まれないもの', systemInstructionExample: '配送追跡の質問に日本語で簡潔に答えてください。', selectedContextExample: '選択した文脈: 配送サポート。外部の追跡データはありません。', omittedExample: '選ばれていない履歴、製品のメモリ、検索、ツール。' },
+        productEnvelope: { visibleRequest: '見える利用者の依頼', systemInstruction: '製品が追加したシステム指示', selectedContext: '選択した現在の文脈', modelInput: '現在のモデル入力', insideWindow: '現在のウィンドウ内', omitted: '現在の入力に含まれないもの', systemInstructionExample: '音楽の再生に関する質問に日本語で簡潔に答えてください。', selectedContextExample: '選択した文脈: 音楽アプリのサポート。外部の再生データはありません。', omittedExample: '選ばれていない履歴、製品のメモリ、検索、ツール。' },
         matrix: { token: 'トークン', id: 'ID', embedding: 'embeddingの抜粋', position: '位置', positionAware: '位置を含む表現', attention: 'Attention後', feedForward: 'feed-forward後', checkpoint: 'チェックポイント', predictionPosition: '予測位置' },
         scores: { candidate: '候補トークン', logit: '生のlogit', total: '合計', greedy: 'Greedy', sampling: 'Sampling', selectedToken: '選ばれたトークン' },
         generation: { step: '生成ステップ', appended: 'トークンを追加', updatedContext: '文脈を更新', nextDistribution: '次ステップの分布', stop: '停止条件' },
@@ -54,7 +54,7 @@ export const chapter1Visuals = {
             stations: {
                 a1: { title: 'リクエストが入る', note: '頼んだタスク。ここからエージェントのラウンドが始まります。' },
                 a2: { title: '考えられるタスクの特定', note: 'システムは依頼と文脈からタスク候補を推定し、意図を直接知るわけではありません。' },
-                a3: { title: '使えるツール', note: '製品は追跡やメッセージなど許可されたツールを公開できます。MCP は選択可能なプロトコルの一つで、必須ではありません。' },
+                a3: { title: '使えるツール', note: '製品はプレイリストの検索や削除など許可されたツールを公開できます。MCP は選択可能なプロトコルの一つで、必須ではありません。' },
                 a4: { title: '条件付き計画', note: 'ツールが役立ち必要情報がある場合だけ、許可されたツールを検討します。' },
                 a5: { title: '不足情報の確認', note: '実行に足りない情報がある?エージェントは推測せず、止まって尋ねます。' },
                 a6: { title: '認可と承認', note: 'システム認可がアクセスを制御し、人の承認は機微な外部操作前の別の門です。' },
@@ -63,10 +63,10 @@ export const chapter1Visuals = {
                 a9: { title: '条件付きループ', note: '実際の観測後、続行、質問、停止、完了を選べます。' },
                 a10: { title: '回答、操作、停止', note: '回答、情報や承認の依頼、認可済み操作、または停止を行います。' },
             },
-            toolNames: ['配送追跡', '顧客へメッセージ送信'],
+            toolNames: ['プレイリストの検索', 'プレイリストの削除'],
             mcp: 'MCP (任意)',
-            observation: 'ツール呼び出し後の例: 荷物は仕分け中',
-            missingOn: '識別子がない(バーコード)',
+            observation: 'ツール呼び出し後の例: プレイリストの詳細を受信',
+            missingOn: '識別子がない(Playlist ID)',
             missingOff: '必要な情報はそろっている',
             loopNodes: ['計画', 'ツール呼び出し', '観測', '推論'],
             loopOutcomes: ['続ける', '尋ねる', '止める', '終える'],
@@ -85,15 +85,16 @@ export const chapter1Visuals = {
     trace: {
         labels: {
             task: {
-                'Send / update on customer record': '顧客レコードの送信または更新',
-                'Check delivery failure': '配送失敗の確認',
+                'Delete a playlist': 'プレイリストの削除',
+                'Look up a playlist': 'プレイリストの検索',
                 'Unclear task': '不明確なタスク',
                 'General request': '一般的な依頼',
             },
             decision: {
                 'Stop for approval': '承認のため停止',
-                'Use Tracking API': '追跡ツールを使う',
-                'Ask for barcode before action': '行動前にバーコードを尋ねる',
+                'Use the Playlist API': 'プレイリストツールを使う',
+                'Use the Playlist deletion tool': 'プレイリスト削除ツールを使う',
+                'Ask for the Playlist ID before acting': '行動前にPlaylist IDを尋ねる',
                 'Ask what to handle': '何を扱うか尋ねる',
                 'Answer directly': '直接答える',
             },
@@ -103,17 +104,17 @@ export const chapter1Visuals = {
     // mockEngine: demo replies (resolved by the replyKey the engine returns)
     mockEngine: {
         chatReplies: {
-            notDelivered: '未配達のケースのようです。バーコードで配送状況を確認するとよいでしょう。',
-            tracking: '追跡番号で配送状況を確認できます。追跡番号は何番ですか?',
-            system: 'システムの情報表示の不具合かもしれません。更新してもう一度お試しください。',
-            payment: 'この質問は請求や支払いに関係していそうです。請求書の詳細を確認するとよいでしょう。',
+            notDelivered: '再生の問題のようです。接続を確認してもう一度再生してみるとよいでしょう。',
+            tracking: '今流れている曲を確認できます。確認しましょうか?',
+            system: 'アプリの不具合かもしれません。閉じてもう一度開いてみてください。',
+            payment: 'ご依頼に合う音楽のおすすめをいくつか紹介します。',
             other: '正確に理解できているか自信がありません。問題を詳しく教えていただけますか?',
         },
         agentReplies: {
-            sensitive: 'これは顧客に影響する行動です。確認と承認なしには実行しません - 承認用の下書きを用意できます。',
-            tool: 'バーコードがあります。追跡システムで配送状況を確認しています...',
-            askBarcode: '実際に確認するには、荷物のバーコード番号が必要です。',
-            vague: '何を指しているのか理解する必要があります - どのタスクや荷物を確認しますか?',
+            sensitive: 'これはプレイリストを削除する行動です。確認と承認なしには実行しません - 承認用の下書きを用意できます。',
+            tool: 'Playlist IDがあります。プレイリストツールで詳細を確認しています...',
+            askBarcode: '実際に確認するには、Playlist IDが必要です。',
+            vague: '何を指しているのか理解する必要があります - どのタスクやプレイリストを確認しますか?',
             general: '一般的な依頼のようです。外部ツールなしで直接お答えできます。',
         },
     },

@@ -81,12 +81,12 @@ export const chapter1 = {
     // Note: these are demo inputs fed to the learning engine, coupled to the Russian
     // detection vocabulary in chapter-1/mockEngine.ts.
     seed: {
-        defaultInput: 'Моя посылка не пришла',
+        defaultInput: 'Песня не играет',
         suggestions: [
-            'Моя посылка не пришла',
-            'Где моя посылка?',
-            'Проверь посылку 123456789',
-            'Сообщи клиенту, что посылка потеряна',
+            'Песня не играет',
+            'Какая песня сейчас играет?',
+            'Покажи плейлист 123456',
+            'Удали плейлист 123456',
             'Разберись с этим',
         ],
     },

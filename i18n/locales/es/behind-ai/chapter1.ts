@@ -81,12 +81,12 @@ export const chapter1 = {
     // Note: these are demo inputs fed to the learning engine, coupled to the Spanish
     // detection vocabulary in chapter-1/mockEngine.ts.
     seed: {
-        defaultInput: 'Mi paquete no llegó',
+        defaultInput: 'La canción no suena',
         suggestions: [
-            'Mi paquete no llegó',
-            '¿Dónde está mi paquete?',
-            'Revisa el paquete 123456789',
-            'Avisa al cliente que el paquete se perdió',
+            'La canción no suena',
+            '¿Qué canción está sonando ahora?',
+            'Muéstrame la playlist 123456',
+            'Elimina la playlist 123456',
             'Encárgate de esto',
         ],
     },
