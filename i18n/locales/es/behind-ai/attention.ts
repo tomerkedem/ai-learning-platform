@@ -34,7 +34,7 @@ export const attention = {
     },
 
     // El prompt ancla, compartido por el hero, la conjetura y el bloqueo de comprensión.
-    prompt: 'El paquete figura como entregado, pero el cliente dice que nunca lo recibió.',
+    prompt: 'La luz está apagada, pero la vecina dice que la vio encendida.',
 
     // ── Hero ──
     hero: {
@@ -61,15 +61,15 @@ export const attention = {
             },
             {
                 title: 'La tensión de nuestra frase',
-                body: 'En la frase "El paquete figura como entregado, pero el cliente dice que nunca lo recibió", lo esencial no es una palabra suelta, sino la tensión entre "entregado" y "nunca lo recibió". Ahí la atención debe ser fuerte, porque esa es la contradicción que la respuesta tiene que atender.',
+                body: 'En la frase "La luz está apagada, pero la vecina dice que la vio encendida", lo esencial no es una palabra suelta, sino la tensión entre "apagada" y "encendida". Ahí la atención debe ser fuerte, porque esa es la contradicción que la respuesta tiene que atender.',
             },
             {
                 title: 'Palabras pequeñas que mueven el vínculo',
-                body: 'Palabras como "pero", la negación ("no"), las condiciones ("solo si"), las excepciones y los pronombres ("lo") cambian qué vínculos se vuelven importantes. Un cambio pequeño así puede mover por completo el foco de la atención.',
+                body: 'Palabras como "pero", la negación ("no"), las condiciones ("solo si"), las excepciones y los pronombres ("la") cambian qué vínculos se vuelven importantes. Un cambio pequeño así puede mover por completo el foco de la atención.',
             },
             {
                 title: 'Qué no es Attention',
-                body: 'La atención no es conciencia ni comprensión humana. El modelo no tiene un momento de "lo entendí". Y tampoco es una verificación de hechos: un peso de atención alto en "entregado" no dice que el paquete se haya entregado de verdad, solo que la palabra es importante para procesar el contexto.',
+                body: 'La atención no es conciencia ni comprensión humana. El modelo no tiene un momento de "lo entendí". Y tampoco es una verificación de hechos: un peso de atención alto en "apagada" no dice que la luz esté apagada de verdad, solo que la palabra es importante para procesar el contexto.',
             },
         ],
     },
@@ -86,7 +86,7 @@ export const attention = {
     everyday: {
         title: 'Un momento de la vida real',
         body:
-            'Cuando una persona lee "El paquete figura como entregado, pero el cliente dice que nunca lo recibió", se detiene un instante en el "pero". Esa palabra cambia cómo se lee todo lo que sigue. Es importante recordar: el modelo no se detiene ni entiende como una persona. No tiene un momento de "comprensión". El mecanismo de atención solo le da una forma matemática de ponderar qué partes del texto se relacionan entre sí con más fuerza, y a partir de eso mezclar la información.',
+            'Cuando una persona lee "La luz está apagada, pero la vecina dice que la vio encendida", se detiene un instante en el "pero". Esa palabra cambia cómo se lee todo lo que sigue. Es importante recordar: el modelo no se detiene ni entiende como una persona. No tiene un momento de "comprensión". El mecanismo de atención solo le da una forma matemática de ponderar qué partes del texto se relacionan entre sí con más fuerza, y a partir de eso mezclar la información.',
     },
 
     // ── Corrección de un error común ──
@@ -116,15 +116,15 @@ export const attention = {
         falseText: '"El modelo marcó las palabras importantes y luego respondió."',
         question: 'Aquí está el prompt otra vez. Cuando el modelo prepara una respuesta prudente, ¿qué vínculo es especialmente importante?',
         options: [
-            'El paquete → figura',
-            'entregado → nunca lo recibió',
-            'el cliente → dice',
-            'figura → el cliente',
+            'La luz → está',
+            'apagada → encendida',
+            'la vecina → dice',
+            'apagada → la vecina',
         ],
         explanationLead: 'El vínculo fuerte es',
-        explanationPair: '"entregado" frente a "nunca lo recibió"',
+        explanationPair: '"apagada" frente a "encendida"',
         explanationRest:
-            '. Lo esencial no es solo que falte un paquete, sino la contradicción entre lo que el sistema marca y lo que el cliente reporta. Ahí la atención debe ser fuerte para que la respuesta no dé por hecho algo que todavía no se ha comprobado.',
+            '. Lo esencial no es solo que haya incertidumbre sobre la luz, sino la contradicción entre la primera afirmación y lo que la vecina reporta. Ahí la atención debe ser fuerte para que la respuesta no dé por hecho algo que todavía no se ha comprobado.',
     },
 
     // ── Conclusión práctica ──
@@ -151,14 +151,14 @@ export const attention = {
         resetButton: 'Elige de nuevo',
         revealTitle: 'Entonces, ¿qué pasa de verdad?',
         revealCopy:
-            'Attention no busca una sola palabra ganadora ni comprueba qué es cierto en el mundo. Pondera el vínculo entre las partes de la frase. Cuando hay que identificar el problema, "entregado" recibe peso. Cuando hay que identificar la contradicción, el vínculo entre "entregado" y "nunca lo recibió" se vuelve importante. Y en cuanto cambias una palabra en la frase, como quitar el "pero" o invertir la negación, la atención se mueve al instante.',
+            'Attention no busca una sola palabra ganadora ni comprueba qué es cierto en el mundo. Pondera el vínculo entre las partes de la frase. Cuando hay que identificar la afirmación, "apagada" recibe peso. Cuando hay que identificar la contradicción, el vínculo entre "apagada" y "encendida" se vuelve importante. Y en cuanto cambias una palabra en la frase, como quitar el "pero" o sustituir la afirmación contradictoria, la atención se mueve al instante.',
         cta: 'Veamos cómo se mueve el peso',
         cards: {
             'one-word': {
                 title: 'Una sola palabra manda',
                 desc: 'El modelo encuentra la palabra más importante de la frase y se aferra a ella durante toda la respuesta.',
                 statusLabel: 'Parcialmente cierto',
-                getsRight: 'En un momento dado, una palabra como "entregado" o "nunca lo recibió" sí puede recibir mucho peso.',
+                getsRight: 'En un momento dado, una palabra como "apagada" o "encendida" sí puede recibir mucho peso.',
                 missesLabel: 'Qué se le escapa',
                 misses: 'Attention no elige una palabra ganadora y se aferra a ella durante toda la respuesta.',
                 bridge: 'En otro momento de la respuesta, otro vínculo de la frase puede volverse más importante.',
@@ -183,12 +183,12 @@ export const attention = {
             },
             'factcheck': {
                 title: 'Verificar hechos en el mundo',
-                desc: 'El modelo se centra en las palabras que le ayudarán a comprobar si el paquete se entregó de verdad.',
+                desc: 'El modelo se centra en las palabras que le ayudarán a comprobar si la luz está apagada de verdad.',
                 statusLabel: 'Importante, pero no es Attention',
-                getsRight: 'La distinción es importante. De verdad hay que comprobar si el paquete se entregó.',
+                getsRight: 'La distinción es importante. De verdad hay que comprobar el estado real de la luz.',
                 missesLabel: 'Qué se le escapa',
                 misses: 'Pero ese no es el trabajo de Attention. No comprueba si algo es cierto en el mundo.',
-                bridge: 'Attention puede identificar la tensión entre "entregado" y "nunca lo recibió", pero una verificación real necesita una fuente de información externa o una herramienta.',
+                bridge: 'Attention puede identificar la tensión entre "apagada" y "encendida", pero una verificación real necesita una fuente de información externa o una herramienta.',
             },
         },
     },

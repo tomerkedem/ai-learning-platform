@@ -36,7 +36,7 @@ export const attention = {
     },
 
     // The anchor prompt, shared by the hero, the guess and the Check Your Understanding step.
-    prompt: 'The package was marked delivered, but the customer says they never received it.',
+    prompt: 'The light is off, but she says it is on.',
 
     // -- Hero --
     hero: {
@@ -63,7 +63,7 @@ export const attention = {
             },
             {
                 title: 'The tension in our sentence',
-                body: 'In the sentence "The package was marked delivered, but the customer says they never received it", the point is not a single word but the tension between "delivered" and "never received". That is where attention needs to be strong, because this is the contradiction the answer has to handle.',
+                body: 'In the sentence "The light is off, but she says it is on", the point is not a single word but the tension between "off" and "on". That is where attention needs to be strong, because this is the contradiction the answer has to handle.',
             },
             {
                 title: 'Small words that move the link',
@@ -71,7 +71,7 @@ export const attention = {
             },
             {
                 title: 'What Attention is not',
-                body: 'Attention is not consciousness and not human understanding. The model has no moment of "I get it". And it is not a fact check either: high attention weight on "delivered" does not mean the package really was delivered, only that the word matters for processing the context.',
+                body: 'Attention is not consciousness and not human understanding. The model has no moment of "I get it". And it is not a fact check either: high attention weight on "off" does not mean the light really is off, only that the word matters for processing the context.',
             },
         ],
     },
@@ -88,7 +88,7 @@ export const attention = {
     everyday: {
         title: 'A moment from life',
         body:
-            'When a person reads "The package was marked delivered, but the customer says they never received it", they pause for a moment at "but". That word changes how the rest is read. It is important to remember: the model does not pause and does not understand like a person. It has no moment of "understanding". The attention mechanism only gives it a mathematical way to weigh which parts of the text are linked to one another more strongly, and to mix the information accordingly.',
+            'When a person reads "The light is off, but she says it is on", they pause for a moment at "but". That word changes how the rest is read. It is important to remember: the model does not pause and does not understand like a person. It has no moment of "understanding". The attention mechanism only gives it a mathematical way to weigh which parts of the text are linked to one another more strongly, and to mix the information accordingly.',
     },
 
     // -- Fixing a common mistake --
@@ -118,15 +118,15 @@ export const attention = {
         falseText: '"The model marked the important words and then answered."',
         question: 'Here is the prompt again. When the model prepares a careful answer, which link is especially important?',
         options: [
-            'package → marked',
-            'delivered → never received',
-            'customer → says',
-            'marked → customer',
+            'light → is',
+            'off → on',
+            'she → says',
+            'off → she',
         ],
         explanationLead: 'The strong link is',
-        explanationPair: '"delivered" against "never received"',
+        explanationPair: '"off" against "on"',
         explanationRest:
-            '. The point is not just that a package is missing, but the contradiction between what the system marks and what the customer reports. That is where attention needs to be strong, so the answer does not assume something that has not been checked yet.',
+            '. The point is not just that there is uncertainty about the light, but the contradiction between the first claim and what she reports. That is where attention needs to be strong, so the answer does not assume something that has not been checked yet.',
     },
 
     // -- Practical insight --
@@ -153,14 +153,14 @@ export const attention = {
         resetButton: 'Choose again',
         revealTitle: 'So what really happens?',
         revealCopy:
-            'Attention does not look for one winning word, and it does not check what is true in the world. It weighs the link between the parts of the sentence. When it needs to spot the problem, "delivered" gets weight. When it needs to spot the contradiction, the link between "delivered" and "never received" becomes important. And the moment you change a word in the sentence, like removing "but" or flipping the negation, attention moves right away.',
+            'Attention does not look for one winning word, and it does not check what is true in the world. It weighs the link between the parts of the sentence. When it needs to spot the claim, "off" gets weight. When it needs to spot the contradiction, the link between "off" and "on" becomes important. And the moment you change a word in the sentence, like removing "but" or swapping the contradicting claim, attention moves right away.',
         cta: 'Let us see how the weight moves',
         cards: {
             'one-word': {
                 title: 'One word leads',
                 desc: 'The model finds the most important word in the sentence, and sticks to it throughout the answer.',
                 statusLabel: 'Partly right',
-                getsRight: 'At a certain moment a word like "delivered" or "never received" really can get a lot of weight.',
+                getsRight: 'At a certain moment a word like "off" or "on" really can get a lot of weight.',
                 missesLabel: 'What it misses',
                 misses: 'Attention does not pick one winning word and stick to it throughout the answer.',
                 bridge: 'At another moment in the answer, a different link in the sentence can become more important.',
@@ -185,12 +185,12 @@ export const attention = {
             },
             'factcheck': {
                 title: 'Fact checking in the world',
-                desc: 'The model focuses on the words that will help it check whether the package really was delivered.',
+                desc: 'The model focuses on the words that will help it check whether the light really is off.',
                 statusLabel: 'Important, but not Attention',
-                getsRight: 'The distinction matters. You really do need to check whether the package was delivered.',
+                getsRight: 'The distinction matters. You really do need to check the actual state of the light.',
                 missesLabel: 'What it misses',
                 misses: 'But that is not the work of Attention. It does not check whether something is true in the world.',
-                bridge: 'Attention can spot the tension between "delivered" and "never received", but real verification requires an external source of information or a tool.',
+                bridge: 'Attention can spot the tension between "off" and "on", but real verification requires an external source of information or a tool.',
             },
         },
     },

@@ -58,7 +58,7 @@ export const attentionQuiz = {
                 '"Presta atención" es una metáfora cómoda, pero aquí no hay conciencia, emoción ni una pausa como la de una persona. Attention es un cálculo que pondera cuánto se relacionan entre sí las partes del texto, y así mezcla la información. Es un mecanismo, no una conciencia.',
         },
         4: {
-            question: 'En el laboratorio quitamos el "pero" y luego cambiamos "nunca lo recibió" por "lo recibió tarde". ¿Qué nos enseña esto sobre la atención?',
+            question: 'En el laboratorio quitamos el "pero" y luego cambiamos la afirmación contradictoria por "rota". ¿Qué nos enseña esto sobre la atención?',
             options: [
                 'Las palabras de enlace y de negación son adorno, no cambian lo que el modelo pondera',
                 'Palabras como "pero" y "no" orientan la atención hacia el vínculo correcto, y cambiarlas mueve el foco de la atención',
@@ -66,18 +66,18 @@ export const attentionQuiz = {
                 'Quitar el "pero" hace que el modelo deje de procesar la frase',
             ],
             explanation:
-                'Las palabras de contraste y de negación son señales de camino. El "pero" indica que hay tensión entre dos partes, y el "no" invierte el significado. Al quitar el "pero", el vínculo entre las partes queda menos marcado, y al cambiar la negación por "lo recibió tarde", la contradicción desaparece y el peso pasa a otro lugar. Palabras pequeñas, un gran cambio en el foco de la atención.',
+                'Las palabras de contraste y de negación son señales de camino. El "pero" indica que hay tensión entre dos partes. Al quitar el "pero", el vínculo entre las partes queda menos marcado, y al cambiar la afirmación contradictoria por "rota", la contradicción desaparece y el peso pasa a otro lugar. Palabras pequeñas, un gran cambio en el foco de la atención.',
         },
         5: {
-            question: 'El modelo pone mucho peso en "entregado". Un usuario deduce: "entonces el modelo comprobó la realidad y el paquete sí se entregó". ¿Qué es impreciso en esa deducción?',
+            question: 'El modelo pone mucho peso en "apagada". Un usuario deduce: "entonces el modelo comprobó la realidad y la luz sí está apagada". ¿Qué es impreciso en esa deducción?',
             options: [
                 'No hay error, un peso de atención alto prueba que la información es correcta',
-                'Attention pondera vínculos dentro del texto, no comprueba hechos en el mundo. Un peso alto en "entregado" solo dice que esa palabra es importante para procesar el contexto',
-                'El error es que el modelo en realidad no puso peso en "entregado"',
-                'El error es que "entregado" nunca puede recibir un peso alto',
+                'Attention pondera vínculos dentro del texto, no comprueba hechos en el mundo. Un peso alto en "apagada" solo dice que esa palabra es importante para procesar el contexto',
+                'El error es que el modelo en realidad no puso peso en "apagada"',
+                'El error es que "apagada" nunca puede recibir un peso alto',
             ],
             explanation:
-                'Un peso de atención alto dice que la palabra es relevante para procesar el contexto interno, no que sea cierta en la realidad. Attention conecta partes del texto entre sí, no verifica si el paquete se entregó de verdad. Para eso hace falta una fuente externa, como una herramienta de seguimiento, y no el mecanismo de atención.',
+                'Un peso de atención alto dice que la palabra es relevante para procesar el contexto interno, no que sea cierta en la realidad. Attention conecta partes del texto entre sí, no verifica si la luz está apagada de verdad. Para eso hace falta una fuente externa o una herramienta, y no el mecanismo de atención.',
         },
     } satisfies Record<AttentionQuizId, AttentionQuizText>,
 };
