@@ -16,6 +16,13 @@ export const chrome: typeof heChrome = {
     },
 
     nav: {
+
+
+        menu: 'コースメニュー',
+
+
+
+        closeMenu: 'メニューを閉じる',
         next: '次へ',
         prev: '前へ',
         finishedTitle: 'すべての章を修了しました！',

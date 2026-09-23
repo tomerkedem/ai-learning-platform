@@ -9,6 +9,22 @@
 // Token ID, Tool Call, UX) are kept on purpose.
 
 export const conceptLabels: Record<string, string> = {
+    // Chapters 7, 9 and 19 (concepts used by their chapter quizzes and the final exam)
+    "חלון הקשר": "Ventana de contexto",
+    "פרטים נופלים מהחלון": "Los datos salen de la ventana",
+    "חלון אינו זיכרון": "La ventana no es memoria",
+    "פרומפט עצמאי": "Prompt independiente",
+    "מה עושים כשנשכח": "Qué hacer cuando se olvida",
+    "מהי בחירת טוקן": "Qué es elegir un token",
+    "אחרי ההסתברויות": "Después de las probabilidades",
+    "שמרני מול פתוח": "Conservador vs abierto",
+    "למה נבחרת אפשרות נמוכה": "Por qué se elige una opción baja",
+    "בחירה אינה אמת": "Elegir no es verdad",
+    "הרכבת הקשר": "Armado del contexto",
+    "יצירת טוקן": "Generación de tokens",
+    "עיגון ובדיקה": "Anclaje y comprobación",
+    "Agent ובקרה": "Agent y control",
+    "שיפור מאוחר": "Mejora posterior",
     // Capítulo 19 (Full Trace)
     "Trace גלוי": "Traza visible",
     "Trace אינו מחשבה נסתרת": "La traza no es pensamiento oculto",

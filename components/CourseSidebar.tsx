@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useLayoutEffect, useRef } from 'react';
+import React, { useState, useLayoutEffect, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Circle, PlayCircle, Menu, X, Terminal, Sigma, BrainCircuit, ArrowRight, ArrowLeft } from 'lucide-react';
@@ -17,6 +17,49 @@ export function CourseSidebar({ isFocusMode = false }: { isFocusMode?: boolean }
   const { locale, dir, t } = useT();
   const [isOpen, setIsOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  // סגירת מגירת המובייל: מחזירה את הפוקוס לכפתור התפריט (Esc, כפתור X ושכבת הרקע).
+  const closeMenu = useCallback(() => {
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  }, []);
+
+  // מגירה פתוחה: הפוקוס נכנס אליה, Tab / Shift+Tab נשארים בתוכה, ו-Esc סוגר.
+  useEffect(() => {
+    if (!isOpen) return;
+    const focusables = () =>
+      Array.from(
+        drawerRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])') ?? [],
+      ).filter((el) => el.getClientRects().length > 0);
+    focusables()[0]?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeMenu();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const items = focusables();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (!active || !drawerRef.current?.contains(active)) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+      } else if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, closeMenu]);
 
   // פתרון הריצוד: שימוש ב-useLayoutEffect לביצוע הגלילה לפני הציור על המסך
   // פתרון שגיאת ה-Lint: אנחנו מוותרים על ה-isReady state ומשתמשים במיקום ה-Scroll בלבד
@@ -107,7 +150,8 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
 
                 {isOpen && (
                     <button
-                        onClick={() => setIsOpen(false)}
+                        onClick={closeMenu}
+                        aria-label={t.chrome.nav.closeMenu}
                         className="p-1 rounded-full text-[var(--bts-text-muted)] hover:text-[var(--bts-text-primary)] ms-auto md:hidden"
                     >
                         <X size={24} />
@@ -208,11 +252,6 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
               <div className="mb-3 flex justify-center">
                   <ThemeToggle />
               </div>
-              <div className="flex justify-center items-center gap-2">
-                  <span>v4.6</span>
-                  <span className="w-1 h-1 rounded-full bg-[var(--bts-border-emphasis)]"></span>
-                  <span>AI Math Primer</span>
-              </div>
           </div>
       </div>
   );
@@ -220,7 +259,10 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
   return (
       <>
           <button
+              ref={triggerRef}
               onClick={() => setIsOpen(true)}
+              aria-label={t.chrome.nav.menu}
+              aria-expanded={isOpen}
               className="fixed top-4 left-4 z-50 p-2.5 rounded-xl bg-[var(--bts-surface-elevated)] text-[var(--bts-text-primary)] shadow-lg backdrop-blur-md border border-[var(--bts-border-emphasis)] md:hidden hover:scale-105 transition-transform"
           >
               <Menu size={20} />
@@ -251,11 +293,15 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                           animate={{ opacity: 0.6 }}
                           exit={{ opacity: 0 }}
                           transition={{ duration: 0.2 }}
-                          onClick={() => setIsOpen(false)}
+                          onClick={closeMenu}
                           className="fixed inset-0 bg-black/80 backdrop-blur-sm z-90 md:hidden"
                       />
                       
                       <motion.div
+                          ref={drawerRef}
+                          role="dialog"
+                          aria-modal="true"
+                          aria-label={t.chrome.nav.menu}
                           initial={{ x: '100%' }}
                           animate={{ x: 0 }}
                           exit={{ x: '100%' }}

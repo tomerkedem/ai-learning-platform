@@ -16,6 +16,13 @@ export const chrome: typeof heChrome = {
     },
 
     nav: {
+
+
+        menu: 'Menú del curso',
+
+
+
+        closeMenu: 'Cerrar el menú',
         next: 'Siguiente',
         prev: 'Anterior',
         finishedTitle: '¡Completaste todos los capítulos!',

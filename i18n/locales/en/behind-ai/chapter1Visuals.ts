@@ -194,6 +194,7 @@ export const chapter1Visuals = {
             task: {
                 'Delete a playlist': 'Delete a playlist',
                 'Look up a playlist': 'Look up a playlist',
+                'Look up the current song': 'Look up the current song',
                 'Unclear task': 'Unclear task',
                 'General request': 'General request',
             },
@@ -212,7 +213,7 @@ export const chapter1Visuals = {
     mockEngine: {
         chatReplies: {
             notDelivered: 'This looks like a playback problem. It is worth checking the connection and trying to play again.',
-            tracking: 'We can check what song is currently playing. Want me to check?',
+            tracking: 'I cannot see what is playing right now. Checking it needs access to the live playback source, for example through a tool.',
             system: 'This may be a glitch in the app. It is worth closing and reopening it.',
             payment: 'Here are a few music recommendations that fit your request.',
             other: 'I am not sure I understood exactly. Could you describe the problem?',
@@ -223,6 +224,7 @@ export const chapter1Visuals = {
             askBarcode: 'To actually check this, I need the Playlist ID.',
             vague: 'I need to understand what this refers to - which task or playlist should I check?',
             general: 'This sounds like a general request. It can be answered directly, without an external tool.',
+            liveLookup: 'This asks for live state, so I need a tool. I am checking what is playing now with the playlist tool, a read-only lookup that needs no approval...',
         },
     },
 };

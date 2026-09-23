@@ -87,6 +87,7 @@ export const chapter1Visuals = {
             task: {
                 'Delete a playlist': 'プレイリストの削除',
                 'Look up a playlist': 'プレイリストの検索',
+                'Look up the current song': '現在の曲の確認',
                 'Unclear task': '不明確なタスク',
                 'General request': '一般的な依頼',
             },
@@ -105,7 +106,7 @@ export const chapter1Visuals = {
     mockEngine: {
         chatReplies: {
             notDelivered: '再生の問題のようです。接続を確認してもう一度再生してみるとよいでしょう。',
-            tracking: '今流れている曲を確認できます。確認しましょうか?',
+            tracking: '今何が流れているかは、ここからは見えません。確認するには、ツールなどを通じてリアルタイムの再生元にアクセスする必要があります。',
             system: 'アプリの不具合かもしれません。閉じてもう一度開いてみてください。',
             payment: 'ご依頼に合う音楽のおすすめをいくつか紹介します。',
             other: '正確に理解できているか自信がありません。問題を詳しく教えていただけますか?',
@@ -116,6 +117,7 @@ export const chapter1Visuals = {
             askBarcode: '実際に確認するには、Playlist IDが必要です。',
             vague: '何を指しているのか理解する必要があります - どのタスクやプレイリストを確認しますか?',
             general: '一般的な依頼のようです。外部ツールなしで直接お答えできます。',
+            liveLookup: 'これはリアルタイムの状態についての質問なので、ツールが必要です。プレイリストツールで今流れている曲を確認しています。読み取り専用の参照なので承認は不要です...',
         },
     },
 };

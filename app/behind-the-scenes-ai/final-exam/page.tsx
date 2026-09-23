@@ -26,7 +26,7 @@ export default function FinalExamPage() {
     const { questions: baseQuestions, passScore, onComplete, getReviewLinks, soundEnabled } = behindAiFinalExam;
     const questions = baseQuestions.map((question) => ({
         ...question,
-        ...(fx.questionOverrides[question.id as 13 | 17] ?? {}),
+        ...(fx.questionOverrides[question.id] ?? {}),
     }));
 
     // דרגות ציון מתורגמות: שומרים את ה-min/color המבניים מ-quizData וממזגים מעליהם
@@ -105,6 +105,7 @@ export default function FinalExamPage() {
                         onComplete={onComplete}
                         getReviewLinks={localizedReviewLinks}
                         soundEnabled={soundEnabled}
+                        conceptDisplayMap={t.behindAi.conceptLabels}
                         title={fx.examTitle}
                         subtitle={fx.examSubtitle}
                         startLabel={fx.startLabel}

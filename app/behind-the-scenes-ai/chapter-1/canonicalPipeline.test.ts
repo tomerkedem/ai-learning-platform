@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import {
     buildCanonicalChatPipeline,
     runAgentEngine,
+    selectChatReplyKey,
     softmax,
     type ProbabilityCandidate,
 } from './mockEngine.ts';
@@ -155,5 +156,39 @@ test('Agent ask, stop and denied-approval branches never execute a tool', () => 
 
     const unauthorized = runAgentEngine('בדוק פלייליסט 123456789', { authorized: false });
     assert.equal(unauthorized.authorization.status, 'unauthorized');
+    assert.equal(unauthorized.execution.toolCalled, false);
+});
+
+const LIVE_STATE_SAMPLES: Record<string, string> = {
+    he: 'איזה שיר מתנגן עכשיו?',
+    en: 'What song is playing now?',
+    es: '¿Qué canción está sonando ahora?',
+    ru: 'Какая песня сейчас играет?',
+    ar: 'أي أغنية تعمل الآن؟',
+    ja: '今の曲は何ですか',
+};
+const ALL_VISUALS = { he: chapter1Visuals, en: enVisuals, es: esVisuals, ru: ruVisuals, ar: arVisuals, ja: jaVisuals };
+
+test('live-state sample needs a read-only tool lookup in every locale (no approval, no direct answer)', () => {
+    for (const [locale, text] of Object.entries(LIVE_STATE_SAMPLES)) {
+        const agent = runAgentEngine(text);
+        assert.equal(agent.toolNeed.needed, true, locale);
+        assert.equal(agent.toolNeed.tool, 'Playlist API', locale);
+        assert.equal(agent.decision.kind, 'tool', locale);
+        assert.equal(agent.risk, 'Low', locale);
+        assert.equal(agent.approval.required, false, locale);
+        assert.equal(agent.execution.toolCalled, true, locale);
+        assert.equal(agent.replyKey, 'liveLookup', locale);
+        assert.equal(selectChatReplyKey(text), 'tracking', locale);
+
+        const visuals = ALL_VISUALS[locale as keyof typeof ALL_VISUALS];
+        assert.ok(visuals.mockEngine.agentReplies.liveLookup, locale);
+        assert.ok((visuals.trace.labels.task as Record<string, string>)[agent.task], locale);
+    }
+});
+
+test('live-state lookup without tool authorization stops and never calls the tool', () => {
+    const unauthorized = runAgentEngine(LIVE_STATE_SAMPLES.en, { authorized: false });
+    assert.equal(unauthorized.decision.kind, 'stop');
     assert.equal(unauthorized.execution.toolCalled, false);
 });

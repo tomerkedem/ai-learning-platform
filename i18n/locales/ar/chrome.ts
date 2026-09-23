@@ -16,6 +16,13 @@ export const chrome: typeof heChrome = {
     },
 
     nav: {
+
+
+        menu: 'قائمة الدورة',
+
+
+
+        closeMenu: 'إغلاق القائمة',
         next: 'التالي',
         prev: 'السابق',
         finishedTitle: 'أكملت جميع الفصول!',

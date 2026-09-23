@@ -124,6 +124,7 @@ export const chapter1Visuals = {
             task: {
                 'Delete a playlist': 'Eliminar una playlist',
                 'Look up a playlist': 'Buscar una playlist',
+                'Look up the current song': 'Consultar la canción actual',
                 'Unclear task': 'Tarea poco clara',
                 'General request': 'Solicitud general',
             },
@@ -142,7 +143,7 @@ export const chapter1Visuals = {
     mockEngine: {
         chatReplies: {
             notDelivered: 'Esto parece un problema de reproducción. Conviene revisar la conexión e intentar reproducir de nuevo.',
-            tracking: 'Podemos revisar qué canción está sonando ahora. ¿Quieres que lo revise?',
+            tracking: 'No puedo ver qué está sonando ahora mismo. Comprobarlo requiere acceso a la fuente de reproducción en vivo, por ejemplo mediante una herramienta.',
             system: 'Puede que sea un fallo en la aplicación. Conviene cerrarla y volver a abrirla.',
             payment: 'Aquí tienes algunas recomendaciones de música que encajan con tu pedido.',
             other: 'No estoy seguro de haber entendido exactamente. ¿Podrías describir el problema?',
@@ -153,6 +154,7 @@ export const chapter1Visuals = {
             askBarcode: 'Para revisar esto realmente, necesito el Playlist ID.',
             vague: 'Necesito entender a qué se refiere esto - ¿qué tarea o playlist debo revisar?',
             general: 'Esto suena como una solicitud general. Se puede responder directamente, sin una herramienta externa.',
+            liveLookup: 'Esto pregunta por un estado en vivo, así que necesito una herramienta. Estoy comprobando qué suena ahora con la herramienta de la playlist, una consulta de solo lectura que no requiere aprobación...',
         },
     },
 };

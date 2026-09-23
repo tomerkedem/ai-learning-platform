@@ -21,6 +21,11 @@ export const chrome = {
 
     // ניווט בין פרקים (פוטר הפרק)
     nav: {
+
+        menu: 'תפריט הלומדה',
+
+
+        closeMenu: 'סגירת התפריט',
         next: 'הבא',
         prev: 'הקודם',
         finishedTitle: 'סיימת את כל הפרקים!',

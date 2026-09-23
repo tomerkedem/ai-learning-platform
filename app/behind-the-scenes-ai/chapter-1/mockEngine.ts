@@ -173,7 +173,7 @@ export interface AgentRunOptions {
 // פותרת אותו לטקסט הנכון מהמילון (chapter1Visuals.mockEngine), כדי שהפלט יהיה
 // תלוי-שפה בלי להכניס תלות-מילון למודול הלוגי הזה.
 export type ChatReplyKey = 'notDelivered' | 'tracking' | 'system' | 'payment' | 'other';
-export type AgentReplyKey = 'sensitive' | 'tool' | 'askBarcode' | 'vague' | 'general';
+export type AgentReplyKey = 'sensitive' | 'tool' | 'liveLookup' | 'askBarcode' | 'vague' | 'general';
 
 export interface ChatEngineResult {
     tokens: string[];
@@ -557,7 +557,7 @@ function decode(probabilities: ProbabilityCandidate[], strategy: DecodingStrateg
 function defaultResponse(replyKey: ChatReplyKey): string {
     const responses: Record<ChatReplyKey, string> = {
         notDelivered: 'This looks like a playback problem. Try restarting the song.',
-        tracking: 'Let me check what is currently playing.',
+        tracking: 'I cannot see what is playing right now. Checking it needs access to the live playback source, for example through a tool.',
         system: 'This may be a glitch in the app. Try refreshing and playing again.',
         payment: 'Here is a recommendation based on what you asked.',
         other: 'Please add a little more context.',
@@ -976,6 +976,38 @@ export function runAgentEngine(text: string, options: AgentRunOptions = {}): Age
                 tool: 'Playlist deletion tool',
                 transport,
                 observation: 'Playlist deleted',
+            } : noExecution,
+        };
+    }
+
+    // 1b. שאלת מצב חי ("מה מתנגן עכשיו"): המידע קיים רק במקור חי, ולכן נדרש כלי.
+    // חיפוש בקריאה בלבד: אין צורך באישור, אבל עדיין נדרשת הרשאת מערכת לכלי.
+    if (includesAny(text, vocab.chatWords.tracking)) {
+        const mayExecute = authorized;
+        return {
+            tokens,
+            task: 'Look up the current song',
+            missingInfo: 'None',
+            toolNeed: { needed: true, tool: 'Playlist API' },
+            canActNow: mayExecute,
+            risk: 'Low',
+            decision: mayExecute
+                ? { kind: 'tool', label: 'Use the Playlist API' }
+                : { kind: 'stop', label: 'Tool is not authorized' },
+            output: mayExecute ? 'Call the Playlist API' : 'Stop before unauthorized tool call',
+            replyKey: 'liveLookup',
+            authorization: {
+                required: true,
+                status: authorized ? 'authorized' : 'unauthorized',
+                tool: 'Playlist API',
+            },
+            approval: { required: false, status: 'not-required' },
+            execution: mayExecute ? {
+                attempted: true,
+                toolCalled: true,
+                tool: 'Playlist API',
+                transport,
+                observation: 'Current song details received',
             } : noExecution,
         };
     }
