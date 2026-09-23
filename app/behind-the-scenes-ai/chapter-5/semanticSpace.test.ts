@@ -53,18 +53,18 @@ test('the same selected point always produces the same ordering', () => {
     assert.deepEqual(a, b);
 });
 
-/* 5. עבור "החבילה לא הגיעה", "המשלוח מתעכב" מדורג ראשון. */
+/* 5. עבור "החלון לא פתוח", "השאירו אותו סגור מהבוקר" מדורג ראשון. */
 test('not-arrived ranks delayed first', () => {
     assert.equal(rankNeighbors('not-arrived')[0].phrase.id, 'delayed');
 });
 
-/* 6. "החבילה הגיעה" אינו מסווג כ-near ביחס ל"החבילה לא הגיעה" (מהפך משמעות). */
+/* 6. "החלון פתוח" אינו מסווג כ-near ביחס ל"החלון לא פתוח" (מהפך משמעות). */
 test('arrived is not classified as "near" for not-arrived', () => {
     const d = distance(findPhrase('not-arrived')!, findPhrase('arrived')!);
     assert.notEqual(closenessTone(d), 'near');
 });
 
-/* 7. משפטים לא קשורים נשארים "far" מ"החבילה לא הגיעה". */
+/* 7. משפטים לא קשורים נשארים "far" מ"החלון לא פתוח". */
 test('unrelated phrases remain "far" from not-arrived', () => {
     const from = findPhrase('not-arrived')!;
     for (const id of ['recipe', 'weather'] as PhraseId[]) {

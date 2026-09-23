@@ -17,8 +17,37 @@ import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } fro
 import { useReducedMotion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
-import type { JoinedSentence, Chapter4LabDict } from '../labContent';
-import { DNA_DIMS, dimValue } from '../embeddingEngine';
+import { DNA_DIMS as CH4_DNA_DIMS } from '../embeddingEngine';
+
+// הרכיב גנרי במכוון: אינו תלוי ב-SentenceId/Profile/DimKey של פרק 4. הצורה המבנית
+// המינימלית הנדרשת כאן בלבד (id/text/ttsLine/profile), כדי שפרק אחר (למשל פרק 5) יוכל
+// להזין את המשפטים והממדים שלו בלי לעבור דרך SENTENCE_STRUCTS/JoinedSentence של פרק 4.
+// profile הוא Partial כדי לקבל גם Profile החלקי של פרק 4 וגם Record מלא של קורא אחר.
+
+/** הצורה המינימלית שהרכיב צריך ממשפט, בלתי תלויה במבנה הנתונים של פרק 4. */
+export interface DnaStripSentence {
+    id: string;
+    text: string;
+    ttsLine: string;
+    profile: Partial<Record<string, number>>;
+}
+
+/** מחרוזות הפסיקה/המקרא של הסולם, גנריות ובלתי תלויות בתוכן של פרק מסוים. */
+export interface DnaStripCopy {
+    title: string;
+    intro: string;
+    roleActive: string;
+    roleCompare: string;
+    twistMeaning: string;
+    leadShared: (names: string) => string;
+    leadNone: string;
+    sharedBadge: string;
+    guideSize: string;
+    guideBond: string;
+    stayedClose: string;
+    drifted: string;
+    axesNote: string;
+}
 
 // צבע לפי תפקיד וקבוע: ציאן = המשפט שבחרת, סגול = המשפט להשוואה. הצבע לא תלוי בזהות
 // המשפט (בניגוד למפה), כדי שהעין תקרא "מי מול מי" ולא תחפש משמעות בצבע המתחלף.
@@ -27,10 +56,10 @@ const ROLE_A = { hex: '#22d3ee', rgb: '34,211,238', lightInk: '#0e7490' }; // ה
 const ROLE_B = { hex: '#a78bfa', rgb: '167,139,250', lightInk: '#7c3aed' }; // המשפט להשוואה
 
 interface MeaningDnaStripProps {
-    active: JoinedSentence;
-    compare: JoinedSentence | null;
-    geneLabels: Chapter4LabDict['genes'];
-    dna: Chapter4LabDict['dna'];
+    active: DnaStripSentence;
+    compare: DnaStripSentence | null;
+    geneLabels: Record<string, string>;
+    dna: DnaStripCopy;
     dir: 'rtl' | 'ltr';
     /** מספר המעבדה בפרק (מוצג כתג ליד הכותרת). לא מוצג אם לא הועבר. */
     labNumber?: number;
@@ -42,6 +71,10 @@ interface MeaningDnaStripProps {
     /** האם להציג את פסקת המבוא. ברירת מחדל true. פרק שכבר ממסגר את המקטע מבחוץ יכול
      *  לכבות אותה כדי למנוע מבוא כפול. */
     showIntro?: boolean;
+    /** אילו ממדים להציג כשורות גנים. ברירת מחדל: ממדי ה-DNA של פרק 4, כדי שקוראים
+     *  קיימים בפרק 4 לא ישתנו. קורא עם סט ממדים משלו (למשל פרק 5) מעביר כאן את הרשימה
+     *  שלו. */
+    dims?: string[];
 }
 
 const LIT = 0.4; // סף "נדלק" לרכיב
@@ -58,9 +91,9 @@ const SPIN = 0.55; // מהירות פיתול רגועה (רדיאנים לשנ�
 const SAMPLES = 48; // צפיפות דגימה לשרטוט גדיל חלק
 const LANE = 64; // גובה שורת רכיב בפיקסלים
 
-/** קרבה ממוצעת על ממדי ה-DNA (1 = זהה, 0 = רחוק). */
-function avgCloseness(a: JoinedSentence, b: JoinedSentence): number {
-    const dist = DNA_DIMS.reduce((s, d) => s + Math.abs(dimValue(a.profile, d) - dimValue(b.profile, d)), 0) / DNA_DIMS.length;
+/** קרבה ממוצעת על ממדי ה-DNA שהועברו (1 = זהה, 0 = רחוק). */
+function avgCloseness(a: DnaStripSentence, b: DnaStripSentence, dims: string[]): number {
+    const dist = dims.reduce((s, d) => s + Math.abs((a.profile[d] ?? 0) - (b.profile[d] ?? 0)), 0) / dims.length;
     return Math.max(0, 1 - dist);
 }
 
@@ -89,7 +122,7 @@ function railPaths(phase: number, closeness: number): { a: string; b: string } {
     return { a: a.trim(), b: b.trim() };
 }
 
-export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compare, geneLabels, dna, dir, labNumber, title, intro, showIntro = true }) => {
+export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compare, geneLabels, dna, dir, labNumber, title, intro, showIntro = true, dims = CH4_DNA_DIMS }) => {
     const reduce = useReducedMotion();
 
     // פאזת הפיתול, מונעת ב-rAF. reduced-motion משאיר 0 (סולם סטטי וקריא).
@@ -112,21 +145,21 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
 
     // רק רכיבים שנדלקו לפחות במשפט אחד, כדי לא לצייר שורות ריקות.
     const litDims = useMemo(
-        () => DNA_DIMS.filter((d) => Math.max(dimValue(active.profile, d), compare ? dimValue(compare.profile, d) : 0) >= SHOW),
-        [active, compare],
+        () => dims.filter((d) => Math.max(active.profile[d] ?? 0, compare ? compare.profile[d] ?? 0 : 0) >= SHOW),
+        [active, compare, dims],
     );
 
     // רכיב "נקשר" (משותף): חזק בשני המשפטים וקרוב בערכו.
     const sharedSet = useMemo(() => {
         const set = new Set<string>();
         if (!compare) return set;
-        DNA_DIMS.forEach((d) => {
-            const av = dimValue(active.profile, d);
-            const bv = dimValue(compare.profile, d);
+        dims.forEach((d) => {
+            const av = active.profile[d] ?? 0;
+            const bv = compare.profile[d] ?? 0;
             if (av >= LIT && bv >= LIT && Math.abs(av - bv) <= CLOSE) set.add(d);
         });
         return set;
-    }, [active, compare]);
+    }, [active, compare, dims]);
 
     // הבהוב "מה השתנה": רכיבים שהקשר שלהם נוצר או נשבר מאז הבחירה הקודמת.
     // הזיהוי נעשה באפקט מול ref (גישה ל-ref מותרת באפקט), ו-setFlash נקרא רק בתוך timeout
@@ -139,7 +172,7 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
         prevRef.current = { sig, shared: new Set(sharedSet) };
         if (!prev || prev.sig === sig || reduce) return;
         const changed = new Set<string>();
-        DNA_DIMS.forEach((d) => {
+        dims.forEach((d) => {
             if (prev.shared.has(d) !== sharedSet.has(d)) changed.add(d);
         });
         if (changed.size === 0) return;
@@ -149,15 +182,15 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
             clearTimeout(onId);
             clearTimeout(offId);
         };
-    }, [active.id, compare?.id, sharedSet, reduce]);
+    }, [active.id, compare?.id, sharedSet, reduce, dims]);
 
     const sharedNames = useMemo(
-        () => DNA_DIMS.filter((d) => sharedSet.has(d)).map((d) => geneLabels[d]).join(', '),
-        [sharedSet, geneLabels],
+        () => dims.filter((d) => sharedSet.has(d)).map((d) => geneLabels[d]).join(', '),
+        [sharedSet, geneLabels, dims],
     );
 
     // קרבה כוללת בין שני המשפטים (1 = זהה). מניעה גם את הפסיקה וגם את הידוק ההליקס.
-    const closeness = compare ? avgCloseness(active, compare) : 0.7;
+    const closeness = compare ? avgCloseness(active, compare, dims) : 0.7;
     const stayedClose = compare ? closeness >= CLOSE_VERDICT : true;
     const verdict = stayedClose ? dna.stayedClose : dna.drifted;
     const lead = !compare ? '' : sharedSet.size > 0 ? dna.leadShared(sharedNames) : dna.leadNone;
@@ -178,8 +211,8 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
             yPct: t * 100,
             xA: 50 - half,
             xB: 50 + half,
-            va: dimValue(active.profile, d),
-            vb: compare ? dimValue(compare.profile, d) : 0,
+            va: active.profile[d] ?? 0,
+            vb: compare ? compare.profile[d] ?? 0 : 0,
             shared: sharedSet.has(d),
             flashed: flash.has(d),
         };

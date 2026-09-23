@@ -43,7 +43,7 @@ export const semanticSpaceQuiz: typeof HeQuiz = {
                 'The map shows in two dimensions an idea that happens in a space with far more dimensions. The model does not reduce its representation to two dimensions, and a single dimension usually has no simple human meaning. The display helps you grasp the idea of closeness, but the distances drawn in it are not an exact or absolute measurement of the real space.',
         },
         3: {
-            question: "'The package has not arrived' and 'The delivery is running late' use different words, yet they sit close together in the space. What does that teach?",
+            question: "'The window is not open' and 'They left it closed since morning' use completely different words, yet they sit close together in the space. What does that teach?",
             options: [
                 'That the model counts shared letters',
                 'That the model recognises similar meaning even when the words differ',
@@ -51,10 +51,10 @@ export const semanticSpaceQuiz: typeof HeQuiz = {
                 'That closeness depends only on identical words',
             ],
             explanation:
-                'This is the heart of the chapter. They share almost no words, and still the meaning is close: both are about a package that did not arrive on time. The model works on meaning, not on exact word matching.',
+                'This is the heart of the chapter. They share no words at all, and still the meaning is close: both are about a window that stayed closed. The model works on meaning, not on exact word matching.',
         },
         4: {
-            question: "'The package has arrived' and 'The package has not arrived' share almost the same words. Why is it dangerous to conclude that they say the same thing?",
+            question: "'The window is open' and 'The window is not open' share almost the same words. Why is it dangerous to conclude that they say the same thing?",
             options: [
                 'Because one of the sentences is longer',
                 'Because the model always ignores negation',

@@ -15,6 +15,7 @@ import type { Locale } from '@/i18n/config';
 import { semanticSpace as he } from '../../he/behind-ai/semanticSpace';
 import { semanticSpaceLab } from './semanticSpaceLab';
 import { semanticSpaceQuiz } from './semanticSpaceQuiz';
+import { semanticSpaceDna } from './semanticSpaceDna';
 
 export const semanticSpace: typeof he = {
     contentLocale: 'es' as Locale,
@@ -36,7 +37,7 @@ export const semanticSpace: typeof he = {
         badge: he.hero.badge,
         titleLead: 'Cada significado',
         titleHighlight: 'tiene un lugar en el mapa',
-        lede: '"El paquete no llegó" y "El envío viene con retraso" casi no comparten palabras y, aun así, el modelo entiende que dicen casi lo mismo. ¿Cómo consigue acercar dos frases redactadas de forma tan distinta? Para responderlo, tendremos que ver dónde se ubica cada frase y en qué espacio se mide.',
+        lede: '"La ventana no está abierta" y "Lo dejaron cerrado desde la mañana" no comparten ninguna palabra y, aun así, el modelo entiende que dicen casi lo mismo. ¿Cómo consigue acercar dos frases redactadas de forma tan distinta? Para responderlo, tendremos que ver dónde se ubica cada frase y en qué espacio se mide.',
         chipMap: 'Elige una frase y mira quién está cerca',
         chipNeighbors: 'Descubre por qué una negación lo cambia todo',
     },
@@ -58,9 +59,9 @@ export const semanticSpace: typeof he = {
 
     guess: {
         eyebrow: 'Adivinanza rápida · cercanía en el significado',
-        title: '¿Qué frase es la más cercana en significado a "El paquete no llegó"?',
+        title: '¿Qué frase es la más cercana en significado a "La ventana no está abierta"?',
         subtitle: 'Elige la que te parezca más cercana. No hay puntaje, solo una dirección que muestra cómo el modelo entiende la cercanía.',
-        prompt: '"El paquete no llegó"',
+        prompt: '"La ventana no está abierta"',
         invite: 'Antes de abrir esto, intenta adivinar qué frase verá el modelo como la más cercana en significado.',
         correctTitle: '¡Muy bien!',
         wrongTitle: '¡Casi!',
@@ -68,37 +69,37 @@ export const semanticSpace: typeof he = {
         revealButton: 'Revela la idea central',
         revealTitle: '¿Y qué pasa en realidad?',
         revealCopy:
-            'El modelo no cuenta palabras compartidas. Ubica cada frase en un espacio según su significado y mide quién está cerca. "El envío viene con retraso" es lo más cercano a "El paquete no llegó", aunque casi no comparten palabras, porque el significado es parecido. "El paquete llegó" comparte casi las mismas palabras, pero invierte el significado, así que no es la más cercana.',
+            'El modelo no cuenta palabras compartidas. Ubica cada frase en un espacio según su significado y mide quién está cerca. "Lo dejaron cerrado desde la mañana" es lo más cercano a "La ventana no está abierta", aunque no comparten ninguna palabra, porque el significado es parecido. "La ventana está abierta" comparte casi las mismas palabras, pero invierte el significado, así que no es la más cercana.',
         cta: 'Vamos a verlo en el laboratorio',
         resetButton: 'Elegir de nuevo',
         exploreHint: 'También puedes elegir otra opción y leer su explicación.',
 
         cards: {
             delayed: {
-                title: 'El envío viene con retraso',
-                desc: 'Palabras totalmente distintas, pero la misma idea: el paquete no está aquí a tiempo.',
+                title: 'Lo dejaron cerrado desde la mañana',
+                desc: 'Palabras totalmente distintas, pero la misma idea: la ventana sigue sin abrirse.',
                 statusLabel: 'La más cercana en significado',
-                getsRight: 'Exacto. Casi no comparten palabras y aun así el significado es casi el mismo. Las dos hablan de un paquete que se retrasa.',
+                getsRight: 'Exacto. No comparten ninguna palabra y aun así el significado es casi el mismo. Las dos hablan de una ventana que quedó cerrada.',
                 missesLabel: 'Qué queda por ver',
                 misses: 'En el laboratorio veremos que esta frase es la que se ubica más cerca del ancla en el mapa del significado, a pesar de las palabras distintas.',
                 bridge: 'La cercanía en el significado no depende de palabras idénticas.',
             },
             arrived: {
-                title: 'El paquete llegó',
+                title: 'La ventana está abierta',
                 desc: 'Casi las mismas palabras que la frase original, solo que sin el "no".',
                 statusLabel: 'Una trampa frecuente',
                 getsRight: 'Es tentador elegirla, porque las palabras son casi idénticas y la frase parece la más parecida.',
                 missesLabel: 'Qué se le escapa',
-                misses: 'Una palabra, "no", invierte el significado. Es exactamente lo contrario de "El paquete no llegó", no lo más cercano.',
+                misses: 'Una palabra, "no", invierte el significado. Es exactamente lo contrario de "La ventana no está abierta", no lo más cercano.',
                 bridge: 'Compartir palabras no es compartir significado.',
             },
             checking: {
-                title: 'Soporte está revisando el caso',
-                desc: 'Del mismo mundo de los paquetes, pero describe una acción de servicio.',
+                title: 'El aire acondicionado está apagado',
+                desc: 'Del mismo mundo de la habitación, pero describe otro hecho.',
                 statusLabel: 'Mismo mundo, otro significado',
-                getsRight: 'Es cierto que pertenece al mismo ámbito de paquetes y servicio.',
+                getsRight: 'Es cierto que pertenece al mismo ámbito de la habitación.',
                 missesLabel: 'Qué se le escapa',
-                misses: 'Es una acción del equipo de soporte, no un estado del paquete. Cerca en el tema, pero no lo más cercano en significado a "no llegó".',
+                misses: 'Es un hecho sobre el aire acondicionado, no sobre la ventana. Cerca en el tema, pero no lo más cercano en significado a "no está abierta".',
                 bridge: 'El mismo ámbito no implica el mismo significado.',
             },
             recipe: {
@@ -107,7 +108,7 @@ export const semanticSpace: typeof he = {
                 statusLabel: 'Sin relación',
                 getsRight: 'Es fácil descartarla, y está bien que así sea.',
                 missesLabel: 'Qué se le escapa',
-                misses: 'Aquí no hay ninguna relación con los paquetes. En el mapa del significado se ubica muy lejos del ancla.',
+                misses: 'Aquí no hay ninguna relación con la ventana ni con la habitación. En el mapa del significado se ubica muy lejos del ancla.',
                 bridge: 'Las frases sin relación se ubican lejos en el espacio.',
             },
         },
@@ -132,8 +133,8 @@ export const semanticSpace: typeof he = {
     explain: {
         title: 'Qué enseña el mapa',
         paragraphs: [
-            'Cada frase recibió un lugar en el espacio según su significado. Las frases que el modelo ve como relacionadas se agruparon en zonas: los reclamos de clientes en una, los estados en otra, las acciones de servicio en una tercera, y las frases sin relación lejos, a un costado.',
-            'La distancia es el significado. "Cerca" quiere decir que el modelo ve una relación, "lejos" quiere decir que la relación es débil. Por eso "El paquete no llegó" y "El envío viene con retraso" quedan pegados, incluso sin palabras en común.',
+            'Cada frase recibió un lugar en el espacio según su significado. Las frases que el modelo ve como relacionadas se agruparon en zonas: el malestar en una, el estado de la habitación en otra, la actividad cotidiana en una tercera, y las frases sin relación lejos, a un costado.',
+            'La distancia es el significado. "Cerca" quiere decir que el modelo ve una relación, "lejos" quiere decir que la relación es débil. Por eso "La ventana no está abierta" y "Lo dejaron cerrado desde la mañana" quedan pegadas, incluso sin palabras en común.',
             'Y una palabra sobre el mapa mismo: es una ilustración didáctica, no el espacio en el que el modelo trabaja realmente. Lo mostramos en dos dimensiones para que la idea se pudiera ver, pero el espacio real tiene cientos o miles de dimensiones. Las dimensiones aisladas normalmente no tienen un nombre simple que una persona pueda leer como una "propiedad". Por eso el mapa ayuda a entender la idea de cercanía, pero no hay que tomar las distancias dibujadas en él como una medición exacta ni absoluta del espacio real.',
         ],
     },
@@ -167,4 +168,5 @@ export const semanticSpace: typeof he = {
 
     lab: semanticSpaceLab,
     quiz: semanticSpaceQuiz,
+    dna: semanticSpaceDna,
 };

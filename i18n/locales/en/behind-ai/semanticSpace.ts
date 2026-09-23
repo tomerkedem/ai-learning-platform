@@ -15,6 +15,7 @@ import type { Locale } from '@/i18n/config';
 import { semanticSpace as he } from '../../he/behind-ai/semanticSpace';
 import { semanticSpaceLab } from './semanticSpaceLab';
 import { semanticSpaceQuiz } from './semanticSpaceQuiz';
+import { semanticSpaceDna } from './semanticSpaceDna';
 
 export const semanticSpace: typeof he = {
     contentLocale: 'en' as Locale,
@@ -36,7 +37,7 @@ export const semanticSpace: typeof he = {
         badge: he.hero.badge,
         titleLead: 'Every meaning',
         titleHighlight: 'has a place on the map',
-        lede: '"The package has not arrived" and "The delivery is running late" share almost no words, and yet the model understands that they say nearly the same thing. How does it bring two sentences worded so differently close together? To answer that, we need to see where each sentence sits, and in what space it is measured.',
+        lede: '"The window is not open" and "They left it closed since morning" share no words at all, and yet the model understands that they say nearly the same thing. How does it bring two sentences worded so differently close together? To answer that, we need to see where each sentence sits, and in what space it is measured.',
         chipMap: 'Select a sentence and see who is close to it',
         chipNeighbors: 'Find out why one negation changes everything',
     },
@@ -58,9 +59,9 @@ export const semanticSpace: typeof he = {
 
     guess: {
         eyebrow: 'Quick guess · closeness in meaning',
-        title: 'Which sentence is closest in meaning to "The package has not arrived"?',
+        title: 'Which sentence is closest in meaning to "The window is not open"?',
         subtitle: 'Pick whichever looks closest to you. There is no score, just one direction that shows how the model sees closeness.',
-        prompt: '"The package has not arrived"',
+        prompt: '"The window is not open"',
         invite: 'Before we open this up, try to guess which sentence the model will see as closest in meaning.',
         correctTitle: 'Exactly right!',
         wrongTitle: 'Almost!',
@@ -68,37 +69,37 @@ export const semanticSpace: typeof he = {
         revealButton: 'Reveal the main idea',
         revealTitle: 'So what is really going on?',
         revealCopy:
-            'The model does not count shared words. It places every sentence in a space according to meaning, and measures who is close. "The delivery is running late" sits closest to "The package has not arrived", even though they share almost no words, because the meaning is similar. "The package has arrived" shares almost the same words, but it reverses the meaning, so it is not the closest.',
+            'The model does not count shared words. It places every sentence in a space according to meaning, and measures who is close. "They left it closed since morning" sits closest to "The window is not open", even though they share no words at all, because the meaning is similar. "The window is open" shares almost the same words, but it reverses the meaning, so it is not the closest.',
         cta: 'Let us see it in the laboratory',
         resetButton: 'Choose again',
         exploreHint: 'You can pick another option too and read its explanation.',
 
         cards: {
             delayed: {
-                title: 'The delivery is running late',
-                desc: 'Completely different words, but the same idea: the package is not here on time.',
+                title: 'They left it closed since morning',
+                desc: 'Completely different words, but the same idea: the window is still not open.',
                 statusLabel: 'Closest in meaning',
-                getsRight: 'Exactly. They share almost no words, and still the meaning is nearly the same. Both are about a package that is running late.',
+                getsRight: 'Exactly. They share no words at all, and still the meaning is nearly the same. Both are about a window that stayed closed.',
                 missesLabel: 'What is left to see',
                 misses: 'In the laboratory we will see that this sentence sits closest to the anchor on the meaning map, despite the different words.',
                 bridge: 'Closeness in meaning does not depend on identical words.',
             },
             arrived: {
-                title: 'The package has arrived',
+                title: 'The window is open',
                 desc: 'Almost the same words as the original, just without the "not".',
                 statusLabel: 'A common trap',
                 getsRight: 'It is tempting to pick this one, because the words are nearly identical and the sentence looks the most similar.',
                 missesLabel: 'What this misses',
-                misses: 'One word, "not", flips the meaning. This is the exact opposite of "The package has not arrived", not the closest to it.',
+                misses: 'One word, "not", flips the meaning. This is the exact opposite of "The window is not open", not the closest to it.',
                 bridge: 'Sharing words is not sharing meaning.',
             },
             checking: {
-                title: 'Support is reviewing the case',
-                desc: 'From the same world of packages, but it describes a service action.',
+                title: 'The air conditioner is off',
+                desc: 'From the same world of the room, but it describes a different fact.',
                 statusLabel: 'Same world, different meaning',
-                getsRight: 'True, this is from the same domain of packages and service.',
+                getsRight: 'True, this is from the same domain of the room.',
                 missesLabel: 'What this misses',
-                misses: 'This is an action by the support team, not a status of the package. Close in topic, but not the closest in meaning to "has not arrived".',
+                misses: 'This is a fact about the air conditioner, not about the window. Close in topic, but not the closest in meaning to "is not open".',
                 bridge: 'The same subject area is not necessarily the same meaning.',
             },
             recipe: {
@@ -107,7 +108,7 @@ export const semanticSpace: typeof he = {
                 statusLabel: 'Unrelated',
                 getsRight: 'This one is easy to rule out, and rightly so.',
                 missesLabel: 'What this misses',
-                misses: 'There is no connection to packages here at all. On the meaning map it sits very far from the anchor.',
+                misses: 'There is no connection to the window or the room here at all. On the meaning map it sits very far from the anchor.',
                 bridge: 'Unrelated sentences sit far apart in the space.',
             },
         },
@@ -132,8 +133,8 @@ export const semanticSpace: typeof he = {
     explain: {
         title: 'What the map teaches',
         paragraphs: [
-            'Every sentence got a place in the space according to its meaning. Sentences the model sees as related gathered into regions: customer complaints in one, statuses in another, service actions in a third, and unrelated sentences far off to the side.',
-            'Distance is the meaning. "Close" means the model sees a relation, "far" means the relation is weak. That is why "The package has not arrived" and "The delivery is running late" sit side by side, even without shared words.',
+            'Every sentence got a place in the space according to its meaning. Sentences the model sees as related gathered into regions: discomfort in one, room state in another, everyday activity in a third, and unrelated sentences far off to the side.',
+            'Distance is the meaning. "Close" means the model sees a relation, "far" means the relation is weak. That is why "The window is not open" and "They left it closed since morning" sit side by side, even without shared words.',
             'And a word about the map itself: it is a teaching illustration, not the space the model actually works in. We showed it in two dimensions so the idea would be visible, but the real space has hundreds or thousands of dimensions. Individual dimensions usually have no simple name a person could read as a "property". So the map helps you understand the idea of closeness, but you should not treat the distances drawn in it as an exact or absolute measurement of the real space.',
         ],
     },
@@ -167,4 +168,5 @@ export const semanticSpace: typeof he = {
 
     lab: semanticSpaceLab,
     quiz: semanticSpaceQuiz,
+    dna: semanticSpaceDna,
 };

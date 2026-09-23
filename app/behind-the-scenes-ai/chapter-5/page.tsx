@@ -14,21 +14,11 @@ import { InsightBox } from '@/components/content/InsightBox';
 import { OpeningGuess, type OpeningGuessContent, type DiscoveryGuessCard, type GuessTone } from '@/components/ai-internals/OpeningGuess';
 import { SemanticSpaceLab } from '@/components/ai-internals/SemanticSpaceLab';
 import { ExpandableLab } from '@/components/ai-internals/ExpandableLab';
-// רכיב ה-DNA מפרק 4 שמקומו האמיתי כאן, במרחב המשמעות: הוא מראה למה שני Embeddings
-// שונים יכולים להופיע קרובים. התוכן מגיע ממילון פרק 4 (chapter4Lab), מתורגם ב-6 השפות.
-import { getLabContent, joinSentences } from '../chapter-4/labContent';
+// רכיב ה-DNA מפרק 4 גנרי במכוון (dims/geneLabels/profile הם פרמטרים), ולכן פרק 5 יכול
+// להשתמש בו מחדש בלי לעבור דרך SENTENCE_STRUCTS או התוכן הפוסטלי של פרק 4. המשפטים,
+// הפרופילים והממדים כאן שייכים לפרק 5 בלבד (dnaModel.ts), מתורגמים ב-6 השפות.
 import { MeaningDnaStrip } from '../chapter-4/components/MeaningDnaStrip';
-import type { SentenceId } from '../chapter-4/embeddingEngine';
-
-// משפטים ל-DNA ההשוואתי: משתרעים על טווח הקרבה, מזהים-כמעט (שני כשלי מסירה) ועד רחוקים
-// לגמרי (בעיית מסירה מול עדכון חיוב). כך הלומד בוחר זוג ורואה כמה רכיבי משמעות משותפים.
-const DNA_COMPARE_IDS: SentenceId[] = [
-    'pkg-not-arrived',
-    'delivery-not-handed',
-    'pkg-arrived',
-    'system-not-showing',
-    'billing-address-update',
-];
+import { DNA_DIMS, DNA_SENTENCES, type DnaSentenceId } from './dnaModel';
 import { ReadAloudControls, type ReadAloudMode } from '@/components/ai-internals/ReadAloudControls';
 import { FloatingReadAloud } from '@/components/ai-internals/FloatingReadAloud';
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';
@@ -204,13 +194,15 @@ export default function BehindTheScenesChapter5() {
         questions: baseQuiz.questions.map((q) => ({ ...q, ...c5.quiz.byId[q.id as SemanticSpaceQuizId] })),
     };
 
-    // תוכן מעבדת פרק 4 (locale-aware) עבור דמו האובייקטים וה-DNA שהובאו לכאן.
-    const c4Lab = getLabContent(locale);
-    const c4Sentences = useMemo(() => joinSentences(c4Lab), [c4Lab]);
-    const [dnaAId, setDnaAId] = useState<SentenceId>('pkg-not-arrived');
-    const [dnaBId, setDnaBId] = useState<SentenceId>('delivery-not-handed');
-    const dnaA = c4Sentences.find((s) => s.id === dnaAId) ?? c4Sentences[0];
-    const dnaB = c4Sentences.find((s) => s.id === dnaBId) ?? null;
+    // משפטי ה-DNA של פרק 5 (locale-aware): מבנה מספרי מ-dnaModel + טקסט מקומי מ-c5.dna.
+    const dnaSentences = useMemo(
+        () => DNA_SENTENCES.map((s) => ({ ...s, text: c5.dna.sentences[s.id].text, ttsLine: c5.dna.sentences[s.id].ttsLine })),
+        [c5.dna.sentences],
+    );
+    const [dnaAId, setDnaAId] = useState<DnaSentenceId>('window-not-open');
+    const [dnaBId, setDnaBId] = useState<DnaSentenceId>('window-shut');
+    const dnaA = dnaSentences.find((s) => s.id === dnaAId) ?? dnaSentences[0];
+    const dnaB = dnaSentences.find((s) => s.id === dnaBId) ?? null;
 
     return (
         <ChapterLayout courseId="behind-the-scenes-ai" currentChapterId={5} themeAware>
@@ -351,7 +343,7 @@ export default function BehindTheScenesChapter5() {
                 </div>
             </section>
 
-            {/* ══════════ למה שני Embeddings מופיעים קרובים: השוואת דפוס הערכים (הובא מפרק 4) ══════════ */}
+            {/* ══════════ למה שני Embeddings מופיעים קרובים: השוואת דפוס הערכים (סט DNA עצמאי של פרק 5) ══════════ */}
             {/* שני משפטים שנוסחו אחרת יכולים להופיע קרובים כשדפוס הערכים הכולל שלהם דומה.
                 הפסים מראים כמה מהדפוס משותף, וזה מה שמזכה אותם במיקומים קרובים במרחב. */}
             {dnaA && (
@@ -363,17 +355,16 @@ export default function BehindTheScenesChapter5() {
                   <ExpandableLab title={c5.sections.dnaTitle}>
                     <div className="space-y-4 rounded-2xl border border-violet-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 sm:p-6">
                         {/* שני בוררים: בחרו שני משפטים וראו כמה רכיבי משמעות משותפים להם.
-                            זהים כמעט (שני כשלי מסירה) => הרבה קשרים ירוקים. רחוקים (מסירה מול חיוב)
-                            => כמעט בלי קשרים, הגדילים נפרדים. */}
+                            זהים כמעט (חלון לא פתוח מול חלון סגור) => הרבה קשרים ירוקים. רחוקים
+                            (חלון לא פתוח מול חתול על הספה) => כמעט בלי קשרים, הגדילים נפרדים. */}
                         {/* הנחיית פעולה קצרה, צמודה לבוררים, כדי שברור שזו השוואת זוג ולא רק תוויות */}
                         <p className="text-[13px] font-semibold leading-relaxed text-[var(--bts-text-body)]">{c5.sections.dnaSelectorHint}</p>
                         <div className="grid gap-4 sm:grid-cols-2">
                             <div>
-                                <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-cyan-300">{c4Lab.dna.roleActive}</div>
+                                <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-cyan-300">{c5.dna.dna.roleActive}</div>
                                 <div className="flex flex-wrap gap-1.5">
-                                    {DNA_COMPARE_IDS.map((id) => {
-                                        const s = c4Sentences.find((x) => x.id === id);
-                                        if (!s) return null;
+                                    {dnaSentences.map((s) => {
+                                        const id = s.id;
                                         const on = id === dnaAId;
                                         return (
                                             <button
@@ -392,11 +383,10 @@ export default function BehindTheScenesChapter5() {
                                 </div>
                             </div>
                             <div>
-                                <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-violet-300">{c4Lab.dna.roleCompare}</div>
+                                <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-violet-300">{c5.dna.dna.roleCompare}</div>
                                 <div className="flex flex-wrap gap-1.5">
-                                    {DNA_COMPARE_IDS.map((id) => {
-                                        const s = c4Sentences.find((x) => x.id === id);
-                                        if (!s) return null;
+                                    {dnaSentences.map((s) => {
+                                        const id = s.id;
                                         const on = id === dnaBId;
                                         return (
                                             <button
@@ -425,12 +415,11 @@ export default function BehindTheScenesChapter5() {
                                     בנתיב הקראה בלי כפתור נוסף גלוי. */}
                                 <SpeakButton text={`${c5.sections.dnaStrandNote} ${c5.sections.dnaDisclaimer}`} className="mt-0.5" />
                             </div>
-                            {/* דריסת המסגור של פרק 4: כותרת פרק-5 קצרה (דפוס הערכים) ובלי המבוא
-                            הפנימי, שכבר נאמר בכרטיס המסגור מעל ה-ExpandableLab. כך אין חזרה על
-                            "מה יש בתוך הווקטור" של פרק 4 ואין מבוא כפול. */}
-                        <MeaningDnaStrip active={dnaA} compare={dnaB} geneLabels={c4Lab.genes} dna={c4Lab.dna} dir={dir} labNumber={2} title={c5.sections.dnaStripTitle} showIntro={false} />
+                            {/* כותרת פרק-5 קצרה (דפוס הערכים) ובלי המבוא הפנימי, שכבר נאמר בכרטיס
+                            המסגור מעל ה-ExpandableLab. כך אין מבוא כפול. */}
+                        <MeaningDnaStrip active={dnaA} compare={dnaB} geneLabels={c5.dna.genes} dna={c5.dna.dna} dir={dir} dims={DNA_DIMS} labNumber={2} title={c5.sections.dnaStripTitle} showIntro={false} />
                             {/* הבהרת מטאפורה, משנית וקצרה: ה-DNA הוא המחשה, לא חוט ביולוגי. משלימה את
-                                axesNote המשותף (שמדבר על הצירים) בלי לגעת בטקסט פרק 4. */}
+                                axesNote (שמדבר על הצירים). */}
                             <p className="mt-3 text-[12px] leading-relaxed text-[var(--bts-text-faint)]">{c5.sections.dnaDisclaimer}</p>
                         </div>
                     </div>

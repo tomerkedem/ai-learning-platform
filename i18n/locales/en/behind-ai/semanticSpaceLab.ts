@@ -7,9 +7,14 @@
 // app/behind-the-scenes-ai/chapter-5/semanticSpace.ts.
 //
 // The negation pair is base='not-arrived' vs opposite='arrived'. The two English phrases
-// are kept lexically as close as English allows ("has not arrived" vs "has arrived") so
-// that exactly one token, "not", is unique to the base sentence and gets highlighted as
-// the negation pivot.
+// are kept lexically as close as English allows ("is not open" vs "is open") so that
+// exactly one token, "not", is unique to the base sentence and gets highlighted as the
+// negation pivot.
+//
+// Phrase ids (not-arrived/delayed/arrived/etc.) are kept as opaque internal keys even
+// though the translated meaning behind them changed completely (from the old postal
+// domain to an everyday window/room domain). Renaming them added no learner-facing value
+// and would have required touching semanticSpace.test.ts, ANCHOR_ID and NEGATION_PAIR.
 //
 // No em dash and no en dash, per project text rules.
 
@@ -46,28 +51,28 @@ export const semanticSpaceLab: SemanticSpaceLabDict = {
         sharedChip: 'Almost the same words',
         oppositeChip: 'Opposite meaning',
         revealButton: 'What this teaches us',
-        explanation: 'The two sentences share almost every word, so they look close. But one word, "not", flips the meaning end to end. One says the package arrived, the other says it did not. Closeness in words is no guarantee of the same meaning.',
+        explanation: 'The two sentences share almost every word, so they look close. But one word, "not", flips the meaning end to end. One says the window is open, the other says it is not. Closeness in words is no guarantee of the same meaning.',
         bridge: 'This is not a contradiction to the map rule. Closeness in the space is a learned, useful signal, but not a perfect one: sometimes almost identical wording hides an opposite meaning. So the model also has to weigh the context and the relations between the words, not just which words appeared.',
     },
 
     clusters: {
-        complaint: 'Customer complaint',
-        status: 'Delivery status',
-        action: 'Service action',
+        complaint: 'Discomfort',
+        status: 'Room state',
+        action: 'Everyday activity',
         unrelated: 'Unrelated',
     },
 
     phrases: {
-        'not-arrived': 'The package has not arrived',
-        'customer-waiting': 'The customer has been waiting a week',
-        'not-received': 'I never received my order',
-        'delayed': 'The delivery is running late',
-        'status-not-updated': 'The status was not updated',
-        'courier-on-way': 'The courier is on the way to you',
-        'arrived': 'The package has arrived',
-        'center-checking': 'Support is reviewing the case',
-        'agent-contacted': 'An agent contacted the customer',
-        'draft-update': 'Draft an update note for the customer',
+        'not-arrived': 'The window is not open',
+        'customer-waiting': "I'm feeling too warm",
+        'not-received': "It's stuffy in here",
+        'delayed': 'They left it closed since morning',
+        'status-not-updated': 'The air conditioner is off',
+        'courier-on-way': 'The room needs airing out',
+        'arrived': 'The window is open',
+        'center-checking': 'She is watering the plants',
+        'agent-contacted': 'He turned off all the lights',
+        'draft-update': 'They are cleaning the kitchen',
         'recipe': 'A recipe for chocolate cake',
         'weather': "Tomorrow's weather forecast",
     },

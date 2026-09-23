@@ -43,7 +43,7 @@ export const semanticSpaceQuiz: typeof HeQuiz = {
                 'El mapa muestra en dos dimensiones una idea que ocurre en un espacio con muchas más dimensiones. El modelo no reduce su representación a dos dimensiones, y una dimensión aislada normalmente no tiene un significado humano simple. La visualización ayuda a entender la idea de cercanía, pero las distancias dibujadas en ella no son una medición exacta ni absoluta del espacio real.',
         },
         3: {
-            question: "'El paquete no llegó' y 'El envío viene con retraso' usan palabras distintas, pero se ubican cerca en el espacio. ¿Qué nos enseña esto?",
+            question: "'La ventana no está abierta' y 'Lo dejaron cerrado desde la mañana' usan palabras totalmente distintas, pero se ubican cerca en el espacio. ¿Qué nos enseña esto?",
             options: [
                 'Que el modelo cuenta letras compartidas',
                 'Que el modelo reconoce un significado parecido aunque las palabras sean distintas',
@@ -51,10 +51,10 @@ export const semanticSpaceQuiz: typeof HeQuiz = {
                 'Que la cercanía depende solo de palabras idénticas',
             ],
             explanation:
-                'Este es el corazón del capítulo. Casi no comparten palabras y aun así el significado es cercano: ambas hablan de un paquete que no llegó a tiempo. El modelo trabaja sobre el significado, no sobre una coincidencia exacta de palabras.',
+                'Este es el corazón del capítulo. No comparten ninguna palabra y aun así el significado es cercano: ambas hablan de una ventana que quedó cerrada. El modelo trabaja sobre el significado, no sobre una coincidencia exacta de palabras.',
         },
         4: {
-            question: "'El paquete llegó' y 'El paquete no llegó' comparten casi las mismas palabras. ¿Por qué es peligroso concluir que dicen lo mismo?",
+            question: "'La ventana está abierta' y 'La ventana no está abierta' comparten casi las mismas palabras. ¿Por qué es peligroso concluir que dicen lo mismo?",
             options: [
                 'Porque una de las frases es más larga',
                 'Porque el modelo siempre ignora la negación',
