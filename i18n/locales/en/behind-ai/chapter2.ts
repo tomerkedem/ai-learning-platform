@@ -27,7 +27,7 @@ export const chapter2 = {
     // independent; this is only what the mentor says next, on both outcomes.
     mentorRespond: {
         guessCorrect:
-            'You noticed that the model receives one thing: what was actually written. That is also why a small addition like a tracking number changes so much. It goes in, while your intention stays with you.',
+            'You noticed that the model receives one thing: what was actually written. That is also why a small addition like an error code changes so much. It goes in, while your intention stays with you.',
         guessWrong:
             'That assumption is natural, because with a person a hint is enough and the other side fills in the rest. Here one thing is different: what was not written simply did not arrive. It is worth rereading the lines above and asking which part of what you had in mind was actually typed.',
         quizPass:
@@ -121,7 +121,7 @@ export const chapter2 = {
             'The input is the text that was actually written, not the intent.',
             'Phrasing, order, and context change what the model has to work with.',
             'Missing details can force the model to guess, to ask, or to answer in general terms.',
-            'Adding a tracking number turns the request into something that can be checked.',
+            'Adding an error code turns the request into something that can be checked.',
             'The message you see is part of the input, and the application may attach more.',
             'A correction mid conversation changes the current context, not what the model learned in training.',
         ],
@@ -138,7 +138,7 @@ export const chapter2 = {
 
     // In-page diagnosis question (not part of the chapter quiz / quizData)
     diagnosis: {
-        prompt: 'My package has not arrived?',
+        prompt: "My printer isn't working?",
         question: 'The user wrote this message. What did the model really receive?',
         choosePrompt: 'Choose the answer that seems right to you, and you will get a short explanation.',
         options: [

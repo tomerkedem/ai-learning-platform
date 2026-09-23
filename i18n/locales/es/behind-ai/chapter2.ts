@@ -27,7 +27,7 @@ export const chapter2 = {
     // siendo independiente; aqui solo esta lo que dice el mentor despues, en ambos casos.
     mentorRespond: {
         guessCorrect:
-            'Te diste cuenta de que el modelo recibe una sola cosa: lo que realmente se escribió. Por eso un detalle pequeño, como un número de seguimiento, cambia tanto: ese dato sí entra, mientras que tu intención se queda contigo.',
+            'Te diste cuenta de que el modelo recibe una sola cosa: lo que realmente se escribió. Por eso un detalle pequeño, como un código de error, cambia tanto: ese dato sí entra, mientras que tu intención se queda contigo.',
         guessWrong:
             'Es una suposición natural, porque con una persona basta una insinuación y la otra parte completa el resto. Aquí hay una diferencia: lo que no se escribió simplemente no llegó. Vale la pena releer las líneas de arriba y preguntarte qué parte de lo que pensabas quedó escrita de verdad.',
         quizPass:
@@ -121,7 +121,7 @@ export const chapter2 = {
             'La entrada es el texto que se escribió en la práctica, no la intención.',
             'La formulación, el orden y el contexto cambian lo que el modelo tiene para trabajar.',
             'Los detalles faltantes pueden obligar al modelo a adivinar, a preguntar o a responder en términos generales.',
-            'Agregar un número de seguimiento convierte la solicitud en algo que se puede verificar.',
+            'Agregar un código de error convierte la solicitud en algo que se puede verificar.',
             'El mensaje que ves es parte de la entrada, y la aplicación puede añadir más.',
             'Una corrección a mitad de la conversación cambia el contexto actual, no lo que el modelo aprendió en el entrenamiento.',
         ],
@@ -138,7 +138,7 @@ export const chapter2 = {
 
     // In-page diagnosis question (not part of the chapter quiz / quizData)
     diagnosis: {
-        prompt: '¿No llegó mi paquete?',
+        prompt: '¿Mi impresora no funciona?',
         question: 'El usuario escribió este mensaje. ¿Qué recibió realmente el modelo?',
         choosePrompt: 'Elige la respuesta que te parezca correcta y recibirás una breve explicación.',
         options: [
