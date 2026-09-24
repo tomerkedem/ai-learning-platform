@@ -637,6 +637,7 @@ html[data-locale="ar"] body {
 /* הרוחב כרוחב הגלולות, כך שקצוות קשת המסלול יושבים מתחת לגלולות הקיצוניות. */
 .lgs-overlay-row {
   position: relative;
+  z-index: 1;
   width: fit-content;
   max-width: 100%;
   padding-top: 48px;
@@ -743,6 +744,32 @@ html[data-locale="ar"] body {
   contain: layout paint;
 }
 
+/* קרני האור מהשפה לנקודות לדוגמה על הכדור. overflow גלוי: הקואורדינטות יחסיות ל-SVG גם כשהחלון נגלל. */
+.lgs-overlay-beams {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0.72;
+  filter: drop-shadow(0 0 3px rgba(232, 197, 71, 0.45));
+  transition: opacity 220ms ease, filter 220ms ease;
+}
+.lgs-overlay-beams path {
+  fill: none;
+  stroke: rgba(244, 226, 170, 0.75);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+.lgs-overlay-beams circle {
+  fill: #fff5c8;
+}
+.lgs-overlay-beams.is-flash {
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgba(255, 236, 170, 0.9)) drop-shadow(0 0 12px rgba(232, 197, 71, 0.6));
+}
+
 /* קרדיט המרקם לפי הצהרת בעל הפרויקט על מקורו (public/assets/globe/SOURCE.txt). שקט, מתחת לכדור. */
 .lgs-overlay-credit {
   margin: 0;
@@ -815,5 +842,8 @@ html[data-locale="ar"] body {
   }
   .lgs-overlay[open] {
     animation: none;
+  }
+  .lgs-overlay-beams {
+    transition: none;
   }
 }
