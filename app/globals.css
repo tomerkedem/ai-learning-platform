@@ -599,21 +599,36 @@ html[data-locale="ar"] body {
   padding: 16px;
   border: 0;
   color: #f0e6d0;
-  background: radial-gradient(ellipse at center, rgba(8, 10, 18, 0.78) 0%, rgba(2, 3, 8, 0.92) 70%);
-  backdrop-filter: blur(12px) saturate(120%);
+  background: transparent;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 .lgs-overlay[open] {
   display: flex;
-  animation: lgs-fade-in 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.lgs-overlay.is-closing {
+  pointer-events: none;
 }
 .lgs-overlay::backdrop {
   background: transparent;
 }
-@keyframes lgs-fade-in {
+/* הרקע בשכבה משלו (ולא על החלון), כדי שידהה בלי להדהות את הכדור שעף מהכפתור. */
+.lgs-overlay-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(ellipse at center, rgba(8, 10, 18, 0.78) 0%, rgba(2, 3, 8, 0.92) 70%);
+  backdrop-filter: blur(12px) saturate(120%);
+}
+/* פתיחה: הרקע דוהה פנימה בזמן שהכדור עף למרכז (LanguageGlobe.tsx, 400ms), והתוכן נגלה אחריו. */
+.lgs-overlay[open] .lgs-overlay-bg {
+  animation: lgs-appear 300ms ease backwards;
+}
+.lgs-overlay[open] :is(.lgs-overlay-title, .lgs-overlay-row, .lgs-overlay-credit, .lgs-overlay-close, .lgs-overlay-beams) {
+  animation: lgs-appear 180ms ease 240ms backwards;
+}
+@keyframes lgs-appear {
   from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 /* margin: auto ממרכז בלי לחתוך את הראש כשהתוכן גבוה מהמסך (גלילה בטוחה). */
@@ -742,6 +757,8 @@ html[data-locale="ar"] body {
   width: clamp(120px, min(78vw, 100dvh - 260px), 600px);
   aspect-ratio: 1 / 1;
   contain: layout paint;
+  /* תמונת הכדור המוקטן בזמן המעבר, עד שהכדור הגדול נטען (MINI_SPHERE_SCALE). */
+  background: center / 92% no-repeat;
 }
 
 /* קרני האור מהשפה לנקודות לדוגמה על הכדור. overflow גלוי: הקואורדינטות יחסיות ל-SVG גם כשהחלון נגלל. */
@@ -840,7 +857,7 @@ html[data-locale="ar"] body {
   .lgs-overlay-option:hover {
     transform: translateY(calc(var(--lgs-arc-y, 0px) * var(--lgs-arc-scale)));
   }
-  .lgs-overlay[open] {
+  .lgs-overlay[open] :is(.lgs-overlay-bg, .lgs-overlay-title, .lgs-overlay-row, .lgs-overlay-credit, .lgs-overlay-close, .lgs-overlay-beams) {
     animation: none;
   }
   .lgs-overlay-beams {

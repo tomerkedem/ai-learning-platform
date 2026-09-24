@@ -19,6 +19,23 @@ import * as THREE from 'three';
 export const DAY_TEXTURE_URL = '/assets/globe/earth-day-2k.webp';
 
 const SUN_WORLD_POSITION = new THREE.Vector3(-1.2, 1.3, 3.2);
+const DEG = Math.PI / 180;
+const AIM_TILT_CLAMP = 0.9;
+
+export type LatLon = readonly [lat: number, lon: number];
+
+// המיפוי של SphereGeometry: u=0 בקו אורך 180- ו-y כלפי הקוטב הצפוני.
+export const toLocal = ([lat, lon]: LatLon) => {
+    const la = lat * DEG;
+    const ph = (lon + 180) * DEG;
+    return new THREE.Vector3(-Math.cos(ph) * Math.cos(la), Math.sin(la), Math.sin(ph) * Math.cos(la));
+};
+export const wrapAngle = (a: number) => a - 2 * Math.PI * Math.round(a / (2 * Math.PI));
+/** הסיבוב (x, y) של הכדור שמביא כיוון מקומי מנורמל למרכז המבט, בהטיה מוגבלת. */
+export const aimRotation = (v: THREE.Vector3) => ({
+    x: Math.max(-AIM_TILT_CLAMP, Math.min(AIM_TILT_CLAMP, Math.asin(v.y))),
+    y: Math.PI / 2 - Math.atan2(v.z, -v.x),
+});
 
 const ATMOSPHERE_VERTEX_SHADER = /* glsl */ `
   varying vec3 vNormalView;
@@ -180,9 +197,10 @@ ${shader.fragmentShader}`.replace(
             );
         },
         sizeFromContainer() {
-            const rect = container.getBoundingClientRect();
-            const w = Math.max(1, Math.round(rect.width));
-            const h = Math.max(1, Math.round(rect.height));
+            // גודל הפריסה, לא getBoundingClientRect: טרנספורם (מעבר הפתיחה) אינו מפעיל את
+            // ResizeObserver, ומדידה מוקטנת הייתה נשארת כמאגר ציור מטושטש.
+            const w = Math.max(1, container.clientWidth);
+            const h = Math.max(1, container.clientHeight);
             renderer.setSize(w, h, false);
             camera.aspect = w / h;
             camera.updateProjectionMatrix();

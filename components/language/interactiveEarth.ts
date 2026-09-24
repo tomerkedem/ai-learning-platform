@@ -7,15 +7,11 @@
 // תנועה מופחתת: אין סיבוב סרק ואין סיבוב מונפש; הכדור קופץ אל היעד ומצויר לפי דרישה.
 
 import * as THREE from 'three';
-import { createEarthScene } from './earthRenderingCore';
+import { aimRotation, createEarthScene, toLocal, wrapAngle, type LatLon } from './earthRenderingCore';
 
 const POLE_CLAMP = Math.PI / 2 - 0.05;
 const IDLE_SPEED = 0.06;
 const AIM_SPEED = 4;
-const AIM_TILT_CLAMP = 0.9;
-const DEG = Math.PI / 180;
-
-export type LatLon = readonly [lat: number, lon: number];
 
 export interface InteractiveEarth {
     showBeams(anchor: HTMLElement | null, points: readonly LatLon[]): void;
@@ -23,17 +19,18 @@ export interface InteractiveEarth {
     destroy(): void;
 }
 
-// המיפוי של SphereGeometry: u=0 בקו אורך 180- ו-y כלפי הקוטב הצפוני.
-const toLocal = ([lat, lon]: LatLon) => {
-    const la = lat * DEG;
-    const ph = (lon + 180) * DEG;
-    return new THREE.Vector3(-Math.cos(ph) * Math.cos(la), Math.sin(la), Math.sin(ph) * Math.cos(la));
-};
-const wrapAngle = (a: number) => a - 2 * Math.PI * Math.round(a / (2 * Math.PI));
-
-export function createInteractiveEarth(container: HTMLElement, beams: SVGSVGElement, reducedMotion: boolean): InteractiveEarth {
+export function createInteractiveEarth(
+    container: HTMLElement,
+    beams: SVGSVGElement,
+    reducedMotion: boolean,
+    /** הכיוון ההתחלתי: כמו הכדור המוקטן, כך שהמעבר מהכפתור רציף. */
+    initial: LatLon,
+    onReady: () => void,
+): InteractiveEarth {
     const core = createEarthScene(container, { oceanLift: 0.3 });
     const { scene, camera, renderer, canvas, earth } = core;
+    const start = aimRotation(toLocal(initial));
+    earth.rotation.set(start.x, start.y, 0);
     scene.visible = false; // כמו ב-BookForge: מוסתר עד שהמרקם (או היעדרו) הוכרע
     canvas.style.touchAction = 'none';
 
@@ -131,6 +128,7 @@ export function createInteractiveEarth(container: HTMLElement, beams: SVGSVGElem
         if (core.isDisposed()) return;
         scene.visible = true;
         render();
+        onReady();
         if (!reducedMotion) rafId = requestAnimationFrame(tick);
     });
 
@@ -141,8 +139,7 @@ export function createInteractiveEarth(container: HTMLElement, beams: SVGSVGElem
             if (targets.length) {
                 // מכוונים למרכז הנקודות, כך שכולן (או רובן) בצד הגלוי.
                 const mid = targets.reduce((s, v) => s.add(v), new THREE.Vector3()).normalize();
-                aimY = Math.PI / 2 - Math.atan2(mid.z, -mid.x);
-                aimX = Math.max(-AIM_TILT_CLAMP, Math.min(AIM_TILT_CLAMP, Math.asin(mid.y)));
+                ({ x: aimX, y: aimY } = aimRotation(mid));
                 if (reducedMotion) {
                     earth.rotation.set(aimX, aimY, 0);
                 }

@@ -16,7 +16,6 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { LOCALES, LOCALE_COOKIE, dirOf, type Locale, type Direction } from './config';
-import { DevLocaleToggle } from './DevLocaleToggle';
 
 interface LocaleContextValue {
     locale: Locale;
@@ -65,7 +64,6 @@ export function LocaleProvider({
     return (
         <LocaleContext.Provider value={value}>
             {children}
-            <DevLocaleToggle locale={locale} setLocale={setLocale} />
         </LocaleContext.Provider>
     );
 }
