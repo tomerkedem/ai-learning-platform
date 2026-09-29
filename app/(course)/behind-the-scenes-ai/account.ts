@@ -343,6 +343,38 @@ export async function savePreferredLocale(userId: string, locale: Locale): Promi
     await supabase.from("profiles").upsert({ user_id: userId, preferred_locale: locale });
 }
 
+// ── שם מלא ──
+/**
+ * מנרמל ובודק שם מלא לפי אותו כלל שהמסד אוכף (profiles_full_name_valid): 2 עד 100 תווים
+ * אחרי קיצוץ רווחים, בלי תווי בקרה. null = לא תקין.
+ */
+export function normalizeFullName(raw: string): string | null {
+    const name = raw.trim().replace(/\s+/g, " ");
+    if (name.length < 2 || name.length > 100 || /[\u0000-\u001f\u007f]/.test(name)) return null;
+    return name;
+}
+
+/** השם המלא ששמור בפרופיל, או null כשעוד לא הושלם (משתמשים ותיקים). זורק בשגיאת רשת. */
+export async function loadFullName(userId: string): Promise<string | null> {
+    if (!supabase) return null;
+    const { data, error } = await supabase.from("profiles").select("full_name").eq("user_id", userId).maybeSingle();
+    if (error) throw error;
+    return (data?.full_name as string | null | undefined) ?? null;
+}
+
+export async function saveFullName(userId: string, fullName: string): Promise<void> {
+    if (!supabase) throw new Error("Supabase is not configured");
+    const { error } = await supabase.from("profiles").upsert({ user_id: userId, full_name: fullName });
+    if (error) throw error;
+}
+
+/** לתצוגה בלבד (קישור לעמוד הניהול). ההרשאה נבדקת בשרת ובמסד בכל פעולה. */
+export async function checkIsCourseAdmin(): Promise<boolean> {
+    if (!supabase) return false;
+    const { data, error } = await supabase.rpc("is_course_admin");
+    return !error && data === true;
+}
+
 // הצעת הייבוא מוצגת פעם אחת לכל משתמש בכל מכשיר (ייבוא או ויתור מסמנים אותה).
 const importKey = (userId: string) => `behindAiImportHandled:${userId}`;
 

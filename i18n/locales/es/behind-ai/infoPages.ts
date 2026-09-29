@@ -156,17 +156,27 @@ export const infoPages: InfoPagesDict = {
 
         privacy: {
             navTitle: 'Privacidad',
-            summary: 'Qué se guarda en tu dispositivo y qué no.',
+            summary: 'Qué guarda el curso en tu dispositivo y en tu cuenta.',
             title: 'Privacidad',
-            lead: 'Esta página describe qué guarda la versión actual del curso y qué no. El registro y el acceso beta todavía no forman parte de esta versión.',
+            lead: 'Esta página describe qué guarda la versión actual del curso y qué no.',
             blocks: [
                 {
                     kind: 'facts',
                     heading: 'Qué se guarda en tu dispositivo',
                     items: [
-                        { icon: 'save', title: 'Progreso y resultados de las comprobaciones', body: 'Se guardan en el almacenamiento local de tu navegador para mostrarte qué dominas y qué conviene reforzar. El curso no los envía a ningún servidor.' },
+                        { icon: 'save', title: 'Progreso sin cuenta', body: 'Sin cuenta, el progreso y los resultados de los tests se guardan en el almacenamiento local de tu navegador y no se envían a ningún servidor.' },
                         { icon: 'cookie', title: 'Idioma elegido', body: 'Si eliges un idioma, se guarda en una cookie funcional durante un año como máximo. El navegador la envía con las solicitudes al curso para que las páginas se carguen en el idioma que elegiste.' },
+                        { icon: 'key', title: 'Sesión iniciada', body: 'Si inicias sesión, tu navegador conserva la sesión y una cookie guarda tu token de acceso para que el curso pueda comprobar qué capítulos tienes abiertos. La cookie caduca con la sesión.' },
                         { icon: 'sliders', title: 'Preferencias de visualización', body: 'El tema y la posición de desplazamiento del menú del curso se guardan en tu navegador.' },
+                    ],
+                },
+                {
+                    kind: 'facts',
+                    heading: 'Si creas una cuenta',
+                    items: [
+                        { icon: 'key', title: 'Nombre y correo electrónico', body: 'Para crear una cuenta escribes tu nombre completo y tu correo electrónico. Identifican tu cuenta. Tu nombre se muestra junto a tu correo en tu cuenta y a los administradores del curso que gestionan el acceso beta. Puedes editar tu nombre en cualquier momento.' },
+                        { icon: 'save', title: 'Progreso e idioma', body: 'Mientras tienes la sesión iniciada, los resultados de los tests y el idioma elegido se guardan en tu cuenta para que estén disponibles en tus otros dispositivos.' },
+                        { icon: 'clock', title: 'Acceso beta', body: 'Si tu cuenta tiene acceso beta aprobado, cuándo se aprobó y cuándo termina, y un registro de qué administrador lo aprobó o revocó y cuándo.' },
                     ],
                 },
                 {
@@ -174,8 +184,8 @@ export const infoPages: InfoPagesDict = {
                     heading: 'Lo que el curso no hace',
                     items: [
                         'El curso no tiene herramientas de analítica ni rastreadores publicitarios.',
-                        'La versión actual no requiere cuenta y no pide tu nombre ni tu dirección de correo.',
-                        'El progreso no se sincroniza entre dispositivos.',
+                        'Tu nombre y tu correo no se muestran a otros estudiantes ni se usan para publicidad.',
+                        'No necesitas una cuenta para leer la introducción y el capítulo 1.',
                     ],
                 },
                 {
@@ -186,12 +196,12 @@ export const infoPages: InfoPagesDict = {
                 {
                     kind: 'text',
                     heading: 'Cómo borrarlo',
-                    paragraphs: ['Puedes borrar todo lo que guarda el curso eliminando los datos de este sitio en la configuración de tu navegador.'],
+                    paragraphs: ['Puedes borrar lo que el curso guarda en tu dispositivo eliminando los datos de este sitio en la configuración del navegador. La forma de solicitar la eliminación de los datos de la cuenta se describirá en la política de privacidad completa.'],
                 },
                 {
                     kind: 'placeholder',
                     heading: 'Política de privacidad completa',
-                    decision: 'Requiere revisión legal: identidad y datos de contacto del responsable de los datos, qué registra el proveedor de alojamiento (por ejemplo, direcciones IP y registros de solicitudes) y durante cuánto tiempo, qué datos recogerán el registro y la aprobación de participantes, para qué, dónde y durante cuánto tiempo se conservarán, terceros y encargados del tratamiento, derechos de los usuarios y cómo ejercerlos, y ley aplicable.',
+                    decision: 'Requiere revisión legal: la identidad y los datos de contacto del responsable de los datos, durante cuánto tiempo se conservan los datos de la cuenta (nombre, correo, progreso, idioma elegido y registros de acceso beta) y con qué base legal, cómo solicitar el acceso o la eliminación, qué registran los proveedores de alojamiento y autenticación (como direcciones IP y registros de solicitudes) y durante cuánto tiempo, terceros y encargados del tratamiento, y la ley aplicable.',
                 },
             ],
         },

@@ -16,7 +16,7 @@ export const ACCESS_TOKEN_COOKIE = 'bts-access-token';
  * no-grant: מחובר בלי הרשאה (ברירת המחדל לכל משתמש חדש, גם אחרי אימות מייל).
  * unavailable: לא ניתן היה לבדוק כרגע (תקלה); נכשלים סגור.
  */
-export type AccessStatus = 'signed-out' | 'no-grant' | 'expired' | 'revoked' | 'active' | 'unavailable';
+export type AccessStatus = 'signed-out' | 'no-grant' | 'expired' | 'revoked' | 'active' | 'unavailable' | 'suspended';
 
 export interface CourseAccess {
     status: AccessStatus;

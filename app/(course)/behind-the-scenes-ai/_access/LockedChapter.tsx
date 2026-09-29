@@ -16,6 +16,7 @@ import { formatChapterLabel } from "@/i18n/format";
 import { courses } from "@/lib/courseData";
 import { tField } from "@/lib/localize";
 import { AccountPanel } from "../AccountPanel";
+import { SpeakButton } from "@/components/ai-internals/SpeakButton";
 import type { CourseAccess } from "./access";
 
 const course = courses["behind-the-scenes-ai"];
@@ -30,6 +31,7 @@ export function LockedChapter({ access, chapter }: { access: CourseAccess; chapt
         access.status === "no-grant" ? x.noGrant
         : access.status === "expired" ? x.expired(date)
         : access.status === "revoked" ? x.revoked
+        : access.status === "suspended" ? x.suspended
         : access.status === "unavailable" ? x.unavailable
         : x.signedOut;
 
@@ -55,7 +57,13 @@ export function LockedChapter({ access, chapter }: { access: CourseAccess; chapt
                                 {name && <p className="text-sm font-bold text-[var(--bts-text-secondary)] leading-tight">{name}</p>}
                             </div>
                         </div>
-                        <h1 id="locked-title" className="text-xl md:text-2xl font-black leading-tight">{x.title}</h1>
+                        <div className="flex items-start justify-between gap-3">
+                            <h1 id="locked-title" className="text-xl md:text-2xl font-black leading-tight">{x.title}</h1>
+                            {/* הקראה: רק הכותרת, ההסבר ומצב הגישה של מסך הנעילה, לפי הסדר. מתחילה רק
+                                בלחיצה. key לפי שפה ופרק: החלפת שפה או ניווט מרכיבים את הכפתור מחדש,
+                                וההרכבה מחדש עוצרת הקראה פעילה. */}
+                            <SpeakButton key={`${locale}-${chapter}`} text={`${x.title}. ${x.body} ${reason}`} className="mt-0.5" />
+                        </div>
                         <p className="text-sm text-[var(--bts-text-muted)] leading-relaxed">{x.body}</p>
                         <p role="status" className="text-sm font-bold text-[var(--bts-text-secondary)] leading-relaxed">{reason}</p>
                         <div className="flex flex-wrap gap-2 pt-1">

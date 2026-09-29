@@ -11,6 +11,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import type { AuthError } from "@supabase/supabase-js";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useT } from "@/i18n/useT";
 import { useCourseAccess } from "./_access/CourseAccessContext";
@@ -23,6 +24,10 @@ import {
     endPasswordRecovery,
     flushPendingAttempts,
     signOutAndForget,
+    normalizeFullName,
+    loadFullName,
+    saveFullName,
+    checkIsCourseAdmin,
     importLocalRecords,
     isImportHandled,
     markImportHandled,
@@ -38,6 +43,7 @@ function errorText(error: AuthError, a: AccountDict): string {
         case "email_not_confirmed": return a.errorUnconfirmed;
         case "weak_password": return a.errorWeakPassword;
         case "same_password": return a.errorSamePassword;
+        case "user_banned": return a.errorSuspended;
         default: return a.errorGeneric;
     }
 }
@@ -59,6 +65,7 @@ function AccessStatusLine() {
         : access.status === "no-grant" ? x.accessNone
         : access.status === "expired" ? x.accessExpired(date)
         : access.status === "revoked" ? x.accessRevoked
+        : access.status === "suspended" ? x.accessSuspended
         : null;
     if (!text) return null;
     return <p className="text-[11px] font-bold text-[var(--bts-text-secondary)] leading-relaxed">{text}</p>;
@@ -72,11 +79,24 @@ export function AccountPanel() {
     const [busy, setBusy] = useState(false);
     const [message, setMessage] = useState("");
     const [importCount, setImportCount] = useState(0);
+    // undefined = עוד נטען; null = אין שם בפרופיל (משתמש ותיק) וצריך להשלים.
+    const [fullName, setFullName] = useState<string | null | undefined>(undefined);
+    const [editingName, setEditingName] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect -- התקדמות מקומית נקראת רק אחרי mount בצד הלקוח
         setImportCount(userId && !isImportHandled(userId) ? getAllRecords().length : 0);
         setMessage("");
+        setFullName(undefined);
+        setEditingName(false);
+        setIsAdmin(false);
+        if (!userId) return;
+        let cancelled = false;
+        loadFullName(userId).then((n) => { if (!cancelled) setFullName(n); }).catch(() => {});
+        // קישור לעמוד הניהול לתצוגה בלבד: ההרשאה נאכפת בשרת ובמסד.
+        checkIsCourseAdmin().then((v) => { if (!cancelled) setIsAdmin(v); });
+        return () => { cancelled = true; };
     }, [userId]);
 
     if (!supabase) return null;
@@ -101,9 +121,17 @@ export function AccountPanel() {
         const isSignUp = (e.nativeEvent as SubmitEvent).submitter?.getAttribute("value") === "signup";
         const email = (form.elements.namedItem("email") as HTMLInputElement).value.trim();
         const password = (form.elements.namedItem("password") as HTMLInputElement).value;
+        const nameInput = form.elements.namedItem("fullName") as HTMLInputElement;
+        const name = normalizeFullName(nameInput.value);
+        if (isSignUp && !name) {
+            setMessage(a.errorName);
+            nameInput.focus();
+            return;
+        }
         void run(async () => {
             if (isSignUp) {
-                const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: pageUrl() } });
+                // השם עובר במטא-דאטה של ההרשמה; טריגר במסד שומר אותו ב-profiles ודוחה הרשמה בלי שם.
+                const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: pageUrl(), data: { full_name: name } } });
                 // בלי session = נדרש אישור מייל. אותה הודעה גם לכתובת שכבר רשומה (לא חושפים קיום חשבון).
                 return error ? errorText(error, a) : data.session ? "" : a.checkEmail;
             }
@@ -134,6 +162,24 @@ export function AccountPanel() {
         });
     };
 
+    const submitName = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const input = e.currentTarget.elements.namedItem("fullName") as HTMLInputElement;
+        const name = normalizeFullName(input.value);
+        if (!userId) return;
+        if (!name) {
+            setMessage(a.errorName);
+            input.focus();
+            return;
+        }
+        void run(async () => {
+            await saveFullName(userId, name);
+            setFullName(name);
+            setEditingName(false);
+            return a.nameSaved;
+        });
+    };
+
     const skipImport = () => {
         if (userId) markImportHandled(userId);
         setImportCount(0);
@@ -143,10 +189,37 @@ export function AccountPanel() {
     if (session) {
         body = (
             <>
-                <p className="text-[11px] text-[var(--bts-text-muted)]">
-                    {a.signedInAs} <bdi className="font-bold text-[var(--bts-text-secondary)]">{session.user.email}</bdi>
+                <p className="text-[11px] text-[var(--bts-text-muted)] leading-relaxed">
+                    {a.signedInAs}{" "}
+                    {fullName && <><bdi className="font-bold text-[var(--bts-text-secondary)]">{fullName}</bdi><br /></>}
+                    <bdi dir="ltr" className={fullName ? "" : "font-bold text-[var(--bts-text-secondary)]"}>{session.user.email}</bdi>
                 </p>
+                {(fullName === null || editingName) ? (
+                    <form onSubmit={submitName} className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill)] p-2.5 space-y-2">
+                        {fullName === null && (
+                            <>
+                                <p className="text-[11px] font-bold text-[var(--bts-text-primary)]">{a.nameMissingTitle}</p>
+                                <p className="text-[11px] text-[var(--bts-text-muted)] leading-relaxed">{a.nameMissingBody}</p>
+                            </>
+                        )}
+                        <label className={labelClass}>
+                            {a.fullName}
+                            <input name="fullName" type="text" required minLength={2} maxLength={100} autoComplete="name" defaultValue={fullName ?? ""} className={`${inputClass} mt-1`} />
+                        </label>
+                        <div className="flex gap-2">
+                            <button type="submit" className={buttonClass} disabled={busy}>{a.saveName}</button>
+                            {editingName && <button type="button" className={buttonClass} disabled={busy} onClick={() => setEditingName(false)}>{a.cancel}</button>}
+                        </div>
+                    </form>
+                ) : fullName ? (
+                    <button type="button" onClick={() => setEditingName(true)} className="text-[11px] font-bold text-[var(--bts-text-muted)] underline hover:text-[var(--bts-text-secondary)]">
+                        {a.editName}
+                    </button>
+                ) : null}
                 <AccessStatusLine />
+                {isAdmin && (
+                    <Link href="/behind-the-scenes-ai/admin" className={`${buttonClass} block text-center no-underline`}>{a.adminLink}</Link>
+                )}
                 {importCount > 0 && (
                     <div className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill)] p-2.5 space-y-2">
                         <p className="text-[11px] font-bold text-[var(--bts-text-primary)]">{a.importTitle}</p>
@@ -164,6 +237,10 @@ export function AccountPanel() {
         body = (
             <form onSubmit={submit} className="space-y-2">
                 <p className="text-[11px] text-[var(--bts-text-muted)] leading-relaxed">{a.intro}</p>
+                <label className={labelClass}>
+                    {a.fullName} <span className="font-normal">{a.fullNameHint}</span>
+                    <input name="fullName" type="text" maxLength={100} autoComplete="name" className={`${inputClass} mt-1`} />
+                </label>
                 <label className={labelClass}>
                     {a.email}
                     <input name="email" type="email" required autoComplete="email" dir="ltr" className={`${inputClass} mt-1`} />

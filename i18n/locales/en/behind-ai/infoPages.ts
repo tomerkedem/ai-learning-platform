@@ -156,17 +156,27 @@ export const infoPages: InfoPagesDict = {
 
         privacy: {
             navTitle: 'Privacy',
-            summary: 'What is stored on your device and what is not.',
+            summary: 'What the course stores on your device and in your account.',
             title: 'Privacy',
-            lead: 'This page describes what the current version of the course stores and what it does not. Registration and beta access are not part of this version yet.',
+            lead: 'This page describes what the current version of the course stores and what it does not.',
             blocks: [
                 {
                     kind: 'facts',
                     heading: 'What is stored on your device',
                     items: [
-                        { icon: 'save', title: 'Progress and quiz results', body: 'Saved in your browser\'s local storage so you can see what is strong and what is worth reinforcing. The course does not send them to a server.' },
+                        { icon: 'save', title: 'Progress without an account', body: "Without an account, progress and quiz results are saved in your browser's local storage and are not sent to a server." },
                         { icon: 'cookie', title: 'Language choice', body: 'If you choose a language, it is saved in a functional cookie for up to one year. Your browser sends it with requests to the course so pages load in the language you chose.' },
+                        { icon: 'key', title: 'Sign-in session', body: 'If you sign in, your browser keeps your session, and a cookie holds your access token so the course can check which chapters are open to you. The cookie expires with the session.' },
                         { icon: 'sliders', title: 'Display preferences', body: 'Your theme and the scroll position of the course menu are saved in your browser.' },
+                    ],
+                },
+                {
+                    kind: 'facts',
+                    heading: 'If you create an account',
+                    items: [
+                        { icon: 'key', title: 'Name and email address', body: 'To create an account you enter your full name and email address. They identify your account. Your name is shown with your email address in your account and to the course administrators who manage beta access. You can edit your name at any time.' },
+                        { icon: 'save', title: 'Progress and language', body: 'While you are signed in, your quiz results and language choice are stored in your account so they are available on your other devices.' },
+                        { icon: 'clock', title: 'Beta access', body: 'Whether your account has approved beta access, when it was approved and when it ends, and a record of which administrator approved or revoked it and when.' },
                     ],
                 },
                 {
@@ -174,8 +184,8 @@ export const infoPages: InfoPagesDict = {
                     heading: 'What the course does not do',
                     items: [
                         'The course has no analytics or advertising trackers.',
-                        'The current version does not require an account and does not ask for your name or email address.',
-                        'Progress is not synced between devices.',
+                        'Your name and email address are not shown to other learners and are not used for advertising.',
+                        'You do not need an account to read the introduction and Chapter 1.',
                     ],
                 },
                 {
@@ -186,12 +196,12 @@ export const infoPages: InfoPagesDict = {
                 {
                     kind: 'text',
                     heading: 'How to delete it',
-                    paragraphs: ['You can delete everything the course stores by clearing this site\'s data in your browser settings.'],
+                    paragraphs: ["You can delete what the course stores on your device by clearing this site's data in your browser settings. How to request deletion of account data will be described in the full privacy policy."],
                 },
                 {
                     kind: 'placeholder',
                     heading: 'Full privacy policy',
-                    decision: 'Requires legal review: the identity and contact details of the party responsible for the data, what the hosting provider logs (such as IP addresses and request logs) and for how long, what data registration and tester approval will collect, why, where and for how long it will be kept, third parties and processors, users\' rights and how to exercise them, and applicable law.',
+                    decision: 'Requires legal review: the identity and contact details of the party responsible for the data, how long account data (name, email address, progress, language choice and beta-access records) is kept and on what legal basis, how to request access or deletion, what the hosting and authentication providers log (such as IP addresses and request logs) and for how long, third parties and processors, and applicable law.',
                 },
             ],
         },

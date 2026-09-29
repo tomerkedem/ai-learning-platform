@@ -24,23 +24,31 @@ import { CHAPTER_QUIZ_QUESTIONS, CONCEPT_TO_CHAPTER, finalExamQuestions } from '
 import { ACCESS_TOKEN_COOKIE, type AccessStatus, type CourseAccess } from './access';
 import { ANSWER_KEYS } from './answerKeys.server';
 
-const KNOWN: readonly AccessStatus[] = ['no-grant', 'expired', 'revoked', 'active'];
+const KNOWN: readonly AccessStatus[] = ['no-grant', 'expired', 'revoked', 'active', 'suspended'];
 
-/** מצב הגישה של הבקשה הנוכחית. מחושב פעם אחת לבקשה (layout ועמוד חולקים). */
-export const getCourseAccess = cache(async (): Promise<CourseAccess> => {
+/**
+ * לקוח Supabase של הבקשה הנוכחית, עם ה-token של הלומד מהעוגייה. המסד מאמת אותו (חתימה
+ * ותוקף) ומפעיל RLS ובדיקות הרשאה לפי זהותו. null כשאין token.
+ */
+export async function requestClient() {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
     const token = (await cookies()).get(ACCESS_TOKEN_COOKIE)?.value;
-    if (!url || !key || !token) return { status: 'signed-out', expiresAt: null };
-
-    const client = createClient(url, key, {
+    if (!url || !key || !token) return null;
+    return createClient(url, key, {
         auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
         global: {
             headers: { Authorization: `Bearer ${token}` },
-            // אף פעם לא ממטמון: ביטול או פקיעה חלים בבקשה הבאה.
+            // אף פעם לא ממטמון: ביטול, פקיעה או הסרת מנהל חלים בבקשה הבאה.
             fetch: (input, init) => fetch(input, { ...init, cache: 'no-store' }),
         },
     });
+}
+
+/** מצב הגישה של הבקשה הנוכחית. מחושב פעם אחת לבקשה (layout ועמוד חולקים). */
+export const getCourseAccess = cache(async (): Promise<CourseAccess> => {
+    const client = await requestClient();
+    if (!client) return { status: 'signed-out', expiresAt: null };
     try {
         const { data, error, status } = await client.rpc('course_access_status').single<{ status: string; expires_at: string | null }>();
         if (status === 401 || status === 403) return { status: 'signed-out', expiresAt: null };
@@ -50,6 +58,21 @@ export const getCourseAccess = cache(async (): Promise<CourseAccess> => {
         return { status: 'unavailable', expiresAt: null };
     }
 });
+
+/**
+ * האם מבקש הבקשה הנוכחית הוא מנהל לומדה (public.course_admins, לפי user_id מה-token המאומת).
+ * נבדק בשרת בכל בקשה לעמוד הניהול; כל פעולת ניהול נבדקת שוב במסד. נכשלים סגור.
+ */
+export async function isCourseAdminRequest(): Promise<boolean> {
+    const client = await requestClient();
+    if (!client) return false;
+    try {
+        const { data, error } = await client.rpc('is_course_admin');
+        return !error && data === true;
+    } catch {
+        return false;
+    }
+}
 
 interface ContentRequest {
     namespaces: readonly ProtectedNamespace[];
