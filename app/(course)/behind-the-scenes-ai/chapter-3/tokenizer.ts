@@ -27,7 +27,7 @@ function punctRole(p: string): TokenRole {
 }
 
 /** תפקיד לליבת הטוקן: רצף ספרות נחשב מספר, אחרת לפי טבלת התפקידים (locale-aware). */
-function coreRole(core: string, roleWords?: RoleWordMap): TokenRole {
+function coreRole(core: string, roleWords: RoleWordMap): TokenRole {
     return DIGITS.test(core) ? 'number' : roleForWord(core, roleWords);
 }
 
@@ -37,7 +37,7 @@ function coreRole(core: string, roleWords?: RoleWordMap): TokenRole {
  * מפת התפקידים אופציונלית כדי לאפשר זיהוי לפי שפה; ללא ארגומנט נשמרת התנהגות
  * העברית הקיימת.
  */
-export function tokenize(text: string, roleWords?: RoleWordMap): Token[] {
+export function tokenize(text: string, roleWords: RoleWordMap): Token[] {
     const out: { text: string; role: TokenRole; isPunct: boolean }[] = [];
     const raw = text.trim().split(/\s+/).filter(Boolean);
 
@@ -77,27 +77,16 @@ export interface PairSignal {
     second: string;
 }
 
-/** ברירת המחדל העברית: צירוף ההקשר "כוס קפה". */
-export const HE_SORTING_CENTER: PhraseAfterSignal = {
-    leads: ['כוס', 'לכוס', 'בכוס'],
-    follow: 'קפה',
-};
-
-/** ברירת המחדל העברית: צירוף שלילה ופעולה "לא ... לאכול". */
-export const HE_DELIVERY_FAILURE: PairSignal = {
-    first: 'לא',
-    second: 'לאכול',
-};
 
 /** האם הקלט מכיל את צירוף ההקשר (כוס קפה). ברירת מחדל עברית. */
-export function hasSortingCenter(tokens: Token[], cfg: PhraseAfterSignal = HE_SORTING_CENTER): boolean {
+export function hasSortingCenter(tokens: Token[], cfg: PhraseAfterSignal): boolean {
     const texts = tokens.map((t) => t.text);
     const i = texts.findIndex((t) => cfg.leads.includes(t));
     return i >= 0 && texts.slice(i + 1).includes(cfg.follow);
 }
 
 /** האם יש צירוף שלילה ופעולה (Negation + action signal). ברירת מחדל עברית. */
-export function hasDeliveryFailure(tokens: Token[], cfg: PairSignal = HE_DELIVERY_FAILURE): boolean {
+export function hasDeliveryFailure(tokens: Token[], cfg: PairSignal): boolean {
     const texts = tokens.map((t) => t.text);
     const i = texts.indexOf(cfg.first);
     return i >= 0 && texts.slice(i + 1).includes(cfg.second);
@@ -142,49 +131,14 @@ export interface TokenScenario {
     examples: TokenExample[];
 }
 
-export const TOKEN_SCENARIOS: TokenScenario[] = [
-    {
-        id: 'chat-basics',
-        mode: 'chat',
-        labelHe: 'מצב צ׳אט',
-        labelEn: 'Chat mode',
-        prompt: 'הכביסה לא התייבשה',
-        accent: 'emerald',
-        routeHe: 'בניית תשובה',
-        routeEn: 'Build answer',
-        examples: [
-            { labelHe: 'בסיס', labelEn: 'Base', text: 'הכביסה לא התייבשה' },
-            { labelHe: 'עם שאלה', labelEn: 'With question', text: 'הכביסה לא התייבשה?' },
-            { labelHe: 'עם דגש', labelEn: 'With emphasis', text: 'הכביסה שלי לא התייבשה!!!' },
-            { labelHe: 'כמות במתכון', labelEn: 'Recipe quantity', text: 'המתכון דורש 250 גרם קמח' },
-            { labelHe: 'בלי רווחים', labelEn: 'No spaces', text: 'הכביסהלאהתייבשה' },
-            { labelHe: 'באנגלית', labelEn: 'In English', text: 'The laundry did not dry. What should I do?' },
-            { labelHe: 'תיקון בשיחה', labelEn: 'Correction', text: 'לא עוגיות, אפיתי עוגה' },
-        ],
-    },
-    {
-        id: 'agent-check',
-        mode: 'agent',
-        labelHe: 'מצב Agent',
-        labelEn: 'Agent mode',
-        prompt: 'בדוק למה החתול לא חזר',
-        accent: 'purple',
-        routeHe: 'הבנת משימה',
-        routeEn: 'Understand task',
-        examples: [
-            { labelHe: 'בקשת בדיקה', labelEn: 'Investigation', text: 'בדוק למה החתול לא חזר' },
-            { labelHe: 'בדיקה לנמען', labelEn: 'To recipient', text: 'בדוק למה החתול לא חזר לילד' },
-        ],
-    },
-];
 
 /** איתור תרחיש לפי מזהה. מקבל רשימת תרחישים אופציונלית (locale-aware). */
-export function getScenario(id: string, scenarios: TokenScenario[] = TOKEN_SCENARIOS): TokenScenario | undefined {
+export function getScenario(id: string, scenarios: TokenScenario[]): TokenScenario | undefined {
     return scenarios.find((s) => s.id === id);
 }
 
 /** ברירת המחדל של תרחיש לפי מצב. מקבל רשימת תרחישים אופציונלית (locale-aware). */
-export function defaultScenarioFor(mode: TokenizationMode, scenarios: TokenScenario[] = TOKEN_SCENARIOS): TokenScenario {
+export function defaultScenarioFor(mode: TokenizationMode, scenarios: TokenScenario[]): TokenScenario {
     return scenarios.find((s) => s.mode === mode) ?? scenarios[0];
 }
 
@@ -194,14 +148,3 @@ export interface RoadmapStep {
     en: string;
     active: boolean;
 }
-
-/** שלבי מפת הדרכים: רק הראשון פעיל, השאר נעולים כטיזר לפרקים הבאים. */
-export const ROADMAP_STEPS: RoadmapStep[] = [
-    { he: 'טקסט', en: 'Text', active: true },
-    { he: 'טוקנים', en: 'Tokens', active: true },
-    { he: 'מזהי טוקן', en: 'Token IDs', active: false },
-    { he: 'וקטורים', en: 'Vectors', active: false },
-    { he: 'דמיון', en: 'Similarity', active: false },
-    { he: 'ציונים', en: 'Scores', active: false },
-    { he: 'הסתברויות', en: 'Probabilities', active: false },
-];

@@ -8,6 +8,7 @@
 // ════════════════════════════════════════════════════════════════════════
 
 import type { AssessmentResult } from "@/components/content/AssessmentEngine";
+import { queueAccountResult, signedInUserId } from "./account";
 
 export const MASTERY_STORAGE_KEY = "behindAiMasteryProgress";
 export const MASTERY_UPDATED_EVENT = "behindai:mastery-updated";
@@ -108,33 +109,34 @@ export interface RecordResultInput extends AssessmentResult {
     chapterId: number | null;
 }
 
-/**
- * שומר תוצאה של ניסיון שהושלם וממזג אותה עם מה שכבר נשמר.
- * לעולם לא דורס bestScorePercent בציון נמוך יותר, ומגדיל attempts בכל ניסיון.
- */
-export function recordResult(input: RecordResultInput): QuizRecord {
-    const store = loadStore();
-    const prev = store.records[input.quizId];
-    const attempts = (prev?.attempts ?? 0) + 1;
-    const bestScorePercent = Math.max(prev?.bestScorePercent ?? 0, input.scorePercent);
-
-    const record: QuizRecord = {
+/** ממזג ניסיון אחד לרשומה קיימת: attempts גדל, bestScorePercent לעולם לא יורד. */
+export function mergeAttempt(prev: QuizRecord | undefined, input: RecordResultInput, completedAt: number): QuizRecord {
+    return {
         quizId: input.quizId,
         chapterId: input.chapterId,
         scorePercent: input.scorePercent,
         correctCount: input.correctCount,
         totalQuestions: input.totalQuestions,
         passed: input.passed,
-        attempts,
-        bestScorePercent,
-        lastCompletedAt: Date.now(),
+        attempts: (prev?.attempts ?? 0) + 1,
+        bestScorePercent: Math.max(prev?.bestScorePercent ?? 0, input.scorePercent),
+        lastCompletedAt: completedAt,
         weakConcepts: input.weakConcepts,
         strongConcepts: input.strongConcepts,
     };
+}
 
-    store.records[input.quizId] = record;
+/**
+ * שומר תוצאה של ניסיון שהושלם.
+ * מחובר: הניסיון נכנס לתור של המשתמש ונשלח לחשבון (account.ts), בלי לגעת באחסון הכללי,
+ * כדי שנתונים של חשבונות שונים במכשיר משותף לא יתערבבו. לא מחובר: אחסון מקומי כרגיל.
+ */
+export function recordResult(input: RecordResultInput): void {
+    const userId = signedInUserId();
+    if (userId) return queueAccountResult(userId, input);
+    const store = loadStore();
+    store.records[input.quizId] = mergeAttempt(store.records[input.quizId], input, Date.now());
     saveStore(store);
-    return record;
 }
 
 /** מחזיר מזהה מבדק יציב עבור פרק נתון. */
@@ -168,8 +170,7 @@ export interface MasterySummary {
  * מאגד את כל הרשומות לסיכום אחד עבור לוח ההתקדמות.
  * "מושגים שכדאי לחזק" מקבצים מושג חלש שלא מופיע כחזק בשום מבדק אחר.
  */
-export function getMasterySummary(): MasterySummary {
-    const records = getAllRecords();
+export function getMasterySummary(records: QuizRecord[] = getAllRecords()): MasterySummary {
     const chapterRecords = records.filter(r => r.chapterId !== null);
     const final = records.find(r => r.quizId === FINAL_EXAM_QUIZ_ID);
 

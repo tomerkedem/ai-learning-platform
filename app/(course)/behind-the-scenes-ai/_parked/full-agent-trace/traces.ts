@@ -10,7 +10,7 @@
 //   * Risk/Control     -> פרק 13 (evaluate)
 // כל מספר שמוצג במעבדה מגיע מהמנועים האלה, בלי קידוד קשיח ובלי חישוב סותר.
 
-import { idForWord } from '@/app/(course)/behind-the-scenes-ai/chapter-4/embeddingEngine';
+import { idForWord } from '@/app/(course)/behind-the-scenes-ai/chapter-4/embeddingData.server';
 import { analyzeSentence, DIMS, DIM_INFO } from '@/app/(course)/behind-the-scenes-ai/chapter-6/pipelineData';
 import { INTENT_META, metaFor } from '@/app/(course)/behind-the-scenes-ai/_parked/confidence/gateData';
 import { evaluateGate, buildClarifyingQuestion } from '@/app/(course)/behind-the-scenes-ai/_parked/confidence/gateLogic';

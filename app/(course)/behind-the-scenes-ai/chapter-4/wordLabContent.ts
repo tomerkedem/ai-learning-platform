@@ -1,4 +1,4 @@
-// app/behind-the-scenes-ai/chapter-4/wordLabContent.ts
+// app/behind-the-scenes-ai/chapter-4/wordLabContent.ts (שרת בלבד: פרק 4 מוגן)
 //
 // שכבת תוכן locale-aware ל-WordToNumberLab ("Under the hood" של פרק 4).
 // ────────────────────────────────────────────────────────────────────────
@@ -9,26 +9,23 @@
 // הנתיב העברי (HE_WORD_DATASET / HE_WORD_TEXT) משקף בדיוק את המנוע ואת המחרוזות
 // הנוכחיות, כך שפלט העברית נשאר זהה. אין מקף ארוך או מקף בינוני בטקסט גלוי.
 
+import 'server-only';
 import type { Locale } from '@/i18n/config';
-import {
-    SCENARIOS,
-    getScenario,
-    idForWord,
-    type EngineScenario,
-    type EngineStep,
-} from './embeddingEngine';
+import type { EngineScenario, EngineStep } from './embeddingEngine';
+import { SCENARIOS, getScenario, TOKEN_DICTIONARY } from './embeddingData.server';
 
 /* ════════════════════════ נתונים: dataset לפי שפה ════════════════════════ */
 
 export interface WordLabDataset {
     scenarios: EngineScenario[];
-    tokenId: (w: string) => number | null;
+    /** מילה -> Token ID להמחשה. טבלה (ולא פונקציה) כדי שתעבור מהשרת לדפדפן. */
+    tokenIds: Record<string, number>;
 }
 
 /** הנתיב העברי: ישירות מהמנוע (ללא שינוי). */
 export const HE_WORD_DATASET: WordLabDataset = {
     scenarios: SCENARIOS,
-    tokenId: idForWord,
+    tokenIds: TOKEN_DICTIONARY,
 };
 
 /* ── שכבת נתונים אנגלית מקבילה (משתמשת מחדש בפרופילים המספריים של המנוע) ── */
@@ -43,9 +40,6 @@ const EN_TOKEN_DICTIONARY: Record<string, number> = {
     coffee: 340, too: 95, hot: 512, music: 670, loud: 825,
 };
 
-function enTokenId(word: string): number | null {
-    return word in EN_TOKEN_DICTIONARY ? EN_TOKEN_DICTIONARY[word] : null;
-}
 
 // בונה שלב אנגלי שמשתמש מחדש בפרופיל/lead/negation/agent.status של שלב המנוע המקביל,
 // ומחליף רק את הטקסט והטוקנים (ואת טקסט ה-Agent אם קיים).
@@ -157,7 +151,7 @@ const EN_SCENARIOS: EngineScenario[] = [
 
 export const EN_WORD_DATASET: WordLabDataset = {
     scenarios: EN_SCENARIOS,
-    tokenId: enTokenId,
+    tokenIds: EN_TOKEN_DICTIONARY,
 };
 
 /* ── שכבת נתונים ספרדית מקבילה (משתמשת מחדש בפרופילים המספריים של המנוע) ── */
@@ -171,9 +165,6 @@ const ES_TOKEN_DICTIONARY: Record<string, number> = {
     café: 345, está: 522, muy: 101, caliente: 633, La: 712, música: 847, alta: 958,
 };
 
-function esTokenId(word: string): number | null {
-    return word in ES_TOKEN_DICTIONARY ? ES_TOKEN_DICTIONARY[word] : null;
-}
 
 const esScenario = (id: string, prompt: string, steps: EngineStep[]): EngineScenario => ({
     ...scOf(id),
@@ -274,7 +265,7 @@ const ES_SCENARIOS: EngineScenario[] = [
 
 export const ES_WORD_DATASET: WordLabDataset = {
     scenarios: ES_SCENARIOS,
-    tokenId: esTokenId,
+    tokenIds: ES_TOKEN_DICTIONARY,
 };
 
 /* ── Параллельный русский слой данных (повторно использует числовые профили движка) ── */
@@ -288,9 +279,6 @@ const RU_TOKEN_DICTIONARY: Record<string, number> = {
     Кофе: 355, слишком: 512, горячий: 640, Музыка: 718, громкая: 876,
 };
 
-function ruTokenId(word: string): number | null {
-    return word in RU_TOKEN_DICTIONARY ? RU_TOKEN_DICTIONARY[word] : null;
-}
 
 const RU_SCENARIO_LABEL: Record<string, string> = {
     'chat-delivery': 'Горячий кофе',
@@ -391,7 +379,7 @@ const RU_SCENARIOS: EngineScenario[] = [
 
 export const RU_WORD_DATASET: WordLabDataset = {
     scenarios: RU_SCENARIOS,
-    tokenId: ruTokenId,
+    tokenIds: RU_TOKEN_DICTIONARY,
 };
 
 /* ── طبقة بيانات عربية موازية (تعيد استخدام الملفات الرقمية للمحرّك) ── */
@@ -406,9 +394,6 @@ const AR_TOKEN_DICTIONARY: Record<string, number> = {
     القهوة: 365, ساخنة: 540, 'جدًا': 690, الموسيقى: 745, صاخبة: 820,
 };
 
-function arTokenId(word: string): number | null {
-    return word in AR_TOKEN_DICTIONARY ? AR_TOKEN_DICTIONARY[word] : null;
-}
 
 const AR_SCENARIO_LABEL: Record<string, string> = {
     'chat-delivery': 'قهوة ساخنة',
@@ -509,7 +494,7 @@ const AR_SCENARIOS: EngineScenario[] = [
 
 export const AR_WORD_DATASET: WordLabDataset = {
     scenarios: AR_SCENARIOS,
-    tokenId: arTokenId,
+    tokenIds: AR_TOKEN_DICTIONARY,
 };
 
 /* ── 並行する日本語データ層（エンジンの数値プロファイルを再利用） ── */
@@ -530,9 +515,6 @@ const JA_TOKEN_DICTIONARY: Record<string, number> = {
     コーヒー: 372, 熱: 558, すぎます: 640, 音楽: 715, うるさ: 860,
 };
 
-function jaTokenId(word: string): number | null {
-    return word in JA_TOKEN_DICTIONARY ? JA_TOKEN_DICTIONARY[word] : null;
-}
 
 const JA_SCENARIO_LABEL: Record<string, string> = {
     'chat-delivery': '熱いコーヒー',
@@ -633,7 +615,7 @@ const JA_SCENARIOS: EngineScenario[] = [
 
 export const JA_WORD_DATASET: WordLabDataset = {
     scenarios: JA_SCENARIOS,
-    tokenId: jaTokenId,
+    tokenIds: JA_TOKEN_DICTIONARY,
 };
 
 export function getWordDataset(locale: Locale): WordLabDataset {
@@ -892,4 +874,14 @@ export function getWordText(locale: Locale): WordLabText {
     if (locale === 'ar') return AR_WORD_TEXT;
     if (locale === 'ja') return JA_WORD_TEXT;
     return EN_WORD_TEXT;
+}
+
+/** כל מה שהמעבדה צריכה לשפה אחת, בצורה שעוברת מהשרת לדפדפן (אחרי בדיקת הרשאה). */
+export interface WordLabContent {
+    dataset: WordLabDataset;
+    text: WordLabText;
+}
+
+export function getWordLabContent(locale: Locale): WordLabContent {
+    return { dataset: getWordDataset(locale), text: getWordText(locale) };
 }

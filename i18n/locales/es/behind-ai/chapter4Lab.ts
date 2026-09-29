@@ -206,7 +206,7 @@ export const chapter4Lab: Chapter4LabDict = {
         roleActive: 'tu frase',
         roleCompare: 'comparada',
         twistMeaning: 'Cuanto más cercano es el significado de las dos frases, más se enrollan juntas las hebras. Cuando el significado deriva, se separan.',
-        leadShared: (names) => `Las dos frases son fuertes en los mismos componentes de significado: ${names}. Por eso están cerca.`,
+        leadShared: `Las dos frases son fuertes en los mismos componentes de significado: {names}. Por eso están cerca.`,
         leadNone: 'Las dos frases activan componentes distintos, así que están más lejos.',
         sharedBadge: 'compartido',
         guideSize: 'Un nodo más grande significa que el componente es más fuerte en esa frase.',

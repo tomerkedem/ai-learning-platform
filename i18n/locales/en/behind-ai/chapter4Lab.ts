@@ -206,7 +206,7 @@ export const chapter4Lab: Chapter4LabDict = {
         roleActive: 'your pick',
         roleCompare: 'compared',
         twistMeaning: 'The closer the meaning of the two sentences, the tighter the strands wind together. When the meaning drifts, they pull apart.',
-        leadShared: (names) => `Both sentences are strong on the same meaning components: ${names}. That is why they are close.`,
+        leadShared: `Both sentences are strong on the same meaning components: {names}. That is why they are close.`,
         leadNone: 'The two sentences light up different components, so they are farther apart.',
         sharedBadge: 'shared',
         guideSize: 'A bigger node means the component is stronger in that sentence.',

@@ -30,157 +30,62 @@ import { chapter1 as jaChapter1 } from './locales/ja/behind-ai/chapter1';
 
 // פרק 2 (i18n של תוכן הפרק, שלב C1). העברית היא המקור; שאר השפות הן stubs שמייצאים
 // מחדש את העברית (fallback בטוח) עד שיתורגמו בשלב מאוחר יותר.
-import { chapter2 as heChapter2 } from './locales/he/behind-ai/chapter2';
-import { chapter2 as arChapter2 } from './locales/ar/behind-ai/chapter2';
-import { chapter2 as ruChapter2 } from './locales/ru/behind-ai/chapter2';
-import { chapter2 as enChapter2 } from './locales/en/behind-ai/chapter2';
-import { chapter2 as esChapter2 } from './locales/es/behind-ai/chapter2';
-import { chapter2 as jaChapter2 } from './locales/ja/behind-ai/chapter2';
+import type { chapter2 as heChapter2 } from './locales/he/behind-ai/chapter2';
 
 // פרק 3 (Tokenization). העברית היא המקור; שאר השפות הן stubs שמייצאים מחדש את
 // העברית (fallback בטוח) עד שיתורגמו בשלבים מאוחרים יותר (C/D).
-import { chapter3 as heChapter3 } from './locales/he/behind-ai/chapter3';
-import { chapter3 as arChapter3 } from './locales/ar/behind-ai/chapter3';
-import { chapter3 as ruChapter3 } from './locales/ru/behind-ai/chapter3';
-import { chapter3 as enChapter3 } from './locales/en/behind-ai/chapter3';
-import { chapter3 as esChapter3 } from './locales/es/behind-ai/chapter3';
-import { chapter3 as jaChapter3 } from './locales/ja/behind-ai/chapter3';
+import type { chapter3 as heChapter3 } from './locales/he/behind-ai/chapter3';
 
 // פרק 4 (Embeddings). העברית היא המקור; שאר השפות הן skeletons זמניים שמייצאים מחדש
 // את העברית (fallback בטוח) עד שיתורגמו, שפה לכל commit.
-import { chapter4 as heChapter4 } from './locales/he/behind-ai/chapter4';
-import { chapter4 as arChapter4 } from './locales/ar/behind-ai/chapter4';
-import { chapter4 as ruChapter4 } from './locales/ru/behind-ai/chapter4';
-import { chapter4 as enChapter4 } from './locales/en/behind-ai/chapter4';
-import { chapter4 as esChapter4 } from './locales/es/behind-ai/chapter4';
-import { chapter4 as jaChapter4 } from './locales/ja/behind-ai/chapter4';
+import type { chapter4 as heChapter4 } from './locales/he/behind-ai/chapter4';
 
 // פרק Generation Loop (פרק 10, "איך תשובה נבנית עד הסוף"). העברית היא שפת המקור,
 // וכל שש השפות מתורגמות באמת (contentLocale משלהן), לא נפילה לעברית.
-import { generationLoop as heGenerationLoop } from './locales/he/behind-ai/generationLoop';
-import { generationLoop as arGenerationLoop } from './locales/ar/behind-ai/generationLoop';
-import { generationLoop as ruGenerationLoop } from './locales/ru/behind-ai/generationLoop';
-import { generationLoop as enGenerationLoop } from './locales/en/behind-ai/generationLoop';
-import { generationLoop as esGenerationLoop } from './locales/es/behind-ai/generationLoop';
-import { generationLoop as jaGenerationLoop } from './locales/ja/behind-ai/generationLoop';
-import { semanticSpace as heSemanticSpace } from './locales/he/behind-ai/semanticSpace';
-import { semanticSpace as arSemanticSpace } from './locales/ar/behind-ai/semanticSpace';
-import { semanticSpace as ruSemanticSpace } from './locales/ru/behind-ai/semanticSpace';
-import { semanticSpace as enSemanticSpace } from './locales/en/behind-ai/semanticSpace';
-import { semanticSpace as esSemanticSpace } from './locales/es/behind-ai/semanticSpace';
-import { semanticSpace as jaSemanticSpace } from './locales/ja/behind-ai/semanticSpace';
-import { attention as heAttention } from './locales/he/behind-ai/attention';
-import { attention as arAttention } from './locales/ar/behind-ai/attention';
-import { attention as ruAttention } from './locales/ru/behind-ai/attention';
-import { attention as enAttention } from './locales/en/behind-ai/attention';
-import { attention as esAttention } from './locales/es/behind-ai/attention';
-import { attention as jaAttention } from './locales/ja/behind-ai/attention';
-import { contextWindow as heContextWindow } from './locales/he/behind-ai/contextWindow';
-import { contextWindow as arContextWindow } from './locales/ar/behind-ai/contextWindow';
-import { contextWindow as ruContextWindow } from './locales/ru/behind-ai/contextWindow';
-import { contextWindow as enContextWindow } from './locales/en/behind-ai/contextWindow';
-import { contextWindow as esContextWindow } from './locales/es/behind-ai/contextWindow';
-import { contextWindow as jaContextWindow } from './locales/ja/behind-ai/contextWindow';
-import { logitsSoftmax as heLogitsSoftmax } from './locales/he/behind-ai/logitsSoftmax';
-import { logitsSoftmax as arLogitsSoftmax } from './locales/ar/behind-ai/logitsSoftmax';
-import { logitsSoftmax as ruLogitsSoftmax } from './locales/ru/behind-ai/logitsSoftmax';
-import { logitsSoftmax as enLogitsSoftmax } from './locales/en/behind-ai/logitsSoftmax';
-import { logitsSoftmax as esLogitsSoftmax } from './locales/es/behind-ai/logitsSoftmax';
-import { logitsSoftmax as jaLogitsSoftmax } from './locales/ja/behind-ai/logitsSoftmax';
-import { decoding as heDecoding } from './locales/he/behind-ai/decoding';
-import { decoding as arDecoding } from './locales/ar/behind-ai/decoding';
-import { decoding as ruDecoding } from './locales/ru/behind-ai/decoding';
-import { decoding as enDecoding } from './locales/en/behind-ai/decoding';
-import { decoding as esDecoding } from './locales/es/behind-ai/decoding';
-import { decoding as jaDecoding } from './locales/ja/behind-ai/decoding';
+import type { generationLoop as heGenerationLoop } from './locales/he/behind-ai/generationLoop';
+import type { semanticSpace as heSemanticSpace } from './locales/he/behind-ai/semanticSpace';
+import type { attention as heAttention } from './locales/he/behind-ai/attention';
+import type { contextWindow as heContextWindow } from './locales/he/behind-ai/contextWindow';
+import type { logitsSoftmax as heLogitsSoftmax } from './locales/he/behind-ai/logitsSoftmax';
+import type { decoding as heDecoding } from './locales/he/behind-ai/decoding';
 
 // פרק Hallucinations (פרק 11, "למה תשובה בטוחה יכולה להיות שגויה"). העברית היא שפת
 // המקור, וכל שש השפות מתורגמות באמת (contentLocale משלהן), לא נפילה לעברית.
-import { hallucinations as heHallucinations } from './locales/he/behind-ai/hallucinations';
-import { hallucinations as arHallucinations } from './locales/ar/behind-ai/hallucinations';
-import { hallucinations as ruHallucinations } from './locales/ru/behind-ai/hallucinations';
-import { hallucinations as enHallucinations } from './locales/en/behind-ai/hallucinations';
-import { hallucinations as esHallucinations } from './locales/es/behind-ai/hallucinations';
-import { hallucinations as jaHallucinations } from './locales/ja/behind-ai/hallucinations';
+import type { hallucinations as heHallucinations } from './locales/he/behind-ai/hallucinations';
 
 // פרק RAG & Grounding (פרק 12, "איך מחברים AI למקורות"). העברית היא שפת המקור, וכל
 // שש השפות מתורגמות באמת (contentLocale משלהן), לא נפילה לעברית.
-import { grounding as heGrounding } from './locales/he/behind-ai/grounding';
-import { grounding as arGrounding } from './locales/ar/behind-ai/grounding';
-import { grounding as ruGrounding } from './locales/ru/behind-ai/grounding';
-import { grounding as enGrounding } from './locales/en/behind-ai/grounding';
-import { grounding as esGrounding } from './locales/es/behind-ai/grounding';
-import { grounding as jaGrounding } from './locales/ja/behind-ai/grounding';
+import type { grounding as heGrounding } from './locales/he/behind-ai/grounding';
 
 // פרק Self-Check (פרק 13, "בדיקה עצמית בזמן תשובה"). העברית היא שפת המקור, וכל שש
 // השפות מתורגמות באמת (contentLocale משלהן), לא נפילה לעברית.
-import { selfCheck as heSelfCheck } from './locales/he/behind-ai/selfCheck';
-import { selfCheck as arSelfCheck } from './locales/ar/behind-ai/selfCheck';
-import { selfCheck as ruSelfCheck } from './locales/ru/behind-ai/selfCheck';
-import { selfCheck as enSelfCheck } from './locales/en/behind-ai/selfCheck';
-import { selfCheck as esSelfCheck } from './locales/es/behind-ai/selfCheck';
-import { selfCheck as jaSelfCheck } from './locales/ja/behind-ai/selfCheck';
+import type { selfCheck as heSelfCheck } from './locales/he/behind-ai/selfCheck';
 
 // פרק Learning from Mistakes (פרק 14, "איך מודל משתפר מטעות"). העברית היא שפת המקור,
 // וכל שש השפות מתורגמות באמת (contentLocale משלהן), לא נפילה לעברית.
-import { mistakeLearning as heMistakeLearning } from './locales/he/behind-ai/mistakeLearning';
-import { mistakeLearning as arMistakeLearning } from './locales/ar/behind-ai/mistakeLearning';
-import { mistakeLearning as ruMistakeLearning } from './locales/ru/behind-ai/mistakeLearning';
-import { mistakeLearning as enMistakeLearning } from './locales/en/behind-ai/mistakeLearning';
-import { mistakeLearning as esMistakeLearning } from './locales/es/behind-ai/mistakeLearning';
-import { mistakeLearning as jaMistakeLearning } from './locales/ja/behind-ai/mistakeLearning';
-import { evaluation as heEvaluation } from './locales/he/behind-ai/evaluation';
-import { evaluation as arEvaluation } from './locales/ar/behind-ai/evaluation';
-import { evaluation as ruEvaluation } from './locales/ru/behind-ai/evaluation';
-import { evaluation as enEvaluation } from './locales/en/behind-ai/evaluation';
-import { evaluation as esEvaluation } from './locales/es/behind-ai/evaluation';
-import { evaluation as jaEvaluation } from './locales/ja/behind-ai/evaluation';
+import type { mistakeLearning as heMistakeLearning } from './locales/he/behind-ai/mistakeLearning';
+import type { evaluation as heEvaluation } from './locales/he/behind-ai/evaluation';
 
 // הרחבת פרק 15: לוח פירוק הציון וכרטיס ההטיה שאחריו. מרחב שמות נפרד, כדי שמעבדת
 // ההערכה הקיימת (evaluationLab) תישאר בדיוק כפי שהיא. העברית היא שפת המקור, וכל שש
 // השפות מתורגמות באמת, לא נפילה לעברית.
-import { evaluationScore as heEvaluationScore } from './locales/he/behind-ai/evaluationScore';
-import { evaluationScore as arEvaluationScore } from './locales/ar/behind-ai/evaluationScore';
-import { evaluationScore as ruEvaluationScore } from './locales/ru/behind-ai/evaluationScore';
-import { evaluationScore as enEvaluationScore } from './locales/en/behind-ai/evaluationScore';
-import { evaluationScore as esEvaluationScore } from './locales/es/behind-ai/evaluationScore';
-import { evaluationScore as jaEvaluationScore } from './locales/ja/behind-ai/evaluationScore';
+import type { evaluationScore as heEvaluationScore } from './locales/he/behind-ai/evaluationScore';
 
 // פרק Does AI Learn From Me (פרק 16, "האם AI לומד ממני"). העברית היא שפת המקור, וכל
 // שש השפות מתורגמות באמת (contentLocale משלהן), לא נפילה לעברית.
-import { doesAiLearn as heDoesAiLearn } from './locales/he/behind-ai/doesAiLearn';
-import { doesAiLearn as arDoesAiLearn } from './locales/ar/behind-ai/doesAiLearn';
-import { doesAiLearn as ruDoesAiLearn } from './locales/ru/behind-ai/doesAiLearn';
-import { doesAiLearn as enDoesAiLearn } from './locales/en/behind-ai/doesAiLearn';
-import { doesAiLearn as esDoesAiLearn } from './locales/es/behind-ai/doesAiLearn';
-import { doesAiLearn as jaDoesAiLearn } from './locales/ja/behind-ai/doesAiLearn';
+import type { doesAiLearn as heDoesAiLearn } from './locales/he/behind-ai/doesAiLearn';
 
 // פרק Chat to Agent (פרק 17, "כששאלה הופכת למשימה", פותח את מקטע ה-Agent). העברית
 // היא שפת המקור, וכל שש השפות מתורגמות באמת (contentLocale משלהן), לא נפילה לעברית.
-import { chatToAgent as heChatToAgent } from './locales/he/behind-ai/chatToAgent';
-import { chatToAgent as arChatToAgent } from './locales/ar/behind-ai/chatToAgent';
-import { chatToAgent as ruChatToAgent } from './locales/ru/behind-ai/chatToAgent';
-import { chatToAgent as enChatToAgent } from './locales/en/behind-ai/chatToAgent';
-import { chatToAgent as esChatToAgent } from './locales/es/behind-ai/chatToAgent';
-import { chatToAgent as jaChatToAgent } from './locales/ja/behind-ai/chatToAgent';
+import type { chatToAgent as heChatToAgent } from './locales/he/behind-ai/chatToAgent';
 
 // פרק Guardrails (פרק 18, "סיכון, הרשאות, אישור ועצירה", ממשיך את מקטע ה-Agent).
 // העברית היא שפת המקור, וכל שש השפות מתורגמות באמת (contentLocale משלהן), לא נפילה לעברית.
-import { guardrails as heGuardrails } from './locales/he/behind-ai/guardrails';
-import { guardrails as arGuardrails } from './locales/ar/behind-ai/guardrails';
-import { guardrails as ruGuardrails } from './locales/ru/behind-ai/guardrails';
-import { guardrails as enGuardrails } from './locales/en/behind-ai/guardrails';
-import { guardrails as esGuardrails } from './locales/es/behind-ai/guardrails';
-import { guardrails as jaGuardrails } from './locales/ja/behind-ai/guardrails';
+import type { guardrails as heGuardrails } from './locales/he/behind-ai/guardrails';
 
 // פרק Full Trace (פרק 19, "פרומפט אחד, כל התחנות", פרק הסיכום). העברית היא שפת המקור,
 // וכל שש השפות מתורגמות באמת (contentLocale משלהן), לא נפילה לעברית.
-import { fullTrace as heFullTrace } from './locales/he/behind-ai/fullTrace';
-import { fullTrace as arFullTrace } from './locales/ar/behind-ai/fullTrace';
-import { fullTrace as ruFullTrace } from './locales/ru/behind-ai/fullTrace';
-import { fullTrace as enFullTrace } from './locales/en/behind-ai/fullTrace';
-import { fullTrace as esFullTrace } from './locales/es/behind-ai/fullTrace';
-import { fullTrace as jaFullTrace } from './locales/ja/behind-ai/fullTrace';
+import type { fullTrace as heFullTrace } from './locales/he/behind-ai/fullTrace';
 
 // המבוא (i18n של המבוא). העברית היא המקור; שאר השפות הן stubs שמייצאים מחדש את
 // העברית (fallback בטוח) עד שיתורגמו בשלב מאוחר יותר.
@@ -193,21 +98,12 @@ import { introduction as jaIntroduction } from './locales/ja/behind-ai/introduct
 
 // תוויות תצוגה למושגים (concept) של הלומדה. העברית היא המקור (מפת זהות); שאר השפות
 // הן stubs שמייצאים מחדש את העברית (fallback בטוח) עד שיתורגמו בשלב B3.
-import { conceptLabels as heConceptLabels } from './locales/he/behind-ai/conceptLabels';
-import { conceptLabels as arConceptLabels } from './locales/ar/behind-ai/conceptLabels';
-import { conceptLabels as ruConceptLabels } from './locales/ru/behind-ai/conceptLabels';
-import { conceptLabels as enConceptLabels } from './locales/en/behind-ai/conceptLabels';
-import { conceptLabels as esConceptLabels } from './locales/es/behind-ai/conceptLabels';
-import { conceptLabels as jaConceptLabels } from './locales/ja/behind-ai/conceptLabels';
+import type { conceptLabels as heConceptLabels } from './locales/he/behind-ai/conceptLabels';
+import type { chapterBridges as heChapterBridges } from './locales/he/behind-ai/chapterBridges';
 
 // כרום עמוד מבחן הסיום. העברית היא המקור; שאר השפות הן stubs שמייצאים מחדש את
 // העברית (fallback בטוח) עד שיתורגמו בשלב F3.
-import { finalExam as heFinalExam } from './locales/he/behind-ai/finalExam';
-import { finalExam as arFinalExam } from './locales/ar/behind-ai/finalExam';
-import { finalExam as ruFinalExam } from './locales/ru/behind-ai/finalExam';
-import { finalExam as enFinalExam } from './locales/en/behind-ai/finalExam';
-import { finalExam as esFinalExam } from './locales/es/behind-ai/finalExam';
-import { finalExam as jaFinalExam } from './locales/ja/behind-ai/finalExam';
+import type { finalExam as heFinalExam } from './locales/he/behind-ai/finalExam';
 
 // כרום מבדקי הפרקים (כותרת, תת-כותרת, תוויות וכפתורים). העברית היא המקור; שאר
 // השפות הן stubs שמייצאים מחדש את העברית (fallback בטוח) עד שיתורגמו בשלב מאוחר.
@@ -270,6 +166,7 @@ export type GuardrailsDict = typeof heGuardrails;
 export type FullTraceDict = typeof heFullTrace;
 export type IntroductionDict = typeof heIntroduction;
 export type ConceptLabelsDict = typeof heConceptLabels;
+export type ChapterBridgesDict = typeof heChapterBridges;
 export type FinalExamDict = typeof heFinalExam;
 export type ChapterQuizDict = typeof heChapterQuiz;
 export type IntroVisualsDict = typeof heIntroVisuals;
@@ -300,6 +197,7 @@ export interface BehindAiDict {
     guardrails: GuardrailsDict;
     fullTrace: FullTraceDict;
     conceptLabels: ConceptLabelsDict;
+    chapterBridges: ChapterBridgesDict;
     finalExam: FinalExamDict;
     chapterQuiz: ChapterQuizDict;
     introVisuals: IntroVisualsDict;
@@ -313,16 +211,42 @@ export interface Dictionary {
     behindAi: BehindAiDict;
 }
 
-const DICTS: Record<Locale, Dictionary> = {
-    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter1: heChapter1, chapter2: heChapter2, chapter3: heChapter3, chapter4: heChapter4, generationLoop: heGenerationLoop, semanticSpace: heSemanticSpace, attention: heAttention, contextWindow: heContextWindow, logitsSoftmax: heLogitsSoftmax, decoding: heDecoding, hallucinations: heHallucinations, grounding: heGrounding, selfCheck: heSelfCheck, mistakeLearning: heMistakeLearning, evaluation: heEvaluation, evaluationScore: heEvaluationScore, doesAiLearn: heDoesAiLearn, chatToAgent: heChatToAgent, guardrails: heGuardrails, fullTrace: heFullTrace, conceptLabels: heConceptLabels, finalExam: heFinalExam, chapterQuiz: heChapterQuiz, introVisuals: heIntroVisuals, aiInternals: heAiInternals, infoPages: heInfoPages } },
-    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter1: arChapter1, chapter2: arChapter2, chapter3: arChapter3, chapter4: arChapter4, generationLoop: arGenerationLoop, semanticSpace: arSemanticSpace, attention: arAttention, contextWindow: arContextWindow, logitsSoftmax: arLogitsSoftmax, decoding: arDecoding, hallucinations: arHallucinations, grounding: arGrounding, selfCheck: arSelfCheck, mistakeLearning: arMistakeLearning, evaluation: arEvaluation, evaluationScore: arEvaluationScore, doesAiLearn: arDoesAiLearn, chatToAgent: arChatToAgent, guardrails: arGuardrails, fullTrace: arFullTrace, conceptLabels: arConceptLabels, finalExam: arFinalExam, chapterQuiz: arChapterQuiz, introVisuals: arIntroVisuals, aiInternals: arAiInternals, infoPages: arInfoPages } },
-    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter1: ruChapter1, chapter2: ruChapter2, chapter3: ruChapter3, chapter4: ruChapter4, generationLoop: ruGenerationLoop, semanticSpace: ruSemanticSpace, attention: ruAttention, contextWindow: ruContextWindow, logitsSoftmax: ruLogitsSoftmax, decoding: ruDecoding, hallucinations: ruHallucinations, grounding: ruGrounding, selfCheck: ruSelfCheck, mistakeLearning: ruMistakeLearning, evaluation: ruEvaluation, evaluationScore: ruEvaluationScore, doesAiLearn: ruDoesAiLearn, chatToAgent: ruChatToAgent, guardrails: ruGuardrails, fullTrace: ruFullTrace, conceptLabels: ruConceptLabels, finalExam: ruFinalExam, chapterQuiz: ruChapterQuiz, introVisuals: ruIntroVisuals, aiInternals: ruAiInternals, infoPages: ruInfoPages } },
-    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter1: enChapter1, chapter2: enChapter2, chapter3: enChapter3, chapter4: enChapter4, generationLoop: enGenerationLoop, semanticSpace: enSemanticSpace, attention: enAttention, contextWindow: enContextWindow, logitsSoftmax: enLogitsSoftmax, decoding: enDecoding, hallucinations: enHallucinations, grounding: enGrounding, selfCheck: enSelfCheck, mistakeLearning: enMistakeLearning, evaluation: enEvaluation, evaluationScore: enEvaluationScore, doesAiLearn: enDoesAiLearn, chatToAgent: enChatToAgent, guardrails: enGuardrails, fullTrace: enFullTrace, conceptLabels: enConceptLabels, finalExam: enFinalExam, chapterQuiz: enChapterQuiz, introVisuals: enIntroVisuals, aiInternals: enAiInternals, infoPages: enInfoPages } },
-    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter1: esChapter1, chapter2: esChapter2, chapter3: esChapter3, chapter4: esChapter4, generationLoop: esGenerationLoop, semanticSpace: esSemanticSpace, attention: esAttention, contextWindow: esContextWindow, logitsSoftmax: esLogitsSoftmax, decoding: esDecoding, hallucinations: esHallucinations, grounding: esGrounding, selfCheck: esSelfCheck, mistakeLearning: esMistakeLearning, evaluation: esEvaluation, evaluationScore: esEvaluationScore, doesAiLearn: esDoesAiLearn, chatToAgent: esChatToAgent, guardrails: esGuardrails, fullTrace: esFullTrace, conceptLabels: esConceptLabels, finalExam: esFinalExam, chapterQuiz: esChapterQuiz, introVisuals: esIntroVisuals, aiInternals: esAiInternals, infoPages: esInfoPages } },
-    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter1: jaChapter1, chapter2: jaChapter2, chapter3: jaChapter3, chapter4: jaChapter4, generationLoop: jaGenerationLoop, semanticSpace: jaSemanticSpace, attention: jaAttention, contextWindow: jaContextWindow, logitsSoftmax: jaLogitsSoftmax, decoding: jaDecoding, hallucinations: jaHallucinations, grounding: jaGrounding, selfCheck: jaSelfCheck, mistakeLearning: jaMistakeLearning, evaluation: jaEvaluation, evaluationScore: jaEvaluationScore, doesAiLearn: jaDoesAiLearn, chatToAgent: jaChatToAgent, guardrails: jaGuardrails, fullTrace: jaFullTrace, conceptLabels: jaConceptLabels, finalExam: jaFinalExam, chapterQuiz: jaChapterQuiz, introVisuals: jaIntroVisuals, aiInternals: jaAiInternals, infoPages: jaInfoPages } },
+/**
+ * מרחבי-שמות של הפרקים המוגנים (2-19 ומבחן הסיום). הם אינם במילון הלקוח: התוכן שלהם
+ * נטען רק בשרת (i18n/chapterContent.server.ts) אחרי בדיקת הרשאה, ומגיע לעמוד דרך
+ * ProtectedContentProvider. useT ממזג אותם לתוך t.behindAi בתוך העמוד המוגן בלבד.
+ */
+export const PROTECTED_NAMESPACES = [
+    'chapter2', 'chapter3', 'chapter4', 'generationLoop', 'semanticSpace', 'attention', 'contextWindow',
+    'logitsSoftmax', 'decoding', 'hallucinations', 'grounding', 'selfCheck', 'mistakeLearning', 'evaluation',
+    'evaluationScore', 'doesAiLearn', 'chatToAgent', 'guardrails', 'fullTrace', 'finalExam',
+    // משותפים לכל הפרקים המוגנים: שמות המושגים ומשפטי הגשר בין הפרקים.
+    'conceptLabels', 'chapterBridges',
+] as const satisfies readonly (keyof BehindAiDict)[];
+export type ProtectedNamespace = (typeof PROTECTED_NAMESPACES)[number];
+
+type PublicDictionary = Omit<Dictionary, 'behindAi'> & {
+    behindAi: Omit<BehindAiDict, ProtectedNamespace> & { conceptLabels: ConceptLabelsDict };
 };
 
-/** מחזיר את המילון לשפה, עם נפילה לעברית אם השפה לא נמצאה. */
+// שמות המושגים שייכים כולם לפרקים המוגנים (למושגי פרק 1 אין תווית), ולכן המילון הציבורי
+// מחזיק מפה ריקה. עמוד מוגן, ו-layout למשתמש עם הרשאה פעילה, מקבלים את המפה המלאה מהשרת.
+const NO_CONCEPT_LABELS: ConceptLabelsDict = {};
+
+const DICTS: Record<Locale, PublicDictionary> = {
+    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter1: heChapter1, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: heChapterQuiz, introVisuals: heIntroVisuals, aiInternals: heAiInternals, infoPages: heInfoPages } },
+    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter1: arChapter1, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: arChapterQuiz, introVisuals: arIntroVisuals, aiInternals: arAiInternals, infoPages: arInfoPages } },
+    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter1: ruChapter1, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: ruChapterQuiz, introVisuals: ruIntroVisuals, aiInternals: ruAiInternals, infoPages: ruInfoPages } },
+    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter1: enChapter1, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: enChapterQuiz, introVisuals: enIntroVisuals, aiInternals: enAiInternals, infoPages: enInfoPages } },
+    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter1: esChapter1, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: esChapterQuiz, introVisuals: esIntroVisuals, aiInternals: esAiInternals, infoPages: esInfoPages } },
+    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter1: jaChapter1, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: jaChapterQuiz, introVisuals: jaIntroVisuals, aiInternals: jaAiInternals, infoPages: jaInfoPages } },
+};
+
+/**
+ * מחזיר את המילון הציבורי לשפה, עם נפילה לעברית אם השפה לא נמצאה.
+ * הטיפוס כולל גם את המרחבים המוגנים כדי שעמודי הפרקים יישארו בטוחי-טיפוס, אבל בזמן ריצה
+ * הם קיימים רק בתוך ProtectedContentProvider (ראו useT). מחוץ לעמוד מוגן אין לגשת אליהם.
+ */
 export function getDictionary(locale: Locale): Dictionary {
-    return DICTS[locale] ?? DICTS.he;
+    return (DICTS[locale] ?? DICTS.he) as Dictionary;
 }

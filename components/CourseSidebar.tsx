@@ -3,10 +3,13 @@
 import React, { useState, useLayoutEffect, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Circle, PlayCircle, Menu, X, Terminal, Sigma, BrainCircuit, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Circle, PlayCircle, Menu, X, Terminal, Sigma, BrainCircuit, ArrowRight, ArrowLeft, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { courses } from "@/lib/courseData";
 import { SidebarMastery } from "@/app/(course)/behind-the-scenes-ai/MasteryDashboard";
+import { AccountPanel } from "@/app/(course)/behind-the-scenes-ai/AccountPanel";
+import { useCourseAccess } from "@/app/(course)/behind-the-scenes-ai/_access/CourseAccessContext";
+import { isProtectedCoursePath } from "@/app/(course)/behind-the-scenes-ai/_access/access";
 import { INFO_PAGES } from "@/app/(course)/behind-the-scenes-ai/_info/infoRoutes";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageGlobe } from "@/components/language/LanguageGlobe";
@@ -17,6 +20,8 @@ import { formatChapterLabel } from "@/i18n/format";
 export function CourseSidebar({ isFocusMode = false }: { isFocusMode?: boolean }) {
   const pathname = usePathname();
   const { locale, dir, t } = useT();
+  // תצוגה בלבד: מצב הגישה שהשרת חישב. האכיפה בשרת, בכל עמוד מוגן.
+  const access = useCourseAccess();
   const [isOpen, setIsOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -203,6 +208,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
 
             {/* סיכום שליטה במבדקים - מוצג רק בלומדת "מאחורי הקלעים של AI" ורק כשיש נתונים */}
             {currentCourseId === 'behind-the-scenes-ai' && <SidebarMastery />}
+            {currentCourseId === 'behind-the-scenes-ai' && <AccountPanel />}
           </div>
 
           {/* Navigation List */}
@@ -219,12 +225,14 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                   const isActive = pathname === chapter.href;
                   const activeTextColor = chapter.labelColor || "text-blue-400";
                   const Icon = isActive ? PlayCircle : Circle;
+                  const locked = currentCourseId === 'behind-the-scenes-ai' && access.status !== 'active' && isProtectedCoursePath(chapter.href);
 
                   return (
                     <Link 
                         key={chapter.id} 
                         href={chapter.href || "#"}
                         onClick={() => setIsOpen(false)}
+                        title={locked ? t.chrome.access.lockedHint : undefined}
                     >
                         <div className={`
                             relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group mb-1
@@ -250,6 +258,12 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                                     {tField(chapter.title, locale)}
                                 </span>
                             </div>
+                            {locked && (
+                                <span className="ms-auto shrink-0 flex items-center text-[var(--bts-text-faint)]">
+                                    <Lock size={13} aria-hidden />
+                                    <span className="sr-only">{t.chrome.access.lockedLabel}</span>
+                                </span>
+                            )}
                         </div>
                     </Link>
                   );

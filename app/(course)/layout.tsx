@@ -3,6 +3,10 @@ import { RootDocument } from "@/components/RootDocument";
 import { getRequestLocale } from "@/i18n/requestLocale";
 import { courses } from "@/lib/courseData";
 import { tField } from "@/lib/localize";
+import { AccountSync, PasswordResetDialog } from "./behind-the-scenes-ai/AccountPanel";
+import { getCourseAccess, sharedCourseContent } from "./behind-the-scenes-ai/_access/courseAccess";
+import { ProtectedContentProvider } from "@/i18n/ProtectedContent";
+import { CourseAccessProvider } from "./behind-the-scenes-ai/_access/CourseAccessContext";
 
 // Root layout של מאחורי הקלעים של AI. השפה נפתרת בשרת בכל בקשה (עוגיית בחירה, שפת
 // דפדפן, רמז מדינה אמין, אנגלית), ולכן ה-HTML הראשוני כבר מגיע עם lang/dir ותוכן בשפה
@@ -27,6 +31,21 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+// מצב הגישה כאן הוא לתצוגה בלבד (נעילה בסרגל, סטטוס בפאנל החשבון). layout אינו
+// מתרנדר מחדש בניווט, ולכן האכיפה נעשית בכל עמוד מוגן בנפרד (openCourseContent).
 export default async function CourseLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <RootDocument locale={await getRequestLocale()} serverResolved>{children}</RootDocument>;
+  const [locale, access] = await Promise.all([getRequestLocale(), getCourseAccess()]);
+  // תמיד אותו מבנה עץ (תוכן ריק בלי הרשאה), כדי שכניסה לא תרכיב מחדש את העמוד.
+  const shared = await sharedCourseContent(access);
+  return (
+    <RootDocument locale={locale} serverResolved>
+      <CourseAccessProvider value={access}>
+        <ProtectedContentProvider value={shared}>
+          <AccountSync />
+          <PasswordResetDialog />
+          {children}
+        </ProtectedContentProvider>
+      </CourseAccessProvider>
+    </RootDocument>
+  );
 }

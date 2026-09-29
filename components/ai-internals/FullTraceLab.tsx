@@ -143,7 +143,7 @@ export const FullTraceLab: React.FC<FullTraceLabProps> = ({ data, dir, speechLoc
 
             <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-700/50 pt-4">
                 <button type="button" onClick={() => go(index - 1)} disabled={index === 0} className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold text-slate-200 disabled:opacity-35"><PrevIcon size={16} />{data.labels.previous}</button>
-                <span className="text-center text-xs font-bold text-slate-400" aria-live="polite">{data.labels.progress(index + 1, data.stages.length)}</span>
+                <span className="text-center text-xs font-bold text-slate-400" aria-live="polite">{data.labels.progress.replace('{current}', String(index + 1)).replace('{total}', String(data.stages.length))}</span>
                 <button type="button" onClick={() => go(index + 1)} disabled={index === data.stages.length - 1} className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-bold text-slate-200 disabled:opacity-35">{data.labels.next}<NextIcon size={16} /></button>
             </div>
 

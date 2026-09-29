@@ -8,6 +8,7 @@
 import { useMemo } from 'react';
 import { useLocaleContext } from './LocaleProvider';
 import { getDictionary, type Dictionary } from './dictionary';
+import { useProtectedContent } from './ProtectedContent';
 import type { Locale, Direction } from './config';
 
 export interface UseT {
@@ -19,6 +20,11 @@ export interface UseT {
 
 export function useT(): UseT {
     const { locale, dir, setLocale } = useLocaleContext();
-    const t = useMemo(() => getDictionary(locale), [locale]);
+    // בתוך עמוד מוגן: מרחבי-השמות של הפרק שהשרת העביר אחרי בדיקת הרשאה.
+    const extra = useProtectedContent()?.dict;
+    const t = useMemo(() => {
+        const base = getDictionary(locale);
+        return extra ? { ...base, behindAi: { ...base.behindAi, ...extra } } : base;
+    }, [locale, extra]);
     return { locale, dir, setLocale, t };
 }

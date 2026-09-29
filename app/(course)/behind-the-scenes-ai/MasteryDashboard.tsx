@@ -21,16 +21,64 @@ import {
     type MasterySummary,
     type FinalExamStatus,
 } from "./masteryProgress";
+import { formatChapterLabel } from "@/i18n/format";
+import { LOCALES } from "@/i18n/config";
+import {
+    getPendingAttempts,
+    loadAccountSnapshot,
+    removeRejected,
+    retryRejected,
+    useAuthState,
+    withPending,
+    type PendingAttempt,
+} from "./account";
 
 type ProgressDict = Dictionary["chrome"]["progress"];
 
 const FINAL_EXAM_HREF = "/behind-the-scenes-ai/final-exam";
 
-function useMasterySummary(): MasterySummary | null {
-    const [summary, setSummary] = useState<MasterySummary | null>(null);
+interface SyncState {
+    userId: string;
+    offline: boolean;
+    loadedAt: number | null;
+    pending: PendingAttempt[];
+    rejected: PendingAttempt[];
+}
+
+interface MasteryView {
+    summary: MasterySummary;
+    /** null = לא מחובר (תרגול בלי חשבון). */
+    sync: SyncState | null;
+}
+
+const hasSyncNotice = (s: SyncState | null) => !!s && (s.offline || s.pending.length > 0 || s.rejected.length > 0);
+
+// מחובר: הסיכום מהחשבון (בכל מכשיר) ועוד ניסיונות שממתינים בתור. בלי רשת: העותק האחרון
+// שנטען מהחשבון ועוד מה שממתין. לא מחובר: מהתרגול המקומי בלי חשבון. נתוני חשבון אחד
+// לעולם לא מוצגים תחת חשבון אחר או תחת אורח.
+function useMasteryView(): MasteryView | null {
+    const [view, setView] = useState<MasteryView | null>(null);
+    const userId = useAuthState().session?.user.id;
 
     useEffect(() => {
-        const refresh = () => setSummary(getMasterySummary());
+        let cancelled = false;
+        const refresh = () => {
+            if (!userId) return setView({ summary: getMasterySummary(), sync: null });
+            loadAccountSnapshot(userId).then(snap => {
+                if (cancelled) return;
+                const queue = getPendingAttempts(userId);
+                setView({
+                    summary: getMasterySummary(withPending(snap.records, queue)),
+                    sync: {
+                        userId,
+                        offline: snap.offline,
+                        loadedAt: snap.loadedAt,
+                        pending: queue.filter(p => !p.rejected),
+                        rejected: queue.filter(p => p.rejected),
+                    },
+                });
+            });
+        };
         refresh();
         const onStorage = (e: StorageEvent) => {
             if (e.key === MASTERY_STORAGE_KEY) refresh();
@@ -38,12 +86,62 @@ function useMasterySummary(): MasterySummary | null {
         window.addEventListener(MASTERY_UPDATED_EVENT, refresh);
         window.addEventListener("storage", onStorage);
         return () => {
+            cancelled = true;
             window.removeEventListener(MASTERY_UPDATED_EVENT, refresh);
             window.removeEventListener("storage", onStorage);
         };
-    }, []);
+    }, [userId]);
 
-    return summary;
+    return view;
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// מצב סנכרון לחשבון: ניתוק, תוצאות שעוד לא נשלחו, ותוצאות שהחשבון דחה (עם פעולות
+// מפורשות: נסו שוב / הסרה). לא מבוסס רק על צבע: לכל מצב יש כותרת טקסט.
+// ────────────────────────────────────────────────────────────────────────
+function SyncNotice({ sync, compact = false }: { sync: SyncState; compact?: boolean }) {
+    const { locale, t } = useT();
+    const a = t.chrome.account;
+    const name = (p: PendingAttempt) => p.chapterId === null ? t.chrome.progress.finalExam : formatChapterLabel(locale, p.chapterId);
+    const time = (ms: number) => new Date(ms).toLocaleString(LOCALES[locale].htmlLang, { dateStyle: "short", timeStyle: "short" });
+    const text = compact ? "text-[10px]" : "text-xs";
+    const btn = "rounded-md border border-[var(--bts-border)] bg-[var(--bts-sub-fill-soft)] hover:bg-[var(--bts-sub-fill-hover)] px-2 py-1 font-bold text-[var(--bts-text-secondary)]";
+
+    return (
+        <div role="status" className={`space-y-2 ${text} leading-relaxed`}>
+            {sync.offline && (
+                <p className="text-[var(--bts-text-muted)]">
+                    {sync.loadedAt !== null ? a.offlineCached(time(sync.loadedAt)) : a.offlineNoCache}
+                </p>
+            )}
+            {sync.pending.length > 0 && (
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-2">
+                    <p className="font-bold bts-tier-amber">{a.unsyncedTitle(sync.pending.length)}</p>
+                    <ul className="text-[var(--bts-text-secondary)]">
+                        {sync.pending.map(p => <li key={p.attemptId}>{name(p)} · {p.scorePercent}% · {time(p.completedAt)}</li>)}
+                    </ul>
+                    <p className="text-[var(--bts-text-muted)]">{a.unsyncedHint}</p>
+                </div>
+            )}
+            {sync.rejected.length > 0 && (
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-2 space-y-1.5">
+                    <p className="font-bold text-[var(--bts-status-danger)]">{a.rejectedTitle(sync.rejected.length)}</p>
+                    <p className="text-[var(--bts-text-muted)]">{a.rejectedHint}</p>
+                    <ul className="space-y-1.5">
+                        {sync.rejected.map(p => (
+                            <li key={p.attemptId} className="flex flex-wrap items-center justify-between gap-2 text-[var(--bts-text-secondary)]">
+                                <span>{name(p)} · {p.scorePercent}% · {time(p.completedAt)}</span>
+                                <span className="flex gap-1.5">
+                                    <button type="button" className={btn} onClick={() => retryRejected(sync.userId, p.attemptId)}>{a.retry}</button>
+                                    <button type="button" className={btn} onClick={() => removeRejected(sync.userId, p.attemptId)}>{a.remove}</button>
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
+    );
 }
 
 function finalExamText(status: FinalExamStatus, progress: ProgressDict): { label: string; color: string } {
@@ -64,11 +162,14 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
     const { dir, t } = useT();
     const progress = t.chrome.progress;
     const conceptLabels = t.behindAi.conceptLabels;
-    const summary = useMasterySummary();
+    const view = useMasteryView();
+    const summary = view?.summary;
+    const sync = view?.sync ?? null;
+    const notice = sync && hasSyncNotice(sync) ? <SyncNotice sync={sync} /> : null;
 
     if (!summary || !summary.hasAnyData) {
         return (
-            <div dir={dir} className="rounded-3xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 text-start">
+            <div dir={dir} className="rounded-3xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 text-start space-y-3">
                 <div className="flex items-center gap-2 text-[var(--bts-text-secondary)] mb-1">
                     <TrendingUp size={18} className="text-blue-400" />
                     <h3 className="font-black text-[var(--bts-text-primary)]">{progress.emptyTitle}</h3>
@@ -76,6 +177,7 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
                 <p className="text-sm text-[var(--bts-text-muted)] leading-relaxed">
                     {progress.emptyBody}
                 </p>
+                {notice}
             </div>
         );
     }
@@ -88,6 +190,8 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
                 <TrendingUp size={18} className="text-blue-400" />
                 <h3 className="font-black text-[var(--bts-text-primary)]">{progress.title}</h3>
             </div>
+
+            {notice}
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="bg-[var(--bts-fill-soft)] rounded-2xl border border-[var(--bts-divider-soft)] p-3">
@@ -159,7 +263,9 @@ export function SidebarMastery() {
     const { dir, t } = useT();
     const progress = t.chrome.progress;
     const conceptLabels = t.behindAi.conceptLabels;
-    const summary = useMasterySummary();
+    const view = useMasteryView();
+    const summary = view?.summary;
+    const sync = view?.sync ?? null;
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
@@ -183,7 +289,8 @@ export function SidebarMastery() {
         });
     };
 
-    if (!summary || !summary.hasAnyData) return null;
+    const showNotice = !!sync && hasSyncNotice(sync);
+    if (!summary || (!summary.hasAnyData && !showNotice)) return null;
 
     const exam = finalExamText(summary.finalExam, progress);
 
@@ -207,6 +314,9 @@ export function SidebarMastery() {
                     <ChevronDown size={14} className={`text-[var(--bts-text-faint)] transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
                 </span>
             </button>
+
+            {/* מצב הסנכרון מוצג תמיד, גם כשהסיכום מכווץ */}
+            {showNotice && sync && <div className="mt-2"><SyncNotice sync={sync} compact /></div>}
 
             <AnimatePresence initial={false}>
                 {open && (

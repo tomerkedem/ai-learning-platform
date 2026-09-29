@@ -31,7 +31,7 @@ export const semanticSpaceDna: SemanticSpaceDnaDict = {
         roleActive: 'שבחרת',
         roleCompare: 'להשוואה',
         twistMeaning: 'ככל שהמשמעות של שני המשפטים קרובה יותר, הגדילים נכרכים הדוק יותר. כשהמשמעות נסחפת, הם נפרדים.',
-        leadShared: (names) => `שני המשפטים חזקים באותם רכיבי משמעות: ${names}. לכן הם קרובים.`,
+        leadShared: `שני המשפטים חזקים באותם רכיבי משמעות: {names}. לכן הם קרובים.`,
         leadNone: 'שני המשפטים מדליקים רכיבים שונים, ולכן הם רחוקים יותר.',
         sharedBadge: 'משותף',
         guideSize: 'צומת גדול יותר = הרכיב חזק יותר באותו משפט.',

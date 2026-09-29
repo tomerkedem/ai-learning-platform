@@ -36,7 +36,7 @@ export interface FullTraceLabContent {
     labels: {
         input: string; process: string; output: string; details: string; branchReason: string;
         stopReason: string; stage: string; previous: string; next: string; reset: string;
-        selectStage: string; progress: (current: number, total: number) => string;
+        selectStage: string; progress: string;
     };
     stages: TraceStage[];
     branches: {
@@ -78,7 +78,7 @@ export const fullTraceLab: FullTraceLabContent = {
     labels: {
         input: 'קלט', process: 'מה משתנה או מוחלט', output: 'פלט', details: 'פרטים קומפקטיים',
         branchReason: 'סיבת ההסתעפות', stopReason: 'סיבת העצירה', stage: 'שלב', previous: 'הקודם', next: 'הבא',
-        reset: 'איפוס המסלול', selectStage: 'בחירת שלב מרכזי', progress: (current, total) => `מיקום נוכחי ${current} מתוך ${total}, במסלול שניתן לדלג בו`,
+        reset: 'איפוס המסלול', selectStage: 'בחירת שלב מרכזי', progress: `מיקום נוכחי {current} מתוך {total}, במסלול שניתן לדלג בו`,
     },
     stages: [
         {

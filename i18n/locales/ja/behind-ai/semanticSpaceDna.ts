@@ -28,7 +28,7 @@ export const semanticSpaceDna: typeof HeDna = {
         roleActive: '選んだ文',
         roleCompare: '比較する文',
         twistMeaning: '2つの文の意味が近いほど、2本の鎖はきつく絡み合います。意味が離れると、鎖もほどけていきます。',
-        leadShared: (names) => `2つの文は同じ意味の要素で強く光っています: ${names}。だから近いのです。`,
+        leadShared: `2つの文は同じ意味の要素で強く光っています: {names}。だから近いのです。`,
         leadNone: '2つの文は違う要素を光らせているので、より離れています。',
         sharedBadge: '共通',
         guideSize: 'ノードが大きいほど、その文でその要素が強いことを示します。',

@@ -60,7 +60,8 @@ export interface SemanticSpaceDnaDict {
         roleActive: string;
         roleCompare: string;
         twistMeaning: string;
-        leadShared: (names: string) => string;
+        /** תבנית: {names} מוחלף ברשימת הרכיבים המשותפים (מחרוזת, כדי שהתוכן יעבור מהשרת). */
+        leadShared: string;
         leadNone: string;
         sharedBadge: string;
         guideSize: string;

@@ -16,11 +16,8 @@ import {
     activeStepIndex,
     type EngineMode,
 } from '@/app/(course)/behind-the-scenes-ai/chapter-4/embeddingEngine';
-import {
-    getWordDataset,
-    getWordText,
-    type WordLabText,
-} from '@/app/(course)/behind-the-scenes-ai/chapter-4/wordLabContent';
+import type { WordLabContent, WordLabText } from '@/app/(course)/behind-the-scenes-ai/chapter-4/wordLabContent';
+import { useProtectedContent } from '@/i18n/ProtectedContent';
 
 /**
  * WordToNumberLab - מעבדת פרק 4, Embeddings: "ממספר חסר משמעות למשמעות".
@@ -34,8 +31,13 @@ import {
 export const WordToNumberLab: React.FC = () => {
     const { t, locale, dir } = useT();
     const isHe = locale === 'he';
-    const data = getWordDataset(locale);
-    const tx = getWordText(locale);
+    // נתוני המעבדה והטקסט שלה מגיעים מהשרת רק אחרי בדיקת הרשאה (פרק 4 מוגן).
+    const labContent = useProtectedContent()?.lab as WordLabContent;
+    const tx = labContent.text;
+    const data = useMemo(() => {
+        const ids = labContent.dataset.tokenIds;
+        return { scenarios: labContent.dataset.scenarios, tokenId: (w: string): number | null => (w in ids ? ids[w] : null) };
+    }, [labContent]);
     const lab = t.behindAi.chapter4.lab2;
     const cc = t.behindAi.chapter4.labConclusion;
 

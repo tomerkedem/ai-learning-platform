@@ -29,6 +29,7 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
+import { useAnswerKey } from '@/i18n/ProtectedContent';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
     PieChart, PackageCheck, FileQuestion, MessagesSquare, AlertTriangle,
@@ -73,8 +74,6 @@ const TYPE_ICON: Record<ScoreCaseTypeId, LucideIcon> = {
 };
 
 /** האינדקסים הנכונים. מבניים, ולכן סדר האפשרויות במילון חייב להישמר בכל שפה. */
-const GUESS_CORRECT = 2;
-const LOCK_CORRECT = 1;
 
 /** אחוז שלם מתוך יחס. מקור יחיד לכל המספרים המוצגים. */
 const toPercent = (passed: number, total: number) => Math.round((passed / total) * 100);
@@ -115,6 +114,8 @@ const ChoiceList: React.FC<{
 };
 
 export const ScoreBreakdownPanel: React.FC<ScoreBreakdownPanelProps> = ({ data, dir, speechLocale }) => {
+    const LOCK_CORRECT = useAnswerKey('scoreLock') ?? -1; // שרת בלבד
+    const GUESS_CORRECT = useAnswerKey('scoreGuess') ?? -1; // שרת בלבד
     const reduce = useReducedMotion();
     const [guessChoice, setGuessChoice] = useState<number | null>(null);
     const [revealed, setRevealed] = useState(false);

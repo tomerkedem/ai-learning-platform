@@ -31,7 +31,7 @@ export const fullTraceLab: FullTraceLabContent = {
         tool: { label: 'External system or tool', description: 'A defined external integration' }, human: { label: 'Human control', description: 'An explicit human decision' }, offline: { label: 'Offline improvement process', description: 'A later process outside the live response' },
     },
     statusLabels: { required: 'main path', optional: 'optional', skipped: 'skipped here', repeated: 'may repeat', stop: 'stop point' },
-    labels: { input: 'Input', process: 'Transformation or decision', output: 'Output', details: 'Compact details', branchReason: 'Branch reason', stopReason: 'Stop reason', stage: 'Stage', previous: 'Previous', next: 'Next', reset: 'Reset trace', selectStage: 'Select a major stage', progress: (c, t) => `Position ${c} of ${t} in a trace with optional paths` },
+    labels: { input: 'Input', process: 'Transformation or decision', output: 'Output', details: 'Compact details', branchReason: 'Branch reason', stopReason: 'Stop reason', stage: 'Stage', previous: 'Previous', next: 'Next', reset: 'Reset trace', selectStage: 'Select a major stage', progress: `Position {current} of {total} in a trace with optional paths` },
     stages: he.stages.map((stage) => ({ ...stage, ...stages[stage.id] })),
     branches: {
         title: 'Explore branches without leaving the main scenario', intro: 'These choices change only the simulation and explain why a path continues, skips, or stops.',

@@ -39,7 +39,8 @@ export interface DnaStripCopy {
     roleActive: string;
     roleCompare: string;
     twistMeaning: string;
-    leadShared: (names: string) => string;
+    /** תבנית: {names} מוחלף ברשימת הרכיבים המשותפים. */
+    leadShared: string;
     leadNone: string;
     sharedBadge: string;
     guideSize: string;
@@ -193,7 +194,7 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
     const closeness = compare ? avgCloseness(active, compare, dims) : 0.7;
     const stayedClose = compare ? closeness >= CLOSE_VERDICT : true;
     const verdict = stayedClose ? dna.stayedClose : dna.drifted;
-    const lead = !compare ? '' : sharedSet.size > 0 ? dna.leadShared(sharedNames) : dna.leadNone;
+    const lead = !compare ? '' : sharedSet.size > 0 ? dna.leadShared.replace('{names}', sharedNames) : dna.leadNone;
 
     // צבע לפי תפקיד וקבוע (לא לפי זהות המשפט): ציאן = שבחרת, סגול = להשוואה.
     const colorA = ROLE_A;
