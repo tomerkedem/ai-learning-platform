@@ -87,6 +87,8 @@ interface ReadAloudControlsProps {
      * ההקראה רצה על רשימה זו בלבד עד שהיא נגמרת או נעצרת, בלי לשנות את מצב ההיקף הגלובלי.
      */
     startSegments?: ReadAloudSegment[];
+    /** מסתיר את בורר ההיקף כשאין גרסאות קצרה/מלאה שונות באמת (למשל דפי המידע). */
+    hideScope?: boolean;
 }
 
 export function ReadAloudControls({
@@ -105,6 +107,7 @@ export function ReadAloudControls({
     startSegmentId,
     startSignal = '',
     startSegments,
+    hideScope = false,
 }: ReadAloudControlsProps) {
     const [mode, setMode] = useState<ReadAloudMode>('regular');
     const [showSettings, setShowSettings] = useState(false);
@@ -396,7 +399,7 @@ export function ReadAloudControls({
                     >
                         <div className="flex flex-col gap-3">
                             {/* מצב היקף */}
-                            <div>
+                            {!hideScope && <div>
                                 <span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--bts-text-muted)]">{labels.scope}</span>
                                 <div className="flex flex-wrap gap-1.5" role="group" aria-label={labels.scope}>
                                     {MODE_ORDER.map((m) => (
@@ -411,7 +414,7 @@ export function ReadAloudControls({
                                         </button>
                                     ))}
                                 </div>
-                            </div>
+                            </div>}
 
                             {/* מהירות קריאה */}
                             <div>

@@ -2,12 +2,14 @@
 "use client";
 
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { courses } from '@/lib/courseData';
 import { useT } from '@/i18n/useT';
 import { tField } from '@/lib/localize';
 import type { Locale } from '@/i18n/config';
+import { INFO_PAGES } from '@/app/(course)/behind-the-scenes-ai/_info/infoRoutes';
 
 // הנתיב לתמונה השניה שנמצאת בתיקיית public (השתמשתי בסיומת .png כפי שציינת)
 const IMAGE_TWO_PATH = "/01dbd09c-b44a-4b1a-b364-bd4881435ef2.png";
@@ -64,6 +66,24 @@ export function CourseFooter() {
                 {/* ... (שאר התוכן נשאר זהה) */}
                 {/* הוספת שורה כדי שהטקסט לא יעלה על התמונה */}
                 <p className={`text-sm text-slate-400 mb-1 ${lt('[html[data-theme=light]_&]:text-[var(--bts-text-secondary)]')}`}>{courseTitle}</p>
+                {/* דפי המידע קיימים רק בלומדה מאחורי הקלעים של AI */}
+                {themed && pathname !== '/' && (
+                    <nav aria-label={t.behindAi.infoPages.navLabel} className="mb-3">
+                        <ul className="flex flex-wrap justify-center gap-x-1 gap-y-1 text-sm">
+                            {INFO_PAGES.map(({ key, href }) => (
+                                <li key={key}>
+                                    <Link
+                                        href={href}
+                                        aria-current={pathname === href ? 'page' : undefined}
+                                        className="inline-block rounded-md px-2 py-1.5 text-slate-300 underline-offset-4 hover:text-white hover:underline aria-[current=page]:text-white aria-[current=page]:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bts-focus-ring)] [html[data-theme=light]_&]:text-[var(--bts-text-secondary)] [html[data-theme=light]_&]:hover:text-[var(--bts-text-primary)] [html[data-theme=light]_&]:aria-[current=page]:text-[var(--bts-text-primary)]"
+                                    >
+                                        {t.behindAi.infoPages.pages[key].navTitle}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                )}
                 <p className="text-xs mb-4">
                    {t.chrome.footer.copyright}
                 </p>

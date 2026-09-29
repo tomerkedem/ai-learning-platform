@@ -7,6 +7,7 @@ import { Circle, PlayCircle, Menu, X, Terminal, Sigma, BrainCircuit, ArrowRight,
 import { motion, AnimatePresence } from 'framer-motion';
 import { courses } from "@/lib/courseData";
 import { SidebarMastery } from "@/app/(course)/behind-the-scenes-ai/MasteryDashboard";
+import { INFO_PAGES } from "@/app/(course)/behind-the-scenes-ai/_info/infoRoutes";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageGlobe } from "@/components/language/LanguageGlobe";
 import { useT } from "@/i18n/useT";
@@ -253,6 +254,35 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                     </Link>
                   );
               })}
+
+              {/* דפי המידע של הלומדה: בסוף הרשימה, כך שהם זמינים גם במגירת המובייל. */}
+              {currentCourseId === 'behind-the-scenes-ai' && (
+                  <nav aria-label={t.behindAi.infoPages.navLabel} className="mt-4 border-t border-[var(--bts-border)] pt-4">
+                      <p aria-hidden className="text-[10px] font-bold text-[var(--bts-text-muted)] mb-2 px-2 uppercase tracking-widest opacity-70">
+                          {t.behindAi.infoPages.navLabel}
+                      </p>
+                      <ul className="space-y-0.5">
+                          {INFO_PAGES.map(({ key, href, Icon }) => {
+                              const isActive = pathname === href;
+                              return (
+                                  <li key={key}>
+                                      <Link
+                                          href={href}
+                                          onClick={() => setIsOpen(false)}
+                                          aria-current={isActive ? 'page' : undefined}
+                                          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors ${isActive
+                                              ? 'bg-[var(--bts-surface-inset)] text-[var(--bts-text-primary)] border border-[var(--bts-border-emphasis)]'
+                                              : 'text-[var(--bts-text-muted)] hover:bg-[var(--bts-surface)] hover:text-[var(--bts-text-secondary)] border border-transparent'}`}
+                                      >
+                                          <Icon size={14} aria-hidden className={`shrink-0 ${isActive ? 'text-[var(--bts-brand-primary-strong)]' : ''}`} />
+                                          <span className="leading-tight">{t.behindAi.infoPages.pages[key].navTitle}</span>
+                                      </Link>
+                                  </li>
+                              );
+                          })}
+                      </ul>
+                  </nav>
+              )}
           </div>
 
           {/* Footer */}
