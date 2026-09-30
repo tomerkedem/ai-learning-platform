@@ -16,6 +16,7 @@ import { formatChapterLabel } from "@/i18n/format";
 import { courses } from "@/lib/courseData";
 import { tField } from "@/lib/localize";
 import { AccountPanel } from "../AccountPanel";
+import { BetaAccessRequest } from "./BetaAccessRequest";
 import { SpeakButton } from "@/components/ai-internals/SpeakButton";
 import type { CourseAccess } from "./access";
 
@@ -74,7 +75,7 @@ export function LockedChapter({ access, chapter }: { access: CourseAccess; chapt
                                 {x.toIntro}
                             </Link>
                         </div>
-                        {access.status === "signed-out" && <AccountPanel />}
+                        {access.status === "signed-out" ? <AccountPanel /> : <BetaAccessRequest />}
                     </section>
                 </main>
             </div>

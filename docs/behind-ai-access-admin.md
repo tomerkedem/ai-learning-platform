@@ -101,6 +101,9 @@ Suspending an account blocks both chapter access and sign-in (migration
   - If Auth fails, the admin page shows what happened and a retry. Suspending leaves access
     blocked but sign-in open. Reactivating leaves the account suspended.
   - Retries are safe: every step can be repeated.
+- Beta access cannot be approved or renewed for a suspended account, from a request or manually
+  (migration `20260930080215_refuse_suspended_manual_beta_approval`, error `BT005`). No grant
+  changes; the admin page says to reactivate the account first.
 - Every attempt is recorded in `course_access_audit` (actions `suspend` / `reactivate`) with
   `details.outcome` = `succeeded` or `auth_failed` and the Auth error.
 
@@ -110,6 +113,50 @@ Suspending an account blocks both chapter access and sign-in (migration
 dashboard > Project Settings > API Keys: a `sb_secret_...` key, or the legacy `service_role` key).
 Restart the server after setting it. Without it, the admin page refuses to suspend or reactivate
 and changes nothing.
+
+## Beta-access requests
+
+Migration `20260930073759_beta_access_requests`. A signed-in learner with a confirmed email, no
+suspension and no active access can request beta access from the account panel or a locked
+chapter. A request grants nothing.
+
+- **Submission** (`public.request_beta_access`, called by a server action) is checked in the
+  database: identity, confirmed email, not suspended, consent ticked, the current Beta Terms
+  version with a matching text fingerprint, and no active access. A unique index allows at most
+  one pending request per learner. The row stores the user, submission time, accepted terms
+  version and locale. Learners can read only their own requests and cannot write the table.
+- **Admin page**: "Pending beta requests only" lists pending requests, oldest first. For a
+  learner with a pending request, the approve button approves the request
+  (`admin_approve_beta_request`): it grants access through `admin_approve_beta` (same period
+  rules and audit) and marks the request approved with the acting admin and grant, in one
+  transaction. Decline (`admin_decline_beta_request`) asks for confirmation and records the
+  acting admin. A request that is no longer pending is refused (another admin decided first).
+  Admins cannot approve their own request. A suspended learner's request cannot be approved
+  (migration `20260930075828_refuse_suspended_beta_approval`): it stays pending with no grant,
+  and the page says to reactivate the account first. Manual approve, revoke and suspend work as before.
+
+### Beta Terms versions (submissions are disabled until one exists)
+
+`public.beta_terms_versions` holds immutable snapshots of the Beta Terms page in all six
+locales, with a SHA-256 of the text the app shows. A trigger refuses any change or deletion, and
+refuses a snapshot that still contains a draft placeholder block.
+
+**No version is registered today**, because the Beta Terms page still has placeholder blocks
+(tester license, legal terms). Until then the learner sees an explanation instead of the
+consent form, and the server and database refuse every submission.
+
+To publish a version, after the final wording is approved and the placeholders are removed from
+all six locales:
+
+1. `node scripts/beta-terms-version.mjs YYYY-MM-DD > snapshot.sql` (refuses while any placeholder
+   remains).
+2. Put the output in a new migration and apply it to the development project.
+3. Set `BETA_TERMS_VERSION` in `app/(course)/behind-the-scenes-ai/_access/access.ts` to the same
+   value.
+
+If the Beta Terms text changes later without a new version, the fingerprint no longer matches
+and submissions are refused, so a request is never recorded against text the learner did not
+see. Register a new version the same way.
 
 ## Test learners (development project only)
 

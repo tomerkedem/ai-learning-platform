@@ -15,6 +15,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useT } from "@/i18n/useT";
 import { useCourseAccess } from "./_access/CourseAccessContext";
+import { BetaAccessRequest } from "./_access/BetaAccessRequest";
 import type { Dictionary } from "@/i18n/dictionary";
 import { LOCALES } from "@/i18n/config";
 import { getAllRecords, MASTERY_UPDATED_EVENT } from "./masteryProgress";
@@ -217,6 +218,7 @@ export function AccountPanel() {
                     </button>
                 ) : null}
                 <AccessStatusLine />
+                <BetaAccessRequest />
                 {isAdmin && (
                     <Link href="/behind-the-scenes-ai/admin" className={`${buttonClass} block text-center no-underline`}>{a.adminLink}</Link>
                 )}

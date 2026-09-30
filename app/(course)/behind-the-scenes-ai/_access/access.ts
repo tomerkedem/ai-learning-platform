@@ -24,6 +24,13 @@ export interface CourseAccess {
     expiresAt: string | null;
 }
 
+/**
+ * גרסת תנאי הבטא שהלומד מסכים לה בבקשת גישה, כפי שנרשמה ב-public.beta_terms_versions
+ * (scripts/beta-terms-version.mjs). null = אין עדיין גרסה מאושרת (בדף התנאים יש טיוטות),
+ * ולכן שליחת בקשות חסומה. המסד אוכף זאת בנפרד.
+ */
+export const BETA_TERMS_VERSION: string | null = null;
+
 /** האם כתובת בלומדה דורשת הרשאה: פרקים 2-19 ומבחן הסיום. */
 export function isProtectedCoursePath(href: string | undefined | null): boolean {
     if (!href) return false;

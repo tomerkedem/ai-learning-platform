@@ -31,6 +31,13 @@ interface Learner {
     access_revoked_at: string | null;
     last_action: "approve" | "revoke" | "rename" | "suspend" | "reactivate" | null;
     last_action_at: string | null;
+    /** הבקשה האחרונה של הלומד לגישת בטא, אם יש. */
+    request_id: string | null;
+    request_status: "pending" | "approved" | "declined" | null;
+    request_submitted_at: string | null;
+    request_decided_at: string | null;
+    request_terms_version: string | null;
+    request_locale: string | null;
 }
 
 const PAGE = 50;
@@ -46,6 +53,7 @@ export default function AdminView() {
     const a = t.chrome.account;
     const lang = LOCALES[locale].htmlLang;
     const [query, setQuery] = useState("");
+    const [pendingOnly, setPendingOnly] = useState(false);
     const [rows, setRows] = useState<Learner[]>([]);
     const [hasMore, setHasMore] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -73,9 +81,9 @@ export default function AdminView() {
 
     const fetchPage = useCallback(async (q: string, offset: number): Promise<Learner[] | null> => {
         if (!supabase) return null;
-        const { data, error } = await supabase.rpc("admin_list_learners", { p_query: q.trim() || null, p_limit: PAGE, p_offset: offset });
+        const { data, error } = await supabase.rpc("admin_list_learners", { p_query: q.trim() || null, p_limit: PAGE, p_offset: offset, p_pending_only: pendingOnly });
         return error ? null : (data as Learner[]);
-    }, []);
+    }, [pendingOnly]);
 
     // now: רגע הבקשה, מועבר מהקורא (טיימר או פעולה) כדי שהרינדור יישאר טהור.
     const reload = useCallback(async (q: string, now: number) => {
@@ -110,11 +118,37 @@ export default function AdminView() {
         setBusyId(null);
     };
 
+    // בקשה ממתינה מאושרת דרך admin_approve_beta_request: המסד יוצר את ההרשאה במנגנון הקיים
+    // ומסמן את הבקשה כמאושרת באותה טרנזקציה. בלי בקשה ממתינה, אישור ידני כמו קודם.
     const approve = (l: Learner) => act(l.user_id, async () => {
-        const { data, error } = await supabase!.rpc("admin_approve_beta", { p_user_id: l.user_id, p_duration: DURATIONS[durations[l.user_id] ?? "month"] });
+        const p_duration = DURATIONS[durations[l.user_id] ?? "month"];
+        const { data, error } = l.request_status === "pending" && l.request_id
+            ? await supabase!.rpc("admin_approve_beta_request", { p_request_id: l.request_id, p_duration })
+            : await supabase!.rpc("admin_approve_beta", { p_user_id: l.user_id, p_duration });
+        if (error?.code === "BT004") return x.requestNotPending;
+        // מושעה: שום הרשאה לא נוצרה או חודשה (ובקשה, אם יש, נשארת ממתינה). קודם מחזירים את החשבון.
+        if (error?.code === "BT005") return x.requestSuspended;
+        if (error?.code === "42501") return x.requestNotAllowed;
         if (error) throw error;
         return x.approved(fmt(data as string));
     });
+
+    const decline = (l: Learner) => {
+        if (!l.request_id || !window.confirm(x.confirmDecline(l.full_name ?? l.email))) return;
+        const requestId = l.request_id;
+        void act(l.user_id, async () => {
+            const { error } = await supabase!.rpc("admin_decline_beta_request", { p_request_id: requestId });
+            if (error?.code === "BT004") return x.requestNotPending;
+            if (error) throw error;
+            return x.declined;
+        });
+    };
+
+    const requestText = (l: Learner) =>
+        !l.request_status || !l.request_submitted_at ? null
+        : l.request_status === "pending" ? x.requestPending(fmt(l.request_submitted_at))
+        : l.request_status === "approved" ? x.requestApproved(fmt(l.request_decided_at ?? l.request_submitted_at))
+        : x.requestDeclined(fmt(l.request_decided_at ?? l.request_submitted_at));
 
     const revoke = (l: Learner) => {
         if (!window.confirm(x.confirmRevoke(l.full_name ?? l.email))) return;
@@ -205,12 +239,16 @@ export default function AdminView() {
                         className={`${field} mt-1`}
                     />
                 </label>
+                <label className="flex min-h-[44px] items-center gap-2 text-sm font-bold text-[var(--bts-text-secondary)]">
+                    <input type="checkbox" checked={pendingOnly} onChange={(e) => setPendingOnly(e.target.checked)} className="h-5 w-5 shrink-0" />
+                    {x.pendingOnly}
+                </label>
 
                 <p aria-live="polite" className="min-h-[1.25rem] text-sm font-bold text-[var(--bts-text-secondary)]">
                     {message || (!loading && x.shown(rows.length))}
                 </p>
 
-                {!loading && rows.length === 0 && <p className="text-sm text-[var(--bts-text-muted)]">{x.empty}</p>}
+                {!loading && rows.length === 0 && <p className="text-sm text-[var(--bts-text-muted)]">{pendingOnly ? x.emptyPending : x.empty}</p>}
 
                 <ul className="space-y-3">
                     {rows.map((l) => {
@@ -254,7 +292,17 @@ export default function AdminView() {
                                     {l.suspended && (
                                         <span className="rounded-md border border-rose-500/50 px-2 py-1 text-[var(--bts-status-danger)]">{x.suspendedBadge}</span>
                                     )}
+                                    {requestText(l) && (
+                                        <span className={`rounded-md border px-2 py-1 ${l.request_status === "pending" ? "border-amber-500/50 bts-tier-amber" : "border-[var(--bts-border)] text-[var(--bts-text-secondary)]"}`}>
+                                            {requestText(l)}
+                                        </span>
+                                    )}
                                 </div>
+                                {l.request_terms_version && l.request_locale && (
+                                    <p className="text-[11px] text-[var(--bts-text-faint)]">
+                                        {x.requestTerms(l.request_terms_version, LOCALES[l.request_locale as keyof typeof LOCALES]?.label ?? l.request_locale)}
+                                    </p>
+                                )}
                                 {l.suspended && l.suspension_auth_synced === false && (
                                     <p role="note" className="rounded-lg border border-amber-500/40 px-3 py-2 text-xs font-bold bts-tier-amber">
                                         {x.suspendPending(l.suspension_error ?? "")}
@@ -291,7 +339,12 @@ export default function AdminView() {
                                             <option value="month">{x.month}</option>
                                         </select>
                                     </label>
-                                    <button type="button" className={btn} disabled={busy} onClick={() => void approve(l)}>{x.approve}</button>
+                                    <button type="button" className={btn} disabled={busy} onClick={() => void approve(l)}>
+                                        {l.request_status === "pending" ? x.approveRequest : x.approve}
+                                    </button>
+                                    {l.request_status === "pending" && (
+                                        <button type="button" className={btn} disabled={busy} onClick={() => decline(l)}>{x.decline}</button>
+                                    )}
                                     {l.access_status === "active" && (
                                         <button type="button" className={btn} disabled={busy} onClick={() => revoke(l)}>{x.revoke}</button>
                                     )}
