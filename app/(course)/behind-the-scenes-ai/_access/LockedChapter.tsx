@@ -42,9 +42,16 @@ export function LockedChapter({ access, chapter }: { access: CourseAccess; chapt
 
     return (
         <div className="flex min-h-screen bg-[var(--bts-page)] text-[var(--bts-text-primary)]" dir={dir}>
+            {/* דילוג לתוכן: כמו ב-ChapterLayout, מעל הסרגל. */}
+            <a
+                href="#locked-main"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:inset-x-0 focus:mx-auto focus:w-fit focus:z-[200] focus:rounded-full focus:bg-[var(--bts-surface-elevated)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--bts-text-primary)] focus:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bts-focus-ring)]"
+            >
+                {t.behindAi.infoPages.skipToContent}
+            </a>
             <CourseSidebar />
             <div className="flex-1 relative h-screen overflow-y-auto custom-scrollbar">
-                <main className="mx-auto max-w-xl px-6 md:px-10 py-20">
+                <main id="locked-main" tabIndex={-1} className="mx-auto max-w-xl focus:outline-none px-6 md:px-10 py-20">
                     <section
                         aria-labelledby="locked-title"
                         className="rounded-3xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-from)_60%,transparent)] p-6 md:p-8 text-start space-y-4"

@@ -9,7 +9,7 @@
 // אין שימוש בתו "מקף ארוך" (em dash).
 // ════════════════════════════════════════════════════════════════════════
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import type { AuthError } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -84,6 +84,9 @@ export function AccountPanel() {
     const [fullName, setFullName] = useState<string | null | undefined>(undefined);
     const [editingName, setEditingName] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const statusId = useId();
+    // שגיאת שם מקושרת לשדה, כך שקורא מסך מקריא אותה עם הפוקוס שעובר אליו.
+    const nameError = message === a.errorName ? { "aria-invalid": true, "aria-describedby": statusId } : {};
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect -- התקדמות מקומית נקראת רק אחרי mount בצד הלקוח
@@ -205,7 +208,7 @@ export function AccountPanel() {
                         )}
                         <label className={labelClass}>
                             {a.fullName}
-                            <input name="fullName" type="text" required minLength={2} maxLength={100} autoComplete="name" defaultValue={fullName ?? ""} className={`${inputClass} mt-1`} />
+                            <input name="fullName" type="text" required minLength={2} maxLength={100} autoComplete="name" defaultValue={fullName ?? ""} {...nameError} className={`${inputClass} mt-1`} />
                         </label>
                         <div className="flex gap-2">
                             <button type="submit" className={buttonClass} disabled={busy}>{a.saveName}</button>
@@ -241,7 +244,7 @@ export function AccountPanel() {
                 <p className="text-[11px] text-[var(--bts-text-muted)] leading-relaxed">{a.intro}</p>
                 <label className={labelClass}>
                     {a.fullName} <span className="font-normal">{a.fullNameHint}</span>
-                    <input name="fullName" type="text" maxLength={100} autoComplete="name" className={`${inputClass} mt-1`} />
+                    <input name="fullName" type="text" maxLength={100} autoComplete="name" {...nameError} className={`${inputClass} mt-1`} />
                 </label>
                 <label className={labelClass}>
                     {a.email}
@@ -269,7 +272,7 @@ export function AccountPanel() {
             </summary>
             <div className="pt-3 space-y-3 text-start">
                 {body}
-                <p aria-live="polite" className="text-[11px] text-[var(--bts-text-secondary)] leading-relaxed">
+                <p id={statusId} aria-live="polite" className="text-[11px] text-[var(--bts-text-secondary)] leading-relaxed">
                     {busy ? a.working : message}
                 </p>
             </div>

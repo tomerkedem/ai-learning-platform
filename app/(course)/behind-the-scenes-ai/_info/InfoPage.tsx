@@ -162,7 +162,7 @@ export function InfoPage({ page }: { page: InfoPageKey }) {
         <div className="flex min-h-[100dvh] bg-[var(--bts-page)] font-sans text-[var(--bts-text-bright)] selection:bg-indigo-500/30 overflow-hidden relative" dir={dir}>
             <a
                 href="#info-main"
-                className={`sr-only focus:not-sr-only focus:fixed focus:top-4 focus:start-4 focus:z-[200] focus:rounded-full focus:bg-[var(--bts-surface-elevated)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--bts-text-primary)] focus:shadow-lg ${FOCUS}`}
+                className={`sr-only focus:not-sr-only focus:fixed focus:top-4 focus:inset-x-0 focus:mx-auto focus:w-fit focus:z-[200] focus:rounded-full focus:bg-[var(--bts-surface-elevated)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--bts-text-primary)] focus:shadow-lg ${FOCUS}`}
             >
                 {ip.skipToContent}
             </a>
