@@ -219,6 +219,7 @@ export const chrome: typeof heChrome = {
         requestNotAllowed: '現在、このアカウントからは申請できません。ログインしていること、メールアドレスが確認済みであることを確かめてください。',
         requestHasAccess: 'このアカウントにはすでに有効なベータアクセスがあります。',
         requestTermsUnavailable: 'まだ申請を送信できません。ベータ規約は下書きの段階で、一部は決定待ちです。最終版が公開されたら、内容を読んでここから申請できます。',
+        requestLoadError: '申請状況を確認できなかったため、現在は申請を送信できません。',
     },
 
     admin: {

@@ -4,11 +4,12 @@
 // בקשת גישת בטא ללומד מחובר, עם מייל מאומת, לא מושעה ובלי גישה פעילה. מוצג בפאנל החשבון
 // ובמסך הנעילה. מציג את מצב הבקשה האחרונה (ממתינה, אושרה, נדחתה), הסבר, קישור לתנאי הבטא
 // ותיבת הסכמה שאינה מסומנת מראש. כל עוד בדף התנאים יש טיוטות (או שאין גרסה רשומה) השליחה
-// כבויה ומוצג הסבר. זו תצוגה בלבד: השרת והמסד אוכפים הכול בעצמם.
+// כבויה ומוצג הסבר. אם מצב הבקשה לא נטען, המצב לא ידוע: מוצגת שגיאה עם ניסיון חוזר, בלי טופס
+// ובלי הסבר הטיוטה. זו תצוגה בלבד: השרת והמסד אוכפים הכול בעצמם.
 // אין שימוש בתו "מקף ארוך" (em dash).
 // ════════════════════════════════════════════════════════════════════════
 
-import React, { useCallback, useEffect, useId, useState } from "react";
+import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { useT } from "@/i18n/useT";
 import { LOCALES } from "@/i18n/config";
@@ -46,17 +47,31 @@ export function BetaAccessRequest() {
     const [consentError, setConsentError] = useState(false);
     const [busy, setBusy] = useState(false);
     const [message, setMessage] = useState("");
+    // true = הטעינה האחרונה של מצב הבקשה נכשלה: המצב לא ידוע, והשליחה לא זמינה עד ניסיון חוזר.
+    const [loadFailed, setLoadFailed] = useState(false);
+    const [retrying, setRetrying] = useState(false);
+    const headingRef = useRef<HTMLHeadingElement>(null);
 
-    const load = useCallback(async () => {
-        if (!supabase) return;
-        // RLS: רק הבקשות של המשתמש עצמו.
-        const { data, error } = await supabase
-            .from("beta_access_requests")
-            .select("status, submitted_at, decided_at")
-            .order("submitted_at", { ascending: false })
-            .limit(1)
-            .maybeSingle<LatestRequest>();
-        setLatest(error ? undefined : data);
+    const load = useCallback(async (): Promise<boolean> => {
+        if (!supabase) return false;
+        let ok = false;
+        try {
+            // RLS: רק הבקשות של המשתמש עצמו.
+            const { data, error } = await supabase
+                .from("beta_access_requests")
+                .select("status, submitted_at, decided_at")
+                .order("submitted_at", { ascending: false })
+                .limit(1)
+                .maybeSingle<LatestRequest>();
+            if (!error) {
+                setLatest(data);
+                ok = true;
+            }
+        } catch {
+            // שגיאת רשת: כמו שגיאה מהשרת.
+        }
+        setLoadFailed(!ok);
+        return ok;
     }, []);
 
     useEffect(() => {
@@ -69,6 +84,15 @@ export function BetaAccessRequest() {
     }, [eligible, userId, load]);
 
     if (!eligible) return null;
+
+    // כפתור הניסיון החוזר נשאר במקומו בזמן הטעינה (המיקוד לא הולך לאיבוד). בהצלחה הוא נעלם,
+    // ולכן המיקוד עובר לכותרת הקטע.
+    const retry = async () => {
+        setRetrying(true);
+        const ok = await load();
+        setRetrying(false);
+        if (ok) headingRef.current?.focus();
+    };
 
     const fmt = (iso: string) => new Date(iso).toLocaleDateString(LOCALES[locale].htmlLang, { dateStyle: "medium" });
     const statusText = !latest ? ""
@@ -114,13 +138,15 @@ export function BetaAccessRequest() {
 
     const titleId = `${ids}-title`;
     const errorId = `${ids}-error`;
-    const speech = [x.requestTitle, ...x.requestPoints, statusText, pending ? "" : termsReady ? "" : x.requestTermsUnavailable]
+    const speech = [x.requestTitle, ...x.requestPoints,
+        loadFailed ? x.requestLoadError : statusText,
+        loadFailed || pending || termsReady ? "" : x.requestTermsUnavailable]
         .filter(Boolean).join(" ");
 
     return (
         <section aria-labelledby={titleId} className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill)] p-3 space-y-2 text-start">
             <div className="flex items-start justify-between gap-2">
-                <h2 id={titleId} className="text-sm font-bold text-[var(--bts-text-primary)] leading-tight">{x.requestTitle}</h2>
+                <h2 id={titleId} ref={headingRef} tabIndex={-1} className="text-sm font-bold text-[var(--bts-text-primary)] leading-tight">{x.requestTitle}</h2>
                 {/* הקראה בלחיצה בלבד; key לפי שפה עוצר הקראה פעילה כשהשפה מתחלפת. */}
                 <SpeakButton key={locale} text={speech} />
             </div>
@@ -133,8 +159,16 @@ export function BetaAccessRequest() {
                 </Link>
                 {BETA_TERMS_VERSION && <span className="text-[var(--bts-text-faint)]"> ({x.termsVersion(BETA_TERMS_VERSION)})</span>}
             </p>
-            {statusText && <p className="text-xs font-bold text-[var(--bts-text-secondary)] leading-relaxed">{statusText}</p>}
-            {!pending && latest !== undefined && (termsReady ? (
+            {loadFailed ? (
+                <div className="rounded-lg border border-rose-500/40 px-2.5 py-2 space-y-2">
+                    <p role="alert" className="text-xs font-bold text-[var(--bts-status-danger)] leading-relaxed">{x.requestLoadError}</p>
+                    {/* aria-disabled ולא disabled: כפתור מושבת מאבד את המיקוד בזמן הניסיון. */}
+                    <button type="button" className={`${buttonClass} aria-disabled:opacity-50`} aria-disabled={retrying || undefined} onClick={() => { if (!retrying) void retry(); }}>
+                        {t.chrome.account.retry}
+                    </button>
+                </div>
+            ) : statusText && <p className="text-xs font-bold text-[var(--bts-text-secondary)] leading-relaxed">{statusText}</p>}
+            {!loadFailed && !pending && latest !== undefined && (termsReady ? (
                 <form onSubmit={submit} noValidate className="space-y-2">
                     <label className="flex min-h-[44px] items-start gap-2 text-xs text-[var(--bts-text-primary)] leading-relaxed">
                         <input
@@ -158,7 +192,7 @@ export function BetaAccessRequest() {
                 </p>
             ))}
             <p aria-live="polite" className="text-xs text-[var(--bts-text-secondary)] leading-relaxed">
-                {busy ? t.chrome.account.working : message}
+                {busy || retrying ? t.chrome.account.working : message}
             </p>
         </section>
     );

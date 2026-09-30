@@ -219,6 +219,7 @@ export const chrome: typeof heChrome = {
         requestNotAllowed: "This account can't send a request right now. Make sure you are signed in and your email address is confirmed.",
         requestHasAccess: 'This account already has active beta access.',
         requestTermsUnavailable: "Requests can't be sent yet: the beta terms are still a draft, and parts of them are awaiting decisions. Once the final version is published, you can read it and send a request here.",
+        requestLoadError: "We couldn't check the status of your request, so a request can't be sent right now.",
     },
 
     admin: {

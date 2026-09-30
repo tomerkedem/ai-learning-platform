@@ -219,6 +219,7 @@ export const chrome: typeof heChrome = {
         requestNotAllowed: 'Esta cuenta no puede enviar una solicitud ahora mismo. Comprueba que has iniciado sesión y que tu correo está confirmado.',
         requestHasAccess: 'Esta cuenta ya tiene acceso beta activo.',
         requestTermsUnavailable: 'Aún no se pueden enviar solicitudes: las condiciones beta siguen siendo un borrador y hay partes pendientes de decisión. Cuando se publique la versión final, podrás leerla y enviar una solicitud aquí.',
+        requestLoadError: 'No pudimos comprobar el estado de tu solicitud, así que ahora mismo no se puede enviar una solicitud.',
     },
 
     admin: {
