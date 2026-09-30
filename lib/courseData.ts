@@ -532,7 +532,7 @@ export const courses: Record<string, CourseData> = {
         // התוכנית הסופית כוללת 19 פרקים, וכולם בנויים. הפרק האחרון בתוכנית הוא 19
         // (Full Trace), שמסתיים ב-CTA למבחן הסיום. לכן אין דגל hasUpcomingChapters:
         // הפוטר של פרק 19 מציג את מסך הסיום הרגיל.
-        title: { he: "מאחורי הקלעים של AI", en: "Behind the Scenes of AI", ar: "ما وراء كواليس AI", ru: "AI за кулисами", es: "Entre bastidores de AI", ja: "AI の舞台裏" },
+        title: { he: "מאחורי הקלעים של ה-AI", en: "Behind the Scenes of AI", ar: "ما وراء كواليس AI", ru: "AI за кулисами", es: "Entre bastidores de AI", ja: "AI の舞台裏" },
         description: { he: "מה קורה כשכותבים לצ'ט או ל-Agent", en: "What happens when you write to a chat or an agent", ar: "ما الذي يحدث عندما تكتب إلى محادثة أو وكيل", ru: "Что происходит, когда вы пишете в чат или агенту", es: "Qué ocurre cuando escribes a un chat o a un agente", ja: "チャットやエージェントに入力したとき、何が起きるのか" },
         chapters: [
             {

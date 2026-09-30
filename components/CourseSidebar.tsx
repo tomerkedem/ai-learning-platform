@@ -3,7 +3,7 @@
 import React, { useState, useLayoutEffect, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Circle, PlayCircle, Menu, X, Terminal, Sigma, BrainCircuit, ArrowRight, ArrowLeft, Lock } from 'lucide-react';
+import { Circle, PlayCircle, Menu, X, ArrowRight, ArrowLeft, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { courses } from "@/lib/courseData";
 import { SidebarMastery } from "@/app/(course)/behind-the-scenes-ai/MasteryDashboard";
@@ -115,26 +115,6 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
   const safeIndex = currentChapterIndex === -1 ? 0 : currentChapterIndex;
   const progress = Math.round(((safeIndex + 1) / course.chapters.length) * 100);
 
-  // ראשי-התיבות של מחבר הלומדה, נגזרים מהשם המתורגם (chrome.authorName). כך הם
-  // תלויי-שפה: he 'תומר קדם' => 'תק', en 'Tomer Kedem' => 'TK'. לא נדרש מפתח חדש.
-  const authorInitials = t.chrome.authorName.split(/[\s・]+/).filter(Boolean).map((w) => w[0]).join('').slice(0, 2);
-
-  const getCourseIcon = () => {
-      switch(currentCourseId) {
-          case 'python': return <Terminal size={20} />;
-          case 'probability': return <BrainCircuit size={20} />;
-          default: return <Sigma size={20} />; 
-      }
-  };
-
-  const getCourseColor = () => {
-      switch(currentCourseId) {
-          case 'python': return 'text-yellow-400';
-          case 'probability': return 'text-pink-400';
-          default: return 'text-sky-400';
-      }
-  };
-
   // שם הלומדה בסרגל הוא ניווט/chrome. בלומדות עם hero משלהן (behind-the-scenes-ai) אסור
   // שיהיה h1, אחרת נוצר h1 שני לצד ה-hero. בלומדות אחרות (math) אין hero, ולכן הוא נשאר
   // הכותרת הראשית של המסמך.
@@ -143,70 +123,42 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
   const sidebarContent = (
       <div className="flex flex-col h-full bg-[var(--bts-surface-elevated)]">
           {/* Header */}
-          <div className="p-6 border-b border-[var(--bts-border)] shrink-0">
-            <Link
-                href="/"
-                className="flex items-center gap-2 text-xs font-medium text-[var(--bts-text-muted)] hover:text-indigo-400 transition-colors mb-6 group"
-            >
-                {dir === 'rtl'
-                    ? <ArrowRight size={14} className="group-hover:-translate-x-1 transition-transform" />
-                    : <ArrowLeft size={14} className="group-hover:translate-x-1 transition-transform" />}
-                <span>{t.chrome.backToCatalog}</span>
-            </Link>
-
-            <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-[var(--bts-surface-inset)] flex items-center justify-center text-[var(--bts-text-primary)] font-bold shadow-lg shadow-black/20 border border-[var(--bts-border-emphasis)]">
-                    <span className={getCourseColor()}>{getCourseIcon()}</span>
-                </div>
-                <div className="flex flex-col min-w-0">
-                    <SidebarTitleTag className="font-bold text-[var(--bts-text-primary)] text-base truncate leading-tight">
-                        {tField(course.title, locale)}
-                    </SidebarTitleTag>
-                    <span className="text-[var(--bts-text-muted)] text-[10px] mt-0.5 truncate">
-                        {tField(course.description, locale)}
-                    </span>
-                </div>
+          <div className="px-3 pt-2 pb-2 border-b border-[var(--bts-border)] shrink-0">
+            <div className="flex items-center gap-1">
+                {/* חזרה לקטלוג: קישור-אייקון, השם הנגיש מגיע מהמחרוזת המתורגמת */}
+                <Link
+                    href="/"
+                    aria-label={t.chrome.backToCatalog}
+                    title={t.chrome.backToCatalog}
+                    className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-[var(--bts-text-muted)] hover:text-[var(--bts-text-primary)] hover:bg-[var(--bts-surface)] transition-colors"
+                >
+                    {dir === 'rtl' ? <ArrowRight size={16} aria-hidden /> : <ArrowLeft size={16} aria-hidden />}
+                </Link>
+                <SidebarTitleTag className="min-w-0 flex-1 font-bold text-[var(--bts-text-primary)] text-base truncate leading-tight">
+                    {tField(course.title, locale)}
+                </SidebarTitleTag>
 
                 {isOpen && (
                     <button
                         onClick={closeMenu}
                         aria-label={t.chrome.nav.closeMenu}
-                        className="p-1 rounded-full text-[var(--bts-text-muted)] hover:text-[var(--bts-text-primary)] ms-auto md:hidden"
+                        className="shrink-0 p-1 rounded-full text-[var(--bts-text-muted)] hover:text-[var(--bts-text-primary)] md:hidden"
                     >
                         <X size={24} />
                     </button>
                 )}
             </div>
 
-            {/* User Card */}
-            <div className="flex items-center bg-[var(--bts-surface)] rounded-2xl p-3 gap-3 w-full shadow-lg border border-[var(--bts-border)] relative overflow-hidden group">
-                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                <div className="relative shrink-0">
-                    <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-md border-2 border-blue-400">
-                        {authorInitials}
-                    </div>
-                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[var(--bts-surface)] rounded-full"></div>
-                </div>
-
-                <div className="flex flex-col text-start min-w-0 relative z-10">
-                    <span className="text-[var(--bts-text-primary)] font-bold text-md leading-tight">{t.chrome.authorName}</span>
-                    <span className="text-[var(--bts-text-muted)] text-[12px]">{t.chrome.authorRole}</span>
-                    <span className="text-[var(--bts-brand-secondary)] text-[14px] mt-0.5 font-medium">AI Developer Series</span>
-                </div>
-            </div>
-
             {/* Progress Bar */}
-            <div className="mt-5">
-                <div className="flex justify-between text-[10px] text-[var(--bts-text-muted)] mb-1.5 font-mono">
-                    <span>{t.chrome.courseProgress}</span>
-                    <span className={progress === 100 ? 'text-[var(--bts-status-positive)]' : ''}>{progress}%</span>
-                </div>
-                <div className="h-1.5 w-full bg-[var(--bts-surface-inset)] rounded-full overflow-hidden border border-[var(--bts-border)]">
+            <div className="mt-1.5 px-1 flex items-center gap-2 text-[11px] text-[var(--bts-text-muted)] font-mono">
+                <span className="shrink-0">{t.chrome.courseProgress}</span>
+                <div aria-hidden className="h-1 flex-1 bg-[var(--bts-surface-inset)] rounded-full overflow-hidden">
                     <div
                         className={`h-full transition-all duration-700 ease-out ${progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
                         style={{ width: `${Math.max(2, progress)}%` }}
                     />
                 </div>
+                <span className={`shrink-0 ${progress === 100 ? 'text-[var(--bts-status-positive)]' : ''}`}>{progress}%</span>
             </div>
 
             {/* סיכום שליטה במבדקים - מוצג רק בלומדת "מאחורי הקלעים של AI" ורק כשיש נתונים */}
@@ -312,6 +264,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                   <DisplaySettings />
                   {pathname?.startsWith('/behind-the-scenes-ai') && <LanguageGlobe />}
               </div>
+              <p className="text-xs">{t.chrome.byAuthor}</p>
           </div>
       </div>
   );

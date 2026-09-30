@@ -27,7 +27,7 @@ export const catalog = {
             description: 'שליטה בלוגיקה שמניעה את האופטימיזציה וה-Gradient Descent.',
         },
         'behind-the-scenes-ai': {
-            title: 'מאחורי הקלעים של AI',
+            title: 'מאחורי הקלעים של ה-AI',
             description: "מה קורה כשכותבים לצ'ט או ל-Agent: מטקסט להסתברות, החלטה ופעולה.",
         },
     } as Record<string, { title: string; description: string }>,

@@ -295,13 +295,13 @@ export function SidebarMastery() {
     const exam = finalExamText(summary.finalExam, progress);
 
     return (
-        <div className="mt-5 pt-5 border-t border-[var(--bts-sub-rule)]" dir={dir}>
+        <div className="mt-2 pt-0.5 border-t border-[var(--bts-sub-rule)]" dir={dir}>
             {/* כותרת לחיצה: מציגה סיכום קצר גם כשמכווץ, ומתקפלת בלחיצה */}
             <button
                 type="button"
                 onClick={toggle}
                 aria-expanded={open}
-                className="w-full flex items-center justify-between gap-2 group"
+                className="w-full flex items-center justify-between gap-2 py-1.5 group"
             >
                 <span className="flex items-center gap-2 min-w-0">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--bts-text-faint)] group-hover:text-[var(--bts-text-secondary)] transition-colors">{progress.sidebarTitle}</span>

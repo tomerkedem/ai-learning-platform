@@ -12,6 +12,7 @@
 import React, { useEffect, useId, useRef, useState } from "react";
 import type { AuthError } from "@supabase/supabase-js";
 import Link from "next/link";
+import { UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useT } from "@/i18n/useT";
 import { useCourseAccess } from "./_access/CourseAccessContext";
@@ -75,7 +76,7 @@ function AccessStatusLine() {
 export function AccountPanel() {
     const { dir, t } = useT();
     const a = t.chrome.account;
-    const { session } = useAuthState();
+    const { session, ready } = useAuthState();
     const userId = session?.user.id;
     const [busy, setBusy] = useState(false);
     const [message, setMessage] = useState("");
@@ -266,9 +267,17 @@ export function AccountPanel() {
     }
 
     return (
-        <details className="mt-5 pt-5 border-t border-[var(--bts-sub-rule)]" dir={dir}>
-            <summary className="cursor-pointer text-[10px] font-bold uppercase tracking-widest text-[var(--bts-text-faint)] hover:text-[var(--bts-text-secondary)]">
-                {a.title}
+        <details className="mt-2 pt-0.5 border-t border-[var(--bts-sub-rule)]" dir={dir}>
+            {/* שורה אחת: שם ארוך נחתך חזותית בלבד בתוך ה-bdi, לפי כיוון השם עצמו (תחילתו נשמרת),
+                והשם המלא נשאר בשם הנגיש של ה-summary. */}
+            <summary className="cursor-pointer truncate py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--bts-text-faint)] hover:text-[var(--bts-text-secondary)]">
+                {session && fullName ? (
+                    <span className="inline-flex max-w-[calc(100%-1rem)] items-center gap-1 align-bottom">
+                        <span className="shrink-0">{a.summarySignedIn}</span>{" "}
+                        <UserRound size={12} aria-hidden="true" className="shrink-0" />{" "}
+                        <bdi className="min-w-0 truncate normal-case tracking-normal leading-none text-[11px] text-[var(--bts-text-secondary)]">{fullName}</bdi>
+                    </span>
+                ) : ready && !session ? a.summarySignedOut : a.title}
             </summary>
             <div className="pt-3 space-y-3 text-start">
                 {body}

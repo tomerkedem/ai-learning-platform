@@ -8,6 +8,7 @@ export const chrome: typeof heChrome = {
     courseProgress: 'コースの進捗',
     authorName: 'トメル・ケデム',
     authorRole: 'コース作成者',
+    byAuthor: '作成：トメル・ケデム',
     intro: 'はじめに',
 
     header: {
@@ -140,6 +141,8 @@ export const chrome: typeof heChrome = {
         password: 'パスワード',
         signIn: 'ログイン',
         signUp: 'アカウントを作成',
+        summarySignedOut: 'ログイン / 新規登録',
+        summarySignedIn: 'ログイン中：',
         signOut: 'ログアウト',
         signedInAs: 'ログイン中',
         working: '少々お待ちください...',

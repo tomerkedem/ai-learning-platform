@@ -11,6 +11,7 @@ export const chrome = {
     courseProgress: 'התקדמות בלומדה',
     authorName: 'תומר קדם',
     authorRole: 'מחבר הלומדה',
+    byAuthor: 'מאת תומר קדם',
     intro: 'מבוא',
 
     // כותרת עליונה
@@ -160,6 +161,8 @@ export const chrome = {
         password: 'סיסמה',
         signIn: 'התחברות',
         signUp: 'יצירת חשבון',
+        summarySignedOut: 'התחברות / הרשמה',
+        summarySignedIn: 'חשבון מחובר:',
         signOut: 'התנתקות',
         signedInAs: 'מחוברים בתור',
         working: 'רגע...',

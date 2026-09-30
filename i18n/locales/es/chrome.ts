@@ -8,6 +8,7 @@ export const chrome: typeof heChrome = {
     courseProgress: 'Progreso del curso',
     authorName: 'Tomer Kedem',
     authorRole: 'Autor del curso',
+    byAuthor: 'Por Tomer Kedem',
     intro: 'Introducción',
 
     header: {
@@ -140,6 +141,8 @@ export const chrome: typeof heChrome = {
         password: 'Contraseña',
         signIn: 'Iniciar sesión',
         signUp: 'Crear cuenta',
+        summarySignedOut: 'Iniciar sesión / Registrarse',
+        summarySignedIn: 'Sesión iniciada:',
         signOut: 'Cerrar sesión',
         signedInAs: 'Sesión iniciada como',
         working: 'Un momento...',

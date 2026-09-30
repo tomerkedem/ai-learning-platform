@@ -200,6 +200,11 @@ export function InfoPage({ page }: { page: InfoPageKey }) {
                         <p className="mt-5 max-w-[62ch] text-base md:text-lg leading-8 text-[var(--bts-text-secondary)]">
                             {content.lead}
                         </p>
+                        {page === "about" && (
+                            <p className="mt-3 text-sm text-[var(--bts-text-muted)]">
+                                {t.chrome.authorRole}: <bdi className="font-semibold text-[var(--bts-text-secondary)]">{t.chrome.authorName}</bdi>
+                            </p>
+                        )}
                         {/* דוק ההאזנה המודרכת: אותו רכיב של הפרקים. לדפי מידע אין גרסאות היקף שונות, לכן בורר ההיקף מוסתר. */}
                         <FloatingReadAloud dir={dir}>
                             <ReadAloudControls
