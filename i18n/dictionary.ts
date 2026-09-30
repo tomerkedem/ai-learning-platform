@@ -21,12 +21,7 @@ import { chrome as jaChrome } from './locales/ja/chrome';
 
 // פרק 1 (i18n של תוכן הפרק, שלב C1). העברית היא המקור; שאר השפות הן stubs שמייצאים
 // מחדש את העברית (fallback בטוח) עד שיתורגמו בשלב C3.
-import { chapter1 as heChapter1 } from './locales/he/behind-ai/chapter1';
-import { chapter1 as arChapter1 } from './locales/ar/behind-ai/chapter1';
-import { chapter1 as ruChapter1 } from './locales/ru/behind-ai/chapter1';
-import { chapter1 as enChapter1 } from './locales/en/behind-ai/chapter1';
-import { chapter1 as esChapter1 } from './locales/es/behind-ai/chapter1';
-import { chapter1 as jaChapter1 } from './locales/ja/behind-ai/chapter1';
+import type { chapter1 as heChapter1 } from './locales/he/behind-ai/chapter1';
 
 // פרק 2 (i18n של תוכן הפרק, שלב C1). העברית היא המקור; שאר השפות הן stubs שמייצאים
 // מחדש את העברית (fallback בטוח) עד שיתורגמו בשלב מאוחר יותר.
@@ -89,12 +84,13 @@ import type { fullTrace as heFullTrace } from './locales/he/behind-ai/fullTrace'
 
 // המבוא (i18n של המבוא). העברית היא המקור; שאר השפות הן stubs שמייצאים מחדש את
 // העברית (fallback בטוח) עד שיתורגמו בשלב מאוחר יותר.
-import { introduction as heIntroduction } from './locales/he/behind-ai/introduction';
-import { introduction as arIntroduction } from './locales/ar/behind-ai/introduction';
-import { introduction as ruIntroduction } from './locales/ru/behind-ai/introduction';
-import { introduction as enIntroduction } from './locales/en/behind-ai/introduction';
-import { introduction as esIntroduction } from './locales/es/behind-ai/introduction';
-import { introduction as jaIntroduction } from './locales/ja/behind-ai/introduction';
+import type { introduction as heIntroduction } from './locales/he/behind-ai/introduction';
+import { introPreview as heIntroPreview } from './locales/he/behind-ai/introPreview';
+import { introPreview as arIntroPreview } from './locales/ar/behind-ai/introPreview';
+import { introPreview as ruIntroPreview } from './locales/ru/behind-ai/introPreview';
+import { introPreview as enIntroPreview } from './locales/en/behind-ai/introPreview';
+import { introPreview as esIntroPreview } from './locales/es/behind-ai/introPreview';
+import { introPreview as jaIntroPreview } from './locales/ja/behind-ai/introPreview';
 
 // תוויות תצוגה למושגים (concept) של הלומדה. העברית היא המקור (מפת זהות); שאר השפות
 // הן stubs שמייצאים מחדש את העברית (fallback בטוח) עד שיתורגמו בשלב B3.
@@ -116,12 +112,7 @@ import { chapterQuiz as jaChapterQuiz } from './locales/ja/behind-ai/chapterQuiz
 
 // המחשות ותוויות פנימיות של המבוא. העברית היא המקור; שאר השפות הן stubs שמייצאים
 // מחדש את העברית (fallback בטוח) עד שיתורגמו בשלב I2.
-import { introVisuals as heIntroVisuals } from './locales/he/behind-ai/introVisuals';
-import { introVisuals as arIntroVisuals } from './locales/ar/behind-ai/introVisuals';
-import { introVisuals as ruIntroVisuals } from './locales/ru/behind-ai/introVisuals';
-import { introVisuals as enIntroVisuals } from './locales/en/behind-ai/introVisuals';
-import { introVisuals as esIntroVisuals } from './locales/es/behind-ai/introVisuals';
-import { introVisuals as jaIntroVisuals } from './locales/ja/behind-ai/introVisuals';
+import type { introVisuals as heIntroVisuals } from './locales/he/behind-ai/introVisuals';
 
 // כרום משותף של רכיבי ai-internals (ChatInterfacePanel, ConfidenceMeter). העברית היא
 // המקור; שאר השפות הן stubs שמייצאים מחדש את העברית עד שיתורגמו (en כבר מתורגם).
@@ -165,6 +156,7 @@ export type ChatToAgentDict = typeof heChatToAgent;
 export type GuardrailsDict = typeof heGuardrails;
 export type FullTraceDict = typeof heFullTrace;
 export type IntroductionDict = typeof heIntroduction;
+export type IntroPreviewDict = typeof heIntroPreview;
 export type ConceptLabelsDict = typeof heConceptLabels;
 export type ChapterBridgesDict = typeof heChapterBridges;
 export type FinalExamDict = typeof heFinalExam;
@@ -176,6 +168,7 @@ export type InfoPagesDict = typeof heInfoPages;
 /** מרחב הלומדה "מאחורי הקלעים של AI". מתרחב עם כל פרק שעובר i18n. */
 export interface BehindAiDict {
     introduction: IntroductionDict;
+    introPreview: IntroPreviewDict;
     chapter1: Chapter1Dict;
     chapter2: Chapter2Dict;
     chapter3: Chapter3Dict;
@@ -212,11 +205,13 @@ export interface Dictionary {
 }
 
 /**
- * מרחבי-שמות של הפרקים המוגנים (2-19 ומבחן הסיום). הם אינם במילון הלקוח: התוכן שלהם
+ * מרחבי-שמות מוגנים (המבוא המלא, פרקים 1-19 ומבחן הסיום). הם אינם במילון הלקוח: התוכן שלהם
  * נטען רק בשרת (i18n/chapterContent.server.ts) אחרי בדיקת הרשאה, ומגיע לעמוד דרך
  * ProtectedContentProvider. useT ממזג אותם לתוך t.behindAi בתוך העמוד המוגן בלבד.
  */
 export const PROTECTED_NAMESPACES = [
+    // המבוא המלא ופרק 1: ללומד מחובר ומאומת. לאורחים יש רק introPreview (ההירו ודוגמת הצ'אט).
+    'introduction', 'introVisuals', 'chapter1',
     'chapter2', 'chapter3', 'chapter4', 'generationLoop', 'semanticSpace', 'attention', 'contextWindow',
     'logitsSoftmax', 'decoding', 'hallucinations', 'grounding', 'selfCheck', 'mistakeLearning', 'evaluation',
     'evaluationScore', 'doesAiLearn', 'chatToAgent', 'guardrails', 'fullTrace', 'finalExam',
@@ -234,12 +229,12 @@ type PublicDictionary = Omit<Dictionary, 'behindAi'> & {
 const NO_CONCEPT_LABELS: ConceptLabelsDict = {};
 
 const DICTS: Record<Locale, PublicDictionary> = {
-    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introduction: heIntroduction, chapter1: heChapter1, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: heChapterQuiz, introVisuals: heIntroVisuals, aiInternals: heAiInternals, infoPages: heInfoPages } },
-    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introduction: arIntroduction, chapter1: arChapter1, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: arChapterQuiz, introVisuals: arIntroVisuals, aiInternals: arAiInternals, infoPages: arInfoPages } },
-    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introduction: ruIntroduction, chapter1: ruChapter1, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: ruChapterQuiz, introVisuals: ruIntroVisuals, aiInternals: ruAiInternals, infoPages: ruInfoPages } },
-    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introduction: enIntroduction, chapter1: enChapter1, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: enChapterQuiz, introVisuals: enIntroVisuals, aiInternals: enAiInternals, infoPages: enInfoPages } },
-    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introduction: esIntroduction, chapter1: esChapter1, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: esChapterQuiz, introVisuals: esIntroVisuals, aiInternals: esAiInternals, infoPages: esInfoPages } },
-    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introduction: jaIntroduction, chapter1: jaChapter1, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: jaChapterQuiz, introVisuals: jaIntroVisuals, aiInternals: jaAiInternals, infoPages: jaInfoPages } },
+    he: { catalog: heCatalog, chrome: heChrome, behindAi: { introPreview: heIntroPreview, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: heChapterQuiz, aiInternals: heAiInternals, infoPages: heInfoPages } },
+    ar: { catalog: arCatalog, chrome: arChrome, behindAi: { introPreview: arIntroPreview, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: arChapterQuiz, aiInternals: arAiInternals, infoPages: arInfoPages } },
+    ru: { catalog: ruCatalog, chrome: ruChrome, behindAi: { introPreview: ruIntroPreview, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: ruChapterQuiz, aiInternals: ruAiInternals, infoPages: ruInfoPages } },
+    en: { catalog: enCatalog, chrome: enChrome, behindAi: { introPreview: enIntroPreview, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: enChapterQuiz, aiInternals: enAiInternals, infoPages: enInfoPages } },
+    es: { catalog: esCatalog, chrome: esChrome, behindAi: { introPreview: esIntroPreview, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: esChapterQuiz, aiInternals: esAiInternals, infoPages: esInfoPages } },
+    ja: { catalog: jaCatalog, chrome: jaChrome, behindAi: { introPreview: jaIntroPreview, conceptLabels: NO_CONCEPT_LABELS, chapterQuiz: jaChapterQuiz, aiInternals: jaAiInternals, infoPages: jaInfoPages } },
 };
 
 /**

@@ -28,7 +28,7 @@ import {
     signOutAndForget,
     normalizeFullName,
     loadFullName,
-    saveFullName,
+    cachedFullName,
     checkIsCourseAdmin,
     importLocalRecords,
     isImportHandled,
@@ -68,12 +68,14 @@ function AccessStatusLine() {
         : access.status === "expired" ? x.accessExpired(date)
         : access.status === "revoked" ? x.accessRevoked
         : access.status === "suspended" ? x.accessSuspended
+        : access.status === "unconfirmed" ? x.accessUnconfirmed
         : null;
     if (!text) return null;
     return <p className="text-[11px] font-bold text-[var(--bts-text-secondary)] leading-relaxed">{text}</p>;
 }
 
-export function AccountPanel() {
+/** defaultOpen: פתוח מראש (בשער התצוגה המקדימה של המבוא), כדי שההרשמה וההתחברות יהיו גלויות מיד. */
+export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } = {}) {
     const { dir, t } = useT();
     const a = t.chrome.account;
     const { session, ready } = useAuthState();
@@ -81,9 +83,9 @@ export function AccountPanel() {
     const [busy, setBusy] = useState(false);
     const [message, setMessage] = useState("");
     const [importCount, setImportCount] = useState(0);
-    // undefined = עוד נטען; null = אין שם בפרופיל (משתמש ותיק) וצריך להשלים.
-    const [fullName, setFullName] = useState<string | null | undefined>(undefined);
-    const [editingName, setEditingName] = useState(false);
+    // undefined = עוד נטען; null = אין שם בפרופיל (משתמש ותיק; מנהל משלים אותו).
+    // מתחיל מהשם שכבר נטען לאותו משתמש, כדי שהסיכום לא יהבהב בניווט בין עמודים.
+    const [fullName, setFullName] = useState<string | null | undefined>(() => cachedFullName(userId));
     const [isAdmin, setIsAdmin] = useState(false);
     const statusId = useId();
     // שגיאת שם מקושרת לשדה, כך שקורא מסך מקריא אותה עם הפוקוס שעובר אליו.
@@ -93,8 +95,7 @@ export function AccountPanel() {
         // eslint-disable-next-line react-hooks/set-state-in-effect -- התקדמות מקומית נקראת רק אחרי mount בצד הלקוח
         setImportCount(userId && !isImportHandled(userId) ? getAllRecords().length : 0);
         setMessage("");
-        setFullName(undefined);
-        setEditingName(false);
+        setFullName(cachedFullName(userId));
         setIsAdmin(false);
         if (!userId) return;
         let cancelled = false;
@@ -167,24 +168,6 @@ export function AccountPanel() {
         });
     };
 
-    const submitName = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const input = e.currentTarget.elements.namedItem("fullName") as HTMLInputElement;
-        const name = normalizeFullName(input.value);
-        if (!userId) return;
-        if (!name) {
-            setMessage(a.errorName);
-            input.focus();
-            return;
-        }
-        void run(async () => {
-            await saveFullName(userId, name);
-            setFullName(name);
-            setEditingName(false);
-            return a.nameSaved;
-        });
-    };
-
     const skipImport = () => {
         if (userId) markImportHandled(userId);
         setImportCount(0);
@@ -199,28 +182,12 @@ export function AccountPanel() {
                     {fullName && <><bdi className="font-bold text-[var(--bts-text-secondary)]">{fullName}</bdi><br /></>}
                     <bdi dir="ltr" className={fullName ? "" : "font-bold text-[var(--bts-text-secondary)]"}>{session.user.email}</bdi>
                 </p>
-                {(fullName === null || editingName) ? (
-                    <form onSubmit={submitName} className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill)] p-2.5 space-y-2">
-                        {fullName === null && (
-                            <>
-                                <p className="text-[11px] font-bold text-[var(--bts-text-primary)]">{a.nameMissingTitle}</p>
-                                <p className="text-[11px] text-[var(--bts-text-muted)] leading-relaxed">{a.nameMissingBody}</p>
-                            </>
-                        )}
-                        <label className={labelClass}>
-                            {a.fullName}
-                            <input name="fullName" type="text" required minLength={2} maxLength={100} autoComplete="name" defaultValue={fullName ?? ""} {...nameError} className={`${inputClass} mt-1`} />
-                        </label>
-                        <div className="flex gap-2">
-                            <button type="submit" className={buttonClass} disabled={busy}>{a.saveName}</button>
-                            {editingName && <button type="button" className={buttonClass} disabled={busy} onClick={() => setEditingName(false)}>{a.cancel}</button>}
-                        </div>
-                    </form>
-                ) : fullName ? (
-                    <button type="button" onClick={() => setEditingName(true)} className="text-[11px] font-bold text-[var(--bts-text-muted)] underline hover:text-[var(--bts-text-secondary)]">
-                        {a.editName}
-                    </button>
-                ) : null}
+                {fullName === null && (
+                    <div className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill)] p-2.5 space-y-1">
+                        <p className="text-[11px] font-bold text-[var(--bts-text-primary)]">{a.nameMissingTitle}</p>
+                        <p className="text-[11px] text-[var(--bts-text-muted)] leading-relaxed">{a.nameMissingBody}</p>
+                    </div>
+                )}
                 <AccessStatusLine />
                 <BetaAccessRequest />
                 {isAdmin && (
@@ -267,7 +234,7 @@ export function AccountPanel() {
     }
 
     return (
-        <details className="mt-2 pt-0.5 border-t border-[var(--bts-sub-rule)]" dir={dir}>
+        <details open={defaultOpen || undefined} className="mt-2 pt-0.5 border-t border-[var(--bts-sub-rule)]" dir={dir}>
             {/* שורה אחת: שם ארוך נחתך חזותית בלבד בתוך ה-bdi, לפי כיוון השם עצמו (תחילתו נשמרת),
                 והשם המלא נשאר בשם הנגיש של ה-summary. */}
             <summary className="cursor-pointer truncate py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--bts-text-faint)] hover:text-[var(--bts-text-secondary)]">

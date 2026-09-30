@@ -7,6 +7,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { introRoadmap } from './introRoadmap';
+import { introPreview } from './introPreview';
 
 export const introduction = {
     contentLocale: 'es' as Locale,
@@ -23,22 +24,11 @@ export const introduction = {
     },
 
     // ── Hero ──
-    hero: {
-        badge: 'El laboratorio transparente · Behind the Scenes',
-        titleLead: '¿Qué ocurre en realidad entre el mensaje que envías',
-        titleAccent: 'y la respuesta que recibes?',
-        intro: 'Una mirada a lo que ocurre en el momento en que envías un mensaje a un chat.',
-    },
+    hero: introPreview.hero,
 
     // ── El ejemplo de chat y la puerta hacia el motor (EngineReveal + EngineGate) ──
     chat: {
-        promptRole: 'Tu solicitud',
-        prompt: 'Voy a tener amigos a cenar. ¿Qué podría preparar?',
-        inputPlaceholder: 'Escribe un mensaje...',
-        answerRole: 'La respuesta',
-        answer: 'Podrías hacer pasta con una ensalada sencilla. Si me dices qué les gusta, puedo sugerirte un menú más concreto.',
-        outsideLine: 'Desde fuera parece que son dos pasos: escribiste una solicitud y recibiste una respuesta.',
-        curiosityLine: 'Pero la verdadera pregunta es qué ocurrió en el medio.',
+        ...introPreview.chat,
         gateLead: 'Ahora abrimos la caja y vemos el recorrido por dentro.',
         revealLabel: 'Abre el motor entre la pregunta y la respuesta',
         closeLabel: 'Cerrar la vista',
@@ -168,26 +158,7 @@ export const introduction = {
     },
 
     // ── Control de lectura en voz alta (Web Speech API). Solo etiquetas, iniciado por el usuario. ──
-    readAloud: {
-        dock: 'Escucha guiada',
-        play: 'Leer en voz alta',
-        pause: 'Pausar',
-        resume: 'Reanudar',
-        stop: 'Detener',
-        prev: 'Segmento anterior',
-        next: 'Segmento siguiente',
-        voice: 'Voz',
-        browserDefault: 'Voz predeterminada del navegador',
-        settings: 'Opciones de lectura',
-        sections: 'Secciones',
-        nowReading: 'Leyendo ahora',
-        unsupported: 'La lectura en voz alta no está disponible en este navegador.',
-        scope: 'Alcance',
-        scopeShort: 'Breve',
-        scopeRegular: 'Normal',
-        scopeFull: 'Completo',
-        speed: 'Velocidad',
-    },
+    readAloud: introPreview.readAloud,
 
     // ── El mapa de la IA: el recorrido automático antes de abrir el motor. beats[i] es el momento conceptual i (subtítulos y lectura en voz alta) ──
     landscape: {

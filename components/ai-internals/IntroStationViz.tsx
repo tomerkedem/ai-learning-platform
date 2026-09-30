@@ -708,7 +708,7 @@ function EmbeddingViz({ a, reduce, viz, dir, focus }: VizProps) {
             {/* כיתוב השרשרת יושב מתחת לשרשרת (במקום wall אחד גדול למטה). local: הוא מסביר
                 את השרשרת בלבד, ולכן גם ב-Focus Stage הוא נשאר כאן, ורק כיתוב המפה יורד
                 לשורת הסיכום. */}
-            <Caption local>{viz.embedding.caption(viz.sharedNote)}</Caption>
+            <Caption local>{viz.embedding.caption.replace('{note}', viz.sharedNote)}</Caption>
 
             {/* מפת המשמעות: נכנסת אחרי השרשרת (חשיפה מדורגת, פחות עומס בבת אחת) */}
             <motion.div
@@ -1322,7 +1322,7 @@ function MixViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                 </div>
 
                 {/* כמה מומחים מתוך כמה רצים */}
-                <span className={focus ? 'text-xs font-bold text-[var(--bts-text-secondary)]' : `text-xs font-bold ${a.text}`} dir="auto">{v.activeNote(active.length, NUM_EXPERTS)}</span>
+                <span className={focus ? 'text-xs font-bold text-[var(--bts-text-secondary)]' : `text-xs font-bold ${a.text}`} dir="auto">{v.activeNote.replace('{k}', String(active.length)).replace('{n}', String(NUM_EXPERTS))}</span>
 
                 {/* טוקן מועשר יוצא */}
                 <div className={focus ? 'grid justify-items-center' : ''}>
@@ -1657,7 +1657,7 @@ function LogitsViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                 })}
             </div>
             <p className="mt-2 text-[13px] font-bold text-[var(--bts-text-muted)]">{v.note}</p>
-            <Caption>{v.caption(viz.sharedNote)}</Caption>
+            <Caption>{v.caption.replace('{note}', viz.sharedNote)}</Caption>
         </div>
     );
 }
@@ -1749,7 +1749,7 @@ function ScoresViz({ a, reduce, silent, viz, dir, focus }: VizProps) {
                     {total}%
                 </motion.span>
             </div>
-            <Caption>{viz.scores.caption(viz.sharedNote)}</Caption>
+            <Caption>{viz.scores.caption.replace('{note}', viz.sharedNote)}</Caption>
         </div>
     );
 }

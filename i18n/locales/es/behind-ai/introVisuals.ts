@@ -19,7 +19,7 @@ export const introVisuals = {
             exit: 'Salir de la presentación',
             prev: 'Anterior',
             next: 'Siguiente',
-            counter: (n: number, total: number) => `Estación ${n} de ${total}`,
+            counter: `Estación {n} de {total}`,
         },
     },
 
@@ -89,8 +89,7 @@ export const introVisuals = {
 
         embedding: {
             token: 'gato',
-            caption: (note: string) =>
-                `El token se convierte en un ID del vocabulario y luego en un vector de números que codifica significado. ${note}`,
+            caption: `El token se convierte en un ID del vocabulario y luego en un vector de números que codifica significado. {note}`,
             // Fixed order across locales (vector numbers are mapped by index): 0 cat, 1 dog, 2 car, 3 bicycle.
             mapWords: ['gato', 'perro', 'coche', 'bicicleta'] as string[],
             mapHint: 'Toca una palabra en el mapa',
@@ -141,7 +140,7 @@ export const introVisuals = {
             tokenA: 'receta',
             tokenB: 'clima',
             routerLabel: 'El router elige',
-            activeNote: (k: number, n: number) => `${k} de ${n} expertos se ejecutan`,
+            activeNote: `{k} de {n} expertos se ejecutan`,
             outLabel: 'enriquecido',
             hint: 'Cambia de token y mira qué expertos se encienden',
             caption: 'Tras la atención, cada token pasa por una red feed-forward que lo enriquece. En los modelos grandes esto funciona como Mixture-of-Experts: conocimiento enorme, pero solo una parte pequeña se ejecuta por token. Los "expertos" no son expertos humanos en temas: el enrutamiento se aprende en el entrenamiento, es puramente numérico y no es legible de forma directa para las personas.',
@@ -171,8 +170,7 @@ export const introVisuals = {
             prompt: 'Mañana estará...',
             words: ['soleado', 'lluvioso', 'nublado', 'caluroso', 'fresco', 'agradable', 'tormentoso', 'despejado'] as string[],
             note: 'Ocho candidatos de las decenas de miles que se evalúan a la vez.',
-            caption: (note: string) =>
-                `Una puntuación más alta solo dice "más probable", no "cuánto más". ${note}`,
+            caption: `Una puntuación más alta solo dice "más probable", no "cuánto más". {note}`,
         },
 
         scores: {
@@ -180,8 +178,7 @@ export const introVisuals = {
             rawHeader: 'Puntuación',
             probHeader: 'Probabilidad',
             totalLabel: 'En total',
-            caption: (note: string) =>
-                `Incluso después de la conversión esto sigue siendo una distribución, no una decisión. ${note}`,
+            caption: `Incluso después de la conversión esto sigue siendo una distribución, no una decisión. {note}`,
         },
 
         decoding: {

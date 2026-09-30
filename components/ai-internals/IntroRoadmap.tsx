@@ -593,7 +593,7 @@ export const IntroRoadmap: React.FC<IntroRoadmapProps> = ({ zones, stations, red
 
                         {/* מונה קומפקטי: מספר נוכחי מעל הסך-הכל. הטקסט המלא זמין לקוראי-מסך. */}
                         <div className="flex flex-col items-center py-0.5" aria-live="polite">
-                            <span className="sr-only">{demoLabels.counter(Math.max(1, currentIndex + 1), total)}</span>
+                            <span className="sr-only">{demoLabels.counter.replace('{n}', String(Math.max(1, currentIndex + 1))).replace('{total}', String(total))}</span>
                             <span aria-hidden className="text-base font-black leading-none text-[var(--bts-brand-primary-strong)]">{Math.max(1, currentIndex + 1)}</span>
                             <span aria-hidden className="my-1 h-px w-4 bg-[var(--bts-brand-primary-strong)]/40" />
                             <span aria-hidden className="text-xs font-bold leading-none text-[var(--bts-text-muted)]" dir="ltr">{total}</span>

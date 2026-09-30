@@ -4,7 +4,7 @@
 // עטיפה ממוקמת ל-AssessmentEngine שמלבישה כרום מתורגם על שלד מבדק הפרק.
 // ────────────────────────────────────────────────────────────────────────
 // ההתנהגות והנתונים (questions, passScore, onComplete, getReviewLinks, nextHref,
-// showTimer, soundEnabled) נשמרים כמו שהם מ-behindAiChapterQuizzes[chapterId];
+// showTimer, soundEnabled) נשמרים כמו שהם מ-useChapterQuiz(chapterId);
 // רק מחרוזות התצוגה מוחלפות במחרוזות מהמילון (t.behindAi.chapterQuiz). quizData.ts
 // אינו משתנה. הניתוב של קישורי החזרה נשמר, ורק התווית מתורגמת לפי מספר הפרק.
 // אין שימוש בתו "מקף ארוך" (em dash).
@@ -13,14 +13,14 @@
 import React from "react";
 import { AssessmentEngine, type ReviewLink } from "@/components/content/AssessmentEngine";
 import { ExpandableLab } from "@/components/ai-internals/ExpandableLab";
-import { behindAiChapterQuizzes } from "./quizData";
+import { useChapterQuiz } from "./quizData";
 import { useT } from "@/i18n/useT";
 
 export function ChapterQuiz({ chapterId }: { chapterId: number }) {
     const { t } = useT();
     const cq = t.behindAi.chapterQuiz;
-    const base = behindAiChapterQuizzes[chapterId];
-    if (!base) return null;
+    const base = useChapterQuiz(chapterId);
+    if (!base.questions.length) return null;
 
     const chapterName = cq.chapterNames[chapterId] ?? "";
 

@@ -18,7 +18,7 @@ export const introVisuals = {
             exit: 'プレゼンを終了',
             prev: '前へ',
             next: '次へ',
-            counter: (n: number, total: number) => `ステーション ${n} / ${total}`,
+            counter: `ステーション {n} / {total}`,
         },
     },
 
@@ -88,8 +88,7 @@ export const introVisuals = {
 
         embedding: {
             token: '猫',
-            caption: (note: string) =>
-                `トークンは語彙のIDになり、次に意味を表す数値ベクトルになります。${note}`,
+            caption: `トークンは語彙のIDになり、次に意味を表す数値ベクトルになります。{note}`,
             // Fixed order across locales (vector numbers are mapped by index): 0 cat, 1 dog, 2 car, 3 bicycle.
             mapWords: ['猫', '犬', '車', '自転車'] as string[],
             mapHint: '地図の言葉をタップ',
@@ -140,7 +139,7 @@ export const introVisuals = {
             tokenA: 'レシピ',
             tokenB: '天気',
             routerLabel: 'ルーターが選ぶ',
-            activeNote: (k: number, n: number) => `${n}人中${k}人の専門家が動く`,
+            activeNote: `{n}人中{k}人の専門家が動く`,
             outLabel: '強化済み',
             hint: 'トークンを切り替えて、どの専門家が点灯するか見て',
             caption: 'アテンションのあと、各トークンはfeed-forwardネットワークを通って強化されます。大きなモデルでは、これがMixture-of-Expertsとして働き、膨大な知識を持ちながら、トークンごとにごく一部だけが動きます。「専門家」は人間の分野別専門家ではありません。振り分けは学習で得られた純粋に数値的なもので、人がそのまま読めるものではありません。',
@@ -170,8 +169,7 @@ export const introVisuals = {
             prompt: '明日は...',
             words: ['晴れ', '雨', '曇り', '暑い', '涼しい', '快適', '嵐', '快晴'] as string[],
             note: '一度に検討される数万の候補のうちの8つです。',
-            caption: (note: string) =>
-                `スコアが高いことは「より起こりそう」だけを表し、「どれだけ」は表しません。${note}`,
+            caption: `スコアが高いことは「より起こりそう」だけを表し、「どれだけ」は表しません。{note}`,
         },
 
         scores: {
@@ -179,8 +177,7 @@ export const introVisuals = {
             rawHeader: '生スコア',
             probHeader: '確率',
             totalLabel: '合計',
-            caption: (note: string) =>
-                `変換したあとでも、これはまだ分布であって決定ではありません。${note}`,
+            caption: `変換したあとでも、これはまだ分布であって決定ではありません。{note}`,
         },
 
         decoding: {

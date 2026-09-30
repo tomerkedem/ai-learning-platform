@@ -18,6 +18,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { introRoadmap } from './introRoadmap';
+import { introPreview } from './introPreview';
 
 export const introduction = {
     contentLocale: 'he' as Locale,
@@ -33,23 +34,11 @@ export const introduction = {
     },
 
     // ── ההירו ──
-    hero: {
-        badge: 'המעבדה השקופה · Behind the Scenes',
-        // הכותרת מפוצלת כדי לאפשר הדגשת-צבע על החלק האחרון, בלי לשרשר משפט.
-        titleLead: 'מה באמת קורה בין המשפט שכתבתם',
-        titleAccent: 'לבין התשובה שהופיעה?',
-        intro: 'הצצה אל מה שקורה ברגע שאתם שולחים הודעה לצ׳אט.',
-    },
+    hero: introPreview.hero,
 
     // ── דוגמת הצ׳אט והשער אל המנוע (EngineReveal + EngineGate) ──
     chat: {
-        promptRole: 'הבקשה שלכם',
-        prompt: 'חברים באים אליי לארוחת ערב. מה אפשר להכין?',
-        inputPlaceholder: 'הקלידו הודעה...',
-        answerRole: 'התשובה',
-        answer: 'אפשר להכין פסטה עם סלט פשוט. אם תספרו לי מה הם אוהבים, אני יכול להציע תפריט מדויק יותר.',
-        outsideLine: 'מבחוץ זה נראה כמו שני שלבים: כתבתם בקשה וקיבלתם תשובה.',
-        curiosityLine: 'אבל השאלה האמיתית היא מה קרה באמצע.',
+        ...introPreview.chat,
         gateLead: 'עכשיו פותחים את הקופסה ורואים את המסלול מבפנים.',
         revealLabel: 'פתחו את המנוע שבין השאלה לתשובה',
         closeLabel: 'סגרו את התצוגה',
@@ -178,26 +167,7 @@ export const introduction = {
     },
 
     // ── פקד ההקראה (Web Speech API). תוויות בלבד, ביוזמת המשתמש. ──
-    readAloud: {
-        dock: 'האזנה מודרכת',
-        play: 'הקראה',
-        pause: 'השהיה',
-        resume: 'המשך',
-        stop: 'עצירה',
-        prev: 'המקטע הקודם',
-        next: 'המקטע הבא',
-        voice: 'קול',
-        browserDefault: 'קול ברירת המחדל של הדפדפן',
-        settings: 'אפשרויות הקראה',
-        sections: 'קטעים',
-        nowReading: 'קורא כעת',
-        unsupported: 'ההקראה אינה זמינה בדפדפן הזה.',
-        scope: 'היקף',
-        scopeShort: 'קצר',
-        scopeRegular: 'רגיל',
-        scopeFull: 'מלא',
-        speed: 'מהירות',
-    },
+    readAloud: introPreview.readAloud,
 
     // ── מפת ה-AI: המסע האוטומטי שלפני פתיחת המנוע. beats[i] הוא הרגע המושגי ה-i (גם כתוביות וגם ההקראה) ──
     landscape: {

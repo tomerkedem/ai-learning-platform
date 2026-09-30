@@ -9,7 +9,7 @@ import { courses } from "@/lib/courseData";
 import { SidebarMastery } from "@/app/(course)/behind-the-scenes-ai/MasteryDashboard";
 import { AccountPanel } from "@/app/(course)/behind-the-scenes-ai/AccountPanel";
 import { useCourseAccess } from "@/app/(course)/behind-the-scenes-ai/_access/CourseAccessContext";
-import { isProtectedCoursePath } from "@/app/(course)/behind-the-scenes-ai/_access/access";
+import { coursePathLevel, meetsAccessLevel } from "@/app/(course)/behind-the-scenes-ai/_access/access";
 import { INFO_PAGES } from "@/app/(course)/behind-the-scenes-ai/_info/infoRoutes";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { DisplaySettings } from "@/components/DisplaySettings";
@@ -180,14 +180,15 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                   const isActive = pathname === chapter.href;
                   const activeTextColor = chapter.labelColor || "text-blue-400";
                   const Icon = isActive ? PlayCircle : Circle;
-                  const locked = currentCourseId === 'behind-the-scenes-ai' && access.status !== 'active' && isProtectedCoursePath(chapter.href);
+                  const level = currentCourseId === 'behind-the-scenes-ai' ? coursePathLevel(chapter.href) : null;
+                  const locked = !!level && !meetsAccessLevel(access.status, level);
 
                   return (
                     <Link 
                         key={chapter.id} 
                         href={chapter.href || "#"}
                         onClick={() => setIsOpen(false)}
-                        title={locked ? t.chrome.access.lockedHint : undefined}
+                        title={locked ? (level === 'learner' ? t.chrome.access.lockedHintLearner : t.chrome.access.lockedHint) : undefined}
                     >
                         <div className={`
                             relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group mb-1

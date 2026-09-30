@@ -354,18 +354,26 @@ export function normalizeFullName(raw: string): string | null {
     return name;
 }
 
-/** השם המלא ששמור בפרופיל, או null כשעוד לא הושלם (משתמשים ותיקים). זורק בשגיאת רשת. */
+// השם האחרון שנטען, לפי משתמש. פאנל החשבון נטען מחדש בכל ניווט (הוא בתוך הסרגל של כל עמוד),
+// ומתחיל מהערך הזה כדי שהשם בסיכום לא ייעלם עד שהטעינה חוזרת. משתמש אחר או יציאה = אין ערך.
+let lastFullName: { userId: string; name: string | null } | null = null;
+
+/** השם שנטען לאחרונה למשתמש הזה, או undefined כשעוד לא נטען. */
+export function cachedFullName(userId: string | undefined): string | null | undefined {
+    return userId && lastFullName?.userId === userId ? lastFullName.name : undefined;
+}
+
+/**
+ * השם המלא ששמור בפרופיל, או null כשאין (משתמשים ותיקים; מנהל משלים אותו). זורק בשגיאת רשת.
+ * הלומד אינו יכול לשנות את השם: רק ההרשמה או מנהל (admin_set_learner_name), והמסד אוכף זאת.
+ */
 export async function loadFullName(userId: string): Promise<string | null> {
     if (!supabase) return null;
     const { data, error } = await supabase.from("profiles").select("full_name").eq("user_id", userId).maybeSingle();
     if (error) throw error;
-    return (data?.full_name as string | null | undefined) ?? null;
-}
-
-export async function saveFullName(userId: string, fullName: string): Promise<void> {
-    if (!supabase) throw new Error("Supabase is not configured");
-    const { error } = await supabase.from("profiles").upsert({ user_id: userId, full_name: fullName });
-    if (error) throw error;
+    const name = (data?.full_name as string | null | undefined) ?? null;
+    lastFullName = { userId, name };
+    return name;
 }
 
 /** לתצוגה בלבד (קישור לעמוד הניהול). ההרשאה נבדקת בשרת ובמסד בכל פעולה. */

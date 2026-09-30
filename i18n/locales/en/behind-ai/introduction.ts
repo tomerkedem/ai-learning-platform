@@ -7,6 +7,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { introRoadmap } from './introRoadmap';
+import { introPreview } from './introPreview';
 
 export const introduction = {
     contentLocale: 'en' as Locale,
@@ -22,22 +23,11 @@ export const introduction = {
     },
 
     // ── Hero ──
-    hero: {
-        badge: 'The Transparent Lab · Behind the Scenes',
-        titleLead: 'What really happens between the message you send',
-        titleAccent: 'and the answer you receive?',
-        intro: 'A look at what happens the moment you send a message to a chat.',
-    },
+    hero: introPreview.hero,
 
     // ── The chat example and the gate into the engine (EngineReveal + EngineGate) ──
     chat: {
-        promptRole: 'Your request',
-        prompt: "I'm having friends over for dinner. What could I make?",
-        inputPlaceholder: 'Type a message...',
-        answerRole: 'The answer',
-        answer: 'You could make pasta with a simple salad. If you tell me what they like, I can suggest a more specific menu.',
-        outsideLine: 'From the outside it looks like two steps: you wrote a request and got an answer.',
-        curiosityLine: 'But the real question is what happened in between.',
+        ...introPreview.chat,
         gateLead: 'Now we open the box and see the route from the inside.',
         revealLabel: 'Open the engine between the question and the answer',
         closeLabel: 'Close the view',
@@ -167,26 +157,7 @@ export const introduction = {
     },
 
     // ── Read-aloud control (Web Speech API). Labels only, user-triggered. ──
-    readAloud: {
-        dock: 'Guided listening',
-        play: 'Read aloud',
-        pause: 'Pause',
-        resume: 'Resume',
-        stop: 'Stop',
-        prev: 'Previous segment',
-        next: 'Next segment',
-        voice: 'Voice',
-        browserDefault: 'Browser default voice',
-        settings: 'Read-aloud options',
-        sections: 'Sections',
-        nowReading: 'Now reading',
-        unsupported: 'Read-aloud is not available in this browser.',
-        scope: 'Scope',
-        scopeShort: 'Short',
-        scopeRegular: 'Regular',
-        scopeFull: 'Full',
-        speed: 'Speed',
-    },
+    readAloud: introPreview.readAloud,
 
     // ── The AI map: the automatic journey before opening the engine. beats[i] is conceptual moment i (both captions and read-aloud) ──
     landscape: {

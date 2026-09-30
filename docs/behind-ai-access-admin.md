@@ -1,9 +1,16 @@
 # Behind the Scenes of AI: beta access admin runbook
 
-Chapters 2-19, their quizzes and the final exam open only for a signed-in learner with an
-active, explicitly approved grant. The introduction and Chapter 1 stay public.
+Access has three levels (migration `20260930174234_learner_access_and_admin_only_names`):
 
-Creating an account or confirming an email grants nothing. New users have no grant.
+- **Anonymous:** only the introduction preview (heading, hero and the opening chat example) and a
+  free-registration invitation. The rest of the introduction is never rendered or sent.
+- **Learner** (signed in, email confirmed, not suspended): the full introduction and Chapter 1,
+  with no grant needed. `course_access_status` returns `unconfirmed` for an unconfirmed email.
+- **Grant:** Chapters 2-19, their quizzes and the final exam open only for a signed-in learner
+  with an active, explicitly approved grant.
+
+Creating an account or confirming an email grants no beta access. New users have no grant.
+Information pages, registration, email confirmation and password recovery stay public.
 
 ## How access is decided
 
@@ -78,9 +85,11 @@ show no timing. Remaining time is computed from when the list was last loaded.
 ### Editing a learner's name
 
 Admins can correct a learner's full name on the admin page (`admin_set_learner_name`). The
-same rule applies as for learners (2 to 100 characters, trimmed, no control characters,
+same rule applies as at registration (2 to 100 characters, trimmed, no control characters,
 enforced by the database), and each change is recorded in `course_access_audit` as action
-`rename` with the old and new name in `details`. Learners can still edit their own name.
+`rename` with the old and new name in `details`. Only admins can change a name: learners have no
+update or insert privilege on `profiles.full_name`, and a trigger pins `full_name` in the Auth
+user metadata after registration, so `auth.updateUser` cannot change it either.
 
 ### Suspending an account
 
@@ -178,8 +187,9 @@ one-month beta grant) and `test-learner-expired@example.com` (a grant that ended
 
 Registration requires a full name (2 to 100 characters). It is sent with the sign-up and a
 database trigger stores it in `public.profiles.full_name`; a registration without a valid name
-is rejected by the database. Learners who registered before names existed are asked to add one
-after signing in, and anyone can edit their own name. The identity key everywhere remains
+is rejected by the database. After that, only an admin can set or change it (admin page). An
+account without a name (registered before names existed) shows a note that an admin will add
+it; the learner has no form for it. The identity key everywhere remains
 `user_id`, never the name or email.
 
 Because of that trigger, a user created by hand (for example from the dashboard) must include a

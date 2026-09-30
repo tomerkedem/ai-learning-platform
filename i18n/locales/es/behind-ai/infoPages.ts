@@ -59,7 +59,7 @@ export const infoPages: InfoPagesDict = {
                     kind: 'faq',
                     heading: 'Acceso y la beta',
                     items: [
-                        { q: '¿Registrarme me da acceso al curso completo?', a: 'No. El registro por sí solo no da acceso al curso completo. El acceso completo se concede a participantes de la beta aprobados individualmente.' },
+                        { q: '¿Registrarme me da acceso al curso completo?', a: 'No. Una cuenta gratuita con el correo confirmado abre la introducción completa y el capítulo 1. El curso completo (capítulos 2 a 19 y el examen final) solo se abre a participantes de la beta aprobados individualmente.' },
                         { q: '¿Cuánto dura el acceso gratuito?', a: 'Cada participante aprobado recibe acceso gratuito al curso completo durante un máximo de un mes desde la aprobación, no desde el día en que te registras. El acceso puede terminar antes.' },
                         { q: '¿Me pedirán una tarjeta o me cobrarán automáticamente?', a: 'No. El acceso beta no requiere tarjeta de pago y no hay ningún cobro automático.' },
                         { q: '¿Puede terminar mi acceso antes de que acabe el mes?', a: 'Sí. El acceso puede terminar antes de que acabe el mes. Puede suspenderse de inmediato y sin aviso previo por motivos de seguridad, uso indebido o motivos técnicos urgentes. En los demás casos, procuraremos avisar al participante con antelación.' },
@@ -174,7 +174,7 @@ export const infoPages: InfoPagesDict = {
                     kind: 'facts',
                     heading: 'Si creas una cuenta',
                     items: [
-                        { icon: 'key', title: 'Nombre y correo electrónico', body: 'Para crear una cuenta escribes tu nombre completo y tu correo electrónico. Identifican tu cuenta. Tu nombre se muestra junto a tu correo en tu cuenta y a los administradores del curso que gestionan el acceso beta. Puedes editar tu nombre en cualquier momento.' },
+                        { icon: 'key', title: 'Nombre y correo electrónico', body: 'Para crear una cuenta escribes tu nombre completo y tu correo electrónico. Identifican tu cuenta. Tu nombre se muestra junto a tu correo en tu cuenta y a los administradores del curso que gestionan el acceso beta. Después del registro, solo los administradores del curso pueden cambiar tu nombre; para cambiarlo, contacta con el equipo del curso.' },
                         { icon: 'save', title: 'Progreso e idioma', body: 'Mientras tienes la sesión iniciada, los resultados de los tests y el idioma elegido se guardan en tu cuenta para que estén disponibles en tus otros dispositivos.' },
                         { icon: 'clock', title: 'Acceso beta', body: 'Si tu cuenta tiene acceso beta aprobado, cuándo se aprobó y cuándo termina, y un registro de qué administrador lo aprobó o revocó y cuándo.' },
                     ],
@@ -185,7 +185,7 @@ export const infoPages: InfoPagesDict = {
                     items: [
                         'El curso no tiene herramientas de analítica ni rastreadores publicitarios.',
                         'Tu nombre y tu correo no se muestran a otros estudiantes ni se usan para publicidad.',
-                        'No necesitas una cuenta para leer la introducción y el capítulo 1.',
+                        'Sin cuenta puedes leer el comienzo de la introducción. La introducción completa y el capítulo 1 requieren una cuenta gratuita con el correo confirmado.',
                     ],
                 },
                 {

@@ -18,7 +18,7 @@ export const introVisuals = {
             exit: 'Exit presentation',
             prev: 'Previous',
             next: 'Next',
-            counter: (n: number, total: number) => `Station ${n} of ${total}`,
+            counter: `Station {n} of {total}`,
         },
     },
 
@@ -88,8 +88,7 @@ export const introVisuals = {
 
         embedding: {
             token: 'cat',
-            caption: (note: string) =>
-                `The token becomes an ID in the vocabulary, then a vector of numbers that encodes meaning. ${note}`,
+            caption: `The token becomes an ID in the vocabulary, then a vector of numbers that encodes meaning. {note}`,
             // Fixed order across locales (vector numbers are mapped by index): 0 cat, 1 dog, 2 car, 3 bicycle.
             mapWords: ['cat', 'dog', 'car', 'bicycle'] as string[],
             mapHint: 'Tap a word on the map',
@@ -140,7 +139,7 @@ export const introVisuals = {
             tokenA: 'recipe',
             tokenB: 'weather',
             routerLabel: 'Router picks',
-            activeNote: (k: number, n: number) => `${k} of ${n} experts run`,
+            activeNote: `{k} of {n} experts run`,
             outLabel: 'enriched',
             hint: 'Switch token and see which experts light up',
             caption: 'After attention, each token passes through a feed-forward network that enriches it. In large models this works as Mixture-of-Experts: huge knowledge, but only a small part runs per token. The "experts" are not human subject-matter experts: the routing is learned in training, purely numerical, and not directly human-readable.',
@@ -170,8 +169,7 @@ export const introVisuals = {
             prompt: 'Tomorrow will be...',
             words: ['sunny', 'rainy', 'cloudy', 'hot', 'chilly', 'pleasant', 'stormy', 'bright'] as string[],
             note: 'Eight candidates out of tens of thousands checked at once.',
-            caption: (note: string) =>
-                `A higher score only says "more likely", not "by how much". ${note}`,
+            caption: `A higher score only says "more likely", not "by how much". {note}`,
         },
 
         scores: {
@@ -179,8 +177,7 @@ export const introVisuals = {
             rawHeader: 'Raw score',
             probHeader: 'Chance',
             totalLabel: 'Together',
-            caption: (note: string) =>
-                `Even after the conversion this is still a distribution, not a decision. ${note}`,
+            caption: `Even after the conversion this is still a distribution, not a decision. {note}`,
         },
 
         decoding: {

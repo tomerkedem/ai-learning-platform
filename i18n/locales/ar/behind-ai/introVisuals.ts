@@ -19,7 +19,7 @@ export const introVisuals = {
             exit: 'إنهاء العرض',
             prev: 'السابق',
             next: 'التالي',
-            counter: (n: number, total: number) => `المحطة ${n} من ${total}`,
+            counter: `المحطة {n} من {total}`,
         },
     },
 
@@ -89,8 +89,7 @@ export const introVisuals = {
 
         embedding: {
             token: 'قطة',
-            caption: (note: string) =>
-                `يصبح الرمز معرّفًا في المفردات، ثم متجهًا من الأرقام يرمّز المعنى. ${note}`,
+            caption: `يصبح الرمز معرّفًا في المفردات، ثم متجهًا من الأرقام يرمّز المعنى. {note}`,
             // Fixed order across locales (vector numbers are mapped by index): 0 cat, 1 dog, 2 car, 3 bicycle.
             mapWords: ['قطة', 'كلب', 'سيارة', 'دراجة'] as string[],
             mapHint: 'اضغطوا على كلمة في الخريطة',
@@ -141,7 +140,7 @@ export const introVisuals = {
             tokenA: 'وصفة',
             tokenB: 'طقس',
             routerLabel: 'الراوتر يختار',
-            activeNote: (k: number, n: number) => `${k} من ${n} خبراء يعملون`,
+            activeNote: `{k} من {n} خبراء يعملون`,
             outLabel: 'مُثرى',
             hint: 'بدّل التوكن وشاهد أيّ خبراء يضيئون',
             caption: 'بعد الانتباه، يمرّ كل توكن عبر شبكة feed-forward تُثريه. في النماذج الكبيرة يعمل هذا بأسلوب Mixture-of-Experts: معرفة هائلة، لكن جزءًا صغيرًا فقط يعمل لكل توكن. "الخبراء" ليسوا خبراء بشريين في مواضيع: التوجيه يُتعلَّم أثناء التدريب، وهو رقمي بالكامل، ولا يمكن قراءته مباشرة.',
@@ -171,8 +170,7 @@ export const introVisuals = {
             prompt: 'غدًا سيكون الطقس...',
             words: ['مشمسًا', 'ممطرًا', 'غائمًا', 'حارًا', 'باردًا', 'لطيفًا', 'عاصفًا', 'صافيًا'] as string[],
             note: 'ثمانية مرشحين من بين عشرات الآلاف تُفحص دفعة واحدة.',
-            caption: (note: string) =>
-                `الدرجة الأعلى تقول "أرجح" فقط، لا "بكم أرجح". ${note}`,
+            caption: `الدرجة الأعلى تقول "أرجح" فقط، لا "بكم أرجح". {note}`,
         },
 
         scores: {
@@ -180,8 +178,7 @@ export const introVisuals = {
             rawHeader: 'درجة خام',
             probHeader: 'الاحتمال',
             totalLabel: 'معًا',
-            caption: (note: string) =>
-                `حتى بعد التحويل، هذا لا يزال توزيعًا، لا قرارًا. ${note}`,
+            caption: `حتى بعد التحويل، هذا لا يزال توزيعًا، لا قرارًا. {note}`,
         },
 
         decoding: {

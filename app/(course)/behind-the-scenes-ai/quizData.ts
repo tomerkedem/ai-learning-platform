@@ -40,82 +40,6 @@ export interface ChapterQuizMeta {
     soundEnabled?: boolean;
 }
 
-// ===== CHAPTER 1 =====
-// התשובה הגלויה היא קצה של דרך מוצר ומודל נסתרת. המסלול עובר ממזהי טוקנים
-// דרך הסתברויות ובחירת הטוקן הבא; פרק 2 פותח את קלט המודל שהמוצר הרכיב.
-export const chapter1Quiz: QuizQuestion[] = [
-    {
-        id: 1,
-        question: "מה הצ׳אט הגלוי מראה לנו?",
-        options: [
-            "את הבקשה והתשובה החיצוניות, אך לא את כל הדרך שביניהן",
-            "את כל ההוראות וההקשר שנכנסו למודל",
-            "את המקום המדויק שבו כל תקלה נוצרה",
-            "את כל החישובים הפנימיים של המודל"
-        ],
-        correctAnswer: 0,
-        explanation: "הצ׳אט הוא המעטפת הגלויה. הוא מציג את הבקשה ואת התשובה, אך לא את כל מה שהמוצר והמודל עשו ביניהן.",
-        difficulty: "easy",
-        concept: "הגלוי מול הנסתר"
-    },
-    {
-        id: 2,
-        question: "מה הקשר הנכון בין מוצר AI לבין המודל?",
-        options: [
-            "המודל הוא תמיד המוצר כולו",
-            "המוצר עשוי להרכיב קלט ולטפל בפלט סביב המודל",
-            "המוצר רק מציג צבעים ואין לו תפקיד בדרך",
-            "כל מוצר חייב להשתמש בכלי חיצוני בכל תשובה"
-        ],
-        correctAnswer: 1,
-        explanation: "המודל הוא רכיב בתוך מוצר רחב יותר. המוצר עשוי לצרף הוראות או הקשר לפני המודל, ולעבד את הפלט אחריו.",
-        difficulty: "easy",
-        concept: "מוצר מול מודל"
-    },
-    {
-        id: 3,
-        question: "מה נכון לגבי Token ID?",
-        options: [
-            "זה הווקטור המלא שמכיל את משמעות הטוקן",
-            "מזהים סמוכים מייצגים תמיד משמעויות דומות",
-            "זו כתובת מספרית באוצר המילים, לא משמעות בפני עצמה",
-            "זו ההסתברות שהטוקן ייבחר"
-        ],
-        correctAnswer: 2,
-        explanation: "Token ID הוא כתובת יציבה באוצר המילים. הייצוג המספרי בעל התכונות נבחר רק בשלב ה-embedding.",
-        difficulty: "medium",
-        concept: "Token ID מול משמעות"
-    },
-    {
-        id: 4,
-        question: "מה ההבדל בין Softmax לבין Decoding?",
-        options: [
-            "Softmax יוצר התפלגות הסתברויות, ו-Decoding משתמש בה כדי לבחור או לדגום טוקן",
-            "Softmax בוחר את התשובה הסופית, ו-Decoding יוצר את ההסתברויות",
-            "שניהם בודקים אם הטוקן נכון עובדתית",
-            "אין הבדל, אלה שני שמות לאותו חישוב"
-        ],
-        correctAnswer: 0,
-        explanation: "Softmax ממיר logits להתפלגות. Decoding מפעיל אסטרטגיית בחירה על ההתפלגות; אף אחד מהם אינו בדיקת אמת.",
-        difficulty: "medium",
-        concept: "Softmax מול Decoding"
-    },
-    {
-        id: 5,
-        question: "אחרי שראינו שהמוצר עשוי להרכיב קלט עבור המודל, מה השאלה השימושית הבאה?",
-        options: [
-            "איזה צבע צריך להיות לכפתור השליחה?",
-            "מה בדיוק הרכיב המוצר והעביר כקלט למודל?",
-            "איך לזכור בעל פה את כל השלבים הפנימיים?",
-            "איזה כלי חיצוני משמש בהכרח בכל תשובה?"
-        ],
-        correctAnswer: 1,
-        explanation: "אחרי שהבנו שהמוצר עשוי להרכיב משהו לפני המודל, השאלה הבאה היא מה בדיוק נמצא בקלט הנוכחי שהמודל מקבל.",
-        difficulty: "hard",
-        concept: "קלט המודל שהמוצר מרכיב"
-    }
-];
-
 // ===== CHAPTER 2 =====
 // שאלות פרקים 2-19 ומבחן הסיום נמצאות ב-quizQuestions.ts (שרת בלבד), כי הן תוכן מוגן.
 
@@ -165,10 +89,10 @@ export const CHAPTER_LABELS: Record<number, string> = {
 // פרק 8 (Logits & Softmax) ופרק 9 (Decoding) כבר נבנו במלואם. מבדק הביטחון הישן
 // (chapter9Quiz) ומבדק chapter10Quiz (מ-Prompt למשימה) נותקו ושמורים תחת _parked,
 // ואינם רשומים כעת.
-// מושג -> פרק לקישורי החזרה הממוקדים. כאן רק מושגי פרק 1 (ציבורי), נגזרים מהמבדק שלו.
-// המפה המלאה (מושגי פרקים 2-19 ומבחן הסיום) נמצאת בשרת (quizQuestions.ts) ומגיעה לעמוד
-// מוגן רק אחרי בדיקת הרשאה (useConceptReviewLinks).
-const PUBLIC_CONCEPT_TO_CHAPTER: Record<string, number> = Object.fromEntries(chapter1Quiz.map((q) => [q.concept, 1]));
+// מושג -> פרק לקישורי החזרה הממוקדים. שמות המושגים הם תוכן מוגן (גם של פרק 1), ולכן
+// המפה נמצאת בשרת (quizQuestions.ts) ומגיעה לעמוד רק אחרי בדיקת גישה (useConceptReviewLinks).
+// מחוץ לעמוד כזה אין מפה, ולא נוצרים קישורי חזרה.
+const PUBLIC_CONCEPT_TO_CHAPTER: Record<string, number> = {};
 
 /** ממיר מושגים חלשים לקישורי חזרה ממוקדים, פרק אחד לכל מושג, בלי כפילויות. */
 export function reviewLinksForConcepts(concepts: string[], conceptToChapter: Record<string, number> = PUBLIC_CONCEPT_TO_CHAPTER): ReviewLink[] {
@@ -207,19 +131,14 @@ function chapterQuizBase(n: number): Omit<ChapterQuizMeta, "questions"> {
     };
 }
 
-/** פרק 1 ציבורי, ולכן השאלות שלו נשארות בחבילת הלקוח. */
-export const behindAiChapterQuizzes: Record<number, ChapterQuizMeta> = {
-    1: { ...chapterQuizBase(1), questions: chapter1Quiz },
-};
-
 /**
- * מבדק הפרק לעמוד פרק. פרקים 2-19: השאלות מגיעות מהשרת (quizQuestions.ts) דרך
- * ProtectedContentProvider, רק אחרי בדיקת הרשאה.
+ * מבדק הפרק לעמוד פרק. השאלות (גם של פרק 1) מגיעות מהשרת (quizQuestions.ts) דרך
+ * ProtectedContentProvider, רק אחרי בדיקת גישה.
  */
 export function useChapterQuiz(n: number): ChapterQuizMeta {
     const content = useProtectedContent();
     const getReviewLinks = useConceptReviewLinks();
-    return behindAiChapterQuizzes[n] ?? { ...chapterQuizBase(n), questions: content?.quiz ?? [], getReviewLinks };
+    return { ...chapterQuizBase(n), questions: content?.quiz ?? [], getReviewLinks };
 }
 
 /** קישורי חזרה לפי מושגים, עם המפה המלאה כשהשרת העביר אותה (עמוד מוגן), אחרת רק פרק 1. */

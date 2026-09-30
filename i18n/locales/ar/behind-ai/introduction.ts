@@ -7,6 +7,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { introRoadmap } from './introRoadmap';
+import { introPreview } from './introPreview';
 
 export const introduction = {
     contentLocale: 'ar' as Locale,
@@ -22,22 +23,11 @@ export const introduction = {
     },
 
     // ── Hero ──
-    hero: {
-        badge: 'المختبر الشفاف · Behind the Scenes',
-        titleLead: 'ما الذي يحدث فعلًا بين الرسالة التي ترسلها',
-        titleAccent: 'والإجابة التي تتلقّاها؟',
-        intro: 'نظرة إلى ما يحدث في اللحظة التي ترسل فيها رسالة إلى دردشة.',
-    },
+    hero: introPreview.hero,
 
     // ── مثال الدردشة والبوابة إلى المحرّك (EngineReveal + EngineGate) ──
     chat: {
-        promptRole: 'طلبك',
-        prompt: 'سيأتي أصدقائي لتناول العشاء. ماذا يمكنني أن أحضّر؟',
-        inputPlaceholder: 'اكتب رسالة...',
-        answerRole: 'الإجابة',
-        answer: 'يمكنك تحضير المعكرونة مع سلطة بسيطة. إذا أخبرتني بما يحبونه، يمكنني اقتراح قائمة أكثر تحديدًا.',
-        outsideLine: 'من الخارج يبدو الأمر كخطوتين: كتبت طلبًا وتلقّيت إجابة.',
-        curiosityLine: 'لكن السؤال الحقيقي هو ما الذي حدث في المنتصف.',
+        ...introPreview.chat,
         gateLead: 'الآن نفتح الصندوق ونرى المسار من الداخل.',
         revealLabel: 'افتح المحرّك بين السؤال والإجابة',
         closeLabel: 'إغلاق العرض',
@@ -167,26 +157,7 @@ export const introduction = {
     },
 
     // ── أداة القراءة الصوتية (Web Speech API). تسميات فقط، بمبادرة المستخدم. ──
-    readAloud: {
-        dock: 'استماع موجّه',
-        play: 'استماع',
-        pause: 'إيقاف مؤقت',
-        resume: 'متابعة',
-        stop: 'إيقاف',
-        prev: 'المقطع السابق',
-        next: 'المقطع التالي',
-        voice: 'الصوت',
-        browserDefault: 'الصوت الافتراضي للمتصفّح',
-        settings: 'خيارات القراءة',
-        sections: 'الأقسام',
-        nowReading: 'يقرأ الآن',
-        unsupported: 'القراءة الصوتية غير متاحة في هذا المتصفّح.',
-        scope: 'النطاق',
-        scopeShort: 'مختصر',
-        scopeRegular: 'عادي',
-        scopeFull: 'كامل',
-        speed: 'السرعة',
-    },
+    readAloud: introPreview.readAloud,
 
     // ── خريطة AI: الرحلة التلقائية قبل فتح المحرّك. beats[i] هي اللحظة المفهومية i (للعناوين وللقراءة الصوتية) ──
     landscape: {

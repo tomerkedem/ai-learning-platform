@@ -3,7 +3,8 @@
 // ════════════════════════════════════════════════════════════════════════
 // מסך נעילה לפרק מוגן. השרת מרנדר אותו במקום תוכן הפרק כשאין הרשאה פעילה, ולכן
 // התשובה מכילה רק מטא-דאטה ציבורי (מספר ושם הפרק, שכבר מופיעים בתוכן העניינים).
-// המסר מסביר שנדרש אישור בטא, ושהרשמה או אימות מייל אינם נותנים גישה.
+// פרק 1 דורש רק חשבון חינמי מאומת; שאר הפרקים ומבחן הסיום דורשים גם אישור בטא, והמסר
+// מסביר שהרשמה או אימות מייל אינם נותנים אותו.
 // אין שימוש בתו "מקף ארוך" (em dash).
 // ════════════════════════════════════════════════════════════════════════
 
@@ -25,6 +26,7 @@ const course = courses["behind-the-scenes-ai"];
 export function LockedChapter({ access, chapter }: { access: CourseAccess; chapter: number | "final" }) {
     const { dir, locale, t } = useT();
     const x = t.chrome.access;
+    const learnerLevel = chapter === 1;
     const date = access.expiresAt
         ? new Date(access.expiresAt).toLocaleDateString(LOCALES[locale].htmlLang, { dateStyle: "long" })
         : "";
@@ -33,8 +35,12 @@ export function LockedChapter({ access, chapter }: { access: CourseAccess; chapt
         : access.status === "expired" ? x.expired(date)
         : access.status === "revoked" ? x.revoked
         : access.status === "suspended" ? x.suspended
+        : access.status === "unconfirmed" ? x.unconfirmed
         : access.status === "unavailable" ? x.unavailable
+        : learnerLevel ? x.learnerSignedOut
         : x.signedOut;
+    const title = learnerLevel ? x.learnerTitle : x.title;
+    const body = learnerLevel ? x.learnerBody : x.body;
 
     const meta = chapter === "final" ? null : course.chapters.find((c) => c.id === chapter);
     const eyebrow = chapter === "final" ? t.chrome.progress.finalExam : formatChapterLabel(locale, chapter);
@@ -66,23 +72,23 @@ export function LockedChapter({ access, chapter }: { access: CourseAccess; chapt
                             </div>
                         </div>
                         <div className="flex items-start justify-between gap-3">
-                            <h1 id="locked-title" className="text-xl md:text-2xl font-black leading-tight">{x.title}</h1>
+                            <h1 id="locked-title" className="text-xl md:text-2xl font-black leading-tight">{title}</h1>
                             {/* הקראה: רק הכותרת, ההסבר ומצב הגישה של מסך הנעילה, לפי הסדר. מתחילה רק
                                 בלחיצה. key לפי שפה ופרק: החלפת שפה או ניווט מרכיבים את הכפתור מחדש,
                                 וההרכבה מחדש עוצרת הקראה פעילה. */}
-                            <SpeakButton key={`${locale}-${chapter}`} text={`${x.title}. ${x.body} ${reason}`} className="mt-0.5" />
+                            <SpeakButton key={`${locale}-${chapter}`} text={`${title}. ${body} ${reason}`} className="mt-0.5" />
                         </div>
-                        <p className="text-sm text-[var(--bts-text-muted)] leading-relaxed">{x.body}</p>
+                        <p className="text-sm text-[var(--bts-text-muted)] leading-relaxed">{body}</p>
                         <p role="status" className="text-sm font-bold text-[var(--bts-text-secondary)] leading-relaxed">{reason}</p>
                         <div className="flex flex-wrap gap-2 pt-1">
-                            <Link href="/behind-the-scenes-ai/chapter-1" className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill-soft)] hover:bg-[var(--bts-sub-fill-hover)] px-3 py-2 text-xs font-bold text-[var(--bts-text-secondary)] no-underline">
+                            {!learnerLevel && <Link href="/behind-the-scenes-ai/chapter-1" className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill-soft)] hover:bg-[var(--bts-sub-fill-hover)] px-3 py-2 text-xs font-bold text-[var(--bts-text-secondary)] no-underline">
                                 {x.toChapter1}
-                            </Link>
+                            </Link>}
                             <Link href="/behind-the-scenes-ai/introduction" className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill-soft)] hover:bg-[var(--bts-sub-fill-hover)] px-3 py-2 text-xs font-bold text-[var(--bts-text-secondary)] no-underline">
                                 {x.toIntro}
                             </Link>
                         </div>
-                        {access.status === "signed-out" ? <AccountPanel /> : <BetaAccessRequest />}
+                        {access.status === "signed-out" ? <AccountPanel defaultOpen={learnerLevel} /> : !learnerLevel && <BetaAccessRequest />}
                     </section>
                 </main>
             </div>

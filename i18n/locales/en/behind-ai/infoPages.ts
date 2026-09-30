@@ -59,7 +59,7 @@ export const infoPages: InfoPagesDict = {
                     kind: 'faq',
                     heading: 'Access and the beta',
                     items: [
-                        { q: 'Does registering give me access to the full course?', a: 'No. Registration alone does not grant access to the full course. Full access is given to beta testers who are individually approved.' },
+                        { q: 'Does registering give me access to the full course?', a: 'No. A free account with a confirmed email address opens the full introduction and Chapter 1. The full course (chapters 2 to 19 and the final exam) opens only to beta testers who are individually approved.' },
                         { q: 'How long does the free access last?', a: 'An approved tester receives free access to the full course for up to one month from approval, not from the day you register. Access may end earlier.' },
                         { q: 'Will I be asked for a card or charged automatically?', a: 'No. Beta access does not require a payment card, and there is no automatic charge.' },
                         { q: 'Can my access stop before the month is over?', a: 'Yes. Access may end before the month is over. It may be suspended immediately, without prior notice, for security reasons, misuse or urgent technical reasons. In other cases, we aim to notify the tester in advance.' },
@@ -174,7 +174,7 @@ export const infoPages: InfoPagesDict = {
                     kind: 'facts',
                     heading: 'If you create an account',
                     items: [
-                        { icon: 'key', title: 'Name and email address', body: 'To create an account you enter your full name and email address. They identify your account. Your name is shown with your email address in your account and to the course administrators who manage beta access. You can edit your name at any time.' },
+                        { icon: 'key', title: 'Name and email address', body: 'To create an account you enter your full name and email address. They identify your account. Your name is shown with your email address in your account and to the course administrators who manage beta access. After registration, only course administrators can change your name; contact the course team to change it.' },
                         { icon: 'save', title: 'Progress and language', body: 'While you are signed in, your quiz results and language choice are stored in your account so they are available on your other devices.' },
                         { icon: 'clock', title: 'Beta access', body: 'Whether your account has approved beta access, when it was approved and when it ends, and a record of which administrator approved or revoked it and when.' },
                     ],
@@ -185,7 +185,7 @@ export const infoPages: InfoPagesDict = {
                     items: [
                         'The course has no analytics or advertising trackers.',
                         'Your name and email address are not shown to other learners and are not used for advertising.',
-                        'You do not need an account to read the introduction and Chapter 1.',
+                        'Without an account you can read the beginning of the introduction. The full introduction and Chapter 1 require a free account with a confirmed email address.',
                     ],
                 },
                 {
