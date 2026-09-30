@@ -53,6 +53,22 @@ export const chrome: typeof heChrome = {
         close: 'Close',
         imageCredit: 'Earth imagery: NASA',
     },
+    display: {
+        open: 'Accessibility and display',
+        title: 'Accessibility and display',
+        textSize: 'Reading text size',
+        sizeDefault: 'Default',
+        sizeLarge: 'Large',
+        sizeLarger: 'Larger',
+        spacing: 'Wider reading spacing',
+        contrast: 'Higher contrast',
+        motion: 'Reduce motion',
+        motionSystem: 'Your device already asks for reduced motion, and the course follows it.',
+        underline: 'Underline links',
+        statement: 'About accessibility in this course',
+        reset: 'Reset to defaults',
+        close: 'Close',
+    },
 
     footer: {
         defaultLabel: 'Interactive courses for AI developers',

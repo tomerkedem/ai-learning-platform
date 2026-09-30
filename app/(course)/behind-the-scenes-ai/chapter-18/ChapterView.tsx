@@ -17,7 +17,8 @@
 
 import React, { useState } from 'react';
 import { useAnswerKey, useGuessTones } from '@/i18n/ProtectedContent';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     ShieldCheck, ShieldAlert, Ban, Send, MousePointerClick, Layers, FlaskConical,
     ListChecks, CheckCircle2, XCircle, Sparkles, Route, ArrowLeft, ArrowRight,

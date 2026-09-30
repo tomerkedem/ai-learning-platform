@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { motion, useMotionValue, useTransform, animate, useReducedMotion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { ACCENTS } from './accents';
 import { DUR, EASE, SPRING } from './motionTokens';
 import type { Accent, IntentProbability } from './types';

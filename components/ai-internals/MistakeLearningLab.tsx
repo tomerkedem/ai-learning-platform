@@ -18,7 +18,8 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     MessageSquare, FileSearch, Wrench, GraduationCap, Gauge, ClipboardCheck,
     CheckCircle2, XCircle, Lightbulb, ArrowDown, User, Reply, type LucideIcon,

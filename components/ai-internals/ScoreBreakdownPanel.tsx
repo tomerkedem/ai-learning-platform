@@ -30,7 +30,8 @@
 
 import React, { useState } from 'react';
 import { useAnswerKey } from '@/i18n/ProtectedContent';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     PieChart, PackageCheck, FileQuestion, MessagesSquare, AlertTriangle,
     Layers, CheckCircle2, XCircle, Lightbulb, ArrowLeftRight, type LucideIcon,

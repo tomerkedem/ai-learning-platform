@@ -17,7 +17,8 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { MessageSquare, ShieldAlert, CheckCircle2, XCircle, AlertTriangle, FileSearch, HelpCircle, Lightbulb, Scale, type LucideIcon } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
 import type { HallucinationsLabContent, CheckState, RiskLevel } from '@/i18n/locales/he/behind-ai/hallucinationsLab';

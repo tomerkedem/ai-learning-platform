@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useRef } from 'react';
-import { motion, useMotionValue, useMotionTemplate, useReducedMotion } from 'framer-motion';
+import { motion, useMotionValue, useMotionTemplate } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import type { Accent } from '@/components/ai-internals/types';
 
 interface HoloFrameProps {

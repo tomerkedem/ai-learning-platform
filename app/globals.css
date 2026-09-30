@@ -3,6 +3,12 @@
 
 @custom-variant dark (&:is(.dark *));
 @custom-variant light (&:where(html[data-theme="light"] *));
+/* motion-reduce: העדפת מערכת ההפעלה או בחירת הלומד בחלון "נגישות ותצוגה" (data-reduce-motion),
+   כדי שכל מחלקות motion-reduce:* יגיבו גם לבחירה בזמן אמת. ראו components/reducedMotion.ts. */
+@custom-variant motion-reduce {
+  @media (prefers-reduced-motion: reduce) { @slot; }
+  &:where(html[data-reduce-motion] *) { @slot; }
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -194,7 +200,10 @@
   /* T3.1: אסימוני רכיבים משותפים (מבדק, ניחוש, תיבות תובנה). ערכי Dark זהים לערכים
      המילוליים שהוחלפו (white/5, white/10, white/20, slate-200, slate-500, slate-900/950). */
   --bts-text-body: var(--color-slate-200);
-  --bts-text-faint: var(--color-slate-500);
+  /* slate-500 היה 3.9:1 על משטח מוגבה, מתחת ל-4.5:1 לטקסט רגיל. תערובת 70% slate-400 עומדת
+     ב-4.5:1 לפחות על כל משטחי Dark שנמדדו (כולל slate-800 מלא), ונשארת מתחת ל-muted בהיררכיה. */
+  --bts-text-faint: #8293ac;
+  --bts-text-faint: color-mix(in oklab, var(--color-slate-400) 70%, var(--color-slate-500));
   --bts-fill-soft: rgb(255 255 255 / 0.05);
   --bts-fill-track: rgb(255 255 255 / 0.1);
   --bts-fill-strong: rgb(255 255 255 / 0.2);
@@ -235,7 +244,10 @@
 
   --bts-text-primary: var(--color-slate-900);
   --bts-text-secondary: var(--color-slate-600);
-  --bts-text-muted: var(--color-slate-500);
+  /* slate-500 היה 3.8-4.35:1 על המשטחים הבהירים בפועל (עמוד, שבבים כחלחלים). תערובת 50% slate-600
+     עומדת ב-4.8:1 לפחות על כולם, ונשארת בהירה מ-secondary (slate-600) בהיררכיה. */
+  --bts-text-muted: #53647d;
+  --bts-text-muted: color-mix(in oklab, var(--color-slate-600) 50%, var(--color-slate-500));
 
   --bts-border: #cbd5e199;
   --bts-border: color-mix(in oklab, var(--color-slate-300) 60%, transparent);
@@ -863,4 +875,79 @@ html[data-locale="ar"] body {
   .lgs-overlay-beams {
     transition: none;
   }
+}
+
+/* ───────────── נגישות ותצוגה (components/DisplaySettings.tsx) ─────────────
+   כל כלל תלוי במאפיין data-* על <html>. בלי מאפיין אין שינוי, ולכן ברירת המחדל זהה למראה
+   הקיים. הכללים מחוץ ל-@layer, ולכן גוברים על מחלקות Tailwind בלי !important. */
+
+/* גודל טקסט: zoom על טקסט הקריאה בלבד (רק האלמנט החיצוני, בלי הכפלה בקינון). כך גם גדלי
+   px קבועים גדלים, והטקסט נשבר מחדש בתוך הרוחב שלו. zoom על כל main צמצם את רוחב הפריסה
+   בנייד מתחת למינימום של המעבדות וחתך אותן, ולכן הפריסה, הפקדים והמעבדות נשארים בגודלם. */
+html[data-text-size="lg"] main :is(p, li, blockquote, dd, figcaption):not(:is(p, li, blockquote, dd, figcaption) *) { zoom: 1.125; }
+html[data-text-size="xl"] main :is(p, li, blockquote, dd, figcaption):not(:is(p, li, blockquote, dd, figcaption) *) { zoom: 1.25; }
+
+/* ריווח קריאה בכיוון WCAG 1.4.12. בלי ריווח אותיות בערבית, כדי לא לפרק את חיבורי האותיות. */
+html[data-reading-spacing] main :is(p, li, dd, blockquote) {
+  line-height: 1.8;
+  word-spacing: 0.16em;
+}
+html[data-reading-spacing]:not([data-locale="ar"]) main :is(p, li, dd, blockquote) {
+  letter-spacing: 0.04em;
+}
+
+/* ניגודיות גבוהה יותר: רק אסימוני טקסט-משני ומסגרות. צבעים פדגוגיים לא משתנים.
+   נמדד מול משטחי הלומדה: כל אסימון טקסט 7:1 לפחות, מסגרות 3:1 לפחות, בשתי הערכות.
+   גם תת-עצים נעולים (data-theme על שורש הפרק) מקבלים את הערכים של הערכה שלהם. */
+html[data-contrast="more"],
+html[data-contrast="more"] [data-theme="dark"] {
+  --bts-text-secondary: var(--color-slate-200);
+  --bts-text-muted: var(--color-slate-300);
+  --bts-text-faint: var(--color-slate-400);
+  --bts-text-subtle: var(--color-slate-400);
+  --bts-text-body: var(--color-slate-100);
+  --bts-border: var(--color-slate-500);
+  --bts-border-emphasis: var(--color-slate-400);
+  --bts-border-mid: var(--color-slate-500);
+  --bts-focus-ring: var(--color-cyan-400);
+}
+html[data-contrast="more"][data-theme="light"],
+html[data-contrast="more"] [data-theme="light"] {
+  --bts-text-secondary: var(--color-slate-700);
+  --bts-text-muted: var(--color-slate-700);
+  --bts-text-faint: var(--color-slate-700);
+  --bts-text-subtle: var(--color-slate-700);
+  --bts-text-body: var(--color-slate-800);
+  --bts-border: var(--color-slate-500);
+  --bts-border-emphasis: var(--color-slate-600);
+  --bts-border-mid: var(--color-slate-500);
+  --bts-focus-ring: var(--color-cyan-700);
+}
+html[data-contrast="more"] :focus-visible {
+  outline-color: var(--bts-focus-ring);
+}
+
+/* הפחתת תנועה: בחירת הלומד או העדפת מערכת ההפעלה, באותה התנהגות. אנימציות framer-motion
+   מדולגות ב-JS (components/reducedMotion.ts). !important גובר גם על style מוטבע. */
+html[data-reduce-motion] *,
+html[data-reduce-motion] *::before,
+html[data-reduce-motion] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+/* אותה החלטה כשמערכת ההפעלה מבקשת הפחתת תנועה (ראו components/reducedMotion.ts). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html[data-underline-links] a[href] {
+  text-decoration-line: underline;
+  text-underline-offset: 0.2em;
 }

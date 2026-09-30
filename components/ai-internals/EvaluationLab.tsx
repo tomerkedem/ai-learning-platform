@@ -19,7 +19,8 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     BadgeCheck, Repeat, AlertTriangle, FileQuestion, PackageCheck, Target,
     User, FileSearch, CheckCircle2, XCircle, Lightbulb, Gauge, History, type LucideIcon,

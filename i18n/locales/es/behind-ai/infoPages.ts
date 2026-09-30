@@ -217,8 +217,9 @@ export const infoPages: InfoPagesDict = {
                     heading: 'Lo que existe hoy',
                     items: [
                         { icon: 'direction', title: 'Idioma y dirección', body: 'Cada página declara su idioma y su dirección de lectura, de derecha a izquierda en hebreo y árabe y de izquierda a derecha en los demás idiomas, para que los lectores de pantalla y los navegadores presenten bien el texto.' },
-                        { icon: 'keyboard', title: 'Teclado', body: 'El menú del curso y la navegación entre capítulos funcionan con el teclado, con un indicador de foco visible. En los capítulos, las flechas llevan al capítulo siguiente o anterior, y Esc cierra el menú en el teléfono.' },
-                        { icon: 'motion', title: 'Movimiento reducido', body: 'Algunas animaciones decorativas, como el brillo del fondo, se detienen cuando tu sistema pide reducir el movimiento.' },
+                        { icon: 'keyboard', title: 'Teclado', body: 'El menú del curso y la navegación entre capítulos funcionan con el teclado, con un indicador de foco visible. En los capítulos y en las páginas de información, la primera pulsación de Tab muestra el enlace «Saltar al contenido». En los capítulos, las flechas llevan al capítulo siguiente o anterior, y Esc cierra el menú en el teléfono y cualquier ventana abierta.' },
+                        { icon: 'motion', title: 'Movimiento reducido', body: 'Cuando tu sistema pide reducir el movimiento, o cuando activas «Reducir el movimiento» en la ventana «Accesibilidad y visualización», se detienen las animaciones y los efectos decorativos, incluido el globo terráqueo del selector de idioma. El contenido y los laboratorios siguen disponibles. El cambio se aplica al instante, sin recargar la página.' },
+                        { icon: 'sliders', title: 'Accesibilidad y visualización', body: 'En la ventana «Accesibilidad y visualización» del menú del curso puedes agrandar el texto de lectura, ampliar el espaciado de lectura, aumentar el contraste, reducir el movimiento y subrayar los enlaces. Los ajustes se guardan solo en este dispositivo.' },
                         { icon: 'theme', title: 'Temas claro y oscuro', body: 'Elige un tema claro u oscuro, o el de tu sistema, desde el menú del curso.' },
                         { icon: 'speaker', title: 'Lectura en voz alta', body: 'Cada capítulo tiene una opción de lectura en voz alta que usa las voces de tu navegador cuando están disponibles.' },
                     ],
@@ -228,7 +229,9 @@ export const infoPages: InfoPagesDict = {
                     heading: 'Limitaciones conocidas',
                     items: [
                         'Todavía no se ha publicado una revisión formal de accesibilidad según un estándar reconocido (como WCAG).',
-                        'Es posible que algunos textos pequeños y secundarios no tengan suficiente contraste de color. Todavía no se ha medido.',
+                        'El tamaño del texto de lectura agranda solo los párrafos y las listas. Los títulos, los botones y las etiquetas de los laboratorios mantienen su tamaño. El zoom del navegador lo agranda todo.',
+                        'Los colores del texto secundario del curso se midieron en los temas claro y oscuro, en la introducción, el capítulo 1 y las páginas de información, con un contraste de al menos 4.5:1. Algunos colores fijos dentro de los laboratorios todavía no se han medido y pueden ser más bajos. El ajuste «Más contraste» refuerza el texto secundario y los bordes del curso, pero no todos los colores de los laboratorios.',
+                        'Todavía no se han publicado pruebas con lectores de pantalla como NVDA o VoiceOver.',
                     ],
                 },
                 {

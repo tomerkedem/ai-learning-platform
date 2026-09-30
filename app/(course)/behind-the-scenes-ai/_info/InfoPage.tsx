@@ -5,7 +5,7 @@
 // בלוק placeholder הוא טיוטה עריכתית מסומנת (data-editorial-placeholder), לא נוסח סופי.
 
 import Link from "next/link";
-import { useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "@/components/reducedMotion";
 import {
     ArrowLeft, ArrowRight, BookOpen, ChevronDown, PenLine,
     Layers, Languages, MonitorSmartphone, KeyRound, CalendarClock, CreditCard, Save,

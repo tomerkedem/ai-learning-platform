@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     Compass, ArrowLeftRight, Sigma, Boxes, BarChart3, Flag, ChevronDown, ChevronRight,
     Play, RotateCcw, Keyboard, FunctionSquare, Eye, Workflow, ScanLine,

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     AppWindow, BrainCircuit, CheckCircle2, ChevronLeft, ChevronRight, CircleStop,
     ExternalLink, History, UserRound, Info, RefreshCcw, RotateCcw, ShieldCheck, Wrench,

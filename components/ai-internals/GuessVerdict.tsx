@@ -25,7 +25,8 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { CheckCircle2, Lightbulb, RotateCcw, ArrowDown, Sparkles } from 'lucide-react';
 import { ResponseNote } from './ResponseNote';
 import { GuessButton } from './GuessButton';

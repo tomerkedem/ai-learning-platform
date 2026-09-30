@@ -10,7 +10,8 @@
 // reduced-motion: בלי ריחוף, הכרטיסים מתחלפים מיד. עומק וזוהר סטטיים.
 
 import React from 'react';
-import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import type { LucideIcon } from 'lucide-react';
 
 export interface SemanticCardData {

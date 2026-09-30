@@ -14,7 +14,8 @@
 // reduced-motion: בלי אנימציות, החלפה מיידית. RTL/LTR בטוח. בלי מקף ארוך או בינוני.
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { Hash, Table2, ArrowLeft, ArrowRight, Sparkles, Shuffle, GraduationCap, Eye, MousePointerClick } from 'lucide-react';
 
 import { useT } from '@/i18n/useT';
@@ -178,7 +179,7 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                                         // גם הן aria-pressed. יעד מגע מלא וטבעת פוקוס נראית.
                                         aria-pressed={isActive}
                                         className={`grid min-h-[44px] w-full grid-cols-[4.75rem_1fr] items-center gap-3 rounded-lg border px-2.5 py-1.5 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
-                                            isActive ? 'border-cyan-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-cyan-900)] [--t-l:var(--color-cyan-500)]' : 'border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-700))_40%,transparent)] bg-[color-mix(in_oklab,var(--bts-panel-from)_30%,transparent)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))] opacity-70'
+                                            isActive ? 'border-cyan-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-cyan-900)] [--t-l:var(--color-cyan-500)]' : 'border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-700))_40%,transparent)] bg-[color-mix(in_oklab,var(--bts-panel-from)_30%,transparent)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                         }`}
                                     >
                                         <span className={`inline-flex items-center gap-0.5 font-mono text-sm font-black ${isActive ? 'text-cyan-200' : 'text-[var(--bts-text-muted)]'}`} dir="ltr">
@@ -186,9 +187,9 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                                         </span>
                                         <span className="flex flex-wrap gap-x-1.5 gap-y-0.5 font-mono text-[13px]" dir="ltr">
                                             {preview.map((n, i) => (
-                                                <span key={i} className={isActive ? 'text-[var(--bts-text-body)]' : 'text-[var(--bts-text-subtle)]'}>{fmt(n)}</span>
+                                                <span key={i} className={isActive ? 'text-[var(--bts-text-body)]' : 'text-[var(--bts-text-faint)]'}>{fmt(n)}</span>
                                             ))}
-                                            <span className={isActive ? 'text-[var(--bts-text-faint)]' : 'text-[color-mix(in_oklab,var(--bts-text-subtle)_var(--bts-tint-mix),var(--color-slate-700))]'}>...</span>
+                                            <span className="text-[var(--bts-text-faint)]">...</span>
                                         </span>
                                     </button>
                                 );

@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { useAnswerKey, useGuessTones } from '@/i18n/ProtectedContent';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     Scissors, MousePointerClick, SplitSquareHorizontal, FlaskConical, Lightbulb, ListChecks,
     CheckCircle2, Info, Type, Boxes, Brain, Filter,

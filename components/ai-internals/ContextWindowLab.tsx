@@ -16,7 +16,8 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { MessageSquare, User, Bot, Eye, EyeOff, Sparkles, PenLine } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
 import type { ContextWindowLabContent, AnswerTone, LabMessage } from '@/i18n/locales/he/behind-ai/contextWindowLab';

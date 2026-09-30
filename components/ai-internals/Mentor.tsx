@@ -7,7 +7,8 @@
 // (למשל think→celebrate) פשוט על-ידי החלפת ה-pose לפי state של ההורה.
 
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 
 export type MentorPose =
     | 'hero'

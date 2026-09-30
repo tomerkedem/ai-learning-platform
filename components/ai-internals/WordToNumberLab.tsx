@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     Sparkles, ChevronDown,
     Play, RotateCcw, Keyboard,
@@ -334,7 +335,7 @@ const TypingField: React.FC<TypingFieldProps> = ({ text, prompt, accent, autoTyp
             {/* תצוגת המשפט הנבנה (קריאה בלבד). ריק => מציג את המשפט המוצע מעומעם כתצוגה מקדימה */}
             <div className="relative flex min-h-[3rem] items-center rounded-xl border border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,var(--bts-panel-to)_60%,transparent)] px-4 py-2.5">
                 <span className="text-lg font-medium leading-snug text-[var(--bts-text-primary)]">
-                    {text || <span className="text-[var(--bts-text-subtle)]">{prompt}</span>}
+                    {text || <span className="text-[var(--bts-text-faint)]">{prompt}</span>}
                 </span>
                 {autoTyping && !reduce && (
                     <motion.span

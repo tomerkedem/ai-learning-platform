@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     Info, Lightbulb, MousePointerClick, ScanLine, ShieldAlert, Workflow,
     CheckCircle2, XCircle, Clock, ArrowDown, ArrowLeft, Play, Pause,

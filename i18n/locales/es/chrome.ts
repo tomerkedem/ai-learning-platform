@@ -53,6 +53,22 @@ export const chrome: typeof heChrome = {
         close: 'Cerrar',
         imageCredit: 'Imagen de la Tierra: NASA',
     },
+    display: {
+        open: 'Accesibilidad y visualización',
+        title: 'Accesibilidad y visualización',
+        textSize: 'Tamaño del texto de lectura',
+        sizeDefault: 'Normal',
+        sizeLarge: 'Grande',
+        sizeLarger: 'Muy grande',
+        spacing: 'Más espacio para leer',
+        contrast: 'Más contraste',
+        motion: 'Reducir el movimiento',
+        motionSystem: 'Tu dispositivo ya pide reducir el movimiento, y el curso lo respeta.',
+        underline: 'Subrayar los enlaces',
+        statement: 'Sobre la accesibilidad del curso',
+        reset: 'Restablecer valores predeterminados',
+        close: 'Cerrar',
+    },
 
     footer: {
         defaultLabel: 'Cursos interactivos para desarrolladores de IA',

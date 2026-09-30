@@ -14,7 +14,7 @@
 // הפיתול, הפעימה וההבהוב ומשאיר סולם סטטי וקריא לחלוטין. aria שומר נגישות והקראה.
 
 import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { Check } from 'lucide-react';
 
 import { DNA_DIMS as CH4_DNA_DIMS } from '../embeddingEngine';

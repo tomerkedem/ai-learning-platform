@@ -53,6 +53,22 @@ export const chrome: typeof heChrome = {
         close: '閉じる',
         imageCredit: '地球の画像: NASA',
     },
+    display: {
+        open: 'アクセシビリティと表示',
+        title: 'アクセシビリティと表示',
+        textSize: '本文の文字サイズ',
+        sizeDefault: '標準',
+        sizeLarge: '大',
+        sizeLarger: '特大',
+        spacing: '読みやすい間隔にする',
+        contrast: 'コントラストを高める',
+        motion: '動きを減らす',
+        motionSystem: 'お使いの端末ですでに「動きを減らす」が有効になっており、コースはその設定に従います。',
+        underline: 'リンクに下線を表示',
+        statement: 'このコースのアクセシビリティについて',
+        reset: '初期設定に戻す',
+        close: '閉じる',
+    },
 
     footer: {
         defaultLabel: 'AI 開発者のためのインタラクティブコース',

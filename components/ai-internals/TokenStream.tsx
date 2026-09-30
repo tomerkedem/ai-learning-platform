@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { ArrowLeft, ScanLine, Sparkles } from 'lucide-react';
 import { TokenChip } from './TokenChip';
 import { TokenRoleCard } from './TokenRoleCard';

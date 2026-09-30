@@ -24,7 +24,8 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { Link2, Pencil, Sparkles, ArrowLeftRight, Crosshair } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
 import type { AttentionLabContent, LabTension, AttentionLabFocus } from '@/i18n/locales/he/behind-ai/attentionLab';

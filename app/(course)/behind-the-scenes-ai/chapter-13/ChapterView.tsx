@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { useAnswerKey, useGuessTones } from '@/i18n/ProtectedContent';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { ClipboardCheck, MousePointerClick, ListChecks, FlaskConical, Lightbulb, CheckCircle2, XCircle, Sparkles, Send, FilePlus2, Scissors, ArrowLeft, ArrowRight } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';

@@ -26,7 +26,7 @@ export interface HeaderEarth {
     destroy(): void;
 }
 
-export function createHeaderEarth(container: HTMLElement, trigger: HTMLElement, home: LatLon, reducedMotion: boolean): HeaderEarth {
+export function createHeaderEarth(container: HTMLElement, trigger: HTMLElement, home: LatLon, reducedMotion: () => boolean): HeaderEarth {
     const core = createEarthScene(container, {
         pixelRatioCap: 3,
         cameraDistance: 3.55,
@@ -73,7 +73,7 @@ export function createHeaderEarth(container: HTMLElement, trigger: HTMLElement, 
         if (Math.abs(dx) + Math.abs(dy) > 0.002) rafId = requestAnimationFrame(tick);
     };
     const goHome = () => {
-        if (reducedMotion) {
+        if (reducedMotion()) {
             earth.rotation.set(homeRot.x, homeRot.y, 0);
             render();
         } else if (rafId === null) {

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { Terminal, ScanSearch, Layers, Eye, Lightbulb, CheckCircle2 } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';
@@ -360,14 +361,15 @@ export default function BehindTheScenesChapter1() {
                 </div>
 
                 <div className="relative">
-                {/* aurora אמביינטי מאחורי שני החלונות - סטטי כדי להשאיר את המסך הראשי רגוע */}
+                {/* aurora אמביינטי מאחורי שני החלונות - סטטי כדי להשאיר את המסך הראשי רגוע. במובייל קטן יותר,
+                    כדי שהקופסה (לא הטשטוש) לא תחרוג מרוחב התוכן ותיצור גלילה אופקית. */}
                 <div
                     aria-hidden
-                    className={`pointer-events-none absolute -top-12 ${isRtl ? 'right-1/4' : 'left-1/4'} -z-10 h-72 w-72 rounded-full bg-cyan-500/10 blur-[110px]`}
+                    className={`pointer-events-none absolute -top-12 ${isRtl ? 'right-1/4' : 'left-1/4'} -z-10 h-48 w-48 md:h-72 md:w-72 rounded-full bg-cyan-500/10 blur-[110px]`}
                 />
                 <div
                     aria-hidden
-                    className={`pointer-events-none absolute -bottom-12 ${isRtl ? 'left-1/4' : 'right-1/4'} -z-10 h-72 w-72 rounded-full bg-purple-500/10 blur-[110px]`}
+                    className={`pointer-events-none absolute -bottom-12 ${isRtl ? 'left-1/4' : 'right-1/4'} -z-10 h-48 w-48 md:h-72 md:w-72 rounded-full bg-purple-500/10 blur-[110px]`}
                 />
                 <ExpandableLab title={c1.lab.panelTitle}>
                 <TransparentLabLayout

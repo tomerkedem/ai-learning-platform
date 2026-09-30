@@ -10,7 +10,8 @@
 // ולולאת פידבק של הספק (איטי, נפרד, ולא תמיד).
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     Lock, Snowflake, RefreshCw, History, MessageSquare, RotateCcw, Layers,
     Clock, Check, X, ArrowDown, Sparkles, Lightbulb, MousePointerClick, Info,

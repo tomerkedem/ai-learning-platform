@@ -16,7 +16,8 @@
 // גדלי הגופן הם גדלי גוף הלומדה (15px ומעלה), לא הערת שוליים. RTL/LTR בטוח.
 
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { ChevronDown, ChevronLeft, ChevronRight, Info, Layers } from 'lucide-react';
 
 import { SpeakButton } from '@/components/ai-internals/SpeakButton';

@@ -11,7 +11,8 @@
 // סטטיים, ולכן נשאר פרימיום בלי תלות באנימציה.
 
 import React, { useMemo } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 
 import { ObjectGlyph, type ObjectGlyphKey } from './objectGlyphs';
 

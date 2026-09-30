@@ -19,7 +19,8 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useMemo, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { Sparkles, Plus, Minus, RotateCcw, Percent, Crown } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
 import type { LogitsSoftmaxLabContent } from '@/i18n/locales/he/behind-ai/logitsSoftmaxLab';

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { motion, useMotionValue, useTransform, animate, useReducedMotion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { ListOrdered, Trophy } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent, ProbabilityCandidate } from './types';

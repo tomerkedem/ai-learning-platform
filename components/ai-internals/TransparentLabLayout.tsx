@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { ChevronLeft, ChevronDown } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';
@@ -52,7 +53,7 @@ const DataFlowConnector: React.FC<{ accent: Accent; tokens: string[]; isRtl: boo
 
             {/* דסקטופ: המחבר יושב בעמודה האמצעית וזורם מה-Chat אל ה-Engine. */}
             <div className="relative hidden h-full min-h-[220px] w-14 items-center justify-center lg:flex">
-                <span className="absolute top-[calc(50%-2.25rem)] font-mono text-[10px] uppercase tracking-widest text-[var(--bts-text-subtle)]">tokens</span>
+                <span className="absolute top-[calc(50%-2.25rem)] font-mono text-[10px] uppercase tracking-widest text-[var(--bts-text-faint)]">tokens</span>
                 <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-[var(--bts-fill-track)]" />
                 {hasTokens && Array.from({ length: slotCount }).map((_, i) => (
                     <motion.span

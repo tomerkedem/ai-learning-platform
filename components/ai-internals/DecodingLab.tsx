@@ -19,7 +19,8 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { SlidersHorizontal, Shuffle, Crown, Sparkles } from 'lucide-react';
 import type { Direction, Locale } from '@/i18n/config';
 import type { DecodingLabContent } from '@/i18n/locales/he/behind-ai/decodingLab';

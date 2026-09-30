@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { SearchX, CheckCircle2 } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent } from './types';

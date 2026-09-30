@@ -22,7 +22,8 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     MessageSquare, HelpCircle, Wrench, ShieldCheck, ListChecks, Lightbulb,
     ArrowLeft, ArrowRight, AlertTriangle, RotateCw, CheckCircle2, Clock, type LucideIcon,

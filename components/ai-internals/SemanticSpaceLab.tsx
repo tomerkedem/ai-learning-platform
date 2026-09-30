@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { Compass, MousePointerClick, Sparkles, Map, Info, ArrowLeftRight, Check } from 'lucide-react';
 
 import type { Direction, Locale } from '@/i18n/config';

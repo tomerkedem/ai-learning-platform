@@ -21,7 +21,8 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     MessageSquare, FilePlus2, Bookmark, GraduationCap, Sparkles, Eye,
     CheckCircle2, Lock, Lightbulb, User, Layers, type LucideIcon,

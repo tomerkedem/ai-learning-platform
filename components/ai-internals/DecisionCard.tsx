@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { CheckCircle2, HelpCircle, Wrench, Hand } from 'lucide-react';
 import { useT } from '@/i18n/useT';
 import { DUR, EASE, SPRING, STAGGER } from './motionTokens';

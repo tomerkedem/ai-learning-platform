@@ -18,7 +18,8 @@
 import React, { useState } from 'react';
 import { useAnswerKey, useGuessTones } from '@/i18n/ProtectedContent';
 import Link from 'next/link';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     Route, MessageSquareText, Send, Search, MousePointerClick, Layers, FlaskConical,
     ListChecks, CheckCircle2, XCircle, Sparkles, GraduationCap, ArrowLeft, ArrowRight,

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useContext, useEffect, useId, useMemo, useRef } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { Send, Bot, Sparkles, CircleAlert } from 'lucide-react';
 import { ModeToggle } from './ModeToggle';
 import { ACCENTS } from './accents';

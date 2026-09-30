@@ -24,7 +24,8 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import {
     HelpCircle, Search, PenLine, Send, PackageCheck,
     CheckCircle2, XCircle, AlertTriangle, ShieldAlert, Ban,

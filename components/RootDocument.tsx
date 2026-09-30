@@ -43,6 +43,10 @@ const heebo = Heebo({
 // כ-THEME_STORAGE_KEY; אם המפתח משתנה אי-פעם יש לעדכן את שני המקומות.
 const THEME_INIT = `(function(){var e=document.documentElement,m='system';try{var s=localStorage.getItem('bts-theme');if(s==='light'||s==='dark'||s==='system'){m=s;}}catch(x){}var t;try{t=m==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;}catch(x){t=m==='system'?'dark':m;}e.setAttribute('data-theme',t);e.style.colorScheme=t;})();`;
 
+// העדפות "נגישות ותצוגה" (bts-display), באותה גישה: מוחלות לפני הציור הראשון כדי שלא יהיה
+// קפיצה בגודל הטקסט או בניגודיות. המבנה זהה ל-applyPrefs ב-components/DisplaySettings.tsx.
+const DISPLAY_INIT = `(function(){try{var e=document.documentElement,p=JSON.parse(localStorage.getItem('bts-display')||'{}');if(p.size==='lg'||p.size==='xl')e.setAttribute('data-text-size',p.size);if(p.spacing===true)e.setAttribute('data-reading-spacing','on');if(p.contrast===true)e.setAttribute('data-contrast','more');if(p.motion===true)e.setAttribute('data-reduce-motion','on');if(p.underline===true)e.setAttribute('data-underline-links','on');}catch(x){}})();`;
+
 export function RootDocument({
   locale,
   serverResolved = false,
@@ -71,7 +75,7 @@ export function RootDocument({
         {/* חייב להיות האלמנט הראשון ב-body: הוא רץ סינכרונית בזמן פענוח ה-HTML,
             לפני שהתוכן שאחריו מפוענח ולפני הציור הראשון. אלמנט <head> ידני אינו
             נתמך ב-App Router של Next ונשמט מהפלט, ולכן זה המיקום הנכון. */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT + DISPLAY_INIT }} />
         <ThemeProvider>
           <LocaleProvider initialLocale={locale} serverResolved={serverResolved}>
             {children}

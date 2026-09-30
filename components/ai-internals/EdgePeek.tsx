@@ -14,13 +14,10 @@
 //             ולכן הפתיחה מגיעה מ"נעוץ" (למשל הקראה פעילה). reduced-motion מבטל את
 //             ההחלקה בלבד, לא את ההצמדה.
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import type { Direction } from '@/i18n/config';
-
-// useLayoutEffect בצד הלקוח (רץ לפני הצביעה), useEffect בשרת. כך הפריט נצמד לקצה עוד
-// לפני ה-paint הראשון, ולא "יוצא ונכנס" בכל מעבר בין פרקים.
-const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+import { useReducedMotion } from '@/components/reducedMotion';
 
 interface EdgeRailProps {
     dir: Direction;
@@ -68,21 +65,12 @@ export function EdgePeekItem({ dir, pinned = false, peekRem = 2.25, className, c
     // התוכן, וזה נכון רק בדסקטופ (main הוא max-w-4xl ממורכז). במובייל main ממלא את החלון
     // ושוליו הם px-8 בלבד (32px), צרים מהפריט (60px), ולכן הוא כיסה פקדים.
     // מכאן: תמיד מצמידים לקצה במנוחה, ורק *המעבר* מותנה בהעדפת התנועה.
-    const [reduceMotion, setReduceMotion] = useState(false);
+    const reduceMotion = useReducedMotion();
     const [hovered, setHovered] = useState(false);
     const [focusWithin, setFocusWithin] = useState(false);
     // מפעיל מעברים רק אחרי הצביעה הראשונה, כך שההיצמדות הראשונית לקצה מיידית (בלי החלקה).
     const [animateReady, setAnimateReady] = useState(false);
     const leaveTimer = useRef<number | null>(null);
-
-    // זיהוי לפני paint (layout effect), כדי שהפריט יצויר מיד במצב הנכון בלי הבהוב.
-    useIsoLayoutEffect(() => {
-        const motionMq = window.matchMedia('(prefers-reduced-motion: reduce)');
-        const update = () => setReduceMotion(motionMq.matches);
-        update();
-        motionMq.addEventListener('change', update);
-        return () => motionMq.removeEventListener('change', update);
-    }, []);
 
     // אחרי הפריים הראשון מפעילים מעברים, כך שרק אינטראקציית hover אמיתית מחליקה.
     useEffect(() => {

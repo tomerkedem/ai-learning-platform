@@ -16,6 +16,7 @@ import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { Check, X } from 'lucide-react';
 import { useT } from '@/i18n/useT';
 import { LOCALES, LOCALE_LIST, type Locale } from '@/i18n/config';
+import { reducedMotion as prefersReducedMotion } from '@/components/reducedMotion';
 import type { InteractiveEarth } from './interactiveEarth';
 import type { HeaderEarth } from './headerEarth';
 import type { LatLon } from './earthRenderingCore';
@@ -50,8 +51,6 @@ const CENTER = (LOCALE_LIST.length - 1) / 2;
 const ARC_Y = LOCALE_LIST.map((_, i) =>
     -Math.round(APEX_LIFT_PX * Math.cos((((i - CENTER) / CENTER) * Math.PI) / 2) * 10) / 10,
 );
-
-const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /** טרנספורם שמניח את הכדור הגדול (לפני טרנספורם) בדיוק על הכדור המוקטן בכפתור. */
 const flightFrom = (earthEl: HTMLElement, miniEl: HTMLElement) => {
@@ -96,7 +95,7 @@ export function LanguageGlobe() {
         let cancelled = false;
         import('./headerEarth')
             .then(({ createHeaderEarth }) => {
-                if (!cancelled) miniRef.current = createHeaderEarth(el, trigger, homeRef.current, prefersReducedMotion());
+                if (!cancelled) miniRef.current = createHeaderEarth(el, trigger, homeRef.current, prefersReducedMotion);
             })
             .catch(() => {});
         return () => {

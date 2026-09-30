@@ -12,6 +12,7 @@ import { useCourseAccess } from "@/app/(course)/behind-the-scenes-ai/_access/Cou
 import { isProtectedCoursePath } from "@/app/(course)/behind-the-scenes-ai/_access/access";
 import { INFO_PAGES } from "@/app/(course)/behind-the-scenes-ai/_info/infoRoutes";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { DisplaySettings } from "@/components/DisplaySettings";
 import { LanguageGlobe } from "@/components/language/LanguageGlobe";
 import { useT } from "@/i18n/useT";
 import { tField } from "@/lib/localize";
@@ -42,6 +43,8 @@ export function CourseSidebar({ isFocusMode = false }: { isFocusMode?: boolean }
       ).filter((el) => el.getClientRects().length > 0);
     focusables()[0]?.focus();
     const onKeyDown = (e: KeyboardEvent) => {
+      // חלון <dialog> מודאלי שנפתח מתוך המגירה (שפה, נגישות ותצוגה) מנהל בעצמו Escape ו-Tab.
+      if (document.querySelector('dialog[open]')) return;
       if (e.key === 'Escape') {
         e.preventDefault();
         closeMenu();
@@ -217,7 +220,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
             onScroll={handleScroll}
             className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-0.5"
           >
-              <div className="text-[10px] font-bold text-[var(--bts-text-muted)] mb-2 px-2 uppercase tracking-widest opacity-70 mt-2">
+              <div className="text-[10px] font-bold text-[var(--bts-text-muted)] mb-2 px-2 uppercase tracking-widest mt-2">
                   {t.chrome.tableOfContents}
               </div>
               
@@ -272,7 +275,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
               {/* דפי המידע של הלומדה: בסוף הרשימה, כך שהם זמינים גם במגירת המובייל. */}
               {currentCourseId === 'behind-the-scenes-ai' && (
                   <nav aria-label={t.behindAi.infoPages.navLabel} className="mt-4 border-t border-[var(--bts-border)] pt-4">
-                      <p aria-hidden className="text-[10px] font-bold text-[var(--bts-text-muted)] mb-2 px-2 uppercase tracking-widest opacity-70">
+                      <p aria-hidden className="text-[10px] font-bold text-[var(--bts-text-muted)] mb-2 px-2 uppercase tracking-widest">
                           {t.behindAi.infoPages.navLabel}
                       </p>
                       <ul className="space-y-0.5">
@@ -306,6 +309,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
               {/* בורר השפה רק בלומדה מאחורי הקלעים של AI: רק היא פותרת שפה בשרת. */}
               <div className="mb-3 flex items-center justify-center gap-3">
                   <ThemeToggle />
+                  <DisplaySettings />
                   {pathname?.startsWith('/behind-the-scenes-ai') && <LanguageGlobe />}
               </div>
           </div>

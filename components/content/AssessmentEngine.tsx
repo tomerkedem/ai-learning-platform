@@ -17,6 +17,7 @@ import { GuessButton } from '../ai-internals/GuessButton';
 import { SpeakButton } from '../ai-internals/SpeakButton';
 import { speakJoin } from '../ai-internals/GuessVerdict';
 import { useT } from '@/i18n/useT';
+import { reducedMotion, useReducedMotion } from '@/components/reducedMotion';
 
 // שכבת הקונפטי חייבת לצוף מעל מצב "מסך מלא" של ExpandableLab, שהוא Portal אטום
 // ב-document.body עם z-index 9999. ברירת המחדל של canvas-confetti היא z-index 100,
@@ -198,19 +199,9 @@ export const AssessmentEngine = ({
     // גוון accent בפורמט של GuessButton (פסיקים במקום רווחים).
     const accentRgb = accent.shadow.replace(/\s+/g, ',');
 
-    // העדפת תנועה מופחתת. נקראת ישירות מ-media query (לא framer useReducedMotion) כדי לא
-    // לפלוט אזהרת dev של framer, וכדי לשמור על ריהדרציה ראשונה זהה ל-SSR (reduce=false)
-    // ולמנוע אי-התאמת hydration. מסונכרן להעדפת המערכת אחרי mount ומתעדכן בשינוי חי.
-    const [reduce, setReduce] = useState(false);
-    useEffect(() => {
-        if (typeof window === 'undefined' || !window.matchMedia) return;
-        const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- סנכרון חד-פעמי של העדפת מערכת אחרי mount (בטיחות SSR/hydration)
-        setReduce(mq.matches);
-        const onChange = () => setReduce(mq.matches);
-        mq.addEventListener('change', onChange);
-        return () => mq.removeEventListener('change', onChange);
-    }, []);
+    // העדפת תנועה מופחתת (מערכת ההפעלה או בחירת הלומד). false בזמן ה-hydration כמו בשרת,
+    // ומתעדכנת בשינוי חי בלי לאפס את מצב המבדק. ראו components/reducedMotion.ts.
+    const reduce = useReducedMotion();
 
     // אבחון מבוסס מושגים: בונה את תוצאת הניסיון, כולל מושגים חזקים (כל השאלות של
     // המושג נענו נכון) ומושגים חלשים (לפחות שאלה אחת של המושג נענתה שגוי).
@@ -596,7 +587,7 @@ export const AssessmentEngine = ({
                                                     exitFullscreen();
                                                     return;
                                                 }
-                                                const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+                                                const reduced = reducedMotion();
                                                 const behavior: ScrollBehavior = reduced ? 'auto' : 'smooth';
                                                 // ChapterLayout גולל בתוך מיכל פנימי (overflow-y-auto), לא ב-window.
                                                 // מאתרים את מיכל הגלילה האמיתי בטיפוס במעלה ה-DOM ונגללים אותו לראש.

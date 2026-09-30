@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, CodeXml, Sigma, BrainCog, BookOpen, Eye } from "
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import type { Engine, ISourceOptions } from "tsparticles-engine";
-import { useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "@/components/reducedMotion";
 import { Tilt } from '@/components/ui/Tilt';
 import { useT } from "@/i18n/useT";
 import { formatChapterCount } from "@/i18n/format";

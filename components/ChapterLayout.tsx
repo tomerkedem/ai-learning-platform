@@ -295,6 +295,14 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                 } as React.CSSProperties
             }
         >
+            {/* דילוג לתוכן: האלמנט הממוקד הראשון בעמוד, גלוי רק בפוקוס (כמו ב-InfoPage). */}
+            <a
+                href="#chapter-main"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:start-4 focus:z-[200] focus:rounded-full focus:bg-[var(--bts-surface-elevated)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--bts-text-primary)] focus:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bts-focus-ring)]"
+            >
+                {t.behindAi.infoPages.skipToContent}
+            </a>
+
             {/* --- רקע גלובלי --- */}
             <div className="fixed inset-0 z-0 pointer-events-none">
                  <div className="absolute inset-0 bg-[var(--bts-page)]"></div>
@@ -391,7 +399,9 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
 
             {/* h-[100dvh] ולא h-screen: במובייל 100vh כולל את שטח סרגל הכתובת, ולכן תחתית
                 מיכל הגלילה (והניווט הדביק של המבדק) נחתכה מתחתיו. dvh עוקב אחרי הגובה הגלוי. */}
-            <div className="flex-1 relative h-[100dvh] flex flex-col z-10">
+            {/* min-w-0: פריט flex ברירת-מחדל לא מתכווץ מתחת לרוחב ה-min-content של התוכן, ולכן
+                בנייד העמודה (ואיתה main) נמתחה ל-392px מעבר לרוחב המסך ויצרה גלילה אופקית. */}
+            <div className="flex-1 min-w-0 relative h-[100dvh] flex flex-col z-10">
                 
                 {/* Header */}
                 <div ref={headerRef} className="absolute top-0 left-0 right-0 z-30 pointer-events-none">
@@ -423,7 +433,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                         בהדרגה עם רוחב החלון (clamp) במקום לקפוץ בנקודות-שבירה. במובייל נשמר הריפוד
                         הקיים (px-8). המחלקה bts-fluid מפעילה גם את קנה-המידה הנזיל של כותרת ההירו
                         (globals.css). מוגבל ל-behind-the-scenes-ai כדי לא לגעת בלומדות אחרות. */}
-                    <main className={`mx-auto pb-32 transition-[max-width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+                    <main id="chapter-main" tabIndex={-1} className={`mx-auto pb-32 focus:outline-none transition-[max-width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
                         ${isBtsAi
                             ? 'bts-fluid px-8 md:px-[clamp(1.75rem,0.3rem+2.8vw,3rem)] space-y-[clamp(3.5rem,2.2rem+3.5vw,6rem)]'
                             : 'px-8 md:px-12 space-y-24'}

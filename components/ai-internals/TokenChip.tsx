@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { ROLE_STYLE, type TokenRole } from '@/app/(course)/behind-the-scenes-ai/chapter-3/tokenRoles';
 
 interface TokenChipProps {

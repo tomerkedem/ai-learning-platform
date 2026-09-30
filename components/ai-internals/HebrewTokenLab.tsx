@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useMemo, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { FlaskConical, Info, Layers, Scissors, Combine } from 'lucide-react';
 import { TokenChip } from './TokenChip';
 import { roleForWord } from '@/app/(course)/behind-the-scenes-ai/chapter-3/tokenRoles';

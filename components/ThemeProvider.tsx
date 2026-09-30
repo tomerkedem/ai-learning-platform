@@ -20,6 +20,8 @@
 // T2A: אין עדיין בורר ערכה. setMode נחשף לשימוש עתידי בלבד.
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+// צד-לוואי מכוון: מכוון את framer-motion להחלטת התנועה המשותפת לפני הרינדור הראשון בכל עמוד.
+import '@/components/reducedMotion';
 
 /** מפתח האחסון היחיד של העדפת הערכה. אינו משותף עם אחסון ההתקדמות בלמידה. */
 export const THEME_STORAGE_KEY = 'bts-theme';

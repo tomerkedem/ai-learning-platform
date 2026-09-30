@@ -16,6 +16,7 @@ import { Maximize2, Minimize2 } from 'lucide-react';
 
 import { useT } from '@/i18n/useT';
 import { usePortalTheme } from './usePortalTheme';
+import { reducedMotion } from '@/components/reducedMotion';
 
 // אלמנטים שאפשר למקד עליהם. משמש למלכודת הפוקוס במסך מלא.
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -65,7 +66,7 @@ export const ExpandableLab: React.FC<ExpandableLabProps> = ({ children, title })
     // בתוך העמוד, כדי שהיא תפעל על מיכל הגלילה של הפרק ולא על המיכל שבתוך ה-Portal.
     const exitToChapter = useCallback(() => {
         setExpanded(false);
-        const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+        const reduced = reducedMotion();
         const behavior: ScrollBehavior = reduced ? 'auto' : 'smooth';
         const scroller = findScroller(rootRef.current?.parentElement ?? null);
         requestAnimationFrame(() => {

@@ -8,7 +8,8 @@
 // החץ והאורב סטטיים, וערכי המשיכה מוצגים כמספרים.
 
 import React, { useMemo } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 
 import type { Chapter4LabDict } from '../labContent';
 import { MAGNETS, magnetPull, netVector, DIM_STYLE, type Profile } from '../embeddingEngine';

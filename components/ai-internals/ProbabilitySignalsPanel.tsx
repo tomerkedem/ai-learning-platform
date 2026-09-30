@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { Radar, ArrowLeft, Info } from 'lucide-react';
 import { ACCENTS } from './accents';
 import type { Accent, ProbabilitySignal, SignalStrength } from './types';

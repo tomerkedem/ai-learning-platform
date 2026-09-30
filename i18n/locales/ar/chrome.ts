@@ -53,6 +53,22 @@ export const chrome: typeof heChrome = {
         close: 'إغلاق',
         imageCredit: 'صورة الأرض: NASA',
     },
+    display: {
+        open: 'إمكانية الوصول والعرض',
+        title: 'إمكانية الوصول والعرض',
+        textSize: 'حجم نص القراءة',
+        sizeDefault: 'عادي',
+        sizeLarge: 'كبير',
+        sizeLarger: 'كبير جدًا',
+        spacing: 'تباعد أوسع للقراءة',
+        contrast: 'تباين أعلى',
+        motion: 'تقليل الحركة',
+        motionSystem: 'جهازك يطلب بالفعل تقليل الحركة، والدورة تلتزم بذلك.',
+        underline: 'وضع خط تحت الروابط',
+        statement: 'عن إمكانية الوصول في الدورة',
+        reset: 'إعادة الإعدادات الافتراضية',
+        close: 'إغلاق',
+    },
 
     footer: {
         defaultLabel: 'دورات تفاعلية لمطوّري الذكاء الاصطناعي',

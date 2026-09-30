@@ -217,8 +217,9 @@ export const infoPages: InfoPagesDict = {
                     heading: 'In place today',
                     items: [
                         { icon: 'direction', title: 'Language and direction', body: 'Every page declares its language and reading direction, right to left for Hebrew and Arabic and left to right for the others, so screen readers and browsers present the text correctly.' },
-                        { icon: 'keyboard', title: 'Keyboard', body: 'The course menu and chapter navigation work from the keyboard, with a visible focus indicator. In chapters, the arrow keys move to the next or previous chapter, and Esc closes the menu on phones.' },
-                        { icon: 'motion', title: 'Reduced motion', body: 'Some decorative animations, such as the background glow, stop when your system asks for reduced motion.' },
+                        { icon: 'keyboard', title: 'Keyboard', body: 'The course menu and chapter navigation work from the keyboard, with a visible focus indicator. In chapters and information pages, the first press of Tab shows a “Skip to content” link. In chapters, the arrow keys move to the next or previous chapter, and Esc closes the menu on phones and any open window.' },
+                        { icon: 'motion', title: 'Reduced motion', body: 'When your system asks for reduced motion, or when you turn on “Reduce motion” in the “Accessibility and display” window, decorative animations and effects stop, including the language picker globe. Content and labs stay available. The change applies immediately, without reloading the page.' },
+                        { icon: 'sliders', title: 'Accessibility and display', body: 'The “Accessibility and display” window in the course menu lets you enlarge reading text, widen reading spacing, raise contrast, reduce motion and underline links. Settings are saved only on this device.' },
                         { icon: 'theme', title: 'Light and dark themes', body: 'Choose a light or dark theme, or follow your system, from the course menu.' },
                         { icon: 'speaker', title: 'Read aloud', body: 'Every chapter has a read-aloud option that uses your browser\'s speech voices when they are available.' },
                     ],
@@ -228,7 +229,9 @@ export const infoPages: InfoPagesDict = {
                     heading: 'Known limitations',
                     items: [
                         'No formal accessibility review against a recognized standard (such as WCAG) has been published yet.',
-                        'Some small captions and secondary text may not have enough color contrast. This has not been measured yet.',
+                        'Reading text size enlarges paragraphs and lists only. Headings, buttons and lab labels keep their size. Browser zoom enlarges everything.',
+                        'The course\'s secondary text colors were measured in the light and dark themes, on the introduction, chapter 1 and the information pages, at a contrast of at least 4.5:1. Some fixed colors inside the labs have not been measured yet and may be lower. The “Higher contrast” setting strengthens the course\'s secondary text and borders, but not every color inside the labs.',
+                        'No testing with screen readers such as NVDA or VoiceOver has been published yet.',
                     ],
                 },
                 {

@@ -61,6 +61,23 @@ export const chrome = {
         close: 'סגירה',
         imageCredit: 'תמונת כדור הארץ: NASA',
     },
+    // חלון "נגישות ותצוגה" (components/DisplaySettings.tsx). העדפות תצוגה מקומיות בלבד.
+    display: {
+        open: 'נגישות ותצוגה',
+        title: 'נגישות ותצוגה',
+        textSize: 'גודל טקסט הקריאה',
+        sizeDefault: 'רגיל',
+        sizeLarge: 'גדול',
+        sizeLarger: 'גדול מאוד',
+        spacing: 'ריווח קריאה מוגדל',
+        contrast: 'ניגודיות גבוהה יותר',
+        motion: 'הפחתת תנועה',
+        motionSystem: 'המכשיר שלכם כבר מבקש תנועה מופחתת, והלומדה מכבדת זאת.',
+        underline: 'קו תחתון לקישורים',
+        statement: 'מידע על נגישות הלומדה',
+        reset: 'איפוס לברירת המחדל',
+        close: 'סגירה',
+    },
 
     // פוטר
     footer: {

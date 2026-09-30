@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { ScanLine, MousePointerClick, ArrowLeftRight, FlaskConical, Layers } from 'lucide-react';
 
 import { ChapterLayout } from '@/components/ChapterLayout';

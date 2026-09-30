@@ -13,7 +13,8 @@
 // ────────────────────────────────────────────────────────────────────────
 
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/components/reducedMotion';
 import { Check, MinusCircle, ArrowLeftRight, Gauge, Target, Info, MousePointerClick } from 'lucide-react';
 
 import { useT } from '@/i18n/useT';
