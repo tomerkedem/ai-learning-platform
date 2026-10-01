@@ -1,15 +1,17 @@
 # Behind the Scenes of AI: beta access admin runbook
 
-Access has three levels (migration `20260930174234_learner_access_and_admin_only_names`):
+Access has two levels (`hasCourseAccess` in `app/(course)/behind-the-scenes-ai/_access/access.ts`):
 
-- **Anonymous:** only the introduction preview (heading, hero and the opening chat example) and a
-  free-registration invitation. The rest of the introduction is never rendered or sent.
-- **Learner** (signed in, email confirmed, not suspended): the full introduction and Chapter 1,
-  with no grant needed. `course_access_status` returns `unconfirmed` for an unconfirmed email.
-- **Grant:** Chapters 2-19, their quizzes and the final exam open only for a signed-in learner
-  with an active, explicitly approved grant.
+- **No active grant** (guest, unconfirmed email, confirmed with no grant, expired grant, revoked
+  grant, suspended account): only the introduction preview (heading, hero and the opening chat
+  example) and an explanation that the introduction continues with approved access. The rest of
+  the introduction, Chapters 1-19 and the final exam are never rendered or sent.
+- **Active grant:** the full introduction, Chapters 1-19, their quizzes and the final exam, for a
+  signed-in learner with an active, explicitly approved grant.
 
-Creating an account or confirming an email grants no beta access. New users have no grant.
+Creating an account or confirming an email is authentication only: it grants no access. New users
+have no grant. `course_access_status` still distinguishes every state (for the messages shown),
+but only `active` opens content.
 Information pages, registration, email confirmation and password recovery stay public.
 
 ## How access is decided
@@ -185,9 +187,14 @@ one-month beta grant) and `test-learner-expired@example.com` (a grant that ended
 
 ## Learner names
 
-Registration requires a full name (2 to 100 characters). It is sent with the sign-up and a
-database trigger stores it in `public.profiles.full_name`; a registration without a valid name
-is rejected by the database. After that, only an admin can set or change it (admin page). An
+Registration requires a full name. The rule depends on the course language at sign-up
+(`normalizeFullName` in `authForm.ts`, and the same rule in the database trigger
+`private.create_profile_for_new_user`, migration `20261001120000_locale_aware_registration_names`):
+whitespace is trimmed and collapsed, at most 100 characters, no control characters; Japanese
+(`ja`) needs at least 2 characters and no space (Japanese names are usually written without one);
+every other language needs at least two space-separated parts and at least 5 characters. It is
+sent with the sign-up and the trigger stores it in `public.profiles.full_name`; a registration
+without a valid name is rejected by the database. After that, only an admin can set or change it (admin page). An
 account without a name (registered before names existed) shows a note that an admin will add
 it; the learner has no form for it. The identity key everywhere remains
 `user_id`, never the name or email.
@@ -239,3 +246,69 @@ order by g.approved_at desc;
 Paid entitlements become a new `kind` value, with its own duration rule in a new migration
 (for example, extend the `kind` check and add a constraint for the paid rules). The status
 function, page enforcement and learner permissions stay as they are.
+
+## Auth emails: templates, language and links
+
+The hosted project's email templates live in the Supabase dashboard. This repository keeps the
+source in `supabase/templates/` (there is no `supabase/config.toml`, so nothing applies them
+automatically):
+
+| Dashboard template (Authentication > Email Templates) | Subject field | Body (Source) |
+| --- | --- | --- |
+| Confirm signup | `supabase/templates/confirmation.subject.txt` | `supabase/templates/confirmation.html` |
+| Reset password | `supabase/templates/recovery.subject.txt` | `supabase/templates/recovery.html` |
+
+How the language is chosen: each template branches on `.Data.locale` (user metadata) and falls
+back to English for a missing or unknown value. `he` and `ar` branches are `dir="rtl"`. The
+templates only compare `.Data.locale` with fixed strings; they never print metadata (no name,
+no locale), and `lang`/`dir` are constants per branch. The link is always `{{ .ConfirmationURL }}`,
+so Supabase's own verification and expiry rules are unchanged.
+
+Where `locale` comes from: signup sends the course language at signup. After that, every
+language change of a signed-in learner also updates `user_metadata.locale`
+(`savePreferredLocale` in `account.ts`), so a password-reset email follows the learner's current
+language. Accounts created before `locale` existed get English until they next change or load a
+language while signed in.
+
+### Manual dashboard steps (not done from this repository)
+
+1. Authentication > Email Templates > **Confirm signup**: paste `confirmation.subject.txt` into
+   Subject and `confirmation.html` into the message body. Save.
+2. Same for **Reset password** with `recovery.subject.txt` and `recovery.html`.
+3. Send one test of each from a `he`, an `ar`, a `ja` and an `en` account. Check that the subject
+   is translated (if it shows raw `{{ ... }}`, the subject field does not support templating on
+   this project: use a fixed subject instead) and that Hebrew and Arabic render right-to-left.
+4. Authentication > URL Configuration: Site URL is the production origin. Redirect URLs must
+   include `<origin>/behind-the-scenes-ai/introduction` (signup confirmation always returns there)
+   and the course pages used for password reset (for example `<origin>/behind-the-scenes-ai/**`),
+   for every origin in use (production, preview, `http://localhost:3000`). A `redirectTo` that is
+   not on the list is replaced by the Site URL.
+
+### Confirmation destination and tokens in the URL
+
+- Signup confirmation always returns to `/behind-the-scenes-ai/introduction`
+  (`SIGNUP_CONFIRM_PATH` in `authForm.ts`), never to the chapter where the learner registered.
+  Confirming an email grants nothing: without an active grant the learner sees the preview.
+- The project uses the implicit flow: a successful link returns with `#access_token=...` and
+  `refresh_token` in the URL. The app turns off supabase-js URL detection and handles it in
+  `account.ts`: it reads the tokens once, replaces the URL with a clean one (`replaceState`, no new
+  history entry), establishes the session with `setSession`, and then syncs the clean URL into the
+  Next.js router so a later router update cannot restore the old hash. Failed links (`error_code`)
+  are cleaned the same way and show the localized "link no longer valid" dialog.
+
+Limits to know:
+
+- The default Supabase SMTP sender is for development only. It allows very few emails per hour
+  (the development project is set to 2 per hour), which learners see as the localized
+  "too many emails" message (`over_email_send_rate_limit`).
+
+Options, from least to most infrastructure:
+
+1. **One template with `.Data.locale` branches** (implemented in `supabase/templates/`). Suitable
+   for the beta.
+2. **Custom SMTP** (Authentication > SMTP Settings). Needed before production regardless of
+   language: it removes the default sender's limits and lets Auth > Rate Limits be raised.
+3. **Send Email Auth Hook** (an Edge Function or HTTP endpoint). Supabase hands the email to our
+   code, which renders it from our own six-locale templates and sends it through a provider. Most
+   control (for example the learner's current language), but it adds a deployed function, a
+   provider and a signing secret to maintain. Consider it only if option 1 proves insufficient.

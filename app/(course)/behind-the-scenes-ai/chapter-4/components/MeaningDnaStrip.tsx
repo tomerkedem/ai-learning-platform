@@ -199,6 +199,9 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
     // צבע לפי תפקיד וקבוע (לא לפי זהות המשפט): ציאן = שבחרת, סגול = להשוואה.
     const colorA = ROLE_A;
     const colorB = ROLE_B;
+    // צבע הגרפיקה (צמתים ורצועות) לפי הערכה: ב-Dark ה-hex עצמו, ב-Light הגוון הכהה של אותו תפקיד.
+    const inkA = `color-mix(in oklab, ${colorA.lightInk} var(--bts-tint-mix), ${colorA.hex})`;
+    const inkB = `color-mix(in oklab, ${colorB.lightInk} var(--bts-tint-mix), ${colorB.hex})`;
 
     const n = Math.max(1, litDims.length);
     const rails = railPaths(phase, closeness);
@@ -244,13 +247,13 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
             {/* מקרא לפי תפקיד: ציאן = המשפט שבחרת, סגול = המשפט להשוואה */}
             <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] font-bold">
                 <span className="inline-flex items-center gap-1.5" style={{ color: `color-mix(in oklab, ${colorA.lightInk} var(--bts-tint-mix), ${colorA.hex})` }}>
-                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colorA.hex, boxShadow: `0 0 6px 1px rgba(${colorA.rgb},0.7)` }} />
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: inkA, boxShadow: `0 0 6px 1px rgba(${colorA.rgb},0.7)` }} />
                     <span className="text-[10px] uppercase tracking-wide opacity-75">{dna.roleActive}</span>
                     <span>{active.text}</span>
                 </span>
                 {compare && (
                     <span className="inline-flex items-center gap-1.5" style={{ color: `color-mix(in oklab, ${colorB.lightInk} var(--bts-tint-mix), ${colorB.hex})` }}>
-                        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colorB.hex, boxShadow: `0 0 6px 1px rgba(${colorB.rgb},0.7)` }} />
+                        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: inkB, boxShadow: `0 0 6px 1px rgba(${colorB.rgb},0.7)` }} />
                         <span className="text-[10px] uppercase tracking-wide opacity-75">{dna.roleCompare}</span>
                         <span>{compare.text}</span>
                     </span>
@@ -258,7 +261,8 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
             </div>
 
             {/* ── סולם ה-DNA: עמודת הליקס + עמודת תוויות, מיושרות שורה מול שורה ── */}
-            <div data-theme="dark" className="flex items-stretch gap-2 rounded-2xl border border-violet-500/25 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-3 sm:gap-3 sm:p-4">
+            {/* עוקב אחרי הערכה. ב-Light: משטח בהיר, צבעי התפקיד הכהים (inkA/inkB) והזוהר נשאר הילה רכה. */}
+            <div className="flex items-stretch gap-2 rounded-2xl border border-violet-500/25 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 light:from-slate-50 light:via-white light:to-slate-50 p-3 sm:gap-3 sm:p-4">
                 {/* עמודת ההליקס. dir=ltr קבוע כדי שצומת A תמיד משמאל וההתיישרות זהה בכל שפה */}
                 <div dir="ltr" className="relative flex-[0_0_56%] sm:flex-[0_0_58%]" style={{ height: helixHeight }}>
                     {/* זוהר רקע עדין */}
@@ -282,8 +286,8 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
                             />
                         ))}
                         {/* שתי רצועות ההליקס */}
-                        <path d={rails.a} fill="none" stroke={colorA.hex} strokeWidth={1.4} strokeLinecap="round" opacity={0.55} vectorEffect="non-scaling-stroke" />
-                        <path d={rails.b} fill="none" stroke={colorB.hex} strokeWidth={1.4} strokeLinecap="round" opacity={0.55} vectorEffect="non-scaling-stroke" />
+                        <path d={rails.a} fill="none" style={{ stroke: inkA }} strokeWidth={1.4} strokeLinecap="round" opacity={0.55} vectorEffect="non-scaling-stroke" />
+                        <path d={rails.b} fill="none" style={{ stroke: inkB }} strokeWidth={1.4} strokeLinecap="round" opacity={0.55} vectorEffect="non-scaling-stroke" />
                     </svg>
 
                     {/* צמתים וקשרים כ-overlay (px קבוע => עיגולים מושלמים, גודל = עוצמה בלבד) */}
@@ -302,7 +306,7 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
                                         top: `${p.yPct}%`,
                                         width: sizeA,
                                         height: sizeA,
-                                        backgroundColor: colorA.hex,
+                                        backgroundColor: inkA,
                                         opacity: 0.4 + 0.55 * p.va,
                                         zIndex: 20,
                                         boxShadow: `0 0 ${4 + p.va * 14}px rgba(${colorA.rgb},${0.3 + p.va * 0.5})`,
@@ -317,7 +321,7 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
                                             top: `${p.yPct}%`,
                                             width: sizeB,
                                             height: sizeB,
-                                            backgroundColor: colorB.hex,
+                                            backgroundColor: inkB,
                                             opacity: 0.4 + 0.55 * p.vb,
                                             zIndex: 20,
                                             boxShadow: `0 0 ${4 + p.vb * 14}px rgba(${colorB.rgb},${0.3 + p.vb * 0.5})`,
@@ -327,7 +331,7 @@ export const MeaningDnaStrip: React.FC<MeaningDnaStripProps> = ({ active, compar
                                 {/* קשר זוהר במרכז (זוג בסיסים שנקשר) - פועם כשמשותף */}
                                 {p.shared && compare && (
                                     <span
-                                        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-300"
+                                        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-300 light:bg-emerald-500"
                                         style={{
                                             left: '50%',
                                             top: `${p.yPct}%`,

@@ -11,7 +11,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useT } from "@/i18n/useT";
 import { LOCALES } from "@/i18n/config";
-import { supabase, normalizeFullName } from "../account";
+import { supabase } from "../account";
+import { normalizeFullName } from "../authForm";
 import { suspendAccount, reactivateAccount, type AccountActionResult } from "./actions";
 
 interface Learner {
@@ -162,9 +163,10 @@ export default function AdminView() {
     const saveName = (l: Learner, e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const input = e.currentTarget.elements.namedItem("fullName") as HTMLInputElement;
-        const name = normalizeFullName(input.value);
+        // עריכת מנהל: כלל הבסיס של המסד (2 עד 100), לא כלל ההרשמה של הלומדים.
+        const name = normalizeFullName(input.value, null);
         if (!name) {
-            setMessage(a.errorName);
+            setMessage(x.errorNameAdmin);
             input.focus();
             return;
         }
@@ -260,8 +262,9 @@ export default function AdminView() {
                                         <form onSubmit={(e) => saveName(l, e)} className="space-y-2">
                                             <label className="block text-[11px] font-bold text-[var(--bts-text-faint)]">
                                                 {a.fullName}
-                                                <input name="fullName" type="text" required minLength={2} maxLength={100} autoComplete="off" defaultValue={l.full_name ?? ""} className={`${field} mt-1`} />
+                                                <input name="fullName" type="text" required minLength={2} maxLength={100} autoComplete="off" defaultValue={l.full_name ?? ""} aria-describedby={`name-rule-${l.user_id}`} className={`${field} mt-1`} />
                                             </label>
+                                            <p id={`name-rule-${l.user_id}`} className="text-[11px] leading-relaxed text-[var(--bts-text-muted)]">{x.nameRuleHint}</p>
                                             <div className="flex gap-2">
                                                 <button type="submit" className={`${btn} flex-1`} disabled={busy}>{a.saveName}</button>
                                                 <button type="button" className={`${btn} flex-1`} disabled={busy} onClick={() => setEditingId(null)}>{a.cancel}</button>

@@ -19,11 +19,40 @@ import { createClient, type Session } from "@supabase/supabase-js";
 import { isLocale, type Locale } from "@/i18n/config";
 import { mergeAttempt, MASTERY_UPDATED_EVENT, type QuizRecord, type RecordResultInput } from "./masteryProgress";
 import { ACCESS_TOKEN_COOKIE } from "./_access/access";
+import { readAuthRedirect } from "./authForm";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-export const supabase = url && key ? createClient(url, key) : null;
+// detectSessionInUrl כבוי: את החזרה מקישור מייל קוראים כאן (readAuthRedirect), כדי שהטוקנים
+// יוסרו מהכתובת מיד ובהחלפה (replaceState), בלי רשומת היסטוריה שמכילה אותם. הניקוי המובנה של
+// supabase-js (location.hash = "") יוצר רשומת היסטוריה חדשה, והנתב של Next מחזיר את ה-hash
+// לשורת הכתובת בעדכון הבא שלו (למשל router.refresh אחרי כניסה), כי הוא שמר את הכתובת המקורית.
+export const supabase = url && key ? createClient(url, key, { auth: { detectSessionInUrl: false } }) : null;
+
+const authRedirect = typeof window !== "undefined" ? readAuthRedirect(window.location.href) : null;
+// הניקוי הראשון, לפני שהנתב של Next נטען (אם המודול נטען לפניו, הנתב מתחיל מהכתובת הנקייה).
+if (authRedirect) window.history.replaceState(window.history.state, "", authRedirect.cleanUrl);
+let recoveryPending = !!authRedirect?.recovery && !!authRedirect.tokens;
+let linkErrorPending = !!authRedirect?.linkError;
+
+/**
+ * נקרא פעם אחת אחרי שהנתב של Next עלה (AccountSync). replaceState עם state ריק עובר דרך העטיפה
+ * של Next, שמעדכנת גם את הכתובת שהנתב שומר, כך שהיא לא תחזור עם הטוקנים בעדכון הבא.
+ */
+export function syncCleanAuthUrl(): void {
+    if (authRedirect) window.history.replaceState(null, "", authRedirect.cleanUrl);
+}
+
+/** נשלח כשהטוקנים מהקישור נדחו אחרי שחלון ההודעה כבר עלה. */
+export const AUTH_LINK_ERROR_EVENT = "bts-auth-link-error";
+
+/** true פעם אחת, כשהעמוד נטען מקישור מייל שנכשל. */
+export function takeAuthLinkError(): boolean {
+    const v = linkErrorPending;
+    linkErrorPending = false;
+    return v;
+}
 
 // ── מצב ההתחברות: מנוי יחיד ברמת המודול, נצרך ברכיבים דרך useAuthState ──
 interface AuthState {
@@ -54,13 +83,25 @@ if (supabase && typeof window !== "undefined") {
     // נרשם מיד עם יצירת הלקוח, כדי לא לפספס את PASSWORD_RECOVERY שנורה בזמן קריאת הקישור.
     supabase.auth.onAuthStateChange((event, session) => {
         mirrorAccessToken(session);
+        const recovery = event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && recoveryPending);
+        if (event === "SIGNED_IN") recoveryPending = false;
         authState = {
             session,
-            recovering: !!session && (event === "PASSWORD_RECOVERY" || authState.recovering),
+            recovering: !!session && (recovery || authState.recovering),
             ready: true,
         };
         notify();
     });
+    // ביסוס ה-session מהטוקנים של הקישור (setSession מאמת אותם מול השרת ושומר כרגיל, כולל רענון).
+    // כשל: הלומד פשוט לא מחובר, ומוצגת הודעת קישור לא תקין.
+    if (authRedirect?.tokens) {
+        void supabase.auth.setSession(authRedirect.tokens).then(({ error }) => {
+            if (!error) return;
+            recoveryPending = false;
+            linkErrorPending = true;
+            window.dispatchEvent(new CustomEvent(AUTH_LINK_ERROR_EVENT));
+        });
+    }
 }
 
 function subscribe(listener: () => void) {
@@ -341,19 +382,13 @@ export async function loadPreferredLocale(userId: string): Promise<Locale | unde
 export async function savePreferredLocale(userId: string, locale: Locale): Promise<void> {
     if (!supabase) return;
     await supabase.from("profiles").upsert({ user_id: userId, preferred_locale: locale });
+    // תבניות המייל של Supabase (supabase/templates) בוחרות שפה לפי user_metadata.locale, ולכן
+    // מייל איפוס סיסמה יגיע בשפה הנוכחית של הלומד. full_name במטא-דאטה נעול במסד ואינו משתנה כאן.
+    if (authState.session?.user.user_metadata?.locale !== locale) await supabase.auth.updateUser({ data: { locale } });
 }
 
 // ── שם מלא ──
-/**
- * מנרמל ובודק שם מלא לפי אותו כלל שהמסד אוכף (profiles_full_name_valid): 2 עד 100 תווים
- * אחרי קיצוץ רווחים, בלי תווי בקרה. null = לא תקין.
- */
-export function normalizeFullName(raw: string): string | null {
-    const name = raw.trim().replace(/\s+/g, " ");
-    if (name.length < 2 || name.length > 100 || /[\u0000-\u001f\u007f]/.test(name)) return null;
-    return name;
-}
-
+// כלל השם בהרשמה: normalizeFullName ב-authForm.ts.
 // השם האחרון שנטען, לפי משתמש. פאנל החשבון נטען מחדש בכל ניווט (הוא בתוך הסרגל של כל עמוד),
 // ומתחיל מהערך הזה כדי שהשם בסיכום לא ייעלם עד שהטעינה חוזרת. משתמש אחר או יציאה = אין ערך.
 let lastFullName: { userId: string; name: string | null } | null = null;

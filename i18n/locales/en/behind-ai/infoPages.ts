@@ -59,7 +59,7 @@ export const infoPages: InfoPagesDict = {
                     kind: 'faq',
                     heading: 'Access and the beta',
                     items: [
-                        { q: 'Does registering give me access to the full course?', a: 'No. A free account with a confirmed email address opens the full introduction and Chapter 1. The full course (chapters 2 to 19 and the final exam) opens only to beta testers who are individually approved.' },
+                        { q: 'Does registering give me access to the full course?', a: 'No. Registering only creates an account; with or without one, you can read the beginning of the introduction. The rest of the introduction, chapters 1 to 19 and the final exam open only to beta testers who are individually approved.' },
                         { q: 'How long does the free access last?', a: 'An approved tester receives free access to the full course for up to one month from approval, not from the day you register. Access may end earlier.' },
                         { q: 'Will I be asked for a card or charged automatically?', a: 'No. Beta access does not require a payment card, and there is no automatic charge.' },
                         { q: 'Can my access stop before the month is over?', a: 'Yes. Access may end before the month is over. It may be suspended immediately, without prior notice, for security reasons, misuse or urgent technical reasons. In other cases, we aim to notify the tester in advance.' },
@@ -185,7 +185,7 @@ export const infoPages: InfoPagesDict = {
                     items: [
                         'The course has no analytics or advertising trackers.',
                         'Your name and email address are not shown to other learners and are not used for advertising.',
-                        'Without an account you can read the beginning of the introduction. The full introduction and Chapter 1 require a free account with a confirmed email address.',
+                        'Without approved access you can read only the beginning of the introduction. The rest of the introduction, the chapters and the final exam require an account with approved beta access.',
                     ],
                 },
                 {

@@ -1,0 +1,52 @@
+{{- /* Behind the Scenes of AI: confirmation email, six locales by user_metadata.locale (unknown -> English).
+Generated together with confirmation.subject.txt. Paste into Supabase Dashboard > Authentication > Email Templates.
+See docs/behind-ai-access-admin.md. Never print .Data values here; compare them only. */ -}}
+{{- $l := printf "%v" (or .Data.locale "en") -}}
+<!doctype html>
+<html>
+<body style="margin:0;padding:24px 12px;background:#f4f5f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937">
+{{ if eq $l "he" }}
+<div lang="he" dir="rtl" style="direction:rtl;text-align:right;max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+<h1 style="font-size:20px;line-height:1.4;margin:0 0 12px;color:#111827">אישור כתובת המייל</h1>
+<p style="font-size:16px;line-height:1.6;margin:0 0 20px">תודה שנרשמתם ללומדה "מאחורי הקלעים של ה-AI". כדי להשלים את יצירת החשבון, אשרו את כתובת המייל הזו.</p>
+<p style="margin:0 0 20px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:12px 20px;border-radius:8px">אישור כתובת המייל</a></p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#4b5563">אישור המייל לבדו אינו פותח את הלומדה המלאה: הגישה מאושרת בנפרד. אם לא נרשמתם, אפשר להתעלם מהמייל הזה.</p>
+</div>
+{{ else if eq $l "ar" }}
+<div lang="ar" dir="rtl" style="direction:rtl;text-align:right;max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+<h1 style="font-size:20px;line-height:1.4;margin:0 0 12px;color:#111827">تأكيد عنوان البريد الإلكتروني</h1>
+<p style="font-size:16px;line-height:1.6;margin:0 0 20px">شكرًا لتسجيلك في «ما وراء كواليس AI». لإكمال إنشاء حسابك، أكّد عنوان البريد الإلكتروني هذا.</p>
+<p style="margin:0 0 20px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:12px 20px;border-radius:8px">تأكيد البريد الإلكتروني</a></p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#4b5563">تأكيد البريد وحده لا يفتح الدورة الكاملة: يُعتمد الوصول بشكل منفصل. إذا لم تسجّل، يمكنك تجاهل هذه الرسالة.</p>
+</div>
+{{ else if eq $l "es" }}
+<div lang="es" dir="ltr" style="direction:ltr;text-align:left;max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+<h1 style="font-size:20px;line-height:1.4;margin:0 0 12px;color:#111827">Confirma tu dirección de correo</h1>
+<p style="font-size:16px;line-height:1.6;margin:0 0 20px">Gracias por registrarte en Entre bastidores de AI. Para terminar de crear tu cuenta, confirma esta dirección de correo.</p>
+<p style="margin:0 0 20px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:12px 20px;border-radius:8px">Confirmar correo</a></p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#4b5563">Confirmar el correo no abre por sí solo el curso completo: el acceso se aprueba por separado. Si no te registraste, puedes ignorar este correo.</p>
+</div>
+{{ else if eq $l "ru" }}
+<div lang="ru" dir="ltr" style="direction:ltr;text-align:left;max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+<h1 style="font-size:20px;line-height:1.4;margin:0 0 12px;color:#111827">Подтвердите адрес электронной почты</h1>
+<p style="font-size:16px;line-height:1.6;margin:0 0 20px">Спасибо за регистрацию в курсе «AI за кулисами». Чтобы завершить создание аккаунта, подтвердите этот адрес.</p>
+<p style="margin:0 0 20px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:12px 20px;border-radius:8px">Подтвердить адрес</a></p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#4b5563">Подтверждение почты само по себе не открывает полный курс: доступ одобряется отдельно. Если вы не регистрировались, просто проигнорируйте это письмо.</p>
+</div>
+{{ else if eq $l "ja" }}
+<div lang="ja" dir="ltr" style="direction:ltr;text-align:left;max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+<h1 style="font-size:20px;line-height:1.4;margin:0 0 12px;color:#111827">メールアドレスの確認</h1>
+<p style="font-size:16px;line-height:1.6;margin:0 0 20px">「AI の舞台裏」にご登録いただきありがとうございます。アカウント作成を完了するには、このメールアドレスを確認してください。</p>
+<p style="margin:0 0 20px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:12px 20px;border-radius:8px">メールアドレスを確認</a></p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#4b5563">メールアドレスの確認だけでは、コース全体は開きません。アクセスは別途承認されます。登録した覚えがない場合は、このメールを無視してください。</p>
+</div>
+{{ else }}
+<div lang="en" dir="ltr" style="direction:ltr;text-align:left;max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+<h1 style="font-size:20px;line-height:1.4;margin:0 0 12px;color:#111827">Confirm your email address</h1>
+<p style="font-size:16px;line-height:1.6;margin:0 0 20px">Thanks for signing up for Behind the Scenes of AI. To finish creating your account, confirm this email address.</p>
+<p style="margin:0 0 20px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:12px 20px;border-radius:8px">Confirm email address</a></p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#4b5563">Confirming your email does not by itself open the full course: access is approved separately. If you did not sign up, you can ignore this email.</p>
+</div>
+{{ end }}
+</body>
+</html>

@@ -1,9 +1,10 @@
 // ════════════════════════════════════════════════════════════════════════
 // גישה ללומדה: הגדרות משותפות לשרת וללקוח (בלי סודות ובלי לוגיקת הרשאה).
 // ────────────────────────────────────────────────────────────────────────
-// אורחים רואים רק תצוגה מקדימה של המבוא (ההירו ודוגמת הצ'אט). המבוא המלא ופרק 1 פתוחים
-// ללומד מחובר עם מייל מאומת שאינו מושעה. פרקים 2-19, המבדקים שלהם ומבחן הסיום דורשים
-// הרשאת בטא פעילה שאושרה במפורש; הרשמה או אימות מייל אינם נותנים אותה.
+// שתי רמות בלבד: מי שאין לו הרשאה פעילה (אורח, חשבון לא מאומת, בלי הרשאה, הרשאה שפגה או
+// בוטלה, חשבון מושעה) רואה רק תצוגה מקדימה של המבוא (ההירו ודוגמת הצ'אט). המבוא המלא,
+// פרקים 1-19, המבדקים ומבחן הסיום דורשים הרשאה פעילה שאושרה במפורש; הרשמה או אימות מייל
+// הם זיהוי בלבד, ואינם נותנים גישה.
 // ההחלטה עצמה מתקבלת רק בשרת (courseAccess.ts), בכל בקשה. מצב נעילה בסרגל הצד הוא תצוגה
 // בלבד, ואינו מקור הרשאה.
 // אין שימוש בתו "מקף ארוך" (em dash).
@@ -34,22 +35,14 @@ export interface CourseAccess {
 export const BETA_TERMS_VERSION: string | null = null;
 
 /**
- * רמת הגישה שתוכן דורש: learner = לומד מחובר, מאומת ולא מושעה (המבוא המלא ופרק 1);
- * grant = הרשאת בטא פעילה (פרקים 2-19 ומבחן הסיום).
+ * האם מצב הגישה פותח תוכן מוגן (המבוא המלא, פרקים 1-19 ומבחן הסיום). רק הרשאה פעילה.
+ * הרשמה, אימות מייל, הרשאה שפגה או בוטלה, והשעיה: תצוגה מקדימה של המבוא בלבד.
  */
-export type AccessLevel = 'learner' | 'grant';
-
-/** האם מצב הגישה פותח תוכן ברמה הנדרשת. */
-export function meetsAccessLevel(status: AccessStatus, level: AccessLevel): boolean {
-    if (level === 'grant') return status === 'active';
-    return status === 'no-grant' || status === 'expired' || status === 'revoked' || status === 'active';
+export function hasCourseAccess(status: AccessStatus): boolean {
+    return status === 'active';
 }
 
-/** רמת הגישה של כתובת בלומדה, לנעילה בסרגל. null = פתוחה (גם המבוא, שיש לו תצוגה מקדימה). */
-export function coursePathLevel(href: string | undefined | null): AccessLevel | null {
-    if (!href) return null;
-    if (href === '/behind-the-scenes-ai/final-exam') return 'grant';
-    const m = href.match(/^\/behind-the-scenes-ai\/chapter-(\d+)$/);
-    if (!m) return null;
-    return Number(m[1]) >= 2 ? 'grant' : 'learner';
+/** האם כתובת בלומדה מוגנת, לנעילה בסרגל. המבוא אינו נעול: יש לו תצוגה מקדימה לכולם. */
+export function isProtectedCoursePath(href: string | undefined | null): boolean {
+    return href === '/behind-the-scenes-ai/final-exam' || /^\/behind-the-scenes-ai\/chapter-\d+$/.test(href ?? '');
 }

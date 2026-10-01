@@ -43,6 +43,8 @@ export function conicFor(rgb: string): string {
 }
 
 /* גווני ה-accent למצב ההצלחה בלבד. מצב הטעות תמיד כתום רך ואחיד.
+   הטקסט כתוב כ-var(--color-*) ולא כמחלקת Tailwind רגילה: למחלקות כמו text-emerald-300 יש
+   ב-globals.css הכהיה אוטומטית ב-Light, שהייתה מכהה גם את ערכי light: שכאן. ב-Dark הערך זהה.
    הרקע הפנימי אטום בכוונה: טבעת ה-conic המסתובבת של ShimmerFrame נמצאת מאחוריו,
    ואם הרקע היה שקוף למחצה היא הייתה זולגת פנימה ומלכלכת את הפינות המעוגלות. */
 const ACCENT: Record<GuessAccent, {
@@ -56,21 +58,21 @@ const ACCENT: Record<GuessAccent, {
 }> = {
     emerald: {
         rgb: '16,185,129',
-        inner: 'bg-gradient-to-b from-emerald-950 to-slate-950',
-        sparkle: 'text-emerald-300',
-        icon: 'text-emerald-300',
-        title: 'text-emerald-100',
-        lead: 'text-emerald-200',
-        insight: 'border-emerald-400/60 text-emerald-100',
+        inner: 'bg-gradient-to-b from-emerald-950 to-slate-950 light:from-emerald-50 light:to-white',
+        sparkle: 'text-[var(--color-emerald-300)] light:text-emerald-600',
+        icon: 'text-[var(--color-emerald-300)] light:text-emerald-600',
+        title: 'text-[var(--color-emerald-100)] light:text-emerald-800',
+        lead: 'text-[var(--color-emerald-200)] light:text-emerald-700',
+        insight: 'border-emerald-400/60 light:border-emerald-600/60 text-[var(--color-emerald-100)] light:text-emerald-800',
     },
     cyan: {
         rgb: '34,211,238',
-        inner: 'bg-gradient-to-b from-cyan-950 to-slate-950',
-        sparkle: 'text-cyan-300',
-        icon: 'text-cyan-300',
-        title: 'text-cyan-100',
-        lead: 'text-cyan-200',
-        insight: 'border-cyan-400/60 text-cyan-100',
+        inner: 'bg-gradient-to-b from-cyan-950 to-slate-950 light:from-cyan-50 light:to-white',
+        sparkle: 'text-[var(--color-cyan-300)] light:text-cyan-600',
+        icon: 'text-[var(--color-cyan-300)] light:text-cyan-600',
+        title: 'text-[var(--color-cyan-100)] light:text-cyan-800',
+        lead: 'text-[var(--color-cyan-200)] light:text-cyan-700',
+        insight: 'border-cyan-400/60 light:border-cyan-600/60 text-[var(--color-cyan-100)] light:text-cyan-800',
     },
 };
 
@@ -148,12 +150,9 @@ export const ShimmerFrame: React.FC<{
 }> = ({ rgb, reduce, innerClassName = '', children }) => {
     const conic = conicFor(rgb);
     return (
-        // data-theme="dark": פאנל-ההצלחה הוא שבב זכוכית כהה מכוון (כמו GuessButton),
-        // אטום בכוונה מאחורי טבעת ה-conic המסתובבת. הטקסט בפנים (cyan-100/emerald-300
-        // וכו') נבחר להיקרא על רקע כהה קבוע, לא על ה-Light/Dark של הדף שסביבו. בלי
-        // הנעילה הזו, אסימוני --bts-* (ובכללם --bts-ink-darken שמכהה טקסט-זהות-תחנה
-        // ב-Light) היו זולגים לכאן ב-Light ומכהים טקסט שכבר כהה מספיק - כמעט בלתי-נראה.
-        <div data-theme="dark" className="relative rounded-[1.2rem]" style={reduce ? undefined : { boxShadow: `0 0 60px -14px rgba(${rgb},0.6)` }}>
+        // עוקב אחרי הערכה. הפנים אטום (innerClassName), מאחוריו טבעת ה-conic, וב-Light הוא בהיר
+        // עם צבעי טקסט Light מפורשים (ACCENT). הזוהר, הטבעת והסוויפ זהים בשתי הערכות.
+        <div className="relative rounded-[1.2rem]" style={reduce ? undefined : { boxShadow: `0 0 60px -14px rgba(${rgb},0.6)` }}>
             {/* מסגרת גרדיאנט מלאה ואטומה כבסיס (כמו בכפתור): לעולם לא חושפת רקע כהה
                 בפינות. ה-conic המסתובב מרצד מעליה בלבד. */}
             <div
@@ -317,7 +316,7 @@ export const GuessVerdict: React.FC<GuessVerdictProps> = ({
                                     <SpeakButton text={correctSpeak} className="ms-auto" />
                                 </div>
                                 {correctLead && <p className={`mt-2 text-sm font-bold md:text-base ${a.lead}`}>{correctLead}</p>}
-                                <p className="mt-2 text-sm leading-relaxed text-slate-200">{correctExplain}</p>
+                                <p className="mt-2 text-sm leading-relaxed text-slate-200 light:text-slate-700">{correctExplain}</p>
                                 {correctInsight && (
                                     <p className={`mt-3 inline-flex items-center gap-1.5 border-s-2 ps-3 text-sm font-bold ${a.insight}`}>
                                         {correctInsight}

@@ -1,8 +1,9 @@
 "use client";
 
 // ════════════════════════════════════════════════════════════════════════
-// התצוגה המקדימה של המבוא למי שאינו לומד מחובר ומאומת: ההירו ודוגמת הצ'אט הפותחת בלבד,
-// ומיד אחריהן הזמנה להרשמה חינמית או להתחברות. שאר המבוא לא נשלח בתשובה בכלל (השרת
+// התצוגה המקדימה של המבוא לכל מי שאין לו הרשאה פעילה (אורח, חשבון לא מאומת, בלי הרשאה,
+// הרשאה שפגה או בוטלה, חשבון מושעה): ההירו ודוגמת הצ'אט הפותחת בלבד, ומיד אחריהן הסבר
+// שהמבוא ממשיך ושהמשכו דורש גישה מאושרת, עם התחברות, הרשמה ובקשת גישה. שאר המבוא לא נשלח בתשובה בכלל (השרת
 // מרנדר את הרכיב הזה במקום IntroView), ולכן אין מה להסתיר בגלילה או ב-CSS.
 // אין שימוש בתו "מקף ארוך" (em dash).
 // ════════════════════════════════════════════════════════════════════════
@@ -17,6 +18,7 @@ import { LOCALE_SPEECH_LANG } from "@/components/ai-internals/readAloudLang";
 import { useT } from "@/i18n/useT";
 import { AccountPanel } from "../AccountPanel";
 import type { CourseAccess } from "../_access/access";
+import { lockReason } from "../_access/LockedChapter";
 import { IntroHero } from "./IntroHero";
 
 export function IntroPreview({ access }: { access: CourseAccess }) {
@@ -25,12 +27,9 @@ export function IntroPreview({ access }: { access: CourseAccess }) {
   const p = t.behindAi.introPreview;
   const x = t.chrome.access;
 
-  // מחובר אבל עוד לא פתוח: הסיבה (מייל לא מאומת, השעיה, תקלה). אורח: אין סיבה, רק ההזמנה.
-  const reason =
-    access.status === "unconfirmed" ? x.unconfirmed
-    : access.status === "suspended" ? x.suspended
-    : access.status === "unavailable" ? x.unavailable
-    : null;
+  // מחובר אבל בלי הרשאה פעילה: הסיבה (בלי הרשאה, פגה, בוטלה, מייל לא מאומת, השעיה, תקלה).
+  // אורח: אין סיבה, רק ההסבר וההזמנה.
+  const reason = access.status === "signed-out" ? null : lockReason(access, x, locale);
 
   // ההקראה מכסה רק את מה שמוצג: ההירו, השורות שמתחת לכרטיס וההזמנה.
   const segments: ReadAloudSegment[] = [
@@ -75,7 +74,8 @@ export function IntroPreview({ access }: { access: CourseAccess }) {
             </div>
             <p className="text-sm text-[var(--bts-text-muted)] leading-relaxed">{x.previewBody}</p>
             {reason && <p role="status" className="text-sm font-bold text-[var(--bts-text-secondary)] leading-relaxed">{reason}</p>}
-            <AccountPanel defaultOpen={access.status === "signed-out"} />
+            {/* פתוח מראש: לאורח ההתחברות וההרשמה, ולמחובר בלי הרשאה גם בקשת הגישה שבתוך הפאנל. */}
+            <AccountPanel defaultOpen />
           </section>
         </div>
       </div>

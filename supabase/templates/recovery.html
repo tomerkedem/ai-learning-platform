@@ -1,0 +1,52 @@
+{{- /* Behind the Scenes of AI: recovery email, six locales by user_metadata.locale (unknown -> English).
+Generated together with recovery.subject.txt. Paste into Supabase Dashboard > Authentication > Email Templates.
+See docs/behind-ai-access-admin.md. Never print .Data values here; compare them only. */ -}}
+{{- $l := printf "%v" (or .Data.locale "en") -}}
+<!doctype html>
+<html>
+<body style="margin:0;padding:24px 12px;background:#f4f5f7;font-family:Arial,Helvetica,sans-serif;color:#1f2937">
+{{ if eq $l "he" }}
+<div lang="he" dir="rtl" style="direction:rtl;text-align:right;max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+<h1 style="font-size:20px;line-height:1.4;margin:0 0 12px;color:#111827">איפוס סיסמה</h1>
+<p style="font-size:16px;line-height:1.6;margin:0 0 20px">קיבלנו בקשה לאפס את הסיסמה של החשבון שלכם בלומדה "מאחורי הקלעים של ה-AI". כדי לבחור סיסמה חדשה, פתחו את הקישור:</p>
+<p style="margin:0 0 20px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:12px 20px;border-radius:8px">בחירת סיסמה חדשה</a></p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#4b5563">אם לא ביקשתם לאפס את הסיסמה, אפשר להתעלם מהמייל הזה. הסיסמה הנוכחית נשארת כמו שהיא.</p>
+</div>
+{{ else if eq $l "ar" }}
+<div lang="ar" dir="rtl" style="direction:rtl;text-align:right;max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+<h1 style="font-size:20px;line-height:1.4;margin:0 0 12px;color:#111827">إعادة تعيين كلمة المرور</h1>
+<p style="font-size:16px;line-height:1.6;margin:0 0 20px">تلقّينا طلبًا لإعادة تعيين كلمة المرور لحسابك في «ما وراء كواليس AI». لاختيار كلمة مرور جديدة، افتح هذا الرابط:</p>
+<p style="margin:0 0 20px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:12px 20px;border-radius:8px">اختيار كلمة مرور جديدة</a></p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#4b5563">إذا لم تطلب إعادة تعيين كلمة المرور، يمكنك تجاهل هذه الرسالة. تبقى كلمة المرور الحالية كما هي.</p>
+</div>
+{{ else if eq $l "es" }}
+<div lang="es" dir="ltr" style="direction:ltr;text-align:left;max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+<h1 style="font-size:20px;line-height:1.4;margin:0 0 12px;color:#111827">Restablece tu contraseña</h1>
+<p style="font-size:16px;line-height:1.6;margin:0 0 20px">Recibimos una solicitud para restablecer la contraseña de tu cuenta de Entre bastidores de AI. Para elegir una contraseña nueva, abre este enlace:</p>
+<p style="margin:0 0 20px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:12px 20px;border-radius:8px">Elegir una contraseña nueva</a></p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#4b5563">Si no pediste restablecer la contraseña, puedes ignorar este correo. Tu contraseña actual no cambia.</p>
+</div>
+{{ else if eq $l "ru" }}
+<div lang="ru" dir="ltr" style="direction:ltr;text-align:left;max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+<h1 style="font-size:20px;line-height:1.4;margin:0 0 12px;color:#111827">Сброс пароля</h1>
+<p style="font-size:16px;line-height:1.6;margin:0 0 20px">Мы получили запрос на сброс пароля для вашего аккаунта в курсе «AI за кулисами». Чтобы выбрать новый пароль, откройте ссылку:</p>
+<p style="margin:0 0 20px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:12px 20px;border-radius:8px">Выбрать новый пароль</a></p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#4b5563">Если вы не запрашивали сброс пароля, просто проигнорируйте это письмо. Текущий пароль останется прежним.</p>
+</div>
+{{ else if eq $l "ja" }}
+<div lang="ja" dir="ltr" style="direction:ltr;text-align:left;max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+<h1 style="font-size:20px;line-height:1.4;margin:0 0 12px;color:#111827">パスワードの再設定</h1>
+<p style="font-size:16px;line-height:1.6;margin:0 0 20px">「AI の舞台裏」のアカウントのパスワード再設定がリクエストされました。新しいパスワードを設定するには、次のリンクを開いてください。</p>
+<p style="margin:0 0 20px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:12px 20px;border-radius:8px">新しいパスワードを設定</a></p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#4b5563">パスワードの再設定をリクエストしていない場合は、このメールを無視してください。現在のパスワードは変わりません。</p>
+</div>
+{{ else }}
+<div lang="en" dir="ltr" style="direction:ltr;text-align:left;max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:24px">
+<h1 style="font-size:20px;line-height:1.4;margin:0 0 12px;color:#111827">Reset your password</h1>
+<p style="font-size:16px;line-height:1.6;margin:0 0 20px">We received a request to reset the password for your Behind the Scenes of AI account. To choose a new password, open this link:</p>
+<p style="margin:0 0 20px"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:12px 20px;border-radius:8px">Choose a new password</a></p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#4b5563">If you did not ask to reset your password, you can ignore this email. Your current password stays as it is.</p>
+</div>
+{{ end }}
+</body>
+</html>

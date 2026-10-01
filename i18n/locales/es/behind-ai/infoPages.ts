@@ -59,7 +59,7 @@ export const infoPages: InfoPagesDict = {
                     kind: 'faq',
                     heading: 'Acceso y la beta',
                     items: [
-                        { q: '¿Registrarme me da acceso al curso completo?', a: 'No. Una cuenta gratuita con el correo confirmado abre la introducción completa y el capítulo 1. El curso completo (capítulos 2 a 19 y el examen final) solo se abre a participantes de la beta aprobados individualmente.' },
+                        { q: '¿Registrarme me da acceso al curso completo?', a: 'No. Registrarte solo crea una cuenta; con o sin ella, puedes leer el comienzo de la introducción. El resto de la introducción, los capítulos 1 a 19 y el examen final solo se abren a participantes de la beta aprobados individualmente.' },
                         { q: '¿Cuánto dura el acceso gratuito?', a: 'Cada participante aprobado recibe acceso gratuito al curso completo durante un máximo de un mes desde la aprobación, no desde el día en que te registras. El acceso puede terminar antes.' },
                         { q: '¿Me pedirán una tarjeta o me cobrarán automáticamente?', a: 'No. El acceso beta no requiere tarjeta de pago y no hay ningún cobro automático.' },
                         { q: '¿Puede terminar mi acceso antes de que acabe el mes?', a: 'Sí. El acceso puede terminar antes de que acabe el mes. Puede suspenderse de inmediato y sin aviso previo por motivos de seguridad, uso indebido o motivos técnicos urgentes. En los demás casos, procuraremos avisar al participante con antelación.' },
@@ -185,7 +185,7 @@ export const infoPages: InfoPagesDict = {
                     items: [
                         'El curso no tiene herramientas de analítica ni rastreadores publicitarios.',
                         'Tu nombre y tu correo no se muestran a otros estudiantes ni se usan para publicidad.',
-                        'Sin cuenta puedes leer el comienzo de la introducción. La introducción completa y el capítulo 1 requieren una cuenta gratuita con el correo confirmado.',
+                        'Sin acceso aprobado solo puedes leer el comienzo de la introducción. El resto de la introducción, los capítulos y el examen final requieren una cuenta con acceso beta aprobado.',
                     ],
                 },
                 {

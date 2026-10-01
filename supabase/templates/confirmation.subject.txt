@@ -1,0 +1,1 @@
+{{- $l := printf "%v" (or .Data.locale "en") -}}{{ if eq $l "he" }}אישור כתובת המייל{{ else if eq $l "ar" }}تأكيد عنوان البريد الإلكتروني{{ else if eq $l "es" }}Confirma tu dirección de correo{{ else if eq $l "ru" }}Подтвердите адрес электронной почты{{ else if eq $l "ja" }}メールアドレスの確認{{ else }}Confirm your email address{{ end }}

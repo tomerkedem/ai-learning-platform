@@ -38,6 +38,8 @@ const GRAIN =
  * עוטף "עומק הולוגרפי": מסגרת conic-gradient מסתובבת (שביט אור שסורק את המסגרת),
  * תאורת-spotlight רכה שעוקבת אחרי העכבר, וגרעין מרקם. שכבת-הצגה טהורה - אינה
  * נוגעת בתוכן או בנתונים. מכבדת reduced-motion (מסגרת סטטית, בלי spotlight).
+ * עוקב אחרי הערכה: ב-Dark ללא שינוי. ב-Light הפנים בהיר, השביט והזוהר נשארים (הם על הרים),
+ * וה-spotlight עובר ל-multiply, כי screen על משטח בהיר אינו נראה.
  */
 export const HoloFrame: React.FC<HoloFrameProps> = ({ accent, children, className = '' }) => {
     const reduce = useReducedMotion();
@@ -77,21 +79,20 @@ export const HoloFrame: React.FC<HoloFrameProps> = ({ accent, children, classNam
             />
 
             {/* תוכן (מכסה את מרכז ה-conic, משאיר רק רים מואר) */}
-            {/* מכשיר כהה במכוון: ה-conic/spotlight/גרעין נשענים על משטח כהה, ולכן הפנים נעולים ל-Dark בשתי הערכות. */}
-            <div data-theme="dark" className="relative overflow-hidden rounded-[2rem] bg-slate-950 text-[var(--bts-text-primary)]">
+            <div className="relative overflow-hidden rounded-[2rem] bg-slate-950 light:bg-[var(--bts-panel-to)] text-[var(--bts-text-primary)]">
                 {children}
 
                 {/* spotlight שעוקב אחרי העכבר */}
                 <motion.div
                     aria-hidden
-                    className="pointer-events-none absolute inset-0 z-30 mix-blend-screen motion-reduce:hidden"
+                    className="pointer-events-none absolute inset-0 z-30 mix-blend-screen light:mix-blend-multiply motion-reduce:hidden"
                     style={{ background: spot }}
                 />
 
                 {/* גרעין מרקם */}
                 <div
                     aria-hidden
-                    className="pointer-events-none absolute inset-0 z-30 opacity-[0.10] mix-blend-overlay"
+                    className="pointer-events-none absolute inset-0 z-30 opacity-[0.10] light:opacity-[0.05] mix-blend-overlay"
                     style={{ backgroundImage: GRAIN, backgroundSize: '140px 140px' }}
                 />
             </div>

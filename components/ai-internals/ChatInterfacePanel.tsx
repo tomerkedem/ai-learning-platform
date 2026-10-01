@@ -152,13 +152,13 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
     const visible = isTyping ? messages.filter((m) => m.role !== 'ai') : messages;
 
     return (
-        <div className={`relative isolate flex flex-col rounded-[2rem] border border-white/10 bg-slate-950/80 ${panelHeight} overflow-hidden`} dir={dir}>
+        <div className={`relative isolate flex flex-col rounded-[2rem] border border-white/10 light:border-slate-300 bg-slate-950/80 light:bg-white/90 ${panelHeight} overflow-hidden`} dir={dir}>
             {/* רקע גריד עדין + הילת פינה (המסגרת והזוהר מגיעים מ-HoloFrame) */}
             <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
             <div className={`pointer-events-none absolute -top-24 -right-16 -z-10 h-52 w-52 rounded-full blur-[80px] ${a.bgSoft}`} />
 
             {/* כותרת + מצב */}
-            <div className="relative z-10 p-5 border-b border-white/10 shrink-0 space-y-3 bg-slate-900/50">
+            <div className="relative z-10 p-5 border-b border-white/10 light:border-slate-300 shrink-0 space-y-3 bg-slate-900/50 light:bg-slate-50/90">
                 <div className="flex items-center justify-between gap-2.5">
                     <div className="flex items-center gap-2.5">
                         <span className="relative flex h-2.5 w-2.5">
@@ -166,13 +166,13 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                             <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${a.dot}`} />
                         </span>
                         <div>
-                            <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500">{title}</div>
-                            {subtitle && <div className="text-xs text-slate-400">{subtitle}</div>}
+                            <div className="text-[11px] font-mono uppercase tracking-widest text-slate-500 light:text-slate-600">{title}</div>
+                            {subtitle && <div className="text-xs text-slate-400 light:text-slate-600">{subtitle}</div>}
                         </div>
                     </div>
                     <span
                         title={live ? ci.liveTooltip : ci.demoTooltip}
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-widest border ${live ? `${a.border} ${a.bgSoft} ${a.text}` : 'border-white/10 bg-slate-800/60 text-slate-400'}`}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-widest border ${live ? `${a.border} ${a.bgSoft} ${a.text}` : 'border-white/10 light:border-slate-300 bg-slate-800/60 light:bg-slate-100 text-slate-400 light:text-slate-600'}`}
                     >
                         <span className="relative flex h-1.5 w-1.5">
                             {live && <span className={`absolute inline-flex h-full w-full rounded-full ${a.dot} opacity-75 animate-ping motion-reduce:hidden`} />}
@@ -203,11 +203,11 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                             className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-lg
                                 ${m.role === 'user'
                                     ? `self-start ${isRtl ? 'rounded-br-md' : 'rounded-bl-md'} ${a.solid} ${a.solidText} ${a.glow}`
-                                    : `self-end ${isRtl ? 'rounded-bl-md' : 'rounded-br-md'} bg-gradient-to-bl from-slate-800 to-slate-800/60 text-slate-100 border border-white/10`
+                                    : `self-end ${isRtl ? 'rounded-bl-md' : 'rounded-br-md'} bg-gradient-to-bl from-slate-800 light:from-white to-slate-800/60 light:to-slate-100 text-slate-100 light:text-slate-800 border border-white/10 light:border-slate-300`
                                 }`}
                         >
                             {m.role === 'ai' && (
-                                <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-1">
+                                <div className="flex items-center gap-1.5 text-[11px] text-slate-400 light:text-slate-600 mb-1">
                                     <Bot size={11} /> AI
                                 </div>
                             )}
@@ -231,9 +231,9 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.96 }}
                             transition={{ duration: reduce ? 0 : 0.3 }}
-                            className="self-end rounded-2xl px-4 py-3 bg-slate-800 border border-white/10"
+                            className="self-end rounded-2xl px-4 py-3 bg-slate-800 light:bg-slate-200 border border-white/10 light:border-slate-300"
                         >
-                            <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-1.5">
+                            <div className="flex items-center gap-1.5 text-[11px] text-slate-400 light:text-slate-600 mb-1.5">
                                 <Bot size={11} /> {ci.aiTyping}
                             </div>
                             <TypingDots accent={accent} />
@@ -245,7 +245,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
             {/* דוגמאות מהירות */}
             {suggestions.length > 0 && (
                 <div className="relative z-10 px-4 pt-3 shrink-0">
-                    <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-2">
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-500 light:text-slate-600 mb-2">
                         <Sparkles size={11} /> {ci.tryExample}
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -260,8 +260,8 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                                     aria-label={marked && markLabel ? `${s} - ${markLabel}` : undefined}
                                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-colors active:scale-95 ${
                                         marked
-                                            ? 'bg-amber-900/20 border border-amber-400/50 text-amber-100 hover:border-amber-300'
-                                            : 'bg-slate-900 border border-white/10 text-slate-300 hover:border-white/30 hover:text-white'
+                                            ? 'bg-amber-900/20 light:bg-amber-50 border border-amber-400/50 text-[var(--color-amber-100)] light:text-amber-900 hover:border-amber-300'
+                                            : 'bg-slate-900 light:bg-white border border-white/10 light:border-slate-300 text-slate-300 light:text-slate-700 hover:border-white/30 light:hover:border-slate-400 hover:text-white light:hover:text-slate-900'
                                     }`}
                                 >
                                     {marked && <CircleAlert size={13} className="shrink-0 text-amber-300" aria-hidden />}
@@ -275,7 +275,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
 
             {/* קלט */}
             <div className="relative z-10 p-4 shrink-0">
-                <div className={`flex items-center gap-2 rounded-2xl bg-slate-900 border border-white/10 p-1.5 transition-all focus-within:border-white/30 focus-within:ring-2 focus-within:ring-white/10`}>
+                <div className={`flex items-center gap-2 rounded-2xl bg-slate-900 light:bg-white border border-white/10 light:border-slate-300 p-1.5 transition-all focus-within:border-white/30 light:focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-white/10 light:focus-within:ring-slate-400/30`}>
                     <label htmlFor={inputId} className="sr-only">{inputLabel ?? ci.inputPlaceholder}</label>
                     <input
                         id={inputId}
@@ -283,7 +283,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                         onChange={(e) => onInputChange(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder={ci.inputPlaceholder}
-                        className="flex-1 bg-transparent px-3 py-2 text-sm text-white outline-none"
+                        className="flex-1 bg-transparent px-3 py-2 text-sm text-white light:text-slate-900 outline-none"
                     />
                     <motion.button
                         type="button"

@@ -210,7 +210,7 @@ export interface Dictionary {
  * ProtectedContentProvider. useT ממזג אותם לתוך t.behindAi בתוך העמוד המוגן בלבד.
  */
 export const PROTECTED_NAMESPACES = [
-    // המבוא המלא ופרק 1: ללומד מחובר ומאומת. לאורחים יש רק introPreview (ההירו ודוגמת הצ'אט).
+    // רק עם הרשאה פעילה. בלעדיה יש רק introPreview (ההירו ודוגמת הצ'אט).
     'introduction', 'introVisuals', 'chapter1',
     'chapter2', 'chapter3', 'chapter4', 'generationLoop', 'semanticSpace', 'attention', 'contextWindow',
     'logitsSoftmax', 'decoding', 'hallucinations', 'grounding', 'selfCheck', 'mistakeLearning', 'evaluation',

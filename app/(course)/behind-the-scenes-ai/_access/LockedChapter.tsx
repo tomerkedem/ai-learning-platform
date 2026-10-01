@@ -3,8 +3,8 @@
 // ════════════════════════════════════════════════════════════════════════
 // מסך נעילה לפרק מוגן. השרת מרנדר אותו במקום תוכן הפרק כשאין הרשאה פעילה, ולכן
 // התשובה מכילה רק מטא-דאטה ציבורי (מספר ושם הפרק, שכבר מופיעים בתוכן העניינים).
-// פרק 1 דורש רק חשבון חינמי מאומת; שאר הפרקים ומבחן הסיום דורשים גם אישור בטא, והמסר
-// מסביר שהרשמה או אימות מייל אינם נותנים אותו.
+// כל הפרקים (כולל פרק 1) ומבחן הסיום דורשים הרשאה פעילה, והמסר מסביר שהרשמה או אימות
+// מייל אינם נותנים אותה.
 // אין שימוש בתו "מקף ארוך" (em dash).
 // ════════════════════════════════════════════════════════════════════════
 
@@ -12,7 +12,8 @@ import Link from "next/link";
 import { Lock } from "lucide-react";
 import { CourseSidebar } from "@/components/CourseSidebar";
 import { useT } from "@/i18n/useT";
-import { LOCALES } from "@/i18n/config";
+import { LOCALES, type Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/dictionary";
 import { formatChapterLabel } from "@/i18n/format";
 import { courses } from "@/lib/courseData";
 import { tField } from "@/lib/localize";
@@ -23,24 +24,26 @@ import type { CourseAccess } from "./access";
 
 const course = courses["behind-the-scenes-ai"];
 
-export function LockedChapter({ access, chapter }: { access: CourseAccess; chapter: number | "final" }) {
-    const { dir, locale, t } = useT();
-    const x = t.chrome.access;
-    const learnerLevel = chapter === 1;
+/** הסיבה שהתוכן נעול, לפי מצב הגישה (גם לתצוגה המקדימה של המבוא). */
+export function lockReason(access: CourseAccess, x: Dictionary["chrome"]["access"], locale: Locale): string {
     const date = access.expiresAt
         ? new Date(access.expiresAt).toLocaleDateString(LOCALES[locale].htmlLang, { dateStyle: "long" })
         : "";
-    const reason =
-        access.status === "no-grant" ? x.noGrant
+    return access.status === "no-grant" ? x.noGrant
         : access.status === "expired" ? x.expired(date)
         : access.status === "revoked" ? x.revoked
         : access.status === "suspended" ? x.suspended
         : access.status === "unconfirmed" ? x.unconfirmed
         : access.status === "unavailable" ? x.unavailable
-        : learnerLevel ? x.learnerSignedOut
         : x.signedOut;
-    const title = learnerLevel ? x.learnerTitle : x.title;
-    const body = learnerLevel ? x.learnerBody : x.body;
+}
+
+export function LockedChapter({ access, chapter }: { access: CourseAccess; chapter: number | "final" }) {
+    const { dir, locale, t } = useT();
+    const x = t.chrome.access;
+    const reason = lockReason(access, x, locale);
+    const title = x.title;
+    const body = x.body;
 
     const meta = chapter === "final" ? null : course.chapters.find((c) => c.id === chapter);
     const eyebrow = chapter === "final" ? t.chrome.progress.finalExam : formatChapterLabel(locale, chapter);
@@ -67,7 +70,7 @@ export function LockedChapter({ access, chapter }: { access: CourseAccess; chapt
                                 <Lock size={18} aria-hidden className="text-[var(--bts-text-secondary)]" />
                             </span>
                             <div className="min-w-0">
-                                <p className="text-[11px] font-mono text-[var(--bts-text-faint)]">{eyebrow}</p>
+                                <p className="text-xs font-mono text-[var(--bts-text-muted)]">{eyebrow}</p>
                                 {name && <p className="text-sm font-bold text-[var(--bts-text-secondary)] leading-tight">{name}</p>}
                             </div>
                         </div>
@@ -78,17 +81,17 @@ export function LockedChapter({ access, chapter }: { access: CourseAccess; chapt
                                 וההרכבה מחדש עוצרת הקראה פעילה. */}
                             <SpeakButton key={`${locale}-${chapter}`} text={`${title}. ${body} ${reason}`} className="mt-0.5" />
                         </div>
-                        <p className="text-sm text-[var(--bts-text-muted)] leading-relaxed">{body}</p>
-                        <p role="status" className="text-sm font-bold text-[var(--bts-text-secondary)] leading-relaxed">{reason}</p>
+                        <p className="text-[15px] md:text-base text-[var(--bts-text-body)] leading-relaxed">{body}</p>
+                        <p role="status" className="flex items-start gap-2 rounded-xl border border-[var(--bts-border-emphasis)] bg-[var(--bts-fill-soft)] p-3 text-[15px] md:text-base font-bold text-[var(--bts-text-primary)] leading-relaxed">
+                            <Lock size={16} aria-hidden className="mt-1 shrink-0 text-[var(--bts-brand-primary-strong)]" />
+                            {reason}
+                        </p>
                         <div className="flex flex-wrap gap-2 pt-1">
-                            {!learnerLevel && <Link href="/behind-the-scenes-ai/chapter-1" className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill-soft)] hover:bg-[var(--bts-sub-fill-hover)] px-3 py-2 text-xs font-bold text-[var(--bts-text-secondary)] no-underline">
-                                {x.toChapter1}
-                            </Link>}
                             <Link href="/behind-the-scenes-ai/introduction" className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill-soft)] hover:bg-[var(--bts-sub-fill-hover)] px-3 py-2 text-xs font-bold text-[var(--bts-text-secondary)] no-underline">
                                 {x.toIntro}
                             </Link>
                         </div>
-                        {access.status === "signed-out" ? <AccountPanel defaultOpen={learnerLevel} /> : !learnerLevel && <BetaAccessRequest />}
+                        {access.status === "signed-out" ? <AccountPanel /> : <BetaAccessRequest />}
                     </section>
                 </main>
             </div>

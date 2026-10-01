@@ -3,7 +3,7 @@ import { RootDocument } from "@/components/RootDocument";
 import { getRequestLocale } from "@/i18n/requestLocale";
 import { courses } from "@/lib/courseData";
 import { tField } from "@/lib/localize";
-import { AccountSync, PasswordResetDialog } from "./behind-the-scenes-ai/AccountPanel";
+import { AccountSync, AuthLinkErrorDialog, PasswordResetDialog } from "./behind-the-scenes-ai/AccountPanel";
 import { getCourseAccess, sharedCourseContent } from "./behind-the-scenes-ai/_access/courseAccess";
 import { ProtectedContentProvider } from "@/i18n/ProtectedContent";
 import { CourseAccessProvider } from "./behind-the-scenes-ai/_access/CourseAccessContext";
@@ -43,6 +43,7 @@ export default async function CourseLayout({ children }: Readonly<{ children: Re
         <ProtectedContentProvider value={shared}>
           <AccountSync />
           <PasswordResetDialog />
+          <AuthLinkErrorDialog />
           {children}
         </ProtectedContentProvider>
       </CourseAccessProvider>
