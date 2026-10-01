@@ -191,6 +191,9 @@
      הדרך הבטוחה היחידה: כל תת-עץ נעול-Dark מצהיר data-theme="dark" על השורש שלו,
      מה שגם מאפס כאן את שני המשתנים בחזרה לערכי Dark, בלי קשר למה ש-html פותר גלובלית. */
   --bts-ink-darken: 0%;
+  /* Light contrast: הכהיה ואטימות נוספת לסימני accent שאינם טקסט (מסגרות, טבעות, אייקונים). */
+  --bts-accent-darken: 0%;
+  --bts-accent-boost: 0%;
   --bts-ambient-blend: screen;
   /* Effect parity: קו-סריקה ופס-הבהוב זהים בשני ההיערכים; רק הצבע/העוצמה מותאמים. */
   --bts-scan-line: color-mix(in srgb, var(--bts-brand-primary-strong) 35%, transparent);
@@ -273,6 +276,8 @@
   --bts-status-caution: var(--color-amber-800);
 
   --bts-ink-darken: 65%;
+  --bts-accent-darken: 40%;
+  --bts-accent-boost: 55%;
   --bts-ambient-blend: normal;
   --bts-scan-line: color-mix(in srgb, var(--bts-brand-primary-strong) 100%, transparent);
   --bts-sweep: color-mix(in srgb, var(--bts-brand-primary-strong) 40%, transparent);
@@ -339,6 +344,40 @@
 .text-\[\#00f0c8\], .text-\[\#00f0c8\]\/70 { color: color-mix(in oklab, #00f0c8 calc(100% - var(--bts-ink-darken)), black) !important; }
 .text-\[\#6c4dff\], .text-\[\#6c4dff\]\/70 { color: color-mix(in oklab, #6c4dff calc(100% - var(--bts-ink-darken)), black) !important; }
 .text-\[\#ff2e63\], .text-\[\#ff2e63\]\/70 { color: color-mix(in oklab, #ff2e63 calc(100% - var(--bts-ink-darken)), black) !important; }
+
+/* Light contrast: אותו מנגנון לסימנים שאינם טקסט של STATION_PALETTE (מסגרות וטבעות).
+   ליים, צהוב וטורקיז ניאוניים נמדדו 1.05:1 עד 1.7:1 מול לבן. --bts-accent-darken (40%) ו-
+   --bts-accent-boost (+55% אטימות) מביאים את כל 14 הגוונים ל-3:1 לפחות מול לבן ומול
+   slate-100, באותו גוון. ב-Dark שניהם 0%, ולכן הערך זהה בדיוק למחלקת Tailwind המקורית.
+   מילוי מלא (bg-[#hex]) לא משתנה: טקסט כהה או לבן מעליו כבר עומד ב-AA, והכהיה הייתה שוברת אותו. */
+.border-\[\#ff3cac\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #ff3cac calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#b6ff2e\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #b6ff2e calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#1fe0ff\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #1fe0ff calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#ffb020\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #ffb020 calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#a24bff\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #a24bff calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#22ffb0\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #22ffb0 calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#ff5a3c\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #ff5a3c calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#3b7bff\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #3b7bff calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#d8ff33\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #d8ff33 calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#ff2dd4\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #ff2dd4 calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#ff8a00\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #ff8a00 calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#00f0c8\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #00f0c8 calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#6c4dff\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #6c4dff calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.border-\[\#ff2e63\]\/45 { border-color: color-mix(in oklab, color-mix(in oklab, #ff2e63 calc(100% - var(--bts-accent-darken)), black) calc(45% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#ff3cac\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #ff3cac calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#b6ff2e\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #b6ff2e calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#1fe0ff\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #1fe0ff calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#ffb020\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #ffb020 calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#a24bff\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #a24bff calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#22ffb0\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #22ffb0 calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#ff5a3c\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #ff5a3c calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#3b7bff\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #3b7bff calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#d8ff33\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #d8ff33 calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#ff2dd4\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #ff2dd4 calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#ff8a00\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #ff8a00 calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#00f0c8\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #00f0c8 calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#6c4dff\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #6c4dff calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
+.ring-\[\#ff2e63\]\/30 { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #ff2e63 calc(100% - var(--bts-accent-darken)), black) calc(30% + var(--bts-accent-boost)), transparent); }
 
 /* RequestViz (station 1, "request"): תפקידי system/history בתוך הרצף. אותו מנגנון,
    שתי מחלקות Tailwind נוספות (לא חלק מ-STATION_PALETTE). */

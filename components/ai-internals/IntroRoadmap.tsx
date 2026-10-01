@@ -82,6 +82,10 @@ const STATION_INK: Record<string, string> = {
     decoding: '132 107 255', // מקור #6c4dff - 4.57:1 ומעלה
 };
 const inkOf = (id: string) => STATION_INK[id] ?? STATION_RGB[id] ?? '148 163 184';
+// סימן accent שאינו טקסט (אייקון, מסגרת, טבעת): ב-Light מוכהה ואטום יותר (--bts-accent-*, globals.css)
+// כדי שגווני ניאון בהירים יעמדו ב-3:1 מול משטח בהיר. ב-Dark שני האסימונים 0%, ולכן זהה ל-rgba(rgb / alpha).
+const accentMark = (rgb: string, alpha = 1) =>
+    `color-mix(in oklab, color-mix(in oklab, rgb(${rgb}) calc(100% - var(--bts-accent-darken)), black) min(100%, calc(${alpha * 100}% + var(--bts-accent-boost))), transparent)`;
 
 /* ── Focus Stage: כל 14 התחנות ──────────────────────────────────────────────────
    תחנה פתוחה היא יחידת הלמידה הנוכחית, לא אקורדיון צבעוני: פריסת צד-קריאה + מכשיר,
@@ -120,7 +124,7 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
             // קריאה בלי להיכנס מתחת למסילת-הקצה הצפה שיושבת בצד הסוף.
             style={{
                 scrollMarginTop: 'calc(var(--bts-sticky-top, 6rem) + 1.75rem)',
-                borderColor: open ? 'var(--bts-border-emphasis)' : candidate ? `rgba(${rgb} / 0.3)` : 'var(--bts-border)',
+                borderColor: open ? 'var(--bts-border-emphasis)' : candidate ? accentMark(rgb, 0.3) : 'var(--bts-border)',
                 backgroundColor: open ? 'var(--bts-surface-elevated)' : 'var(--bts-surface)',
                 boxShadow: open ? 'var(--bts-shadow-elevation)' : 'none',
             }}
@@ -144,15 +148,15 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                         backgroundColor: 'var(--bts-surface-inset)',
                         color: `rgb(${ink})`,
                         '--ink': ink,
-                        boxShadow: `inset 0 0 0 1px rgba(${rgb} / ${open ? 0.4 : 0.35})`,
+                        boxShadow: `inset 0 0 0 1px ${accentMark(rgb, open ? 0.4 : 0.35)}`,
                     } as React.CSSProperties}
                     dir="ltr"
                 >
                     {n}
                 </span>
 
-                {/* אייקון: נשאר בגוון הזהות המלא (גרפיקה, לא טקסט) */}
-                <span className="mt-1 shrink-0" style={{ color: open ? `rgba(${rgb} / 0.8)` : `rgb(${rgb})` }} aria-hidden>
+                {/* אייקון: בגוון הזהות (גרפיקה, לא טקסט). ב-Light מוכהה עד 3:1 לפחות, באותו גוון. */}
+                <span className="mt-1 shrink-0" style={{ color: accentMark(rgb, open ? 0.8 : 1) }} aria-hidden>
                     {STATION_ICON[station.id]}
                 </span>
 
@@ -182,7 +186,7 @@ function StationCard({ station, n, a, reduce, snap, roadmapLabels, hint, open, c
                             backgroundColor: 'transparent',
                             color: 'var(--bts-text-secondary)',
                         } : {
-                            borderColor: `rgba(${rgb} / 0.28)`,
+                            borderColor: accentMark(rgb, 0.28),
                             backgroundColor: 'var(--bts-surface-inset)',
                             color: `rgb(${ink})`,
                             '--ink': ink,
