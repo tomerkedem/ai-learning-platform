@@ -7,8 +7,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
     canUseSupport, firstParam, isSupportKind, isUuid, normalizeSupportFrom, SUPPORT_HOME, supportHomeHref, supportNewHref, supportOrigin,
-    supportOriginText, type SupportOriginLabels,
+    supportAction, supportOriginText, type SupportOriginLabels,
 } from "./supportShared.ts";
+import { hasCourseAccess } from "../_access/access.ts";
 import { courses } from "../../../../lib/courseData.ts";
 import { tField } from "../../../../lib/localize.ts";
 import { formatChapterLabel } from "../../../../i18n/format.ts";
@@ -108,8 +109,13 @@ test("error page origin: the page itself, or the origin a support page carries",
 // The flow above only holds if every hop uses these helpers. Wiring check, as in access.test.ts.
 test("every support entry and hop passes the origin through the shared helpers", () => {
     const panel = source("../AccountPanel.tsx");
-    assert.match(panel, /supportHomeHref\(supportOrigin\(usePathname\(\), useSearchParams\(\)\.get\("from"\)\)\)/);
-    assert.match(panel, /<Link\s+href=\{supportHref\}/);
+    // The panel's help action and its "new reply" link both resolve the origin from the current
+    // page or the ?from= a support page carries, through the shared helpers.
+    assert.match(panel, /const pathname = usePathname\(\);/);
+    assert.match(panel, /const carriedFrom = useSearchParams\(\)\.get\("from"\);/);
+    assert.match(panel, /supportAction\(pathname, carriedFrom, chapters, hasCourseAccess\(access\.status\)\)/);
+    assert.match(panel, /<Link href=\{help\.href\}/);
+    assert.match(panel, /<Link href=\{supportHomeHref\(supportOrigin\(pathname, carriedFrom\)\)\}/);
     assert.doesNotMatch(panel, /href=\{SUPPORT_HOME\}/);
 
     const homePage = source("page.tsx");
@@ -278,5 +284,41 @@ test("origin: chapter label and title come from the existing locale data in ever
         // No "label: title" double colon (course titles already contain one); the intro gets no separator.
         assert.doesNotMatch(dict, /\$\{chapterLabel\}:/, `${locale}: no colon after the chapter label`);
         assert.doesNotMatch(intro, /-/, `${locale}: no hyphen in the intro wording`);
+    }
+});
+
+// ── Learner Pulse: the account panel's help action follows the real context and access ──
+test("help action: chapter and introduction only with active access, origin always kept", () => {
+    const chapters = courses["behind-the-scenes-ai"].chapters;
+    const chapter = "/behind-the-scenes-ai/chapter-3";
+    const intro = "/behind-the-scenes-ai/introduction";
+    // Active access on a chapter: a new help request whose origin is that chapter.
+    const onChapter = supportAction(chapter, null, chapters, true);
+    assert.equal(onChapter.label, "chapter");
+    assert.equal(onChapter.href, supportNewHref("help", chapter));
+    assert.equal(fromOf(onChapter.href), chapter);
+    assert.equal(new URL(onChapter.href, "https://x.invalid").searchParams.get("kind"), "help");
+    const onIntro = supportAction(intro, null, chapters, true);
+    assert.deepEqual(onIntro, { label: "intro", href: supportNewHref("help", intro) });
+    // Without active access the same pages get generic support, still carrying the page as origin.
+    assert.deepEqual(supportAction(chapter, null, chapters, false), { label: "generic", href: supportHomeHref(chapter) });
+    assert.deepEqual(supportAction(intro, null, chapters, false), { label: "generic", href: supportHomeHref(intro) });
+    // Pages that are not the introduction or a chapter: generic, with their own origin.
+    for (const page of ["/behind-the-scenes-ai", "/behind-the-scenes-ai/faq", "/behind-the-scenes-ai/final-exam"]) {
+        assert.deepEqual(supportAction(page, null, chapters, true), { label: "generic", href: supportHomeHref(page) }, page);
+    }
+    // A support page is never "this chapter", but keeps the origin it already carries.
+    const fromSupport = supportAction(SUPPORT_HOME, chapter, chapters, true);
+    assert.deepEqual(fromSupport, { label: "generic", href: supportHomeHref(chapter) });
+    assert.equal(fromOf(fromSupport.href), chapter);
+    assert.deepEqual(supportAction(null, null, chapters, true), { label: "generic", href: SUPPORT_HOME });
+});
+
+test("help action: only the active access status counts as active", () => {
+    const chapters = courses["behind-the-scenes-ai"].chapters;
+    const statuses = ["signed-out", "unconfirmed", "no-grant", "expired", "revoked", "active", "unavailable", "suspended"] as const;
+    for (const status of statuses) {
+        const label = supportAction("/behind-the-scenes-ai/chapter-3", null, chapters, hasCourseAccess(status)).label;
+        assert.equal(label, status === "active" ? "chapter" : "generic", status);
     }
 });

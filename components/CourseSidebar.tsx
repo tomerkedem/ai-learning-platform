@@ -110,11 +110,6 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
   const course = courses[currentCourseId];
   if (!course) return null;
 
-  // חישוב התקדמות - בשימוש בתוך ה-UI
-  const currentChapterIndex = course.chapters.findIndex(c => c.href === pathname);
-  const safeIndex = currentChapterIndex === -1 ? 0 : currentChapterIndex;
-  const progress = Math.round(((safeIndex + 1) / course.chapters.length) * 100);
-
   // שם הלומדה בסרגל הוא ניווט/chrome. בלומדות עם hero משלהן (behind-the-scenes-ai) אסור
   // שיהיה h1, אחרת נוצר h1 שני לצד ה-hero. בלומדות אחרות (math) אין hero, ולכן הוא נשאר
   // הכותרת הראשית של המסמך.
@@ -147,18 +142,6 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                         <X size={24} />
                     </button>
                 )}
-            </div>
-
-            {/* Progress Bar */}
-            <div className="mt-1.5 px-1 flex items-center gap-2 text-[11px] text-[var(--bts-text-muted)] font-mono">
-                <span className="shrink-0">{t.chrome.courseProgress}</span>
-                <div aria-hidden className="h-1 flex-1 bg-[var(--bts-surface-inset)] rounded-full overflow-hidden">
-                    <div
-                        className={`h-full transition-all duration-700 ease-out ${progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
-                        style={{ width: `${Math.max(2, progress)}%` }}
-                    />
-                </div>
-                <span className={`shrink-0 ${progress === 100 ? 'text-[var(--bts-status-positive)]' : ''}`}>{progress}%</span>
             </div>
 
             {/* סיכום שליטה במבדקים - מוצג רק בלומדת "מאחורי הקלעים של AI" ורק כשיש נתונים */}

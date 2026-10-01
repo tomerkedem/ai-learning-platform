@@ -55,7 +55,7 @@ test("auth error mapping", () => {
         [{ status: 429 }, "rateLimit"],
         [{ code: "user_already_exists" }, "accountExists"],
         [{ code: "email_exists" }, "accountExists"],
-        [{ code: "email_address_invalid" }, "emailInvalid"],
+        [{ code: "email_address_invalid" }, "emailRejected"],
         [{ name: "AuthRetryableFetchError", status: 0 }, "network"],
         // F1: supabase-js מחזיר AuthRetryableFetchError גם ל-5xx. זו תקלת שרת, לא רשת.
         [{ name: "AuthRetryableFetchError", status: 500, message: "Database error saving new user" }, "generic"],
@@ -224,3 +224,33 @@ for (const kind of ["confirmation", "recovery"]) {
         }
     });
 }
+
+
+// ── Server-rejected email: separate from the client format check, and claims no reason ──
+test("server email_address_invalid uses its own copy; malformed input keeps the field validation", () => {
+    // Client side: a malformed address is a field error, as before; a well-formed one passes in every mode
+    // (the server may still reject it, e.g. on /recover).
+    assert.equal(validateAuth("reset", { ...ok, email: "learner@example" }).email, "emailInvalid");
+    for (const mode of ["signin", "signup", "reset"] as const) {
+        assert.equal(validateAuth(mode, { ...ok, email: "test-learner-active@example.com" }).email, undefined, mode);
+    }
+    // Server side: its own key, never the field-validation key.
+    assert.equal(authErrorKey({ code: "email_address_invalid", status: 400 }), "emailRejected");
+    // The panel shows the new message for it, keeps the operation title, and uses the field copy only for field errors.
+    const panel = readFileSync(new URL("./AccountPanel.tsx", import.meta.url), "utf8");
+    assert.match(panel, /emailRejected: a\.errorEmailRejected,/);
+    assert.equal(panel.split("a.fieldEmailInvalid").length, 2, "fieldEmailInvalid only in fieldText");
+    assert.match(panel, /case "emailInvalid": return a\.fieldEmailInvalid;/);
+    assert.match(panel, /void run\(a\.errorTitleReset, async \(\) => \{/);
+    // The new key exists in all six locales, differs from the format message, and says nothing about why.
+    for (const locale of ["he", "en", "es", "ru", "ar", "ja"]) {
+        const dict = readFileSync(new URL(`../../../i18n/locales/${locale}/chrome.ts`, import.meta.url), "utf8");
+        const rejected = dict.match(/\n        errorEmailRejected: '((?:[^'\\]|\\.)+)',/)?.[1];
+        const invalid = dict.match(/\n        fieldEmailInvalid: '((?:[^'\\]|\\.)+)',/)?.[1];
+        assert.ok(rejected, `${locale}: errorEmailRejected`);
+        assert.notEqual(rejected, invalid, `${locale}: not the format message`);
+        assert.doesNotMatch(rejected!, /example\.com|@/, `${locale}: no example address`);
+    }
+    const he = readFileSync(new URL("../../../i18n/locales/he/chrome.ts", import.meta.url), "utf8");
+    assert.match(he, /errorEmailRejected: 'לא ניתן לשלוח הודעה לכתובת האימייל הזו\. בדקו שהכתובת נכונה ונסו שוב\.',/);
+});

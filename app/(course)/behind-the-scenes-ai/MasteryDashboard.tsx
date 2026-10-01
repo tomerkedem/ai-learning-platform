@@ -56,7 +56,7 @@ const hasSyncNotice = (s: SyncState | null) => !!s && (s.offline || s.pending.le
 // מחובר: הסיכום מהחשבון (בכל מכשיר) ועוד ניסיונות שממתינים בתור. בלי רשת: העותק האחרון
 // שנטען מהחשבון ועוד מה שממתין. לא מחובר: מהתרגול המקומי בלי חשבון. נתוני חשבון אחד
 // לעולם לא מוצגים תחת חשבון אחר או תחת אורח.
-function useMasteryView(): MasteryView | null {
+export function useMasteryView(): MasteryView | null {
     const [view, setView] = useState<MasteryView | null>(null);
     const userId = useAuthState().session?.user.id;
 

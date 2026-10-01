@@ -5,7 +5,6 @@ import { chrome as heChrome } from '../he/chrome';
 export const chrome: typeof heChrome = {
     backToCatalog: 'Назад к каталогу курсов',
     tableOfContents: 'Содержание',
-    courseProgress: 'Прогресс курса',
     authorName: 'Томер Кедем',
     authorRole: 'Автор курса',
     byAuthor: 'Автор: Томер Кедем',
@@ -148,6 +147,7 @@ export const chrome: typeof heChrome = {
         haveAccount: 'Уже есть аккаунт?',
         summarySignedOut: 'Вход / Создать аккаунт',
         summarySignedIn: 'Вход выполнен:',
+        pulseMastery: (passed: number, total: number) => `${passed} из ${total} тестов`,
         signOut: 'Выйти',
         signedInAs: 'Вы вошли как',
         working: 'Секунду...',
@@ -188,6 +188,7 @@ export const chrome: typeof heChrome = {
         errorEmailRateLimit: 'Недавно было отправлено слишком много писем, поэтому сейчас мы не можем отправить ещё одно. Попробуйте снова примерно через час. Если вы уже получили от нас письмо, можно воспользоваться ссылкой из него.',
         errorRateLimit: 'Слишком много попыток за короткое время. Подождите несколько минут и попробуйте снова.',
         errorAccountExists: 'Не удаётся создать аккаунт с этим адресом. Если у вас уже есть аккаунт, войдите или сбросьте пароль.',
+        errorEmailRejected: 'Не удаётся отправить сообщение на этот адрес электронной почты. Проверьте, что адрес указан верно, и попробуйте снова.',
         errorNetwork: 'Не удалось связаться с сервером. Проверьте подключение к интернету и попробуйте снова.',
         linkErrorTitle: 'Ссылка из письма больше не действует',
         linkErrorBody: 'Возможно, срок её действия истёк или она уже использована. Если вы уже подтвердили эл. почту, просто войдите. Чтобы сбросить пароль, запросите новую ссылку через «Забыли пароль?».',
@@ -267,6 +268,9 @@ export const chrome: typeof heChrome = {
         started: (date: string) => `Создано: ${date}`,
         lastActivity: (date: string) => `Последняя активность: ${date}`,
         unread: 'Новый ответ',
+        newReplies: (n: number) => (n === 1 ? 'Вас ждёт новый ответ' : `Новых ответов: ${n}`),
+        helpChapter: 'Помощь по текущей главе',
+        helpIntro: 'Помощь по введению',
         statusLabel: 'Статус',
         kinds: {
             problem: { action: 'Сообщить о проблеме', noun: 'Сообщение о проблеме', hint: 'Что-то в курсе работает не так, как вы ожидали.' },

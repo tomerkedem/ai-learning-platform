@@ -5,7 +5,6 @@ import { chrome as heChrome } from '../he/chrome';
 export const chrome: typeof heChrome = {
     backToCatalog: 'العودة إلى كتالوج الدورات',
     tableOfContents: 'المحتويات',
-    courseProgress: 'تقدّم الدورة',
     authorName: 'تومر كيدم',
     authorRole: 'مؤلّف الدورة',
     byAuthor: 'من إعداد تومر كيدم',
@@ -148,6 +147,7 @@ export const chrome: typeof heChrome = {
         haveAccount: 'لديك حساب بالفعل؟',
         summarySignedOut: 'تسجيل الدخول / إنشاء حساب',
         summarySignedIn: 'تم تسجيل الدخول:',
+        pulseMastery: (passed: number, total: number) => `الاختبارات: ${passed} من ${total}`,
         signOut: 'تسجيل الخروج',
         signedInAs: 'مسجّل الدخول باسم',
         working: 'لحظة...',
@@ -188,6 +188,7 @@ export const chrome: typeof heChrome = {
         errorEmailRateLimit: 'أُرسلت رسائل كثيرة مؤخرًا، لذلك لا يمكننا إرسال رسالة أخرى الآن. حاول مرة أخرى بعد نحو ساعة. إذا وصلتك رسالة منا بالفعل، يمكنك استخدام الرابط الموجود فيها.',
         errorRateLimit: 'محاولات كثيرة خلال وقت قصير. انتظر بضع دقائق ثم حاول مرة أخرى.',
         errorAccountExists: 'لا يمكن إنشاء حساب بهذا العنوان. إذا كان لديك حساب بالفعل، فسجّل الدخول أو أعد تعيين كلمة المرور.',
+        errorEmailRejected: 'لا يمكن إرسال رسالة إلى عنوان البريد الإلكتروني هذا. تحقّق من صحة العنوان وحاول مرة أخرى.',
         errorNetwork: 'تعذّر الاتصال بالخادم. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.',
         linkErrorTitle: 'رابط البريد الإلكتروني لم يعد صالحًا',
         linkErrorBody: 'ربما انتهت صلاحيته أو استُخدم من قبل. إذا كنت قد أكدت بريدك الإلكتروني بالفعل، فسجّل الدخول فقط. لإعادة تعيين كلمة المرور، اطلب رابطًا جديدًا من «هل نسيت كلمة المرور؟».',
@@ -267,6 +268,9 @@ export const chrome: typeof heChrome = {
         started: (date: string) => `فُتح: ${date}`,
         lastActivity: (date: string) => `آخر نشاط: ${date}`,
         unread: 'ردّ جديد',
+        newReplies: (n: number) => (n === 1 ? 'لديك ردّ جديد' : `ردود جديدة: ${n}`),
+        helpChapter: 'مساعدة في الفصل الحالي',
+        helpIntro: 'مساعدة في المقدّمة',
         statusLabel: 'الحالة',
         kinds: {
             problem: { action: 'الإبلاغ عن مشكلة', noun: 'بلاغ عن مشكلة', hint: 'شيء في الدورة لا يعمل كما توقّعت.' },

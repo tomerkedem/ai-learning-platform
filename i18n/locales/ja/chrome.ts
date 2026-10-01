@@ -5,7 +5,6 @@ import { chrome as heChrome } from '../he/chrome';
 export const chrome: typeof heChrome = {
     backToCatalog: 'コースカタログに戻る',
     tableOfContents: '目次',
-    courseProgress: 'コースの進捗',
     authorName: 'トメル・ケデム',
     authorRole: 'コース作成者',
     byAuthor: '作成：トメル・ケデム',
@@ -148,6 +147,7 @@ export const chrome: typeof heChrome = {
         haveAccount: 'すでにアカウントをお持ちの方',
         summarySignedOut: 'ログイン / アカウント作成',
         summarySignedIn: 'ログイン中：',
+        pulseMastery: (passed: number, total: number) => `テスト ${passed} / ${total}`,
         signOut: 'ログアウト',
         signedInAs: 'ログイン中',
         working: '少々お待ちください...',
@@ -188,6 +188,7 @@ export const chrome: typeof heChrome = {
         errorEmailRateLimit: '最近送信したメールが多すぎるため、今は新しいメールを送信できません。1時間ほど待ってから、もう一度お試しください。すでにメールを受け取っている場合は、そのリンクを使用できます。',
         errorRateLimit: '短時間に試行が多すぎます。数分待ってから、もう一度お試しください。',
         errorAccountExists: 'このアドレスではアカウントを作成できません。すでにアカウントをお持ちの場合は、ログインするか、パスワードをリセットしてください。',
+        errorEmailRejected: 'このメールアドレスにはメッセージを送信できません。アドレスが正しいか確認して、もう一度お試しください。',
         errorNetwork: 'サーバーに接続できませんでした。インターネット接続を確認して、もう一度お試しください。',
         linkErrorTitle: 'メールのリンクは無効になっています',
         linkErrorBody: '有効期限が切れたか、すでに使用された可能性があります。メールアドレスの確認が済んでいる場合は、そのままログインしてください。パスワードをリセットするには、「パスワードをお忘れですか？」から新しいリンクを申請してください。',
@@ -267,6 +268,9 @@ export const chrome: typeof heChrome = {
         started: (date: string) => `作成：${date}`,
         lastActivity: (date: string) => `最終更新：${date}`,
         unread: '新しい返信',
+        newReplies: (n: number) => (n === 1 ? '新しい返信があります' : `新しい返信が${n}件あります`),
+        helpChapter: 'この章のヘルプ',
+        helpIntro: '「はじめに」のヘルプ',
         statusLabel: '状況',
         kinds: {
             problem: { action: '問題を報告', noun: '問題の報告', hint: 'コース内の何かが期待どおりに動きません。' },

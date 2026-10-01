@@ -5,7 +5,6 @@ import { chrome as heChrome } from '../he/chrome';
 export const chrome: typeof heChrome = {
     backToCatalog: 'Volver al catálogo de cursos',
     tableOfContents: 'Contenido',
-    courseProgress: 'Progreso del curso',
     authorName: 'Tomer Kedem',
     authorRole: 'Autor del curso',
     byAuthor: 'Por Tomer Kedem',
@@ -148,6 +147,7 @@ export const chrome: typeof heChrome = {
         haveAccount: '¿Ya tienes cuenta?',
         summarySignedOut: 'Iniciar sesión / Crear cuenta',
         summarySignedIn: 'Sesión iniciada:',
+        pulseMastery: (passed: number, total: number) => `${passed} de ${total} tests`,
         signOut: 'Cerrar sesión',
         signedInAs: 'Sesión iniciada como',
         working: 'Un momento...',
@@ -188,6 +188,7 @@ export const chrome: typeof heChrome = {
         errorEmailRateLimit: 'Se enviaron demasiados correos hace poco, así que ahora no podemos enviar otro. Inténtalo de nuevo en aproximadamente una hora. Si ya recibiste un correo nuestro, puedes usar el enlace que contiene.',
         errorRateLimit: 'Demasiados intentos en poco tiempo. Espera unos minutos e inténtalo de nuevo.',
         errorAccountExists: 'No podemos crear una cuenta con esta dirección. Si ya tienes una cuenta, inicia sesión o restablece tu contraseña.',
+        errorEmailRejected: 'No podemos enviar un mensaje a esta dirección de correo. Comprueba que la dirección sea correcta e inténtalo de nuevo.',
         errorNetwork: 'No pudimos conectar con el servidor. Revisa tu conexión a internet e inténtalo de nuevo.',
         linkErrorTitle: 'Este enlace del correo ya no es válido',
         linkErrorBody: 'Puede que haya caducado o que ya se haya usado. Si ya confirmaste tu correo, simplemente inicia sesión. Para restablecer tu contraseña, solicita un enlace nuevo con «¿Olvidaste tu contraseña?».',
@@ -267,6 +268,9 @@ export const chrome: typeof heChrome = {
         started: (date: string) => `Abierta: ${date}`,
         lastActivity: (date: string) => `Última actividad: ${date}`,
         unread: 'Nueva respuesta',
+        newReplies: (n: number) => (n === 1 ? 'Tienes una respuesta nueva' : `Tienes ${n} respuestas nuevas`),
+        helpChapter: 'Ayuda con este capítulo',
+        helpIntro: 'Ayuda con la introducción',
         statusLabel: 'Estado',
         kinds: {
             problem: { action: 'Informar de un problema', noun: 'Informe de problema', hint: 'Algo del curso no funciona como esperabas.' },

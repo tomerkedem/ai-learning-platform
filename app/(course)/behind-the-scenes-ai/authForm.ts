@@ -108,7 +108,7 @@ export function readAuthRedirect(href: string): AuthRedirect | null {
 
 export type AuthErrorKey =
     | "invalid" | "unconfirmed" | "weakPassword" | "samePassword" | "suspended"
-    | "emailRateLimit" | "rateLimit" | "accountExists" | "emailInvalid" | "network" | "generic";
+    | "emailRateLimit" | "rateLimit" | "accountExists" | "emailRejected" | "network" | "generic";
 
 /**
  * ממפה שגיאה מ-supabase-js (AuthError עם code/status/name) או חריגה שנזרקה למפתח הודעה.
@@ -128,7 +128,9 @@ export function authErrorKey(error: unknown): AuthErrorKey {
         case "over_request_rate_limit": return "rateLimit";
         case "user_already_exists":
         case "email_exists": return "accountExists";
-        case "email_address_invalid": return "emailInvalid";
+        // השרת דחה כתובת שעברה את בדיקת הצורה בלקוח (למשל ב-/recover). הודעה נפרדת מבדיקת הצורה,
+        // שאינה טוענת דבר על הסיבה (שלא ידועה לנו).
+        case "email_address_invalid": return "emailRejected";
     }
     if (e.status === 429) return "rateLimit";
     // רשת רק כשהבקשה לא הגיעה לשרת: AuthRetryableFetchError עם status 0, או fetch שנזרק

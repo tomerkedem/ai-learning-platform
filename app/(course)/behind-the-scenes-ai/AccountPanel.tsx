@@ -12,15 +12,19 @@
 import React, { useEffect, useId, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import Link from "next/link";
-import { CalendarClock, CircleAlert, Eye, EyeOff, LifeBuoy, LogOut, Mail, MailCheck, UserRound } from "lucide-react";
+import { ChevronDown, CircleAlert, Eye, EyeOff, LifeBuoy, LogOut, Mail, MailCheck, MessageSquare, UserRound } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useT } from "@/i18n/useT";
 import { useCourseAccess } from "./_access/CourseAccessContext";
 import { BetaAccessRequest } from "./_access/BetaAccessRequest";
-import { canUseSupport, supportHomeHref, supportOrigin } from "./support/supportShared";
+import { hasCourseAccess } from "./_access/access";
+import { canUseSupport, supportAction, supportHomeHref, supportOrigin } from "./support/supportShared";
 import type { Dictionary } from "@/i18n/dictionary";
 import { LOCALES } from "@/i18n/config";
-import { getAllRecords, MASTERY_UPDATED_EVENT } from "./masteryProgress";
+import { courses } from "@/lib/courseData";
+import { getAllRecords, MASTERY_UPDATED_EVENT, TOTAL_CHAPTER_QUIZZES } from "./masteryProgress";
+import { useMasteryView } from "./MasteryDashboard";
+import { pulseSegments } from "./learnerPulse";
 import {
     supabase,
     useAuthState,
@@ -34,6 +38,7 @@ import {
     isImportHandled,
     markImportHandled,
     loadPreferredLocale,
+    loadUnreadSupportReplies,
     savePreferredLocale,
     syncCleanAuthUrl,
     takeAuthLinkError,
@@ -54,7 +59,7 @@ function errorText(error: unknown, a: AccountDict): string {
         emailRateLimit: a.errorEmailRateLimit,
         rateLimit: a.errorRateLimit,
         accountExists: a.errorAccountExists,
-        emailInvalid: a.fieldEmailInvalid,
+        emailRejected: a.errorEmailRejected,
         network: a.errorNetwork,
         generic: a.errorGeneric,
     };
@@ -78,6 +83,10 @@ const buttonClass = "flex-1 rounded-lg border border-[var(--bts-border)] bg-[var
 // 16px בשדות: פחות מזה גורם ל-iOS להגדיל את העמוד בפוקוס.
 const inputClass = "w-full rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill)] px-2.5 py-2 text-base text-[var(--bts-text-primary)] aria-[invalid=true]:border-[var(--bts-status-danger)]";
 const labelClass = "block text-xs font-bold text-[var(--bts-text-secondary)]";
+// פעולות ההקשר: בגודל התוכן, בקו ההתחלה של שורות ההקשר (start לוגי), 44px. תשובת תמיכה שמחכה היא
+// הראשית (מילוי בגוון המותג); העזרה משנית (גבול בלבד). תווית ארוכה (es/ru) נשברת בתוך הרוחב.
+const replyLinkClass = "flex w-fit max-w-full min-h-[44px] items-center gap-2 rounded-lg border border-[color-mix(in_oklab,var(--bts-brand-primary)_55%,transparent)] bg-[color-mix(in_oklab,var(--bts-brand-primary)_12%,transparent)] px-3 py-2 text-start text-xs font-bold text-[var(--bts-text-primary)] no-underline transition-colors hover:bg-[color-mix(in_oklab,var(--bts-brand-primary)_18%,transparent)] motion-reduce:transition-none";
+const helpLinkClass = "flex w-fit max-w-full min-h-[44px] items-center gap-2 rounded-lg border border-[color-mix(in_oklab,var(--bts-brand-primary)_40%,transparent)] px-3 py-2 text-start text-xs font-bold text-[var(--bts-text-secondary)] no-underline transition-colors hover:bg-[color-mix(in_oklab,var(--bts-brand-primary)_10%,transparent)] hover:text-[var(--bts-text-primary)] motion-reduce:transition-none";
 
 /** שגיאה בולטת אך לא תוקפנית: אייקון, כותרת וגוף, ו-role="alert" שמוקרא מיד. משמש גם בתמיכה. */
 export function AuthAlert({ title, body }: { title?: string; body: string }) {
@@ -135,7 +144,10 @@ function PasswordField({ name, label, autoComplete, autoFocus, describedBy, inva
     );
 }
 
-/** מצב הרשאת הבטא של החשבון המחובר. אימות מייל לבדו לעולם לא מוצג כגישה. */
+/**
+ * מצב הרשאת הבטא של החשבון המחובר. אימות מייל לבדו לעולם לא מוצג כגישה. טקסט בלבד, באותו קו
+ * התחלה כמו שורת ההקשר שמעליו (המצב נאמר במילים, לא בצבע).
+ */
 function AccessStatusLine() {
     const { locale, t } = useT();
     const access = useCourseAccess();
@@ -149,13 +161,27 @@ function AccessStatusLine() {
         : access.status === "unconfirmed" ? x.accessUnconfirmed
         : null;
     if (!text) return null;
-    // אייקון לוח שנה רק לשורה שיש בה תאריך (גישה פעילה עד / הסתיימה ב-).
-    const dated = access.status === "active" || access.status === "expired";
+    return <p className="text-xs leading-snug text-[var(--bts-text-secondary)]">{text}</p>;
+}
+
+/**
+ * Learner Pulse: מקטע לכל מבדק פרק, ומבדקים שעברו מודגשים (learnerPulse.ts). 32px בשורה המכווצת
+ * ו-60px בפאנל הפתוח. המרכז נשאר פתוח ושקט בשני הגדלים: המקטעים הם הזהות, והספירה מוצגת כטקסט
+ * לידו. passed=null: עוד לא נטען, ולכן רק המסלול (לא 0). הגישה לא משנה את הצבע: ידע שנצבר נשאר
+ * גם כשהגישה הסתיימה. נקודה מחוץ להיקף = תשובת תמיכה שלא נקראה. דקורטיבי (aria-hidden).
+ */
+function LearnerPulse({ passed, total, unread, open }: { passed: number | null; total: number; unread: boolean; open: boolean }) {
     return (
-        <p className="flex items-start gap-1.5 text-[11px] font-bold text-[var(--bts-text-secondary)] leading-relaxed">
-            {dated && <CalendarClock size={13} aria-hidden className="mt-[0.15rem] shrink-0" />}
-            <span className="min-w-0">{text}</span>
-        </p>
+        <span aria-hidden="true" className={`relative block shrink-0 transition-[width,height] duration-200 ease-out motion-reduce:transition-none ${open ? "size-15" : "size-8"}`}>
+            <svg viewBox="0 0 40 40" fill="none" className="block size-full">
+                {pulseSegments(passed ?? 0, total).map((s, i) => (
+                    <path key={i} d={s.d} strokeWidth={4} stroke={s.passed ? "var(--bts-brand-primary-strong)" : "var(--bts-border-emphasis)"} />
+                ))}
+            </svg>
+            {unread && (
+                <span className="absolute -end-0.5 -top-0.5 size-2.5 rounded-full border-2 border-[var(--bts-surface-elevated)] bg-[var(--bts-status-caution)]" />
+            )}
+        </span>
     );
 }
 
@@ -165,9 +191,21 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
     const a = t.chrome.account;
     const { session, ready } = useAuthState();
     const access = useCourseAccess();
-    // נתיב המקור לתמיכה: העמוד הנוכחי בלומדה, או המקור שעמוד תמיכה כבר נושא.
-    const supportHref = supportHomeHref(supportOrigin(usePathname(), useSearchParams().get("from")));
+    const s = t.chrome.support;
+    const pathname = usePathname();
+    const carriedFrom = useSearchParams().get("from");
+    const chapters = courses["behind-the-scenes-ai"].chapters;
+    // פעולת העזרה: עזרה בפרק או במבוא כשיש גישה פעילה ונמצאים בהם, אחרת עזרה ותמיכה כללית.
+    // בשני המקרים נתיב המקור נשמר (העמוד הנוכחי, או המקור שעמוד תמיכה כבר נושא). המיקום משמש כאן
+    // בלבד (ניסוח ומקור הבקשה) ואינו מוצג: הלומד כבר רואה את הפרק הנוכחי בלומדה עצמה.
+    const help = supportAction(pathname, carriedFrom, chapters, hasCourseAccess(access.status));
+    const helpLabel = help.label === "chapter" ? s.helpChapter : help.label === "intro" ? s.helpIntro : s.entry;
     const userId = session?.user.id;
+    const supportAllowed = canUseSupport(access.status);
+    // מבדקים שעברו, מהסיכום של החשבון. null עד שנטען סיכום של המשתמש הזה (לא 0 ולא של משתמש קודם).
+    const mastery = useMasteryView();
+    const passed = userId && mastery?.sync?.userId === userId ? mastery.summary.passedChapters : null;
+    const [unreadReplies, setUnreadReplies] = useState(0);
     const [busy, setBusy] = useState(false);
     const [message, setMessage] = useState("");
     const [alert, setAlert] = useState<{ title?: string; body: string } | null>(null);
@@ -183,6 +221,8 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
     // מתחיל מהשם שכבר נטען לאותו משתמש, כדי שהסיכום לא יהבהב בניווט בין עמודים.
     const [fullName, setFullName] = useState<string | null | undefined>(() => cachedFullName(userId));
     const [isAdmin, setIsAdmin] = useState(false);
+    // מצב הפאנל (פתוח/מכווץ), מסונכרן מאירוע toggle המקורי של details. קובע מה מוצג בשורת הסיכום.
+    const [open, setOpen] = useState(defaultOpen);
     const statusId = useId();
     const fid = useId();
     // שגיאת שדה מקושרת לשדה, כך שקורא מסך מקריא אותה עם הפוקוס שעובר אליו.
@@ -212,6 +252,16 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
         checkIsCourseAdmin().then((v) => { if (!cancelled) setIsAdmin(v); });
         return () => { cancelled = true; };
     }, [userId]);
+
+    useEffect(() => {
+        // תשובות תמיכה שלא נקראו: רק למי שיכול להשתמש בתמיכה. נטען מחדש בכל טעינה של הסרגל (ניווט).
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- איפוס כשהמשתמש או ההרשאה לתמיכה מתחלפים
+        setUnreadReplies(0);
+        if (!userId || !supportAllowed) return;
+        let cancelled = false;
+        loadUnreadSupportReplies(userId).then((n) => { if (!cancelled) setUnreadReplies(n); }).catch(() => {});
+        return () => { cancelled = true; };
+    }, [userId, supportAllowed]);
 
     if (!supabase) return null;
     const client = supabase;
@@ -323,33 +373,39 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
 
     let body: React.ReactNode;
     if (session) {
+        const hasUnread = supportAllowed && unreadReplies > 0;
+        const signOutButton = (
+            <button
+                type="button"
+                className="-my-1.5 inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-lg px-2 text-[11px] font-bold text-[var(--bts-text-muted)] transition-colors hover:bg-[var(--bts-sub-fill-soft)] hover:text-[var(--bts-text-primary)] disabled:opacity-50 motion-reduce:transition-none"
+                disabled={busy}
+                onClick={() => userId && void signOutAndForget(userId)}
+            >
+                <LogOut size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
+                {a.signOut}
+            </button>
+        );
         body = (
             <>
-                {/* השם כבר מופיע בכותרת הפאנל. בלי שם (משתמש ותיק) הכותרת כללית, ולכן המייל מזהה את החשבון. */}
-                <p className="text-[11px] text-[var(--bts-text-muted)] leading-relaxed">
-                    {!fullName && <>{a.signedInAs}{" "}</>}
-                    <Mail size={12} aria-hidden className="me-1 inline-block shrink-0 align-[-2px]" />
-                    <bdi dir="ltr" className={fullName ? "" : "font-bold text-[var(--bts-text-secondary)]"}>{session.user.email}</bdi>
-                </p>
+                {/* זהות: לחשבון בלי שם, ההסבר צמוד לשורת הזהות שמעליו. */}
                 {fullName === null && (
                     <div className="rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill)] p-2.5 space-y-1">
                         <p className="text-[11px] font-bold text-[var(--bts-text-primary)]">{a.nameMissingTitle}</p>
                         <p className="text-[11px] text-[var(--bts-text-muted)] leading-relaxed">{a.nameMissingBody}</p>
                     </div>
                 )}
-                <AccessStatusLine />
-                <BetaAccessRequest />
-                {/* תמיכה: מחובר, מייל מאומת, לא מושעה. לא תלוי בגישה ללומדה. */}
-                {canUseSupport(access.status) && (
-                    // פעולה בולטת יותר מהיציאה: גוון המותג, אייקון ורוחב מלא.
-                    <Link
-                        href={supportHref}
-                        className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg border border-[color-mix(in_oklab,var(--bts-brand-primary)_55%,transparent)] bg-[color-mix(in_oklab,var(--bts-brand-primary)_10%,transparent)] px-2.5 py-2 text-center text-xs font-bold text-[var(--bts-text-primary)] no-underline transition-colors hover:bg-[color-mix(in_oklab,var(--bts-brand-primary)_18%,transparent)] motion-reduce:transition-none"
-                    >
-                        <LifeBuoy size={16} aria-hidden className="shrink-0 text-[var(--bts-brand-primary-strong)]" />
-                        {t.chrome.support.entry}
-                    </Link>
-                )}
+                {/* גישה: מצב הגישה (טקסט, בקו ההתחלה של ה-Pulse; מושג נפרד מהשליטה). תשובה שלא נקראה היא
+                    הפעולה הראשית, בשורה משלה מיד אחריו (מובילה לבקשות שלי, עם המקור שנשמר). */}
+                <div className="space-y-2 empty:hidden">
+                    <AccessStatusLine />
+                    <BetaAccessRequest />
+                    {hasUnread && (
+                        <Link href={supportHomeHref(supportOrigin(pathname, carriedFrom))} className={replyLinkClass}>
+                            <MessageSquare size={16} aria-hidden className="shrink-0 text-[var(--bts-status-caution)]" />
+                            {s.newReplies(unreadReplies)}
+                        </Link>
+                    )}
+                </div>
                 {isAdmin && (
                     <Link href="/behind-the-scenes-ai/admin" className={`${buttonClass} block text-center no-underline`}>{a.adminLink}</Link>
                 )}
@@ -363,19 +419,33 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
                         </div>
                     </div>
                 )}
-                {/* פעולה משנית: בלי מסגרת, אבל אותו יעד לחיצה (44px). האייקון מתהפך ב-RTL כדי שהחץ יצביע החוצה.
-                    justify-end לוגי: בצד הנגדי לטקסט (שמאל ב-RTL, ימין ב-LTR). */}
-                <div className="flex justify-end">
-                    <button
-                        type="button"
-                        className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-2 text-[11px] font-bold text-[var(--bts-text-muted)] transition-colors hover:bg-[var(--bts-sub-fill-soft)] hover:text-[var(--bts-text-primary)] disabled:opacity-50 motion-reduce:transition-none"
-                        disabled={busy}
-                        onClick={() => userId && void signOutAndForget(userId)}
-                    >
-                        <LogOut size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
-                        {a.signOut}
-                    </button>
-                </div>
+                {/* שורת פעולות אחת: העזרה תלוית ההקשר בתחילת השורה (start לוגי; תמיכה: מחובר, מייל מאומת, לא
+                    מושעה), והיציאה בסופה (ms-auto, end לוגי), שקטה ובלי מסגרת. -me-2 מיישר את תווית היציאה לקצה
+                    הטקסט (מקזז את הריפוד הפנימי שלה). כשאין מקום (תווית ארוכה), היציאה יורדת לשורה הבאה ונשארת
+                    בקצה; שום טקסט לא נחתך. בלי שם שמור, היציאה נשארת בשורת המייל שלמטה. */}
+                {(supportAllowed || fullName !== null) && (
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        {supportAllowed && (
+                            <Link href={help.href} className={helpLinkClass}>
+                                <LifeBuoy size={16} aria-hidden className="shrink-0 text-[var(--bts-brand-primary-strong)]" />
+                                {helpLabel}
+                            </Link>
+                        )}
+                        {fullName !== null && <div className="-me-2 ms-auto flex">{signOutButton}</div>}
+                    </div>
+                )}
+                {/* בלי שם שמור: המייל הוא הזהות הגלויה של החשבון, בשורה אחת עם היציאה. השוליים השליליים של
+                    היציאה (-my-1.5) משאירים יעד לחיצה של 44px בלי להגביה את השורה. האייקון מתהפך ב-RTL. */}
+                {fullName === null && (
+                    <div className="flex items-center justify-between gap-2">
+                        <p className="min-w-0 truncate text-[11px] leading-relaxed text-[var(--bts-text-faint)]">
+                            {a.signedInAs}{" "}
+                            <Mail size={11} aria-hidden className="me-1 inline-block shrink-0 align-[-1px]" />
+                            <bdi dir="ltr" className="font-bold text-[var(--bts-text-muted)]">{session.user.email}</bdi>
+                        </p>
+                        {signOutButton}
+                    </div>
+                )}
             </>
         );
     } else if (sentTo) {
@@ -448,17 +518,28 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
     }
 
     return (
-        <details open={defaultOpen || undefined} className="mt-2 pt-0.5 border-t border-[var(--bts-sub-rule)]" dir={dir}>
-            {/* שורה אחת: שם ארוך נחתך חזותית בלבד בתוך ה-bdi, לפי כיוון השם עצמו (תחילתו נשמרת),
-                והשם המלא נשאר בשם הנגיש של ה-summary. */}
-            <summary className="cursor-pointer truncate py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--bts-text-faint)] hover:text-[var(--bts-text-secondary)]">
-                {session && fullName ? (
-                    <span className="inline-flex max-w-[calc(100%-1rem)] items-center gap-1 align-bottom">
-                        <span className="shrink-0">{a.summarySignedIn}</span>{" "}
-                        <UserRound size={12} aria-hidden="true" className="shrink-0" />{" "}
-                        <bdi className="min-w-0 truncate normal-case tracking-normal leading-none text-[11px] text-[var(--bts-text-secondary)]">{fullName}</bdi>
+        <details open={defaultOpen || undefined} onToggle={(e) => setOpen(e.currentTarget.open)} className="mt-2 pt-0.5 border-t border-[var(--bts-sub-rule)]" dir={dir}>
+            {session ? (
+                // מחובר: Learner Pulse ושם. מכווץ: שורת זהות בלבד (סימן, שם, חץ), וספירת המבדקים רק לקורא
+                // המסך, כי הסימן מציג אותה חזותית. פתוח: הספירה גם כטקסט גלוי. summary מקורי (מקלדת וקורא
+                // מסך כרגיל), עם חץ משלו במקום הסמן. הסימן והחץ לא מתכווצים; שם ארוך נחתך חזותית בלבד,
+                // והשם המלא נשאר בשם הנגיש. בלי שם (עוד נטען, או משתמש ותיק) הכותרת כללית, והמייל בפאנל.
+                <summary className={`flex min-h-[44px] cursor-pointer list-none items-center py-1.5 text-start [&::-webkit-details-marker]:hidden ${open ? "gap-3" : "gap-2.5"}`}>
+                    <LearnerPulse passed={passed} total={TOTAL_CHAPTER_QUIZZES} unread={supportAllowed && unreadReplies > 0} open={open} />
+                    <span className="min-w-0 flex-1">
+                        <span className="sr-only">{a.summarySignedIn} </span>
+                        <bdi className={`block truncate font-bold leading-snug text-[var(--bts-text-primary)] ${open ? "text-sm" : "text-[13px]"}`}>{fullName || a.title}</bdi>
+                        {/* אותו טקסט בשני המצבים: גלוי בפאנל הפתוח (שורה שמורה גם בזמן הטעינה), ולקורא מסך בלבד במכווץ. */}
+                        <span className={open ? "block mt-1 min-h-[1lh] text-xs leading-snug text-[var(--bts-text-muted)]" : "sr-only"}>
+                            {passed !== null && <> {a.pulseMastery(passed, TOTAL_CHAPTER_QUIZZES)}</>}
+                        </span>
+                        {supportAllowed && unreadReplies > 0 && <span className="sr-only"> {s.unread}</span>}
                     </span>
-                ) : ready && !session ? (
+                    <ChevronDown size={16} aria-hidden className={`shrink-0 text-[var(--bts-text-faint)] transition-transform duration-200 motion-reduce:transition-none ${open ? "rotate-180" : ""}`} />
+                </summary>
+            ) : (
+            <summary className="cursor-pointer truncate py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--bts-text-faint)] hover:text-[var(--bts-text-secondary)]">
+                {ready ? (
                     // אורח: המצב (אורח) והפעולה (התחברות / יצירת חשבון) מוצגים בנפרד.
                     <span className="inline-flex max-w-[calc(100%-1rem)] items-center gap-1.5 align-bottom">
                         <UserRound size={12} aria-hidden="true" className="shrink-0" />
@@ -468,10 +549,14 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
                     </span>
                 ) : a.title}
             </summary>
-            <div className="pt-3 space-y-3 text-start">
+            )}
+            {/* מחובר: מרווחים צפופים יותר, כי הפאנל יושב בכותרת הסרגל שאינה נגללת. */}
+            <div className={`${session ? "pt-2 space-y-3" : "pt-3 space-y-3"} text-start`}>
                 {body}
                 {session && alert && <AuthAlert {...alert} />}
-                <p id={statusId} aria-live="polite" className="text-xs text-[var(--bts-text-secondary)] leading-relaxed">
+                {/* מחובר: שורת הסטטוס הריקה היא הילד האחרון, ו-space-y משאיר מעליה רווח. כשהיא ריקה הרווח מבוטל
+                    (היא נשארת ב-DOM, כדי שהודעה חדשה תוקרא). */}
+                <p id={statusId} aria-live="polite" className={`${session ? "empty:-mt-3" : ""} text-xs text-[var(--bts-text-secondary)] leading-relaxed`}>
                     {busy ? a.working : message}
                 </p>
             </div>

@@ -142,6 +142,25 @@ export function supportHomeHref(from?: string | null): string {
     return route ? `${SUPPORT_HOME}?${new URLSearchParams({ from: route })}` : SUPPORT_HOME;
 }
 
+export type SupportAction = { label: "chapter" | "intro" | "generic"; href: string };
+
+/**
+ * פעולת העזרה בפאנל החשבון. עם גישה פעילה (active), בעמוד המבוא או בעמוד פרק (לפי רשימת הפרקים
+ * של הלומדה): בקשת עזרה חדשה שהעמוד הוא המקור שלה. בכל עמוד או מצב אחר: עמוד הבית של התמיכה,
+ * עם המקור שנשמר (העמוד הנוכחי, או ?from= שעמוד תמיכה כבר נושא).
+ */
+export function supportAction<C extends { id: number; href?: string }>(
+    pathname: string | null,
+    carriedFrom: string | null,
+    chapters: readonly C[],
+    active: boolean,
+): SupportAction {
+    const origin = supportOrigin(pathname, carriedFrom);
+    const chapter = active ? chapters.find((c) => c.href === pathname) : undefined;
+    if (chapter && origin === pathname) return { label: chapter.id === 0 ? "intro" : "chapter", href: supportNewHref("help", origin) };
+    return { label: "generic", href: supportHomeHref(origin) };
+}
+
 /** קישור לבקשה חדשה, עם סוג ונתיב מקור אופציונליים (שניהם מנוקים שוב בעמוד). */
 export function supportNewHref(kind?: SupportKind, from?: string | null): string {
     const params = new URLSearchParams();

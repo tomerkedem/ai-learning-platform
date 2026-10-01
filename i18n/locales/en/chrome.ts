@@ -5,7 +5,6 @@ import { chrome as heChrome } from '../he/chrome';
 export const chrome: typeof heChrome = {
     backToCatalog: 'Back to course catalog',
     tableOfContents: 'Contents',
-    courseProgress: 'Course progress',
     authorName: 'Tomer Kedem',
     authorRole: 'Course author',
     byAuthor: 'By Tomer Kedem',
@@ -148,6 +147,7 @@ export const chrome: typeof heChrome = {
         haveAccount: 'Already have an account?',
         summarySignedOut: 'Sign in / Create account',
         summarySignedIn: 'Signed in:',
+        pulseMastery: (passed: number, total: number) => `${passed} of ${total} quizzes`,
         signOut: 'Sign out',
         signedInAs: 'Signed in as',
         working: 'One moment...',
@@ -188,6 +188,7 @@ export const chrome: typeof heChrome = {
         errorEmailRateLimit: 'Too many emails were sent recently, so we can\'t send another one right now. Try again in about an hour. If you already received an email from us, you can use the link in it.',
         errorRateLimit: 'Too many attempts in a short time. Wait a few minutes and try again.',
         errorAccountExists: 'We can\'t create an account with this address. If you already have an account, sign in or reset your password.',
+        errorEmailRejected: 'We can\'t send a message to this email address. Check that the address is correct and try again.',
         errorNetwork: 'We couldn\'t reach the server. Check your internet connection and try again.',
         linkErrorTitle: 'This email link is no longer valid',
         linkErrorBody: 'It may have expired or already been used. If you already confirmed your email address, just sign in. To reset your password, request a new link with "Forgot your password?".',
@@ -267,6 +268,9 @@ export const chrome: typeof heChrome = {
         started: (date: string) => `Opened: ${date}`,
         lastActivity: (date: string) => `Last activity: ${date}`,
         unread: 'New reply',
+        newReplies: (n: number) => (n === 1 ? 'New reply waiting' : `${n} new replies waiting`),
+        helpChapter: 'Help with this chapter',
+        helpIntro: 'Help with the introduction',
         statusLabel: 'Status',
         kinds: {
             problem: { action: 'Report a problem', noun: 'Problem report', hint: 'Something in the course does not work as you expected.' },

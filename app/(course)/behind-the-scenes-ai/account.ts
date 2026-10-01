@@ -411,6 +411,23 @@ export async function loadFullName(userId: string): Promise<string | null> {
     return name;
 }
 
+/**
+ * מספר בקשות התמיכה עם תשובה מהצוות שעוד לא נקראה (התראה support_reply שלא סומנה כנקראה;
+ * יש לכל היותר אחת לבקשה). שינוי סטטוס (support_status) אינו תשובה ואינו נספר. RLS: רק
+ * ההתראות של המשתמש עצמו. נקרא בכל טעינה של הפאנל, בלי realtime. זורק בשגיאת רשת.
+ */
+export async function loadUnreadSupportReplies(userId: string): Promise<number> {
+    if (!supabase) return 0;
+    const { count, error } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .eq("type", "support_reply")
+        .is("read_at", null);
+    if (error) throw error;
+    return count ?? 0;
+}
+
 /** לתצוגה בלבד (קישור לעמוד הניהול). ההרשאה נבדקת בשרת ובמסד בכל פעולה. */
 export async function checkIsCourseAdmin(): Promise<boolean> {
     if (!supabase) return false;

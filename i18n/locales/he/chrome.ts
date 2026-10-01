@@ -8,7 +8,6 @@ export const chrome = {
     // סרגל צד
     backToCatalog: 'חזרה לקטלוג הלומדות',
     tableOfContents: 'תוכן העניינים',
-    courseProgress: 'התקדמות בלומדה',
     authorName: 'תומר קדם',
     authorRole: 'מחבר הלומדה',
     byAuthor: 'מאת תומר קדם',
@@ -168,6 +167,7 @@ export const chrome = {
         haveAccount: 'כבר יש לכם חשבון?',
         summarySignedOut: 'התחברות / יצירת חשבון',
         summarySignedIn: 'חשבון מחובר:',
+        pulseMastery: (passed: number, total: number) => `${passed} מתוך ${total} מבחנים`,
         signOut: 'התנתקות',
         signedInAs: 'מחוברים בתור',
         working: 'רגע...',
@@ -208,6 +208,7 @@ export const chrome = {
         errorEmailRateLimit: 'נשלחו לאחרונה יותר מדי מיילים, ולכן אי אפשר לשלוח מייל נוסף כרגע. נסו שוב בעוד כשעה. אם כבר קיבלתם מאיתנו מייל, אפשר להשתמש בקישור שבו.',
         errorRateLimit: 'היו יותר מדי ניסיונות בזמן קצר. המתינו כמה דקות ונסו שוב.',
         errorAccountExists: 'לא ניתן ליצור חשבון עם הכתובת הזו. אם כבר יש לכם חשבון, התחברו או אפסו את הסיסמה.',
+        errorEmailRejected: 'לא ניתן לשלוח הודעה לכתובת האימייל הזו. בדקו שהכתובת נכונה ונסו שוב.',
         errorNetwork: 'לא הצלחנו להתחבר לשרת. בדקו את החיבור לאינטרנט ונסו שוב.',
         linkErrorTitle: 'הקישור מהמייל כבר לא בתוקף',
         linkErrorBody: 'ייתכן שפג תוקפו או שכבר השתמשו בו. אם כבר אישרתם את כתובת המייל, פשוט התחברו. לאיפוס סיסמה, בקשו קישור חדש דרך "שכחתם את הסיסמה?".',
@@ -289,6 +290,9 @@ export const chrome = {
         started: (date: string) => `נפתחה: ${date}`,
         lastActivity: (date: string) => `פעילות אחרונה: ${date}`,
         unread: 'תשובה חדשה',
+        newReplies: (n: number) => (n === 1 ? 'תשובה חדשה מחכה לכם' : `${n} תשובות חדשות מחכות לכם`),
+        helpChapter: 'עזרה בפרק הפעיל',
+        helpIntro: 'עזרה במבוא',
         statusLabel: 'סטטוס',
         kinds: {
             problem: { action: 'דיווח על בעיה', noun: 'דיווח על בעיה', hint: 'משהו בלומדה לא עובד כמו שציפיתם.' },
