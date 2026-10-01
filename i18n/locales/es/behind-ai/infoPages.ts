@@ -96,12 +96,12 @@ export const infoPages: InfoPagesDict = {
             navTitle: 'Contacto',
             summary: 'Cómo comunicarte con el equipo del curso.',
             title: 'Contacto',
-            lead: 'Los datos de contacto oficiales del curso todavía no se han publicado. Mientras tanto, puede que la respuesta ya esté en las preguntas frecuentes.',
+            lead: 'Los estudiantes con la sesión iniciada pueden contactar con el equipo del curso directamente desde dentro del curso, en Ayuda y soporte. También puede que la respuesta ya esté en las preguntas frecuentes.',
             blocks: [
                 {
                     kind: 'placeholder',
-                    heading: 'Canal de contacto',
-                    decision: 'Definir el canal de contacto oficial (por ejemplo, una dirección de correo o un formulario), quién responde, el tiempo de respuesta esperado y si las consultas de accesibilidad y privacidad tienen un canal propio.',
+                    heading: 'Otros canales de contacto',
+                    decision: 'Definir un canal de contacto oficial para quienes no pueden iniciar sesión (por ejemplo, un invitado o una cuenta suspendida), quién responde y el tiempo de respuesta esperado, y si las consultas de accesibilidad, privacidad y asuntos legales tienen un canal propio. El soporte dentro del curso no es necesariamente el único canal para esas consultas.',
                 },
             ],
         },

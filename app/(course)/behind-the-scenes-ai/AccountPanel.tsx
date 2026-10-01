@@ -12,11 +12,12 @@
 import React, { useEffect, useId, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import Link from "next/link";
-import { CircleAlert, Eye, EyeOff, MailCheck, UserRound } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { CalendarClock, CircleAlert, Eye, EyeOff, LifeBuoy, LogOut, Mail, MailCheck, UserRound } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useT } from "@/i18n/useT";
 import { useCourseAccess } from "./_access/CourseAccessContext";
 import { BetaAccessRequest } from "./_access/BetaAccessRequest";
+import { canUseSupport, supportHomeHref, supportOrigin } from "./support/supportShared";
 import type { Dictionary } from "@/i18n/dictionary";
 import { LOCALES } from "@/i18n/config";
 import { getAllRecords, MASTERY_UPDATED_EVENT } from "./masteryProgress";
@@ -78,8 +79,8 @@ const buttonClass = "flex-1 rounded-lg border border-[var(--bts-border)] bg-[var
 const inputClass = "w-full rounded-lg border border-[var(--bts-border)] bg-[var(--bts-sub-fill)] px-2.5 py-2 text-base text-[var(--bts-text-primary)] aria-[invalid=true]:border-[var(--bts-status-danger)]";
 const labelClass = "block text-xs font-bold text-[var(--bts-text-secondary)]";
 
-/** שגיאה בולטת אך לא תוקפנית: אייקון, כותרת וגוף, ו-role="alert" שמוקרא מיד. */
-function AuthAlert({ title, body }: { title?: string; body: string }) {
+/** שגיאה בולטת אך לא תוקפנית: אייקון, כותרת וגוף, ו-role="alert" שמוקרא מיד. משמש גם בתמיכה. */
+export function AuthAlert({ title, body }: { title?: string; body: string }) {
     return (
         <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-[var(--bts-status-danger)]/50 bg-[color-mix(in_oklab,var(--bts-status-danger)_9%,transparent)] p-3 text-start">
             <CircleAlert size={18} aria-hidden className="mt-0.5 shrink-0 text-[var(--bts-status-danger)]" />
@@ -91,8 +92,8 @@ function AuthAlert({ title, body }: { title?: string; body: string }) {
     );
 }
 
-/** שגיאת שדה: אייקון וטקסט (לא צבע בלבד), מקושרת לשדה דרך aria-describedby. */
-function FieldError({ id, text }: { id: string; text?: string }) {
+/** שגיאת שדה: אייקון וטקסט (לא צבע בלבד), מקושרת לשדה דרך aria-describedby. משמש גם בתמיכה. */
+export function FieldError({ id, text }: { id: string; text?: string }) {
     if (!text) return null;
     return (
         <p id={id} className="mt-1 flex items-start gap-1 text-xs font-semibold leading-snug text-[var(--bts-status-danger)]">
@@ -148,7 +149,14 @@ function AccessStatusLine() {
         : access.status === "unconfirmed" ? x.accessUnconfirmed
         : null;
     if (!text) return null;
-    return <p className="text-[11px] font-bold text-[var(--bts-text-secondary)] leading-relaxed">{text}</p>;
+    // אייקון לוח שנה רק לשורה שיש בה תאריך (גישה פעילה עד / הסתיימה ב-).
+    const dated = access.status === "active" || access.status === "expired";
+    return (
+        <p className="flex items-start gap-1.5 text-[11px] font-bold text-[var(--bts-text-secondary)] leading-relaxed">
+            {dated && <CalendarClock size={13} aria-hidden className="mt-[0.15rem] shrink-0" />}
+            <span className="min-w-0">{text}</span>
+        </p>
+    );
 }
 
 /** defaultOpen: פתוח מראש (בשער התצוגה המקדימה של המבוא), כדי שההרשמה וההתחברות יהיו גלויות מיד. */
@@ -156,6 +164,9 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
     const { dir, locale, t } = useT();
     const a = t.chrome.account;
     const { session, ready } = useAuthState();
+    const access = useCourseAccess();
+    // נתיב המקור לתמיכה: העמוד הנוכחי בלומדה, או המקור שעמוד תמיכה כבר נושא.
+    const supportHref = supportHomeHref(supportOrigin(usePathname(), useSearchParams().get("from")));
     const userId = session?.user.id;
     const [busy, setBusy] = useState(false);
     const [message, setMessage] = useState("");
@@ -314,9 +325,10 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
     if (session) {
         body = (
             <>
+                {/* השם כבר מופיע בכותרת הפאנל. בלי שם (משתמש ותיק) הכותרת כללית, ולכן המייל מזהה את החשבון. */}
                 <p className="text-[11px] text-[var(--bts-text-muted)] leading-relaxed">
-                    {a.signedInAs}{" "}
-                    {fullName && <><bdi className="font-bold text-[var(--bts-text-secondary)]">{fullName}</bdi><br /></>}
+                    {!fullName && <>{a.signedInAs}{" "}</>}
+                    <Mail size={12} aria-hidden className="me-1 inline-block shrink-0 align-[-2px]" />
                     <bdi dir="ltr" className={fullName ? "" : "font-bold text-[var(--bts-text-secondary)]"}>{session.user.email}</bdi>
                 </p>
                 {fullName === null && (
@@ -327,6 +339,17 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
                 )}
                 <AccessStatusLine />
                 <BetaAccessRequest />
+                {/* תמיכה: מחובר, מייל מאומת, לא מושעה. לא תלוי בגישה ללומדה. */}
+                {canUseSupport(access.status) && (
+                    // פעולה בולטת יותר מהיציאה: גוון המותג, אייקון ורוחב מלא.
+                    <Link
+                        href={supportHref}
+                        className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg border border-[color-mix(in_oklab,var(--bts-brand-primary)_55%,transparent)] bg-[color-mix(in_oklab,var(--bts-brand-primary)_10%,transparent)] px-2.5 py-2 text-center text-xs font-bold text-[var(--bts-text-primary)] no-underline transition-colors hover:bg-[color-mix(in_oklab,var(--bts-brand-primary)_18%,transparent)] motion-reduce:transition-none"
+                    >
+                        <LifeBuoy size={16} aria-hidden className="shrink-0 text-[var(--bts-brand-primary-strong)]" />
+                        {t.chrome.support.entry}
+                    </Link>
+                )}
                 {isAdmin && (
                     <Link href="/behind-the-scenes-ai/admin" className={`${buttonClass} block text-center no-underline`}>{a.adminLink}</Link>
                 )}
@@ -340,7 +363,19 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
                         </div>
                     </div>
                 )}
-                <button type="button" className={buttonClass} disabled={busy} onClick={() => userId && void signOutAndForget(userId)}>{a.signOut}</button>
+                {/* פעולה משנית: בלי מסגרת, אבל אותו יעד לחיצה (44px). האייקון מתהפך ב-RTL כדי שהחץ יצביע החוצה.
+                    justify-end לוגי: בצד הנגדי לטקסט (שמאל ב-RTL, ימין ב-LTR). */}
+                <div className="flex justify-end">
+                    <button
+                        type="button"
+                        className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-2 text-[11px] font-bold text-[var(--bts-text-muted)] transition-colors hover:bg-[var(--bts-sub-fill-soft)] hover:text-[var(--bts-text-primary)] disabled:opacity-50 motion-reduce:transition-none"
+                        disabled={busy}
+                        onClick={() => userId && void signOutAndForget(userId)}
+                    >
+                        <LogOut size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
+                        {a.signOut}
+                    </button>
+                </div>
             </>
         );
     } else if (sentTo) {

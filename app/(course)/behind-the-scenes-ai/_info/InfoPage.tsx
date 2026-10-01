@@ -4,6 +4,7 @@
 // מבחן הסיום, ועמודת קריאה אחת: כותרת, בלוקי תוכן מהמילון, ובסוף חזרה ללמידה ושאר הדפים.
 // בלוק placeholder הוא טיוטה עריכתית מסומנת (data-editorial-placeholder), לא נוסח סופי.
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { useReducedMotion } from "@/components/reducedMotion";
 import {
@@ -132,7 +133,8 @@ function Block({ block, id, placeholderLabel }: { block: InfoBlock; id: string; 
     );
 }
 
-export function InfoPage({ page }: { page: InfoPageKey }) {
+/** children: תוכן חי לפני הבלוקים (בדף יצירת קשר: הכניסה לתמיכה), שאינו חלק מההקראה. */
+export function InfoPage({ page, children }: { page: InfoPageKey; children?: ReactNode }) {
     const { dir, t, locale } = useT();
     const ip = t.behindAi.infoPages;
     const content = ip.pages[page];
@@ -222,6 +224,7 @@ export function InfoPage({ page }: { page: InfoPageKey }) {
                     </header>
 
                     <div className="space-y-12 md:space-y-14">
+                        {children}
                         {content.blocks.map((block, i) => (
                             <Block key={`${page}-${i}`} block={block} id={`${page}-block-${i}`} placeholderLabel={ip.placeholderLabel} />
                         ))}

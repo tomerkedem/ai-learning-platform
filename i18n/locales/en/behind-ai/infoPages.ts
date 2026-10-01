@@ -96,12 +96,12 @@ export const infoPages: InfoPagesDict = {
             navTitle: 'Contact',
             summary: 'How to reach the course team.',
             title: 'Contact',
-            lead: 'Official contact details for the course have not been published yet. Until then, the answer may already be in the FAQ.',
+            lead: 'Signed-in learners can contact the course team directly from inside the course, under Help and support. The answer may also already be in the FAQ.',
             blocks: [
                 {
                     kind: 'placeholder',
-                    heading: 'Contact channel',
-                    decision: 'Set the official contact channel (for example an email address or a form), who answers, the expected response time, and whether accessibility and privacy requests have a separate channel.',
+                    heading: 'Other contact channels',
+                    decision: 'Set an official contact channel for people who cannot sign in (for example a guest or a suspended account), who answers and the expected response time, and whether accessibility, privacy and legal requests have a separate channel. Support inside the course is not necessarily the only channel for such requests.',
                 },
             ],
         },

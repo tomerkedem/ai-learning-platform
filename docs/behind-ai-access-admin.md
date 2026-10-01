@@ -248,6 +248,83 @@ recorded against text the learner did not see.
 Database tests: `supabase/tests/legal_documents.sql` (development project only; everything is
 rolled back).
 
+## In-app support and notifications
+
+Migrations `20261002100000_notifications`, `20261002110000_support_tickets` and
+`20261002120000_support_learner_route`, all applied to the development project. Database tests: `supabase/tests/support.sql` (development project only;
+everything is rolled back). Learner pages: `/behind-the-scenes-ai/support`,
+`/behind-the-scenes-ai/support/new` and `/behind-the-scenes-ai/support/[id]` (noindex, not in the
+sitemap). There is no admin support page yet.
+
+Who can use it: a signed-in learner with a confirmed email who is not suspended. Course access is
+not required (no-grant, expired, revoked and active learners can all use it). Guests cannot, and
+a suspended account cannot sign in, so it has no in-app channel.
+
+### Tables
+
+- `public.support_tickets`: one request. `kind` (`problem`, `help`, `feedback`), `status` (the
+  internal workflow state: `new`, `open`, `in_progress`, `waiting_on_learner`, `resolved`,
+  `closed`), `locale` (the course language when it was opened), `route` (a validated course
+  pathname or null; no query string, hash or host), `created_at`, `last_activity_at` (learner-visible
+  events only), `awaiting_team_since` (the first learner message the team has not answered yet),
+  `status_changed_at`, `status_changed_by`.
+- `public.support_messages`: the conversation. `author_role` (`learner` or `admin`),
+  `author_user_id`, `body` (1 to 4000 characters), `created_at`. Messages cannot be edited or
+  deleted, except by a cascade from deleting the ticket or the account.
+- `public.notifications`: user notifications (today `support_reply` and `support_status`). A row
+  stores a type, a subject id and learner-safe parameters (the request kind and the
+  learner-facing status), never text. At most one unread row per user, type and subject; a repeat
+  updates it and increments `count`.
+
+Learners have no privilege on the two support tables. They read their own notifications directly
+(RLS) and can only mark them read. Every other read and write goes through the functions below,
+which take identity from the session. `list_my_support_tickets` and `get_my_support_ticket` also
+return the request's own `route` (added by `20261002120000_support_learner_route`), which the
+learner pages show as "Sent from Chapter N: title" using the course chapter list; no other internal
+field is returned to learners.
+
+### Learner-facing status
+
+The learner never receives the internal status. `private.support_learner_status(status)` is the
+only mapping: `new`, `open` and `in_progress` show as `open`; `waiting_on_learner` as
+`waiting_for_you`; `resolved` and `closed` unchanged. A learner reply to `resolved` or
+`waiting_on_learner` sets `open`; a `closed` request accepts no replies. Admin replies are shown
+to learners as the course team, never with the admin's identity.
+
+### Functions
+
+| Learner (`authenticated`) | Admin (refuses non-admins with `42501`) |
+| --- | --- |
+| `create_support_ticket(kind, body, locale, route)` | `admin_support_counts()` |
+| `add_support_message(ticket_id, body)` | `admin_list_support_tickets(view, kind, query, limit, offset)` |
+| `list_my_support_tickets(limit, offset)` | `admin_get_support_ticket(ticket_id)` |
+| `get_my_support_ticket(ticket_id)` | `admin_list_support_messages(ticket_id)` |
+| `list_my_support_messages(ticket_id)` | `admin_reply_support_ticket(ticket_id, body, status)` |
+| `mark_notifications_read(subject_id)` | `admin_set_support_status(ticket_id, status)` |
+
+An admin can read their own request as a learner but cannot reply to it or change its status as
+an admin (`BT105`). Admin attention is derived (a request awaits the team and is not resolved or
+closed), not stored, and excludes the caller's own requests.
+
+Error codes: `42501` not allowed; `22023` invalid input; `BT101` too many active requests;
+`BT102` daily message limit; `BT103` request closed; `BT104` request not found; `BT105` an admin
+cannot handle their own request.
+
+### Abuse limits
+
+Defined once, in `private.support_limits()`: at most 10 active (not resolved or closed) requests
+per learner, 30 learner messages per rolling 24 hours (a new request counts as one), and 4000
+characters per message. Admins have no limit. To change a value, replace that function in a new
+migration; the message length is also enforced by the `support_messages_body_valid` constraint
+through `private.support_body_ok`, and existing rows are not revalidated.
+
+### Account deletion (interim V1 behavior)
+
+Support tickets, messages and notifications are deleted with the account (`ON DELETE CASCADE`),
+like the rest of the account data. Admin actor ids on messages and status changes have no foreign
+key, so messages an admin wrote stay when the admin account is removed. This is an interim choice
+that needs review before commercial launch.
+
 ## Test learners (development project only)
 
 `supabase/dev/test-learners.sql` creates exactly three labeled learners for trying the admin

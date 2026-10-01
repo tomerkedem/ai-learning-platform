@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { useT } from "@/i18n/useT";
 import type { Locale } from "@/i18n/config";
@@ -13,7 +14,8 @@ const COPY: Record<Locale, { title: string; body: string; retry: string; home: s
   ja: { title: "問題が発生しました", body: "予期しないエラーが発生しました。保存済みの進捗は失われていません。", retry: "もう一度試す", home: "ホームへ戻る" },
 };
 
-export default function Error({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+// children: פעולה נוספת בשורת הכפתורים (בלומדה: דיווח על הבעיה, app/(course)/error.tsx).
+export default function Error({ reset, children }: { error: Error & { digest?: string }; reset: () => void; children?: ReactNode }) {
   const { locale, dir } = useT();
   const c = COPY[locale];
   return (
@@ -25,6 +27,7 @@ export default function Error({ reset }: { error: Error & { digest?: string }; r
           {c.retry}
         </button>
         <Link href="/" className="rounded-lg border border-current px-5 py-2 font-semibold">{c.home}</Link>
+        {children}
       </div>
     </main>
   );
