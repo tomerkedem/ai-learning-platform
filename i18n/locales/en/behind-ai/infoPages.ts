@@ -176,7 +176,7 @@ export const infoPages: InfoPagesDict = {
                     items: [
                         { icon: 'key', title: 'Name and email address', body: 'To create an account you enter your full name and email address. They identify your account. Your name is shown with your email address in your account and to the course administrators who manage beta access. After registration, only course administrators can change your name; contact the course team to change it.' },
                         { icon: 'save', title: 'Progress and language', body: 'While you are signed in, your quiz results and language choice are stored in your account so they are available on your other devices.' },
-                        { icon: 'clock', title: 'Beta access', body: 'Whether your account has approved beta access, when it was approved and when it ends, and a record of which administrator approved or revoked it and when.' },
+                        { icon: 'clock', title: 'Beta access', body: 'Whether your account has approved beta access, when it was approved and when it ends, and a record of which administrator approved or revoked it and when. If you request beta access, the request and its status are stored, together with a record of your acceptance of the Beta Terms: which version and which language version of the text you were shown, and when. No IP address or browser details are stored with that record.' },
                     ],
                 },
                 {
@@ -201,7 +201,7 @@ export const infoPages: InfoPagesDict = {
                 {
                     kind: 'placeholder',
                     heading: 'Full privacy policy',
-                    decision: 'Requires legal review: the identity and contact details of the party responsible for the data, how long account data (name, email address, progress, language choice and beta-access records) is kept and on what legal basis, how to request access or deletion, what the hosting and authentication providers log (such as IP addresses and request logs) and for how long, third parties and processors, and applicable law.',
+                    decision: 'Requires legal review: the identity and contact details of the party responsible for the data, how long account data (name, email address, progress, language choice, beta-access records and Beta Terms acceptance records, including whether they are kept after an account is deleted) is kept and on what legal basis, how to request access or deletion, what the hosting and authentication providers log (such as IP addresses and request logs) and for how long, third parties and processors, and applicable law.',
                 },
             ],
         },

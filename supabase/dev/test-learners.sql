@@ -49,11 +49,11 @@ begin
                 jsonb_build_object('sub', v_id::text, 'email', r.email, 'email_verified', true),
                 'email', null, now(), now());
         if r.grant_state = 'active' then
-            insert into public.course_access_grants (user_id, kind, approved_at, expires_at, note)
-            values (v_id, 'beta', now(), now() + interval '1 month', 'TEST seed: active grant');
+            insert into public.course_access_grants (user_id, kind, approved_at, expires_at, note, basis)
+            values (v_id, 'beta', now(), now() + interval '1 month', 'TEST seed: active grant', 'admin_override');
         elsif r.grant_state = 'expired' then
-            insert into public.course_access_grants (user_id, kind, approved_at, expires_at, note)
-            values (v_id, 'beta', now() - interval '40 days', now() - interval '10 days', 'TEST seed: expired grant');
+            insert into public.course_access_grants (user_id, kind, approved_at, expires_at, note, basis)
+            values (v_id, 'beta', now() - interval '40 days', now() - interval '10 days', 'TEST seed: expired grant', 'admin_override');
         end if;
     end loop;
 end $$;

@@ -38,20 +38,7 @@ test("every protected page is gated by openCourseContent with no lower access le
     assert.match(gate, /if \(!hasCourseAccess\(access\.status\)\) return \{ open: false, access \};/);
 });
 
-// ── בקשת בטא: אין גרסת הסכמה כל עוד בתנאים יש טיוטה (בשום שפה), ולהפך ──
-test("beta requests stay disabled while the Beta Terms contain a draft placeholder", async () => {
-    const { BETA_TERMS_VERSION } = await import("./access.ts");
-    const drafts: string[] = [];
-    for (const l of ["he", "en", "es", "ru", "ar", "ja"]) {
-        const { infoPages } = await import(`../../../../i18n/locales/${l}/behind-ai/infoPages.ts`);
-        for (const b of infoPages.pages.betaTerms.blocks) if (b.kind === "placeholder") drafts.push(`${l}: ${b.heading}`);
-    }
-    if (drafts.length) assert.equal(BETA_TERMS_VERSION, null, `version set while drafts remain: ${drafts.join(", ")}`);
-    else assert.match(String(BETA_TERMS_VERSION), /^\d{4}-\d{2}-\d{2}(\.\d+)?$/);
-    // השרת חוסם גם כן, בלי קשר ללקוח.
-    const actions = readFileSync(join(COURSE, "_access", "betaActions.ts"), "utf8");
-    assert.match(actions, /if \(!BETA_TERMS_VERSION \|\| BETA_TERMS_HAVE_PLACEHOLDERS\) return "terms_unavailable";/);
-});
+// בקשת בטא ומסמכים משפטיים: legalDocuments.test.ts ו-supabase/tests/legal_documents.sql.
 
 // ── אורח: מצב (אורח) ופעולה (התחברות / יצירת חשבון) נפרדים, בכל שש השפות ──
 test("guest account summary shows the guest state and a separate sign-in / create-account action", () => {

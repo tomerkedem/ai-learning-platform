@@ -132,10 +132,12 @@ suspension and no active access can request beta access from the account panel o
 chapter. A request grants nothing.
 
 - **Submission** (`public.request_beta_access`, called by a server action) is checked in the
-  database: identity, confirmed email, not suspended, consent ticked, the current Beta Terms
-  version with a matching text fingerprint, and no active access. A unique index allows at most
-  one pending request per learner. The row stores the user, submission time, accepted terms
-  version and locale. Learners can read only their own requests and cannot write the table.
+  database: identity, confirmed email, not suspended, consent ticked, no active access, and a
+  Beta Terms acceptance (see Legal documents below). The acceptance and the request are recorded
+  in one transaction; if either is refused, neither is stored. A unique index allows at most one
+  pending request per learner. The request row points to its acceptance
+  (`beta_access_requests.acceptance_id`). Learners can read only their own requests and
+  acceptances and cannot write either table.
 - **Admin page**: "Pending beta requests only" lists pending requests, oldest first. For a
   learner with a pending request, the approve button approves the request
   (`admin_approve_beta_request`): it grants access through `admin_approve_beta` (same period
@@ -146,28 +148,105 @@ chapter. A request grants nothing.
   (migration `20260930075828_refuse_suspended_beta_approval`): it stays pending with no grant,
   and the page says to reactivate the account first. Manual approve, revoke and suspend work as before.
 
-### Beta Terms versions (submissions are disabled until one exists)
+## Legal documents and acceptances
 
-`public.beta_terms_versions` holds immutable snapshots of the Beta Terms page in all six
-locales, with a SHA-256 of the text the app shows. A trigger refuses any change or deletion, and
-refuses a snapshot that still contains a draft placeholder block.
+Migrations `20261001130000_legal_documents` and `20261001140000_legal_documents_hardening`, both
+applied to the development project. Replaces
+`beta_terms_versions` and the `BETA_TERMS_VERSION` constant. The database decides which version is current; the repository
+locale dictionaries remain the authoring source.
 
-**No version is registered today**, because the Beta Terms page still has placeholder blocks
+- **`legal_document_versions`**: one row per canonical version of `beta_terms`,
+  `terms_of_service` or `privacy_policy`, version format `YYYY-MM-DD.N`, at most one current
+  version per type. English is the canonical authoring locale (`canonical_locale`). A version can
+  be current only with a current translation in its canonical locale (deferred constraint
+  triggers, checked at commit). Flags: `requires_acceptance` and `material` (a material version
+  needs a new acceptance from anyone who accepted an earlier version;
+  `private.legal_acceptance_covers_current`). There is no `effective_at`: `is_current` alone
+  decides, and `published_at` records publication. Add a future-dated field only when the product
+  needs scheduled legal versions.
+- **Privacy Policy**: informational today because its published versions have
+  `requires_acceptance = false` (set in `scripts/legal-document-version.mjs`) and no acceptance
+  path exists for it. The schema itself does not forbid a future decision to require acceptance.
+- **`legal_document_translations`**: the exact legal body shown in one locale (JSON of the info
+  page `title`, `lead` and `blocks`; not `navTitle` or `summary`) and its SHA-256, checked by the
+  database. A translation correction is a new `revision` of the same version and locale. At most
+  one current revision per version and locale. A body with a placeholder block is refused.
+- Versions and translations cannot be changed (except `is_current`) or deleted.
+- **`legal_acceptances`**: user, canonical version, exact translation revision, locale,
+  `accepted_at` and `context` (`beta_access_request`). No IP address or User-Agent. Immutable.
+  Learners can read only their own rows. Created only inside `request_beta_access`, through the
+  internal `private.record_legal_acceptance`, which resolves the current version and translation
+  for the locale and refuses (BT002) when the hash the server sends does not match.
+- **Account deletion (temporary, pending a legal retention decision)**: acceptances are deleted
+  with the account, like all other account data. Changing this is a foreign-key change.
+- **Terms of Service**: the type exists, but there is no source text and no acceptance path.
+- **Publishing a new Beta Terms version never revokes or suspends an existing grant.**
+- **Pending requests after a material version (BT006)**: an admin cannot approve a pending
+  request whose acceptance no longer covers the current version (a material version was
+  published after it). A translation revision alone, or a non-material version, does not block
+  approval. The learner's panel asks them to read and accept the current terms again; that
+  records a new acceptance and attaches it to the same pending request (the earlier acceptance
+  stays as evidence). No acceptance is ever created by an admin.
+
+### Grant basis: request acceptance versus administrative override
+
+Every new grant records `course_access_grants.basis` (required by a trigger for new rows):
+
+- `beta_request`: created only by `admin_approve_beta_request`, from a pending request whose
+  acceptance covers the current terms. The request row links the grant (`grant_id`) and the
+  learner's acceptance (`acceptance_id`).
+- `admin_override`: created by a manual approval (`admin_approve_beta` from the admin page, or
+  `private.approve_beta_tester`). An administrative override, not learner consent: no
+  acceptance is recorded or linked.
+- Grants created before the hardening migration keep `basis = null` ("legacy"); their rows are
+  not modified and can still be revoked. This covers the four grandfathered test grants on the
+  development project.
+
+The audit row (`course_access_audit`, action `approve`) points to the grant by `grant_id`, so
+the basis of every audited approval is visible through the grant. The admin page shows
+"Administrative grant" or "Granted before grant types were recorded" for those grants
+(`admin_list_learners.access_grant_basis`).
+
+### Applying migrations (official Supabase CLI)
+
+Migrations are applied with the official Supabase CLI, run through `npx` (no global install and
+no package dependency). The repository is linked to the development project; the CLI keeps its
+link state in `supabase/.temp/`, which is git-ignored. Never insert or edit rows in
+`supabase_migrations.schema_migrations` by hand.
+
+1. `npx supabase login` (once per machine; your own terminal, browser sign-in).
+2. `npx --yes supabase link --project-ref cdwbcwafzohezvpushue` (development project only).
+3. `npx --yes supabase migration list --linked`: local and remote must match, with only the new
+   migration pending.
+4. `npx --yes supabase db push --dry-run`: must list exactly the new migration.
+5. `npx --yes supabase db push`.
+6. Run `supabase/tests/legal_documents.sql` on the development project (rolled back, leaves no
+   data).
+
+`20261001140000_legal_documents_hardening` was applied this way. The history entry for
+`20261001130000` was recorded before this workflow existed and stores only a pointer comment in
+`statements`; the CLI lists it as applied normally and `db push` treats it as applied.
+
+### Publishing (submissions are disabled until a Beta Terms version exists)
+
+**No version is published today**, because the Beta Terms page still has placeholder blocks
 (tester license, legal terms). Until then the learner sees an explanation instead of the
 consent form, and the server and database refuse every submission.
 
-To publish a version, after the final wording is approved and the placeholders are removed from
-all six locales:
+After the final wording is approved and the placeholders are removed from all six locales:
 
-1. `node scripts/beta-terms-version.mjs YYYY-MM-DD > snapshot.sql` (refuses while any placeholder
-   remains).
+1. New version: `node scripts/legal-document-version.mjs version beta_terms YYYY-MM-DD.N --material`
+   (or `--not-material`; this is a human decision). Translation correction of the current
+   version: `node scripts/legal-document-version.mjs revision beta_terms YYYY-MM-DD.N <locale>`.
+   Both refuse while any placeholder remains.
 2. Put the output in a new migration and apply it to the development project.
-3. Set `BETA_TERMS_VERSION` in `app/(course)/behind-the-scenes-ai/_access/access.ts` to the same
-   value.
 
-If the Beta Terms text changes later without a new version, the fingerprint no longer matches
-and submissions are refused, so a request is never recorded against text the learner did not
-see. Register a new version the same way.
+If the text in the repository changes without a new version or revision, its hash no longer
+matches, the consent form is hidden and submissions are refused, so an acceptance is never
+recorded against text the learner did not see.
+
+Database tests: `supabase/tests/legal_documents.sql` (development project only; everything is
+rolled back).
 
 ## Test learners (development project only)
 

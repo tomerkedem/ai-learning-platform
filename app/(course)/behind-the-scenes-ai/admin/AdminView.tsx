@@ -30,6 +30,11 @@ interface Learner {
     access_approved_at: string | null;
     access_expires_at: string | null;
     access_revoked_at: string | null;
+    /**
+     * בסיס ההרשאה האחרונה. beta_request = מבקשה עם הסכמה רשומה של הלומד; admin_override = הרשאה
+     * מנהלית ידנית, בלי הסכמה; legacy = מלפני שהבסיס נרשם; null = אין הרשאה.
+     */
+    access_grant_basis: "beta_request" | "admin_override" | "legacy" | null;
     last_action: "approve" | "revoke" | "rename" | "suspend" | "reactivate" | null;
     last_action_at: string | null;
     /** הבקשה האחרונה של הלומד לגישת בטא, אם יש. */
@@ -129,6 +134,8 @@ export default function AdminView() {
         if (error?.code === "BT004") return x.requestNotPending;
         // מושעה: שום הרשאה לא נוצרה או חודשה (ובקשה, אם יש, נשארת ממתינה). קודם מחזירים את החשבון.
         if (error?.code === "BT005") return x.requestSuspended;
+        // פורסמה גרסה מהותית אחרי ההסכמה שבבקשה: הבקשה נשארת ממתינה עד שהלומד יאשר שוב.
+        if (error?.code === "BT006") return x.requestTermsOutdated;
         if (error?.code === "42501") return x.requestNotAllowed;
         if (error) throw error;
         return x.approved(fmt(data as string));
@@ -324,6 +331,11 @@ export default function AdminView() {
                                                 : (l.access_status === "active" && remaining(l.access_expires_at)) || x.expired}
                                         </dd>
                                     </dl>
+                                )}
+                                {(l.access_grant_basis === "admin_override" || l.access_grant_basis === "legacy") && (
+                                    <p className="text-[11px] text-[var(--bts-text-faint)]">
+                                        {l.access_grant_basis === "admin_override" ? x.grantAdminOverride : x.grantLegacy}
+                                    </p>
                                 )}
                                 <p className="text-[11px] text-[var(--bts-text-faint)]">
                                     {x.registered(fmt(l.registered_at))}

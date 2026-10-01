@@ -3,8 +3,8 @@
 // ════════════════════════════════════════════════════════════════════════
 // בקשת גישת בטא ללומד מחובר, עם מייל מאומת, לא מושעה ובלי גישה פעילה. מוצג בפאנל החשבון
 // ובמסך הנעילה. מציג את מצב הבקשה האחרונה (ממתינה, אושרה, נדחתה), הסבר, קישור לתנאי הבטא
-// ותיבת הסכמה שאינה מסומנת מראש. כל עוד בדף התנאים יש טיוטות (או שאין גרסה רשומה) השליחה
-// כבויה ומוצג הסבר. אם מצב הבקשה לא נטען, המצב לא ידוע: מוצגת שגיאה עם ניסיון חוזר, בלי טופס
+// ותיבת הסכמה שאינה מסומנת מראש. השליחה פתוחה רק כשהשרת מאשר שבמסד יש גרסה נוכחית של התנאים
+// שהנוסח שלה בשפה הזו זהה למה שמוצג (getBetaTermsState); אחרת היא כבויה ומוצג הסבר. אם מצב הבקשה לא נטען, המצב לא ידוע: מוצגת שגיאה עם ניסיון חוזר, בלי טופס
 // ובלי הסבר הטיוטה. זו תצוגה בלבד: השרת והמסד אוכפים הכול בעצמם.
 // אין שימוש בתו "מקף ארוך" (em dash).
 // ════════════════════════════════════════════════════════════════════════
@@ -16,8 +16,7 @@ import { LOCALES } from "@/i18n/config";
 import { SpeakButton } from "@/components/ai-internals/SpeakButton";
 import { supabase, useAuthState } from "../account";
 import { useCourseAccess } from "./CourseAccessContext";
-import { BETA_TERMS_VERSION } from "./access";
-import { submitBetaRequest, type BetaRequestOutcome } from "./betaActions";
+import { getBetaTermsState, submitBetaRequest, type BetaRequestOutcome, type BetaTermsState } from "./betaActions";
 
 interface LatestRequest {
     status: "pending" | "approved" | "declined";
@@ -39,10 +38,11 @@ export function BetaAccessRequest() {
     const userId = session?.user.id;
     const eligible = !!supabase && !!session?.user.email_confirmed_at
         && (access.status === "no-grant" || access.status === "expired" || access.status === "revoked");
-    // השליחה פתוחה רק כשיש גרסה רשומה ובדף התנאים אין טיוטות (אותו מבנה בכל השפות).
-    const termsReady = !!BETA_TERMS_VERSION && !terms.blocks.some((b) => b.kind === "placeholder");
     const ids = useId();
     const [latest, setLatest] = useState<LatestRequest | null | undefined>(undefined);
+    // הגרסה הנוכחית במסד, ואם הנוסח המוצג בשפה הזו תואם לה. כשלון בבדיקה = לא מוכן (נכשלים סגור).
+    const [termsState, setTermsState] = useState<BetaTermsState>({ ready: false, version: null, reaccept: false });
+    const termsReady = termsState.ready;
     const [consent, setConsent] = useState(false);
     const [consentError, setConsentError] = useState(false);
     const [busy, setBusy] = useState(false);
@@ -55,6 +55,7 @@ export function BetaAccessRequest() {
     const load = useCallback(async (): Promise<boolean> => {
         if (!supabase) return false;
         let ok = false;
+        const termsPromise = getBetaTermsState(locale).catch(() => ({ ready: false, version: null, reaccept: false }));
         try {
             // RLS: רק הבקשות של המשתמש עצמו.
             const { data, error } = await supabase
@@ -70,9 +71,10 @@ export function BetaAccessRequest() {
         } catch {
             // שגיאת רשת: כמו שגיאה מהשרת.
         }
+        setTermsState(await termsPromise);
         setLoadFailed(!ok);
         return ok;
-    }, []);
+    }, [locale]);
 
     useEffect(() => {
         if (!eligible || !userId) return;
@@ -100,6 +102,8 @@ export function BetaAccessRequest() {
         : latest.status === "approved" ? x.requestApproved(fmt(latest.decided_at ?? latest.submitted_at))
         : x.requestDeclined(fmt(latest.decided_at ?? latest.submitted_at));
     const pending = latest?.status === "pending";
+    // בקשה ממתינה שהסכמתה כבר לא מכסה את התנאים הנוכחיים: הלומד מאשר שוב (אותה בקשה נשארת).
+    const reaccept = pending && termsState.reaccept;
 
     const outcomeText = (o: BetaRequestOutcome) => {
         switch (o) {
@@ -140,7 +144,8 @@ export function BetaAccessRequest() {
     const errorId = `${ids}-error`;
     const speech = [x.requestTitle, ...x.requestPoints,
         loadFailed ? x.requestLoadError : statusText,
-        loadFailed || pending || termsReady ? "" : x.requestTermsUnavailable]
+        !loadFailed && reaccept ? x.requestReaccept : "",
+        loadFailed || (pending && !reaccept) || termsReady ? "" : x.requestTermsUnavailable]
         .filter(Boolean).join(" ");
 
     return (
@@ -157,7 +162,7 @@ export function BetaAccessRequest() {
                 <Link href="/behind-the-scenes-ai/beta-terms" className="font-bold text-[var(--bts-text-secondary)] underline hover:text-[var(--bts-text-primary)]">
                     {terms.navTitle}
                 </Link>
-                {BETA_TERMS_VERSION && <span className="text-[var(--bts-text-faint)]"> ({x.termsVersion(BETA_TERMS_VERSION)})</span>}
+                {termsState.version && <span className="text-[var(--bts-text-faint)]"> ({x.termsVersion(termsState.version)})</span>}
             </p>
             {loadFailed ? (
                 <div className="rounded-lg border border-rose-500/40 px-2.5 py-2 space-y-2">
@@ -168,7 +173,10 @@ export function BetaAccessRequest() {
                     </button>
                 </div>
             ) : statusText && <p className="text-xs font-bold text-[var(--bts-text-secondary)] leading-relaxed">{statusText}</p>}
-            {!loadFailed && !pending && latest !== undefined && (termsReady ? (
+            {!loadFailed && reaccept && (
+                <p role="note" className="rounded-lg border border-amber-500/40 px-2.5 py-2 text-xs font-bold bts-tier-amber leading-relaxed">{x.requestReaccept}</p>
+            )}
+            {!loadFailed && (!pending || reaccept) && latest !== undefined && (termsReady ? (
                 <form onSubmit={submit} noValidate className="space-y-2">
                     <label className="flex min-h-[44px] items-start gap-2 text-xs text-[var(--bts-text-primary)] leading-relaxed">
                         <input

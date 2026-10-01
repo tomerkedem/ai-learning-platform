@@ -176,7 +176,7 @@ export const infoPages: InfoPagesDict = {
                     items: [
                         { icon: 'key', title: 'Nombre y correo electrónico', body: 'Para crear una cuenta escribes tu nombre completo y tu correo electrónico. Identifican tu cuenta. Tu nombre se muestra junto a tu correo en tu cuenta y a los administradores del curso que gestionan el acceso beta. Después del registro, solo los administradores del curso pueden cambiar tu nombre; para cambiarlo, contacta con el equipo del curso.' },
                         { icon: 'save', title: 'Progreso e idioma', body: 'Mientras tienes la sesión iniciada, los resultados de los tests y el idioma elegido se guardan en tu cuenta para que estén disponibles en tus otros dispositivos.' },
-                        { icon: 'clock', title: 'Acceso beta', body: 'Si tu cuenta tiene acceso beta aprobado, cuándo se aprobó y cuándo termina, y un registro de qué administrador lo aprobó o revocó y cuándo.' },
+                        { icon: 'clock', title: 'Acceso beta', body: 'Si tu cuenta tiene acceso beta aprobado, cuándo se aprobó y cuándo termina, y un registro de qué administrador lo aprobó o revocó y cuándo. Si solicitas acceso beta, se guardan la solicitud y su estado, junto con un registro de tu aceptación de las condiciones beta: qué versión del texto y en qué idioma se te mostró, y cuándo. Ese registro no guarda la dirección IP ni datos del navegador.' },
                     ],
                 },
                 {
@@ -201,7 +201,7 @@ export const infoPages: InfoPagesDict = {
                 {
                     kind: 'placeholder',
                     heading: 'Política de privacidad completa',
-                    decision: 'Requiere revisión legal: la identidad y los datos de contacto del responsable de los datos, durante cuánto tiempo se conservan los datos de la cuenta (nombre, correo, progreso, idioma elegido y registros de acceso beta) y con qué base legal, cómo solicitar el acceso o la eliminación, qué registran los proveedores de alojamiento y autenticación (como direcciones IP y registros de solicitudes) y durante cuánto tiempo, terceros y encargados del tratamiento, y la ley aplicable.',
+                    decision: 'Requiere revisión legal: la identidad y los datos de contacto del responsable de los datos, durante cuánto tiempo se conservan los datos de la cuenta (nombre, correo, progreso, idioma elegido, registros de acceso beta y registros de aceptación de las condiciones beta, incluido si se conservan después de eliminar una cuenta) y con qué base legal, cómo solicitar el acceso o la eliminación, qué registran los proveedores de alojamiento y autenticación (como direcciones IP y registros de solicitudes) y durante cuánto tiempo, terceros y encargados del tratamiento, y la ley aplicable.',
                 },
             ],
         },
