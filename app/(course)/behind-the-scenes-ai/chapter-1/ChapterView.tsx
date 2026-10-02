@@ -298,7 +298,7 @@ export default function BehindTheScenesChapter1() {
                 קבועה במנוחה, בדיוק מה שהמודל הנבחר מבקש להסיר, והיא לא לימדה דבר מעבר לטקסט
                 שלצדה. הטקסט עצמו נשאר במלואו: הוא מסביר על מה להסתכל במעבדה, וזה תוכן לימודי
                 שאינו קיים במקום אחר. גם מקטע ההקראה (id 'mentor') נשאר כפי שהוא. */}
-            <section
+            <section data-learning-unit="guide"
                 data-chapter1-mentor-guide
                 className="mt-8 text-start md:mt-10"
                 dir={dir}
@@ -319,7 +319,7 @@ export default function BehindTheScenesChapter1() {
             </section>
 
             {/* ══════════ Transparent Chat Lab ══════════ */}
-            <section data-chapter1-transparent-chat className="relative mt-8 space-y-5 text-start md:mt-10" dir={dir}>
+            <section data-learning-unit="lab" data-chapter1-transparent-chat className="relative mt-8 space-y-5 text-start md:mt-10" dir={dir}>
                 <div className="flex items-center gap-3">
                     <ScanSearch size={24} className="text-cyan-400" />
                     <div>
@@ -428,7 +428,7 @@ export default function BehindTheScenesChapter1() {
             </section>
 
             {/* ══════════ התובנה המרכזית של הפרק ══════════ */}
-            <section data-chapter1-takeaway className="mt-10 rounded-2xl border border-indigo-400/25 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-indigo-950)] [--t-l:var(--color-indigo-500)] px-5 py-5 text-start md:px-7 md:py-6" dir={dir}>
+            <section data-learning-unit="takeaway" data-chapter1-takeaway className="mt-10 rounded-2xl border border-indigo-400/25 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-indigo-950)] [--t-l:var(--color-indigo-500)] px-5 py-5 text-start md:px-7 md:py-6" dir={dir}>
                 <div className="flex items-start gap-3">
                     <Lightbulb className="mt-1 shrink-0 text-indigo-300" size={22} aria-hidden />
                     <div className="min-w-0 max-w-4xl flex-1">
@@ -447,7 +447,7 @@ export default function BehindTheScenesChapter1() {
                 </div>
             </section>
 
-            <section data-chapter1-summary className="mt-8 rounded-3xl border border-emerald-400/25 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] p-6 text-start md:p-8" dir={dir}>
+            <section data-learning-unit="summary" data-chapter1-summary className="mt-8 rounded-3xl border border-emerald-400/25 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-emerald-950)] [--t-l:var(--color-emerald-500)] p-6 text-start md:p-8" dir={dir}>
                 <h2 className="text-[22px] font-black leading-tight text-[var(--bts-text-primary)] md:text-[26px]">{c.summary.title}</h2>
                 <ol className="mt-5 max-w-4xl space-y-3 text-base leading-[1.7] text-[var(--bts-text-bright)] md:text-[17px]">
                     {c.summary.points.map((point, index) => (

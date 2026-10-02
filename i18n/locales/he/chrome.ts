@@ -129,6 +129,12 @@ export const chrome = {
         unmute: 'הפעלת צלילים',
         prev: 'הקודם',
         continue: 'המשך',
+        // כיתובי החומר שלפני השאלה (תפקיד מוצהר בנתונים): הפרומפט ותשובת המודל.
+        prompt: 'הפרומפט',
+        modelResponse: 'תשובת המודל',
+        modelResponses: 'תשובות המודל',
+        // ציון מבדק הוא ציון 0-100, לא אחוז.
+        scoreOutOf: (score: number) => `ציון ${score} מתוך 100`,
     },
 
     // לוח ההתקדמות (MasteryDashboard / SidebarMastery): סיכום שליטה במבדקים.

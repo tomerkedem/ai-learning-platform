@@ -254,7 +254,7 @@ export default function BehindTheScenesChapter7() {
             </div>
 
             {/* ══════════ ניחוש לפני הסבר: ארבע השערות על חלון ההקשר ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="guess" className="mt-12 text-start" dir={dir}>
                 {/* M8 F3 SELECTIVE RESPOND: מנטור ההזמנה, מנטור ההשערה ומנטור כרטיס התובנה
                     הוסרו, ומשפט ההזמנה נשאר כטקסט גוף וגלוי גם בטלפון. אחרי הבחירה כל ארבע
                     ההשערות מקבלות בדיוק אותה שורת תגובה אנושית, וצ׳יפ הסטטוס נשאר הערוץ
@@ -271,7 +271,7 @@ export default function BehindTheScenesChapter7() {
             </section>
 
             {/* ══════════ רגע לפני המעבדה: הסבר חלון ההקשר ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="primer" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 backdrop-blur-xl md:p-8">
                     <div className="mb-4 flex items-start justify-between gap-2.5">
                         <div>
@@ -300,7 +300,7 @@ export default function BehindTheScenesChapter7() {
             </section>
 
             {/* ══════════ מעבדת חלון ההקשר ══════════ */}
-            <section id="context-window-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+            <section data-learning-unit="lab" id="context-window-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <Frame size={24} className="text-violet-400" />
                     <div>
@@ -320,7 +320,7 @@ export default function BehindTheScenesChapter7() {
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="wow" className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c7.wow.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block text-lg font-bold text-violet-200">{c7.wow.lead}</span>
@@ -331,7 +331,7 @@ export default function BehindTheScenesChapter7() {
             </section>
 
             {/* ══════════ דוגמה יומיומית ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="everyday" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -345,7 +345,7 @@ export default function BehindTheScenesChapter7() {
             </section>
 
             {/* ══════════ תיקון טעות נפוצה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="mistake" className="mt-12 text-start" dir={dir}>
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl border border-rose-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(10%_-_var(--bts-tint-mix)_*_0.05),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] p-5">
                         <div className="mb-2 flex items-center gap-2 text-rose-200">
@@ -368,7 +368,7 @@ export default function BehindTheScenesChapter7() {
             </section>
 
             {/* ══════════ איך החלון עובד ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="how" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-violet-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -387,7 +387,7 @@ export default function BehindTheScenesChapter7() {
             {/* ══════════ בדיקת הבנה ══════════ */}
             {/* M8: המנטור שלפני השאלה הוסר. הוא היה בפוזת celebrate ואמר "תפסתם את חלון
                 ההקשר", כלומר חגג הבנה לפני שהלומד ענה. תוכן הבדיקה נשאר זהה. */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="lock" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-violet-500/40 bg-[var(--bts-surface)] p-6">
                     <div className="mb-5 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -417,7 +417,7 @@ export default function BehindTheScenesChapter7() {
             {/* ══════════ תובנה מעשית ══════════ */}
             {/* M8: המנטור "ככה שומרים את הפרט הקריטי בתמונה" הוסר. זו כותרת התובנה המעשית
                 עצמה, והרשימה שמתחתיה כבר מפרטת בדיוק איך. */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="practical" className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c7.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c7.practical.lead}</span>

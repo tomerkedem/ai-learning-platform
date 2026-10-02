@@ -9,26 +9,14 @@
 
 import type { AssessmentResult } from "@/components/content/AssessmentEngine";
 import { queueAccountResult, signedInUserId } from "./account";
+import { legacyMasteryEarned, mergeAttempt, type QuizRecord } from "./learningProgress";
+
+export { mergeAttempt, type QuizRecord };
 
 export const MASTERY_STORAGE_KEY = "behindAiMasteryProgress";
 export const MASTERY_UPDATED_EVENT = "behindai:mastery-updated";
 export const TOTAL_CHAPTER_QUIZZES = 19;
 export const FINAL_EXAM_QUIZ_ID = "behind-ai-final";
-
-export interface QuizRecord {
-    quizId: string;
-    /** מספר הפרק עבור מבדק פרק, או null עבור מבחן הסיום. */
-    chapterId: number | null;
-    scorePercent: number;
-    correctCount: number;
-    totalQuestions: number;
-    passed: boolean;
-    attempts: number;
-    bestScorePercent: number;
-    lastCompletedAt: number;
-    weakConcepts: string[];
-    strongConcepts: string[];
-}
 
 interface MasteryStore {
     version: 1;
@@ -65,7 +53,9 @@ function parseRecord(quizId: string, v: unknown): QuizRecord | null {
         !isNum(r.attempts) || !isNum(r.bestScorePercent) || !isNum(r.lastCompletedAt) ||
         !isStringArray(r.weakConcepts) || !isStringArray(r.strongConcepts)
     ) return null;
-    return r as unknown as QuizRecord;
+    // רשומה מלפני השליטה הקבועה: נגזרת פעם אחת מהנתונים הישנים (ראו legacyMasteryEarned).
+    const masteryEarned = typeof r.masteryEarned === "boolean" ? r.masteryEarned : legacyMasteryEarned(r as unknown as QuizRecord);
+    return { ...(r as unknown as QuizRecord), masteryEarned };
 }
 
 function loadStore(): MasteryStore {
@@ -107,23 +97,6 @@ function saveStore(store: MasteryStore): void {
 export interface RecordResultInput extends AssessmentResult {
     quizId: string;
     chapterId: number | null;
-}
-
-/** ממזג ניסיון אחד לרשומה קיימת: attempts גדל, bestScorePercent לעולם לא יורד. */
-export function mergeAttempt(prev: QuizRecord | undefined, input: RecordResultInput, completedAt: number): QuizRecord {
-    return {
-        quizId: input.quizId,
-        chapterId: input.chapterId,
-        scorePercent: input.scorePercent,
-        correctCount: input.correctCount,
-        totalQuestions: input.totalQuestions,
-        passed: input.passed,
-        attempts: (prev?.attempts ?? 0) + 1,
-        bestScorePercent: Math.max(prev?.bestScorePercent ?? 0, input.scorePercent),
-        lastCompletedAt: completedAt,
-        weakConcepts: input.weakConcepts,
-        strongConcepts: input.strongConcepts,
-    };
 }
 
 /**
@@ -175,7 +148,8 @@ export function getMasterySummary(records: QuizRecord[] = getAllRecords()): Mast
     const final = records.find(r => r.quizId === FINAL_EXAM_QUIZ_ID);
 
     const completedChapters = chapterRecords.length;
-    const passedChapters = chapterRecords.filter(r => r.passed).length;
+    // שליטה קבועה: פרק שעבר פעם אחת נספר גם אם הניסיון האחרון נכשל.
+    const passedChapters = chapterRecords.filter(r => r.masteryEarned).length;
     const averageScore = chapterRecords.length
         ? Math.round(chapterRecords.reduce((acc, r) => acc + r.bestScorePercent, 0) / chapterRecords.length)
         : null;

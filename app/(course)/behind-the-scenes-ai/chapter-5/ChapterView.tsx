@@ -270,7 +270,7 @@ export default function BehindTheScenesChapter5() {
 
 
             {/* ══════════ במילים פשוטות ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="plain" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 backdrop-blur-xl md:p-8">
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="mb-3 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300">
@@ -288,7 +288,7 @@ export default function BehindTheScenesChapter5() {
             </section>
 
             {/* ══════════ ניחוש מהיר ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="guess" className="mt-12 text-start" dir={dir}>
                 {/* M7 F3 SELECTIVE RESPOND: אין מנטור לפני הבחירה (משפט ההזמנה נשאר כטקסט גוף
                     וגלוי גם בטלפון), ואחרי הבחירה שתי התוצאות מקבלות בדיוק אותה שורת תגובה
                     אנושית: אותה פוזה, אותו גודל, אותו מיקום. זה רגע הדמות היחיד בפרק. */}
@@ -301,7 +301,7 @@ export default function BehindTheScenesChapter5() {
             </section>
 
             {/* ══════════ Semantic Space Lab ══════════ */}
-            <section id="semantic-lab" className="mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
+            <section data-learning-unit="lab" id="semantic-lab" className="mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
                 <div className="flex items-center gap-3">
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))_50%,transparent)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(60%_+_var(--bts-tint-mix)_*_0.4),transparent)] font-mono text-sm font-black text-[var(--bts-text-body)]">1</span>
                     <FlaskConical size={24} className="text-violet-400" />
@@ -332,7 +332,7 @@ export default function BehindTheScenesChapter5() {
             </section>
 
             {/* ══════════ מה המפה מלמדת ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="explain" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-6">
                     <div className="mb-4 flex items-start justify-between gap-2.5">
                         <h2 className="text-lg font-bold text-[var(--bts-text-body)]">{c5.explain.title}</h2>
@@ -350,7 +350,7 @@ export default function BehindTheScenesChapter5() {
             {/* שני משפטים שנוסחו אחרת יכולים להופיע קרובים כשדפוס הערכים הכולל שלהם דומה.
                 הפסים מראים כמה מהדפוס משותף, וזה מה שמזכה אותם במיקומים קרובים במרחב. */}
             {dnaA && (
-                <section className="mt-12 text-start" dir={dir}>
+                <section data-learning-unit="dna" className="mt-12 text-start" dir={dir}>
                   <div className="mb-4 flex items-start justify-between gap-2.5 rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">
                     <span>{c5.sections.dnaIntro}</span>
                     <SpeakButton text={c5.sections.dnaIntro} className="mt-0.5" />
@@ -431,7 +431,7 @@ export default function BehindTheScenesChapter5() {
             )}
 
             {/* ══════════ בדיקת הבנה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="lock" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-violet-500/40 bg-[color-mix(in_oklab,var(--bts-panel-from)_60%,transparent)] p-6">
                     {/* הרמז הוא טקסט ולא בועה, כדי שישרוד גם ב-390 שבו התמונה מוסתרת.
                         הוא נאמר לפני התשובה בכוונה, ולכן אינו זקוק ל-state של LockQuestion. */}
@@ -450,7 +450,7 @@ export default function BehindTheScenesChapter5() {
 
             {/* ══════════ תובנה מעשית ══════════ */}
             {/* בכוונה בלי בועה: הקודמת רק חזרה על התבליט הראשון. */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="practical" className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c5.practical.title} headingLevel={2}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c5.practical.lead}</span>

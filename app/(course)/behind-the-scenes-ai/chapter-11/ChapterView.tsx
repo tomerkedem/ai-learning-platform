@@ -243,7 +243,7 @@ export default function BehindTheScenesChapter11() {
             </div>
 
             {/* ══════════ ניחוש פתיחה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="guess" className="mt-12 text-start" dir={dir}>
                 {/* M8 F3 SELECTIVE RESPOND: מנטור ההזמנה ומנטור כרטיס ההכרעה הוסרו, ומשפט
                     ההזמנה נשאר כטקסט גוף וגלוי גם בטלפון. אחרי הבחירה שתי התוצאות מקבלות
                     בדיוק אותה שורת תגובה אנושית: אותה פוזה, אותו גודל, אותו מיקום. זה רגע
@@ -257,7 +257,7 @@ export default function BehindTheScenesChapter11() {
             </section>
 
             {/* ══════════ רגע לפני המעבדה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="primer" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 backdrop-blur-xl md:p-8">
                     <div className="mb-4 flex items-start justify-between gap-2.5">
                         <div>
@@ -287,7 +287,7 @@ export default function BehindTheScenesChapter11() {
             </section>
 
             {/* ══════════ See: איך נוצרת אשליית הביטחון ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="see" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="text-sm font-bold text-[var(--bts-text-bright)]">{c11.see.title}</div>
@@ -312,7 +312,7 @@ export default function BehindTheScenesChapter11() {
             </section>
 
             {/* ══════════ מעבדת ההזיה ══════════ */}
-            <section id="hallucination-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+            <section data-learning-unit="lab" id="hallucination-lab" className="relative mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-amber-400" />
                     <div>
@@ -334,7 +334,7 @@ export default function BehindTheScenesChapter11() {
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="wow" className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c11.insight.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block text-lg font-bold text-amber-200">{c11.insight.lead}</span>
@@ -345,7 +345,7 @@ export default function BehindTheScenesChapter11() {
             </section>
 
             {/* ══════════ דוגמה יומיומית ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="everyday" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -361,7 +361,7 @@ export default function BehindTheScenesChapter11() {
             {/* ══════════ תיקון טעות נפוצה ══════════ */}
             {/* M8: המנטור "הבעיה היא לא הניסוח" הוסר. שני הכרטיסים שמתחתיו אומרים בדיוק את
                 אותה הבחנה, ובניסוח מלא יותר. */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="misconception" className="mt-12 text-start" dir={dir}>
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl border border-rose-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(10%_-_var(--bts-tint-mix)_*_0.05),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] p-5">
                         <div className="mb-2 flex items-center gap-2 text-rose-200">
@@ -388,7 +388,7 @@ export default function BehindTheScenesChapter11() {
             {/* ══════════ בדיקת הבנה ══════════ */}
             {/* M8: המנטור שלפני השאלה הוסר. "בלי מקור, זה לא מבוסס" הוא בדיוק הקריטריון
                 שהשאלה מבקשת מהלומד להפעיל בעצמו. תוכן הבדיקה נשאר זהה. */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="lock" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-amber-500/40 bg-[var(--bts-surface)] p-6">
                     <div className="mb-5 flex items-center gap-2">
                         <ListChecks size={20} className="text-amber-300" />
@@ -404,7 +404,7 @@ export default function BehindTheScenesChapter11() {
             {/* ══════════ תובנה מעשית ══════════ */}
             {/* M8: המנטור "דעו מתי לאמת" הוסר. זו כותרת התובנה המעשית עצמה, והרשימה
                 שמתחתיה כבר מפרטת בדיוק מתי. */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="practical" className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c11.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c11.practical.lead}</span>

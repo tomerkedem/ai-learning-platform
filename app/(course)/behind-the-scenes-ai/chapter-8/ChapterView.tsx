@@ -256,7 +256,7 @@ export default function BehindTheScenesChapter8() {
             </div>
 
             {/* ══════════ ניחוש לפני הסבר: איזה המשך מוביל ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="guess" className="mt-12 text-start" dir={dir}>
                 {/* M9 F3 SELECTIVE RESPOND: מנטור ההזמנה, מנטור ההשערה ומנטור כרטיס התובנה הוסרו,
                     ומשפט ההזמנה נשאר כטקסט גוף וגלוי גם בטלפון. אחרי הבחירה כל ארבע ההשערות מקבלות
                     בדיוק אותה שורת תגובה אנושית, וצ׳יפ הסטטוס נשאר הערוץ היחיד שאומר עד כמה ההשערה
@@ -273,7 +273,7 @@ export default function BehindTheScenesChapter8() {
             </section>
 
             {/* ══════════ רגע לפני המעבדה: Logits ו-Softmax ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="primer" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 backdrop-blur-xl md:p-8">
                     <div className="mb-4 flex items-start justify-between gap-2.5">
                         <div>
@@ -302,7 +302,7 @@ export default function BehindTheScenesChapter8() {
             </section>
 
             {/* ══════════ See: מהמשפט לאחוזים ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="see" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="text-sm font-bold text-[var(--bts-text-bright)]">{c8.see.title}</div>
@@ -327,7 +327,7 @@ export default function BehindTheScenesChapter8() {
             </section>
 
             {/* ══════════ מעבדת Logits ו-Softmax ══════════ */}
-            <section id="logits-softmax-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+            <section data-learning-unit="lab" id="logits-softmax-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <Percent size={24} className="text-purple-400" />
                     <div>
@@ -348,7 +348,7 @@ export default function BehindTheScenesChapter8() {
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="wow" className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c8.wow.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block text-lg font-bold text-purple-200">{c8.wow.lead}</span>
@@ -359,7 +359,7 @@ export default function BehindTheScenesChapter8() {
             </section>
 
             {/* ══════════ דוגמה יומיומית ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="everyday" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -373,7 +373,7 @@ export default function BehindTheScenesChapter8() {
             </section>
 
             {/* ══════════ תיקון טעות נפוצה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="mistake" className="mt-12 text-start" dir={dir}>
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl border border-rose-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(10%_-_var(--bts-tint-mix)_*_0.05),transparent)] [--t-d:var(--color-rose-950)] [--t-l:var(--color-rose-500)] p-5">
                         <div className="mb-2 flex items-center gap-2 text-rose-200">
@@ -396,7 +396,7 @@ export default function BehindTheScenesChapter8() {
             </section>
 
             {/* ══════════ איך Softmax עובד ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="how" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-purple-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -415,7 +415,7 @@ export default function BehindTheScenesChapter8() {
             {/* ══════════ בדיקת הבנה ══════════ */}
             {/* M9: המנטור שלפני השאלה הוסר. הוא היה בפוזת celebrate ואמר "תפסתם את הרעיון",
                 כלומר חגג הבנה לפני שהלומד ענה. תוכן הבדיקה נשאר זהה. */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="lock" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-purple-500/40 bg-[color-mix(in_oklab,var(--bts-panel-from)_60%,transparent)] p-6">
                     <div className="mb-5 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -445,7 +445,7 @@ export default function BehindTheScenesChapter8() {
             {/* ══════════ תובנה מעשית ══════════ */}
             {/* M9: המנטור "ככה מכוונים את ההתפלגות" הוסר. זו כותרת התובנה המעשית עצמה,
                 והרשימה שמתחתיה כבר מפרטת בדיוק איך. */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="practical" className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c8.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c8.practical.lead}</span>

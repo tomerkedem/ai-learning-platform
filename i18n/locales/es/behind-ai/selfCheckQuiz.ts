@@ -45,7 +45,11 @@ export const selfCheckQuiz = {
                 'Una fuente reduce las suposiciones, pero la respuesta todavía la redacta el modelo y puede añadir un detalle que no aparece en la fuente. La autocomprobación compara el borrador con la fuente y detecta justamente esa desviación.',
         },
         3: {
-            question: 'La fuente dice: horario regular de 09:00 a 18:00, horario de feriado no disponible. El borrador: "La biblioteca abre de 09:00 a 18:00 en días regulares, y de 10:00 a 14:00 en el feriado." ¿Qué afirmación debe señalar la comprobación?',
+            context: 'La fuente dice: horario regular de 09:00 a 18:00, horario de feriado no disponible.',
+            modelResponses: [
+                { label: 'Borrador', text: 'La biblioteca abre de 09:00 a 18:00 en días regulares, y de 10:00 a 14:00 en el feriado.' },
+            ],
+            question: '¿Qué afirmación debe señalar la comprobación?',
             options: [
                 '"Abre de 09:00 a 18:00 en días regulares", porque aparece en la fuente',
                 '"Abre de 10:00 a 14:00 en el feriado", porque la fuente no da un horario de feriado',

@@ -63,7 +63,13 @@ export const hallucinationsQuiz = {
                 'Confidence in phrasing, length or repetition do not make an answer grounded. What lowers risk is grounding: provide a source, ask it to separate known from assumed, and ask the model to say what is missing. A real situation needs a source or a tool. How a source actually enters an answer is the topic of the next chapter.',
         },
         5: {
-            question: "Three answers to the same question: (a) 'The library is open from 10:00 to 14:00 on the holiday', (b) 'Holiday hours cannot be confirmed without checking the schedule', (c) 'What is known: the regular hours are 09:00 to 18:00. What is not known: the holiday hours. The official schedule needs checking'. Which is most accurate?",
+            context: 'Three answers to the same question.',
+            modelResponses: [
+                { label: 'a', text: 'The library is open from 10:00 to 14:00 on the holiday' },
+                { label: 'b', text: 'Holiday hours cannot be confirmed without checking the schedule' },
+                { label: 'c', text: 'What is known: the regular hours are 09:00 to 18:00. What is not known: the holiday hours. The official schedule needs checking' },
+            ],
+            question: 'Which is most accurate?',
             options: [
                 '(a) is best, because it is the clearest and most confident',
                 '(b) and (c) are safer than (a), because they do not invent hours, and (c) also separates what is known from what is not',

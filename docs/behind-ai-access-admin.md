@@ -468,3 +468,19 @@ Options, from least to most infrastructure:
    code, which renders it from our own six-locale templates and sends it through a provider. Most
    control (for example the learner's current language), but it adds a deployed function, a
    provider and a signing secret to maintain. Consider it only if option 1 proves insufficient.
+
+## Learning progress and sticky mastery
+
+Migration `20261002130000_learning_progress_and_sticky_mastery`, applied to the development
+project. Database tests: `supabase/tests/learning_progress.sql` (development project only;
+everything is rolled back).
+
+- `learning_unit_progress`: one row per learner, chapter (1-19) and learning unit reached, with the
+  first `reached_at`. The app writes through `record_learning_units` (idempotent). Learners can read
+  and insert their own rows only; there is no update or delete. The unit registry is
+  `app/(course)/behind-the-scenes-ai/learningProgress.ts`; progress counts only ids in the current
+  registry.
+- `quiz_results.mastery_earned`: the chapter quiz was passed at least once. It never returns to
+  false and is always false for the final exam. `score_percent` is the latest score;
+  `best_score_percent` is history.
+- Access ending (expiry, revocation, suspension) changes neither. Only account deletion removes them.

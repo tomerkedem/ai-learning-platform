@@ -45,7 +45,11 @@ export const selfCheckQuiz = {
                 'A source reduces guessing, but the answer is still written by the model and can add a detail that does not appear in the source. A self-check compares the draft to the source and catches exactly that drift.',
         },
         3: {
-            question: 'The source says: regular hours 09:00-18:00, holiday hours not available. The draft: "The library is open from 09:00 to 18:00 on regular days, and from 10:00 to 14:00 on the holiday." Which claim should the check flag?',
+            context: 'The source says: regular hours 09:00-18:00, holiday hours not available.',
+            modelResponses: [
+                { label: 'Draft', text: 'The library is open from 09:00 to 18:00 on regular days, and from 10:00 to 14:00 on the holiday.' },
+            ],
+            question: 'Which claim should the check flag?',
             options: [
                 '"Open from 09:00 to 18:00 on regular days", because it appears in the source',
                 '"Open from 10:00 to 14:00 on the holiday", because the source gives no holiday hours',

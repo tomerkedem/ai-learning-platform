@@ -228,7 +228,7 @@ export default function BehindTheScenesChapter3() {
             </div>
 
             {/* ══════════ נחש ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="guess" className="mt-12 text-start" dir={dir}>
                 {/* M10 F3 SELECTIVE RESPOND: מנטור ההזמנה ומנטור כרטיס ההכרעה הוסרו, ומשפט ההזמנה
                     נשאר כטקסט גוף וגלוי גם בטלפון. אחרי הבחירה שתי התוצאות מקבלות בדיוק אותה שורת
                     תגובה אנושית: אותה פוזה, אותו גודל, אותו מיקום. זה רגע הדמות היחיד בפרק. */}
@@ -240,7 +240,7 @@ export default function BehindTheScenesChapter3() {
             </section>
 
             {/* ══════════ הסבר פשוט: מה באמת קורה כאן (במקום "הנקודה המפתיעה") ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="insight" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 backdrop-blur-xl md:p-8">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -256,7 +256,7 @@ export default function BehindTheScenesChapter3() {
 
             {/* ══════════ גע: מעבדת הפירוק ══════════ */}
             <Chapter3LabProvider value={labContent}>
-                <section id="token-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+                <section data-learning-unit="lab" id="token-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                     <div className="flex items-center gap-3">
                         <FlaskConical size={24} className="text-violet-400" />
                         <div>
@@ -281,7 +281,7 @@ export default function BehindTheScenesChapter3() {
             </Chapter3LabProvider>
 
             {/* ══════════ בדיקת הבנה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="lock" className="mt-12 text-start" dir={dir}>
                 {/* M10: המנטור שלפני הבדיקה הוסר. "תפסתם את הרעיון" הוא שבח שניתן לפני
                     שהלומד ענה בכלל, ולכן הוא גם לא מדויק וגם מרוקן את הבדיקה. תוכן הבדיקה נשאר זהה. */}
                 <div className="rounded-2xl border border-violet-500/40 bg-[color-mix(in_oklab,var(--bts-panel-from)_60%,transparent)] p-6">
@@ -311,7 +311,7 @@ export default function BehindTheScenesChapter3() {
             </section>
 
             {/* ══════════ תובנה מעשית ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="practical" className="mt-12 text-start" dir={dir}>
                 {/* M10: המנטור "ככה כותבים למודל חכם יותר" הוסר. זו כותרת התובנה המעשית עצמה,
                     והרשימה שמתחתיה כבר מפרטת בדיוק איך. */}
                 <div className="rounded-2xl border border-violet-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">

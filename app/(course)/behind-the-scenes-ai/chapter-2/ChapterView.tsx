@@ -247,7 +247,7 @@ export default function BehindTheScenesChapter2() {
             </div>
 
             {/* ══════════ ניחוש פתיחה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="guess" className="mt-12 text-start" dir={dir}>
                 {/* M10 F3 SELECTIVE RESPOND: מנטור ההזמנה ומנטור כרטיס ההכרעה הוסרו, ומשפט ההזמנה
                     נשאר כטקסט גוף וגלוי גם בטלפון. אחרי הבחירה שתי התוצאות מקבלות בדיוק אותה שורת
                     תגובה אנושית: אותה פוזה, אותו גודל, אותו מיקום. זה רגע הדמות היחיד בפרק. */}
@@ -259,7 +259,7 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ מעבדת השוואת קלט ══════════ */}
-            <section id="input-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+            <section data-learning-unit="lab" id="input-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-indigo-400" />
                     <div>
@@ -286,7 +286,7 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ הודעה גלויה מול הקלט המלא (סוגר את הבטחת שם הפרק) ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="full-input" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-cyan-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -309,7 +309,7 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ דוגמה יומיומית ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="everyday" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -325,7 +325,7 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ הסבר פשוט ════════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="takeaway" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-indigo-500/30 bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5 leading-relaxed text-[var(--bts-text-secondary)]">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="text-sm font-bold text-[var(--bts-text-bright)]">{c2.takeaway.title}</div>
@@ -343,7 +343,7 @@ export default function BehindTheScenesChapter2() {
             </section>
 
             {/* ══════════ בדיקת הבנה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="lock" className="mt-12 text-start" dir={dir}>
                 {/* M10: המנטור שלפני הבדיקה הוסר. "עצרו רגע ובחרו תשובה" הוא הוראת הפעלה
                     של שאלת האבחון שמתחתיו, והשאלה עצמה כבר מזמינה לבחור. תוכן הבדיקה נשאר זהה. */}
                 <div className="rounded-2xl border border-indigo-500/40 bg-[var(--bts-surface)] p-6">

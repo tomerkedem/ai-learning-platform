@@ -30,6 +30,7 @@ import {
     useAuthState,
     endPasswordRecovery,
     flushPendingAttempts,
+    flushLearningUnits,
     signOutAndForget,
     loadFullName,
     cachedFullName,
@@ -725,7 +726,10 @@ export function AccountSync() {
 
     useEffect(() => {
         if (!userId) return;
-        const flush = () => void flushPendingAttempts(userId);
+        const flush = () => {
+            void flushPendingAttempts(userId);
+            void flushLearningUnits(userId);
+        };
         flush();
         window.addEventListener("online", flush);
         return () => window.removeEventListener("online", flush);

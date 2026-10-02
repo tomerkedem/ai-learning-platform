@@ -330,13 +330,13 @@ export default function BehindTheScenesChapter4() {
             </div>
 
             {/* ══════════ ניחוש מהיר ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="guess" className="mt-12 text-start" dir={dir}>
                 <MeaningGuess />
             </section>
 
             {/* ══════════ הכרטיס המסביר היחיד: איך Token ID הופך ל-Embedding (אחרי הניחוש, לפני מעבדה 1) ══════════ */}
             {/* מיזוג שני כרטיסי הפתיחה לכרטיס אחד: מנגנון ה-lookup במקום אחד, בלי חזרה. */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="embedding-table" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-cyan-500/25 bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 backdrop-blur-xl md:p-8">
                     <div className="flex items-start justify-between gap-2.5">
                         <div className="flex items-center gap-2.5">
@@ -378,14 +378,14 @@ export default function BehindTheScenesChapter4() {
             {/* ══════════ See + Touch: המעבדה המרכזית, ממילה למספרים ══════════ */}
             {/* ההנחיה של המעבדה יושבת בתוך EmbeddingLookupLab (c.intro), ליד בורר המילים,
                 ולכן היא נשארת גלויה גם בתצוגה רגילה וגם במסך מלא. */}
-            <section id="embedding-see" className="mt-12 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
+            <section data-learning-unit="lookup-lab" id="embedding-see" className="mt-12 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
                 <ExpandableLab title={c4.embeddingLookup.title}>
                     <EmbeddingLookupLab dir={dir} labNumber={1} />
                 </ExpandableLab>
             </section>
 
             {/* ══════════ Reveal: המסלול המלא של משפט (טוקניזציה -> Token IDs -> וקטור) ══════════ */}
-            <section id="word-lab" className="mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
+            <section data-learning-unit="word-lab" id="word-lab" className="mt-12 space-y-5 text-start scroll-mt-[var(--bts-sticky-top,88px)]" dir={dir}>
                 {/* מקטע מעבר (לא מעבדה, בלי מספר): מטוקנים למשפט. מכין למעבדה 2. */}
                 <SentenceBridge />
 
@@ -410,7 +410,7 @@ export default function BehindTheScenesChapter4() {
 
             {/* ══════════ בדיקת הבנה ══════════ */}
             {/* בלי מנטור: כל רמז מושגי כאן מסגיר את התשובה. בדיקת ההבנה נשארת בדיקה עצמאית. */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="lock" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-violet-500/40 bg-[color-mix(in_oklab,var(--bts-panel-from)_60%,transparent)] p-6">
                     <div className="mb-5 flex items-center gap-2">
                         <ListChecks size={20} className="text-violet-300" />
@@ -423,7 +423,7 @@ export default function BehindTheScenesChapter4() {
             {/* ══════════ תובנה מעשית + גשר לפרק 5 ══════════ */}
             {/* M8: המנטור "טקסט הפך למספר, עכשיו אפשר לחשב" הוסר. זו בדיוק התובנה שהכרטיס
                 שמתחתיו כבר אומר, ובאופן מפורט יותר. */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="practical" className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c4.practical.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block">{c4.practical.lead}</span>

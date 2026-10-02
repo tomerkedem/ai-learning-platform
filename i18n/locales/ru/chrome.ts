@@ -111,6 +111,12 @@ export const chrome: typeof heChrome = {
         unmute: 'Включить звук',
         prev: 'Назад',
         continue: 'Далее',
+        // Captions for question material whose role is declared in the data.
+        prompt: 'Prompt',
+        modelResponse: 'Ответ модели',
+        modelResponses: 'Ответы модели',
+        // A quiz score is a 0-100 score, not a percentage.
+        scoreOutOf: (score) => `Балл: ${score} из 100`,
     },
 
     progress: {

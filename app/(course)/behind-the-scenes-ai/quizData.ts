@@ -7,13 +7,13 @@
 // אין שימוש בתו "מקף ארוך" (em dash) בקובץ הזה, בהתאם להנחיות הלומדה.
 // ════════════════════════════════════════════════════════════════════════
 
-import type { ScoreTier, ReviewLink, AssessmentResult } from "@/components/content/AssessmentEngine";
+import type { ScoreTier, ReviewLink, AssessmentResult, QuizQuestionMaterial } from "@/components/content/AssessmentEngine";
 import { recordResult, chapterQuizId, FINAL_EXAM_QUIZ_ID } from "./masteryProgress";
 import { useProtectedContent } from "@/i18n/ProtectedContent";
 
 export type Difficulty = "easy" | "medium" | "hard";
 
-export interface QuizQuestion {
+export interface QuizQuestion extends QuizQuestionMaterial {
     id: number;
     question: string;
     options: string[];

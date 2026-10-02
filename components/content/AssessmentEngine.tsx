@@ -25,8 +25,29 @@ import { reducedMotion, useReducedMotion } from '@/components/reducedMotion';
 // ולכן הרמת ה-z-index אינה חוסמת כפתורים, קישורים או ניווט מקלדת.
 const CONFETTI_Z_INDEX = 10000;
 
-interface Question {
+/** תשובה אחת שהמודל הפיק. label: שם קצר להשוואה ("א", "טיוטה"), כשהשאלה או האפשרויות מפנות אליו. */
+export interface QuizModelResponse {
+    label?: string;
+    text: string;
+}
+
+/**
+ * חומר אופציונלי שהשאלה נשענת עליו, לפי תפקיד. התפקיד מוצהר בנתונים ולעולם לא נגזר מהטקסט
+ * (מירכאות, נקודתיים או קידומות): טקסט במירכאות שאינו פלט של המודל נשאר בתוך question.
+ * סדר התצוגה וההקראה: context, prompt, modelResponses, ואז question.
+ */
+export interface QuizQuestionMaterial {
+    /** תרחיש או מקור שהשאלה נשענת עליו. */
+    context?: string;
+    /** מה שהמשתמש כתב למודל, כשחשוב להבחין בינו לבין התשובה. */
+    prompt?: string;
+    /** פלט שהמודל הפיק: אחד, או כמה להשוואה, לפי הסדר. */
+    modelResponses?: QuizModelResponse[];
+}
+
+interface Question extends QuizQuestionMaterial {
     id: number;
+    /** השאלה עצמה שהלומד נשאל, בלבד. */
     question: string;
     options: string[];
     correctAnswer: number;
@@ -109,6 +130,65 @@ interface AssessmentProps {
 }
 
 // בונה סדר תצוגה מעורבב לכל שאלה (Fisher-Yates). המפתח הוא q.id, והערך הוא מערך של
+type AssessmentLabels = ReturnType<typeof useT>['t']['chrome']['assessment'];
+
+const responsesCaption = (count: number, l: AssessmentLabels) => (count > 1 ? l.modelResponses : l.modelResponse);
+
+/** ההקראה של השאלה באותו סדר כמו בתצוגה, עם שם התפקיד לפני הפרומפט ותשובות המודל. */
+function questionSpeech(q: Question, l: AssessmentLabels): string {
+    const responses = q.modelResponses ?? [];
+    const caption = responsesCaption(responses.length, l);
+    return speakJoin(
+        q.context,
+        q.prompt && `${l.prompt}: ${q.prompt}`,
+        ...responses.map((r) => `${caption}${r.label ? ` ${r.label}` : ''}: ${r.text}`),
+        q.question,
+    );
+}
+
+const MATERIAL_CAPTION = 'text-[11px] font-bold tracking-wide text-[var(--bts-text-muted)]';
+const MATERIAL_TEXT = 'text-[15px] leading-relaxed text-[var(--bts-text-body)]';
+
+/**
+ * החומר שלפני השאלה, כשהנתונים מצהירים עליו: הקשר כטקסט רגיל, פרומפט, ותשובת המודל כארטיפקט
+ * מצוטט. figure + figcaption נותנים לקבוצה שם נגיש ("תשובת המודל"), כך שקורא מסך מזהה מה פלט
+ * של המודל. ההבחנה אינה בצבע: כיתוב, ציטוט, קו-פתיחה ומשטח שקוע. בלי חומר: לא מרונדר דבר.
+ */
+function QuestionMaterial({ question, labels }: { question: Question; labels: AssessmentLabels }) {
+    const responses = question.modelResponses ?? [];
+    if (!question.context && !question.prompt && responses.length === 0) return null;
+    const badge = (label?: string) => label && (
+        <span className="me-2 inline-block rounded-md border border-[var(--bts-border-emphasis)] px-1.5 align-[1px] text-[11px] font-bold leading-4 text-[var(--bts-text-secondary)]">{label}</span>
+    );
+    return (
+        <div className="mb-3 space-y-2 sm:mb-4 sm:space-y-3">
+            {question.context && <p className={`${MATERIAL_TEXT} text-[var(--bts-text-secondary)]`}>{question.context}</p>}
+            {question.prompt && (
+                <figure className="rounded-xl bg-[var(--bts-fill-soft)] px-3 py-2 sm:px-3.5 sm:py-2.5">
+                    <figcaption className={MATERIAL_CAPTION}>{labels.prompt}</figcaption>
+                    <blockquote className={`mt-1 ${MATERIAL_TEXT}`}>{question.prompt}</blockquote>
+                </figure>
+            )}
+            {responses.length > 0 && (
+                <figure className="rounded-e-xl border-s-2 border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-inset)] px-3 py-2 sm:px-3.5 sm:py-2.5">
+                    <figcaption className={MATERIAL_CAPTION}>{responsesCaption(responses.length, labels)}</figcaption>
+                    {responses.length === 1 ? (
+                        <blockquote className={`mt-1 ${MATERIAL_TEXT}`}>{badge(responses[0].label)}{responses[0].text}</blockquote>
+                    ) : (
+                        <ol className="mt-1.5 divide-y divide-[var(--bts-divider-soft)]">
+                            {responses.map((r, i) => (
+                                <li key={i} className="py-1.5 first:pt-0 last:pb-0">
+                                    <blockquote className={MATERIAL_TEXT}>{badge(r.label)}{r.text}</blockquote>
+                                </li>
+                            ))}
+                        </ol>
+                    )}
+                </figure>
+            )}
+        </div>
+    );
+}
+
 // אינדקסים מקוריים מ-question.options בסדר התצוגה הרצוי. ערבוב תצוגה בלבד: לא נוגע
 // ב-options או ב-correctAnswer, ואינו רץ בזמן render (נבנה רק בפעולת משתמש) כדי למנוע
 // אי-התאמת hydration. משמש כדי שהתשובה הנכונה לא תופיע תמיד באותו מיקום.
@@ -422,7 +502,11 @@ export const AssessmentEngine = ({
             <motion.div
                 initial={reduce ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 220, damping: 24 }}
-                className="bts-tier relative max-w-md mx-auto overflow-hidden p-8 pt-16 rounded-[2rem] bg-gradient-to-b from-[var(--bts-panel-from)] to-[var(--bts-panel-to)] border border-[var(--bts-divider-soft)] text-center shadow-[0_25px_50px_-12px_var(--bts-shadow-lift)]"
+                // הפריסה נקבעת לפי רוחב הכרטיס עצמו (container queries), לא לפי רוחב החלון: מ-768px הסרגל
+                // תופס 320px, ולכן חלון רחב יכול לתת כרטיס צר. כרטיס צר: עמודה אחת קומפקטית. כרטיס רחב
+                // (פנים 32rem ומעלה): סטטוס וטבעת הציון בצד ההתחלה, פירוש, נתונים ופעולות בצד הסוף, כך
+                // שהגובה הוא של העמודה הגבוהה ולא של ערימה אחת. חלון נמוך: ריפוד וטבעת קטנים יותר.
+                className="@container/result bts-tier relative max-w-3xl mx-auto overflow-hidden p-4 pt-5 rounded-[2rem] bg-gradient-to-b from-[var(--bts-panel-from)] to-[var(--bts-panel-to)] border border-[var(--bts-divider-soft)] text-center shadow-[0_25px_50px_-12px_var(--bts-shadow-lift)] sm:p-7 sm:pt-9 sm:[@media(max-height:760px)]:pt-6"
                 dir={dir}
                 role="status"
                 aria-live="polite"
@@ -433,8 +517,11 @@ export const AssessmentEngine = ({
                     style={{ background: passed ? `rgb(${accent.base} / 0.20)` : 'rgb(245 158 11 / 0.14)' }}
                 />
 
-                <div className="relative">
-                    <div className="mb-6">
+                <div className="relative @lg/result:grid @lg/result:grid-cols-[11rem_minmax(0,1fr)] @lg/result:items-center @lg/result:gap-x-7">
+                    {/* עמודת הסיכום: סטטוס, כותרת וטבעת הציון. בכרטיס צר (17rem ומעלה) זו שורת "hero" אחת:
+                        סטטוס וכותרת בצד ההתחלה וטבעת קומפקטית בצד הסוף (מתהפך ב-RTL מעצמו). */}
+                    <div className="mb-3 @[17rem]/result:flex @[17rem]/result:items-center @[17rem]/result:gap-3 @lg/result:mb-0 @lg/result:block">
+                    <div className="mb-2 flex min-w-0 items-center justify-center gap-3 @[17rem]/result:mb-0 @[17rem]/result:flex-1 @[17rem]/result:justify-start @lg/result:mb-4 @lg/result:block">
                         {/* מסלול המורשת בלבד: פורטרט בשתי התוצאות. בברירת המחדל הענף הזה
                             לעולם אינו נבחר, המבדק חסר-דמות לגמרי, ולכן שתי התוצאות מקבלות
                             בסלוט הזה אייקון סטטוס ולא פנים. */}
@@ -450,20 +537,27 @@ export const AssessmentEngine = ({
                             /* אות סטטוס עצמאי לתוצאה שלא עברה. גביע כאן היה משקר, ופנים
                                כאן היו הופכות את הדמות לאייקון הכישלון. חץ-חזרה הוא בדיוק
                                מה שהתוצאה אומרת: עוד סיבוב. הגוון נלקח מדרגת הציון, כדי
-                               שהאייקון וטבעת הציון ידברו באותו צבע. */
-                            <div className="w-20 h-20 bg-[rgb(var(--bts-fill-rgb)/0.06)] rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-[rgb(var(--bts-fill-rgb)/0.03)]">
-                                <RotateCcw size={38} className={feedback.color} />
+                               שהאייקון וטבעת הציון ידברו באותו צבע. בכרטיס צר הוא מוסתר: שם כפתור
+                               "ניסיון חוזר" כבר נושא את אותו אייקון, באותו גוון. */
+                            <div className="size-10 shrink-0 bg-[rgb(var(--bts-fill-rgb)/0.06)] rounded-full flex items-center justify-center @max-lg/result:hidden ring-4 ring-[rgb(var(--bts-fill-rgb)/0.03)] @lg/result:mx-auto @lg/result:mb-3 @lg/result:size-16 @lg/result:ring-[6px]">
+                                <RotateCcw size={30} className={`size-5 @lg/result:size-[30px] ${feedback.color}`} />
                             </div>
                         ) : (
-                            <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-blue-500/5">
-                                <Trophy size={40} className="text-blue-400" />
+                            <div className="size-10 shrink-0 bg-blue-500/10 rounded-full flex items-center justify-center ring-4 ring-blue-500/5 @lg/result:mx-auto @lg/result:mb-3 @lg/result:size-16 @lg/result:ring-[6px]">
+                                <Trophy size={32} className="size-[22px] text-blue-400 @lg/result:size-8" />
                             </div>
                         )}
-                        <h2 className="text-2xl font-black text-[var(--bts-text-primary)]">{completedTitleR}</h2>
+                        <div className="min-w-0 @[17rem]/result:text-start @lg/result:text-center">
+                            <h2 className="text-lg font-black text-[var(--bts-text-primary)] break-words @lg/result:text-xl">{completedTitleR}</h2>
+                            <p className="mt-0.5 @lg/result:hidden">
+                                <span className={`block text-[13px] font-black leading-tight ${feedback.color}`}>{feedback.label}</span>
+                                <span className="block text-xs leading-snug text-[var(--bts-text-faint)]">{feedback.sub}</span>
+                            </p>
+                        </div>
                     </div>
 
                     {/* טבעת ציון מונפשת */}
-                    <div className="relative mx-auto mb-6 h-44 w-44">
+                    <div className="relative mx-auto size-24 shrink-0 @[17rem]/result:mx-0 @lg/result:mx-auto @lg/result:size-36 @lg/result:[@media(max-height:760px)]:size-32">
                         <svg className="h-full w-full -rotate-90" viewBox="0 0 120 120">
                             <circle cx="60" cy="60" r="52" fill="none" style={{ stroke: 'rgb(var(--bts-fill-rgb) / 0.07)' }} strokeWidth="9" />
                             <motion.circle
@@ -481,17 +575,25 @@ export const AssessmentEngine = ({
                             <motion.div
                                 initial={reduce ? false : { opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }}
                                 transition={reduce ? { duration: 0 } : { delay: 0.3, type: 'spring', stiffness: 240, damping: 16 }}
-                                className={`text-5xl font-black tabular-nums leading-none ${feedback.color}`}
+                                aria-hidden
+                                className={`text-[1.625rem] font-black tabular-nums leading-none @lg/result:text-4xl @lg/result:[@media(max-height:760px)]:text-[2rem] ${feedback.color}`}
                             >
-                                {scoreValue}%
+                                {scoreValue}
                             </motion.div>
-                            <div className={`mt-1.5 text-base font-black ${feedback.color}`}>{feedback.label}</div>
-                            <div className="text-[var(--bts-text-faint)] text-[11px] font-medium">{feedback.sub}</div>
+                            {/* ציון 0-100, לא אחוז: הספרה לבדה בתצוגה, ולקורא המסך "ציון N מתוך 100". */}
+                            <span className="sr-only">{a.scoreOutOf(scoreValue)}</span>
+                            <div className={`hidden @lg/result:block @lg/result:mt-1 @lg/result:text-sm font-black ${feedback.color}`}>{feedback.label}</div>
+                            <div className="hidden @lg/result:block text-[var(--bts-text-faint)] text-[11px] font-medium">{feedback.sub}</div>
                         </div>
                     </div>
+                    </div>
 
+                    {/* עמודת הפרטים: פירוש, נתונים, חיזוק ופעולות. container משלה, כדי שהשורות בתוכה ייפתחו לפי הרוחב שלה. בכרטיס רחב: מיושרת להתחלה. */}
+                    <div className="@container min-w-0 @lg/result:text-start">
+                    {/* פירוש התוצאה: משפט הכישלון ומשפט הפרק כבלוק אחד. */}
+                    <div className="mb-3 space-y-1.5 empty:hidden @lg/result:mb-4 @lg/result:space-y-4">
                     {!passed && (
-                        <p className="mb-6 text-sm leading-relaxed text-[var(--bts-text-muted)]">
+                        <p className="text-start text-[13px] leading-snug text-[var(--bts-text-muted)] @lg/result:text-sm @lg/result:leading-relaxed">
                             {a.failNote}
                         </p>
                     )}
@@ -504,14 +606,15 @@ export const AssessmentEngine = ({
                         שני לצד טבעת הציון. נקרא אוטומטית עם כרטיס התוצאה (role=status
                         aria-live), ולכן בלי כפתור הקראה משלו ובלי דיבור כפול. */}
                     {!legacyMentorPortraits && (passed ? mentorResponse?.pass : mentorResponse?.fail) && (
-                        <p className="mb-6 border-s-2 border-[rgb(var(--bts-fill-rgb)/0.15)] ps-3.5 text-start text-[13px] leading-relaxed text-[var(--bts-text-secondary)]">
+                        <p className="border-s-2 border-[rgb(var(--bts-fill-rgb)/0.15)] ps-3 text-start text-[13px] leading-snug text-[var(--bts-text-secondary)] @lg/result:ps-3.5 @lg/result:leading-relaxed">
                             {passed ? mentorResponse?.pass : mentorResponse?.fail}
                         </p>
                     )}
+                    </div>
 
                     {/* סטטיסטיקות: נכונות וזמן */}
-                    <div className={`grid ${showTimer ? 'grid-cols-2' : 'grid-cols-1'} gap-3 mb-6`}>
-                        <div className="flex items-center justify-center gap-2.5 bg-[var(--bts-fill-soft)] p-3.5 rounded-2xl border border-[var(--bts-divider-soft)]">
+                    <div className={`grid grid-cols-1 gap-2 mb-3 @lg/result:gap-2.5 @lg/result:mb-4 ${showTimer ? '@[13rem]:grid-cols-2' : ''}`}>
+                        <div className="flex items-center justify-center gap-1.5 bg-[var(--bts-fill-soft)] px-2.5 py-1.5 rounded-lg border border-[var(--bts-divider-soft)] @lg/result:gap-2.5 @lg/result:px-3.5 @lg/result:py-3 @lg/result:rounded-2xl">
                             {/* אייקון ספירת הנכונות תלוי במעבר: וי ירוק רק כשעוברים. בלי מעבר
                                 מציגים אייקון רשימה ניטרלי בגוון התוצאה (rose/amber), כדי לא לאותת
                                 הצלחה כשהציון מתחת לסף. */}
@@ -520,16 +623,16 @@ export const AssessmentEngine = ({
                             ) : (
                                 <ListChecks size={16} className={`${feedback.color} shrink-0`} />
                             )}
-                            <div className="text-[var(--bts-text-primary)] font-bold leading-tight text-sm text-start">
+                            <div className="min-w-0 text-[var(--bts-text-primary)] font-bold leading-tight text-[13px] text-start @lg/result:text-sm">
                                 {a.correctSummary(correctCount, questions.length)}
                             </div>
                         </div>
                         {showTimer && (
-                            <div className="flex items-center justify-center gap-2.5 bg-[var(--bts-fill-soft)] p-3.5 rounded-2xl border border-[var(--bts-divider-soft)]">
+                            <div className="flex items-center justify-center gap-1.5 bg-[var(--bts-fill-soft)] px-2.5 py-1.5 rounded-lg border border-[var(--bts-divider-soft)] @lg/result:gap-2.5 @lg/result:px-3.5 @lg/result:py-3 @lg/result:rounded-2xl">
                                 <Timer size={16} className="text-amber-400" />
                                 <div className="text-start">
                                     <div className="text-[10px] text-[var(--bts-text-faint)] font-bold uppercase">{a.timeLabel}</div>
-                                    <div className="text-[var(--bts-text-primary)] font-black leading-tight">{formatTime(seconds)}</div>
+                                    <div className="text-[var(--bts-text-primary)] text-sm font-black leading-tight @lg/result:text-base">{formatTime(seconds)}</div>
                                 </div>
                             </div>
                         )}
@@ -537,23 +640,23 @@ export const AssessmentEngine = ({
 
                 {/* אבחון מושגים: מה חזק ומה כדאי לחזק */}
                 {(strongConcepts.length > 0 || weakConcepts.length > 0) && (
-                    <div className="grid grid-cols-1 gap-3 mb-6 text-start">
+                    <div className="grid grid-cols-1 gap-2 mb-3 text-start @md:grid-cols-2 @lg/result:gap-2.5 @lg/result:mb-4 @max-lg/result:flex @max-lg/result:flex-wrap @max-lg/result:items-start">
                         {strongConcepts.length > 0 && (
-                            <div className="bg-emerald-500/5 p-4 rounded-2xl border border-emerald-500/15">
-                                <div className="text-emerald-400 text-xs font-black mb-2">{a.strongConcepts}</div>
-                                <div className="flex flex-wrap gap-1.5">
+                            <div className="bg-emerald-500/5 p-2.5 rounded-xl border border-emerald-500/15 @md:only:col-span-2 @lg/result:p-3.5 @lg/result:rounded-2xl @max-lg/result:min-w-0 @max-lg/result:flex-[1_1_8rem]">
+                                <div className="text-emerald-400 text-xs font-black mb-1 @lg/result:mb-2">{a.strongConcepts}</div>
+                                <div className="flex flex-wrap gap-1.5 @max-lg/result:gap-1">
                                     {strongConcepts.map(c => (
-                                        <span key={c} className="text-[11px] font-bold text-emerald-200 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">{conceptDisplayMap?.[c] ?? c}</span>
+                                        <span key={c} className="text-[11px] font-bold text-emerald-200 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20 @max-lg/result:min-w-0 @max-lg/result:break-words @max-lg/result:px-2 @max-lg/result:py-0.5">{conceptDisplayMap?.[c] ?? c}</span>
                                     ))}
                                 </div>
                             </div>
                         )}
                         {weakConcepts.length > 0 && (
-                            <div className="bg-amber-500/5 p-4 rounded-2xl border border-amber-500/15">
-                                <div className="text-amber-400 text-xs font-black mb-2">{a.weakConcepts}</div>
-                                <div className="flex flex-wrap gap-1.5">
+                            <div className="bg-amber-500/5 p-2.5 rounded-xl border border-amber-500/15 @md:only:col-span-2 @lg/result:p-3.5 @lg/result:rounded-2xl @max-lg/result:min-w-0 @max-lg/result:flex-[1_1_8rem]">
+                                <div className="text-amber-400 text-xs font-black mb-1 @lg/result:mb-2">{a.weakConcepts}</div>
+                                <div className="flex flex-wrap gap-1.5 @max-lg/result:gap-1">
                                     {weakConcepts.map(c => (
-                                        <span key={c} className="text-[11px] font-bold text-amber-200 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">{conceptDisplayMap?.[c] ?? c}</span>
+                                        <span key={c} className="text-[11px] font-bold text-amber-200 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20 @max-lg/result:min-w-0 @max-lg/result:break-words @max-lg/result:px-2 @max-lg/result:py-0.5">{conceptDisplayMap?.[c] ?? c}</span>
                                     ))}
                                 </div>
                             </div>
@@ -563,14 +666,14 @@ export const AssessmentEngine = ({
 
                 {/* חזרה מומלצת: עד שלושה קישורים ממוקדים לפי המושגים החלשים */}
                 {reviewLinks.length > 0 && (
-                    <div className="bg-[var(--bts-fill-soft)] p-4 rounded-2xl border border-[var(--bts-divider-soft)] mb-6 text-start">
-                        <div className="text-[var(--bts-text-secondary)] text-xs font-black mb-3">{a.recommendedReview}</div>
-                        <div className="space-y-2">
+                    <div className="bg-[var(--bts-fill-soft)] p-3 rounded-xl border border-[var(--bts-divider-soft)] mb-3 text-start @lg/result:p-3.5 @lg/result:rounded-2xl @lg/result:mb-4 @max-lg/result:border-0 @max-lg/result:bg-transparent @max-lg/result:p-0">
+                        <div className="text-[var(--bts-text-secondary)] text-xs font-black mb-2 @lg/result:mb-2.5 @max-lg/result:mb-1.5">{a.recommendedReview}</div>
+                        <div className="space-y-1.5 @lg/result:space-y-2">
                             {reviewLinks.map(link => {
                                 // קישור שמצביע על הפרק הנוכחי (המבדק יושב בתוכו): ניווט Link לא יזיז
                                 // כלום, ולכן נגלול חזרה לראש העמוד כדי לחזור לתוכן הפרק.
                                 const isCurrentPage = pathname === link.href || (pathname?.endsWith(link.href) ?? false);
-                                const linkCls = "flex items-center justify-between gap-2 bg-[var(--bts-fill-soft)] hover:bg-[var(--bts-fill-track)] px-3 py-2.5 rounded-xl border border-[var(--bts-divider-soft)] transition-all no-underline group";
+                                const linkCls = "flex min-h-[44px] items-center justify-between gap-2 bg-[var(--bts-fill-soft)] hover:bg-[var(--bts-fill-track)] px-3 py-2.5 @max-lg/result:py-2 rounded-xl border border-[var(--bts-divider-soft)] transition-all no-underline group";
                                 const arrow = isRTL
                                     ? <ArrowLeft size={16} className="text-[var(--bts-text-faint)] group-hover:text-[var(--bts-text-primary)] group-hover:-translate-x-0.5 transition-all" />
                                     : <ArrowRight size={16} className="text-[var(--bts-text-faint)] group-hover:text-[var(--bts-text-primary)] group-hover:translate-x-0.5 transition-all" />;
@@ -623,7 +726,8 @@ export const AssessmentEngine = ({
                     </div>
                 )}
 
-                <div className="flex flex-col items-stretch gap-3">
+                <div className="flex flex-col items-stretch gap-2 @lg/result:gap-2.5 @max-lg/result:flex-row @max-lg/result:flex-wrap @max-lg/result:items-center @max-lg/result:justify-center">
+                    <div className="flex flex-col gap-2 @lg/result:gap-2.5 @max-lg/result:contents @md:flex-row @md:*:min-w-0 @md:*:flex-1 @md:*:basis-0">
                     {passed && nextHref && (
                         <GuessButton
                             href={nextHref}
@@ -639,16 +743,20 @@ export const AssessmentEngine = ({
                             {reviewLabelR}
                         </GuessButton>
                     )}
-                    <GuessButton onClick={() => setIsReviewMode(true)} rgb="100,116,139" fullWidth leadingIcon={<Eye size={18} />}>
+                    <GuessButton onClick={() => setIsReviewMode(true)} rgb="100,116,139" fullWidth leadingIcon={<Eye size={18} />} className="@max-lg/result:w-auto @max-lg/result:max-w-full">
                         {a.reviewAnswers}
                     </GuessButton>
+                    </div>
                     <GuessButton
                         onClick={() => { setAnswers({}); setCurrentIndex(0); setIsSubmitted(false); setIsReviewMode(false); setStreak(0); setSeconds(0); setIsActive(true); setDirection(0); setOptionOrder(buildOptionOrder(questions)); }}
                         variant="ghost"
+                        className="min-h-[44px] self-center"
+                        leadingIcon={<RotateCcw size={14} aria-hidden className={`@lg/result:hidden ${feedback.color}`} />}
                     >
                         {a.retry}
                     </GuessButton>
                 </div>
+                    </div>
                 </div>
             </motion.div>
         );
@@ -666,11 +774,13 @@ export const AssessmentEngine = ({
                 : `rgb(${accent.base} / 0.12)`;
 
     // 3. מסך השאלות - Decision Console (עיצוב Stage B)
+    // רוחב: עמודת התוכן של הפרק (ChapterLayout main) היא הגבול, כמו בשאר תוכן הפרק. בלי max-w פנימי
+    // ובלי ריפוד צד נוסף: אלה צמצמו את המבדק לכרטיס צר בדסקטופ ואכלו רוחב שורה בטלפון.
     return (
-        <div className="w-full max-w-2xl mx-auto px-4 py-4 font-sans" dir={dir}>
+        <div className="w-full mx-auto py-4 font-sans" dir={dir}>
             {/* ===== קונסולת ההחלטה: כרטיס אחד מאוחד. הכרטיס, הכותרת, ההתקדמות והפוטר
                  נשארים מונטים ויציבים; רק תוכן השאלה הפנימי מתחלף (רצף חלק, בלי מסגרת ריקה). ===== */}
-            <div className="relative overflow-hidden rounded-[1.75rem] border border-[var(--bts-divider-soft)] bg-gradient-to-b from-[color-mix(in_oklab,var(--bts-panel-from)_70%,transparent)] to-[color-mix(in_oklab,var(--bts-panel-to)_70%,transparent)] shadow-[0_25px_50px_-12px_var(--bts-shadow-lift)] backdrop-blur-md">
+            <div className="@container/quiz relative overflow-hidden rounded-[1.75rem] border border-[var(--bts-divider-soft)] bg-gradient-to-b from-[color-mix(in_oklab,var(--bts-panel-from)_70%,transparent)] to-[color-mix(in_oklab,var(--bts-panel-to)_70%,transparent)] shadow-[0_25px_50px_-12px_var(--bts-shadow-lift)] backdrop-blur-md">
                 {/* הילה אדפטיבית לפי מצב (ויזואלי בלבד): ציאן רגוע, אמרלד נכון, ענבר תיקון, אפור בסקירה */}
                 <div
                     aria-hidden
@@ -679,8 +789,8 @@ export const AssessmentEngine = ({
                 />
 
                 {/* ---- Header band: כותרת + טיימר/רצף/השתקה, ואז מונה "שאלה X מתוך Y" + התקדמות ---- */}
-                <div className="relative border-b border-[var(--bts-divider-soft)] px-5 pb-4 pt-5 sm:px-7 sm:pb-5 sm:pt-6">
-                    <div className="mb-4 flex items-start justify-between gap-3">
+                <div className="relative border-b border-[var(--bts-divider-soft)] px-4 pb-3 pt-4 sm:px-7 sm:pb-5 sm:pt-6">
+                    <div className="mb-3 flex items-start justify-between gap-3 sm:mb-4">
                         <div className="min-w-0">
                             {/* h2, לא h1: כותרת המבדק היא מקטע בתוך העמוד. ה-h1 היחיד הוא ה-hero. */}
                             <h2 className="truncate text-[15px] font-black leading-tight text-[var(--bts-text-primary)] sm:text-base">{title}</h2>
@@ -731,7 +841,7 @@ export const AssessmentEngine = ({
                 </div>
 
                 {/* ---- גוף: רק כאן מתחלף התוכן. grid-stack לקרוספייד בלי מסגרת ריקה ובלי קריסת פריסה ---- */}
-                <div className="relative grid min-h-[16rem] px-5 py-6 sm:px-7 sm:py-7">
+                <div className="relative grid min-h-[16rem] px-4 py-4 sm:px-7 sm:py-6">
                     <AnimatePresence initial={false}>
                         <motion.div
                             key={currentIndex}
@@ -741,18 +851,21 @@ export const AssessmentEngine = ({
                             exit={reduce ? { opacity: 0 } : { opacity: 0, x: (direction < 0 ? 1 : -1) * (isRTL ? -18 : 18) }}
                             transition={reduce ? { duration: 0 } : { duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
                         >
+                            <QuestionMaterial question={currentQuestion} labels={a} />
+
                             {/* שורת השאלה: prompt חזק + הקראה (אח, לא מקונן) */}
-                            <div className="mb-6 flex items-start justify-between gap-3">
-                                {/* h3: השאלה יושבת תחת כותרת המבדק (h2), בלי לדלג רמה. */}
-                                <h3 className="text-xl font-bold leading-relaxed text-[var(--bts-text-primary)] sm:text-2xl">
+                            <div className="mb-4 flex items-start justify-between gap-3 sm:mb-5">
+                                {/* h3: השאלה יושבת תחת כותרת המבדק (h2), בלי לדלג רמה. גודל קריאה ולא כותרת-הירו:
+                                    17px בטלפון, 18px מ-sm ו-20px מ-md, במשקל 600 ולא bold. הגודל מעל האפשרויות (14px/15px). */}
+                                <h3 className="text-[17px] font-semibold leading-normal text-[var(--bts-text-primary)] sm:text-lg md:text-xl md:leading-relaxed">
                                     {currentQuestion.question}
                                 </h3>
-                                <SpeakButton text={currentQuestion.question} className="mt-1 shrink-0" />
+                                <SpeakButton text={questionSpeech(currentQuestion, a)} className="mt-1 shrink-0" />
                             </div>
 
                             {/* שורות החלטה פרימיום. ההתנהגות זהה: לחיצה = פתרון מיידי עם האינדקס
                                 המקורי (oIdx); displayPos הוא מיקום התצוגה בלבד. */}
-                            <div className="relative grid gap-2.5">
+                            <div className="relative grid gap-2">
                                 {(optionOrder[currentQuestion.id] ?? currentQuestion.options.map((_, i) => i)).map((oIdx, displayPos) => {
                                     const opt = currentQuestion.options[oIdx];
                                     const isSelected = answers[currentQuestion.id] === oIdx;
@@ -788,14 +901,20 @@ export const AssessmentEngine = ({
                                             <button
                                                 disabled={showResult && !isReviewMode}
                                                 onClick={() => handleAnswer(oIdx)}
-                                                className={`group relative flex w-full items-center gap-3.5 overflow-hidden rounded-2xl border py-3.5 pe-12 ps-2.5 text-start transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bts-panel-to)] ${rowCls} ${showResult || reduce ? '' : 'hover:-translate-y-px active:scale-[0.99]'}`}
+                                                className={`group relative flex min-h-[44px] w-full items-center gap-3 overflow-hidden rounded-2xl border py-2 pe-12 ps-2.5 text-start sm:py-2.5 @max-xl/quiz:grid @max-xl/quiz:grid-cols-[auto_minmax(0,1fr)] @max-xl/quiz:items-start @max-xl/quiz:gap-x-2.5 @max-xl/quiz:gap-y-0.5 @max-xl/quiz:py-2 @max-xl/quiz:ps-2.5 @max-xl/quiz:pe-3 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bts-panel-to)] ${rowCls} ${showResult || reduce ? '' : 'hover:-translate-y-px active:scale-[0.99]'}`}
                                             >
-                                                <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-[13px] font-black transition-colors ${chipCls}`}>
+                                                <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-[13px] font-black transition-colors @max-xl/quiz:col-start-1 @max-xl/quiz:row-start-1 @max-xl/quiz:size-6 @max-xl/quiz:rounded-lg @max-xl/quiz:text-[12px] ${chipCls}`}>
                                                     {displayPos + 1}
                                                 </span>
-                                                <span className={`flex-1 break-words text-[15px] font-semibold leading-snug ${textCls}`}>{opt}</span>
-                                                {showResult && isCorrect && <Check size={18} className="shrink-0 text-emerald-300 stroke-[3px]" />}
-                                                {showResult && isSelected && !isCorrect && <X size={18} className="shrink-0 text-amber-300 stroke-[3px]" />}
+                                                {/* טקסט גוף רגיל (400): השאלה היא הטקסט החזק, ושבב המספר נושא את ההדגשה של השורה.
+                                                    leading-normal (1.5) ולא snug: במשקל רגיל, תשובה רב-שורתית בטלפון צריכה מעט יותר אוויר. */}
+                                                <span className={`flex-1 break-words text-[14px] font-normal leading-normal sm:text-[15px] @max-xl/quiz:col-start-2 @max-xl/quiz:row-start-1 @max-xl/quiz:row-span-2 ${textCls}`}>
+                                                    {/* מקום להקראה בסוף השורה הראשונה בלבד (כרטיס צר): הטקסט זורם סביבו ולא מאבד עמודה שלמה. */}
+                                                    <span aria-hidden className="hidden float-end ms-1.5 h-[21px] w-[22px] @max-xl/quiz:block" />
+                                                    {opt}
+                                                </span>
+                                                {showResult && isCorrect && <Check size={18} className="shrink-0 text-emerald-300 stroke-[3px] @max-xl/quiz:col-start-1 @max-xl/quiz:row-start-2 @max-xl/quiz:justify-self-center @max-xl/quiz:size-4" />}
+                                                {showResult && isSelected && !isCorrect && <X size={18} className="shrink-0 text-amber-300 stroke-[3px] @max-xl/quiz:col-start-1 @max-xl/quiz:row-start-2 @max-xl/quiz:justify-self-center @max-xl/quiz:size-4" />}
                                                 {/* הדגשת-אישור חד-פעמית לשורה הנכונה (לא בסקירה). קישוט: מדולג בתנועה מופחתת. */}
                                                 {showResult && isCorrect && !isReviewMode && !reduce && (
                                                     <motion.span
@@ -807,7 +926,7 @@ export const AssessmentEngine = ({
                                                     />
                                                 )}
                                             </button>
-                                            <SpeakButton text={opt} className="absolute end-2 top-1/2 z-10 -translate-y-1/2" />
+                                            <SpeakButton text={opt} className="absolute end-2 top-1/2 z-10 -translate-y-1/2 @max-xl/quiz:end-[13px] @max-xl/quiz:top-2 @max-xl/quiz:translate-y-0 @max-xl/quiz:size-[22px] @max-xl/quiz:after:-inset-[11px]" />
                                         </div>
                                     );
                                 })}
@@ -834,7 +953,7 @@ export const AssessmentEngine = ({
                                         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                                         exit={{ opacity: 0 }}
                                         transition={reduce ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                                        className="mt-5"
+                                        className="mt-5 @max-xl/quiz:mt-4"
                                         role="status"
                                         aria-live="polite"
                                     >
@@ -843,8 +962,8 @@ export const AssessmentEngine = ({
                                         {isAnswered && (
                                             <span className="sr-only">{answeredWrong ? a.verdictWrong : a.verdictCorrect}</span>
                                         )}
-                                        <div className={`relative overflow-hidden rounded-2xl border border-[var(--bts-divider-soft)] border-s-2 bg-gradient-to-b to-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-4 ${answeredWrong ? 'border-s-amber-400/70 from-amber-500/[0.09]' : 'border-s-emerald-400/70 from-emerald-500/[0.09]'}`}>
-                                            <div className="flex items-start gap-3">
+                                        <div className={`relative overflow-hidden rounded-2xl border border-[var(--bts-divider-soft)] border-s-2 bg-gradient-to-b to-[color-mix(in_oklab,var(--bts-panel-to)_40%,transparent)] p-4 @max-xl/quiz:px-3 @max-xl/quiz:py-3 ${answeredWrong ? 'border-s-amber-400/70 from-amber-500/[0.09]' : 'border-s-emerald-400/70 from-emerald-500/[0.09]'}`}>
+                                            <div className="flex items-start gap-3 @max-xl/quiz:gap-2.5">
                                                 <motion.span
                                                     initial={reduce ? false : { scale: 0.6, opacity: 0 }}
                                                     animate={{ scale: 1, opacity: 1 }}
@@ -853,7 +972,7 @@ export const AssessmentEngine = ({
                                                 >
                                                     <Lightbulb size={14} />
                                                 </motion.span>
-                                                <p className="flex-1 text-[14px] font-medium leading-relaxed text-[var(--bts-text-body)] sm:text-[15px]">
+                                                <p className="flex-1 text-[14px] font-medium leading-relaxed text-[var(--bts-text-body)] sm:text-[15px] @max-xl/quiz:leading-normal">
                                                     {currentQuestion.explanation}
                                                 </p>
                                                 {/* הקראת ה-readout: השאלה ואז ההסבר (אח של ה-p, לא מקונן) */}
@@ -869,7 +988,7 @@ export const AssessmentEngine = ({
             </div>
 
             {/* ===== סרגל ניווט דביק: מחוץ ל-AnimatePresence, יציב ולא מהבהב. רק Back + המשך. ===== */}
-            <div className="sticky bottom-0 z-20 -mx-4 mt-5 flex items-center justify-between border-t border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-to)_85%,transparent)] px-4 py-3 backdrop-blur-md">
+            <div className="sticky bottom-0 z-20 mt-5 flex items-center justify-between border-t border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-to)_85%,transparent)] px-4 py-3 backdrop-blur-md">
                 <button
                     onClick={handleBack}
                     disabled={currentIndex === 0}

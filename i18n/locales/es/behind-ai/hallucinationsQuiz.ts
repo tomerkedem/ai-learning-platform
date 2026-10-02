@@ -64,7 +64,13 @@ export const hallucinationsQuiz = {
                 'La seguridad en la redacción, la longitud o la repetición no hacen que una respuesta esté fundamentada. Lo que reduce el riesgo es el fundamento: aportar una fuente, pedir que separe lo conocido de lo supuesto, y pedir al modelo que diga qué falta. Una situación real necesita una fuente o una herramienta. Cómo entra de verdad una fuente en la respuesta es el tema del próximo capítulo.',
         },
         5: {
-            question: "Tres respuestas a la misma pregunta: (a) 'La biblioteca abre de 10:00 a 14:00 en el feriado', (b) 'No se puede confirmar el horario de feriado sin comprobar el horario oficial', (c) 'Lo que se sabe: el horario regular es de 09:00 a 18:00. Lo que no se sabe: el horario de feriado. Hay que comprobar el horario oficial'. ¿Cuál es la más exacta?",
+            context: 'Tres respuestas a la misma pregunta.',
+            modelResponses: [
+                { label: 'a', text: 'La biblioteca abre de 10:00 a 14:00 en el feriado' },
+                { label: 'b', text: 'No se puede confirmar el horario de feriado sin comprobar el horario oficial' },
+                { label: 'c', text: 'Lo que se sabe: el horario regular es de 09:00 a 18:00. Lo que no se sabe: el horario de feriado. Hay que comprobar el horario oficial' },
+            ],
+            question: '¿Cuál es la más exacta?',
             options: [
                 '(a) es la mejor, porque es la más clara y segura',
                 '(b) y (c) son más seguras que (a), porque no inventan un horario, y (c) además separa lo que se sabe de lo que no',

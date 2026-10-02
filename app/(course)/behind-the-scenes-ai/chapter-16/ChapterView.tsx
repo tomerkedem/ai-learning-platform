@@ -256,7 +256,7 @@ export default function BehindTheScenesChapter16() {
             </div>
 
             {/* ══════════ ניחוש פתיחה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="guess" className="mt-12 text-start" dir={dir}>
                 {/* M10 F3 SELECTIVE RESPOND: מנטור ההזמנה ומנטור כרטיס ההכרעה הוסרו, ומשפט ההזמנה
                     נשאר כטקסט גוף וגלוי גם בטלפון. אחרי הבחירה שתי התוצאות מקבלות בדיוק אותה שורת
                     תגובה אנושית: אותה פוזה, אותו גודל, אותו מיקום. זה רגע הדמות היחיד בפרק. */}
@@ -269,7 +269,7 @@ export default function BehindTheScenesChapter16() {
             </section>
 
             {/* ══════════ רגע לפני המעבדה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="primer" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-[2rem] border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-6 backdrop-blur-xl md:p-8">
                     <div className="mb-4 flex items-start justify-between gap-2.5">
                         <div>
@@ -299,7 +299,7 @@ export default function BehindTheScenesChapter16() {
             </section>
 
             {/* ══════════ See: מהתיקון ועד שיפור קבוע ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="see" className="mt-12 text-start" dir={dir}>
                 <div className="rounded-2xl border border-[var(--bts-border)] bg-[color-mix(in_oklab,var(--bts-panel-from)_40%,transparent)] p-5">
                     <div className="mb-3 flex items-center justify-between gap-2">
                         <div className="text-sm font-bold text-[var(--bts-text-bright)]">{c16.see.title}</div>
@@ -324,7 +324,7 @@ export default function BehindTheScenesChapter16() {
             </section>
 
             {/* ══════════ מעבדת האם AI לומד ממני ══════════ */}
-            <section id="does-ai-learn-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
+            <section data-learning-unit="lab" id="does-ai-learn-lab" className="mt-12 space-y-5 text-start scroll-mt-24" dir={dir}>
                 <div className="flex items-center gap-3">
                     <FlaskConical size={24} className="text-violet-400" />
                     <div>
@@ -347,7 +347,7 @@ export default function BehindTheScenesChapter16() {
             </section>
 
             {/* ══════════ רגע ה-wow ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="wow" className="mt-12 text-start" dir={dir}>
                 <InsightBox type="intuition" title={c16.insight.title}>
                     <div className="flex items-start justify-between gap-2.5">
                         <span className="block text-lg font-bold text-violet-200">{c16.insight.lead}</span>
@@ -358,7 +358,7 @@ export default function BehindTheScenesChapter16() {
             </section>
 
             {/* ══════════ תיקון טעות נפוצה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="misconception" className="mt-12 text-start" dir={dir}>
                 {/* M10: המנטור "זה עבד, אבל לא בהכרח נלמד" הוסר. שני הכרטיסים שמתחתיו
                 אומרים בדיוק את אותה הבחנה, ובניסוח מלא יותר. */}
                 <div className="grid gap-4 md:grid-cols-2">
@@ -385,7 +385,7 @@ export default function BehindTheScenesChapter16() {
             </section>
 
             {/* ══════════ בדיקת הבנה ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="lock" className="mt-12 text-start" dir={dir}>
                 {/* M10: המנטור שלפני השאלה הוסר. "שיחה חדשה מתחילה מדף חדש" הוא בדיוק
                 התשובה שהשאלה מבקשת מהלומד להגיע אליה בעצמו. תוכן הבדיקה נשאר זהה. */}
                 <div className="rounded-2xl border border-violet-500/40 bg-[var(--bts-surface)] p-6">
@@ -401,7 +401,7 @@ export default function BehindTheScenesChapter16() {
             </section>
 
             {/* ══════════ תובנה מעשית ══════════ */}
-            <section className="mt-12 text-start" dir={dir}>
+            <section data-learning-unit="practical" className="mt-12 text-start" dir={dir}>
                 {/* M10: המנטור "ספקו שוב את הכלל או המקור" הוסר. זו התובנה המעשית עצמה,
                 והרשימה שמתחתיה כבר מפרטת בדיוק איך. */}
                 <InsightBox type="intuition" title={c16.practical.title}>

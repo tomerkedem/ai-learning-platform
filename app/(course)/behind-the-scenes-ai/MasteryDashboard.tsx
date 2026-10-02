@@ -118,7 +118,7 @@ function SyncNotice({ sync, compact = false }: { sync: SyncState; compact?: bool
                 <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-2">
                     <p className="font-bold bts-tier-amber">{a.unsyncedTitle(sync.pending.length)}</p>
                     <ul className="text-[var(--bts-text-secondary)]">
-                        {sync.pending.map(p => <li key={p.attemptId}>{name(p)} · {p.scorePercent}% · {time(p.completedAt)}</li>)}
+                        {sync.pending.map(p => <li key={p.attemptId}>{name(p)} · {t.chrome.assessment.scoreOutOf(p.scorePercent)} · {time(p.completedAt)}</li>)}
                     </ul>
                     <p className="text-[var(--bts-text-muted)]">{a.unsyncedHint}</p>
                 </div>
@@ -130,7 +130,7 @@ function SyncNotice({ sync, compact = false }: { sync: SyncState; compact?: bool
                     <ul className="space-y-1.5">
                         {sync.rejected.map(p => (
                             <li key={p.attemptId} className="flex flex-wrap items-center justify-between gap-2 text-[var(--bts-text-secondary)]">
-                                <span>{name(p)} · {p.scorePercent}% · {time(p.completedAt)}</span>
+                                <span>{name(p)} · {t.chrome.assessment.scoreOutOf(p.scorePercent)} · {time(p.completedAt)}</span>
                                 <span className="flex gap-1.5">
                                     <button type="button" className={btn} onClick={() => retryRejected(sync.userId, p.attemptId)}>{a.retry}</button>
                                     <button type="button" className={btn} onClick={() => removeRejected(sync.userId, p.attemptId)}>{a.remove}</button>
@@ -204,7 +204,7 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
                 </div>
                 <div className="bg-[var(--bts-fill-soft)] rounded-2xl border border-[var(--bts-divider-soft)] p-3">
                     <div className="text-[10px] font-bold uppercase text-[var(--bts-text-faint)] mb-1">{progress.average}</div>
-                    <div className="text-[var(--bts-text-primary)] font-black text-lg tabular-nums">{summary.averageScore !== null ? `${summary.averageScore}%` : "-"}</div>
+                    <div className="text-[var(--bts-text-primary)] font-black text-lg tabular-nums">{summary.averageScore !== null ? summary.averageScore : "-"}</div>
                 </div>
                 <div className="bg-[var(--bts-fill-soft)] rounded-2xl border border-[var(--bts-divider-soft)] p-3">
                     <div className="text-[10px] font-bold uppercase text-[var(--bts-text-faint)] mb-1">{progress.finalExam}</div>
@@ -309,7 +309,7 @@ export function SidebarMastery() {
                 <span className="flex items-center gap-2 shrink-0">
                     <span className="text-[10px] font-mono text-[var(--bts-text-muted)]">{summary.completedChapters}/{summary.totalChapters}</span>
                     {summary.averageScore !== null && (
-                        <span className="text-[10px] font-mono text-[var(--bts-text-faint)]">· {summary.averageScore}%</span>
+                        <span className="text-[10px] font-mono text-[var(--bts-text-faint)]">· {progress.average} {summary.averageScore}</span>
                     )}
                     <ChevronDown size={14} className={`text-[var(--bts-text-faint)] transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
                 </span>

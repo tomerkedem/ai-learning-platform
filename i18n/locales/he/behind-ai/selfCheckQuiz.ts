@@ -14,7 +14,10 @@
 // אין מקף ארוך (U+2014), אין מקף בינוני (U+2013) ואין אזכור שנה. סדר ה-options חייב
 // להישמר זהה בין השפות, כי correctAnswer הוא אינדקס מספרי שנשמר מהשלד המשותף.
 
-export interface SelfCheckQuizText {
+import type { QuizQuestionMaterial } from '@/components/content/AssessmentEngine';
+
+/** question היא השאלה עצמה בלבד; תשובת מודל, פרומפט והקשר מוצהרים בשדות של QuizQuestionMaterial. */
+export interface SelfCheckQuizText extends QuizQuestionMaterial {
     question: string;
     options: string[];
     explanation: string;
@@ -55,7 +58,11 @@ export const selfCheckQuiz = {
                 'מקור מפחית ניחוש, אבל התשובה עדיין נכתבת על ידי המודל ויכולה להוסיף פרט שלא מופיע במקור. בדיקה עצמית משווה את הטיוטה למקור ותופסת בדיוק את החריגה הזו.',
         },
         3: {
-            question: 'המקור אומר: שעות רגילות 09:00-18:00, שעות חג לא זמינות. הטיוטה: "הספרייה פתוחה בימי חול בין 09:00 ל-18:00, ובחג בין 10:00 ל-14:00." איזו טענה הבדיקה צריכה לסמן?',
+            context: 'המקור אומר: שעות רגילות 09:00-18:00, שעות חג לא זמינות.',
+            modelResponses: [
+                { label: 'הטיוטה', text: 'הספרייה פתוחה בימי חול בין 09:00 ל-18:00, ובחג בין 10:00 ל-14:00.' },
+            ],
+            question: 'איזו טענה הבדיקה צריכה לסמן?',
             options: [
                 '"פתוחה בימי חול בין 09:00 ל-18:00", כי היא מופיעה במקור',
                 '"פתוחה בחג בין 10:00 ל-14:00", כי המקור לא נותן שעות חג',

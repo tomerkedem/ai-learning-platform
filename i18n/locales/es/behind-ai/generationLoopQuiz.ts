@@ -23,7 +23,11 @@ export const generationLoopQuiz = {
                 'La respuesta no nace de golpe ni se saca ya hecha. El modelo genera una parte pequeña, la suma al contexto y luego pasa a la siguiente parte. Es un bucle que se repite hasta que la respuesta está completa.',
         },
         2: {
-            question: 'El modelo acaba de escribir la parte «Revisa cuánto tiempo la herviste». ¿Qué es cierto sobre esta parte ahora?',
+            context: 'El modelo acaba de escribir esta parte de la respuesta.',
+            modelResponses: [
+                { text: 'Revisa cuánto tiempo la herviste' },
+            ],
+            question: '¿Qué es cierto sobre esta parte ahora?',
             options: [
                 'Queda apartada y no influye en lo que se escriba después',
                 'Pasó a formar parte del contexto e influye en qué continuaciones reciben más peso en el siguiente paso',
@@ -34,16 +38,20 @@ export const generationLoopQuiz = {
                 'Cada parte que se escribe vuelve hacia dentro y se suma al contexto. El contexto actualizado es lo que moldea la siguiente elección, por eso tras «Revisa cuánto tiempo la herviste» las continuaciones probables tratan de qué hacer con el resultado de la comprobación.',
         },
         3: {
-            question:
-                'El mismo Prompt exacto, «Siempre intento cocinar pasta y nunca me sale bien. ¿Qué hago?», se construye una vez desde el inicio «Revisa cuánto tiempo la herviste» y otra vez desde «Pide ayuda a alguien con experiencia». ¿Por qué salen respuestas completamente distintas?',
+            prompt: 'Siempre intento cocinar pasta y nunca me sale bien. ¿Qué hago?',
+            modelResponses: [
+                { label: 'Ejecución 1', text: 'Revisa cuánto tiempo la herviste' },
+                { label: 'Ejecución 2', text: 'Pide ayuda a alguien con experiencia' },
+            ],
+            question: 'El mismo Prompt exacto se envió al modelo dos veces. Nada en el Prompt cambió. ¿Por qué aun así se obtuvieron respuestas distintas?',
             options: [
-                'Porque el modelo elige una respuesta al azar cada vez',
-                'Porque la primera parte elegida cambió el contexto, así que toda la continuación se construyó de otra manera',
-                'Porque el segundo Prompt en realidad era diferente',
+                'Porque el modelo recuerda la ejecución anterior y cambia su respuesta a propósito para no repetirse',
+                'Porque el modelo elige tokens a partir de una distribución de probabilidades, así que el mismo Prompt puede llevar a elecciones distintas en ejecuciones distintas',
+                'Porque el modelo tiene varias respuestas completas guardadas de antemano y en cada ejecución muestra una distinta',
                 'Porque en una de las veces el modelo comprobó los hechos y en la otra no',
             ],
             explanation:
-                'Una elección temprana no es solo una palabra más, es un marco para todo lo que sigue. El inicio entra en el contexto y lo orienta, por eso el mismo Prompt puede construirse en dos respuestas distintas según la parte elegida al principio.',
+                'En cada paso el modelo calcula probabilidades para los tokens posibles, y para el mismo Prompt en las mismas condiciones la distribución del primer paso es la misma. Cuando el proceso de elección incluye muestreo, el mismo Prompt puede llevar a que se elija un token distinto. Cada token elegido se suma al contexto e influye en las probabilidades que se calculan en el paso siguiente, por eso las dos respuestas pueden desarrollarse de forma distinta.',
         },
         4: {
             question:

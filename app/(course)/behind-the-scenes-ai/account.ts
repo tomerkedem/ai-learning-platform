@@ -18,6 +18,7 @@ import { useSyncExternalStore } from "react";
 import { createClient, type Session } from "@supabase/supabase-js";
 import { isLocale, type Locale } from "@/i18n/config";
 import { mergeAttempt, MASTERY_UPDATED_EVENT, type QuizRecord, type RecordResultInput } from "./masteryProgress";
+import { isLearningUnit, legacyMasteryEarned, mergeReached, type ReachedUnit } from "./learningProgress";
 import { ACCESS_TOKEN_COOKIE } from "./_access/access";
 import { readAuthRedirect } from "./authForm";
 
@@ -135,6 +136,7 @@ interface QuizRow {
     last_completed_at: string;
     weak_concepts: string[];
     strong_concepts: string[];
+    mastery_earned: boolean;
 }
 
 const toRecord = (r: QuizRow): QuizRecord => ({
@@ -149,6 +151,7 @@ const toRecord = (r: QuizRow): QuizRecord => ({
     lastCompletedAt: Date.parse(r.last_completed_at),
     weakConcepts: r.weak_concepts,
     strongConcepts: r.strong_concepts,
+    masteryEarned: r.mastery_earned,
 });
 
 /** כל רשומות המבדקים של המשתמש המחובר (RLS מסנן למשתמש עצמו). */
@@ -184,7 +187,10 @@ export async function loadAccountSnapshot(userId: string): Promise<AccountSnapsh
         try {
             const cached = JSON.parse(window.localStorage.getItem(cacheKey(userId)) ?? "null") as { records?: unknown; loadedAt?: unknown } | null;
             if (cached && Array.isArray(cached.records) && typeof cached.loadedAt === "number") {
-                return { records: cached.records as QuizRecord[], loadedAt: cached.loadedAt, offline: true };
+                // עותק שנשמר לפני השליטה הקבועה: גוזרים אותה כמו ברשומה מקומית ישנה.
+                const records = (cached.records as QuizRecord[]).map(r =>
+                    typeof r.masteryEarned === "boolean" ? r : { ...r, masteryEarned: legacyMasteryEarned(r) });
+                return { records, loadedAt: cached.loadedAt, offline: true };
             }
         } catch {
             // עותק פגום: כמו שאין עותק.
@@ -196,6 +202,9 @@ export async function loadAccountSnapshot(userId: string): Promise<AccountSnapsh
 export async function signOutAndForget(userId: string): Promise<void> {
     try {
         window.localStorage.removeItem(cacheKey(userId));
+        // רק ההגעות שכבר אושרו בשרת נשכחות מהמכשיר; מה שעוד ממתין נשאר עד שיישלח בכניסה הבאה.
+        const { pending } = loadUnitStore(userId);
+        saveUnitStore(userId, { reached: pending, pending });
     } catch {
         // התעלמות בשקט.
     }
@@ -360,6 +369,7 @@ export async function importLocalRecords(userId: string, records: QuizRecord[]):
         last_completed_at: new Date(r.lastCompletedAt).toISOString(),
         weak_concepts: r.weakConcepts,
         strong_concepts: r.strongConcepts,
+        mastery_earned: r.masteryEarned,
     }));
     const { data, error } = await supabase
         .from("quiz_results")
@@ -367,6 +377,114 @@ export async function importLocalRecords(userId: string, records: QuizRecord[]):
         .select("quiz_id");
     if (error) throw error;
     return { added: data.length, kept: rows.length - data.length };
+}
+
+// ── התקדמות למידה: יחידות שהלומד הגיע אליהן (learning_unit_progress) ──
+// לכל משתמש מאגר אחד במכשיר: reached = כל מה שידוע (מהשרת ומהמכשיר), להצגה מיידית ובלי רשת;
+// pending = הגעות שהשרת עוד לא אישר. כמו תיבת היוצאים של המבדקים: פריט יוצא מ-pending רק
+// אחרי אישור, והשליחה חוזרת בטעינה, בחזרת הרשת ובכניסה. כתיבה כפולה בשרת היא no-op.
+// אורח: לא נרשם דבר (פרקים 1-19 מוגנים). הנתונים נשמרים לפי פרק+יחידה+זמן, כך שאפשר לייבא
+// בעתיד גם הגעות מקומיות, בלי שינוי במבנה.
+export const LEARNING_PROGRESS_UPDATED_EVENT = "behindai:learning-progress-updated";
+
+interface UnitStore {
+    reached: ReachedUnit[];
+    pending: ReachedUnit[];
+}
+
+const unitStoreKey = (userId: string) => `behindAiLearningUnits:${userId}`;
+const memoryUnitStore = new Map<string, UnitStore>();
+
+const isReachedUnit = (v: unknown): v is ReachedUnit => {
+    const u = v as ReachedUnit;
+    return !!u && typeof u.chapterId === "number" && typeof u.unitId === "string" && typeof u.reachedAt === "number";
+};
+
+function loadUnitStore(userId: string): UnitStore {
+    try {
+        const parsed = JSON.parse(window.localStorage.getItem(unitStoreKey(userId)) ?? "null") as Partial<UnitStore> | null;
+        const list = (v: unknown) => (Array.isArray(v) ? v.filter(isReachedUnit) : []);
+        return { reached: list(parsed?.reached), pending: list(parsed?.pending) };
+    } catch {
+        return memoryUnitStore.get(userId) ?? { reached: [], pending: [] };
+    }
+}
+
+function saveUnitStore(userId: string, store: UnitStore): void {
+    memoryUnitStore.set(userId, store);
+    try {
+        window.localStorage.setItem(unitStoreKey(userId), JSON.stringify(store));
+    } catch {
+        // אחסון חסום: נשאר הגיבוי בזיכרון עד סוף הביקור.
+    }
+    window.dispatchEvent(new CustomEvent(LEARNING_PROGRESS_UPDATED_EVENT));
+}
+
+/**
+ * הלומד המחובר הגיע ליחידה. אידמפוטנטי: הגעה שכבר ידועה לא נכתבת שוב ולא נשלחת שוב.
+ * לא מעניק גישה ואינו בודק אותה: היחידות מסומנות רק בתוכן שהשרת כבר שלח אחרי בדיקת הרשאה.
+ */
+export function markUnitReached(chapterId: number, unitId: string): void {
+    const userId = signedInUserId();
+    if (!userId || !isLearningUnit(chapterId, unitId)) return;
+    const store = loadUnitStore(userId);
+    if (store.reached.some(u => u.chapterId === chapterId && u.unitId === unitId)) return;
+    const item: ReachedUnit = { chapterId, unitId, reachedAt: Date.now() };
+    saveUnitStore(userId, { reached: [...store.reached, item], pending: [...store.pending, item] });
+    void flushLearningUnits(userId);
+}
+
+/** שולח את כל ההגעות הממתינות בקריאה אחת. נעילה משותפת לכל הלשוניות, כמו בתור המבדקים. */
+export async function flushLearningUnits(userId: string): Promise<void> {
+    const client = supabase;
+    if (!client) return;
+    const run = async () => {
+        const batch = loadUnitStore(userId).pending;
+        if (!batch.length || signedInUserId() !== userId) return;
+        let error: { code?: string } | null;
+        try {
+            ({ error } = await client.rpc("record_learning_units", {
+                p_chapter_ids: batch.map(u => u.chapterId),
+                p_unit_ids: batch.map(u => u.unitId),
+                p_reached_at: batch.map(u => new Date(u.reachedAt).toISOString()),
+            }));
+        } catch {
+            return;
+        }
+        // שגיאת רשת או טוקן: נשאר בתור. נתון שהשרת דוחה (22xxx/23xxx) לא יצליח בניסיון חוזר,
+        // ונשאר רק במכשיר (המזהים מגיעים מהמרשם, כך שזה לא אמור לקרות).
+        if (error && !/^2[23]/.test(error.code ?? "")) return;
+        const sent = new Set(batch.map(u => `${u.chapterId}:${u.unitId}`));
+        const store = loadUnitStore(userId);
+        saveUnitStore(userId, { ...store, pending: store.pending.filter(u => !sent.has(`${u.chapterId}:${u.unitId}`)) });
+    };
+    if (typeof navigator !== "undefined" && navigator.locks) {
+        await navigator.locks.request(`behindAiLearningOutbox:${userId}`, run);
+    } else {
+        await run();
+    }
+}
+
+/**
+ * כל ההגעות של המשתמש: מהחשבון (RLS: רק שלו), מאוחדות עם מה שבמכשיר ועם מה שממתין.
+ * בלי רשת: מה שבמכשיר. את המצב לכל פרק גוזרים מזה ב-chapterLearningStates.
+ */
+export async function loadReachedUnits(userId: string): Promise<{ reached: ReachedUnit[]; offline: boolean }> {
+    try {
+        if (!supabase) throw new Error("Supabase is not configured");
+        const { data, error } = await supabase.from("learning_unit_progress").select("chapter_id, unit_id, reached_at");
+        if (error) throw error;
+        const server = (data as { chapter_id: number; unit_id: string; reached_at: string }[])
+            .map(r => ({ chapterId: r.chapter_id, unitId: r.unit_id, reachedAt: Date.parse(r.reached_at) }));
+        const store = loadUnitStore(userId);
+        const reached = mergeReached(server, store.reached, store.pending);
+        // שמירה רק כשנוספה הגעה (למשל ממכשיר אחר), כדי שלא ייווצר מעגל עם האירוע.
+        if (reached.length !== store.reached.length) saveUnitStore(userId, { ...store, reached });
+        return { reached, offline: false };
+    } catch {
+        const store = loadUnitStore(userId);
+        return { reached: mergeReached(store.reached, store.pending), offline: true };
+    }
 }
 
 // ── שפה מועדפת ──

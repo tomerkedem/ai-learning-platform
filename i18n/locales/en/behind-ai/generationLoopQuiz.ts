@@ -25,7 +25,11 @@ export const generationLoopQuiz = {
                 'The answer is not born all at once and is not pulled ready-made. The model generates a small part, joins it to the context, and then moves to the next part. It is a loop that repeats until the answer is complete.',
         },
         2: {
-            question: "The model just wrote the part 'Check how long you boiled it'. What is true about this part now?",
+            context: 'The model just wrote this part of the answer.',
+            modelResponses: [
+                { text: 'Check how long you boiled it' },
+            ],
+            question: 'What is true about this part now?',
             options: [
                 'It is set aside and does not affect what gets written after it',
                 'It became part of the context and affects which continuations get high weight in the next step',
@@ -36,16 +40,20 @@ export const generationLoopQuiz = {
                 "Every part that is written loops back in and joins the context. The updated context is what shapes the next choice, so after 'Check how long you boiled it' the plausible continuations are about what to do with the result of the check.",
         },
         3: {
-            question:
-                "The exact same prompt, 'I keep trying to cook pasta, and it never turns out right. What should I do?', is built once from the opener 'Check how long you boiled it' and once from 'Ask someone experienced for help'. Why do the answers come out completely different?",
+            prompt: 'I keep trying to cook pasta, and it never turns out right. What should I do?',
+            modelResponses: [
+                { label: 'Run 1', text: 'Check how long you boiled it' },
+                { label: 'Run 2', text: 'Ask someone experienced for help' },
+            ],
+            question: 'The exact same prompt was sent to the model twice. Nothing in the prompt changed. Why did the answers still come out different?',
             options: [
-                'Because the model picks a random answer each time',
-                'Because the first part chosen changed the context, so the whole continuation was built differently',
-                'Because the second prompt was actually different',
+                'Because the model remembers the previous run and deliberately changes its answer to avoid repeating itself',
+                'Because the model selects tokens from a probability distribution, so the same prompt can lead to different choices in different runs',
+                'Because the model has several complete, pre-stored answers and displays a different one in each run',
                 'Because in one case the model checked the facts and in the other it did not',
             ],
             explanation:
-                'An early choice is not just one more word, it is a frame for everything that follows. The opener enters the context and steers it, so the exact same prompt can be built into two different answers depending on the part chosen at the start.',
+                'At each step the model computes probabilities for the possible tokens, and for the same prompt under the same conditions the distribution at the first step is the same. When the selection process includes sampling, the same prompt can lead to a different token being chosen. Each chosen token joins the context and affects the probabilities computed at the next step, so the two answers can develop differently.',
         },
         4: {
             question:

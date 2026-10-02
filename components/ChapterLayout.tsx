@@ -14,6 +14,7 @@ import { formatChapterLabel, formatNextChapterLabel, formatReadTime, parseReadTi
 import { ChevronRight, ChevronLeft, BookOpen, Trophy, Maximize2, Minimize2, Milestone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { EdgeRail, EdgePeekItem } from "@/components/ai-internals/EdgePeek";
+import { useLearningUnitTracking } from "@/app/(course)/behind-the-scenes-ai/useLearningUnitTracking";
 
 // מצב המיקוד נחשף ל-children (למשל כדי לגדל את מנטור ההירו במבוא כשנכנסים למיקוד).
 // ברירת המחדל false, כך שצרכנים מחוץ לפריסה מקבלים ערך בטוח.
@@ -105,6 +106,8 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     const [headerRestHeight, setHeaderRestHeight] = useState<number | null>(null);
     const isScrolledRef = useRef(false);
     const router = useRouter();
+    // התקדמות למידה: יחידות שנראו באזור הגלילה של פרק 1-19 (לא המבוא ולא לומדות אחרות).
+    useLearningUnitTracking(scrollContainerRef, courseId === 'behind-the-scenes-ai' && currentChapterId >= 1 && currentChapterId <= 19 ? currentChapterId : null);
 
     useEffect(() => {
         const el = headerRef.current;
