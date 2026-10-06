@@ -139,7 +139,7 @@ export const chrome: typeof heChrome = {
     },
 
     pulse: {
-        brand: 'Learning Pulse',
+        brand: '学習パルス',
         subtitle: 'あなたの学びのしるし',
         chapters: '章',
         mastered: '合格したテスト',
@@ -175,8 +175,8 @@ export const chrome: typeof heChrome = {
             title: '現在、章へのアクセスは有効ではありません',
             body: 'これまでの進み具合と習熟は保持されています。',
         },
-        expand: 'Learning Pulseを展開',
-        collapse: 'Learning Pulseを折りたたむ',
+        expand: '学習パルスを展開',
+        collapse: '学習パルスを折りたたむ',
         titled: (chapter, title) => `${chapter}「${title}」`,
         sentences: (parts) => `${parts.join('。')}。`,
         masteredSummary: (mastered, total) => `合格したテスト：${total}件中${mastered}件`,

@@ -159,11 +159,11 @@ export const chrome = {
     },
 
     // Learning Pulse (19 הפרקים): הסימן, רצועת המיקוד, כרטיסי הפרקים ו"המשך למידה".
-    // "הגעה" אינה "קריאה", "השלמה" או "הבנה", ואין כאן מספר יחידות. השם Learning Pulse זהה בכל
-    // השפות (מוצג באותיות גדולות בעיצוב). מבחן הסיום, הסטטוסים שלו, הנעילה והסנכרון: progress.finalExam,
+    // "הגעה" אינה "קריאה", "השלמה" או "הבנה", ואין כאן מספר יחידות. השם המוצג מתורגם לכל
+    // שפה (מוצג באותיות גדולות בעיצוב). מבחן הסיום, הסטטוסים שלו, הנעילה והסנכרון: progress.finalExam,
     // progress.status, access.lockedLabel והמחרוזות של account (offline/unsynced/rejected).
     pulse: {
-        brand: 'Learning Pulse',
+        brand: 'התקדמות בלמידה',
         subtitle: 'חתימת הלמידה שלך',
         chapters: 'פרקים',
         mastered: 'מבדקים שעברו בהצלחה',
@@ -199,8 +199,8 @@ export const chrome = {
             title: 'הגישה לפרקים אינה פעילה כרגע',
             body: 'ההתקדמות והשליטה שנצברו נשמרות.',
         },
-        expand: 'הרחבת Learning Pulse',
-        collapse: 'כיווץ Learning Pulse',
+        expand: 'הרחבת התקדמות בלמידה',
+        collapse: 'כיווץ התקדמות בלמידה',
         // צירוף שם נגיש מחלקים. chapter = formatChapterLabel; title = שם הפרק.
         titled: (chapter: string, title: string) => `${chapter}, ${title}`,
         sentences: (parts: string[]) => `${parts.join('. ')}.`,

@@ -139,7 +139,7 @@ export const chrome: typeof heChrome = {
     },
 
     pulse: {
-        brand: 'Learning Pulse',
+        brand: 'Pulso de aprendizaje',
         subtitle: 'Tu huella de aprendizaje',
         chapters: 'capítulos',
         mastered: 'Tests aprobados',
@@ -175,8 +175,8 @@ export const chrome: typeof heChrome = {
             title: 'El acceso a los capítulos no está activo ahora',
             body: 'Tu progreso y tu dominio se conservan.',
         },
-        expand: 'Expandir Learning Pulse',
-        collapse: 'Contraer Learning Pulse',
+        expand: 'Expandir el Pulso de aprendizaje',
+        collapse: 'Contraer el Pulso de aprendizaje',
         titled: (chapter, title) => `${chapter}, ${title}`,
         sentences: (parts) => `${parts.join('. ')}.`,
         masteredSummary: (mastered, total) => `${mastered} de ${total} tests aprobados`,

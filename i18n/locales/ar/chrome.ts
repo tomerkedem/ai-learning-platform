@@ -139,7 +139,7 @@ export const chrome: typeof heChrome = {
     },
 
     pulse: {
-        brand: 'Learning Pulse',
+        brand: 'نبض التعلّم',
         subtitle: 'بصمة تعلّمك',
         chapters: 'فصلًا',
         mastered: 'اختبارات اجتيزت بنجاح',
@@ -175,8 +175,8 @@ export const chrome: typeof heChrome = {
             title: 'الوصول إلى الفصول غير مفعّل حاليًا',
             body: 'تقدّمك وإتقانك محفوظان.',
         },
-        expand: 'توسيع Learning Pulse',
-        collapse: 'طيّ Learning Pulse',
+        expand: 'توسيع نبض التعلّم',
+        collapse: 'طيّ نبض التعلّم',
         titled: (chapter, title) => `${chapter}، ${title}`,
         sentences: (parts) => `${parts.join('. ')}.`,
         masteredSummary: (mastered, total) => `الاختبارات المجتازة: ${mastered} من ${total}`,

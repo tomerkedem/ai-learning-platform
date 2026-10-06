@@ -1,5 +1,5 @@
-// Learning Pulse copy contract (chrome.pulse): the same structure in all six locales, the brand kept
-// in English, no internal learning-unit vocabulary, and no claim that reaching content means reading,
+// Learning Pulse copy contract (chrome.pulse): the same structure in all six locales, the brand
+// localized per locale, no internal learning-unit vocabulary, and no claim that reaching content means reading,
 // completing or understanding it. The real dictionaries are loaded (not parsed as text).
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -55,8 +55,15 @@ test("chrome.pulse exists in all six locales with identical structure", () => {
     }
 });
 
-test("the brand is exactly 'Learning Pulse' in every locale", () => {
-    for (const locale of LOCALES) assert.equal(pulses[locale].brand, "Learning Pulse", locale);
+test("the brand is localized in every locale", () => {
+    const brands = { he: "התקדמות בלמידה", en: "Learning Pulse", es: "Pulso de aprendizaje", ru: "Пульс обучения", ar: "نبض التعلّم", ja: "学習パルス" };
+    for (const locale of LOCALES) {
+        assert.equal(pulses[locale].brand, brands[locale], locale);
+        // The expand/collapse accessible names announce the same localized brand.
+        assert.ok(pulses[locale].expand.includes(brands[locale]), locale);
+        assert.ok(pulses[locale].collapse.includes(brands[locale]), locale);
+    }
+    assert.equal(pulses.ja.brand, "学習パルス"); // 学習パルス, ス is U+30B9
     // The descriptive subtitle is localized (not left in English).
     const subtitles = LOCALES.map((l) => pulses[l].subtitle);
     assert.equal(new Set(subtitles).size, 6);
