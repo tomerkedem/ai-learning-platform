@@ -4,16 +4,18 @@
 // עם אותן הגדרות מיניאטורה (מצלמה קרובה, שפת אטמוספרה חזקה, low-power), בהירות מוגברת
 // כדי שים ויבשה ייראו בגודל הכפתור. הוסר parallax.
 //
-// הכדור פונה לנקודה הראשית של השפה הפעילה (setHome). בעכבר/עט אפשר לגרור אותו מעל הכפתור;
-// ביציאה מהכפתור הוא חוזר בהדרגה לשפה. מגע לא גורר (הקשה פותחת, גלילה נשמרת).
-// גרירה לא פותחת את החלון (takeDrag). לולאת ציור פועלת רק בזמן החזרה.
-// תנועה מופחתת: אין חזרה מונפשת; הכדור קופץ אל היעד.
+// במנוחה הכדור מסתובב לאט (סיבוב אחד ב-40 שניות). ריחוף או פוקוס מקלדת עוצרים אותו ומסובבים
+// אותו בהחלקה אל הנקודה הראשית של השפה הפעילה (setHome), ושם הוא נשאר. ביציאה הסיבוב ממשיך
+// מהמקום הנוכחי, בלי קפיצה. בעכבר/עט אפשר לגרור אותו מעל הכפתור; מגע לא גורר (הקשה פותחת,
+// גלילה נשמרת). גרירה לא פותחת את החלון (takeDrag). הלולאה לא נוגעת ב-React, ונעצרת כשהכדור
+// מחוץ למסך או מוחזק. תנועה מופחתת: אין סיבוב; הכדור עומד על השפה.
 
 import { aimRotation, createEarthScene, toLocal, wrapAngle, type LatLon } from './earthRenderingCore';
 
 const DRAG_SPEED = 0.025; // רדיאנים לפיקסל: כדור של 40px
 const DRAG_THRESHOLD_PX = 4;
-const RETURN_SPEED = 6;
+const IDLE_SPEED = (2 * Math.PI) / 40; // רדיאנים לשנייה
+const AIM_MS = 650;
 const POLE_CLAMP = Math.PI / 2 - 0.05;
 
 export interface HeaderEarth {
@@ -52,11 +54,17 @@ export function createHeaderEarth(container: HTMLElement, trigger: HTMLElement, 
     let lastX = 0;
     let lastY = 0;
     let dragged = false;
+    let hovered = false;
+    let focused = false;
+    let onScreen = true;
+    // מעבר אל השפה: מנקודת ההתחלה, בהפרש הקצר ביותר. start נקבע בפריים הראשון.
+    let aim: { x0: number; y0: number; dx: number; dy: number; start: number } | null = null;
 
+    const held = () => hovered || focused || pointerId !== null;
     const render = () => {
         if (!core.isDisposed()) renderer.render(scene, camera);
     };
-    const stopReturn = () => {
+    const stop = () => {
         if (rafId !== null) cancelAnimationFrame(rafId);
         rafId = null;
     };
@@ -64,24 +72,58 @@ export function createHeaderEarth(container: HTMLElement, trigger: HTMLElement, 
         rafId = null;
         const dt = lastTime ? Math.min(0.05, (time - lastTime) / 1000) : 0;
         lastTime = time;
-        const k = 1 - Math.exp(-dt * RETURN_SPEED);
-        const dy = wrapAngle(homeRot.y - earth.rotation.y);
-        const dx = homeRot.x - earth.rotation.x;
-        earth.rotation.y += dy * k;
-        earth.rotation.x += dx * k;
+        if (aim) {
+            aim.start ||= time;
+            const p = Math.min(1, (time - aim.start) / AIM_MS);
+            const e = 1 - (1 - p) ** 3; // ease-out
+            earth.rotation.x = aim.x0 + aim.dx * e;
+            earth.rotation.y = aim.y0 + aim.dy * e;
+            if (p === 1) aim = null;
+        } else if (held()) {
+            return;
+        } else {
+            earth.rotation.y += dt * IDLE_SPEED;
+        }
         render();
-        if (Math.abs(dx) + Math.abs(dy) > 0.002) rafId = requestAnimationFrame(tick);
+        rafId = requestAnimationFrame(tick);
     };
-    const goHome = () => {
+    // התחלת הלולאה (או המשך אחרי עצירה) מהמקום הנוכחי. ממשיכה את עצמה עד שהכדור מוחזק.
+    const run = () => {
+        if (rafId !== null || !onScreen || reducedMotion() || (!aim && held())) return;
+        lastTime = 0;
+        rafId = requestAnimationFrame(tick);
+    };
+    const aimHome = () => {
         if (reducedMotion()) {
+            aim = null;
             earth.rotation.set(homeRot.x, homeRot.y, 0);
             render();
-        } else if (rafId === null) {
-            lastTime = 0;
-            rafId = requestAnimationFrame(tick);
+            return;
         }
+        const { x, y } = earth.rotation;
+        aim = { x0: x, y0: y, dx: homeRot.x - x, dy: wrapAngle(homeRot.y - y), start: 0 };
+        run();
     };
 
+    const onPointerEnter = (e: PointerEvent) => {
+        if (e.pointerType === 'touch') return;
+        hovered = true;
+        aimHome();
+    };
+    const onPointerLeave = () => {
+        hovered = false;
+        run();
+    };
+    // רק פוקוס מקלדת: קליק בעכבר משאיר פוקוס על הכפתור, ואז היציאה לא הייתה מחזירה את הסיבוב.
+    const onFocus = () => {
+        if (!trigger.matches(':focus-visible')) return;
+        focused = true;
+        aimHome();
+    };
+    const onBlur = () => {
+        focused = false;
+        run();
+    };
     const onPointerDown = (e: PointerEvent) => {
         if (e.pointerType === 'touch' || e.button !== 0 || pointerId !== null) return;
         pointerId = e.pointerId;
@@ -95,7 +137,8 @@ export function createHeaderEarth(container: HTMLElement, trigger: HTMLElement, 
         if (e.pointerId !== pointerId) return;
         if (!dragged && Math.hypot(e.clientX - startX, e.clientY - startY) < DRAG_THRESHOLD_PX) return;
         dragged = true;
-        stopReturn();
+        aim = null;
+        stop();
         earth.rotation.y += (e.clientX - lastX) * DRAG_SPEED;
         earth.rotation.x = Math.max(-POLE_CLAMP, Math.min(POLE_CLAMP, earth.rotation.x + (e.clientY - lastY) * DRAG_SPEED));
         lastX = e.clientX;
@@ -108,15 +151,16 @@ export function createHeaderEarth(container: HTMLElement, trigger: HTMLElement, 
         if (trigger.hasPointerCapture(e.pointerId)) trigger.releasePointerCapture(e.pointerId);
         // הקליק נשלח מיד אחרי pointerup באותה משימה; אחריו הדגל כבר לא רלוונטי.
         if (dragged) window.setTimeout(() => (dragged = false));
+        run();
     };
-    const onPointerLeave = () => {
-        if (pointerId === null) goHome();
-    };
+    trigger.addEventListener('pointerenter', onPointerEnter);
+    trigger.addEventListener('pointerleave', onPointerLeave);
+    trigger.addEventListener('focus', onFocus);
+    trigger.addEventListener('blur', onBlur);
     trigger.addEventListener('pointerdown', onPointerDown);
     trigger.addEventListener('pointermove', onPointerMove);
     trigger.addEventListener('pointerup', endPointer);
     trigger.addEventListener('pointercancel', endPointer);
-    trigger.addEventListener('pointerleave', onPointerLeave);
 
     core.sizeFromContainer();
     const resizeObserver = new ResizeObserver(() => {
@@ -124,19 +168,28 @@ export function createHeaderEarth(container: HTMLElement, trigger: HTMLElement, 
         render();
     });
     resizeObserver.observe(container);
+    // סרגל סגור או מוסתר: אין ציור.
+    const visibility = new IntersectionObserver(([entry]) => {
+        onScreen = entry.isIntersecting;
+        if (onScreen) run();
+        else stop();
+    });
+    visibility.observe(container);
     core.loadDayTexture(() => {
         scene.visible = true;
         render();
     });
+    run();
 
     return {
         setHome(point, snap = false) {
             homeRot = aimRotation(toLocal(point));
             if (snap) {
-                stopReturn();
+                aim = null;
                 earth.rotation.set(homeRot.x, homeRot.y, 0);
                 render();
-            } else if (pointerId === null) goHome();
+                run();
+            } else if (held() && pointerId === null) aimHome();
         },
         snapshot() {
             if (!scene.visible || core.isDisposed()) return null;
@@ -150,13 +203,17 @@ export function createHeaderEarth(container: HTMLElement, trigger: HTMLElement, 
             return d;
         },
         destroy() {
-            stopReturn();
+            stop();
+            trigger.removeEventListener('pointerenter', onPointerEnter);
+            trigger.removeEventListener('pointerleave', onPointerLeave);
+            trigger.removeEventListener('focus', onFocus);
+            trigger.removeEventListener('blur', onBlur);
             trigger.removeEventListener('pointerdown', onPointerDown);
             trigger.removeEventListener('pointermove', onPointerMove);
             trigger.removeEventListener('pointerup', endPointer);
             trigger.removeEventListener('pointercancel', endPointer);
-            trigger.removeEventListener('pointerleave', onPointerLeave);
             resizeObserver.disconnect();
+            visibility.disconnect();
             core.dispose();
         },
     };

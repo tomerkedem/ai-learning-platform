@@ -22,13 +22,13 @@ import type { HeaderEarth } from './headerEarth';
 import type { LatLon } from './earthRenderingCore';
 
 // נקודות לדוגמה חזותית בלבד: לא דירוג פופולריות, לא גבולות ולא שיוך מלא של שפה למדינה.
-// הנקודה הראשונה היא המבט הראשי של הכדור המוקטן בכפתור (נקודה אחת, לא כל האזורים).
+// הנקודה הראשונה היא העוגן של השפה: אליה הכדור המוקטן מסתובב בריחוף/פוקוס (נקודה אחת, לא כל האזורים).
 const LANGUAGE_POINTS: Record<Locale, readonly LatLon[]> = {
     he: [[31.5, 34.9]],
-    en: [[39, -98], [52.5, -1.5], [9, 8]],
+    en: [[52.5, -1.5], [39, -98], [9, 8]],
     es: [[40, -3.7], [23, -102], [-34, -64]],
     ru: [[55.7, 37.6], [55, 83], [48, 67]],
-    ar: [[27, 30], [32, -6], [24, 45]],
+    ar: [[24, 45], [27, 30], [32, -6]],
     ja: [[36, 138]],
 };
 
@@ -87,7 +87,7 @@ export function LanguageGlobe() {
         miniRef.current?.setHome(homeRef.current, dialogRef.current?.open);
     }, [locale]);
 
-    // כדור מוקטן בכפתור: מצויר לפי דרישה, ומונפש רק בגרירה ובחזרה לשפה.
+    // כדור מוקטן בכפתור: מסתובב במנוחה, ופונה לשפה בריחוף/פוקוס (לולאה ב-headerEarth, בלי state).
     useEffect(() => {
         const el = miniEarthRef.current;
         const trigger = triggerRef.current;
