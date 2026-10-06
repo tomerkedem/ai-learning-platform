@@ -8,9 +8,7 @@
 // ════════════════════════════════════════════════════════════════════════
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Target, TrendingUp, GraduationCap, ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
+import { CheckCircle2, Target, TrendingUp, GraduationCap, ArrowLeft, ArrowRight } from "lucide-react";
 import { useT } from "@/i18n/useT";
 import { GuessButton } from "@/components/ai-internals/GuessButton";
 import type { Dictionary } from "@/i18n/dictionary";
@@ -23,21 +21,14 @@ import {
 } from "./masteryProgress";
 import { formatChapterLabel } from "@/i18n/format";
 import { LOCALES } from "@/i18n/config";
-import {
-    getPendingAttempts,
-    loadAccountSnapshot,
-    removeRejected,
-    retryRejected,
-    useAuthState,
-    withPending,
-    type PendingAttempt,
-} from "./account";
+import { removeRejected, retryRejected, useAuthState, type PendingAttempt } from "./account";
+import { useCourseLearning } from "./learnerState";
 
 type ProgressDict = Dictionary["chrome"]["progress"];
 
 const FINAL_EXAM_HREF = "/behind-the-scenes-ai/final-exam";
 
-interface SyncState {
+export interface SyncState {
     userId: string;
     offline: boolean;
     loadedAt: number | null;
@@ -51,34 +42,19 @@ interface MasteryView {
     sync: SyncState | null;
 }
 
-const hasSyncNotice = (s: SyncState | null) => !!s && (s.offline || s.pending.length > 0 || s.rejected.length > 0);
+export const hasSyncNotice = (s: SyncState | null) => !!s && (s.offline || s.pending.length > 0 || s.rejected.length > 0);
 
-// מחובר: הסיכום מהחשבון (בכל מכשיר) ועוד ניסיונות שממתינים בתור. בלי רשת: העותק האחרון
-// שנטען מהחשבון ועוד מה שממתין. לא מחובר: מהתרגול המקומי בלי חשבון. נתוני חשבון אחד
-// לעולם לא מוצגים תחת חשבון אחר או תחת אורח.
-export function useMasteryView(): MasteryView | null {
-    const [view, setView] = useState<MasteryView | null>(null);
+// מחובר: מהמצב המשותף (learnerState.ts): הסיכום מהחשבון (בכל מכשיר) ועוד ניסיונות שממתינים
+// בתור, ובלי רשת העותק האחרון שנטען ועוד מה שממתין. כל הקוראים חולקים טעינה אחת. לא מחובר:
+// מהתרגול המקומי בלי חשבון. נתוני חשבון אחד לעולם לא מוצגים תחת חשבון אחר או תחת אורח.
+function useMasteryView(): MasteryView | null {
+    const learner = useCourseLearning();
     const userId = useAuthState().session?.user.id;
+    const [guest, setGuest] = useState<MasterySummary | null>(null);
 
     useEffect(() => {
-        let cancelled = false;
-        const refresh = () => {
-            if (!userId) return setView({ summary: getMasterySummary(), sync: null });
-            loadAccountSnapshot(userId).then(snap => {
-                if (cancelled) return;
-                const queue = getPendingAttempts(userId);
-                setView({
-                    summary: getMasterySummary(withPending(snap.records, queue)),
-                    sync: {
-                        userId,
-                        offline: snap.offline,
-                        loadedAt: snap.loadedAt,
-                        pending: queue.filter(p => !p.rejected),
-                        rejected: queue.filter(p => p.rejected),
-                    },
-                });
-            });
-        };
+        if (userId) return;
+        const refresh = () => setGuest(getMasterySummary());
         refresh();
         const onStorage = (e: StorageEvent) => {
             if (e.key === MASTERY_STORAGE_KEY) refresh();
@@ -86,20 +62,20 @@ export function useMasteryView(): MasteryView | null {
         window.addEventListener(MASTERY_UPDATED_EVENT, refresh);
         window.addEventListener("storage", onStorage);
         return () => {
-            cancelled = true;
             window.removeEventListener(MASTERY_UPDATED_EVENT, refresh);
             window.removeEventListener("storage", onStorage);
         };
     }, [userId]);
 
-    return view;
+    if (userId) return learner ? { summary: learner.summary, sync: learner.sync } : null;
+    return guest ? { summary: guest, sync: null } : null;
 }
 
 // ────────────────────────────────────────────────────────────────────────
 // מצב סנכרון לחשבון: ניתוק, תוצאות שעוד לא נשלחו, ותוצאות שהחשבון דחה (עם פעולות
 // מפורשות: נסו שוב / הסרה). לא מבוסס רק על צבע: לכל מצב יש כותרת טקסט.
 // ────────────────────────────────────────────────────────────────────────
-function SyncNotice({ sync, compact = false }: { sync: SyncState; compact?: boolean }) {
+export function SyncNotice({ sync, compact = false }: { sync: SyncState; compact?: boolean }) {
     const { locale, t } = useT();
     const a = t.chrome.account;
     const name = (p: PendingAttempt) => p.chapterId === null ? t.chrome.progress.finalExam : formatChapterLabel(locale, p.chapterId);
@@ -195,8 +171,8 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="bg-[var(--bts-fill-soft)] rounded-2xl border border-[var(--bts-divider-soft)] p-3">
-                    <div className="text-[10px] font-bold uppercase text-[var(--bts-text-faint)] mb-1">{progress.completed}</div>
-                    <div className="text-[var(--bts-text-primary)] font-black text-lg">{summary.completedChapters}<span className="text-[var(--bts-text-faint)] text-sm">/{summary.totalChapters}</span></div>
+                    <div className="text-[10px] font-bold uppercase text-[var(--bts-text-faint)] mb-1">{progress.attempted}</div>
+                    <div className="text-[var(--bts-text-primary)] font-black text-lg">{summary.attemptedChapters}<span className="text-[var(--bts-text-faint)] text-sm">/{summary.totalChapters}</span></div>
                 </div>
                 <div className="bg-[var(--bts-fill-soft)] rounded-2xl border border-[var(--bts-divider-soft)] p-3">
                     <div className="text-[10px] font-bold uppercase text-[var(--bts-text-faint)] mb-1">{progress.passed}</div>
@@ -249,120 +225,6 @@ export function MasteryDashboard({ showFinalExamCta = true }: { showFinalExamCta
                     {progress.finalExamCta}
                 </GuessButton>
             )}
-        </div>
-    );
-}
-
-// ────────────────────────────────────────────────────────────────────────
-// גרסה קומפקטית לסרגל הצד. נטענת רק אם כבר יש נתונים, כדי לא להכביד.
-// מתקפלת (ברירת מחדל מכווצת) כדי לא לדחוק את רשימת הפרקים. ההעדפה נשמרת.
-// ────────────────────────────────────────────────────────────────────────
-const SIDEBAR_OPEN_KEY = "behindAiMasterySidebarOpen";
-
-export function SidebarMastery() {
-    const { dir, t } = useT();
-    const progress = t.chrome.progress;
-    const conceptLabels = t.behindAi.conceptLabels;
-    const view = useMasteryView();
-    const summary = view?.summary;
-    const sync = view?.sync ?? null;
-    const [open, setOpen] = useState(false);
-
-    useEffect(() => {
-        try {
-            // eslint-disable-next-line react-hooks/set-state-in-effect -- שחזור העדפת הקיפול חייב לקרות אחרי mount בצד הלקוח, כדי למנוע אי-התאמת hydration
-            setOpen(window.localStorage.getItem(SIDEBAR_OPEN_KEY) === "1");
-        } catch {
-            // אין localStorage: נשארים במצב מכווץ כברירת מחדל.
-        }
-    }, []);
-
-    const toggle = () => {
-        setOpen(prev => {
-            const next = !prev;
-            try {
-                window.localStorage.setItem(SIDEBAR_OPEN_KEY, next ? "1" : "0");
-            } catch {
-                // התעלמות בשקט אם אי אפשר לשמור העדפה.
-            }
-            return next;
-        });
-    };
-
-    const showNotice = !!sync && hasSyncNotice(sync);
-    if (!summary || (!summary.hasAnyData && !showNotice)) return null;
-
-    const exam = finalExamText(summary.finalExam, progress);
-
-    return (
-        <div className="mt-2 pt-0.5 border-t border-[var(--bts-sub-rule)]" dir={dir}>
-            {/* כותרת לחיצה: מציגה סיכום קצר גם כשמכווץ, ומתקפלת בלחיצה */}
-            <button
-                type="button"
-                onClick={toggle}
-                aria-expanded={open}
-                className="w-full flex items-center justify-between gap-2 py-1.5 group"
-            >
-                <span className="flex items-center gap-2 min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--bts-text-faint)] group-hover:text-[var(--bts-text-secondary)] transition-colors">{progress.sidebarTitle}</span>
-                </span>
-                <span className="flex items-center gap-2 shrink-0">
-                    <span className="text-[10px] font-mono text-[var(--bts-text-muted)]">{summary.completedChapters}/{summary.totalChapters}</span>
-                    {summary.averageScore !== null && (
-                        <span className="text-[10px] font-mono text-[var(--bts-text-faint)]">· {progress.average} {summary.averageScore}</span>
-                    )}
-                    <ChevronDown size={14} className={`text-[var(--bts-text-faint)] transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
-                </span>
-            </button>
-
-            {/* מצב הסנכרון מוצג תמיד, גם כשהסיכום מכווץ */}
-            {showNotice && sync && <div className="mt-2"><SyncNotice sync={sync} compact /></div>}
-
-            <AnimatePresence initial={false}>
-                {open && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                        className="overflow-hidden"
-                    >
-                        <div className="pt-3">
-                            <div className="grid grid-cols-2 gap-2 mb-3">
-                                <div className="bg-[var(--bts-sub-fill)] rounded-lg border border-[var(--bts-border)] px-2.5 py-1.5">
-                                    <div className="text-[9px] text-[var(--bts-text-faint)] font-bold">{progress.completed}</div>
-                                    <div className="text-[var(--bts-text-primary)] text-sm font-bold">{summary.completedChapters}/{summary.totalChapters}</div>
-                                </div>
-                                <div className="bg-[var(--bts-sub-fill)] rounded-lg border border-[var(--bts-border)] px-2.5 py-1.5">
-                                    <div className="text-[9px] text-[var(--bts-text-faint)] font-bold">{progress.passed}</div>
-                                    <div className="text-emerald-400 text-sm font-bold">{summary.passedChapters}/{summary.totalChapters}</div>
-                                </div>
-                            </div>
-
-                            {summary.weakConcepts.length > 0 && (
-                                <div className="mb-3">
-                                    <div className="text-[9px] bts-tier-amber font-bold mb-1.5">{progress.weakHeaderShort}</div>
-                                    <div className="flex flex-wrap gap-1">
-                                        {summary.weakConcepts.slice(0, 3).map(c => (
-                                            <span key={c} className="text-[10px] font-medium text-amber-200/90 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">{conceptLabels[c] ?? c}</span>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            <Link
-                                href={FINAL_EXAM_HREF}
-                                className="flex items-center justify-between gap-2 bg-[var(--bts-sub-fill-soft)] hover:bg-[var(--bts-sub-fill-hover)] px-2.5 py-2 rounded-lg border border-[var(--bts-border)] transition-colors no-underline"
-                            >
-                                <span className="flex items-center gap-1.5 text-[11px] font-bold text-[var(--bts-text-secondary)]">
-                                    <GraduationCap size={13} className="text-blue-400" /> {progress.finalExam}
-                                </span>
-                                <span className={`text-[10px] font-bold ${exam.color}`}>{exam.label}</span>
-                            </Link>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     );
 }

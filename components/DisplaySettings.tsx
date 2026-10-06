@@ -110,7 +110,7 @@ export function DisplaySettings() {
                 // ריחוף ולחיצה מעמיקים את המילוי; הפוקוס נשאר טבעת focusRing.
                 className={`relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-[var(--bts-brand-primary)] bg-[color-mix(in_oklab,var(--bts-brand-primary)_12%,transparent)] text-[var(--bts-brand-primary-strong)] transition-colors hover:bg-[color-mix(in_oklab,var(--bts-brand-primary)_22%,transparent)] hover:text-[var(--bts-text-primary)] active:bg-[color-mix(in_oklab,var(--bts-brand-primary)_32%,transparent)] after:absolute after:-inset-1 after:content-[''] ${focusRing} focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bts-focus-ring-offset)]`}
             >
-                <Accessibility size={18} strokeWidth={2.25} aria-hidden />
+                <Accessibility size={23} strokeWidth={2.1} aria-hidden />
             </button>
 
             <dialog

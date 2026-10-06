@@ -109,12 +109,13 @@ test("error page origin: the page itself, or the origin a support page carries",
 // The flow above only holds if every hop uses these helpers. Wiring check, as in access.test.ts.
 test("every support entry and hop passes the origin through the shared helpers", () => {
     const panel = source("../AccountPanel.tsx");
-    // The panel's help action and its "new reply" link both resolve the origin from the current
-    // page or the ?from= a support page carries, through the shared helpers.
+    // The help action (now the toolbar's SidebarHelpButton, in the same file) and the panel's "new reply"
+    // link both resolve the origin from the current page or the ?from= a support page carries, through
+    // the shared helpers.
     assert.match(panel, /const pathname = usePathname\(\);/);
     assert.match(panel, /const carriedFrom = useSearchParams\(\)\.get\("from"\);/);
-    assert.match(panel, /supportAction\(pathname, carriedFrom, chapters, hasCourseAccess\(access\.status\)\)/);
-    assert.match(panel, /<Link href=\{help\.href\}/);
+    assert.match(panel, /supportAction\(pathname, carriedFrom, courses\["behind-the-scenes-ai"\]\.chapters, hasCourseAccess\(access\.status\)\)/);
+    assert.match(panel, /<Link\s+href=\{help\.href\}/);
     assert.match(panel, /<Link href=\{supportHomeHref\(supportOrigin\(pathname, carriedFrom\)\)\}/);
     assert.doesNotMatch(panel, /href=\{SUPPORT_HOME\}/);
 

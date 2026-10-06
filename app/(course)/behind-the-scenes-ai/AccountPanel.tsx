@@ -12,7 +12,7 @@
 import React, { useEffect, useId, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import Link from "next/link";
-import { ChevronDown, CircleAlert, Eye, EyeOff, LifeBuoy, LogOut, Mail, MailCheck, MessageSquare, UserRound } from "lucide-react";
+import { ChevronDown, CircleAlert, Eye, EyeOff, LogOut, Mail, MailCheck, MessageSquare, UserRound } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useT } from "@/i18n/useT";
 import { useCourseAccess } from "./_access/CourseAccessContext";
@@ -22,9 +22,7 @@ import { canUseSupport, supportAction, supportHomeHref, supportOrigin } from "./
 import type { Dictionary } from "@/i18n/dictionary";
 import { LOCALES } from "@/i18n/config";
 import { courses } from "@/lib/courseData";
-import { getAllRecords, MASTERY_UPDATED_EVENT, TOTAL_CHAPTER_QUIZZES } from "./masteryProgress";
-import { useMasteryView } from "./MasteryDashboard";
-import { pulseSegments } from "./learnerPulse";
+import { getAllRecords, MASTERY_UPDATED_EVENT } from "./masteryProgress";
 import {
     supabase,
     useAuthState,
@@ -87,7 +85,6 @@ const labelClass = "block text-xs font-bold text-[var(--bts-text-secondary)]";
 // פעולות ההקשר: בגודל התוכן, בקו ההתחלה של שורות ההקשר (start לוגי), 44px. תשובת תמיכה שמחכה היא
 // הראשית (מילוי בגוון המותג); העזרה משנית (גבול בלבד). תווית ארוכה (es/ru) נשברת בתוך הרוחב.
 const replyLinkClass = "flex w-fit max-w-full min-h-[44px] items-center gap-2 rounded-lg border border-[color-mix(in_oklab,var(--bts-brand-primary)_55%,transparent)] bg-[color-mix(in_oklab,var(--bts-brand-primary)_12%,transparent)] px-3 py-2 text-start text-xs font-bold text-[var(--bts-text-primary)] no-underline transition-colors hover:bg-[color-mix(in_oklab,var(--bts-brand-primary)_18%,transparent)] motion-reduce:transition-none";
-const helpLinkClass = "flex w-fit max-w-full min-h-[44px] items-center gap-2 rounded-lg border border-[color-mix(in_oklab,var(--bts-brand-primary)_40%,transparent)] px-3 py-2 text-start text-xs font-bold text-[var(--bts-text-secondary)] no-underline transition-colors hover:bg-[color-mix(in_oklab,var(--bts-brand-primary)_10%,transparent)] hover:text-[var(--bts-text-primary)] motion-reduce:transition-none";
 
 /** שגיאה בולטת אך לא תוקפנית: אייקון, כותרת וגוף, ו-role="alert" שמוקרא מיד. משמש גם בתמיכה. */
 export function AuthAlert({ title, body }: { title?: string; body: string }) {
@@ -149,7 +146,7 @@ function PasswordField({ name, label, autoComplete, autoFocus, describedBy, inva
  * מצב הרשאת הבטא של החשבון המחובר. אימות מייל לבדו לעולם לא מוצג כגישה. טקסט בלבד, באותו קו
  * התחלה כמו שורת ההקשר שמעליו (המצב נאמר במילים, לא בצבע).
  */
-function AccessStatusLine() {
+function AccessStatusLine({ compact = false }: { compact?: boolean } = {}) {
     const { locale, t } = useT();
     const access = useCourseAccess();
     const x = t.chrome.access;
@@ -162,27 +159,50 @@ function AccessStatusLine() {
         : access.status === "unconfirmed" ? x.accessUnconfirmed
         : null;
     if (!text) return null;
-    return <p className="text-xs leading-snug text-[var(--bts-text-secondary)]">{text}</p>;
+    return compact
+        ? <span className="mt-0.5 block text-[11.5px] leading-snug text-[var(--bts-text-muted)]">{text}</span>
+        : <p className="text-xs leading-snug text-[var(--bts-text-secondary)]">{text}</p>;
 }
 
 /**
- * Learner Pulse: מקטע לכל מבדק פרק, ומבדקים שעברו מודגשים (learnerPulse.ts). 32px בשורה המכווצת
- * ו-60px בפאנל הפתוח. המרכז נשאר פתוח ושקט בשני הגדלים: המקטעים הם הזהות, והספירה מוצגת כטקסט
- * לידו. passed=null: עוד לא נטען, ולכן רק המסלול (לא 0). הגישה לא משנה את הצבע: ידע שנצבר נשאר
- * גם כשהגישה הסתיימה. נקודה מחוץ להיקף = תשובת תמיכה שלא נקראה. דקורטיבי (aria-hidden).
+ * סמל זהות ניטרלי בכותרת החשבון. נקודה בפינה = תשובת תמיכה שלא נקראה; אין לה קשר להתקדמות או לשליטה.
+ * דקורטיבי (aria-hidden): ההתראה נאמרת כטקסט לקורא המסך בשורת הזהות.
  */
-function LearnerPulse({ passed, total, unread, open }: { passed: number | null; total: number; unread: boolean; open: boolean }) {
+function IdentityMark({ unread }: { unread: boolean }) {
     return (
-        <span aria-hidden="true" className={`relative block shrink-0 transition-[width,height] duration-200 ease-out motion-reduce:transition-none ${open ? "size-15" : "size-8"}`}>
-            <svg viewBox="0 0 40 40" fill="none" className="block size-full">
-                {pulseSegments(passed ?? 0, total).map((s, i) => (
-                    <path key={i} d={s.d} strokeWidth={4} stroke={s.passed ? "var(--bts-brand-primary-strong)" : "var(--bts-border-emphasis)"} />
-                ))}
-            </svg>
+        <span aria-hidden="true" className="relative grid size-8 shrink-0 place-items-center rounded-full border border-[var(--bts-border-emphasis)] bg-[var(--bts-sub-fill-soft)] text-[var(--bts-text-muted)]">
+            <UserRound size={16} />
             {unread && (
-                <span className="absolute -end-0.5 -top-0.5 size-2.5 rounded-full border-2 border-[var(--bts-surface-elevated)] bg-[var(--bts-status-caution)]" />
+                <span className="absolute -end-0.5 -top-0.5 size-2.5 rounded-full border-2 border-[var(--bts-surface-elevated)] bg-[var(--bts-status-caution)] forced-colors:bg-[CanvasText]" />
             )}
         </span>
+    );
+}
+
+/**
+ * עזרה תלוית ההקשר בסרגל הכלים שבתחתית הסרגל (ליד השפה, הנגישות וערכת הנושא). עזרה בפרק או במבוא כשיש
+ * גישה פעילה ונמצאים בהם, אחרת עזרה ותמיכה כללית; נתיב המקור נשמר (העמוד הנוכחי, או המקור שעמוד תמיכה כבר
+ * נושא). מוצג רק למי שיכול להשתמש בתמיכה (מחובר, מייל מאומת, לא מושעה).
+ */
+export function SidebarHelpButton() {
+    const { t } = useT();
+    const s = t.chrome.support;
+    const access = useCourseAccess();
+    const pathname = usePathname();
+    const carriedFrom = useSearchParams().get("from");
+    if (!canUseSupport(access.status)) return null;
+    const help = supportAction(pathname, carriedFrom, courses["behind-the-scenes-ai"].chapters, hasCourseAccess(access.status));
+    const label = help.label === "chapter" ? s.helpChapter : help.label === "intro" ? s.helpIntro : s.entry;
+    return (
+        <Link
+            href={help.href}
+            aria-label={label}
+            title={label}
+            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-[color-mix(in_oklab,var(--color-sky-400)_70%,transparent)] bg-[color-mix(in_oklab,var(--color-sky-400)_12%,transparent)] text-[#7dd3fc] no-underline shadow-[0_0_10px_-2px_color-mix(in_oklab,var(--color-sky-400)_45%,transparent)] transition-colors hover:bg-[color-mix(in_oklab,var(--color-sky-400)_22%,transparent)] hover:text-[var(--bts-text-primary)] light:border-[color-mix(in_oklab,var(--color-blue-600)_60%,transparent)] light:bg-[color-mix(in_oklab,var(--color-blue-500)_10%,transparent)] light:text-[#2563eb] light:shadow-[0_0_10px_-3px_color-mix(in_oklab,var(--color-blue-500)_35%,transparent)] forced-colors:shadow-none after:absolute after:-inset-1 after:content-[''] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bts-focus-ring-offset)] motion-reduce:transition-none"
+        >
+            {/* סימן שאלה נקי, בלי עיגול פנימי: האייקונים של העזרה בספרייה כוללים מסגרת משלהם. */}
+            <span aria-hidden="true" className="text-[22px] font-black leading-none">?</span>
+        </Link>
     );
 }
 
@@ -195,17 +215,8 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
     const s = t.chrome.support;
     const pathname = usePathname();
     const carriedFrom = useSearchParams().get("from");
-    const chapters = courses["behind-the-scenes-ai"].chapters;
-    // פעולת העזרה: עזרה בפרק או במבוא כשיש גישה פעילה ונמצאים בהם, אחרת עזרה ותמיכה כללית.
-    // בשני המקרים נתיב המקור נשמר (העמוד הנוכחי, או המקור שעמוד תמיכה כבר נושא). המיקום משמש כאן
-    // בלבד (ניסוח ומקור הבקשה) ואינו מוצג: הלומד כבר רואה את הפרק הנוכחי בלומדה עצמה.
-    const help = supportAction(pathname, carriedFrom, chapters, hasCourseAccess(access.status));
-    const helpLabel = help.label === "chapter" ? s.helpChapter : help.label === "intro" ? s.helpIntro : s.entry;
     const userId = session?.user.id;
     const supportAllowed = canUseSupport(access.status);
-    // מבדקים שעברו, מהסיכום של החשבון. null עד שנטען סיכום של המשתמש הזה (לא 0 ולא של משתמש קודם).
-    const mastery = useMasteryView();
-    const passed = userId && mastery?.sync?.userId === userId ? mastery.summary.passedChapters : null;
     const [unreadReplies, setUnreadReplies] = useState(0);
     const [busy, setBusy] = useState(false);
     const [message, setMessage] = useState("");
@@ -398,7 +409,6 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
                 {/* גישה: מצב הגישה (טקסט, בקו ההתחלה של ה-Pulse; מושג נפרד מהשליטה). תשובה שלא נקראה היא
                     הפעולה הראשית, בשורה משלה מיד אחריו (מובילה לבקשות שלי, עם המקור שנשמר). */}
                 <div className="space-y-2 empty:hidden">
-                    <AccessStatusLine />
                     <BetaAccessRequest />
                     {hasUnread && (
                         <Link href={supportHomeHref(supportOrigin(pathname, carriedFrom))} className={replyLinkClass}>
@@ -420,21 +430,10 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
                         </div>
                     </div>
                 )}
-                {/* שורת פעולות אחת: העזרה תלוית ההקשר בתחילת השורה (start לוגי; תמיכה: מחובר, מייל מאומת, לא
-                    מושעה), והיציאה בסופה (ms-auto, end לוגי), שקטה ובלי מסגרת. -me-2 מיישר את תווית היציאה לקצה
-                    הטקסט (מקזז את הריפוד הפנימי שלה). כשאין מקום (תווית ארוכה), היציאה יורדת לשורה הבאה ונשארת
-                    בקצה; שום טקסט לא נחתך. בלי שם שמור, היציאה נשארת בשורת המייל שלמטה. */}
-                {(supportAllowed || fullName !== null) && (
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        {supportAllowed && (
-                            <Link href={help.href} className={helpLinkClass}>
-                                <LifeBuoy size={16} aria-hidden className="shrink-0 text-[var(--bts-brand-primary-strong)]" />
-                                {helpLabel}
-                            </Link>
-                        )}
-                        {fullName !== null && <div className="-me-2 ms-auto flex">{signOutButton}</div>}
-                    </div>
-                )}
+                {/* היציאה בסוף השורה (end לוגי), שקטה ובלי מסגרת. -me-2 מיישר את תווית היציאה לקצה הטקסט. העזרה
+                    תלוית ההקשר נמצאת בסרגל הכלים בתחתית הסרגל (SidebarHelpButton). בלי שם שמור, היציאה נשארת
+                    בשורת המייל שלמטה. */}
+                {fullName !== null && <div className="-me-2 flex justify-end">{signOutButton}</div>}
                 {/* בלי שם שמור: המייל הוא הזהות הגלויה של החשבון, בשורה אחת עם היציאה. השוליים השליליים של
                     היציאה (-my-1.5) משאירים יעד לחיצה של 44px בלי להגביה את השורה. האייקון מתהפך ב-RTL. */}
                 {fullName === null && (
@@ -521,19 +520,16 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
     return (
         <details open={defaultOpen || undefined} onToggle={(e) => setOpen(e.currentTarget.open)} className="mt-2 pt-0.5 border-t border-[var(--bts-sub-rule)]" dir={dir}>
             {session ? (
-                // מחובר: Learner Pulse ושם. מכווץ: שורת זהות בלבד (סימן, שם, חץ), וספירת המבדקים רק לקורא
-                // המסך, כי הסימן מציג אותה חזותית. פתוח: הספירה גם כטקסט גלוי. summary מקורי (מקלדת וקורא
-                // מסך כרגיל), עם חץ משלו במקום הסמן. הסימן והחץ לא מתכווצים; שם ארוך נחתך חזותית בלבד,
-                // והשם המלא נשאר בשם הנגיש. בלי שם (עוד נטען, או משתמש ותיק) הכותרת כללית, והמייל בפאנל.
-                <summary className={`flex min-h-[44px] cursor-pointer list-none items-center py-1.5 text-start [&::-webkit-details-marker]:hidden ${open ? "gap-3" : "gap-2.5"}`}>
-                    <LearnerPulse passed={passed} total={TOTAL_CHAPTER_QUIZZES} unread={supportAllowed && unreadReplies > 0} open={open} />
+                // מחובר: כותרת חשבון קומפקטית. זהות (סמל משתמש ניטרלי ושם) ומתחתיה מצב הגישה ומועד הסיום,
+                // משני. אין כאן מצב למידה: ההתקדמות והמבדקים שעברו נמצאים ב-Learning Pulse בלבד. נקודה על סמל
+                // המשתמש = תשובת תמיכה שלא נקראה (וגם טקסט לקורא מסך). summary מקורי (מקלדת וקורא מסך כרגיל),
+                // עם חץ משלו. שם ארוך נחתך חזותית בלבד; בלי שם (עוד נטען, או משתמש ותיק) הכותרת כללית.
+                <summary className="flex min-h-[44px] cursor-pointer list-none items-center gap-2.5 py-1.5 text-start [&::-webkit-details-marker]:hidden">
+                    <IdentityMark unread={supportAllowed && unreadReplies > 0} />
                     <span className="min-w-0 flex-1">
                         <span className="sr-only">{a.summarySignedIn} </span>
-                        <bdi className={`block truncate font-bold leading-snug text-[var(--bts-text-primary)] ${open ? "text-sm" : "text-[13px]"}`}>{fullName || a.title}</bdi>
-                        {/* אותו טקסט בשני המצבים: גלוי בפאנל הפתוח (שורה שמורה גם בזמן הטעינה), ולקורא מסך בלבד במכווץ. */}
-                        <span className={open ? "block mt-1 min-h-[1lh] text-xs leading-snug text-[var(--bts-text-muted)]" : "sr-only"}>
-                            {passed !== null && <> {a.pulseMastery(passed, TOTAL_CHAPTER_QUIZZES)}</>}
-                        </span>
+                        <bdi className="block truncate text-[13px] font-bold leading-snug text-[var(--bts-text-primary)]">{fullName || a.title}</bdi>
+                        <AccessStatusLine compact />
                         {supportAllowed && unreadReplies > 0 && <span className="sr-only"> {s.unread}</span>}
                     </span>
                     <ChevronDown size={16} aria-hidden className={`shrink-0 text-[var(--bts-text-faint)] transition-transform duration-200 motion-reduce:transition-none ${open ? "rotate-180" : ""}`} />
@@ -552,7 +548,7 @@ export function AccountPanel({ defaultOpen = false }: { defaultOpen?: boolean } 
             </summary>
             )}
             {/* מחובר: מרווחים צפופים יותר, כי הפאנל יושב בכותרת הסרגל שאינה נגללת. */}
-            <div className={`${session ? "pt-2 space-y-3" : "pt-3 space-y-3"} text-start`}>
+            <div className={`${session ? "pt-3.5 space-y-3" : "pt-3 space-y-3"} text-start`}>
                 {body}
                 {session && alert && <AuthAlert {...alert} />}
                 {/* מחובר: שורת הסטטוס הריקה היא הילד האחרון, ו-space-y משאיר מעליה רווח. כשהיא ריקה הרווח מבוטל

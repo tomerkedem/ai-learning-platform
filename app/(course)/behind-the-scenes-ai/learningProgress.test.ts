@@ -7,8 +7,9 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-    CHAPTER_IDS, LEARNING_UNITS, chapterLearningStates, latestReachedUnit, legacyMasteryEarned, mergeAttempt, mergeReached,
-    type AttemptInput, type QuizRecord, type ReachedUnit,
+    CHAPTER_IDS, LEARNING_UNITS, averageLatestChapterScore, chapterLearningStates, chapterMilestones, continueTarget, courseLearning,
+    latestReachedUnit, legacyMasteryEarned, masterySummary, mergeAttempt, mergeReached, progressBand, withPending,
+    type AttemptInput, type ContinueTarget, type QuizRecord, type ReachedUnit,
 } from "./learningProgress.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -170,8 +171,9 @@ test("final exam is outside the 19-chapter model and keeps latest-attempt semant
     assert.equal(final.bestScorePercent, 80);
     assert.equal(final.masteryEarned, false, "no sticky mastery for the final exam");
     assert.ok(chapterLearningStates([], [final]).every((s) => !s.attempted));
-    // The final exam status is still read from the latest attempt.
-    assert.match(source("masteryProgress.ts"), /if \(final\) finalExam = final\.passed \? "passed" : "needs-review";/);
+    // The final exam status is still read from the latest attempt (now in the pure summary).
+    assert.match(source("learningProgress.ts"), /finalExam: !finalExam\.attempted \? "not-taken" : finalExam\.passed \? "passed" : "needs-review",/);
+    assert.equal(masterySummary([final]).finalExam, "needs-review");
     assert.match(source("quizData.ts"), /passScore: 75,/);
 });
 
@@ -188,16 +190,28 @@ test("legacy records (before mastery_earned) derive mastery once from pass-or-be
 
 test("pending (offline) attempts merge with sticky mastery and the summary counts mastery", () => {
     const account = source("account.ts");
-    assert.match(account, /if \(!p\.rejected\) byId\.set\(p\.quizId, mergeAttempt\(byId\.get\(p\.quizId\), p, p\.completedAt\)\);/);
+    // withPending lives in the pure module (tested directly below) and account.ts re-exports it.
+    assert.match(source("learningProgress.ts"), /if \(!p\.rejected\) byId\.set\(p\.quizId, mergeAttempt\(byId\.get\(p\.quizId\), p, p\.completedAt\)\);/);
+    assert.match(account, /export \{ withPending \} from "\.\/learningProgress";/);
+    const pending = (score: number, completedAt: number, rejected?: string) => ({ ...attempt(6, score), completedAt, rejected });
+    const merged = withPending([run(6, [90])], [pending(40, 9)]);
+    assert.deepEqual([merged[0].scorePercent, merged[0].masteryEarned, merged[0].attempts, merged[0].bestScorePercent], [40, true, 2, 90]);
+    assert.deepEqual(withPending([run(6, [90])], [pending(10, 9, "22P02")]), [run(6, [90])], "a rejected attempt is not merged");
+    assert.equal(withPending([], [pending(75, 3)])[0].masteryEarned, true, "a pending pass shows mastery");
     assert.match(account, /masteryEarned: r\.mastery_earned,/);
     assert.match(account, /mastery_earned: r\.masteryEarned,/);
     // A server record with mastery, then a pending failed attempt: mastery stays.
     const server = run(6, [90]);
     assert.equal(mergeAttempt(server, attempt(6, 40), 9).masteryEarned, true);
+    // The summary counts sticky mastery: a later failed attempt keeps the chapter mastered.
+    assert.equal(masterySummary(withPending([server], [{ ...attempt(6, 40), completedAt: 9 }])).passedChapters, 1);
+    // The dashboard summary is the pure derivation, with no second aggregate path.
     const mastery = source("masteryProgress.ts");
-    assert.match(mastery, /const passedChapters = chapterRecords\.filter\(r => r\.masteryEarned\)\.length;/);
-    // Average score is unchanged in this phase (still the best scores).
-    assert.match(mastery, /chapterRecords\.reduce\(\(acc, r\) => acc \+ r\.bestScorePercent, 0\)/);
+    assert.match(mastery, /return masterySummary\(records\);/);
+    const summarySection = mastery.slice(mastery.indexOf("export type { FinalExamStatus, MasterySummary }"));
+    assert.ok(summarySection.length > 0 && summarySection.length < mastery.length);
+    assert.doesNotMatch(summarySection, /bestScorePercent/, "no best-score aggregate remains");
+    assert.doesNotMatch(source("learningProgress.ts").slice(source("learningProgress.ts").indexOf("export function masterySummary")), /bestScorePercent/);
 });
 
 test("access never changes learning history", () => {
@@ -215,4 +229,281 @@ test("resume foundation: the latest reach of a unit that still exists", () => {
     assert.equal(latestReachedUnit([]), null);
     const reached = [at(3, "lab", 10), at(11, "see", 30), at(11, "removed-unit", 50), at(0, "guess", 60)];
     assert.deepEqual(latestReachedUnit(reached), at(11, "see", 30));
+});
+
+// ── The public course model (Chapters 1-19 exactly; learning units stay internal) ──
+const full = (chapterId: number, reachedAt = 1) => LEARNING_UNITS[chapterId].map((u) => at(chapterId, u, reachedAt));
+const some = (chapterId: number, count: number, reachedAt = 1) => full(chapterId, reachedAt).slice(0, count);
+const quizAt = (record: QuizRecord, lastCompletedAt: number): QuizRecord => ({ ...record, lastCompletedAt });
+const masteredIds = (reached: ReachedUnit[], records: QuizRecord[]) =>
+    courseLearning(reached, records).chapters.filter((c) => c.masteryEarned).map((c) => c.chapterId);
+
+test("course model: exactly 19 chapters in order, with only the public fields", () => {
+    const course = courseLearning([], []);
+    assert.equal(course.chapters.length, 19);
+    assert.deepEqual(course.chapters.map((c) => c.chapterId), CHAPTER_IDS);
+    for (const c of course.chapters) {
+        assert.deepEqual(Object.keys(c).sort(), ["attempted", "chapterId", "latestPassed", "latestScore", "learningProgressRatio", "masteryEarned"]);
+        assert.deepEqual(c, { chapterId: c.chapterId, learningProgressRatio: 0, masteryEarned: false, latestScore: null, latestPassed: null, attempted: false });
+    }
+    assert.equal(course.masteredCount, 0);
+    assert.deepEqual(course.finalExam, { attempted: false, passed: false, latestScore: null });
+    assert.equal(course.lastActivity, null);
+    // chapters[n - 1] is chapter n, whatever the data.
+    const mixed = courseLearning([...some(9, 3), ...full(2)], [run(17, [90]), run(3, [40])]);
+    mixed.chapters.forEach((c, i) => assert.equal(c.chapterId, i + 1));
+});
+
+test("course model: mastery is the exact chapters passed, never the first N", () => {
+    assert.deepEqual(masteredIds([], [run(4, [80])]), [4]);
+    assert.deepEqual(masteredIds([], [run(14, [88]), run(4, [80])]), [4, 14]);
+    const course = courseLearning([], [run(4, [80]), run(14, [88])]);
+    assert.equal(course.masteredCount, 2);
+    assert.equal(course.chapters[0].masteryEarned, false, "two mastered chapters are not chapters 1 and 2");
+    assert.equal(course.chapters[1].masteryEarned, false);
+    // masteredCount always equals the mastered identities.
+    const records = [run(1, [90]), run(2, [50]), run(7, [60, 85, 40]), run(19, [75]), run(11, [69])];
+    const big = courseLearning(full(5), records);
+    assert.equal(big.masteredCount, big.chapters.filter((c) => c.masteryEarned).length);
+    assert.deepEqual(big.chapters.filter((c) => c.masteryEarned).map((c) => c.chapterId), [1, 7, 19]);
+});
+
+test("course model: latest score and attempted, including a lower retake after mastery", () => {
+    const { chapters } = courseLearning([], [run(3, [60]), run(5, [85, 50])]);
+    assert.deepEqual(chapters[0], { chapterId: 1, learningProgressRatio: 0, masteryEarned: false, latestScore: null, latestPassed: null, attempted: false });
+    assert.deepEqual(chapters[2], { chapterId: 3, learningProgressRatio: 0, masteryEarned: false, latestScore: 60, latestPassed: false, attempted: true });
+    assert.deepEqual([chapters[4].latestScore, chapters[4].latestPassed, chapters[4].masteryEarned], [50, false, true], "85 then 50: latest failed, mastery kept");
+    assert.equal(chapters[4].latestScore, 50, "latest, not best (85)");
+    assert.equal(chapters[4].masteryEarned, true, "mastery stays after the lower retake");
+    assert.equal(chapters[4].attempted, true);
+});
+
+test("course model: learning progress and mastery are independent (90/no, 25/yes, 100/no, 100/yes)", () => {
+    const { chapters } = courseLearning(
+        [...some(8, 9), ...some(14, 2), ...full(3), ...full(1)],
+        [run(14, [88]), run(3, [62]), run(1, [86])],
+    );
+    const pick = (n: number) => [chapters[n - 1].learningProgressRatio, chapters[n - 1].masteryEarned];
+    assert.deepEqual(pick(8), [0.9, false]);
+    assert.deepEqual(pick(14), [0.25, true]);
+    assert.deepEqual(pick(3), [1, false]);
+    assert.deepEqual(pick(1), [1, true]);
+});
+
+test("course model: unknown quiz records and unit ids are ignored; the final exam stays outside", () => {
+    const mismatched: QuizRecord = { ...run(4, [90]), quizId: "behind-ai-chapter-5" };
+    const outside = run(20, [95]);
+    const other: QuizRecord = { ...run(6, [99]), quizId: "some-other-quiz" };
+    const course = courseLearning(
+        [at(3, "not-a-unit"), at(0, "guess"), at(20, "guess"), at(1.5, "guide")],
+        [mismatched, outside, other, run(null, [80])],
+    );
+    assert.ok(course.chapters.every((c) => c.learningProgressRatio === 0 && !c.attempted && !c.masteryEarned && c.latestScore === null));
+    assert.equal(course.masteredCount, 0);
+    assert.deepEqual(course.finalExam, { attempted: true, passed: true, latestScore: 80 });
+    assert.equal(course.lastActivity, null, "the final exam and unknown units are not chapter activity");
+    // Final exam: latest attempt, no mastery semantics.
+    assert.deepEqual(courseLearning([], [run(null, [90, 60])]).finalExam, { attempted: true, passed: false, latestScore: 60 });
+});
+
+test("course model: last activity is the later of a unit reach and a chapter quiz, resuming at that chapter's latest unit", () => {
+    const reached = [at(2, "guess", 10), at(2, "lab", 20), at(6, "guess", 30)];
+    assert.deepEqual(courseLearning(reached, []).lastActivity, { chapterId: 6, unitId: "guess", at: 30 });
+    assert.deepEqual(courseLearning(reached, [quizAt(run(2, [50]), 40)]).lastActivity, { chapterId: 2, unitId: "lab", at: 40 });
+    assert.deepEqual(courseLearning(reached, [quizAt(run(4, [50]), 30)]).lastActivity, { chapterId: 4, unitId: null, at: 30 }, "tie: the quiz");
+    assert.deepEqual(courseLearning(reached, [quizAt(run(null, [90]), 99)]).lastActivity, { chapterId: 6, unitId: "guess", at: 30 });
+});
+
+test("progress bands: every boundary", () => {
+    const cases: [number, string][] = [
+        [0, "not-started"], [-1, "not-started"], [Number.NaN, "not-started"],
+        [0.0001, "started"], [0.25, "started"], [1 / 3 - 1e-9, "started"],
+        [1 / 3, "in-progress"], [2 / 6, "in-progress"], [0.5, "in-progress"], [0.749, "in-progress"],
+        [0.75, "well-advanced"], [3 / 4, "well-advanced"], [0.9, "well-advanced"], [0.999, "well-advanced"],
+        [1, "all-reached"], [1.5, "all-reached"],
+    ];
+    for (const [ratio, band] of cases) assert.equal(progressBand(ratio), band, `ratio ${ratio}`);
+});
+
+test("continue target: every branch of the deterministic rule", () => {
+    const allMastered = CHAPTER_IDS.map((n) => quizAt(run(n, [90]), n));
+    const cases: { name: string; reached?: ReachedUnit[]; records?: QuizRecord[]; access?: boolean; expected: ContinueTarget | null }[] = [
+        { name: "inactive access: no target, even with history", reached: some(5, 2), access: false, expected: null },
+        { name: "inactive access: no target for a new learner", access: false, expected: null },
+        { name: "brand-new learner", expected: { kind: "start", chapterId: 1 } },
+        { name: "only a final exam attempt is not chapter activity", records: [run(null, [40])], expected: { kind: "start", chapterId: 1 } },
+        { name: "partial chapter continues at its latest unit", reached: [at(5, "guess", 5), at(5, "lab", 6)], expected: { kind: "continue", chapterId: 5, unitId: "lab" } },
+        {
+            name: "latest quiz activity newer than latest unit activity anchors on the quiz's chapter",
+            reached: [at(7, "guess", 10), at(7, "primer", 11), at(3, "lab", 50)],
+            records: [quizAt(run(7, [40]), 60)],
+            expected: { kind: "continue", chapterId: 7, unitId: "primer" },
+        },
+        { name: "fully reached but not mastered: the chapter quiz", reached: full(6, 9), expected: { kind: "quiz", chapterId: 6 } },
+        {
+            name: "fully reached but not mastered stays on the quiz even with other open chapters",
+            reached: [...some(2, 1, 1), ...full(6, 9)], records: [quizAt(run(6, [50]), 9)],
+            expected: { kind: "quiz", chapterId: 6 },
+        },
+        { name: "mastered anchor: next untouched chapter starts", reached: full(2, 5), records: [quizAt(run(2, [90]), 6)], expected: { kind: "start", chapterId: 3 } },
+        {
+            name: "mastered anchor: next partial chapter continues (resume point unknown there)",
+            reached: [...some(3, 2, 1), ...full(2, 5)], records: [quizAt(run(2, [90]), 6)],
+            expected: { kind: "continue", chapterId: 3, unitId: null },
+        },
+        {
+            name: "mastered anchor skips fully reached and mastered chapters",
+            reached: [...full(3, 1), ...full(2, 5)], records: [quizAt(run(4, [90]), 2), quizAt(run(2, [90]), 6)],
+            expected: { kind: "start", chapterId: 5 },
+        },
+        {
+            name: "mastery with low progress closes the chapter (25% + mastery moves on)",
+            reached: some(14, 2, 1), records: [quizAt(run(14, [88]), 3)],
+            expected: { kind: "start", chapterId: 15 },
+        },
+        {
+            name: "wraps after chapter 19",
+            reached: full(18, 5), records: [quizAt(run(19, [80]), 4), quizAt(run(18, [80]), 6)],
+            expected: { kind: "start", chapterId: 1 },
+        },
+        {
+            name: "all closed with a fully reached, non-mastered chapter left: its quiz",
+            reached: full(12, 1), records: [...allMastered.filter((r) => r.chapterId !== 12), quizAt(run(5, [95]), 100)],
+            expected: { kind: "quiz", chapterId: 12 },
+        },
+        { name: "all mastered, final exam not taken: final exam", records: allMastered, expected: { kind: "final-exam" } },
+        { name: "all mastered, final exam latest attempt failed: final exam", records: [...allMastered, run(null, [90, 50])], expected: { kind: "final-exam" } },
+        { name: "all mastered and final exam passed: no target", records: [...allMastered, run(null, [80])], expected: null },
+    ];
+    for (const c of cases) {
+        assert.deepEqual(continueTarget(courseLearning(c.reached ?? [], c.records ?? []), c.access ?? true), c.expected, c.name);
+    }
+});
+
+test("continue target is an ordering suggestion; the final exam has no eligibility gate here", () => {
+    // A final exam attempt with open chapters changes nothing: the learner is still sent to the open chapter.
+    const reached = [at(5, "guess", 5), at(5, "lab", 6)];
+    assert.deepEqual(continueTarget(courseLearning(reached, [run(null, [90])]), true), { kind: "continue", chapterId: 5, unitId: "lab" });
+    assert.doesNotMatch(source("learningProgress.ts"), /finalExam\.(?:locked|eligible|available)|eligib/i);
+});
+
+test("average: latest scores of attempted Chapter 1-19 quizzes only", () => {
+    assert.equal(averageLatestChapterScore([]), null);
+    assert.equal(averageLatestChapterScore([run(null, [80])]), null, "final exam alone");
+    assert.equal(averageLatestChapterScore([run(3, [64])]), 64);
+    assert.equal(averageLatestChapterScore([run(1, [80]), run(2, [71])]), 76);
+    assert.equal(averageLatestChapterScore([run(1, [90, 50])]), 50, "latest, not best");
+    assert.equal(averageLatestChapterScore([run(1, [80]), run(2, [70]), run(null, [10])]), 75, "final exam excluded");
+    const mismatched: QuizRecord = { ...run(4, [10]), quizId: "behind-ai-chapter-5" };
+    assert.equal(averageLatestChapterScore([run(1, [80]), run(20, [0]), mismatched]), 80, "unknown chapter records excluded");
+});
+
+test("the final exam id matches masteryProgress", () => {
+    assert.match(source("masteryProgress.ts"), /FINAL_EXAM_QUIZ_ID = "behind-ai-final"/);
+    assert.match(source("learningProgress.ts"), /const FINAL_EXAM_ID = "behind-ai-final"/);
+});
+
+// ── Course summary semantics (MasteryDashboard): latest scores, exact identity, attempted is not completed ──
+test("summary: latest chapter score with sticky mastery (85 then 50)", () => {
+    const records = [run(5, [85, 50])];
+    const chapter = courseLearning([], records).chapters[4];
+    assert.deepEqual([chapter.latestScore, chapter.masteryEarned], [50, true]);
+    const summary = masterySummary(records);
+    assert.equal(summary.passedChapters, 1, "mastery stays after the lower retake");
+    assert.equal(summary.averageScore, 50, "the latest score, not the best (85)");
+});
+
+test("summary: average of latest scores of attempted chapters only (50 and 70 -> 60, despite higher bests)", () => {
+    const records = [run(1, [95, 50]), run(2, [90, 70])];
+    assert.equal(masterySummary(records).averageScore, 60);
+    assert.equal(masterySummary(records).averageScore, averageLatestChapterScore(records), "one derivation");
+    assert.equal(masterySummary([]).averageScore, null, "no attempts: no average");
+    assert.equal(masterySummary([...records, run(null, [10])]).averageScore, 60, "final exam excluded");
+    const mismatched: QuizRecord = { ...run(4, [0]), quizId: "behind-ai-chapter-5" };
+    assert.equal(masterySummary([...records, run(20, [0]), mismatched, { ...run(3, [0]), quizId: "other" }]).averageScore, 60, "unknown records excluded");
+});
+
+test("summary: final exam score is the latest attempt, with the existing pass semantics", () => {
+    const later = masterySummary([run(null, [95, 60])]);
+    assert.equal(later.finalExamScore, 60, "latest, not the earlier 95");
+    assert.equal(later.finalExam, "needs-review", "status follows the latest attempt, as before");
+    assert.deepEqual([masterySummary([run(null, [60, 90])]).finalExamScore, masterySummary([run(null, [60, 90])]).finalExam], [90, "passed"]);
+    assert.deepEqual([masterySummary([]).finalExamScore, masterySummary([]).finalExam], [null, "not-taken"]);
+    assert.equal(masterySummary([{ ...run(null, [80]), chapterId: 3 }]).finalExam, "not-taken", "a malformed final-exam record is ignored");
+});
+
+test("summary: mastered count is exact identity; attempted is not mastered and not 'completed'", () => {
+    const records = [run(4, [80]), run(14, [88]), run(7, [40]), run(9, [55, 60])];
+    const summary = masterySummary(records);
+    assert.equal(summary.passedChapters, 2, "chapters 4 and 14");
+    assert.deepEqual(courseLearning([], records).chapters.filter((c) => c.masteryEarned).map((c) => c.chapterId), [4, 14], "not chapters 1 and 2");
+    assert.equal(summary.attemptedChapters, 4, "attempted: 4, 7, 9, 14");
+    assert.equal(summary.totalChapters, 19);
+    assert.ok(!("completedChapters" in summary), "no value is called completed any more");
+    // Unknown records affect nothing.
+    const noise = [run(20, [99]), { ...run(2, [99]), quizId: "behind-ai-chapter-3" }, { ...run(1, [99]), quizId: "x" }];
+    assert.deepEqual(masterySummary([...records, ...noise]), summary);
+    assert.equal(masterySummary(noise).hasAnyData, false);
+});
+
+test("summary: the learner-facing tile says attempted, in all six locales", () => {
+    const root = join(HERE, "..", "..", "..");
+    for (const locale of ["he", "en", "es", "ru", "ar", "ja"]) {
+        const chrome = readFileSync(join(root, "i18n", "locales", locale, "chrome.ts"), "utf8");
+        const progress = chrome.slice(chrome.indexOf("progress: {"));
+        assert.match(progress, /\n\s+attempted: '[^']+',/, `${locale}: attempted label`);
+        assert.doesNotMatch(progress.slice(0, progress.indexOf("status: {")), /\n\s+completed: /, `${locale}: no "completed" tile label`);
+    }
+    const dashboard = source("MasteryDashboard.tsx");
+    assert.doesNotMatch(dashboard, /progress\.completed|completedChapters/);
+    assert.match(dashboard, /\{progress\.attempted\}<\/div>\s*<div[^>]*>\{summary\.attemptedChapters\}/);
+});
+
+// ── Chapter milestones (card trail): one per registered unit, from real reaches, in registry order ──
+test("milestones: every chapter gets exactly its registered units, in order; nothing for the final exam", () => {
+    const m = chapterMilestones([]);
+    assert.equal(m.length, 19, "19 chapters, no 20th");
+    CHAPTER_IDS.forEach((n) => assert.equal(m[n - 1].length, LEARNING_UNITS[n].length, `chapter ${n}`));
+    assert.ok(m.every((row) => row.every((r) => r === false)));
+    const counts = CHAPTER_IDS.map((n) => m[n - 1].length);
+    assert.deepEqual(counts, [4, 6, 5, 6, 7, 9, 9, 10, 10, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8], "different chapters keep their real counts");
+    // Registry order: reaching the 3rd registered unit of chapter 8 marks index 2, whatever the reach order.
+    const third = LEARNING_UNITS[8][2];
+    assert.deepEqual(chapterMilestones([at(8, third, 99)])[7].map((r, i) => (r ? i : -1)).filter((i) => i >= 0), [2]);
+});
+
+test("milestones: real reached state, including gaps; never manufactured from the ratio", () => {
+    const pick = (n: number, indexes: number[]) => indexes.map((i) => at(n, LEARNING_UNITS[n][i], i + 1));
+    // Chapter 2 (6 units): reached, not, reached, reached, not, reached.
+    assert.deepEqual(chapterMilestones(pick(2, [0, 2, 3, 5]))[1], [true, false, true, true, false, true]);
+    // Same ratio (3/10), different truth: a prefix and a scattered pattern stay different.
+    const prefix = chapterMilestones(pick(8, [0, 1, 2]))[7];
+    const scattered = chapterMilestones(pick(8, [0, 4, 9]))[7];
+    assert.equal(courseLearning(pick(8, [0, 1, 2]), []).chapters[7].learningProgressRatio, courseLearning(pick(8, [0, 4, 9]), []).chapters[7].learningProgressRatio);
+    assert.notDeepEqual(prefix, scattered);
+    assert.deepEqual(scattered, [true, false, false, false, true, false, false, false, false, true]);
+});
+
+test("milestones: unknown, removed or out-of-course unit ids create no dots", () => {
+    const m = chapterMilestones([at(3, "not-a-unit"), at(3, "removed-unit"), at(0, "guess"), at(20, "guess"), at(1.5, "guide")]);
+    assert.deepEqual(m.map((row) => row.length), CHAPTER_IDS.map((n) => LEARNING_UNITS[n].length));
+    assert.ok(m.every((row) => row.every((r) => r === false)));
+});
+
+// ── Course learning progress: registered units reached / all registered units ──
+test("course learning progress: exact registered reached units over all registered units", () => {
+    const total = CHAPTER_IDS.reduce((sum, n) => sum + LEARNING_UNITS[n].length, 0);
+    assert.equal(courseLearning([], []).learningProgress, 0, "nothing reached: 0");
+    const everything = CHAPTER_IDS.flatMap((n) => full(n));
+    assert.equal(courseLearning(everything, []).learningProgress, 1, "all registered units: 1");
+    const some3 = [...some(8, 3), ...some(2, 2)];
+    assert.equal(courseLearning(some3, []).learningProgress, 5 / total);
+    // Unknown, removed and out-of-course ids, and duplicates, never inflate it.
+    const noisy = [...some3, ...some3, at(8, LEARNING_UNITS[8][0], 999), at(3, "not-a-unit"), at(0, "guess"), at(20, "guess")];
+    assert.equal(courseLearning(noisy, []).learningProgress, 5 / total);
+    // Not from quizzes or mastery.
+    assert.equal(courseLearning([], CHAPTER_IDS.map((n) => run(n, [95]))).learningProgress, 0);
+    // Unit-weighted, not an average of chapter percentages: one full 4-unit chapter is 4/total, not 1/19.
+    assert.equal(courseLearning(full(1), []).learningProgress, 4 / total);
+    assert.notEqual(courseLearning(full(1), []).learningProgress, 1 / 19);
 });

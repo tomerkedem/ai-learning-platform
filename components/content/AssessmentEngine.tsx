@@ -94,6 +94,11 @@ interface AssessmentProps {
     /** קישור לחזרה על החומר, מוצג בסיום כאשר לא עוברים את סף ההצלחה. */
     reviewHref?: string;
     reviewLabel?: string;
+    /**
+     * הניסיון האחרון שנשמר (אם יש). כשקיים, המבדק נפתח במסך התוצאה שלו במקום במסך הפתיחה, ורק
+     * "ניסיון חוזר" מתחיל ניסיון חדש. null/undefined: מסך הפתיחה כרגיל.
+     */
+    previousResult?: AssessmentResult | null;
     /** נקרא פעם אחת בכל סיום ניסיון, עם פירוק התוצאה לפי מושגים (לצורך התמדה). */
     onComplete?: (result: AssessmentResult) => void;
     /** ממיר רשימת מושגים חלשים לקישורי חזרה ממוקדים שמוצגים בסיום. */
@@ -224,6 +229,7 @@ export const AssessmentEngine = ({
     reviewHref,
     reviewLabel,
     onComplete,
+    previousResult,
     getReviewLinks,
     startLabel,
     submitLabel,
@@ -419,7 +425,10 @@ export const AssessmentEngine = ({
     }, [isStarted, isSubmitted]);
 
     // 1. מסך פתיחה - Start Screen
-    if (!isStarted) {
+    // תוצאה שנשמרה מניסיון קודם (ניווט, רענון, כניסה מחדש): מוצגת במקום מסך הפתיחה, עד ניסיון חוזר מפורש.
+    const restored = !isStarted && !isSubmitted && previousResult ? previousResult : null;
+
+    if (!isStarted && !restored) {
         return (
             <motion.div
                 initial={reduce ? false : { opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -490,9 +499,9 @@ export const AssessmentEngine = ({
     }
 
     // 2. מסך תוצאות - Results Screen (מעודכן לציון אמיתי)
-    if (isSubmitted && !isReviewMode) {
-        const result = buildResult();
-        const { correctCount, scorePercent: scoreValue, weakConcepts, strongConcepts } = result;
+    if ((isSubmitted || restored) && !isReviewMode) {
+        const result = restored ?? buildResult();
+        const { correctCount, totalQuestions, scorePercent: scoreValue, weakConcepts, strongConcepts } = result;
         const feedback = getScoreFeedback(scoreValue);
         const passed = scoreValue >= passScore;
         const reviewLinks = getReviewLinks ? getReviewLinks(weakConcepts).slice(0, 3) : [];
@@ -533,16 +542,9 @@ export const AssessmentEngine = ({
                                     line={passed ? (scoreValue >= 90 ? a.mentorPassHigh : a.mentorPass) : a.mentorFail}
                                 />
                             </div>
-                        ) : !passed ? (
-                            /* אות סטטוס עצמאי לתוצאה שלא עברה. גביע כאן היה משקר, ופנים
-                               כאן היו הופכות את הדמות לאייקון הכישלון. חץ-חזרה הוא בדיוק
-                               מה שהתוצאה אומרת: עוד סיבוב. הגוון נלקח מדרגת הציון, כדי
-                               שהאייקון וטבעת הציון ידברו באותו צבע. בכרטיס צר הוא מוסתר: שם כפתור
-                               "ניסיון חוזר" כבר נושא את אותו אייקון, באותו גוון. */
-                            <div className="size-10 shrink-0 bg-[rgb(var(--bts-fill-rgb)/0.06)] rounded-full flex items-center justify-center @max-lg/result:hidden ring-4 ring-[rgb(var(--bts-fill-rgb)/0.03)] @lg/result:mx-auto @lg/result:mb-3 @lg/result:size-16 @lg/result:ring-[6px]">
-                                <RotateCcw size={30} className={`size-5 @lg/result:size-[30px] ${feedback.color}`} />
-                            </div>
-                        ) : (
+                        ) : !passed ? null /* בלי אייקון סטטוס בתוצאה שלא עברה: חץ-חזרה גדול נראה כמו כפתור
+                               "ניסיון חוזר" ואינו כזה. הפעולה היחידה היא "ניסיון חוזר" בתחתית, וטבעת הציון היא העוגן. */
+                        : (
                             <div className="size-10 shrink-0 bg-blue-500/10 rounded-full flex items-center justify-center ring-4 ring-blue-500/5 @lg/result:mx-auto @lg/result:mb-3 @lg/result:size-16 @lg/result:ring-[6px]">
                                 <Trophy size={32} className="size-[22px] text-blue-400 @lg/result:size-8" />
                             </div>
@@ -624,7 +626,7 @@ export const AssessmentEngine = ({
                                 <ListChecks size={16} className={`${feedback.color} shrink-0`} />
                             )}
                             <div className="min-w-0 text-[var(--bts-text-primary)] font-bold leading-tight text-[13px] text-start @lg/result:text-sm">
-                                {a.correctSummary(correctCount, questions.length)}
+                                {a.correctSummary(correctCount, totalQuestions)}
                             </div>
                         </div>
                         {showTimer && (
@@ -743,15 +745,18 @@ export const AssessmentEngine = ({
                             {reviewLabelR}
                         </GuessButton>
                     )}
-                    <GuessButton onClick={() => setIsReviewMode(true)} rgb="100,116,139" fullWidth leadingIcon={<Eye size={18} />} className="@max-lg/result:w-auto @max-lg/result:max-w-full">
-                        {a.reviewAnswers}
-                    </GuessButton>
+                    {/* סקירת תשובות דורשת את התשובות עצמן, שנשמרות רק בניסיון שבוצע במסך הזה (לא בחשבון). */}
+                    {!restored && (
+                        <GuessButton onClick={() => setIsReviewMode(true)} rgb="100,116,139" fullWidth leadingIcon={<Eye size={18} />} className="@max-lg/result:w-auto @max-lg/result:max-w-full">
+                            {a.reviewAnswers}
+                        </GuessButton>
+                    )}
                     </div>
                     <GuessButton
-                        onClick={() => { setAnswers({}); setCurrentIndex(0); setIsSubmitted(false); setIsReviewMode(false); setStreak(0); setSeconds(0); setIsActive(true); setDirection(0); setOptionOrder(buildOptionOrder(questions)); }}
+                        onClick={() => { setAnswers({}); setCurrentIndex(0); setIsSubmitted(false); setIsReviewMode(false); setStreak(0); setSeconds(0); setIsActive(true); setDirection(0); setOptionOrder(buildOptionOrder(questions)); setIsStarted(true); }}
                         variant="ghost"
                         className="min-h-[44px] self-center"
-                        leadingIcon={<RotateCcw size={14} aria-hidden className={`@lg/result:hidden ${feedback.color}`} />}
+                        leadingIcon={<RotateCcw size={14} aria-hidden="true" />}
                     >
                         {a.retry}
                     </GuessButton>

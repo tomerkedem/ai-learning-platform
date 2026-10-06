@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { useT } from "@/i18n/useT";
 import { AuthAlert, FieldError } from "../../AccountPanel";
 import { markSupportRequestRead, sendSupportReply } from "../actions";
-import { KIND_ICON, LocalTime, PRIMARY_BUTTON, SECONDARY_LINK, StatusBadge, SupportOrigin } from "../supportParts";
+import { KIND_ICON, KIND_ICON_COLOR, KIND_TONE, LocalTime, PRIMARY_BUTTON, SECONDARY_LINK, StatusBadge, SupportOrigin } from "../supportParts";
 import { SUPPORT_HOME, SUPPORT_MAX_CHARS, supportNewHref, type SupportMessage, type SupportRequestDetail } from "../supportShared";
 
 interface Props {
@@ -110,7 +110,7 @@ export function SupportRequestView({ request, messages, loadFailed, justCreated 
 
             <header className="mt-4 space-y-3">
                 <h1 ref={headingRef} tabIndex={-1} className="flex items-center gap-2 text-2xl md:text-3xl font-black leading-tight focus:outline-none">
-                    <Icon size={22} aria-hidden className="shrink-0 text-[var(--bts-text-muted)]" />
+                    <Icon size={22} aria-hidden className={`${KIND_TONE[request.kind]} ${KIND_ICON_COLOR} shrink-0`} />
                     {s.kinds[request.kind].noun}
                 </h1>
                 <div className="flex flex-wrap items-center gap-2">

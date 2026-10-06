@@ -308,6 +308,170 @@
   --bts-state-selected-bg: color-mix(in oklab, var(--color-violet-500) 11%, transparent);
 }
 
+/* ───────────── Learning Pulse (LearningPulse.tsx, ChapterNavCard.tsx) ─────────────
+   תפקידים: מסלול זכוכית (track), מילוי התקדמות (cyan > כחול חשמלי > סגול), צומת שליטה
+   (אמרלד, שונה תמיד ממילוי ההתקדמות), הפרק הנוכחי (קו מתאר), ומרכז. אותו מנגנון "הקרוב
+   ביותר מנצח": מוצהרים על שורש הערכה, Dark לפני Light (כי :root תואם גם ל-html בהיר). */
+:root,
+[data-theme="dark"] {
+  --lp-aura: rgb(56 130 246 / 0.2);
+  --lp-orbit: rgb(125 200 255 / 0.3);
+  --lp-orbit-glow: rgb(56 189 248 / 0.4);
+  --lp-track-a: rgb(24 36 82 / 0.72);
+  --lp-track-b: rgb(52 72 140 / 0.42);
+  --lp-track-current-a: rgb(30 58 128 / 0.9);
+  --lp-track-current-b: rgb(60 110 210 / 0.55);
+  --lp-track-edge: rgb(150 172 235 / 0.15);
+  --lp-track-complete-edge: rgb(125 211 252 / 0.6);
+  --lp-sheen: rgb(255 255 255 / 0.07);
+  --lp-ring-filter: none;
+  --lp-fill-a: #67e8f9;
+  --lp-fill-b: #3b82f6;
+  --lp-fill-c: #8b5cf6;
+  --lp-fill-core: rgb(240 249 255 / 0.7);
+  --lp-fill-glow: rgb(56 189 248 / 0.5);
+  --lp-node-fill: #0b1430;
+  --lp-node-empty: rgb(148 163 200 / 0.6);
+  --lp-mastery: #34d399;
+  --lp-mastery-edge: #a7f3d0;
+  --lp-mastery-halo: rgb(52 211 153 / 0.24);
+  --lp-mastery-aura: rgb(52 211 153 / 0.42);
+  --lp-node-vivid: rgb(46 242 160);
+  --lp-node-vivid-halo: rgb(46 242 160 / 0.4);
+  --lp-node-vivid-glow: rgb(46 242 160 / 0.85);
+  --lp-node-attempt: rgb(255 168 46);
+  --lp-node-attempt-halo: rgb(255 168 46 / 0.38);
+  --lp-node-attempt-glow: rgb(255 168 46 / 0.8);
+  --lp-score-glow-pass: rgb(46 242 160 / 0.5);
+  --lp-score-glow-fail: rgb(255 168 46 / 0.5);
+  --lp-score-well: rgb(4 9 24 / 0.55);
+  --lp-gold: #d8b46a;
+  --lp-gold-edge: rgb(216 180 106 / 0.45);
+  --lp-gold-edge-strong: rgb(226 192 118 / 0.75);
+  --lp-gold-surface: rgb(216 180 106 / 0.07);
+  --lp-gold-halo: rgb(216 180 106 / 0.16);
+  --lp-gold-text: #e6c98a;
+  --lp-gold-card: linear-gradient(135deg, rgb(40 32 16 / 0.5) 0%, rgb(12 16 34 / 0.92) 55%, rgb(8 12 28 / 0.95) 100%);
+  --lp-gold-light: rgb(232 196 120 / 0.2);
+  --lp-gold-inner: rgb(255 236 190 / 0.12);
+  --lp-gold-depth: rgb(0 0 0 / 0.5);
+  --lp-gold-ring-core: rgb(232 196 120 / 0.18);
+  --lp-gold-glow: rgb(232 190 100 / 0.5);
+  --lp-review-edge: rgb(245 150 80 / 0.75);
+  --lp-review-glow: rgb(245 130 60 / 0.4);
+  --lp-review-tint: rgb(245 110 50 / 0.12);
+  --lp-review-text: #fdba74;
+  --lp-review-well: rgb(127 29 29 / 0.6);
+  --lp-pass-tint: rgb(52 211 153 / 0.07);
+  --lp-pass-well: rgb(6 78 59 / 0.55);
+  --lp-score-well-shadow: rgb(0 0 0 / 0.6);
+  --lp-score-well-light: rgb(150 170 230 / 0.16);
+  --lp-node-body: rgb(8 16 36 / 0.85);
+  --lp-mastery-glow: rgb(52 211 153 / 0.65);
+  --lp-current: #e0f2fe;
+  --lp-current-glow: rgb(125 211 252 / 0.8);
+  --lp-center-a: #1a2c62;
+  --lp-center-b: #070f28;
+  --lp-center-edge: rgb(150 172 235 / 0.38);
+  --lp-center-sheen: rgb(255 255 255 / 0.12);
+  --lp-center-text: #f0f9ff;
+  --lp-center-label: rgb(191 219 254 / 0.8);
+  --lp-panel: linear-gradient(180deg, rgb(15 23 50 / 0.82), rgb(5 10 28 / 0.7));
+  --lp-panel-edge: rgb(148 163 220 / 0.18);
+  --lp-strip: rgb(10 17 40 / 0.45);
+  --lp-card: rgb(15 23 50 / 0.55);
+  --lp-card-edge: rgb(148 163 220 / 0.13);
+  --lp-card-hover: rgb(30 41 82 / 0.7);
+  --lp-card-current: rgb(59 130 246 / 0.12);
+  --lp-card-current-edge: rgb(125 170 252 / 0.6);
+  --lp-trail-track: rgb(148 163 220 / 0.24);
+  --lp-milestone-empty: rgb(120 138 190 / 0.5);
+  --lp-cta: rgb(59 130 246 / 0.14);
+  --lp-cta-edge: rgb(96 165 250 / 0.5);
+  --lp-cta-text: #bfdbfe;
+  --lp-cta-icon: #3b82f6;
+  --lp-cta-shadow: 0 0 20px -8px rgb(59 130 246 / 0.75);
+}
+[data-theme="light"] {
+  --lp-aura: rgb(59 130 246 / 0.08);
+  --lp-orbit: rgb(80 110 175 / 0.26);
+  --lp-orbit-glow: rgb(80 130 210 / 0.14);
+  --lp-track-a: #f5f8fe;
+  --lp-track-b: #e3eaf7;
+  --lp-track-current-a: #eef4ff;
+  --lp-track-current-b: #d4e2fb;
+  --lp-track-edge: rgb(90 110 165 / 0.19);
+  --lp-track-complete-edge: rgb(37 99 235 / 0.55);
+  --lp-sheen: rgb(255 255 255 / 0.95);
+  --lp-ring-filter: drop-shadow(0 1px 1.5px rgb(30 41 82 / 0.14));
+  --lp-fill-a: #38bdf8;
+  --lp-fill-b: #2563eb;
+  --lp-fill-c: #7c3aed;
+  --lp-fill-core: rgb(255 255 255 / 0.45);
+  --lp-fill-glow: transparent;
+  --lp-node-fill: #ffffff;
+  --lp-node-empty: rgb(100 116 139 / 0.62);
+  --lp-mastery: #059669;
+  --lp-mastery-edge: #047857;
+  --lp-mastery-halo: rgb(5 150 105 / 0.16);
+  --lp-mastery-aura: rgb(5 150 105 / 0.24);
+  --lp-node-vivid: rgb(0 196 120);
+  --lp-node-vivid-halo: rgb(0 196 120 / 0.5);
+  --lp-node-vivid-glow: rgb(0 196 120 / 0.75);
+  --lp-node-attempt: rgb(245 130 10);
+  --lp-node-attempt-halo: rgb(245 130 10 / 0.42);
+  --lp-node-attempt-glow: rgb(245 130 10 / 0.7);
+  --lp-score-glow-pass: rgb(0 196 120 / 0.36);
+  --lp-score-glow-fail: rgb(245 130 10 / 0.36);
+  --lp-score-well: #eef2f8;
+  --lp-gold: #a07a22;
+  --lp-gold-edge: rgb(176 136 48 / 0.42);
+  --lp-gold-edge-strong: rgb(160 122 34 / 0.7);
+  --lp-gold-surface: rgb(214 176 90 / 0.08);
+  --lp-gold-halo: rgb(196 156 64 / 0.14);
+  --lp-gold-text: #7a5a12;
+  --lp-gold-card: linear-gradient(135deg, #fff8ea 0%, #fffdf8 55%, #ffffff 100%);
+  --lp-gold-light: rgb(214 176 90 / 0.16);
+  --lp-gold-inner: rgb(255 255 255 / 0.95);
+  --lp-gold-depth: rgb(122 90 18 / 0.14);
+  --lp-gold-ring-core: rgb(214 176 90 / 0.14);
+  --lp-gold-glow: rgb(196 150 50 / 0.3);
+  --lp-review-edge: rgb(194 65 12 / 0.55);
+  --lp-review-glow: rgb(234 88 12 / 0.24);
+  --lp-review-tint: rgb(251 146 60 / 0.1);
+  --lp-review-text: #9a3412;
+  --lp-review-well: #fff1e6;
+  --lp-pass-tint: rgb(5 150 105 / 0.06);
+  --lp-pass-well: #ecfdf5;
+  --lp-score-well-shadow: rgb(30 41 82 / 0.16);
+  --lp-score-well-light: rgb(255 255 255 / 0.95);
+  --lp-node-body: #ffffff;
+  --lp-mastery-glow: transparent;
+  --lp-current: #1e3a8a;
+  --lp-current-glow: transparent;
+  --lp-center-a: #ffffff;
+  --lp-center-b: #e8eef9;
+  --lp-center-edge: rgb(90 110 165 / 0.28);
+  --lp-center-sheen: rgb(255 255 255 / 0.9);
+  --lp-center-text: #0f172a;
+  --lp-center-label: #53647d;
+  --lp-panel: linear-gradient(180deg, #ffffff, rgb(246 248 252));
+  --lp-panel-edge: rgb(100 116 160 / 0.18);
+  --lp-strip: rgb(255 255 255 / 0.6);
+  --lp-card: #ffffff;
+  --lp-card-edge: rgb(100 116 160 / 0.16);
+  --lp-card-hover: rgb(241 245 252);
+  --lp-card-current: rgb(239 246 255);
+  --lp-card-current-edge: rgb(30 58 138 / 0.4);
+  --lp-trail-track: rgb(100 116 139 / 0.28);
+  --lp-milestone-empty: #cbd5e3;
+  --lp-cta: rgb(37 99 235 / 0.08);
+  --lp-cta-edge: rgb(37 99 235 / 0.32);
+  --lp-cta-text: #1d4ed8;
+  --lp-cta-icon: #2563eb;
+  --lp-cta-shadow: 0 6px 16px -10px rgb(37 99 235 / 0.6);
+}
+
 /* T2B: דיו-זהות-תחנה כטקסט (StationCard, IntroStationViz). STATION_RGB/ink הם צבעי
    accent שנבחרו להיראות היטב על משטח כהה (Dark) - בהירים ורוויים. כטקסט על משטח
    בהיר הם נכשלים ב-AA כמעט תמיד. .bts-ink מגדיר את הצבע דרך --ink (משתנה inline
@@ -599,6 +763,94 @@ html[data-locale="ar"] body {
   input[type="radio"] {
     cursor: pointer !important;
   }
+}
+
+/* ───────────── Learning Pulse בסרגל: פאנל אחד בשני מצבים (LearningPulse.tsx) ─────────────
+   --lp-c: 0 = פתוח (הסימן המלא במרכז), 1 = מכווץ (אותו Pulse אמיתי, 72px בתחילת השורה). אותו SVG
+   זז ומוקטן (top, inset-inline-start, scale) ולא מוחלף. data-layout="auto": לפי המסך (פתוח בדסקטופ
+   גבוה, מכווץ בנייד ובמסך נמוך), בלי הבהוב. מעבר רק עם data-morph (גלילה או לחיצה, לא בטעינה).
+   פתוח: מעטפת אחת (::before של הפאנל). מכווץ: המעטפת דוהה, ושורת הכותרת היא כרטיס עצמאי
+   (lp-head::before) מעל כרטיס מבחן הסיום. הגבול השקוף שומר על מידות המצב הפתוח. */
+.lp-panel { --lp-c: 0; --lp-rows: 1fr; isolation: isolate; border: 1px solid transparent; padding: calc(12px * (1 - var(--lp-c))); }
+.lp-panel::before,
+.lp-head::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  border-radius: 16px;
+  background-image: var(--lp-panel);
+  pointer-events: none;
+}
+.lp-panel::before { inset: -1px; border: 1px solid var(--lp-panel-edge); opacity: calc(1 - var(--lp-c)); }
+.lp-head { position: relative; }
+.lp-head::before {
+  inset: 0;
+  border: 1px solid color-mix(in oklab, var(--lp-fill-a) 38%, var(--lp-panel-edge));
+  box-shadow: inset 0 0 22px -10px color-mix(in oklab, var(--lp-fill-a) 55%, transparent);
+  opacity: var(--lp-c);
+}
+.lp-panel[data-layout="compact"] { --lp-c: 1; --lp-rows: 0fr; }
+@media not ((min-width: 768px) and (min-height: 800px)) {
+  .lp-panel[data-layout="auto"] { --lp-c: 1; --lp-rows: 0fr; }
+}
+.lp-art {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  top: calc(56px - 50px * var(--lp-c));
+  inset-inline-start: calc((50% - 110px) * (1 - var(--lp-c)) + 8px * var(--lp-c));
+  scale: calc(1 - 0.6727 * var(--lp-c));
+  transform-origin: top left;
+  pointer-events: none;
+}
+.lp-panel[dir="rtl"] .lp-art { transform-origin: top right; }
+/* מפת הקורס (קישורי פרק, מספרים, תיאור צף) קיימת רק במצב הפתוח: במכווץ היא מוסתרת, ולכן גם לא
+   ניתנת למיקוד ולא ללחיצה. */
+.lp-panel[data-layout="compact"] .lp-map { visibility: hidden; }
+@media not ((min-width: 768px) and (min-height: 800px)) {
+  .lp-panel[data-layout="auto"] .lp-map { visibility: hidden; }
+}
+.lp-head { min-height: calc(44px + 40px * var(--lp-c)); padding-inline-start: calc(86px * var(--lp-c)); }
+/* כפתור ההרחבה: אזור צר משלו בקצה, ולפניו קו מפריד עדין (מכווץ בלבד). בפתוח החץ בקצה כמו קודם. */
+.lp-toggle {
+  position: relative;
+  align-self: stretch;
+  flex-shrink: 0;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-inline-end: calc(5px * var(--lp-c));
+}
+.lp-toggle::before {
+  content: "";
+  position: absolute;
+  inset-block: 16px;
+  inset-inline-start: 0;
+  width: 1px;
+  background: var(--lp-panel-edge);
+  opacity: var(--lp-c);
+}
+.lp-inline { max-width: calc(96px * var(--lp-c)); overflow: hidden; }
+.lp-body { display: grid; grid-template-rows: var(--lp-rows); opacity: calc(1 - var(--lp-c)); }
+.lp-full { opacity: calc(1 - var(--lp-c)); }
+.lp-compact { opacity: var(--lp-c); }
+.lp-chevron { rotate: calc(180deg * (1 - var(--lp-c))); }
+.lp-panel[data-morph],
+.lp-panel[data-morph]::before,
+.lp-panel[data-morph] .lp-head::before,
+.lp-panel[data-morph] .lp-toggle::before,
+.lp-panel[data-morph] :is(.lp-art, .lp-head, .lp-body, .lp-full, .lp-compact, .lp-chevron, .lp-toggle) {
+  transition-property: top, inset-inline-start, scale, min-height, padding, padding-inline-start, padding-inline-end, max-width, grid-template-rows, opacity, rotate;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.25, 0.8, 0.3, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-panel[data-morph],
+  .lp-panel[data-morph]::before,
+  .lp-panel[data-morph] .lp-head::before,
+  .lp-panel[data-morph] .lp-toggle::before,
+  .lp-panel[data-morph] :is(.lp-art, .lp-head, .lp-body, .lp-full, .lp-compact, .lp-chevron, .lp-toggle) { transition: none; }
 }
 
 /* ───────────── בורר השפה של הלומדה (components/language/LanguageGlobe.tsx) ─────────────

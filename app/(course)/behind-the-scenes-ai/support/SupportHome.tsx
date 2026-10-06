@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { useT } from "@/i18n/useT";
-import { FOCUS, KIND_ICON, LocalTime, PRIMARY_BUTTON, StatusBadge, SupportOrigin } from "./supportParts";
+import { FOCUS, KIND_ICON, KIND_ICON_COLOR, KIND_TONE, LocalTime, PRIMARY_BUTTON, StatusBadge, SupportOrigin } from "./supportParts";
 import { SUPPORT_HOME, supportNewHref, type SupportRequestSummary } from "./supportShared";
 
 export function SupportHome({ requests, from }: { requests: SupportRequestSummary[] | null; from: string | null }) {
@@ -50,7 +50,7 @@ export function SupportHome({ requests, from }: { requests: SupportRequestSummar
                                         className={`block rounded-2xl border border-[var(--bts-border)] bg-[var(--bts-surface)] p-4 no-underline transition-colors hover:border-[var(--bts-border-emphasis)] hover:bg-[var(--bts-surface-elevated)] motion-reduce:transition-none ${FOCUS}`}
                                     >
                                         <span className="flex flex-wrap items-center gap-2">
-                                            <Icon size={16} aria-hidden className="shrink-0 text-[var(--bts-text-muted)]" />
+                                            <Icon size={16} aria-hidden className={`${KIND_TONE[r.kind]} ${KIND_ICON_COLOR} shrink-0`} />
                                             <span className="font-bold text-[var(--bts-text-primary)]">{s.kinds[r.kind].noun}</span>
                                             <StatusBadge status={r.status} />
                                             {r.has_unread && (

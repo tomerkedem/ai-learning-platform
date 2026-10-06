@@ -9,6 +9,7 @@
 
 import type { ScoreTier, ReviewLink, AssessmentResult, QuizQuestionMaterial } from "@/components/content/AssessmentEngine";
 import { recordResult, chapterQuizId, FINAL_EXAM_QUIZ_ID } from "./masteryProgress";
+import { useLatestQuizRecord } from "./learnerState";
 import { useProtectedContent } from "@/i18n/ProtectedContent";
 
 export type Difficulty = "easy" | "medium" | "hard";
@@ -24,6 +25,8 @@ export interface QuizQuestion extends QuizQuestionMaterial {
 }
 
 export interface ChapterQuizMeta {
+    /** הניסיון האחרון שנשמר (מהמאגר המשותף). קיים: מוצג מסך התוצאה שלו במקום מסך הפתיחה. */
+    previousResult?: AssessmentResult | null;
     title: string;
     subtitle: string;
     questions: QuizQuestion[];
@@ -138,7 +141,12 @@ function chapterQuizBase(n: number): Omit<ChapterQuizMeta, "questions"> {
 export function useChapterQuiz(n: number): ChapterQuizMeta {
     const content = useProtectedContent();
     const getReviewLinks = useConceptReviewLinks();
-    return { ...chapterQuizBase(n), questions: content?.quiz ?? [], getReviewLinks };
+    const latest = useLatestQuizRecord(chapterQuizId(n));
+    // הניסיון האחרון (לא הטוב ביותר), כפי שנשמר. השליטה הקבועה אינה משפיעה על מה שמוצג כאן.
+    const previousResult = latest
+        ? { scorePercent: latest.scorePercent, correctCount: latest.correctCount, totalQuestions: latest.totalQuestions, passed: latest.passed, weakConcepts: latest.weakConcepts, strongConcepts: latest.strongConcepts }
+        : latest;
+    return { ...chapterQuizBase(n), questions: content?.quiz ?? [], getReviewLinks, previousResult };
 }
 
 /** קישורי חזרה לפי מושגים, עם המפה המלאה כשהשרת העביר אותה (עמוד מוגן), אחרת רק פרק 1. */

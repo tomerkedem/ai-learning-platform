@@ -6,10 +6,11 @@ import { usePathname } from 'next/navigation';
 import { Circle, PlayCircle, Menu, X, ArrowRight, ArrowLeft, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { courses } from "@/lib/courseData";
-import { SidebarMastery } from "@/app/(course)/behind-the-scenes-ai/MasteryDashboard";
-import { AccountPanel } from "@/app/(course)/behind-the-scenes-ai/AccountPanel";
+import { SidebarChapterList, SidebarContinue, SidebarPulse } from "@/app/(course)/behind-the-scenes-ai/LearningSidebar";
+import { AccountPanel, SidebarHelpButton } from "@/app/(course)/behind-the-scenes-ai/AccountPanel";
 import { useCourseAccess } from "@/app/(course)/behind-the-scenes-ai/_access/CourseAccessContext";
 import { hasCourseAccess, isProtectedCoursePath } from "@/app/(course)/behind-the-scenes-ai/_access/access";
+import { revealScrollTop } from "@/app/(course)/behind-the-scenes-ai/learningPulseModel";
 import { INFO_PAGES } from "@/app/(course)/behind-the-scenes-ai/_info/infoRoutes";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { DisplaySettings } from "@/components/DisplaySettings";
@@ -18,15 +19,51 @@ import { useT } from "@/i18n/useT";
 import { tField } from "@/lib/localize";
 import { formatChapterLabel } from "@/i18n/format";
 
+// Learning Pulse: מכווץ אחרי גלילה של יותר מ-COMPACT_AT פיקסלים ברשימה, ונפתח שוב רק קרוב לראש (EXPAND_AT).
+// הפער בין הספים מונע הבהוב בתנועות קטנות; מצב React מתעדכן רק כשחוצים סף.
+const PULSE_COMPACT_AT = 96;
+const PULSE_EXPAND_AT = 16;
+
+/**
+ * חושף את הכרטיס הנוכחי (aria-current) ברשימת הפרקים הנגללת בלבד: לא נוגע בגלילת העמוד או הסרגל, ולא
+ * במיקוד. מחזיר true אם הרשימה זזה. מיידי (scrollTop): רץ לפני הציור, ולכן אין קפיצה נראית ואין הנפשה.
+ */
+function revealCurrentCard(scroller: HTMLElement | null | undefined): boolean {
+  const card = scroller?.querySelector<HTMLElement>('[data-chapter-list] [aria-current="page"]');
+  if (!scroller || !card) return false;
+  const box = scroller.getBoundingClientRect();
+  const c = card.getBoundingClientRect();
+  const top = revealScrollTop(
+    { scrollTop: scroller.scrollTop, height: scroller.clientHeight, scrollHeight: scroller.scrollHeight },
+    { top: c.top - box.top + scroller.scrollTop, height: c.height },
+  );
+  if (top === null || top === Math.round(scroller.scrollTop)) return false;
+  scroller.scrollTop = top;
+  return true;
+}
+
 export function CourseSidebar({ isFocusMode = false }: { isFocusMode?: boolean }) {
   const pathname = usePathname();
   const { locale, dir, t } = useT();
   // תצוגה בלבד: מצב הגישה שהשרת חישב. האכיפה בשרת, בכל עמוד מוגן.
   const access = useCourseAccess();
   const [isOpen, setIsOpen] = useState(false);
+  // פרק בתצוגה מקדימה (ריחוף או מיקוד על כרטיס פרק): מודגש בעלה המתאים ב-Learning Pulse.
+  const [previewChapter, setPreviewChapter] = useState<number | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
+  // הנתיב שהכרטיס הנוכחי שלו כבר נחשף (ראו האפקט שאחרי שחזור הגלילה).
+  const revealedPath = useRef<string | null>(null);
+  // morph: המעבר נגרם מגלילה של הלומד (מונפש). שחזור הגלילה בטעינה מחליף מצב בלי הנפשה.
+  const [listScroll, setListScroll] = useState({ scrolled: false, morph: false });
+  const listScrolledRef = useRef(false);
+  const trackListScroll = (top: number, morph: boolean) => {
+    const scrolled = listScrolledRef.current ? top > PULSE_EXPAND_AT : top > PULSE_COMPACT_AT;
+    if (scrolled === listScrolledRef.current) return;
+    listScrolledRef.current = scrolled;
+    setListScroll({ scrolled, morph });
+  };
 
   // סגירת מגירת המובייל: מחזירה את הפוקוס לכפתור התפריט (Esc, כפתור X ושכבת הרקע).
   const closeMenu = useCallback(() => {
@@ -42,6 +79,7 @@ export function CourseSidebar({ isFocusMode = false }: { isFocusMode?: boolean }
         drawerRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])') ?? [],
       ).filter((el) => el.getClientRects().length > 0);
     focusables()[0]?.focus();
+    revealCurrentCard(drawerRef.current?.querySelector<HTMLElement>('[data-chapter-scroller]'));
     const onKeyDown = (e: KeyboardEvent) => {
       // חלון <dialog> מודאלי שנפתח מתוך המגירה (שפה, נגישות ותצוגה) מנהל בעצמו Escape ו-Tab.
       if (document.querySelector('dialog[open]')) return;
@@ -78,15 +116,58 @@ export function CourseSidebar({ isFocusMode = false }: { isFocusMode?: boolean }
       const savedScrollPos = sessionStorage.getItem('sidebar-scroll-pos');
       if (savedScrollPos && scrollContainerRef.current) {
         const pos = parseInt(savedScrollPos, 10);
-        if (Number.isFinite(pos)) scrollContainerRef.current.scrollTop = pos;
+        if (Number.isFinite(pos)) {
+          scrollContainerRef.current.scrollTop = pos;
+          trackListScroll(scrollContainerRef.current.scrollTop, false);
+        }
       }
     } catch {
       // אחסון חסום: מתחילים מראש הרשימה.
     }
+    // אחרי כל שחזור, הכרטיס הנוכחי נבדק מחדש (גם כשהאפקטים רצים פעמיים במצב פיתוח).
+    revealedPath.current = null;
   }, []);
+
+  // הפרק הנוכחי השתנה (כל מקור ניווט: עלה ב-Pulse, כרטיס, "המשך", קישור, חזרה/קדימה): אחרי שחזור הגלילה
+  // ולפני הציור, הכרטיס שלו נחשף אם אינו גלוי. פעם אחת לכל נתיב; גלילה של הלומד אחר כך לא "מתוקנת".
+  useLayoutEffect(() => {
+    if (revealedPath.current === pathname) return;
+    revealedPath.current = pathname;
+    const scroller = scrollContainerRef.current;
+    if (revealCurrentCard(scroller)) trackListScroll(scroller!.scrollTop, false);
+  }, [pathname]);
+
+  // הפריסה מעל הרשימה עוד מתייצבת אחרי הטעינה (ה-Pulse והחשבון נטענים, ה-Pulse מחליף מצב), וגובה הרשימה
+  // משתנה: כל עוד הלומד לא נגע בסרגל, שינוי גודל של הרשימה בודק שוב שהכרטיס הנוכחי גלוי. האינטראקציה
+  // הראשונה (מצביע, גלגלת, מגע או מקלדת), או כל גלילה של הרשימה שלא באה מכאן, מסיימת את המעקב, כך שאין
+  // מאבק בלומד.
+  useEffect(() => {
+    const scroller = scrollContainerRef.current;
+    const root = scroller?.parentElement;
+    if (!scroller || !root || typeof ResizeObserver === 'undefined') return;
+    let expected = scroller.scrollTop;
+    const ro = new ResizeObserver(() => {
+      if (revealCurrentCard(scroller)) trackListScroll(scroller.scrollTop, false);
+      expected = scroller.scrollTop;
+    });
+    const onScroll = () => {
+      if (Math.abs(scroller.scrollTop - expected) > 1) stop();
+    };
+    const events = ['pointerdown', 'wheel', 'touchstart', 'keydown'] as const;
+    const stop = () => {
+      ro.disconnect();
+      scroller.removeEventListener('scroll', onScroll);
+      events.forEach((type) => root.removeEventListener(type, stop));
+    };
+    ro.observe(scroller);
+    scroller.addEventListener('scroll', onScroll, { passive: true });
+    events.forEach((type) => root.addEventListener(type, stop, { passive: true }));
+    return stop;
+  }, [pathname]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
+    trackListScroll(target.scrollTop, true);
     try {
       sessionStorage.setItem('sidebar-scroll-pos', target.scrollTop.toString());
     } catch {
@@ -144,22 +225,35 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                 )}
             </div>
 
-            {/* סיכום שליטה במבדקים - מוצג רק בלומדת "מאחורי הקלעים של AI" ורק כשיש נתונים */}
-            {currentCourseId === 'behind-the-scenes-ai' && <SidebarMastery />}
+            {/* מאחורי הקלעים של AI: כותרת החשבון (זהות, גישה, עזרה), ומתחתיה Learning Pulse. שניהם לא
+                נגללים; רק רשימת הפרקים נגללת, כך שה-Pulse והזהות לא נעלמים בגלילה. */}
             {currentCourseId === 'behind-the-scenes-ai' && <AccountPanel />}
+            {currentCourseId === 'behind-the-scenes-ai' && (
+                <SidebarPulse pathname={pathname} previewChapterId={previewChapter} listScrolled={listScroll.scrolled} morph={listScroll.morph} onNavigate={() => setIsOpen(false)} />
+            )}
+          </div>
+
+          {/* כותרת תוכן העניינים: קבועה מעל הרשימה הנגללת. במאחורי הקלעים של AI, "המשך" קומפקטי בצידה, ומתחת
+              קו זהב שקט (מבנה, לא כרטיס): חזק מעט במרכז ודועך לקצוות, חלש בהרבה מהזהב של מבחן הסיום. */}
+          <div className={`relative flex shrink-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 px-3 pt-2 ${currentCourseId === 'behind-the-scenes-ai' ? "pb-1.5 after:pointer-events-none after:absolute after:inset-x-5 after:bottom-0 after:h-px after:bg-[linear-gradient(90deg,transparent,var(--lp-gold)_50%,transparent)] after:opacity-35" : "pb-1"}`}>
+              <div className="px-2 text-[10px] font-bold text-[var(--bts-text-muted)] uppercase tracking-widest">
+                  {t.chrome.tableOfContents}
+              </div>
+              {currentCourseId === 'behind-the-scenes-ai' && <SidebarContinue pathname={pathname} onNavigate={() => setIsOpen(false)} />}
           </div>
 
           {/* Navigation List */}
           <div 
             ref={scrollContainerRef}
+            data-chapter-scroller
             onScroll={handleScroll}
-            className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-0.5"
+            className="flex-1 overflow-y-auto custom-scrollbar px-3 pt-1 pb-3 space-y-0.5"
           >
-              <div className="text-[10px] font-bold text-[var(--bts-text-muted)] mb-2 px-2 uppercase tracking-widest mt-2">
-                  {t.chrome.tableOfContents}
-              </div>
-              
-              {course.chapters.map((chapter) => {
+              {currentCourseId === 'behind-the-scenes-ai' ? (
+                  <div data-chapter-list>
+                      <SidebarChapterList pathname={pathname} onPreview={setPreviewChapter} onNavigate={() => setIsOpen(false)} />
+                  </div>
+              ) : course.chapters.map((chapter) => {
                   const isActive = pathname === chapter.href;
                   const activeTextColor = chapter.labelColor || "text-blue-400";
                   const Icon = isActive ? PlayCircle : Circle;
@@ -246,8 +340,9 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                   <ThemeToggle />
                   <DisplaySettings />
                   {pathname?.startsWith('/behind-the-scenes-ai') && <LanguageGlobe />}
+                  {currentCourseId === 'behind-the-scenes-ai' && <SidebarHelpButton />}
               </div>
-              <p className="text-xs">{t.chrome.byAuthor}</p>
+              <p className="whitespace-nowrap text-xs">{t.chrome.creatorLabel}<bdi className="font-semibold text-[var(--bts-text-secondary)]">{t.chrome.authorName}</bdi></p>
           </div>
       </div>
   );
@@ -302,7 +397,7 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
                           animate={{ x: 0 }}
                           exit={{ x: '100%' }}
                           transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                          className="fixed top-0 right-0 h-full w-[85%] max-w-xs z-100 border-l border-[var(--bts-border-emphasis)] shadow-2xl md:hidden bg-[var(--bts-surface-elevated)]"
+                          className="fixed top-0 right-0 h-full w-[85%] max-w-xs z-100 border-l border-[var(--bts-border-emphasis)] shadow-2xl md:hidden bg-[var(--bts-page)]"
                           dir={dir}
                       >
                           {sidebarContent}

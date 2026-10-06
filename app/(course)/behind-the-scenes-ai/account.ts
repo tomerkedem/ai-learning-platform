@@ -17,7 +17,7 @@
 import { useSyncExternalStore } from "react";
 import { createClient, type Session } from "@supabase/supabase-js";
 import { isLocale, type Locale } from "@/i18n/config";
-import { mergeAttempt, MASTERY_UPDATED_EVENT, type QuizRecord, type RecordResultInput } from "./masteryProgress";
+import { MASTERY_UPDATED_EVENT, type QuizRecord, type RecordResultInput } from "./masteryProgress";
 import { isLearningUnit, legacyMasteryEarned, mergeReached, type ReachedUnit } from "./learningProgress";
 import { ACCESS_TOKEN_COOKIE } from "./_access/access";
 import { readAuthRedirect } from "./authForm";
@@ -105,10 +105,12 @@ if (supabase && typeof window !== "undefined") {
     }
 }
 
-function subscribe(listener: () => void) {
+/** מנוי לשינויי מצב ההתחברות (גם מחוץ ל-React: מצב הלמידה המשותף משחרר בו את נתוני המשתמש הקודם). */
+export function subscribeAuthState(listener: () => void) {
     listeners.add(listener);
     return () => { listeners.delete(listener); };
 }
+const subscribe = subscribeAuthState;
 
 export function useAuthState(): AuthState {
     return useSyncExternalStore(subscribe, () => authState, () => SIGNED_OUT);
@@ -184,19 +186,25 @@ export async function loadAccountSnapshot(userId: string): Promise<AccountSnapsh
         }
         return { records, loadedAt, offline: false };
     } catch {
-        try {
-            const cached = JSON.parse(window.localStorage.getItem(cacheKey(userId)) ?? "null") as { records?: unknown; loadedAt?: unknown } | null;
-            if (cached && Array.isArray(cached.records) && typeof cached.loadedAt === "number") {
-                // עותק שנשמר לפני השליטה הקבועה: גוזרים אותה כמו ברשומה מקומית ישנה.
-                const records = (cached.records as QuizRecord[]).map(r =>
-                    typeof r.masteryEarned === "boolean" ? r : { ...r, masteryEarned: legacyMasteryEarned(r) });
-                return { records, loadedAt: cached.loadedAt, offline: true };
-            }
-        } catch {
-            // עותק פגום: כמו שאין עותק.
-        }
-        return { records: [], loadedAt: null, offline: true };
+        const cached = readCachedRecords(userId);
+        return cached ? { ...cached, offline: true } : { records: [], loadedAt: null, offline: true };
     }
+}
+
+/** העותק האחרון שנטען בהצלחה מהחשבון במכשיר הזה (בלי רשת), או null כשאין עותק תקין. */
+export function readCachedRecords(userId: string): { records: QuizRecord[]; loadedAt: number } | null {
+    try {
+        const cached = JSON.parse(window.localStorage.getItem(cacheKey(userId)) ?? "null") as { records?: unknown; loadedAt?: unknown } | null;
+        if (cached && Array.isArray(cached.records) && typeof cached.loadedAt === "number") {
+            // עותק שנשמר לפני השליטה הקבועה: גוזרים אותה כמו ברשומה מקומית ישנה.
+            const records = (cached.records as QuizRecord[]).map(r =>
+                typeof r.masteryEarned === "boolean" ? r : { ...r, masteryEarned: legacyMasteryEarned(r) });
+            return { records, loadedAt: cached.loadedAt };
+        }
+    } catch {
+        // עותק פגום או אחסון חסום: כמו שאין עותק.
+    }
+    return null;
 }
 
 export async function signOutAndForget(userId: string): Promise<void> {
@@ -341,14 +349,8 @@ export function removeRejected(userId: string, attemptId: string): void {
     setPendingAttempts(userId, getPendingAttempts(userId).filter(p => !(p.attemptId === attemptId && p.rejected)));
 }
 
-/** רשומות החשבון בתוספת ניסיונות שעוד ממתינים בתור (לא נדחים), כדי שהלוח יציג גם אותם. */
-export function withPending(records: QuizRecord[], pending: PendingAttempt[]): QuizRecord[] {
-    const byId = new Map(records.map(r => [r.quizId, r]));
-    for (const p of pending) {
-        if (!p.rejected) byId.set(p.quizId, mergeAttempt(byId.get(p.quizId), p, p.completedAt));
-    }
-    return [...byId.values()];
-}
+/** רשומות החשבון בתוספת ניסיונות שעוד ממתינים בתור (לא נדחים). הוגדר במודול הטהור כדי שייבדק שם. */
+export { withPending } from "./learningProgress";
 
 /**
  * ייבוא מפורש של תרגול שנשמר בלי חשבון. מוסיף רק מבדקים שעדיין אין לחשבון
@@ -485,6 +487,23 @@ export async function loadReachedUnits(userId: string): Promise<{ reached: Reach
         const store = loadUnitStore(userId);
         return { reached: mergeReached(store.reached, store.pending), offline: true };
     }
+}
+
+/** כל ההגעות שידועות במכשיר (כולל ממתינות), בלי רשת. */
+export function localReachedUnits(userId: string): ReachedUnit[] {
+    const store = loadUnitStore(userId);
+    return mergeReached(store.reached, store.pending);
+}
+
+/**
+ * לאירוע storage מלשונית אחרת: איזה מאגר של המשתמש הזה השתנה, או null כשהמפתח אינו שלו או אינו
+ * נוגע למצב הלמידה (מפתח של משתמש אחר לעולם אינו נחשב).
+ */
+export function learnerStorageKind(userId: string, key: string | null): "outbox" | "units" | "cache" | null {
+    if (key === outboxKey(userId)) return "outbox";
+    if (key === unitStoreKey(userId)) return "units";
+    if (key === cacheKey(userId)) return "cache";
+    return null;
 }
 
 // ── שפה מועדפת ──

@@ -39,6 +39,17 @@ export const KIND_ICON: Record<SupportKind, LucideIcon> = {
     feedback: MessageSquare,
 };
 
+/**
+ * צבע סמנטי לסוג הבקשה (לפי מזהה הסוג, לעולם לא לפי הטקסט המתורגם): בעיה = ענבר, עזרה = cyan, שיחה = סגול.
+ * מגדיר --kind; הרכיב צובע בו את האייקון (KIND_ICON_COLOR) ובטופס גם עיגול ומסגרת בבחירה. נפרד מצבעי הסטטוס.
+ */
+export const KIND_TONE: Record<SupportKind, string> = {
+    problem: "[--kind:var(--color-amber-400)] light:[--kind:var(--color-amber-700)]",
+    help: "[--kind:var(--bts-brand-primary-strong)]",
+    feedback: "[--kind:var(--color-violet-400)] light:[--kind:var(--color-violet-600)]",
+};
+export const KIND_ICON_COLOR = "text-[var(--kind)] forced-colors:text-[CanvasText]";
+
 // הסטטוס תמיד כתוב בטקסט, עם אייקון; הצבע רק מחזק.
 const STATUS_STYLE: Record<SupportStatus, { Icon: LucideIcon; className: string }> = {
     open: { Icon: CircleDot, className: "border-[color-mix(in_oklab,var(--bts-brand-primary)_55%,transparent)] text-[var(--bts-brand-primary-strong)]" },

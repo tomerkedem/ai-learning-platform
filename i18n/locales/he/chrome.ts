@@ -10,7 +10,7 @@ export const chrome = {
     tableOfContents: 'תוכן העניינים',
     authorName: 'תומר קדם',
     authorRole: 'מחבר הלומדה',
-    byAuthor: 'מאת תומר קדם',
+    creatorLabel: 'יוצר הלומדה: ',
     intro: 'מבוא',
 
     // כותרת עליונה
@@ -137,25 +137,73 @@ export const chrome = {
         scoreOutOf: (score: number) => `ציון ${score} מתוך 100`,
     },
 
-    // לוח ההתקדמות (MasteryDashboard / SidebarMastery): סיכום שליטה במבדקים.
+    // לוח ההתקדמות (MasteryDashboard בעמוד מבחן הסיום): סיכום שליטה במבדקים.
     progress: {
         title: 'ההתקדמות שלכם בלומדה',
-        sidebarTitle: 'שליטה במבדקים',
         emptyTitle: 'ההתקדמות שלכם',
         emptyBody: 'השלימו מבדק הבנה קצר בסוף כל פרק, וכאן תראו אילו מושגים כבר חזקים אצלכם ואילו כדאי לחזק. ההתקדמות נשמרת במכשיר שלכם.',
-        completed: 'הושלמו',
+        attempted: 'נוסו',
         passed: 'עברו',
         average: 'ממוצע',
         finalExam: 'מבחן סיום',
         strongHeader: 'חזק אצלכם',
         weakHeader: 'מושגים שכדאי לחזק',
-        weakHeaderShort: 'כדאי לחזק',
         finalExamCta: 'מעבר למבחן סיום הלומדה',
         status: {
             passed: 'עבר',
             needsReview: 'דורש חזרה',
             notTaken: 'לא בוצע',
         },
+    },
+
+    // Learning Pulse (19 הפרקים): הסימן, רצועת המיקוד, כרטיסי הפרקים ו"המשך למידה".
+    // "הגעה" אינה "קריאה", "השלמה" או "הבנה", ואין כאן מספר יחידות. השם Learning Pulse זהה בכל
+    // השפות (מוצג באותיות גדולות בעיצוב). מבחן הסיום, הסטטוסים שלו, הנעילה והסנכרון: progress.finalExam,
+    // progress.status, access.lockedLabel והמחרוזות של account (offline/unsynced/rejected).
+    pulse: {
+        brand: 'Learning Pulse',
+        subtitle: 'חתימת הלמידה שלך',
+        chapters: 'פרקים',
+        mastered: 'מבדקים שעברו בהצלחה',
+        learningProgress: 'התקדמות בלמידה',
+        latestScore: 'ציון אחרון',
+        latestScoreValue: (score: number) => `ציון אחרון ${score}`,
+        notAttempted: 'המבדק טרם נוסה',
+        masteryAchieved: 'שליטה הושגה',
+        masteryNotYet: 'שליטה טרם הושגה',
+        currentChapter: 'הפרק הנוכחי',
+        courseDestination: 'יעד הקורס',
+        finalExamSummary: 'המבחן המסכם של כל התכנים',
+        finalExamState: {
+            notTaken: 'לא בוצע',
+            needsReview: 'נדרש שיפור',
+            passed: 'עבר בהצלחה',
+        },
+        bands: {
+            'not-started': 'טרם התחיל',
+            'started': 'הלמידה החלה',
+            'in-progress': 'בתהליך למידה',
+            'well-advanced': 'התקדמות רבה',
+            'all-reached': 'הגעה לכל חלקי הפרק',
+        },
+        continue: {
+            start: (chapter: string) => `התחלת ${chapter}`,
+            continue: (chapter: string) => `המשך ל${chapter}`,
+            quiz: (chapter: string) => `למבדק ${chapter}`,
+            finalExam: 'מעבר למבחן הסיום',
+            resumeHere: 'המשך מאיפה שעצרת',
+        },
+        accessInactive: {
+            title: 'הגישה לפרקים אינה פעילה כרגע',
+            body: 'ההתקדמות והשליטה שנצברו נשמרות.',
+        },
+        expand: 'הרחבת Learning Pulse',
+        collapse: 'כיווץ Learning Pulse',
+        // צירוף שם נגיש מחלקים. chapter = formatChapterLabel; title = שם הפרק.
+        titled: (chapter: string, title: string) => `${chapter}, ${title}`,
+        sentences: (parts: string[]) => `${parts.join('. ')}.`,
+        masteredSummary: (mastered: number, total: number) => `${mastered} מתוך ${total} מבדקים עברו בהצלחה`,
+        currentSummary: (chapter: number, title: string) => `הפרק הנוכחי: ${chapter}, ${title}`,
     },
 
     // חשבון לומד (Supabase). ראה app/(course)/behind-the-scenes-ai/AccountPanel.tsx.
@@ -173,7 +221,6 @@ export const chrome = {
         haveAccount: 'כבר יש לכם חשבון?',
         summarySignedOut: 'התחברות / יצירת חשבון',
         summarySignedIn: 'חשבון מחובר:',
-        pulseMastery: (passed: number, total: number) => `${passed} מתוך ${total} מבחנים`,
         signOut: 'התנתקות',
         signedInAs: 'מחוברים בתור',
         working: 'רגע...',
@@ -322,7 +369,8 @@ export const chrome = {
         messageLabel: 'ההודעה שלכם',
         messageHint: (max: number) => `אפשר לכתוב בכל שפה. עד ${max} תווים.`,
         charCount: (n: number, max: number) => `${n} / ${max}`,
-        contextWithPage: 'יחד עם הבקשה נשלחים שפת הלומדה שלכם והעמוד בלומדה שממנו הגעתם:',
+        contextLabel: 'הקשר:',
+        contextSent: 'נשלח עם הבקשה, יחד עם שפת הלומדה',
         contextLanguageOnly: 'יחד עם הבקשה נשלחת שפת הלומדה שלכם.',
         send: 'שליחת הבקשה',
         sending: 'שולחים...',

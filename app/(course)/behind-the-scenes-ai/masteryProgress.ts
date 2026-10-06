@@ -9,7 +9,10 @@
 
 import type { AssessmentResult } from "@/components/content/AssessmentEngine";
 import { queueAccountResult, signedInUserId } from "./account";
-import { legacyMasteryEarned, mergeAttempt, type QuizRecord } from "./learningProgress";
+import {
+    legacyMasteryEarned, masterySummary, mergeAttempt,
+    type FinalExamStatus, type MasterySummary, type QuizRecord,
+} from "./learningProgress";
 
 export { mergeAttempt, type QuizRecord };
 
@@ -125,54 +128,12 @@ export function getAllRecords(): QuizRecord[] {
     return Object.values(loadStore().records);
 }
 
-export type FinalExamStatus = "not-taken" | "passed" | "needs-review";
-
-export interface MasterySummary {
-    completedChapters: number;
-    passedChapters: number;
-    totalChapters: number;
-    averageScore: number | null;
-    finalExam: FinalExamStatus;
-    finalExamScore: number | null;
-    weakConcepts: string[];
-    strongConcepts: string[];
-    hasAnyData: boolean;
-}
+export type { FinalExamStatus, MasterySummary };
 
 /**
- * מאגד את כל הרשומות לסיכום אחד עבור לוח ההתקדמות.
- * "מושגים שכדאי לחזק" מקבצים מושג חלש שלא מופיע כחזק בשום מבדק אחר.
+ * הסיכום ללוח ההתקדמות, מהגזירה הטהורה (masterySummary ב-learningProgress.ts): ציונים אחרונים,
+ * שליטה לפי זהות הפרק, ורק רשומות של מבדקי פרקים 1-19 ושל מבחן הסיום.
  */
 export function getMasterySummary(records: QuizRecord[] = getAllRecords()): MasterySummary {
-    const chapterRecords = records.filter(r => r.chapterId !== null);
-    const final = records.find(r => r.quizId === FINAL_EXAM_QUIZ_ID);
-
-    const completedChapters = chapterRecords.length;
-    // שליטה קבועה: פרק שעבר פעם אחת נספר גם אם הניסיון האחרון נכשל.
-    const passedChapters = chapterRecords.filter(r => r.masteryEarned).length;
-    const averageScore = chapterRecords.length
-        ? Math.round(chapterRecords.reduce((acc, r) => acc + r.bestScorePercent, 0) / chapterRecords.length)
-        : null;
-
-    let finalExam: FinalExamStatus = "not-taken";
-    if (final) finalExam = final.passed ? "passed" : "needs-review";
-
-    // מושגים חזקים: כל מה שסומן חזק באיזשהו מבדק (לפי הציון הטוב ביותר שנשמר).
-    const strongSet = new Set<string>();
-    for (const r of records) for (const c of r.strongConcepts) strongSet.add(c);
-    // מושגים חלשים: סומנו חלש ועדיין לא שולטים בהם (לא מופיעים כחזקים בשום מקום).
-    const weakSet = new Set<string>();
-    for (const r of records) for (const c of r.weakConcepts) if (!strongSet.has(c)) weakSet.add(c);
-
-    return {
-        completedChapters,
-        passedChapters,
-        totalChapters: TOTAL_CHAPTER_QUIZZES,
-        averageScore,
-        finalExam,
-        finalExamScore: final?.bestScorePercent ?? null,
-        weakConcepts: [...weakSet],
-        strongConcepts: [...strongSet],
-        hasAnyData: records.length > 0,
-    };
+    return masterySummary(records);
 }
