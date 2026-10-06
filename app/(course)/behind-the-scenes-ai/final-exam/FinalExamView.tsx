@@ -62,6 +62,13 @@ export default function FinalExamPage() {
             className="flex min-h-screen bg-[var(--bts-page)] font-sans text-[var(--bts-text-bright)] selection:bg-indigo-500/30 overflow-hidden relative"
             dir={dir}
         >
+            <a
+                href="#final-exam-main"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:inset-x-0 focus:mx-auto focus:w-fit focus:z-[200] focus:rounded-full focus:bg-[var(--bts-surface-elevated)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--bts-text-primary)] focus:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bts-focus-ring)]"
+            >
+                {t.behindAi.infoPages.skipToContent}
+            </a>
+
             {/* רקע גלובלי, באותו שפה עיצובית של פרקי הלומדה */}
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <div className="absolute inset-0 bg-[var(--bts-page)]" />
@@ -79,7 +86,7 @@ export default function FinalExamPage() {
             <CourseSidebar />
 
             <div className="flex-1 relative h-screen overflow-y-auto custom-scrollbar z-10">
-                <main className="mx-auto max-w-3xl px-6 md:px-10 py-16 space-y-10">
+                <main id="final-exam-main" tabIndex={-1} className="mx-auto max-w-3xl px-6 md:px-10 py-16 space-y-10 focus:outline-none">
                     {/* כותרת */}
                     <header className="text-center space-y-4">
                         <Link
