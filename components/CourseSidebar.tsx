@@ -359,9 +359,12 @@ const currentCourseId = courses[courseIdFromPath] ? courseIdFromPath : 'mathIntu
               <Menu size={20} />
           </button>
 
-          {/* סרגל דסקטופ - מתקפל בתנועת spring חלקה במצב מיקוד, התוכן מתרחב לתוך המקום שהתפנה */}
+          {/* סרגל דסקטופ - מתקפל בתנועת spring חלקה במצב מיקוד, התוכן מתרחב לתוך המקום שהתפנה.
+              inert במצב מיקוד: הסרגל המוסתר יוצא מסדר ה-Tab ומעץ הנגישות, והדפדפן מסיר ממנו פוקוס שנשאר בפנים.
+              המגירה במובייל היא עותק DOM נפרד ולא מושפעת. */}
           <motion.aside
               initial={false}
+              inert={isFocusMode}
               animate={{ width: isFocusMode ? 0 : 320 }}
               transition={{ type: 'spring', stiffness: 300, damping: 34, mass: 0.9 }}
               className="hidden md:flex bg-[var(--bts-surface-elevated)] border-e border-[var(--bts-border)] flex-col h-screen shrink-0 sticky top-0 shadow-2xl z-30 overflow-hidden"

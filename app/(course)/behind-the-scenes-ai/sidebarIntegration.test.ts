@@ -155,6 +155,24 @@ test("mobile drawer: no second data source; opening reveals the current card in 
     assert.equal([...wiring.matchAll(/useState/g)].length, 3, "only the Pulse layout choice and its crossing marker (import + two calls)");
 });
 
+test("focus mode: the collapsed desktop sidebar is inert; the mobile drawer is not", () => {
+    const aside = sidebar.slice(sidebar.indexOf("<motion.aside"), sidebar.indexOf("</motion.aside>"));
+    const drawer = sidebar.slice(sidebar.indexOf("ref={drawerRef}"), sidebar.lastIndexOf("{sidebarContent}"));
+    // inert follows the state directly: off in normal mode, on in Focus Mode, off again on exit.
+    assert.match(aside, /inert=\{isFocusMode\}/);
+    assert.ok(aside.includes("{sidebarContent}"), "inert wraps the whole desktop sidebar content");
+    // One platform switch, not per-descendant tabindex juggling.
+    assert.equal([...sidebar.matchAll(/\binert\b/g)].length, 2, "the attribute plus its comment, nowhere else");
+    assert.doesNotMatch(sidebar, /tabIndex=\{[^}]*isFocusMode/);
+    assert.doesNotMatch(drawer, /inert/, "the drawer keeps its own focus trap and Escape");
+    // Focus is never stranded: Focus Mode is entered only by the ChapterLayout toggle (outside the sidebar,
+    // so it holds focus when pressed) or restored on mount; the sidebar cannot enter it. A focused element
+    // that becomes inert is blurred by the browser anyway.
+    const layout = source("..", "..", "..", "components", "ChapterLayout.tsx");
+    assert.doesNotMatch(sidebar, /setIsFocusMode/);
+    assert.match(layout, /<CourseSidebar isFocusMode=\{isFocusMode\} \/>/);
+});
+
 test("Pulse states: expanded at the top of a tall screen, compact after scrolling or on short screens; an explicit choice holds until a threshold is crossed", () => {
     assert.match(wiring, /const TALL = "\(min-width: 768px\) and \(min-height: 800px\)";/);
     assert.match(wiring, /useSyncExternalStore\(subscribeTall, \(\) => window\.matchMedia\(TALL\)\.matches, \(\) => null\)/, "server snapshot = auto = CSS default, no flash");
