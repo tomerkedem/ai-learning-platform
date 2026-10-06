@@ -646,6 +646,8 @@
   /* T3.2: טבעת-מיקוד קריאה ב-Light (הברירת-מחדל outline-ring/50 כמעט בלתי נראית על משטח בהיר). Dark: --bts-tint-mix=0%, זהה לערך הקודם. */
   :focus-visible { outline-color: color-mix(in oklab, var(--bts-focus-ring) var(--bts-tint-mix), color-mix(in oklab, var(--ring) 50%, transparent)); }
   body { @apply bg-background text-foreground; }
+  /* נקודות "המשך למידה" (ChapterLayout): היעד נעצר מתחת לכותרת הצפה, לפי גובהה הנמדד. scroll-mt-* מפורש על סעיף גובר. */
+  [data-learning-unit], [data-chapter-quiz] { scroll-margin-top: var(--bts-sticky-top, 88px); }
 }
 
 /* ───────────── i18n: כללים תלויי-שפה (locale-gated) ─────────────

@@ -18,7 +18,7 @@ import { courses } from "@/lib/courseData";
 import { tField } from "@/lib/localize";
 import { continueTarget, type CourseLearning } from "./learningProgress";
 import { PETAL, PULSE_HALF, PULSE_VIEWBOX, fillRadius, markerPlacement, petalAngle, petalPath, wedgePath } from "./learningPulseGeometry";
-import { FILL_START, FINAL_EXAM_HREF, chapterHref, continueAction, coursePercent, mapMarkers, petalLinkName, petalModels, pulseSummary } from "./learningPulseModel";
+import { FILL_START, FINAL_EXAM_HREF, chapterHref, continueAction, coursePercent, mapMarkers, petalLinkName, petalModels, pulseSummary, resumeSelector } from "./learningPulseModel";
 
 // שכבות העלה: גוף זכוכית, ברק צדדי, חומר ההתקדמות (באותה צורה, מעט פנימה) עם ליבה בהירה, וצומת.
 const TRACK = petalPath();
@@ -520,10 +520,20 @@ export function ContinueLink({ course, currentChapterId, onNavigate }: {
     if (!action) return null;
     const Arrow = dir === "rtl" ? ArrowLeft : ArrowRight;
     const sub = action.target.kind === "final-exam" ? null : chapterTitle(action.target.chapterId, locale);
+    // כבר בפרק היעד: ניווט לאותה כתובת לא היה מזיז דבר, ולכן קופצים ישירות לנקודת ההמשך (או לראש
+    // הפרק), בלי רשומת היסטוריה. מיידי, כמו בהגעה מעמוד אחר (ChapterLayout).
+    const here = action.target.kind !== "final-exam" && action.target.chapterId === currentChapterId ? currentChapterId : null;
+    const onClick = (e: React.MouseEvent) => {
+        onNavigate?.();
+        if (here === null) return;
+        e.preventDefault();
+        const selector = resumeSelector(action.href.slice(chapterHref(here).length), here) ?? "#chapter-main";
+        document.querySelector(selector)?.scrollIntoView({ block: "start", behavior: "instant" });
+    };
     return (
         <Link
             href={action.href}
-            onClick={onNavigate}
+            onClick={onClick}
             title={sub ?? undefined}
             className="inline-flex min-h-8 min-w-0 max-w-full items-center gap-1.5 rounded-full border border-[var(--lp-cta-edge)] bg-[var(--lp-cta)] py-1 ps-3 pe-1 text-start no-underline shadow-[var(--lp-cta-shadow)] transition-colors duration-200 hover:bg-[color-mix(in_oklab,var(--lp-cta),var(--lp-cta-icon)_10%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bts-focus-ring)] motion-reduce:transition-none forced-colors:border-[LinkText]"
         >

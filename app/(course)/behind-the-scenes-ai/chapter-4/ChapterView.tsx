@@ -456,7 +456,7 @@ export default function BehindTheScenesChapter4() {
             </section>
 
             {/* ══════════ מבדק הבנה ══════════ */}
-            <section className="mt-16 mb-4" dir={dir}>
+            <section data-chapter-quiz className="mt-16 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
                     {/* M8 F3 SELECTIVE RESPOND: המבדק חסר-דמות לחלוטין. אייקון הסטטוס נשאר בראש
                         כרטיס התוצאה בשתי התוצאות, ומשפט התגובה הספציפי לפרק מופיע מתחתיו

@@ -67,7 +67,7 @@ test("every chapter page marks exactly its registered units, in order, before th
 
 test("detection is rooted on the chapter scroll container, with a documented visibility rule", () => {
     const layout = source("..", "..", "..", "components", "ChapterLayout.tsx");
-    assert.match(layout, /useLearningUnitTracking\(scrollContainerRef, courseId === 'behind-the-scenes-ai' && currentChapterId >= 1 && currentChapterId <= 19 \? currentChapterId : null\);/);
+    assert.match(layout, /const learningChapterId = courseId === 'behind-the-scenes-ai' && currentChapterId >= 1 && currentChapterId <= 19 \? currentChapterId : null;\s*useLearningUnitTracking\(scrollContainerRef, learningChapterId\);/);
     assert.match(layout, /ref=\{scrollContainerRef\}\s+className="flex-1 overflow-y-auto/);
     const hook = source("useLearningUnitTracking.ts");
     assert.match(hook, /new IntersectionObserver\([\s\S]*\{ root, threshold: THRESHOLDS \}\)/);

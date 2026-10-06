@@ -15,6 +15,7 @@ import { ChevronRight, ChevronLeft, BookOpen, Trophy, Maximize2, Minimize2, Mile
 import { motion, AnimatePresence } from "framer-motion";
 import { EdgeRail, EdgePeekItem } from "@/components/ai-internals/EdgePeek";
 import { useLearningUnitTracking } from "@/app/(course)/behind-the-scenes-ai/useLearningUnitTracking";
+import { RESUME_HASH, resumeSelector } from "@/app/(course)/behind-the-scenes-ai/learningPulseModel";
 
 // מצב המיקוד נחשף ל-children (למשל כדי לגדל את מנטור ההירו במבוא כשנכנסים למיקוד).
 // ברירת המחדל false, כך שצרכנים מחוץ לפריסה מקבלים ערך בטוח.
@@ -107,7 +108,8 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     const isScrolledRef = useRef(false);
     const router = useRouter();
     // התקדמות למידה: יחידות שנראו באזור הגלילה של פרק 1-19 (לא המבוא ולא לומדות אחרות).
-    useLearningUnitTracking(scrollContainerRef, courseId === 'behind-the-scenes-ai' && currentChapterId >= 1 && currentChapterId <= 19 ? currentChapterId : null);
+    const learningChapterId = courseId === 'behind-the-scenes-ai' && currentChapterId >= 1 && currentChapterId <= 19 ? currentChapterId : null;
+    useLearningUnitTracking(scrollContainerRef, learningChapterId);
 
     useEffect(() => {
         const el = headerRef.current;
@@ -187,6 +189,20 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
             scrollContainerRef.current.scrollTop = 0;
         }
     }, [currentChapterId, courseId]);
+
+    // "המשך למידה" מעמוד אחר: #resume=<unitId|quiz> (continueAction). נצרך פעם אחת, אחרי איפוס הגלילה
+    // ואחרי שהכותרת נמדדה (הריפוד העליון כבר סופי), ואז נמחק מהכתובת כדי שרענון או חזרה לא יגללו שוב.
+    // קפיצה מיידית: גלילה חלקה הייתה חולפת על יחידות ומסמנת אותן "הגיע". scroll-margin (globals.css)
+    // משאיר את היעד מתחת לכותרת. נקודה לא תקפה: נשארים בראש הפרק.
+    const headerMeasured = headerRestHeight != null;
+    useEffect(() => {
+        if (!headerMeasured || learningChapterId === null) return;
+        const { hash, pathname, search } = window.location;
+        if (!hash.startsWith(RESUME_HASH)) return;
+        const selector = resumeSelector(hash, learningChapterId);
+        if (selector) document.querySelector(selector)?.scrollIntoView({ block: 'start', behavior: 'instant' });
+        window.history.replaceState(null, '', pathname + search);
+    }, [headerMeasured, learningChapterId]);
 
     // ניווט בין פרקים בעזרת מקשי החצים. ב-RTL: שמאלה=הבא, ימינה=הקודם (תואם לחיצים בפוטר).
     // לא חוטפים מקשים כשהמשתמש מקליד בשדה או מזיז סליידר, וכשיש מקש החזקה (Ctrl/Cmd/Alt).

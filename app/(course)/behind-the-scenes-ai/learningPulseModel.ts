@@ -6,7 +6,7 @@
 // ════════════════════════════════════════════════════════════════════════
 
 import type { ChapterLearning, ContinueTarget, CourseLearning } from "./learningProgress";
-import { progressBand } from "./learningProgress";
+import { isLearningUnit, progressBand } from "./learningProgress";
 import { PETAL, fillPath, fillRadius, petalTransform } from "./learningPulseGeometry";
 
 /** מחרוזות chrome.pulse (נמסרות מבחוץ, כך שהמודל אינו תלוי במנגנון המילון). */
@@ -160,9 +160,30 @@ export interface ContinueAction {
 }
 
 /**
+ * נקודת ההמשך בתוך פרק, ככתובת: #resume=<unitId> (יחידת למידה רשומה) או #resume=quiz (מבדק הפרק).
+ * ChapterLayout צורך אותה פעם אחת ומוחק אותה מהכתובת. יחידה היא "הגיע", לא "סיים": חוזרים אליה,
+ * לא מדלגים אחריה.
+ */
+export const RESUME_HASH = "#resume=";
+
+/** הבורר של נקודת ההמשך בפרק, או null כשה-hash אינו נקודת המשך תקפה של הפרק הזה. */
+export function resumeSelector(hash: string, chapterId: number): string | null {
+    if (!hash.startsWith(RESUME_HASH)) return null;
+    const id = hash.slice(RESUME_HASH.length);
+    if (id === "quiz") return "[data-chapter-quiz]";
+    return isLearningUnit(chapterId, id) ? `[data-learning-unit="${id}"]` : null;
+}
+
+const resumeHash = (target: ContinueTarget): string => {
+    if (target.kind === "quiz") return `${RESUME_HASH}quiz`;
+    if (target.kind === "continue" && target.unitId && isLearningUnit(target.chapterId, target.unitId)) return RESUME_HASH + target.unitId;
+    return "";
+};
+
+/**
  * הפעולה "המשך למידה" מתוך היעד הטהור. null = אין פעולה (אין גישה, או שמבחן הסיום עבר).
- * כשהיעד הוא הפרק שבו הלומד נמצא, התווית היא "המשך מאיפה שעצרת". הקישור לפרק עצמו; גלילה לנקודת
- * ההמשך תתווסף בשלב ה-Resume.
+ * כשהיעד הוא הפרק שבו הלומד נמצא, התווית היא "המשך מאיפה שעצרת". הקישור לפרק, עם נקודת ההמשך
+ * (יחידה או מבדק) כשהיא ידועה; בלעדיה, ראש הפרק.
  */
 export function continueAction(
     target: ContinueTarget | null,
@@ -173,7 +194,7 @@ export function continueAction(
     if (!target) return null;
     if (target.kind === "final-exam") return { target, label: copy.continue.finalExam, href: FINAL_EXAM_HREF };
     const label = chapterLabel(target.chapterId);
-    const href = chapterHref(target.chapterId);
+    const href = chapterHref(target.chapterId) + resumeHash(target);
     if (target.kind === "start") return { target, label: copy.continue.start(label), href };
     if (target.kind === "quiz") return { target, label: copy.continue.quiz(label), href };
     return { target, label: target.chapterId === currentId ? copy.continue.resumeHere : copy.continue.continue(label), href };

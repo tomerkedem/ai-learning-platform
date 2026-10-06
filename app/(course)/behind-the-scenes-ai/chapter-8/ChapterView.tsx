@@ -465,7 +465,7 @@ export default function BehindTheScenesChapter8() {
 
             {/* ══════════ מבדק הבנה ══════════ */}
             <section className="mt-10 rounded-2xl border border-indigo-500/30 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-indigo-950)] [--t-l:var(--color-indigo-500)] p-5 text-start" dir={dir}><div className="text-xs font-bold text-indigo-300">{cq.nextQuestionLabel}</div><p className="mt-2 text-base leading-relaxed text-[var(--bts-text-body)]">{t.behindAi.chapterBridges[8]}</p></section>
-            <section className="mt-12 mb-4" dir={dir}>
+            <section data-chapter-quiz className="mt-12 mb-4" dir={dir}>
                 <ExpandableLab title={localizedQuiz.title}>
                     {/* M9 F3 SELECTIVE RESPOND: המבדק חסר-דמות לחלוטין. אייקון הסטטוס נשאר בראש
                         כרטיס התוצאה בשתי התוצאות, ומשפט התגובה הספציפי לפרק מופיע מתחתיו

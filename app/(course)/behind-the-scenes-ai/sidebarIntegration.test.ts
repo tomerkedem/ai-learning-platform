@@ -220,5 +220,7 @@ test("reveal: once per route change from the sidebar (not from a Pulse click), a
     assert.match(fn, /scroller\.scrollTop = top;/, "scrolls the list element only");
     assert.doesNotMatch(fn, /focus\(|scrollIntoView|smooth|setTimeout|IntersectionObserver/, "no focus move, no page scroll, no animation, no timers or observers");
     const pulse = source("LearningPulse.tsx");
-    assert.doesNotMatch(pulse, /scrollTop|scrollIntoView|data-chapter-list/, "the Pulse only navigates; the sidebar reveals");
+    const continueAt = pulse.indexOf("export function ContinueLink");
+    assert.doesNotMatch(pulse.slice(0, continueAt), /scrollTop|scrollIntoView|data-chapter-list/, "the Pulse only navigates; the sidebar reveals");
+    assert.doesNotMatch(pulse.slice(continueAt), /scrollTop|data-chapter-list/, "Continue moves the page to its resume point, never the list");
 });

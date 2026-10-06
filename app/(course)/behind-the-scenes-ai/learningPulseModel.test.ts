@@ -460,3 +460,52 @@ test("course map numbers are placed by the shared outside-marker rule (no fixed 
     assert.match(pulse, /<g aria-hidden="true" direction="ltr" className="pointer-events-none">/, "physical anchoring on RTL pages too");
     assert.match(pulse, /const \{ box \} = markerPlacement\(chapterId, markSize, String\(chapterId\)\);/, "the tooltip starts beyond the number, never over it");
 });
+
+test("resume: Continue carries the stored resume point in the chapter URL, and only a valid one", () => {
+    const href = (reached: ReachedUnit[], records: QuizRecord[] = []) => model.continueAction(continueTarget(courseLearning(reached, records), true), null, en, label)!.href;
+    assert.equal(href([]), "/behind-the-scenes-ai/chapter-1", "no activity: chapter 1, top");
+    assert.equal(href(units(5, 3)), "/behind-the-scenes-ai/chapter-5#resume=lab", "the latest reached unit itself, not the one after it");
+    assert.equal(href(full(6)), "/behind-the-scenes-ai/chapter-6#resume=quiz", "all units reached, no mastery: the chapter quiz");
+    const allMastered = Array.from({ length: 19 }, (_, i) => rec(i + 1, [90]));
+    assert.equal(href([], [...allMastered, rec(null, [50])]), "/behind-the-scenes-ai/final-exam", "the final exam route, never a chapter");
+    const a = (t: Parameters<typeof model.continueAction>[0], current: number | null) => model.continueAction(t, current, en, label)!.href;
+    assert.equal(a({ kind: "continue", chapterId: 9, unitId: null }, null), "/behind-the-scenes-ai/chapter-9", "unknown point: chapter top");
+    assert.equal(a({ kind: "continue", chapterId: 8, unitId: "gone" }, null), "/behind-the-scenes-ai/chapter-8", "unregistered unit: chapter top");
+    assert.equal(a({ kind: "continue", chapterId: 8, unitId: "lab" }, 8), a({ kind: "continue", chapterId: 8, unitId: "lab" }, 3), "same URL from the same or another chapter");
+
+    assert.equal(model.resumeSelector("#resume=lab", 5), '[data-learning-unit="lab"]');
+    assert.equal(model.resumeSelector("#resume=quiz", 12), "[data-chapter-quiz]");
+    for (const [hash, chapter] of [["#resume=embedding-table", 8], ["#resume=", 3], ["#resume=lab\"]", 3], ["#grounding-lab", 12], ["", 1]] as const) {
+        assert.equal(model.resumeSelector(hash, chapter), null, `fails safe: ${hash}`);
+    }
+});
+
+test("resume: every chapter has its registered units and exactly one quiz target, and the quiz follows the units", () => {
+    for (let n = 1; n <= 19; n++) {
+        const page = source(`chapter-${n}/ChapterView.tsx`);
+        const quiz = [...page.matchAll(/<section data-chapter-quiz\b[^>]*>\s*<ExpandableLab title=\{localizedQuiz\.title\}>/g)];
+        assert.equal(quiz.length, 1, `chapter ${n}: one quiz target, on the section around the quiz`);
+        assert.equal(page.split("data-chapter-quiz").length, 2, `chapter ${n}: no second quiz target`);
+        const lastUnit = LEARNING_UNITS[n].at(-1)!;
+        assert.ok(page.indexOf(`data-learning-unit="${lastUnit}"`) < quiz[0].index!, `chapter ${n}: quiz after the units`);
+    }
+    assert.match(readFileSync(join(HERE, "../../globals.css"), "utf8"), /\[data-learning-unit\], \[data-chapter-quiz\] \{ scroll-margin-top: var\(--bts-sticky-top, 88px\); \}/, "targets stop below the measured header");
+});
+
+test("resume: consumed once on arrival, jumped to (no smooth pass over units), then removed from the URL", () => {
+    const layout = readFileSync(join(HERE, "../../../components/ChapterLayout.tsx"), "utf8");
+    const block = layout.slice(layout.indexOf("const headerMeasured"), layout.indexOf("// ניווט בין פרקים"));
+    assert.match(block, /if \(!headerMeasured \|\| learningChapterId === null\) return;/, "after the header is measured, chapters 1-19 only");
+    assert.match(block, /if \(!hash\.startsWith\(RESUME_HASH\)\) return;/, "an ordinary URL is never touched");
+    assert.match(block, /scrollIntoView\(\{ block: 'start', behavior: 'instant' \}\);\s*window\.history\.replaceState\(null, '', pathname \+ search\);/, "jump, then strip the hash (also when invalid)");
+    assert.match(block, /\}, \[headerMeasured, learningChapterId\]\);/, "runs per chapter, not per scroll or render");
+    assert.ok(layout.indexOf("scrollTop = 0") < layout.indexOf("const headerMeasured"), "after the chapter's scroll reset");
+    assert.doesNotMatch(block, /fetch|supabase|learner|setTimeout|setInterval|requestAnimationFrame|focus\(|aria-live|useState/, "no network, timers, focus or state");
+
+    const pulse = source("LearningPulse.tsx");
+    const link = pulse.slice(pulse.indexOf("export function ContinueLink"));
+    assert.match(link, /if \(here === null\) return;\s*e\.preventDefault\(\);/, "another chapter: a normal link navigation");
+    assert.match(link, /resumeSelector\(action\.href\.slice\(chapterHref\(here\)\.length\), here\) \?\? "#chapter-main"/, "same chapter: the same target, or the chapter top");
+    assert.match(link, /scrollIntoView\(\{ block: "start", behavior: "instant" \}\)/);
+    assert.doesNotMatch(link, /focus\(|pushState|replaceState|fetch|useLearner/, "no focus move, history entry or extra learner read");
+});
