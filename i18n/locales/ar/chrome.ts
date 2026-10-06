@@ -99,6 +99,7 @@ export const chrome: typeof heChrome = {
         recommendedReview: 'مراجعة مقترحة',
         reviewAnswers: 'مراجعة الإجابات',
         retry: 'حاول مجددًا',
+        loading: 'جارٍ التحميل',
         tiers: [
             { label: 'ممتاز!', sub: 'إتقان كامل للمادة' },
             { label: 'جيد جدًا', sub: 'فهم جيد جدًا' },

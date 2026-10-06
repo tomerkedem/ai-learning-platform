@@ -269,4 +269,20 @@ export function createLearnerStore<P extends PendingAttemptInput & { attemptId: 
     };
 }
 
+/**
+ * הניסיון האחרון של מבדק, משלושה מצבים נפרדים: undefined = עוד לא ידוע (ההתחברות או הטעינה הראשונה
+ * מהשרת עוד לא הסתיימו, ואין רשומה מקומית), null = ידוע שלא נוסה, אחרת הרשומה. view null אחרי שההתחברות
+ * ידועה = אין לומד מחובר, ולכן אין תוצאה שמורה.
+ */
+export function latestQuizRecord(
+    authReady: boolean,
+    view: { ready: boolean; records: readonly QuizRecord[] } | null,
+    quizId: string,
+): QuizRecord | null | undefined {
+    if (!authReady) return undefined;
+    const record = view?.records.find((r) => r.quizId === quizId);
+    if (record) return record;
+    return view && !view.ready ? undefined : null;
+}
+
 export type LearnerStore<P extends PendingAttemptInput & { attemptId: string }, S> = ReturnType<typeof createLearnerStore<P, S>>;

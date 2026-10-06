@@ -13,7 +13,9 @@ import Link from "next/link";
 import { ArrowRight, ArrowLeft, GraduationCap } from "lucide-react";
 import { CourseSidebar } from "@/components/CourseSidebar";
 import { AssessmentEngine, type ReviewLink } from "@/components/content/AssessmentEngine";
-import { behindAiFinalExam, finalExamTiers, useFinalExamQuestions, useConceptReviewLinks } from "../quizData";
+import { behindAiFinalExam, finalExamTiers, useFinalExamQuestions, useConceptReviewLinks, useLatestQuizResult } from "../quizData";
+import { FINAL_EXAM_QUIZ_ID } from "../masteryProgress";
+import { QuizResultPending } from "../ChapterQuiz";
 import { MasteryDashboard } from "../MasteryDashboard";
 import { useT } from "@/i18n/useT";
 
@@ -27,6 +29,8 @@ export default function FinalExamPage() {
     const getReviewLinks = useConceptReviewLinks();
     // השאלות מגיעות מהשרת (quizQuestions.ts) רק אחרי בדיקת הרשאה.
     const baseQuestions = useFinalExamQuestions();
+    // הניסיון האחרון של מבחן הסיום, מהמאגר המשותף: undefined = עוד לא ידוע, null = לא נוסה.
+    const previousResult = useLatestQuizResult(FINAL_EXAM_QUIZ_ID);
     const questions = baseQuestions.map((question) => ({
         ...question,
         ...(fx.questionOverrides[question.id] ?? {}),
@@ -100,8 +104,10 @@ export default function FinalExamPage() {
                     {/* לוח התקדמות לפני המבחן */}
                     <MasteryDashboard showFinalExamCta={false} />
 
-                    {/* המבחן עצמו: התנהגות מ-quizData, כל מחרוזות התצוגה מהמילון */}
-                    <AssessmentEngine
+                    {/* המבחן עצמו: התנהגות מ-quizData, כל מחרוזות התצוגה מהמילון. עולה רק כשידוע אם יש
+                        ניסיון שמור, כדי שהתוצאה האחרונה תוצג מהרינדור הראשון ולא אחרי מסך פתיחה שגוי. */}
+                    {previousResult === undefined ? <QuizResultPending /> : <AssessmentEngine
+                        previousResult={previousResult}
                         questions={questions}
                         passScore={passScore}
                         scoreTiers={localizedTiers}
@@ -121,7 +127,7 @@ export default function FinalExamPage() {
                         reviewLabel={fx.reviewLabel}
                         nextHref="/"
                         nextLabel={fx.nextLabel}
-                    />
+                    />}
                 </main>
             </div>
         </div>

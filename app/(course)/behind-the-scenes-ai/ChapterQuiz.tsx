@@ -40,15 +40,33 @@ export function ChapterQuiz({ chapterId }: { chapterId: number }) {
 
     return (
         <ExpandableLab title={cq.title(chapterName)}>
-            <AssessmentEngine
-                {...base}
-                title={cq.title(chapterName)}
-                subtitle={cq.subtitle}
-                startLabel={cq.startLabel}
-                submitLabel={cq.submitLabel}
-                completedTitle={cq.completedTitle}
-                getReviewLinks={getReviewLinks}
-            />
+            {/* תוצאה שעוד לא ידועה אינה "לא נוסה": המנוע עולה רק כשהמצב ידוע, עם התוצאה כבר מהרינדור הראשון. */}
+            {base.previousResult === undefined ? (
+                <QuizResultPending />
+            ) : (
+                <AssessmentEngine
+                    {...base}
+                    title={cq.title(chapterName)}
+                    subtitle={cq.subtitle}
+                    startLabel={cq.startLabel}
+                    submitLabel={cq.submitLabel}
+                    completedTitle={cq.completedTitle}
+                    getReviewLinks={getReviewLinks}
+                />
+            )}
         </ExpandableLab>
+    );
+}
+
+/** כרטיס ניטרלי ולא אינטראקטיבי, במסגרת כרטיס הפתיחה, עד שידוע אם יש ניסיון שמור. */
+export function QuizResultPending() {
+    const { t } = useT();
+    return (
+        <div
+            role="status"
+            aria-busy="true"
+            aria-label={t.chrome.assessment.loading}
+            className="max-w-md mx-auto min-h-[26rem] rounded-[2rem] bg-gradient-to-b from-[var(--bts-panel-from)] to-[var(--bts-panel-to)] border border-[var(--bts-divider-soft)] animate-pulse motion-reduce:animate-none"
+        />
     );
 }

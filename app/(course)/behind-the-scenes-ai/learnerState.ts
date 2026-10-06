@@ -18,13 +18,14 @@ import {
     readCachedRecords,
     signedInUserId,
     subscribeAuthState,
+    supabase,
     useAuthState,
     withPending,
     type PendingAttempt,
 } from "./account";
 import { chapterMilestones, courseLearning, mergeReached, type QuizRecord } from "./learningProgress";
 import { getMasterySummary, MASTERY_UPDATED_EVENT, type MasterySummary } from "./masteryProgress";
-import { createLearnerStore, type LearnerSync, type LearnerView } from "./learnerStore";
+import { createLearnerStore, latestQuizRecord, type LearnerSync, type LearnerView } from "./learnerStore";
 
 export type CourseLearningView = LearnerView<PendingAttempt, MasterySummary>;
 export type CourseLearningSync = LearnerSync<PendingAttempt>;
@@ -73,11 +74,11 @@ export function useCourseLearning(): CourseLearningView | null {
 }
 
 /**
- * הניסיון האחרון של מבדק מסוים, מהמאגר המשותף (בלי טעינה נוספת). undefined = אין לומד מחובר או שהמאגר
- * עוד לא זמין; null = לא נוסה; אחרת הרשומה, שהציון בה הוא של הניסיון האחרון (לא הטוב ביותר).
+ * הניסיון האחרון של מבדק מסוים, מהמאגר המשותף (בלי טעינה נוספת). undefined = עוד לא ידוע; null = ידוע
+ * שלא נוסה; אחרת הרשומה, שהציון בה הוא של הניסיון האחרון (לא הטוב ביותר). בלי Supabase מוגדר אין
+ * התחברות שתסתיים, ולכן המצב ידוע מיד (אין לומד מחובר).
  */
 export function useLatestQuizRecord(quizId: string): QuizRecord | null | undefined {
-    const learner = useCourseLearning();
-    if (!learner) return undefined;
-    return learner.records.find((r) => r.quizId === quizId) ?? null;
+    const authReady = useAuthState().ready || !supabase;
+    return latestQuizRecord(authReady, useCourseLearning(), quizId);
 }

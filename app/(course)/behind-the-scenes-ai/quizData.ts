@@ -25,8 +25,11 @@ export interface QuizQuestion extends QuizQuestionMaterial {
 }
 
 export interface ChapterQuizMeta {
-    /** הניסיון האחרון שנשמר (מהמאגר המשותף). קיים: מוצג מסך התוצאה שלו במקום מסך הפתיחה. */
-    previousResult?: AssessmentResult | null;
+    /**
+     * הניסיון האחרון שנשמר (מהמאגר המשותף). undefined: עוד לא ידוע, ולכן אין להציג את מסך הפתיחה;
+     * null: לא נוסה; קיים: מוצג מסך התוצאה שלו במקום מסך הפתיחה.
+     */
+    previousResult: AssessmentResult | null | undefined;
     title: string;
     subtitle: string;
     questions: QuizQuestion[];
@@ -119,7 +122,7 @@ function chapterOnComplete(chapterId: number) {
 // רישום מרוכז: מפה מ-chapterId אל המבדק של אותו פרק, מועשר בהתמדה, אבחון וקופי.
 // כל עמוד פרק צורך את הערך המתאים לו: <AssessmentEngine {...behindAiChapterQuizzes[N]} />
 /** כל מה שמבדק פרק צריך מלבד השאלות עצמן (השאלות של פרקים 2-19 מגיעות מהשרת). */
-function chapterQuizBase(n: number): Omit<ChapterQuizMeta, "questions"> {
+function chapterQuizBase(n: number): Omit<ChapterQuizMeta, "questions" | "previousResult"> {
     return {
         title: `מבדק הבנה: ${CHAPTER_LABELS[n]}`,
         subtitle: QUIZ_SUBTITLE,
@@ -141,12 +144,17 @@ function chapterQuizBase(n: number): Omit<ChapterQuizMeta, "questions"> {
 export function useChapterQuiz(n: number): ChapterQuizMeta {
     const content = useProtectedContent();
     const getReviewLinks = useConceptReviewLinks();
-    const latest = useLatestQuizRecord(chapterQuizId(n));
-    // הניסיון האחרון (לא הטוב ביותר), כפי שנשמר. השליטה הקבועה אינה משפיעה על מה שמוצג כאן.
-    const previousResult = latest
-        ? { scorePercent: latest.scorePercent, correctCount: latest.correctCount, totalQuestions: latest.totalQuestions, passed: latest.passed, weakConcepts: latest.weakConcepts, strongConcepts: latest.strongConcepts }
-        : latest;
+    const previousResult = useLatestQuizResult(chapterQuizId(n));
     return { ...chapterQuizBase(n), questions: content?.quiz ?? [], getReviewLinks, previousResult };
+}
+
+/**
+ * תוצאת הניסיון האחרון (לא הטוב ביותר) של מבדק, לשחזור מסך התוצאה. undefined = עוד לא ידוע; null = לא
+ * נוסה. השליטה הקבועה אינה משפיעה על מה שמוצג כאן.
+ */
+export function useLatestQuizResult(quizId: string): AssessmentResult | null | undefined {
+    const latest = useLatestQuizRecord(quizId);
+    return latest && { scorePercent: latest.scorePercent, correctCount: latest.correctCount, totalQuestions: latest.totalQuestions, passed: latest.passed, weakConcepts: latest.weakConcepts, strongConcepts: latest.strongConcepts };
 }
 
 /** קישורי חזרה לפי מושגים, עם המפה המלאה כשהשרת העביר אותה (עמוד מוגן), אחרת רק פרק 1. */

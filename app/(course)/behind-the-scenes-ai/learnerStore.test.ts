@@ -7,7 +7,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-import { createLearnerStore, STALE_MS } from "./learnerStore.ts";
+import { createLearnerStore, latestQuizRecord, STALE_MS } from "./learnerStore.ts";
 import {
     LEARNING_UNITS, chapterMilestones, courseLearning, mergeAttempt, mergeReached, withPending,
     type PendingAttemptInput, type QuizRecord, type ReachedUnit,
@@ -347,6 +347,74 @@ test("the view exposes each quiz's latest attempt (not best), including a pendin
     assert.equal(requests(), 2, "no extra request");
 });
 
+// ── מחזור התוצאה השמורה: לא ידוע (undefined) / לא נוסה (null) / הניסיון האחרון ──
+const CH3 = "behind-ai-chapter-3";
+const FINAL = "behind-ai-final";
+
+for (const [label, quizId, chapterId] of [["chapter quiz", CH3, 3], ["final exam", FINAL, null]] as const) {
+    test(`${label}: unresolved auth or first load is unknown, never "not attempted"`, async () => {
+        const { store, server, hold, open } = setup();
+        server.records.set("A", [rec(chapterId, [80])]);
+        // ההתחברות עוד לא דיווחה (רענון קשיח, hydration): לא ידוע, גם בלי מאגר.
+        assert.equal(latestQuizRecord(false, null, quizId), undefined);
+        hold();
+        store.subscribe("A", () => {});
+        // המאגר נפתח בלי עותק מקומי והטעינה עוד בדרך: עדיין לא ידוע, לא null.
+        assert.equal(latestQuizRecord(true, store.getView("A"), quizId), undefined);
+        open();
+        await settle();
+        assert.equal(latestQuizRecord(true, store.getView("A"), quizId)!.scorePercent, 80);
+    });
+
+    test(`${label}: resolved with no record is "not attempted" (fresh start)`, async () => {
+        const { store } = setup();
+        store.subscribe("A", () => {});
+        await settle();
+        assert.equal(latestQuizRecord(true, store.getView("A"), quizId), null);
+        // לומד לא מחובר, או Supabase לא מוגדר (ההתחברות ידועה מיד, בלי מאגר): לא נוסה, לא טעינה נצחית.
+        assert.equal(latestQuizRecord(true, null, quizId), null);
+    });
+
+    test(`${label}: a local copy restores the latest attempt before the server answers; a retake replaces it`, async () => {
+        const { store, local, hold } = setup();
+        local.cache.set("A", { records: [rec(chapterId, [90, 60])], loadedAt: 1 });
+        hold();
+        store.subscribe("A", () => {});
+        const restored = latestQuizRecord(true, store.getView("A"), quizId)!;
+        assert.deepEqual([restored.scorePercent, restored.bestScorePercent], [60, 90], "latest, not best");
+        // ניסיון חוזר שהסתיים (בתור): הוא הניסיון האחרון מעכשיו.
+        local.outbox.set("A", [{ ...pend("retry", 3, 85), quizId, chapterId: chapterId as number }]);
+        store.onQuizEvent();
+        assert.equal(latestQuizRecord(true, store.getView("A"), quizId)!.scorePercent, 85);
+    });
+}
+
+test("final exam result stays outside the 19-chapter progress model", async () => {
+    const { store, server, requests } = setup();
+    server.records.set("A", [rec(null, [90])]);
+    store.subscribe("A", () => {});
+    await settle();
+    const view = store.getView("A")!;
+    assert.equal(latestQuizRecord(true, view, FINAL)!.passed, true);
+    assert.deepEqual(view.course.finalExam, { attempted: true, passed: true, latestScore: 90 });
+    assert.equal(view.course.chapters.length, 19, "not a 20th chapter");
+    assert.ok(view.course.chapters.every((c) => !c.attempted && !c.masteryEarned), "no chapter is attempted or mastered");
+    assert.equal(view.course.masteredCount, 0);
+    assert.equal(latestQuizRecord(true, view, CH3), null);
+    assert.equal(requests(), 2, "reading results makes no extra request");
+});
+
+test("quiz callers mount the engine only once the result is known, from its first render", () => {
+    const hooks = readFileSync(join(HERE, "learnerState.ts"), "utf8");
+    assert.match(hooks, /const authReady = useAuthState\(\)\.ready \|\| !supabase;/, "Supabase not configured = known, no learner");
+    const chapterQuiz = readFileSync(join(HERE, "ChapterQuiz.tsx"), "utf8");
+    assert.match(chapterQuiz, /base\.previousResult === undefined \? \(\s*<QuizResultPending \/>/);
+    assert.match(chapterQuiz, /aria-busy="true"/);
+    const finalExam = readFileSync(join(HERE, "final-exam", "FinalExamView.tsx"), "utf8");
+    assert.match(finalExam, /const previousResult = useLatestQuizResult\(FINAL_EXAM_QUIZ_ID\);/);
+    assert.match(finalExam, /previousResult === undefined \? <QuizResultPending \/> : <AssessmentEngine\s+previousResult=\{previousResult\}/);
+});
+
 test("quiz screen: a persisted latest attempt restores the result screen; only Retry starts a new attempt", () => {
     const engine = readFileSync(join(HERE, "..", "..", "..", "components", "content", "AssessmentEngine.tsx"), "utf8");
     assert.match(engine, /const restored = !isStarted && !isSubmitted && previousResult \? previousResult : null;/);
@@ -354,7 +422,8 @@ test("quiz screen: a persisted latest attempt restores the result screen; only R
     assert.match(engine, /if \(\(isSubmitted \|\| restored\) && !isReviewMode\) \{\s*const result = restored \?\? buildResult\(\);/);
     assert.match(engine, /setOptionOrder\(buildOptionOrder\(questions\)\); setIsStarted\(true\); \}\}/, "Retry explicitly starts a fresh attempt");
     const quizData = readFileSync(join(HERE, "quizData.ts"), "utf8");
-    assert.match(quizData, /const latest = useLatestQuizRecord\(chapterQuizId\(n\)\);/);
+    assert.match(quizData, /const previousResult = useLatestQuizResult\(chapterQuizId\(n\)\);/);
+    assert.match(quizData, /const latest = useLatestQuizRecord\(quizId\);/);
     assert.match(quizData, /scorePercent: latest\.scorePercent/, "latest score, never best");
     assert.doesNotMatch(quizData.slice(quizData.indexOf("const latest =")), /bestScorePercent/);
 });

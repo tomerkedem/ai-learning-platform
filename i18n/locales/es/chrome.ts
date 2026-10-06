@@ -99,6 +99,7 @@ export const chrome: typeof heChrome = {
         recommendedReview: 'Repaso recomendado',
         reviewAnswers: 'Revisar respuestas',
         retry: 'Intentar de nuevo',
+        loading: 'Cargando',
         tiers: [
             { label: '¡Excelente!', sub: 'Dominio total del material' },
             { label: 'Muy bien', sub: 'Muy buena comprensión' },

@@ -99,6 +99,7 @@ export const chrome: typeof heChrome = {
         recommendedReview: 'おすすめの復習',
         reviewAnswers: '解答を確認する',
         retry: 'もう一度',
+        loading: '読み込み中',
         tiers: [
             { label: '見事！', sub: '内容を完全に習得' },
             { label: 'とても良い', sub: 'とても良い理解' },

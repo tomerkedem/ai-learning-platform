@@ -99,6 +99,7 @@ export const chrome: typeof heChrome = {
         recommendedReview: 'Рекомендуемое повторение',
         reviewAnswers: 'Просмотр ответов',
         retry: 'Ещё раз',
+        loading: 'Загрузка',
         tiers: [
             { label: 'Отлично!', sub: 'Полное владение материалом' },
             { label: 'Очень хорошо', sub: 'Очень хорошее понимание' },
