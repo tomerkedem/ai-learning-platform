@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { EdgeRail, EdgePeekItem } from "@/components/ai-internals/EdgePeek";
 import { useLearningUnitTracking } from "@/app/(course)/behind-the-scenes-ai/useLearningUnitTracking";
 import { RESUME_HASH, resumeSelector } from "@/app/(course)/behind-the-scenes-ai/learningPulseModel";
+import { pageArrowsAllowed, pageEscapeAllowed } from "@/components/courseShortcuts";
 
 // מצב המיקוד נחשף ל-children (למשל כדי לגדל את מנטור ההירו במבוא כשנכנסים למיקוד).
 // ברירת המחדל false, כך שצרכנים מחוץ לפריסה מקבלים ערך בטוח.
@@ -147,24 +148,14 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
         }
     }, [isFocusMode]);
 
-    // קיצורי מקלדת למצב מיקוד: Esc יוצא, F מחליף מצב.
-    // לא חוטפים מקשים בזמן הקלדה בשדה/סליידר וכשיש מקש החזקה - כדי לא לשבור מעבדות אינטראקטיביות.
+    // Esc יוצא ממצב מיקוד. אין קיצור אות בודדת (WCAG 2.1.4): הכניסה היא דרך הכפתור הגלוי.
+    // לא חוטפים Esc בזמן הקלדה, ולא כשחלון מודאלי או מעבדה במסך מלא פתוחים - ה-Esc שלהם.
     useEffect(() => {
         const handleFocusKeys = (e: KeyboardEvent) => {
-            if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
-
-            const target = e.target as HTMLElement | null;
-            if (target) {
-                const tag = target.tagName;
-                if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable) return;
-            }
-
-            if (e.key === 'Escape') {
-                setIsFocusMode((prev) => (prev ? false : prev));
-            } else if (e.key === 'f' || e.key === 'F') {
-                e.preventDefault();
-                setIsFocusMode((prev) => !prev);
-            }
+            if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || e.key !== 'Escape') return;
+            const target = e.target instanceof Element ? e.target : null;
+            if (!pageEscapeAllowed(target, document)) return;
+            setIsFocusMode((prev) => (prev ? false : prev));
         };
 
         window.addEventListener('keydown', handleFocusKeys);
@@ -205,17 +196,14 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     }, [headerMeasured, learningChapterId]);
 
     // ניווט בין פרקים בעזרת מקשי החצים. ב-RTL: שמאלה=הבא, ימינה=הקודם (תואם לחיצים בפוטר).
-    // לא חוטפים מקשים כשהמשתמש מקליד בשדה או מזיז סליידר, וכשיש מקש החזקה (Ctrl/Cmd/Alt).
+    // רק מתוכן ניטרלי: לא משדה, פקד, וידג'ט מורכב (טאבים, סליידר...) או חלון מודאלי, וכשאין מקש החזקה.
     useEffect(() => {
         const handleKeyNav = (e: KeyboardEvent) => {
             if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
             if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
 
-            const target = e.target as HTMLElement | null;
-            if (target) {
-                const tag = target.tagName;
-                if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable) return;
-            }
+            const target = e.target instanceof Element ? e.target : null;
+            if (!pageArrowsAllowed(target, document)) return;
 
             const course = courses[courseId];
             if (!course) return;
@@ -387,8 +375,6 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                         </AnimatePresence>
 
                         <span>{isFocusMode ? t.chrome.focus.exit : t.chrome.focus.enter}</span>
-
-                        <kbd className="ms-1 rounded-md border border-[var(--bts-divider-soft)] bg-[var(--bts-fill-soft)] px-1.5 py-0.5 font-mono text-[10px] leading-none text-[var(--bts-text-muted)] transition-colors group-hover:text-[var(--bts-text-body)]">F</kbd>
                     </motion.button>
                 </EdgePeekItem>
             </EdgeRail>

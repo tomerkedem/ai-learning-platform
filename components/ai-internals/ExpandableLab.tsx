@@ -85,6 +85,8 @@ export const ExpandableLab: React.FC<ExpandableLabProps> = ({ children, title })
 
         const onKey = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
+                // ה-Esc שייך למסך המלא: מסומן כדי שקיצורי הפרק (יציאה ממצב מיקוד) לא יגיבו גם הם.
+                e.preventDefault();
                 setExpanded(false);
                 return;
             }
