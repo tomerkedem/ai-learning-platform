@@ -15,7 +15,6 @@ import { CourseSidebar } from "@/components/CourseSidebar";
 import { AssessmentEngine, type ReviewLink } from "@/components/content/AssessmentEngine";
 import { behindAiFinalExam, finalExamTiers, useFinalExamQuestions, useConceptReviewLinks, useLatestQuizResult } from "../quizData";
 import { FINAL_EXAM_QUIZ_ID } from "../masteryProgress";
-import { QuizResultPending } from "../ChapterQuiz";
 import { MasteryDashboard } from "../MasteryDashboard";
 import { useT } from "@/i18n/useT";
 
@@ -104,10 +103,11 @@ export default function FinalExamPage() {
                     {/* לוח התקדמות לפני המבחן */}
                     <MasteryDashboard showFinalExamCta={false} />
 
-                    {/* המבחן עצמו: התנהגות מ-quizData, כל מחרוזות התצוגה מהמילון. עולה רק כשידוע אם יש
-                        ניסיון שמור, כדי שהתוצאה האחרונה תוצג מהרינדור הראשון ולא אחרי מסך פתיחה שגוי. */}
-                    {previousResult === undefined ? <QuizResultPending /> : <AssessmentEngine
+                    {/* המבחן עצמו: התנהגות מ-quizData, כל מחרוזות התצוגה מהמילון. כל עוד לא ידוע אם יש
+                        ניסיון שמור, המנוע מציג כרטיס המתנה (אותו מנגנון כמו במבדקי הפרקים), לא מסך פתיחה. */}
+                    <AssessmentEngine
                         previousResult={previousResult}
+                        resultPending={previousResult === undefined}
                         questions={questions}
                         passScore={passScore}
                         scoreTiers={localizedTiers}
@@ -127,7 +127,7 @@ export default function FinalExamPage() {
                         reviewLabel={fx.reviewLabel}
                         nextHref="/"
                         nextLabel={fx.nextLabel}
-                    />}
+                    />
                 </main>
             </div>
         </div>

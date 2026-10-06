@@ -18,6 +18,7 @@ import { SpeakButton } from '../ai-internals/SpeakButton';
 import { speakJoin } from '../ai-internals/GuessVerdict';
 import { useT } from '@/i18n/useT';
 import { reducedMotion, useReducedMotion } from '@/components/reducedMotion';
+import { assessmentScreen } from './assessmentScreen';
 
 // שכבת הקונפטי חייבת לצוף מעל מצב "מסך מלא" של ExpandableLab, שהוא Portal אטום
 // ב-document.body עם z-index 9999. ברירת המחדל של canvas-confetti היא z-index 100,
@@ -99,6 +100,11 @@ interface AssessmentProps {
      * "ניסיון חוזר" מתחיל ניסיון חדש. null/undefined: מסך הפתיחה כרגיל.
      */
     previousResult?: AssessmentResult | null;
+    /**
+     * opt-in: הקורא עוד לא יודע אם יש ניסיון שמור. true: כרטיס המתנה ניטרלי במקום מסך הפתיחה, ואי אפשר
+     * להתחיל ניסיון. קורא שאינו מעביר את ה-prop (מורשת) נשאר בהתנהגות הקודמת.
+     */
+    resultPending?: boolean;
     /** נקרא פעם אחת בכל סיום ניסיון, עם פירוק התוצאה לפי מושגים (לצורך התמדה). */
     onComplete?: (result: AssessmentResult) => void;
     /** ממיר רשימת מושגים חלשים לקישורי חזרה ממוקדים שמוצגים בסיום. */
@@ -230,6 +236,7 @@ export const AssessmentEngine = ({
     reviewLabel,
     onComplete,
     previousResult,
+    resultPending,
     getReviewLinks,
     startLabel,
     submitLabel,
@@ -424,11 +431,24 @@ export const AssessmentEngine = ({
         return () => window.removeEventListener('keydown', onArrowKey, { capture: true });
     }, [isStarted, isSubmitted]);
 
-    // 1. מסך פתיחה - Start Screen
     // תוצאה שנשמרה מניסיון קודם (ניווט, רענון, כניסה מחדש): מוצגת במקום מסך הפתיחה, עד ניסיון חוזר מפורש.
     const restored = !isStarted && !isSubmitted && previousResult ? previousResult : null;
+    const screen = assessmentScreen({ resultPending, hasPreviousResult: !!previousResult, isStarted, isSubmitted, isReviewMode });
 
-    if (!isStarted && !restored) {
+    // 0. התוצאה השמורה עוד לא ידועה: כרטיס ניטרלי ולא אינטראקטיבי, במסגרת כרטיס הפתיחה, בלי מסך פתיחה.
+    if (screen === 'pending') {
+        return (
+            <div
+                role="status"
+                aria-busy="true"
+                aria-label={a.loading}
+                className="max-w-md mx-auto min-h-[26rem] rounded-[2rem] bg-gradient-to-b from-[var(--bts-panel-from)] to-[var(--bts-panel-to)] border border-[var(--bts-divider-soft)] animate-pulse motion-reduce:animate-none"
+            />
+        );
+    }
+
+    // 1. מסך פתיחה - Start Screen
+    if (screen === 'start') {
         return (
             <motion.div
                 initial={reduce ? false : { opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -499,7 +519,7 @@ export const AssessmentEngine = ({
     }
 
     // 2. מסך תוצאות - Results Screen (מעודכן לציון אמיתי)
-    if ((isSubmitted || restored) && !isReviewMode) {
+    if (screen === 'result') {
         const result = restored ?? buildResult();
         const { correctCount, totalQuestions, scorePercent: scoreValue, weakConcepts, strongConcepts } = result;
         const feedback = getScoreFeedback(scoreValue);

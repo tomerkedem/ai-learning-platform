@@ -30,6 +30,8 @@ export interface ChapterQuizMeta {
      * null: לא נוסה; קיים: מוצג מסך התוצאה שלו במקום מסך הפתיחה.
      */
     previousResult: AssessmentResult | null | undefined;
+    /** הניסיון השמור עוד לא ידוע: המנוע מציג כרטיס המתנה במקום מסך הפתיחה (נמסר לו דרך ה-spread). */
+    resultPending: boolean;
     title: string;
     subtitle: string;
     questions: QuizQuestion[];
@@ -122,7 +124,7 @@ function chapterOnComplete(chapterId: number) {
 // רישום מרוכז: מפה מ-chapterId אל המבדק של אותו פרק, מועשר בהתמדה, אבחון וקופי.
 // כל עמוד פרק צורך את הערך המתאים לו: <AssessmentEngine {...behindAiChapterQuizzes[N]} />
 /** כל מה שמבדק פרק צריך מלבד השאלות עצמן (השאלות של פרקים 2-19 מגיעות מהשרת). */
-function chapterQuizBase(n: number): Omit<ChapterQuizMeta, "questions" | "previousResult"> {
+function chapterQuizBase(n: number): Omit<ChapterQuizMeta, "questions" | "previousResult" | "resultPending"> {
     return {
         title: `מבדק הבנה: ${CHAPTER_LABELS[n]}`,
         subtitle: QUIZ_SUBTITLE,
@@ -145,7 +147,7 @@ export function useChapterQuiz(n: number): ChapterQuizMeta {
     const content = useProtectedContent();
     const getReviewLinks = useConceptReviewLinks();
     const previousResult = useLatestQuizResult(chapterQuizId(n));
-    return { ...chapterQuizBase(n), questions: content?.quiz ?? [], getReviewLinks, previousResult };
+    return { ...chapterQuizBase(n), questions: content?.quiz ?? [], getReviewLinks, previousResult, resultPending: previousResult === undefined };
 }
 
 /**

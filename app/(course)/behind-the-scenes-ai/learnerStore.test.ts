@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 import { createLearnerStore, latestQuizRecord, STALE_MS } from "./learnerStore.ts";
+import { assessmentScreen } from "../../../components/content/assessmentScreen.ts";
 import {
     LEARNING_UNITS, chapterMilestones, courseLearning, mergeAttempt, mergeReached, withPending,
     type PendingAttemptInput, type QuizRecord, type ReachedUnit,
@@ -404,23 +405,77 @@ test("final exam result stays outside the 19-chapter progress model", async () =
     assert.equal(requests(), 2, "reading results makes no extra request");
 });
 
-test("quiz callers mount the engine only once the result is known, from its first render", () => {
-    const hooks = readFileSync(join(HERE, "learnerState.ts"), "utf8");
-    assert.match(hooks, /const authReady = useAuthState\(\)\.ready \|\| !supabase;/, "Supabase not configured = known, no learner");
-    const chapterQuiz = readFileSync(join(HERE, "ChapterQuiz.tsx"), "utf8");
-    assert.match(chapterQuiz, /base\.previousResult === undefined \? \(\s*<QuizResultPending \/>/);
-    assert.match(chapterQuiz, /aria-busy="true"/);
-    const finalExam = readFileSync(join(HERE, "final-exam", "FinalExamView.tsx"), "utf8");
-    assert.match(finalExam, /const previousResult = useLatestQuizResult\(FINAL_EXAM_QUIZ_ID\);/);
-    assert.match(finalExam, /previousResult === undefined \? <QuizResultPending \/> : <AssessmentEngine\s+previousResult=\{previousResult\}/);
+// ── מסך המבדק: הנתיב החי (useChapterQuiz -> spread -> AssessmentEngine) ומבחן הסיום חולקים resultPending ──
+const ENGINE = readFileSync(join(HERE, "..", "..", "..", "components", "content", "AssessmentEngine.tsx"), "utf8");
+const before = { isStarted: false, isSubmitted: false, isReviewMode: false };
+/** כמו useChapterQuiz / FinalExamView: resultPending = התוצאה עוד לא ידועה. */
+const screenFor = (record: QuizRecord | null | undefined) =>
+    assessmentScreen({ ...before, resultPending: record === undefined, hasPreviousResult: !!record });
+
+for (const [label, quizId, chapterId] of [["chapter quiz", CH3, 3], ["final exam", FINAL, null]] as const) {
+    test(`${label} screen: unknown -> pending (no start), then fresh start or the restored result`, async () => {
+        const { store, server, hold, open, requests } = setup();
+        assert.equal(screenFor(latestQuizRecord(false, null, quizId)), "pending", "auth not reported yet");
+        server.records.set("A", [rec(chapterId, [80])]);
+        hold();
+        store.subscribe("A", () => {});
+        assert.equal(screenFor(latestQuizRecord(true, store.getView("A"), quizId)), "pending", "first load in flight, no local copy");
+        open();
+        await settle();
+        assert.equal(screenFor(latestQuizRecord(true, store.getView("A"), quizId)), "result", "persisted latest attempt");
+        assert.equal(requests(), 2, "no extra learner-store request");
+
+        const empty = setup();
+        empty.store.subscribe("A", () => {});
+        await settle();
+        assert.equal(screenFor(latestQuizRecord(true, empty.store.getView("A"), quizId)), "start", "resolved, never attempted");
+        assert.equal(screenFor(latestQuizRecord(true, null, quizId)), "start", "signed out / Supabase not configured");
+    });
+}
+
+test("engine screen: pending blocks the start screen; Retry and an attempt in progress are never hidden", () => {
+    assert.equal(assessmentScreen({ ...before, resultPending: true, hasPreviousResult: false }), "pending");
+    assert.equal(assessmentScreen({ ...before, resultPending: false, hasPreviousResult: false }), "start");
+    assert.equal(assessmentScreen({ ...before, resultPending: false, hasPreviousResult: true }), "result");
+    // "ניסיון חוזר" מתוצאה שמורה = isStarted: ניסיון חדש, גם אם המצב חזר להיות לא ידוע.
+    assert.equal(assessmentScreen({ ...before, isStarted: true, resultPending: false, hasPreviousResult: true }), "questions");
+    assert.equal(assessmentScreen({ ...before, isStarted: true, resultPending: true, hasPreviousResult: false }), "questions");
+    assert.equal(assessmentScreen({ isStarted: true, isSubmitted: true, isReviewMode: false, resultPending: true, hasPreviousResult: true }), "result", "a just-finished attempt");
+    assert.equal(assessmentScreen({ isStarted: true, isSubmitted: true, isReviewMode: true, hasPreviousResult: false }), "questions", "review");
+    // The engine routes every screen through the helper, and the pending card is the status card.
+    assert.match(ENGINE, /const screen = assessmentScreen\(\{ resultPending, hasPreviousResult: !!previousResult, isStarted, isSubmitted, isReviewMode \}\);/);
+    assert.match(ENGINE, /if \(screen === 'pending'\) \{\s*return \(\s*<div\s+role="status"\s+aria-busy="true"\s+aria-label=\{a\.loading\}[^>]*motion-reduce:animate-none"/);
+    assert.match(ENGINE, /if \(screen === 'start'\) \{/);
+    assert.match(ENGINE, /if \(screen === 'result'\) \{\s*const result = restored \?\? buildResult\(\);/);
+    assert.match(ENGINE, /setOptionOrder\(buildOptionOrder\(questions\)\); setIsStarted\(true\); \}\}/, "Retry explicitly starts a fresh attempt");
 });
 
-test("quiz screen: a persisted latest attempt restores the result screen; only Retry starts a new attempt", () => {
-    const engine = readFileSync(join(HERE, "..", "..", "..", "components", "content", "AssessmentEngine.tsx"), "utf8");
-    assert.match(engine, /const restored = !isStarted && !isSubmitted && previousResult \? previousResult : null;/);
-    assert.match(engine, /if \(!isStarted && !restored\) \{/, "start screen only when there is no persisted attempt");
-    assert.match(engine, /if \(\(isSubmitted \|\| restored\) && !isReviewMode\) \{\s*const result = restored \?\? buildResult\(\);/);
-    assert.match(engine, /setOptionOrder\(buildOptionOrder\(questions\)\); setIsStarted\(true\); \}\}/, "Retry explicitly starts a fresh attempt");
+test("legacy callers that omit resultPending keep the old behavior (start screen, or the passed result)", () => {
+    assert.equal(assessmentScreen({ ...before, hasPreviousResult: false }), "start");
+    assert.equal(assessmentScreen({ ...before, hasPreviousResult: true }), "result");
+    assert.match(ENGINE, /resultPending\?: boolean;/, "opt-in prop");
+    assert.doesNotMatch(ENGINE, /previousResult === undefined/, "unknown is never inferred from a missing previousResult");
+});
+
+test("live path: Chapters 1-19 receive resultPending from useChapterQuiz through the existing spread", () => {
+    const quizData = readFileSync(join(HERE, "quizData.ts"), "utf8");
+    assert.match(quizData, /previousResult, resultPending: previousResult === undefined \};/);
+    for (let n = 1; n <= 19; n++) {
+        const view = readFileSync(join(HERE, `chapter-${n}`, "ChapterView.tsx"), "utf8");
+        assert.match(view, new RegExp(`const baseQuiz = useChapterQuiz\\(${n}\\);`), `chapter ${n}: its own quiz`);
+        assert.match(view, /const localizedQuiz = \{\s*\.\.\.baseQuiz,/, `chapter ${n}: spreads the hook result`);
+        assert.match(view, /<AssessmentEngine\s+\{\.\.\.localizedQuiz\}/, `chapter ${n}: spreads into the engine`);
+        assert.doesNotMatch(view, /resultPending|previousResult/, `chapter ${n}: never overrides the lifecycle`);
+    }
+    const finalExam = readFileSync(join(HERE, "final-exam", "FinalExamView.tsx"), "utf8");
+    assert.match(finalExam, /const previousResult = useLatestQuizResult\(FINAL_EXAM_QUIZ_ID\);/);
+    assert.match(finalExam, /previousResult=\{previousResult\}\s+resultPending=\{previousResult === undefined\}/, "same mechanism");
+    assert.doesNotMatch(finalExam + readFileSync(join(HERE, "ChapterQuiz.tsx"), "utf8"), /QuizResultPending/, "no second loading UI");
+    const hooks = readFileSync(join(HERE, "learnerState.ts"), "utf8");
+    assert.match(hooks, /const authReady = useAuthState\(\)\.ready \|\| !supabase;/, "Supabase not configured = known, no learner");
+});
+
+test("quiz data: the restored result is the latest attempt, never the best", () => {
     const quizData = readFileSync(join(HERE, "quizData.ts"), "utf8");
     assert.match(quizData, /const previousResult = useLatestQuizResult\(chapterQuizId\(n\)\);/);
     assert.match(quizData, /const latest = useLatestQuizRecord\(quizId\);/);
