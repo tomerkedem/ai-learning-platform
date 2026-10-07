@@ -314,7 +314,8 @@ test("mastery node: a small emerald mark inside a broad, soft, edgeless halo; no
     assert.ok(node.indexOf("size-2.5") > 0, "the mark element exists");
     assert.match(halo, /bg-\[radial-gradient\(circle,var\(--lp-node-vivid-halo\)_0%,transparent_75%\)\] shadow-\[0_0_16px_6px_var\(--lp-node-vivid-halo\)\]/, "broad halo that fades out, in the ring\'s own hue");
     assert.doesNotMatch(halo, /border/, "no hard outer border around the halo");
-    assert.match(mark, /\? "border-2 border-\[var\(--lp-node-vivid\)\] bg-\[var\(--lp-node-body\)\]/, "vivid emerald ring around a dark body (same size)");
+    assert.match(mark, /\? "border-2 border-\[var\(--lp-node-vivid\)\] bg-\[var\(--lp-node-vivid\)\]/, "mastered: solid emerald dot (same size)");
+    assert.match(mark, /\? "border-2 border-\[var\(--lp-node-attempt\)\] bg-\[var\(--lp-node-body\)\]/, "attempted: hollow amber ring");
     assert.match(mark, /: "border-\[1\.5px\] border-\[var\(--lp-node-empty\)\] forced-colors:border-\[GrayText\]"/, "quiet neutral ring when not mastered");
     assert.match(mark, /forced-colors:!bg-\[CanvasText\] forced-colors:\[forced-color-adjust:none\]/, "forced colors: filled mark vs hollow ring");
     const notMastered = mark.slice(mark.indexOf(': "border-[1.5px]'));

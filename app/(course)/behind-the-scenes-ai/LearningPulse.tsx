@@ -184,7 +184,8 @@ export function PulseGraphic({ course, currentId, focusedId = null, centerLabel 
 /** צומת שליטה ב-HTML (כרטיס פרק): אותה שפה כמו צומת העלה. */
 export function MasteryNode({ mastered, attempted = false }: { mastered: boolean; attempted?: boolean }) {
     // מקום קבוע של 16px. שלושה מצבים: שליטה (אמרלד, קבועה גם אחרי ניסיון שנכשל), נוסה בלי שליטה (ענבר),
-    // לא נוסה (טבעת ניטרלית חלולה). בשני הצבעוניים: טבעת חיה וקטנה ומסביבה הילה רכה באותו גוון, בלי קצה.
+    // לא נוסה (טבעת ניטרלית חלולה). שליטה = נקודה מלאה, אחרת טבעת חלולה (כמו צומת העלה), גם בלי צבע.
+    // בשני הצבעוניים: הילה רכה באותו גוון, בלי קצה.
     const tone = mastered ? "vivid" : attempted ? "attempt" : null;
     return (
         <span
@@ -197,7 +198,7 @@ export function MasteryNode({ mastered, attempted = false }: { mastered: boolean
         >
             <span
                 className={`size-2.5 rounded-full transition-[border-color,box-shadow] duration-300 motion-reduce:transition-none ${tone === "vivid"
-                    ? "border-2 border-[var(--lp-node-vivid)] bg-[var(--lp-node-body)] shadow-[0_0_6px_var(--lp-node-vivid-glow)] forced-colors:border-[CanvasText] forced-colors:!bg-[CanvasText] forced-colors:[forced-color-adjust:none]"
+                    ? "border-2 border-[var(--lp-node-vivid)] bg-[var(--lp-node-vivid)] shadow-[0_0_6px_var(--lp-node-vivid-glow)] forced-colors:border-[CanvasText] forced-colors:!bg-[CanvasText] forced-colors:[forced-color-adjust:none]"
                     : tone === "attempt"
                         ? "border-2 border-[var(--lp-node-attempt)] bg-[var(--lp-node-body)] shadow-[0_0_6px_var(--lp-node-attempt-glow)] forced-colors:border-2 forced-colors:border-[CanvasText]"
                         : "border-[1.5px] border-[var(--lp-node-empty)] forced-colors:border-[GrayText]"}`}
