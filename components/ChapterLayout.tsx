@@ -432,7 +432,9 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                 {/* תוכן גלילה - כאן נוסף ה-Ref המטפל באיפוס הגלילה */}
                 <div 
                     ref={scrollContainerRef}
-                    className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth"
+                    className="flex-1 overflow-y-auto overscroll-y-contain custom-scrollbar scroll-smooth"
+                    // overscroll-y-contain: גלילה מעבר לקצה הפרק נעצרת כאן ואינה עוברת למסמך (שגולל אז את
+                    // הפריסה כולה, כולל הכותרת, ומציג את הפוטר הגלובלי).
                     onScroll={handleScroll}
                 >
                     {/* קנה-מידה נזיל בדסקטופ/טאבלט: הריפוד האופקי ומרווחי המקטעים מתכווצים
