@@ -14,7 +14,7 @@ import { useT } from "@/i18n/useT";
 import { formatChapterLabel } from "@/i18n/format";
 import type { ChapterLearning } from "./learningProgress";
 import { chapterCardName, chapterHref, navTitle } from "./learningPulseModel";
-import { MasteryNode, ScoreWell, chapterTitle } from "./LearningPulse";
+import { MasteryNode, chapterTitle } from "./LearningPulse";
 
 const cardClass = (current: boolean) => `group relative flex min-h-10 items-center gap-3 rounded-[10px] border px-3 py-1.5 no-underline transition-[background-color,border-color] duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bts-focus-ring)] ${current
     ? "border-[var(--lp-card-current-edge)] bg-[var(--lp-card-current)] forced-colors:border-2 forced-colors:border-[Highlight]"
@@ -56,19 +56,18 @@ export function ChapterNavCard({ chapter, milestones, current, locked, onPreview
             className={cardClass(current)}
         >
             {current && <CurrentEdge />}
-            {/* זהות הפרק בתחילת השורה: ב-RTL הצומת בקצה ואחריו המספר; ב-LTR המספר בקצה ואחריו הצומת. */}
-            <span aria-hidden="true" className="flex shrink-0 items-center gap-2.5">
-                <span className={`order-1 w-5 text-[12px] font-semibold tabular-nums rtl:order-2 ${current ? "text-[var(--bts-text-primary)]" : "text-[var(--bts-text-muted)]"}`}>
-                    {String(chapter.chapterId).padStart(2, "0")}
-                </span>
-                <span className="order-2 rtl:order-1"><MasteryNode mastered={chapter.masteryEarned} attempted={chapter.attempted} /></span>
+            <span aria-hidden="true" className={`w-5 shrink-0 text-[12px] font-semibold tabular-nums ${current ? "text-[var(--bts-text-primary)]" : "text-[var(--bts-text-muted)]"}`}>
+                {String(chapter.chapterId).padStart(2, "0")}
             </span>
             <span aria-hidden="true" className="min-w-0 flex-1">
-                <span className={`line-clamp-2 text-[13px] leading-[1.3] ${current ? "font-bold" : "font-semibold"} text-[var(--bts-text-primary)]`}>{navTitle(title)}</span>
+                <span className={`line-clamp-2 text-[13px] leading-[1.3] ${current ? "font-bold" : "font-semibold"} text-[var(--bts-text-secondary)]`}>{navTitle(title)}</span>
                 <span className="mt-1 block"><MilestoneTrail milestones={milestones} /></span>
             </span>
-            {/* הציון האחרון (לא הטוב ביותר) בסוף השורה, רק אם המבדק נוסה. בלי סימן אחוז ובלי מקום שמור. */}
-            {chapter.latestScore !== null && <ScoreWell score={chapter.latestScore} latestPassed={chapter.latestPassed} />}
+            {/* מצב המבדק בסוף השורה: הציון האחרון (לא הטוב ביותר, רק אם נוסה, בלי אחוז ובלי מקום שמור) ואחריו צומת השליטה. */}
+            <span aria-hidden="true" className="flex shrink-0 items-center gap-1.5">
+                {chapter.latestScore !== null && <span className="text-[13px] font-normal tabular-nums text-[var(--bts-text-secondary)]">{chapter.latestScore}</span>}
+                <MasteryNode mastered={chapter.masteryEarned} attempted={chapter.attempted} />
+            </span>
             {locked && <Lock aria-hidden="true" size={13} className="shrink-0 text-[var(--bts-text-faint)]" />}
         </Link>
     );

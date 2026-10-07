@@ -377,19 +377,6 @@ function PetalTip({ chapterId, pointer, markSize, text, dir }: {
     );
 }
 
-/** הציון האחרון (לא הטוב ביותר) בבאר עגולה שקועה. הקורא מציג אותו רק כשיש ניסיון. */
-export const ScoreWell = ({ score, latestPassed }: { score: number; latestPassed?: boolean | null }) => {
-    // תוצאת הניסיון האחרון (לא השליטה): הילה רכה סביב הבאר, אמרלד אם עבר וענבר אם לא. חלשה מהילת צומת השליטה.
-    const shadow = latestPassed == null
-        ? "shadow-[inset_0_1.5px_3px_var(--lp-score-well-shadow),inset_0_-1px_0_var(--lp-score-well-light)]"
-        : latestPassed
-            ? "shadow-[inset_0_1.5px_3px_var(--lp-score-well-shadow),inset_0_-1px_0_var(--lp-score-well-light),0_0_12px_2px_var(--lp-score-glow-pass)]"
-            : "shadow-[inset_0_1.5px_3px_var(--lp-score-well-shadow),inset_0_-1px_0_var(--lp-score-well-light),0_0_12px_2px_var(--lp-score-glow-fail)]";
-    return (
-        <span aria-hidden="true" className={`grid size-[30px] shrink-0 place-items-center rounded-full bg-[var(--lp-score-well)] text-[13px] font-bold tabular-nums text-[var(--bts-text-primary)] ${shadow} forced-colors:bg-transparent forced-colors:shadow-none`}>{score}</span>
-    );
-};
-
 /**
  * מבחן הסיום: היעד של הקורס (המסע = Pulse, הצלחה במבדק פרק = ירוק, היעד = זהב). אינו פרק 20 ואינו עלה,
  * ואינו נספר בהתקדמות או ב-19 המבדקים. מצב לפי הניסיון האחרון (לא נבחן, דורש חזרה, עבר) וציון אחרון

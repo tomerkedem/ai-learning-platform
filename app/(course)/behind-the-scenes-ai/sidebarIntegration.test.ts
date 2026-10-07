@@ -91,7 +91,7 @@ test("chapter list: intro and exactly the 19 chapter cards; the final exam is no
 
 test("final exam: the gold destination card stays visible in both Pulse states; Continue lives in the contents header", () => {
     const pulse = source("LearningPulse.tsx");
-    const panel = pulse.slice(pulse.indexOf("export function LearningPulsePanel"), pulse.indexOf("export const ScoreWell"));
+    const panel = pulse.slice(pulse.indexOf("export function LearningPulsePanel"), pulse.indexOf("function FinalExamCard"));
     const body = panel.slice(panel.indexOf('<div className="lp-body">'), panel.indexOf("<FinalExamCard "));
     assert.match(body, /<Stat /, "the statistics fold away in compact");
     assert.ok(panel.indexOf("<FinalExamCard ") > panel.indexOf('<div className="lp-body">'), "after the statistics, outside the folding body");

@@ -122,7 +122,7 @@ test("cards show the latest score only when attempted (no placeholder), and neve
     const card = source("ChapterNavCard.tsx");
     const markup = card.slice(card.indexOf("export function ChapterNavCard"), card.indexOf("export function IntroNavRow"));
     // Attempted: the latest score, as a bare number. Never attempted: nothing at all (no 0, dash or reserved slot).
-    assert.match(markup, /\{chapter\.latestScore !== null && <ScoreWell score=\{chapter\.latestScore\} latestPassed=\{chapter\.latestPassed\} \/>\}/);
+    assert.match(markup, /\{chapter\.latestScore !== null && <span [^>]*>\{chapter\.latestScore\}<\/span>\}/);
     assert.equal([...markup.matchAll(/latestScore/g)].length, 2, "rendered in exactly one place");
     assert.doesNotMatch(card, /bestScore|scoreText|%<|\{"-"\}|"\u2013"|notAttempted/, "no best score, percent, dash or placeholder");
     // 85 then 50: the card model shows 50 and mastery stays achieved.
@@ -166,7 +166,7 @@ test("inactive access never changes the learning visuals", () => {
 
 test("compact state: the same two course values as the expanded statistics, beside the same real Pulse", () => {
     const pulse = source("LearningPulse.tsx");
-    const panel = pulse.slice(pulse.indexOf("export function LearningPulsePanel"), pulse.indexOf("export const ScoreWell"));
+    const panel = pulse.slice(pulse.indexOf("export function LearningPulsePanel"), pulse.indexOf("function FinalExamCard"));
     assert.equal([...panel.matchAll(/<PulseGraphic\s/g)].length, 1, "one Pulse for both states, never a second or mini variant");
     assert.doesNotMatch(pulse, /\bmini\b/);
     assert.match(panel, /lp-compact lp-inline[^>]*>\s*<span [^>]*>\{percent\}<\/span>\s*<span className=\{`[^`]*\$\{progressDot\}`\} \/>/, "compact: progress with its cyan dot on the title row");
@@ -228,7 +228,7 @@ test("course percent: floored so 100 only when every registered unit is reached;
     assert.equal(model.coursePercent(courseLearning([], [])), 0);
     const pulse = source("LearningPulse.tsx");
     assert.doesNotMatch(pulse, /totalUnits|unitCount|150|LEARNING_UNITS/, "the unit total is never rendered");
-    const panel = pulse.slice(pulse.indexOf("export function LearningPulsePanel"), pulse.indexOf("export const ScoreWell"));
+    const panel = pulse.slice(pulse.indexOf("export function LearningPulsePanel"), pulse.indexOf("function FinalExamCard"));
     assert.match(panel, /<Stat [^>]*value=\{percent\} label=\{p\.learningProgress\} \/>/, "expanded shows learning progress");
     assert.match(panel, /const masteryDot = "bg-\[var\(--lp-mastery\)\]/, "mastery is a separate emerald statistic");
     assert.match(panel, /const mastered = `\$\{course\.masteredCount\} \/ \$\{course\.chapters\.length\}`;/);
@@ -326,26 +326,14 @@ test("mastery node: a small emerald mark inside a broad, soft, edgeless halo; no
     assert.equal(css.split("--lp-node-vivid:").length - 1, 2, "a vivid ring colour per theme");
 });
 
-test("latest score: a bare number in a recessed circular well (not a badge); nothing when never attempted", () => {
+test("latest score: bare standalone text (no well, badge or pill); nothing when never attempted", () => {
     const card = source("ChapterNavCard.tsx");
     const markup = card.slice(card.indexOf("export function ChapterNavCard"), card.indexOf("export function IntroNavRow"));
-    // The well itself is one shared component (chapter cards and the final-exam card), rendered only behind an attempted score.
-    const pulseSource = source("LearningPulse.tsx");
-    const scoreBlock = pulseSource.slice(pulseSource.indexOf("export const ScoreWell"), pulseSource.indexOf("function FinalExamCard"));
-    assert.match(markup, /\{chapter\.latestScore !== null && <ScoreWell score=\{chapter\.latestScore\} latestPassed=\{chapter\.latestPassed\} \/>\}/);
-    assert.equal([...card.matchAll(/<ScoreWell /g)].length + [...pulseSource.matchAll(/<ScoreWell /g)].length, 1, "only behind an attempted chapter score");
-    assert.match(scoreBlock, /grid size-\[30px\] shrink-0 place-items-center rounded-full bg-\[var\(--lp-score-well\)\]/, "compact circular well");
-    assert.match(scoreBlock, /shadow-\[inset_0_1\.5px_3px_var\(--lp-score-well-shadow\),inset_0_-1px_0_var\(--lp-score-well-light\)\]/, "inset depth, recessed into the card");
-    assert.match(scoreBlock, />\{score\}<\/span>/, "the number itself is the visible object");
-    assert.doesNotMatch(scoreBlock, /\bborder\b|ring-|px-|<svg|Icon|onClick|tabIndex|<button/, "no border, pill, icon or interactivity");
-    assert.match(scoreBlock, /forced-colors:bg-transparent forced-colors:shadow-none/);
-    // Latest attempt (not mastery): a soft emerald or amber glow added to the same recessed well; none when never attempted.
-    assert.match(scoreBlock, /: latestPassed\s*\? "shadow-\[[^"]*,0_0_12px_2px_var\(--lp-score-glow-pass\)\]"\s*: "shadow-\[[^"]*,0_0_12px_2px_var\(--lp-score-glow-fail\)\]"/);
-    assert.doesNotMatch(scoreBlock, /strokeDasharray|dashed|dotted|border-/, "no outline around the score");
-    assert.doesNotMatch(card, /--lp-score-well/);
-    const css = readFileSync(join(HERE, "..", "..", "globals.css"), "utf8");
-    assert.equal([...css.matchAll(/--lp-score-well: /g)].length, 2, "one value per theme, in globals.css only");
-    assert.doesNotMatch(css, /--lp-score-aura/, "the old faint aura is gone");
+    const score = markup.match(/\{chapter\.latestScore !== null && <span className="([^"]*)">\{chapter\.latestScore\}<\/span>\}/);
+    assert.ok(score, "rendered only behind an attempted score");
+    assert.match(score[1], /^text-\[13px\] font-normal tabular-nums text-\[var\(--bts-text-secondary\)\]$/, "compact, readable, not dominant");
+    assert.doesNotMatch(score[1], /\bborder|ring-|rounded|bg-|shadow|px-|size-/, "no well, border, pill or background");
+    assert.doesNotMatch(card, /ScoreWell|--lp-score-well\b|onClick=\{[^}]*score|tabIndex/, "the well is gone and the score is not interactive");
 });
 
 test("continue has exactly one directional indicator: a circular arrow at the inline end", () => {
@@ -378,16 +366,18 @@ test("forced colors: reached milestone dots and segments stay visible (system co
     assert.match(trail, /h-px -translate-y-1\/2 opacity-75 forced-colors:!bg-\[CanvasText\]/, "segments between reached dots");
 });
 
-test("card layout: identity (number + mastery) at inline-start, score at inline-end, title in the middle; one markup", () => {
+test("card layout: number at inline-start, title in the middle, score + status node as one group at inline-end; one markup", () => {
     const card = source("ChapterNavCard.tsx");
     const markup = card.slice(card.indexOf("export function ChapterNavCard"), card.indexOf("export function IntroNavRow"));
-    const identity = markup.indexOf('className="flex shrink-0 items-center gap-2.5"');
+    const number = markup.indexOf("String(chapter.chapterId)");
     const middle = markup.indexOf('className="min-w-0 flex-1"');
-    const score = markup.indexOf("{chapter.latestScore !== null && <ScoreWell");
-    assert.ok(identity > 0 && identity < middle && middle < score, "DOM order: identity, title/trail, score (logical start to end)");
-    // LTR: number then node; RTL: node at the edge, then number. Only the order utilities differ.
-    assert.match(markup, /className=\{`order-1 w-5 [^`]*rtl:order-2 /, "number first in LTR, second in RTL");
-    assert.match(markup, /<span className="order-2 rtl:order-1"><MasteryNode mastered=\{chapter\.masteryEarned\} attempted=\{chapter\.attempted\} \/><\/span>/, "node second in LTR, at the edge in RTL");
+    const group = markup.indexOf('className="flex shrink-0 items-center gap-1.5"');
+    const score = markup.indexOf("{chapter.latestScore !== null && <span");
+    const node = markup.indexOf("<MasteryNode ");
+    assert.ok(number > 0 && number < middle && middle < group && group < score && score < node, "DOM order: number, title/trail, then score followed by node (logical start to end)");
+    // Logical order only: no physical or order utilities, so RTL and LTR mirror naturally.
+    assert.doesNotMatch(markup, /\border-\d|rtl:order|\bleft-|\bright-|\bml-|\bmr-/);
+    assert.match(markup, /<MasteryNode mastered=\{chapter\.masteryEarned\} attempted=\{chapter\.attempted\} \/>\n\s*<\/span>/, "node is the last item of the status group, always rendered");
     assert.equal([...card.matchAll(/<MasteryNode /g)].length, 1, "no duplicated RTL/LTR markup");
     assert.equal([...markup.matchAll(/<MilestoneTrail milestones=\{milestones\} \/>/g)].length, 1, "trail under the title in the flexible middle");
     assert.doesNotMatch(card, /Chevron/);
