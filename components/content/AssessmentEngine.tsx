@@ -18,7 +18,7 @@ import { SpeakButton } from '../ai-internals/SpeakButton';
 import { speakJoin } from '../ai-internals/GuessVerdict';
 import { useT } from '@/i18n/useT';
 import { reducedMotion, useReducedMotion } from '@/components/reducedMotion';
-import { assessmentScreen } from './assessmentScreen';
+import { assessmentScreen, optionVerdict } from './assessmentScreen';
 
 // שכבת הקונפטי חייבת לצוף מעל מצב "מסך מלא" של ExpandableLab, שהוא Portal אטום
 // ב-document.body עם z-index 9999. ברירת המחדל של canvas-confetti היא z-index 100,
@@ -285,6 +285,12 @@ export const AssessmentEngine = ({
     const [seconds, setSeconds] = useState(0);
     const [isActive, setIsActive] = useState(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+    // מיקוד אחרי פעולת ניווט של הלומד. הכפתור שנלחץ נעלם (מעבר למסך התוצאות) או נעשה disabled
+    // ("המשך" בשאלה חדשה, "הקודם" בשאלה הראשונה), ואז הדפדפן מפיל את המיקוד ל-body. מוגדר רק בפעולה,
+    // ולכן אין גניבת מיקוד בעדכונים אחרים (טיימר, תוצאה שמורה בטעינה).
+    const pendingFocus = useRef<'question' | 'result' | null>(null);
+    const questionHeadingRef = useRef<HTMLHeadingElement>(null);
+    const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
     // גוון ההדגשה לכרום של מסכי הפתיחה/תוצאות (הילות, מסגרות, כפתור ראשי).
     // ציאן, בהתאמה לשפת הצבע של הלומדה.
@@ -375,14 +381,17 @@ export const AssessmentEngine = ({
 
     const handleNext = useCallback(() => {
         if (currentIndex < questions.length - 1) {
+            pendingFocus.current = 'question';
             setDirection(1);
             setCurrentIndex(prev => prev + 1);
         } else if (isReviewMode) {
             // בסקירה, השאלה האחרונה מסיימת את הסקירה ומחזירה למסך התוצאות.
+            pendingFocus.current = 'result';
             setIsReviewMode(false);
         } else {
             // קודם כל עוברים למסך התוצאות. תופעות הלוואי (קונפטי, צליל, שמירה) עטופות
             // ב-try/catch כדי ששגיאה באחת מהן לא תחסום את המעבר ותשאיר את הכפתור "מת".
+            pendingFocus.current = 'result';
             setIsSubmitted(true);
             setIsActive(false);
             const result = buildResult();
@@ -401,6 +410,7 @@ export const AssessmentEngine = ({
 
     const handleBack = useCallback(() => {
         if (currentIndex > 0) {
+            pendingFocus.current = 'question';
             setDirection(-1);
             setCurrentIndex(prev => prev - 1);
         }
@@ -434,6 +444,15 @@ export const AssessmentEngine = ({
     // תוצאה שנשמרה מניסיון קודם (ניווט, רענון, כניסה מחדש): מוצגת במקום מסך הפתיחה, עד ניסיון חוזר מפורש.
     const restored = !isStarted && !isSubmitted && previousResult ? previousResult : null;
     const screen = assessmentScreen({ resultPending, hasPreviousResult: !!previousResult, isStarted, isSubmitted, isReviewMode });
+
+    // מבצע את המיקוד שנקבע בפעולה, אחרי שהמסך החדש מורכב: כותרת השאלה החדשה, או כותרת מסך התוצאות.
+    useEffect(() => {
+        const target = pendingFocus.current;
+        if (target === 'question' && screen === 'questions') questionHeadingRef.current?.focus();
+        else if (target === 'result' && screen === 'result') resultHeadingRef.current?.focus();
+        else return;
+        pendingFocus.current = null;
+    }, [currentIndex, screen]);
 
     // 0. התוצאה השמורה עוד לא ידועה: כרטיס ניטרלי ולא אינטראקטיבי, במסגרת כרטיס הפתיחה, בלי מסך פתיחה.
     if (screen === 'pending') {
@@ -570,7 +589,7 @@ export const AssessmentEngine = ({
                             </div>
                         )}
                         <div className="min-w-0 @[17rem]/result:text-start @lg/result:text-center">
-                            <h2 className="text-lg font-black text-[var(--bts-text-primary)] break-words @lg/result:text-xl">{completedTitleR}</h2>
+                            <h2 ref={resultHeadingRef} tabIndex={-1} className="text-lg font-black text-[var(--bts-text-primary)] break-words focus:outline-none @lg/result:text-xl">{completedTitleR}</h2>
                             <p className="mt-0.5 @lg/result:hidden">
                                 <span className={`block text-[13px] font-black leading-tight ${feedback.color}`}>{feedback.label}</span>
                                 <span className="block text-xs leading-snug text-[var(--bts-text-faint)]">{feedback.sub}</span>
@@ -882,7 +901,7 @@ export const AssessmentEngine = ({
                             <div className="mb-4 flex items-start justify-between gap-3 sm:mb-5">
                                 {/* h3: השאלה יושבת תחת כותרת המבדק (h2), בלי לדלג רמה. גודל קריאה ולא כותרת-הירו:
                                     17px בטלפון, 18px מ-sm ו-20px מ-md, במשקל 600 ולא bold. הגודל מעל האפשרויות (14px/15px). */}
-                                <h3 className="text-[17px] font-semibold leading-normal text-[var(--bts-text-primary)] sm:text-lg md:text-xl md:leading-relaxed">
+                                <h3 ref={questionHeadingRef} tabIndex={-1} className="focus:outline-none text-[17px] font-semibold leading-normal text-[var(--bts-text-primary)] sm:text-lg md:text-xl md:leading-relaxed">
                                     {currentQuestion.question}
                                 </h3>
                                 <SpeakButton text={questionSpeech(currentQuestion, a)} className="mt-1 shrink-0" />
@@ -923,8 +942,10 @@ export const AssessmentEngine = ({
                                     // ה-end בלבד; pe-12 שומר מקום ואינו חוסם את שטח הלחיצה של השורה.
                                     return (
                                         <div key={oIdx} className="relative">
+                                            {/* aria-disabled ולא disabled: disabled מפיל את המיקוד מהכפתור שנלחץ זה עתה ל-body.
+                                                כך המיקוד נשאר על הבחירה, ו-handleAnswer כבר מתעלם מלחיצה חוזרת. */}
                                             <button
-                                                disabled={showResult && !isReviewMode}
+                                                aria-disabled={showResult && !isReviewMode ? true : undefined}
                                                 onClick={() => handleAnswer(oIdx)}
                                                 className={`group relative flex min-h-[44px] w-full items-center gap-3 overflow-hidden rounded-2xl border py-2 pe-12 ps-2.5 text-start sm:py-2.5 @max-xl/quiz:grid @max-xl/quiz:grid-cols-[auto_minmax(0,1fr)] @max-xl/quiz:items-start @max-xl/quiz:gap-x-2.5 @max-xl/quiz:gap-y-0.5 @max-xl/quiz:py-2 @max-xl/quiz:ps-2.5 @max-xl/quiz:pe-3 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bts-panel-to)] ${rowCls} ${showResult || reduce ? '' : 'hover:-translate-y-px active:scale-[0.99]'}`}
                                             >
@@ -938,6 +959,10 @@ export const AssessmentEngine = ({
                                                     <span aria-hidden className="hidden float-end ms-1.5 h-[21px] w-[22px] @max-xl/quiz:block" />
                                                     {opt}
                                                 </span>
+                                                {/* הבחירה, הנכונה והשגויה לקורא המסך: חזותית הן עוברות בצבע, במסגרת ובאייקון בלבד. */}
+                                                {showResult && (
+                                                    <span className="sr-only">{' '}{optionVerdict({ showResult, isSelected, isCorrect }).map((k) => a[k]).join(' ')}</span>
+                                                )}
                                                 {showResult && isCorrect && <Check size={18} className="shrink-0 text-emerald-300 stroke-[3px] @max-xl/quiz:col-start-1 @max-xl/quiz:row-start-2 @max-xl/quiz:justify-self-center @max-xl/quiz:size-4" />}
                                                 {showResult && isSelected && !isCorrect && <X size={18} className="shrink-0 text-amber-300 stroke-[3px] @max-xl/quiz:col-start-1 @max-xl/quiz:row-start-2 @max-xl/quiz:justify-self-center @max-xl/quiz:size-4" />}
                                                 {/* הדגשת-אישור חד-פעמית לשורה הנכונה (לא בסקירה). קישוט: מדולג בתנועה מופחתת. */}
@@ -971,6 +996,9 @@ export const AssessmentEngine = ({
 
                             {/* Readout: פאנל משוב חינוכי פרימיום, גלוי מיד אחרי הבחירה, state-aware (אמרלד/ענבר).
                                 כניסה בסגנון "פלט קונסולה" (blur-in). טקסט ההסבר הקיים בלבד. */}
+                            {/* אזור החי מורכב לפני המענה וריק, כדי שהתוכן שנכנס אליו אחרי הבחירה יוכרז. אזור
+                                שנוצר יחד עם התוכן שלו לא תמיד מוכרז. */}
+                            <div role="status" aria-live="polite">
                             <AnimatePresence>
                                 {(isAnswered || isReviewMode) && (
                                     <motion.div
@@ -979,8 +1007,6 @@ export const AssessmentEngine = ({
                                         exit={{ opacity: 0 }}
                                         transition={reduce ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                                         className="mt-5 @max-xl/quiz:mt-4"
-                                        role="status"
-                                        aria-live="polite"
                                     >
                                         {/* פסק הדין נאמר קודם. חזותית הוא מועבר באייקון, בצבע המסגרת ובתג,
                                             ולכן בלי השורה הזאת קורא מסך שומע רק את ההסבר ולא יודע אם צדק. */}
@@ -1007,6 +1033,7 @@ export const AssessmentEngine = ({
                                     </motion.div>
                                 )}
                             </AnimatePresence>
+                            </div>
                         </motion.div>
                     </AnimatePresence>
                 </div>

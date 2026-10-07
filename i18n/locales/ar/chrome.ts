@@ -79,6 +79,7 @@ export const chrome: typeof heChrome = {
         // إعلان لقارئات الشاشة: النتيجة تُنقل بصريًا بالأيقونة واللون فقط.
         verdictCorrect: 'إجابة صحيحة.',
         verdictWrong: 'إجابة خاطئة.',
+        yourAnswer: 'إجابتك.',
         start: 'ابدأ الاختبار',
         mentorStart: 'مستعد؟ لنرَ ما الذي ترسّخ',
         questionsLabel: 'الأسئلة',

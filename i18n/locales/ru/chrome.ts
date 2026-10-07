@@ -79,6 +79,7 @@ export const chrome: typeof heChrome = {
         // Объявление для скринридеров: иначе результат передаётся только значком и цветом.
         verdictCorrect: 'Правильный ответ.',
         verdictWrong: 'Неправильный ответ.',
+        yourAnswer: 'Ваш ответ.',
         start: 'Начать тест',
         mentorStart: 'Готовы? Посмотрим, что усвоилось',
         questionsLabel: 'Вопросы',

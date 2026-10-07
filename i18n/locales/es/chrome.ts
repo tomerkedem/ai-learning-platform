@@ -79,6 +79,7 @@ export const chrome: typeof heChrome = {
         // Anuncio para lectores de pantalla: el resultado solo se transmite por icono y color.
         verdictCorrect: 'Respuesta correcta.',
         verdictWrong: 'Respuesta incorrecta.',
+        yourAnswer: 'Tu respuesta.',
         start: 'Empezar el test',
         mentorStart: '¿Listo? Veamos qué quedó',
         questionsLabel: 'Preguntas',
