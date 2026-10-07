@@ -52,6 +52,7 @@ export const aiInternals = {
         sections: 'קטעים',
         nowReading: 'קורא כעת',
         unsupported: 'ההקראה אינה זמינה בדפדפן הזה.',
+        noVoice: 'אין במכשיר או בדפדפן הזה קול הקראה לשפה הזו. אפשר להוסיף קול מתאים בהגדרות הדיבור של המערכת.',
         scope: 'היקף',
         scopeShort: 'קצר',
         scopeRegular: 'רגיל',

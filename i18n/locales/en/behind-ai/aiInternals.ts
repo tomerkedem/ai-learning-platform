@@ -44,6 +44,7 @@ export const aiInternals = {
         sections: 'Sections',
         nowReading: 'Now reading',
         unsupported: 'Read-aloud is not available in this browser.',
+        noVoice: 'No read-aloud voice for this language is available on this device or browser. You can add a suitable voice in your system speech settings.',
         scope: 'Scope',
         scopeShort: 'Short',
         scopeRegular: 'Regular',

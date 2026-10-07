@@ -11,17 +11,19 @@
 // מאזין לו), וכל SpeakButton פעיל אחר נעצר דרך מצביע מודול משותף. לחיצה שנייה עוצרת.
 //
 // בחירת קול: אותו קול שנשמר לשפה בדוק ההקראה (localStorage), אחרת הקול התואם
-// המדורג ראשון לפי אותם כללים (התאמה מלאה לתג השפה, ואז קול מקומי).
+// המדורג ראשון לפי אותם כללים (matchVoices / pickVoiceURI המשותפים).
 //
-// SSR/hydration: תמיכת הדפדפן נבדקת רק אחרי mount. עד אז הכפתור מרונדר בלתי-נראה
-// (תופס מקום, לא לחיץ) כדי שלא תהיה קפיצת פריסה, ובדפדפן ללא תמיכה הוא לא מופיע.
+// SSR/hydration: תמיכת הדפדפן נבדקת רק אחרי mount. עד אז, וגם בזמן גילוי הקולות כשעוד
+// אין קול תואם, הכפתור מרונדר בלתי-נראה (תופס מקום, לא לחיץ) כדי שלא תהיה קפיצת פריסה
+// ולא קול בשפה שגויה. בדפדפן ללא תמיכה, או כשאין קול לשפת הדיבור, הוא לא מופיע
+// (ההסבר מוצג בדוק ההקראה).
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Volume2, Square } from 'lucide-react';
 import { useT } from '@/i18n/useT';
 import type { Locale } from '@/i18n/config';
-import { LOCALE_SPEECH_LANG } from './readAloudLang';
-import { READ_ALOUD_EXCLUSIVE_EVENT } from './useReadAloud';
+import { LOCALE_SPEECH_LANG, matchVoices, pickVoiceURI, voiceCapability } from './readAloudLang';
+import { READ_ALOUD_EXCLUSIVE_EVENT, useSpeechVoices } from './useReadAloud';
 
 // ה-SpeakButton הפעיל כרגע (לכל היותר אחד): מצביע לעצירה שלו, לבלעדיות בין כפתורים.
 let activeInlineStop: (() => void) | null = null;
@@ -48,6 +50,14 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({ text, className = '', 
     const [phase, setPhase] = useState<'boot' | 'ready' | 'unsupported'>('boot');
     const [speaking, setSpeaking] = useState(false);
     const uttRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+    // קולות הדפדפן (מתעדכנים דרך voiceschanged) וזמינות קול לשפת הדיבור.
+    const { allVoices, settled } = useSpeechVoices(phase === 'ready');
+    const lang = LOCALE_SPEECH_LANG[effectiveLocale];
+    const matched = matchVoices(allVoices, lang);
+    const capability = voiceCapability(allVoices.length, matched.length, settled);
+    // ממתינים לגילוי הקולות כשעוד אין קול תואם (רשימה לא יציבה).
+    const discovering = capability === 'unknown' && !settled;
 
     // בדיקת תמיכה בצד הלקוח בלבד (אחרי mount), כדי לא לשבור SSR/hydration.
     useEffect(() => {
@@ -77,7 +87,7 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({ text, className = '', 
     }, [stopSpeaking]);
 
     const toggle = () => {
-        if (phase !== 'ready') return;
+        if (phase !== 'ready' || discovering || capability === 'unavailable') return;
 
         if (speaking) {
             stopSpeaking();
@@ -93,27 +103,18 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({ text, className = '', 
         const synth = window.speechSynthesis;
         synth.cancel();
 
-        const lang = LOCALE_SPEECH_LANG[effectiveLocale];
         const utt = new SpeechSynthesisUtterance(text);
         utt.lang = lang;
 
-        // בחירת קול: הקול השמור לשפה (אם עדיין זמין), אחרת הדירוג של useReadAloud.
-        const base = lang.split('-')[0].toLowerCase();
-        const matched = synth.getVoices().filter((v) => v.lang.toLowerCase().startsWith(base));
+        // בחירת קול: הקול השמור לשפה (אם עדיין זמין), אחרת התואם המדורג ראשון.
         let stored: string | null = null;
         try {
             stored = window.localStorage.getItem(`bts-readaloud-voice:${effectiveLocale}`);
         } catch {
             stored = null;
         }
-        const chosen =
-            matched.find((v) => v.voiceURI === stored)
-            ?? [...matched].sort((a, b) => {
-                const aExact = a.lang.toLowerCase() === lang.toLowerCase() ? 0 : 1;
-                const bExact = b.lang.toLowerCase() === lang.toLowerCase() ? 0 : 1;
-                if (aExact !== bExact) return aExact - bExact;
-                return (a.localService ? 0 : 1) - (b.localService ? 0 : 1);
-            })[0];
+        const chosenURI = pickVoiceURI(matched, stored);
+        const chosen = matched.find((v) => v.voiceURI === chosenURI);
         if (chosen) utt.voice = chosen;
 
         // סיום או ביטול (גם ביטול חיצוני ע"י הדוק / כפתור אחר): איפוס, רק אם זו עדיין
@@ -132,8 +133,10 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({ text, className = '', 
         synth.speak(utt);
     };
 
-    if (phase === 'unsupported') return null;
+    if (phase === 'unsupported' || capability === 'unavailable') return null;
 
+    // boot או גילוי קולות: הכפתור תופס מקום אבל בלתי-נראה ולא לחיץ.
+    const waiting = phase === 'boot' || discovering;
     const active = phase === 'ready' && speaking;
     const label = active ? labels.stop : labels.play;
 
@@ -152,13 +155,13 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({ text, className = '', 
             aria-label={label}
             title={label}
             aria-pressed={active}
-            tabIndex={phase === 'ready' ? 0 : -1}
-            aria-hidden={phase === 'boot' || undefined}
+            tabIndex={waiting ? -1 : 0}
+            aria-hidden={waiting || undefined}
             className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--bts-focus-ring)] ${hitArea} ${
                 active
                     ? 'border-[var(--bts-brand-primary-strong)]/60 bg-[var(--bts-brand-primary)]/15 text-[var(--bts-brand-primary-strong)]'
                     : 'border-[var(--bts-border)] bg-[var(--bts-surface-inset)] text-[var(--bts-text-muted)] hover:border-[var(--bts-brand-primary-strong)]/40 hover:text-[var(--bts-brand-primary-strong)]'
-            } ${phase === 'boot' ? 'invisible' : ''} ${className}`}
+            } ${waiting ? 'invisible' : ''} ${className}`}
         >
             {active ? <Square size={12} aria-hidden /> : <Volume2 size={14} aria-hidden />}
         </button>

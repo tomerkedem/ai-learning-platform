@@ -11,6 +11,14 @@
 // בזמן רינדור, כדי לשמור על בטיחות SSR ו-hydration.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    VOICE_SETTLE_MS,
+    knownWrongLanguage,
+    matchVoices,
+    pickVoiceURI,
+    voiceCapability,
+    type VoiceCapability,
+} from './readAloudLang';
 
 export type ReadAloudStatus = 'unsupported' | 'idle' | 'speaking' | 'paused';
 
@@ -61,6 +69,10 @@ export interface UseReadAloud {
     release: () => void;
     /** הקולות התואמים ל-locale הפעיל (אם יש). */
     voices: SpeechSynthesisVoice[];
+    /** זמינות קול לשפת הדיבור (unknown עד שיש קול תואם או שהרשימה התייצבה). */
+    voiceCapability: VoiceCapability;
+    /** רשימת הקולות של הדפדפן התייצבה (לא הגיע voiceschanged במשך VOICE_SETTLE_MS). */
+    voicesSettled: boolean;
     selectedVoiceURI: string | null;
     selectVoice: (voiceURI: string | null) => void;
     /** מהירות הקריאה (speechSynthesis rate). ברירת מחדל 1. */
@@ -107,6 +119,34 @@ function writeStoredVoice(locale: string, voiceURI: string | null): void {
     }
 }
 
+/**
+ * קולות הדפדפן, והאם רשימתם התייצבה. ב-Chrome getVoices ריק בקריאה הראשונה ומתמלא דרך
+ * voiceschanged, ויש דפדפנים שטוענים בכמה מנות. כל טעינה מאתחלת חלון שקט של
+ * VOICE_SETTLE_MS, ורק בסופו settled=true. משותף ל-useReadAloud ול-SpeakButton.
+ */
+export function useSpeechVoices(supported: boolean): { allVoices: SpeechSynthesisVoice[]; settled: boolean } {
+    const [allVoices, setAllVoices] = useState<SpeechSynthesisVoice[]>([]);
+    const [settled, setSettled] = useState(false);
+    useEffect(() => {
+        if (!supported) return;
+        const synth = window.speechSynthesis;
+        let timer: number | undefined;
+        const load = () => {
+            setAllVoices(synth.getVoices());
+            setSettled(false);
+            window.clearTimeout(timer);
+            timer = window.setTimeout(() => setSettled(true), VOICE_SETTLE_MS);
+        };
+        load();
+        synth.addEventListener('voiceschanged', load);
+        return () => {
+            synth.removeEventListener('voiceschanged', load);
+            window.clearTimeout(timer);
+        };
+    }, [supported]);
+    return { allVoices, settled };
+}
+
 export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseReadAloudParams): UseReadAloud {
     const [ready, setReady] = useState(false);
     const [supported, setSupported] = useState(false);
@@ -114,7 +154,6 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
     const [pauseSupported, setPauseSupported] = useState(true);
     const [held, setHeld] = useState(false);
     const heldRef = useRef(-1);
-    const [allVoices, setAllVoices] = useState<SpeechSynthesisVoice[]>([]);
     const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
     const [currentIndex, setCurrentIndex] = useState(-1);
     const [wordRange, setWordRange] = useState<{ start: number; end: number } | null>(null);
@@ -143,15 +182,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
         if (!ok) setStatus('unsupported');
     }, []);
 
-    // טעינת קולות. ב-Chrome getVoices ריק בקריאה הראשונה ומתמלא דרך voiceschanged.
-    useEffect(() => {
-        if (!supported) return;
-        const synth = window.speechSynthesis;
-        const load = () => setAllVoices(synth.getVoices());
-        load();
-        synth.addEventListener('voiceschanged', load);
-        return () => synth.removeEventListener('voiceschanged', load);
-    }, [supported]);
+    const { allVoices, settled: voicesSettled } = useSpeechVoices(supported);
 
     // ניקוי: עצירת כל הקראה כשהרכיב יורד מהעץ.
     useEffect(() => {
@@ -163,21 +194,11 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
         };
     }, []);
 
-    const base = useMemo(() => lang.split('-')[0].toLowerCase(), [lang]);
-
-    // הקולות התואמים ל-locale: לפי בסיס השפה (he/en/es/ru/ar/ja). מקדימים קול מקומי
-    // (localService) ותאמה מלאה לתג השפה, אחר כך השאר.
-    const voices = useMemo(() => {
-        const matched = allVoices.filter((v) => v.lang.toLowerCase().startsWith(base));
-        return [...matched].sort((a, b) => {
-            const aExact = a.lang.toLowerCase() === lang.toLowerCase() ? 0 : 1;
-            const bExact = b.lang.toLowerCase() === lang.toLowerCase() ? 0 : 1;
-            if (aExact !== bExact) return aExact - bExact;
-            const aLocal = a.localService ? 0 : 1;
-            const bLocal = b.localService ? 0 : 1;
-            return aLocal - bLocal;
-        });
-    }, [allVoices, base, lang]);
+    // הקולות התואמים ל-locale (בסיס השפה, התאמה מלאה ואז קול מקומי) - ראו matchVoices.
+    const voices = useMemo(() => matchVoices(allVoices, lang), [allVoices, lang]);
+    const capability = voiceCapability(allVoices.length, voices.length, voicesSettled);
+    // יש קולות אבל אף אחד לא בשפת הדיבור: לא מדברים כלל, במקום קול בשפה שגויה.
+    const wrongLanguage = knownWrongLanguage(allVoices.length, voices.length);
 
     // בחירת קול ברירת מחדל כש-locale או רשימת הקולות משתנים:
     // 1) קול שמור ל-locale אם הוא עדיין זמין.
@@ -185,10 +206,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
     // 3) אחרת null = קול ברירת המחדל של הדפדפן.
     useEffect(() => {
         if (!supported) return;
-        const stored = readStoredVoice(locale);
-        const nextVoice = stored && voices.some((v) => v.voiceURI === stored)
-            ? stored
-            : (voices.length > 0 ? voices[0].voiceURI : null);
+        const nextVoice = pickVoiceURI(voices, readStoredVoice(locale));
         // eslint-disable-next-line react-hooks/set-state-in-effect -- סנכרון בחירת קול מרשימת הקולות החיצונית (speechSynthesis) וה-locale הפעיל
         setSelectedVoiceURI(nextVoice);
     }, [supported, locale, voices]);
@@ -207,7 +225,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
     // הקראת מקטע בודד לפי מדד, ושרשור אוטומטי למקטע הבא ב-onend.
     const speakIndex = useCallback(
         (index: number) => {
-            if (!('speechSynthesis' in window)) return;
+            if (!('speechSynthesis' in window) || wrongLanguage) return;
             const list = segmentsRef.current;
             if (index < 0 || index >= list.length) {
                 singleSegmentRef.current = false;
@@ -283,7 +301,7 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
             setStatus('speaking');
             synth.speak(utt);
         },
-        [voices],
+        [voices, wrongLanguage],
     );
     useEffect(() => { speakIndexRef.current = speakIndex; }, [speakIndex]);
 
@@ -400,6 +418,8 @@ export function useReadAloud({ segments, lang, locale, resetSignal = '' }: UseRe
         held,
         release,
         voices,
+        voiceCapability: capability,
+        voicesSettled,
         selectedVoiceURI,
         selectVoice,
         rate,

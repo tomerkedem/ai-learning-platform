@@ -49,6 +49,8 @@ export interface ReadAloudLabels {
     sections: string;
     nowReading: string;
     unsupported: string;
+    /** אין קול הקראה לשפת הדיבור במכשיר/בדפדפן (בלי לנקוב בשם השפה). */
+    noVoice: string;
     scope: string;
     scopeShort: string;
     scopeRegular: string;
@@ -200,25 +202,27 @@ export function ReadAloudControls({
         full: labels.scopeFull,
     };
 
-    // לפני סיום בדיקת התמיכה בצד הלקוח: שומרים על מבנה זהה ל-SSR (דוק ניטרלי קומפקטי).
-    if (!ra.ready) {
-        return (
-            <div dir={dir} className="inline-flex items-center gap-2 rounded-2xl border border-[var(--bts-border)] bg-[var(--bts-surface)] px-3 py-1.5 text-sm font-bold text-[var(--bts-text-secondary)] backdrop-blur-xl">
-                <Headphones size={16} className="text-[var(--bts-brand-primary-strong)]/80" aria-hidden />
-                <span className={compact ? 'max-sm:hidden' : undefined}>{labels.dock}</span>
-            </div>
-        );
-    }
+    // דוק ניטרלי קומפקטי, זהה ל-SSR: לפני בדיקת התמיכה, וגם בזמן גילוי הקולות כשעוד
+    // אין קול תואם (מונע הבהוב של הודעת "אין קול" וקול בשפה שגויה).
+    const neutralDock = (
+        <div dir={dir} className="inline-flex items-center gap-2 rounded-2xl border border-[var(--bts-border)] bg-[var(--bts-surface)] px-3 py-1.5 text-sm font-bold text-[var(--bts-text-secondary)] backdrop-blur-xl">
+            <Headphones size={16} className="text-[var(--bts-brand-primary-strong)]/80" aria-hidden />
+            <span className={compact ? 'max-sm:hidden' : undefined}>{labels.dock}</span>
+        </div>
+    );
+    if (!ra.ready) return neutralDock;
 
-    // אין תמיכה ב-speechSynthesis: הודעת נפילה עדינה במקום הפקד.
-    if (!ra.supported) {
-        return (
-            <div dir={dir} className="inline-flex items-center gap-2 rounded-2xl border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] px-4 py-2.5 text-xs font-medium text-[var(--bts-text-muted)] backdrop-blur-xl">
-                <Volume2 size={15} aria-hidden className="text-[var(--bts-text-muted)]" />
-                <span>{labels.unsupported}</span>
-            </div>
-        );
-    }
+    // הודעת נפילה עדינה במקום הפקד: אין speechSynthesis, או אין קול לשפת הדיבור.
+    // הודעת "אין קול" ארוכה יותר וחשובה ללומד, ולכן קריאה יותר (roomy): טקסט גדול ומרווח יותר.
+    const notice = (text: string, roomy = false) => (
+        <div dir={dir} className={`inline-flex gap-2 rounded-2xl border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] px-4 font-medium backdrop-blur-xl ${roomy ? 'items-start py-3 text-sm leading-relaxed text-[var(--bts-text-secondary)]' : 'items-center py-2.5 text-xs text-[var(--bts-text-muted)]'}`}>
+            <Volume2 size={15} aria-hidden className={`shrink-0 text-[var(--bts-text-muted)] ${roomy ? 'mt-1' : ''}`} />
+            <span>{text}</span>
+        </div>
+    );
+    if (!ra.supported) return notice(labels.unsupported);
+    if (ra.voiceCapability === 'unknown' && !ra.voicesSettled) return neutralDock;
+    if (ra.voiceCapability === 'unavailable') return notice(labels.noVoice, true);
 
     const PrevIcon = isRtl ? ChevronRight : ChevronLeft;
     const NextIcon = isRtl ? ChevronLeft : ChevronRight;

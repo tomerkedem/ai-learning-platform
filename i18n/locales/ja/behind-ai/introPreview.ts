@@ -34,6 +34,7 @@ export const introPreview = {
         sections: 'セクション',
         nowReading: '読み上げ中',
         unsupported: 'このブラウザーでは読み上げを利用できません。',
+        noVoice: 'このデバイスまたはブラウザーには、この言語の読み上げ音声がありません。システムの音声設定で対応する音声を追加できます。',
         scope: '範囲',
         scopeShort: '短め',
         scopeRegular: '標準',

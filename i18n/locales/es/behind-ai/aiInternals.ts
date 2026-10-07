@@ -44,6 +44,7 @@ export const aiInternals = {
         sections: 'Secciones',
         nowReading: 'Leyendo ahora',
         unsupported: 'La lectura en voz alta no está disponible en este navegador.',
+        noVoice: 'No hay ninguna voz de lectura para este idioma en este dispositivo o navegador. Puedes añadir una voz adecuada en los ajustes de voz del sistema.',
         scope: 'Alcance',
         scopeShort: 'Breve',
         scopeRegular: 'Normal',
