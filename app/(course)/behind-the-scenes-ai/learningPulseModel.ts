@@ -174,6 +174,21 @@ export function resumeSelector(hash: string, chapterId: number): string | null {
     return isLearningUnit(chapterId, id) ? `[data-learning-unit="${id}"]` : null;
 }
 
+/**
+ * הקפיצה לנקודת ההמשך (ChapterLayout בהגעה, "המשך" באותו פרק). גוללת רק את מיכל התוכן של הפרק:
+ * scrollIntoView גולל גם את המסמך, ואז הפוטר שמתחת למעטפת נחשף. המרווח מהכותרת נלקח פעם אחת,
+ * מ-scroll-padding של המיכל (--bts-sticky-top), בלי להוסיף את scroll-margin של היעד.
+ * מיידי: גלילה חלקה הייתה חולפת על יחידות ומסמנת אותן "הגיע".
+ */
+export function scrollToResumeTarget(selector: string): void {
+    const target = document.querySelector(selector);
+    const scroller = target?.closest<HTMLElement>("[data-chapter-content-scroller]");
+    if (!target || !scroller) return;
+    const clearance = parseFloat(getComputedStyle(scroller).scrollPaddingTop) || 0;
+    const top = scroller.scrollTop + target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - clearance;
+    scroller.scrollTo({ top, behavior: "instant" });
+}
+
 const resumeHash = (target: ContinueTarget): string => {
     if (target.kind === "quiz") return `${RESUME_HASH}quiz`;
     if (target.kind === "continue" && target.unitId && isLearningUnit(target.chapterId, target.unitId)) return RESUME_HASH + target.unitId;

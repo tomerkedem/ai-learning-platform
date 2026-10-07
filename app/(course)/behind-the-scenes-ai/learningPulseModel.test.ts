@@ -488,7 +488,16 @@ test("resume: consumed once on arrival, jumped to (no smooth pass over units), t
     const block = layout.slice(layout.indexOf("const headerMeasured"), layout.indexOf("// ניווט בין פרקים"));
     assert.match(block, /if \(!headerMeasured \|\| learningChapterId === null\) return;/, "after the header is measured, chapters 1-19 only");
     assert.match(block, /if \(!hash\.startsWith\(RESUME_HASH\)\) return;/, "an ordinary URL is never touched");
-    assert.match(block, /scrollIntoView\(\{ block: 'start', behavior: 'instant' \}\);\s*window\.history\.replaceState\(null, '', pathname \+ search\);/, "jump, then strip the hash (also when invalid)");
+    assert.match(block, /if \(selector\) scrollToResumeTarget\(selector\);\s*window\.history\.replaceState\(null, '', pathname \+ search\);/, "jump, then strip the hash (also when invalid)");
+    assert.match(layout, /onScroll=\{handleScroll\}[\s\S]{0,120}data-chapter-content-scroller/, "the chapter scroller is the resume scroll owner");
+
+    // Only the chapter scroller moves (never the document), and the header clearance comes once, from its scroll-padding.
+    const model = source("learningPulseModel.ts");
+    const helper = model.slice(model.indexOf("export function scrollToResumeTarget"), model.indexOf("const resumeHash"));
+    assert.match(helper, /target\?\.closest<HTMLElement>\("\[data-chapter-content-scroller\]"\)/);
+    assert.match(helper, /getComputedStyle\(scroller\)\.scrollPaddingTop/);
+    assert.match(helper, /scroller\.scrollTo\(\{ top, behavior: "instant" \}\);/);
+    assert.doesNotMatch(helper, /scrollIntoView|scrollMargin|window\.scroll|focus\(/, "no ancestor scrolling, no doubled margin, no focus move");
     assert.match(block, /\}, \[headerMeasured, learningChapterId\]\);/, "runs per chapter, not per scroll or render");
     assert.ok(layout.indexOf("scrollTop = 0") < layout.indexOf("const headerMeasured"), "after the chapter's scroll reset");
     assert.doesNotMatch(block, /fetch|supabase|learner|setTimeout|setInterval|requestAnimationFrame|focus\(|aria-live|useState/, "no network, timers, focus or state");
@@ -497,6 +506,7 @@ test("resume: consumed once on arrival, jumped to (no smooth pass over units), t
     const link = pulse.slice(pulse.indexOf("export function ContinueLink"));
     assert.match(link, /if \(here === null\) return;\s*e\.preventDefault\(\);/, "another chapter: a normal link navigation");
     assert.match(link, /resumeSelector\(action\.href\.slice\(chapterHref\(here\)\.length\), here\) \?\? "#chapter-main"/, "same chapter: the same target, or the chapter top");
-    assert.match(link, /scrollIntoView\(\{ block: "start", behavior: "instant" \}\)/);
+    assert.match(link, /scrollToResumeTarget\(selector\);/, "same jump as arriving from another page");
+    assert.doesNotMatch(link, /scrollIntoView/);
     assert.doesNotMatch(link, /focus\(|pushState|replaceState|fetch|useLearner/, "no focus move, history entry or extra learner read");
 });

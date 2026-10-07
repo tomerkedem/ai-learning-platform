@@ -50,10 +50,13 @@ const DISPLAY_INIT = `(function(){try{var e=document.documentElement,p=JSON.pars
 export function RootDocument({
   locale,
   serverResolved = false,
+  footer = true,
   children,
 }: {
   locale: Locale;
   serverResolved?: boolean;
+  /** false בלומדה: כל עמודיה הם מעטפת בגובה המסך עם גלילה פנימית, ופוטר מתחתיה רק מוציא את הפוקוס ממנה. */
+  footer?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -79,7 +82,7 @@ export function RootDocument({
         <ThemeProvider>
           <LocaleProvider initialLocale={locale} serverResolved={serverResolved}>
             {children}
-            <CourseFooter />
+            {footer && <CourseFooter />}
           </LocaleProvider>
         </ThemeProvider>
       </body>

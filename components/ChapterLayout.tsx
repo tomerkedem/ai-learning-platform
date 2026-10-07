@@ -15,7 +15,7 @@ import { ChevronRight, ChevronLeft, BookOpen, Trophy, Maximize2, Minimize2, Mile
 import { motion, AnimatePresence } from "framer-motion";
 import { EdgeRail, EdgePeekItem } from "@/components/ai-internals/EdgePeek";
 import { useLearningUnitTracking } from "@/app/(course)/behind-the-scenes-ai/useLearningUnitTracking";
-import { RESUME_HASH, resumeSelector } from "@/app/(course)/behind-the-scenes-ai/learningPulseModel";
+import { RESUME_HASH, resumeSelector, scrollToResumeTarget } from "@/app/(course)/behind-the-scenes-ai/learningPulseModel";
 import { pageArrowsAllowed, pageEscapeAllowed } from "@/components/courseShortcuts";
 
 // מצב המיקוד נחשף ל-children (למשל כדי לגדל את מנטור ההירו במבוא כשנכנסים למיקוד).
@@ -183,15 +183,14 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
 
     // "המשך למידה" מעמוד אחר: #resume=<unitId|quiz> (continueAction). נצרך פעם אחת, אחרי איפוס הגלילה
     // ואחרי שהכותרת נמדדה (הריפוד העליון כבר סופי), ואז נמחק מהכתובת כדי שרענון או חזרה לא יגללו שוב.
-    // קפיצה מיידית: גלילה חלקה הייתה חולפת על יחידות ומסמנת אותן "הגיע". scroll-margin (globals.css)
-    // משאיר את היעד מתחת לכותרת. נקודה לא תקפה: נשארים בראש הפרק.
+    // קפיצה מיידית בתוך מיכל הגלילה בלבד (scrollToResumeTarget). נקודה לא תקפה: נשארים בראש הפרק.
     const headerMeasured = headerRestHeight != null;
     useEffect(() => {
         if (!headerMeasured || learningChapterId === null) return;
         const { hash, pathname, search } = window.location;
         if (!hash.startsWith(RESUME_HASH)) return;
         const selector = resumeSelector(hash, learningChapterId);
-        if (selector) document.querySelector(selector)?.scrollIntoView({ block: 'start', behavior: 'instant' });
+        if (selector) scrollToResumeTarget(selector);
         window.history.replaceState(null, '', pathname + search);
     }, [headerMeasured, learningChapterId]);
 
@@ -432,10 +431,12 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                 {/* תוכן גלילה - כאן נוסף ה-Ref המטפל באיפוס הגלילה */}
                 <div 
                     ref={scrollContainerRef}
-                    className="flex-1 overflow-y-auto overscroll-y-contain custom-scrollbar scroll-smooth"
+                    className="flex-1 overflow-y-auto overscroll-y-contain scroll-pt-[var(--bts-sticky-top,88px)] custom-scrollbar scroll-smooth"
                     // overscroll-y-contain: גלילה מעבר לקצה הפרק נעצרת כאן ואינה עוברת למסמך (שגולל אז את
                     // הפריסה כולה, כולל הכותרת, ומציג את הפוטר הגלובלי).
                     onScroll={handleScroll}
+                    // הבעלים של קפיצת "המשך למידה" (scrollToResumeTarget).
+                    data-chapter-content-scroller
                 >
                     {/* קנה-מידה נזיל בדסקטופ/טאבלט: הריפוד האופקי ומרווחי המקטעים מתכווצים
                         בהדרגה עם רוחב החלון (clamp) במקום לקפוץ בנקודות-שבירה. במובייל נשמר הריפוד

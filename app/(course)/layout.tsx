@@ -38,7 +38,7 @@ export default async function CourseLayout({ children }: Readonly<{ children: Re
   // תמיד אותו מבנה עץ (תוכן ריק בלי הרשאה), כדי שכניסה לא תרכיב מחדש את העמוד.
   const shared = await sharedCourseContent(access);
   return (
-    <RootDocument locale={locale} serverResolved>
+    <RootDocument locale={locale} serverResolved footer={false}>
       <CourseAccessProvider value={access}>
         <ProtectedContentProvider value={shared}>
           <AccountSync />

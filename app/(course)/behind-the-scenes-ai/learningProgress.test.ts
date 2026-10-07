@@ -69,6 +69,8 @@ test("detection is rooted on the chapter scroll container, with a documented vis
     const layout = source("..", "..", "..", "components", "ChapterLayout.tsx");
     assert.match(layout, /const learningChapterId = courseId === 'behind-the-scenes-ai' && currentChapterId >= 1 && currentChapterId <= 19 \? currentChapterId : null;\s*useLearningUnitTracking\(scrollContainerRef, learningChapterId\);/);
     assert.match(layout, /ref=\{scrollContainerRef\}\s+className="flex-1 overflow-y-auto/);
+    // WCAG 2.4.11: focus scrolling stops below the overlaying header (same measured offset as the sticky bars).
+    assert.match(layout, /className="flex-1 overflow-y-auto overscroll-y-contain scroll-pt-\[var\(--bts-sticky-top,88px\)\]/);
     const hook = source("useLearningUnitTracking.ts");
     assert.match(hook, /new IntersectionObserver\([\s\S]*\{ root, threshold: THRESHOLDS \}\)/);
     assert.match(hook, /const REACHED_SHARE = 0\.5;/);

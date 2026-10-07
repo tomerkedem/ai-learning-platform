@@ -18,7 +18,7 @@ import { courses } from "@/lib/courseData";
 import { tField } from "@/lib/localize";
 import { continueTarget, type CourseLearning } from "./learningProgress";
 import { PETAL, PULSE_HALF, PULSE_VIEWBOX, fillRadius, markerPlacement, petalAngle, petalPath, wedgePath } from "./learningPulseGeometry";
-import { FILL_START, FINAL_EXAM_HREF, chapterHref, continueAction, coursePercent, mapMarkers, petalLinkName, petalModels, pulseSummary, resumeSelector } from "./learningPulseModel";
+import { FILL_START, FINAL_EXAM_HREF, chapterHref, continueAction, coursePercent, mapMarkers, petalLinkName, petalModels, pulseSummary, resumeSelector, scrollToResumeTarget } from "./learningPulseModel";
 
 // שכבות העלה: גוף זכוכית, ברק צדדי, חומר ההתקדמות (באותה צורה, מעט פנימה) עם ליבה בהירה, וצומת.
 const TRACK = petalPath();
@@ -516,7 +516,7 @@ export function ContinueLink({ course, currentChapterId, onNavigate }: {
         if (here === null) return;
         e.preventDefault();
         const selector = resumeSelector(action.href.slice(chapterHref(here).length), here) ?? "#chapter-main";
-        document.querySelector(selector)?.scrollIntoView({ block: "start", behavior: "instant" });
+        scrollToResumeTarget(selector);
     };
     return (
         <Link
