@@ -13,8 +13,8 @@ export const chapterQuiz = {
     nextQuestionLabel: 'Следующий вопрос',
 
     title: (chapterName: string) => `Тест на понимание: ${chapterName}`,
-    reviewLinkLabel: (chapterNumber: number, chapterName: string) =>
-        `Назад к главе ${chapterNumber}: ${chapterName}`,
+    reviewLinkLabel: (chapterNumber: number) =>
+        `Вернуться к учебному материалу главы ${chapterNumber}`,
 
     chapterNames: {
         1: 'Прозрачный чат',

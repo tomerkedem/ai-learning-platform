@@ -13,8 +13,8 @@ export const chapterQuiz = {
     nextQuestionLabel: '次の問い',
 
     title: (chapterName: string) => `理解度テスト: ${chapterName}`,
-    reviewLinkLabel: (chapterNumber: number, chapterName: string) =>
-        `第${chapterNumber}章に戻る: ${chapterName}`,
+    reviewLinkLabel: (chapterNumber: number) =>
+        `第${chapterNumber}章の学習内容に戻る`,
 
     chapterNames: {
         1: '透明なチャット',

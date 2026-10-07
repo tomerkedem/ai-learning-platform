@@ -182,7 +182,7 @@ export default function BehindTheScenesChapter5() {
                   const n = match ? Number(match[1]) : null;
                   const name = n != null ? cq.chapterNames[n] : undefined;
                   if (n == null || !name) return link;
-                  return { ...link, label: cq.reviewLinkLabel(n, name) };
+                  return { ...link, label: cq.reviewLinkLabel(n) };
               })
         : undefined;
 

@@ -14,8 +14,8 @@ export const chapterQuiz = {
     nextQuestionLabel: 'السؤال التالي',
 
     title: (chapterName: string) => `اختبار فهم: ${chapterName}`,
-    reviewLinkLabel: (chapterNumber: number, chapterName: string) =>
-        `العودة إلى الفصل ${chapterNumber}: ${chapterName}`,
+    reviewLinkLabel: (chapterNumber: number) =>
+        `العودة إلى المادة التعليمية في الفصل ${chapterNumber}`,
 
     chapterNames: {
         1: 'المحادثة الشفافة',

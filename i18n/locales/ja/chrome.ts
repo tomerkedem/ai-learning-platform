@@ -97,7 +97,7 @@ export const chrome: typeof heChrome = {
         timeLabel: '時間',
         strongConcepts: '得意なところ',
         weakConcepts: '強化したいところ',
-        recommendedReview: 'おすすめの復習',
+        recommendedReview: '学習内容を復習しましょう',
         reviewAnswers: '解答を確認する',
         retry: 'もう一度',
         loading: '読み込み中',

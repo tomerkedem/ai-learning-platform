@@ -97,7 +97,7 @@ export const chrome: typeof heChrome = {
         timeLabel: 'Время',
         strongConcepts: 'Сильные стороны',
         weakConcepts: 'Стоит подтянуть',
-        recommendedReview: 'Рекомендуемое повторение',
+        recommendedReview: 'Повторите учебный материал',
         reviewAnswers: 'Просмотр ответов',
         retry: 'Ещё раз',
         loading: 'Загрузка',

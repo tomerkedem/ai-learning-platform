@@ -97,7 +97,7 @@ export const chrome: typeof heChrome = {
         timeLabel: 'الوقت',
         strongConcepts: 'قوي لديك',
         weakConcepts: 'يستحسن تقويته',
-        recommendedReview: 'مراجعة مقترحة',
+        recommendedReview: 'يُنصح بمراجعة المادة التعليمية',
         reviewAnswers: 'مراجعة الإجابات',
         retry: 'حاول مجددًا',
         loading: 'جارٍ التحميل',

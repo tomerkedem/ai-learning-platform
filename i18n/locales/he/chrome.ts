@@ -113,7 +113,7 @@ export const chrome = {
         timeLabel: 'זמן',
         strongConcepts: 'חזק אצלך',
         weakConcepts: 'כדאי לחזק',
-        recommendedReview: 'חזרה מומלצת',
+        recommendedReview: 'מומלץ לחזור על החומר',
         reviewAnswers: 'סקירת תשובות',
         retry: 'ניסיון חוזר',
         // תוצאת מבדק שעוד לא ידועה (שם נגיש לכרטיס ההמתנה)

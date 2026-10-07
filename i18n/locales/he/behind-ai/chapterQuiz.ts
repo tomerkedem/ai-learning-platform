@@ -22,9 +22,9 @@ export const chapterQuiz = {
     /** כותרת המבדק: "מבדק הבנה: {שם הפרק}". */
     title: (chapterName: string) => `מבדק הבנה: ${chapterName}`,
 
-    /** תווית קישור חזרה ממוקד: "חזרה לפרק {n}: {שם הפרק}". */
-    reviewLinkLabel: (chapterNumber: number, chapterName: string) =>
-        `חזרה לפרק ${chapterNumber}: ${chapterName}`,
+    /** תווית קישור חזרה ממוקד: "חזרה לחומר הלימוד בפרק {n}". */
+    reviewLinkLabel: (chapterNumber: number) =>
+        `חזרה לחומר הלימוד בפרק ${chapterNumber}`,
 
     /** שמות הפרקים (1..16), זהים ל-CHAPTER_LABELS שב-quizData.ts. */
     chapterNames: {
