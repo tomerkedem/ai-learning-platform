@@ -178,6 +178,8 @@ export const chrome: typeof heChrome = {
         },
         expand: '学習パルスを展開',
         collapse: '学習パルスを折りたたむ',
+        mapLabel: '章マップ',
+        mapKeys: '矢印キーで章の間を移動します。Home と End で最初と最後の章へ移動します。Enter で章を開きます。',
         titled: (chapter, title) => `${chapter}「${title}」`,
         sentences: (parts) => `${parts.join('。')}。`,
         masteredSummary: (mastered, total) => `合格したテスト：${total}件中${mastered}件`,

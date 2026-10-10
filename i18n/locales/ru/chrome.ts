@@ -178,6 +178,8 @@ export const chrome: typeof heChrome = {
         },
         expand: 'Развернуть Пульс обучения',
         collapse: 'Свернуть Пульс обучения',
+        mapLabel: 'Карта глав',
+        mapKeys: 'Стрелки перемещают между главами. Home и End переходят к первой и последней главе. Enter открывает главу.',
         titled: (chapter, title) => `${chapter}, ${title}`,
         sentences: (parts) => `${parts.join('. ')}.`,
         masteredSummary: (mastered, total) => `Сдано тестов: ${mastered} из ${total}`,

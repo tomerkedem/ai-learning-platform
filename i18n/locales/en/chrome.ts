@@ -178,6 +178,8 @@ export const chrome: typeof heChrome = {
         },
         expand: 'Expand Learning Pulse',
         collapse: 'Collapse Learning Pulse',
+        mapLabel: 'Chapter map',
+        mapKeys: 'Arrow keys move between chapters. Home and End jump to the first and last chapter. Enter opens the chapter.',
         titled: (chapter, title) => `${chapter}, ${title}`,
         sentences: (parts) => `${parts.join('. ')}.`,
         masteredSummary: (mastered, total) => `${mastered} of ${total} quizzes passed`,

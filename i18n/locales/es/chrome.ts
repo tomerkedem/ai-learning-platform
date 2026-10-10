@@ -178,6 +178,8 @@ export const chrome: typeof heChrome = {
         },
         expand: 'Expandir el Pulso de aprendizaje',
         collapse: 'Contraer el Pulso de aprendizaje',
+        mapLabel: 'Mapa de capítulos',
+        mapKeys: 'Las flechas se mueven entre capítulos. Inicio y Fin van al primero y al último. Intro abre el capítulo.',
         titled: (chapter, title) => `${chapter}, ${title}`,
         sentences: (parts) => `${parts.join('. ')}.`,
         masteredSummary: (mastered, total) => `${mastered} de ${total} tests aprobados`,

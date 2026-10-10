@@ -18,7 +18,7 @@ import { courses } from "@/lib/courseData";
 import { tField } from "@/lib/localize";
 import { continueTarget, type CourseLearning } from "./learningProgress";
 import { PETAL, PULSE_HALF, PULSE_VIEWBOX, fillRadius, markerPlacement, petalAngle, petalPath, wedgePath } from "./learningPulseGeometry";
-import { FILL_START, FINAL_EXAM_HREF, chapterHref, continueAction, coursePercent, mapMarkers, petalLinkName, petalModels, pulseSummary, resumeSelector, scrollToResumeTarget } from "./learningPulseModel";
+import { FILL_START, FINAL_EXAM_HREF, chapterHref, continueAction, coursePercent, mapMarkers, petalKeyTarget, petalLinkName, petalModels, pulseSummary, resumeSelector, scrollToResumeTarget } from "./learningPulseModel";
 
 // שכבות העלה: גוף זכוכית, ברק צדדי, חומר ההתקדמות (באותה צורה, מעט פנימה) עם ליבה בהירה, וצומת.
 const TRACK = petalPath();
@@ -29,6 +29,8 @@ const NODE_Y = -PETAL.outerRadius;
 const EASE = "transition-[opacity,transform,fill,stroke] duration-500 ease-out motion-reduce:transition-none";
 // אורך החומר משתנה דרך d (Chromium ו-Firefox מנפישים; בדפדפן אחר העדכון מיידי).
 const GROW = "transition-[d,opacity] duration-500 ease-out motion-reduce:transition-none";
+// חזית צבע העלה המלא (מעגל ממורכז שנחתך לצללית העלה): הרדיוס משתנה, בלי אנימציה כשמעדיפים תנועה מופחתת.
+const WASH = "transition-[r,opacity] duration-500 ease-out motion-reduce:transition-none";
 const R_OUT = PETAL.outerRadius + PETAL.outerHalfWidth;
 // מפת הקורס: מספר פרק מחוץ לעלה (markerPlacement), ותיאור צף מעבר למספר.
 // אזור הלחיצה: מחוץ לעיגול המרכז ועד מעבר למספר, ברוחב זווית של עלה אחד.
@@ -45,7 +47,7 @@ export const chapterTitle = (chapterId: number, locale: Parameters<typeof tField
     return chapter ? tField(chapter.title, locale) : "";
 };
 
-const stop = (offset: number, color: string, opacity?: number) =>
+const stop = (offset: number, color: string, opacity?: number | string) =>
     <stop offset={offset} style={{ stopColor: color, ...(opacity === undefined ? {} : { stopOpacity: opacity }) }} />;
 
 /**
@@ -65,12 +67,19 @@ export function PulseGraphic({ course, currentId, focusedId = null, centerLabel 
         /** pointer = מיקום הסמן בכניסה לעלה (לתיאור הצף); בלי = מיקוד מקלדת. */
         onActive: (chapterId: number | null, pointer?: { x: number; y: number }) => void;
         onOpen: (chapterId: number, e: React.MouseEvent) => void;
+        /** שם הקבוצה והוראות המקלדת (מוקראים פעם אחת בכניסה לקבוצה). */
+        label: string;
+        keys: string;
     };
 }) {
     const id = useId().replace(/[^a-zA-Z0-9]/g, "");
     const activeId = map?.activeId ?? null;
     // ריחוף/מיקוד על עלה מקבל את אותה הדגשת תצוגה מקדימה כמו ריחוף על כרטיס פרק.
     const petals = petalModels(course, currentId, activeId ?? focusedId);
+    // roving tabindex: עלה אחד בלבד בסדר ה-Tab. הכניסה הראשונה לקבוצה היא פרק 1; אחר כך העלה האחרון שקיבל מיקוד.
+    // שאר העלים ממוקדים בחצים. Tab ו-Shift+Tab יוצאים מהקבוצה כרגיל.
+    const [stopId, setStopId] = useState<number | null>(null);
+    const tabId = petals.some((p) => p.chapterId === stopId) ? stopId : petals[0]?.chapterId;
     const url = (k: string) => `url(#${id}${k})`;
     return (
         <svg viewBox={PULSE_VIEWBOX} focusable="false" className="block size-full overflow-visible">
@@ -88,6 +97,12 @@ export function PulseGraphic({ course, currentId, focusedId = null, centerLabel 
                 <linearGradient id={`${id}f`} gradientUnits="userSpaceOnUse" x1="0" y1={-FILL_START} x2="0" y2={-FILL_END}>
                     {stop(0, "var(--lp-fill-a)")}{stop(0.5, "var(--lp-fill-b)")}{stop(1, "var(--lp-fill-c)")}
                 </linearGradient>
+                {/* צללית העלה (אותו TRACK) כחיתוך אחד לכל העלים: הקבוצה המסובבת של כל עלה מסובבת גם אותו. */}
+                <clipPath id={`${id}p`}><path d={TRACK} /></clipPath>
+                {/* צבע העלה המלא: רדיאלי ממרכז הפולס (העלים מסתובבים סביבו), מהבסיס אל הקצה, באותם גוונים של מילוי ההתקדמות. */}
+                <radialGradient id={`${id}w`} gradientUnits="userSpaceOnUse" cx="0" cy="0" r={R_OUT}>
+                    {stop(FILL_START / R_OUT, "var(--lp-fill-a)", "var(--lp-wash-in)")}{stop(0.62, "var(--lp-fill-b)", "var(--lp-wash-mid)")}{stop(1, "var(--lp-fill-c)", "var(--lp-wash-out)")}
+                </radialGradient>
                 <radialGradient id={`${id}a`}>
                     {stop(0.3, "var(--lp-aura)")}{stop(1, "var(--lp-aura)", 0)}
                 </radialGradient>
@@ -115,6 +130,14 @@ export function PulseGraphic({ course, currentId, focusedId = null, centerLabel 
                                 d={TRACK} fill={url(p.current ? "tc" : "t")} strokeWidth={p.complete || p.current ? 1.1 : 0.6}
                                 className={`${EASE} ${p.complete || p.current ? "stroke-[var(--lp-track-complete-edge)]" : "stroke-[var(--lp-track-edge)]"} forced-colors:fill-[Canvas] forced-colors:stroke-[CanvasText]`}
                             />
+                            {p.wash > 0 && (
+                                <g className="[filter:var(--lp-wash-filter)] forced-colors:hidden">
+                                    <g clipPath={url("p")}>
+                                        <circle r={p.wash} style={{ r: `${p.wash}px` }} fill={url("w")} className={WASH} />
+                                        {!p.complete && <circle r={p.wash} style={{ r: `${p.wash}px` }} fill="none" strokeWidth={1.2} className={`${WASH} stroke-[var(--lp-wash-edge)]`} />}
+                                    </g>
+                                </g>
+                            )}
                             <path d={SHEEN} fill={url("s")} className="forced-colors:hidden" />
                             {p.fillPath && (
                                 <g className="[filter:drop-shadow(0_0_4px_var(--lp-fill-glow))] forced-colors:[filter:none]">
@@ -144,6 +167,27 @@ export function PulseGraphic({ course, currentId, focusedId = null, centerLabel 
             </g>
             </g>
             {map && (
+                <g
+                    className="lp-map"
+                    role="group"
+                    aria-label={map.label}
+                    aria-describedby={`${id}k`}
+                    data-owns-keys=""
+                    onKeyDown={(e) => {
+                        if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+                        const link = e.target instanceof Element ? e.target.closest<SVGAElement>("a[data-petal]") : null;
+                        if (!link) return;
+                        const to = petalKeyTarget(e.key, petals.findIndex((p) => p.chapterId === Number(link.dataset.petal)), petals.length);
+                        if (to === null) return;
+                        // החצים שייכים לקבוצה: רק מזיזים מיקוד, בלי ניווט ובלי קיצור הפרקים של העמוד (חלון).
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const chapterId = petals[to].chapterId;
+                        setStopId(chapterId);
+                        e.currentTarget.querySelector<SVGAElement>(`a[data-petal="${chapterId}"]`)?.focus();
+                    }}
+                >
+                <desc id={`${id}k`}>{map.keys}</desc>
                 <g className="lp-map">
                     {/* מספרי הפרקים: זקופים, מחוץ לעלה ובהמשך הציר שלו. direction="ltr": העיגון (start/end) פיזי
                         בכל שפה, כך שבעמוד RTL המספר לא נמתח בחזרה אל העלה. */}
@@ -165,16 +209,19 @@ export function PulseGraphic({ course, currentId, focusedId = null, centerLabel 
                             href={chapterHref(p.chapterId)}
                             aria-label={map.nameOf(p.chapterId)}
                             aria-current={p.current ? "page" : undefined}
+                            data-petal={p.chapterId}
+                            tabIndex={p.chapterId === tabId ? 0 : -1}
                             className="pointer-events-auto outline-none"
                             onClick={(e) => map.onOpen(p.chapterId, e)}
                             onMouseEnter={(e) => map.onActive(p.chapterId, { x: e.clientX, y: e.clientY })}
                             onMouseLeave={() => map.onActive(null)}
-                            onFocus={() => map.onActive(p.chapterId)}
+                            onFocus={() => { setStopId(p.chapterId); map.onActive(p.chapterId); }}
                             onBlur={() => map.onActive(null)}
                         >
                             <path d={HIT} transform={p.transform} fill="transparent" />
                         </a>
                     ))}
+                </g>
                 </g>
             )}
         </svg>
@@ -277,9 +324,9 @@ export function LearningPulsePanel(props: LearningPulsePanelProps) {
             <div className="lp-art">
                 <PulseGraphic
                     course={course} currentId={currentChapterId} focusedId={previewChapterId} centerLabel={p.chapters} label={summary}
-                    map={{ activeId, nameOf, onActive, onOpen: openChapter }}
+                    map={{ activeId, nameOf, onActive, onOpen: openChapter, label: p.mapLabel, keys: p.mapKeys }}
                 />
-                {activeId !== null && <PetalTip chapterId={activeId} pointer={pointer} markSize={MARK_SIZE[mapMarkers(currentChapterId, activeId).find((m) => m.chapterId === activeId)?.kind ?? "active"]} text={nameOf(activeId)} dir={dir} />}
+                {activeId !== null && <PetalTip chapterId={activeId} pointer={pointer} markSize={MARK_SIZE[mapMarkers(currentChapterId, activeId).find((m) => m.chapterId === activeId)?.kind ?? "active"]} text={nameOf(activeId)} hint={p.mapKeys} dir={dir} />}
             </div>
             {/* שורת הכותרת. במצב המכווץ היא כרטיס עצמאי (lp-head::before), נפרד מכרטיס מבחן הסיום. */}
             <div className="lp-head flex w-full items-center gap-1.5 text-start">
@@ -339,8 +386,8 @@ const TIP_EDGE = 8;
  * פנימה כך שכולו בתוך הסרגל; המיקום נקבע לפני הציור (useLayoutEffect), בלי רינדור נוסף. במיקוד מקלדת
  * (אין סמן): מעבר למספר הפרק (לעולם לא מעליו), מעל בחצי העליון ומתחת בתחתון. aria-hidden: השם על הקישור.
  */
-function PetalTip({ chapterId, pointer, markSize, text, dir }: {
-    chapterId: number; pointer: { x: number; y: number } | null; markSize: number; text: string; dir: "rtl" | "ltr";
+function PetalTip({ chapterId, pointer, markSize, text, hint, dir }: {
+    chapterId: number; pointer: { x: number; y: number } | null; markSize: number; text: string; hint: string; dir: "rtl" | "ltr";
 }) {
     const ref = useRef<HTMLSpanElement>(null);
     useLayoutEffect(() => {
@@ -366,7 +413,7 @@ function PetalTip({ chapterId, pointer, markSize, text, dir }: {
             ref={ref}
             aria-hidden="true"
             dir={dir}
-            className="lp-map pointer-events-none absolute z-10 max-w-[200px] truncate whitespace-nowrap rounded-md border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-elevated)] px-2 py-0.5 text-[11.5px] font-semibold leading-5 text-[var(--bts-text-primary)] shadow-[0_6px_16px_-6px_rgb(0_0_0/0.45)] forced-colors:border-[CanvasText]"
+            className={`lp-map pointer-events-none absolute z-10 ${pointer ? "max-w-[200px]" : "max-w-[240px]"} rounded-md border border-[var(--bts-border-emphasis)] bg-[var(--bts-surface-elevated)] px-2 py-0.5 text-[11.5px] font-semibold leading-5 text-[var(--bts-text-primary)] shadow-[0_6px_16px_-6px_rgb(0_0_0/0.45)] forced-colors:border-[CanvasText] ${pointer ? "truncate whitespace-nowrap" : ""}`}
             style={pointer ? undefined : {
                 left: (pt.x + PULSE_HALF) * k,
                 top: (pt.y + PULSE_HALF) * k,
@@ -374,6 +421,8 @@ function PetalTip({ chapterId, pointer, markSize, text, dir }: {
             }}
         >
             {text}
+            {/* מיקוד מקלדת בלבד: הוראות המקשים גלויות. אותו טקסט מוקרא פעם אחת כתיאור הקבוצה (aria-describedby). */}
+            {!pointer && <span className="mt-0.5 block whitespace-normal text-[10.5px] font-normal leading-4 text-[var(--bts-text-secondary)]">{hint}</span>}
         </span>
     );
 }

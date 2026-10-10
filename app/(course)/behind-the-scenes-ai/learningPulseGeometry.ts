@@ -173,6 +173,18 @@ export function fillPath(front: number, inset: number, shape: PetalShape = PETAL
 }
 
 /**
+ * חזית הצבע של כל צללית העלה (לא רק המילוי הפנימי): רדיוס מעגל ממורכז שנחתך לצורת העלה, מהקצה הפנימי של
+ * העלה (0 = אין צבע) עד הקצה החיצוני שלו ב-1, כך שבשיעור מלא כל העלה צבוע. היחס נחתך ל-0..1, ערך לא תקין = 0.
+ */
+export function washRadius(ratio: number, shape: PetalShape = PETAL): number {
+    if (!(ratio > 0)) return 0;
+    const t = Math.min(1, ratio);
+    const start = shape.innerRadius - shape.innerHalfWidth;
+    const end = shape.outerRadius + shape.outerHalfWidth;
+    return round(start + t * (end - start));
+}
+
+/**
  * רדיוס מעגל החיתוך של מילוי ההתקדמות (מעגל ממורכז). 0 = אין מילוי. היחס נחתך ל-0..1, וערך לא
  * תקין נחשב 0. ב-1 המילוי נעצר ממש לפני צומת השליטה, כך שהמילוי והשליטה לעולם אינם מתמזגים.
  */

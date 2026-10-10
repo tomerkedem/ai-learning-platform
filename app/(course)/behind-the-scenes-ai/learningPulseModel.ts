@@ -7,7 +7,7 @@
 
 import type { ChapterLearning, ContinueTarget, CourseLearning } from "./learningProgress";
 import { isLearningUnit, progressBand } from "./learningProgress";
-import { PETAL, fillPath, fillRadius, petalTransform } from "./learningPulseGeometry";
+import { PETAL, fillPath, fillRadius, petalTransform, washRadius } from "./learningPulseGeometry";
 
 /** מחרוזות chrome.pulse (נמסרות מבחוץ, כך שהמודל אינו תלוי במנגנון המילון). */
 /** אחוז התקדמות הלמידה בקורס, 0..100, מעוגל כלפי מטה: 100 רק כשהגיעו לכל היחידות הרשומות. */
@@ -72,6 +72,8 @@ export interface PetalModel {
     fill: number;
     /** צורת חומר ההתקדמות (קפסולה עם חזית מעוגלת), או "" כשאין מילוי. */
     fillPath: string;
+    /** חזית הצבע של כל צללית העלה (0 = בלי צבע); 100% = כל העלה. נגזר מאותו יחס התקדמות, לא מהשליטה. */
+    wash: number;
     /** הליבה הבהירה: קו לאורך הציר עד ממש לפני החזית, או "". */
     corePath: string;
     complete: boolean;
@@ -88,6 +90,12 @@ export const FILL_INSET = 2.2;
 const corePath = (front: number) =>
     front - 5 > PETAL.innerRadius ? `M0 ${-PETAL.innerRadius}L0 ${-(front - 5)}` : "";
 
+/** כמו fillExtent: כל התקדמות מעל אפס נראית (לפחות FILL_MIN_VISIBLE), ו-1 צובע את כל העלה. */
+export function washExtent(ratio: number): number {
+    if (!(ratio > 0)) return 0;
+    return Math.max(washRadius(ratio), FILL_START + FILL_MIN_VISIBLE);
+}
+
 export function fillExtent(ratio: number): number {
     if (!(ratio > 0)) return 0;
     return Math.max(fillRadius(ratio), FILL_START + FILL_MIN_VISIBLE);
@@ -99,6 +107,7 @@ export function petalModels(course: CourseLearning, currentId: number | null, fo
         chapterId: c.chapterId,
         transform: petalTransform(c.chapterId),
         fill: fillExtent(c.learningProgressRatio),
+        wash: washExtent(c.learningProgressRatio),
         fillPath: c.learningProgressRatio > 0 ? fillPath(fillExtent(c.learningProgressRatio), FILL_INSET) : "",
         corePath: c.learningProgressRatio > 0 ? corePath(fillExtent(c.learningProgressRatio)) : "",
         complete: c.learningProgressRatio >= 1,
@@ -119,6 +128,26 @@ export function mapMarkers(currentId: number | null, activeId: number | null): M
     if (currentId !== null) marks.push({ chapterId: currentId, kind: "current" });
     if (activeId !== null && activeId !== 1 && activeId !== currentId) marks.push({ chapterId: activeId, kind: "active" });
     return marks;
+}
+
+/**
+ * ניווט מקלדת בין העלים (roving tabindex): אינדקס היעד למקש, או null כשהמקש אינו של הקבוצה. הטבעת סגורה,
+ * לכן גולשים בקצה. הכיוון מרחבי ולא תלוי בשפה, כמו הגאומטריה שאינה משתקפת ב-RTL: ימינה ולמטה = הפרק הבא (עם כיוון
+ * השעון מפרק 1 בשעה 12), שמאלה ולמעלה = הקודם.
+ */
+export function petalKeyTarget(key: string, index: number, count: number): number | null {
+    if (count <= 0 || index < 0 || index >= count) return null;
+    const next = (index + 1) % count;
+    const prev = (index - 1 + count) % count;
+    switch (key) {
+        case "ArrowRight":
+        case "ArrowDown": return next;
+        case "ArrowLeft":
+        case "ArrowUp": return prev;
+        case "Home": return 0;
+        case "End": return count - 1;
+        default: return null;
+    }
 }
 
 /** השם של עלה כקישור ניווט (וגם התיאור הצף): "פרק 6 - Attention", עם הכותרת הקצרה של כרטיסי הניווט. */

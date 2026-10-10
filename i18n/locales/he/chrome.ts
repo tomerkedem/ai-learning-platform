@@ -202,6 +202,8 @@ export const chrome = {
         },
         expand: 'הרחבת התקדמות בלמידה',
         collapse: 'כיווץ התקדמות בלמידה',
+        mapLabel: 'מפת הפרקים',
+        mapKeys: 'חצים עוברים בין הפרקים. Home ו-End עוברים לפרק הראשון ולאחרון. Enter פותח את הפרק.',
         // צירוף שם נגיש מחלקים. chapter = formatChapterLabel; title = שם הפרק.
         titled: (chapter: string, title: string) => `${chapter}, ${title}`,
         sentences: (parts: string[]) => `${parts.join('. ')}.`,

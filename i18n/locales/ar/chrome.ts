@@ -178,6 +178,8 @@ export const chrome: typeof heChrome = {
         },
         expand: 'توسيع نبض التعلّم',
         collapse: 'طيّ نبض التعلّم',
+        mapLabel: 'خريطة الفصول',
+        mapKeys: 'مفاتيح الأسهم تنقلك بين الفصول. مفتاحا Home وEnd ينتقلان إلى الفصل الأول والأخير. مفتاح Enter يفتح الفصل.',
         titled: (chapter, title) => `${chapter}، ${title}`,
         sentences: (parts) => `${parts.join('. ')}.`,
         masteredSummary: (mastered, total) => `الاختبارات المجتازة: ${mastered} من ${total}`,

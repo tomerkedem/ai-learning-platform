@@ -21,7 +21,8 @@ export async function resolve(specifier, context, next) {
 
 const { LEARNING_UNITS, continueTarget, courseLearning, mergeAttempt } = await import("./learningProgress.ts");
 const model = await import("./learningPulseModel.ts");
-const { PETAL, fillPath } = await import("./learningPulseGeometry.ts");
+const geometry = await import("./learningPulseGeometry.ts");
+const { PETAL, fillPath } = geometry;
 type QuizRecord = import("./learningProgress.ts").QuizRecord;
 type ReachedUnit = import("./learningProgress.ts").ReachedUnit;
 
@@ -104,7 +105,8 @@ test("one useful Pulse summary: mastered chapters and the current chapter, no un
     const pulse = source("LearningPulse.tsx");
     assert.equal(pulse.match(/role="img"/g)?.length, 1, "one semantic image");
     assert.match(pulse, /<svg viewBox=\{PULSE_VIEWBOX\} focusable="false"[^>]*>\s*<g role="img" aria-label=\{label\}>/, "the drawing is one image named by the summary");
-    assert.doesNotMatch(pulse, /tabIndex/, "no extra tab stops: only the course-map links are focusable");
+    // Roving tabindex: the course-map links are one Tab stop (the others are reached with the arrow keys), never extra stops.
+    assert.deepEqual([...pulse.matchAll(/tabIndex={[^}]*}/g)].map((m) => m[0]), ["tabIndex={p.chapterId === tabId ? 0 : -1}"], "no extra tab stops: only the roving course-map link is focusable");
     assert.doesNotMatch(pulse, /FocusStrip|LearningTrail/, "no focus strip and no continuous trail remain");
 });
 
@@ -412,7 +414,7 @@ test("course map: only in Expanded; Compact has no petal links, numbers or toolt
     assert.match(css, /\.lp-panel\[data-layout="compact"\] \.lp-map \{ visibility: hidden; \}/, "hidden = not focusable, not clickable");
     assert.match(css, /@media not \(\(min-width: 768px\) and \(min-height: 800px\)\) \{\s*\.lp-panel\[data-layout="auto"\] \.lp-map \{ visibility: hidden; \}/);
     const pulse = source("LearningPulse.tsx");
-    assert.match(pulse, /function PetalTip[\s\S]*?className="lp-map /, "the tooltip is part of the hidden map layer");
+    assert.match(pulse, /function PetalTip[\s\S]*?className=\{`lp-map /, "the tooltip is part of the hidden map layer");
     assert.match(pulse, /if \(seenLayout !== layout\) \{\s*setSeenLayout\(layout\);\s*setActiveId\(null\);/, "a state change clears hover/focus");
 });
 
@@ -509,4 +511,100 @@ test("resume: consumed once on arrival, jumped to (no smooth pass over units), t
     assert.match(link, /scrollToResumeTarget\(selector\);/, "same jump as arriving from another page");
     assert.doesNotMatch(link, /scrollIntoView/);
     assert.doesNotMatch(link, /focus\(|pushState|replaceState|fetch|useLearner/, "no focus move, history entry or extra learner read");
+});
+
+test("petal keyboard: arrows only move focus around the closed ring (clockwise = next, same in every locale), Tab is not handled", () => {
+    const n = 19;
+    assert.equal(model.petalKeyTarget("ArrowRight", 4, n), 5);
+    assert.equal(model.petalKeyTarget("ArrowDown", 4, n), 5);
+    assert.equal(model.petalKeyTarget("ArrowLeft", 4, n), 3);
+    assert.equal(model.petalKeyTarget("ArrowUp", 4, n), 3);
+    assert.equal(model.petalKeyTarget("ArrowRight", n - 1, n), 0, "the ring wraps after Chapter 19");
+    assert.equal(model.petalKeyTarget("ArrowLeft", 0, n), n - 1, "and before Chapter 1");
+    assert.equal(model.petalKeyTarget("Home", 7, n), 0);
+    assert.equal(model.petalKeyTarget("End", 7, n), n - 1);
+    // keys the group does not own (Tab, Enter, Space, letters) and bad input fall through untouched
+    for (const key of ["Tab", "Enter", " ", "Escape", "a", "PageDown"]) assert.equal(model.petalKeyTarget(key, 4, n), null, key);
+    assert.equal(model.petalKeyTarget("ArrowRight", -1, n), null);
+    assert.equal(model.petalKeyTarget("ArrowRight", n, n), null);
+    assert.equal(model.petalKeyTarget("ArrowRight", 0, 0), null);
+});
+
+test("petal keyboard wiring: one roving tab stop, the group owns its arrows, activation stays the link's own", () => {
+    const pulse = source("LearningPulse.tsx");
+    const graphic = pulse.slice(pulse.indexOf("export function PulseGraphic"), pulse.indexOf("export function MasteryNode"));
+    const map = graphic.slice(graphic.indexOf("data-owns-keys"));
+    assert.ok(map.includes('data-owns-keys=""'), "the page chapter shortcut stands down inside the group");
+    assert.ok(map.includes("petalKeyTarget(e.key,"), "keys are resolved by the pure helper");
+    assert.ok(map.replace(/\s+/g, " ").includes("e.preventDefault(); e.stopPropagation();"), "arrows are consumed: no scroll, no window shortcut");
+    assert.ok(map.includes("onFocus={() => { setStopId(p.chapterId); map.onActive(p.chapterId); }}"), "focus keeps the roving stop and the existing highlight and tooltip");
+    const handler = map.slice(map.indexOf("onKeyDown"), map.indexOf('<g className="lp-map">'));
+    for (const word of ["router", "push", "click(", "onOpen", "href"]) assert.ok(!handler.includes(word), `arrow keys never navigate (${word})`);
+    assert.ok(!/"Tab"|'Tab'|"Enter"|' '/.test(handler), "Tab, Enter and Space are not intercepted");
+    assert.ok(map.indexOf("href={chapterHref(p.chapterId)}") > 0 && map.indexOf("onClick={(e) => map.onOpen(p.chapterId, e)}") > map.indexOf("href={chapterHref(p.chapterId)}"), "mouse and Enter activation unchanged");
+});
+
+// ── Full-petal progress wash (the whole silhouette, from the same persisted progress ratio) ──
+
+test("petal wash: 0 is empty, any progress shows, proportional from base to tip, 100% reaches the outer edge", () => {
+    const { washRadius } = geometry;
+    const start = PETAL.innerRadius - PETAL.innerHalfWidth;
+    const tip = PETAL.outerRadius + PETAL.outerHalfWidth;
+    assert.equal(washRadius(0), 0);
+    for (const bad of [-1, Number.NaN, Number.NEGATIVE_INFINITY]) assert.equal(washRadius(bad), 0, String(bad));
+    assert.equal(washRadius(1), tip, "100% colors the whole petal, up to its outer edge");
+    assert.equal(washRadius(5), tip, "a ratio above 1 is clamped");
+    assert.equal(washRadius(0.5), +(start + 0.5 * (tip - start)).toFixed(3), "linear between the inner edge and the tip");
+    let prev = 0;
+    for (const r of [0.01, 0.1, 0.25, 0.5, 0.75, 0.99, 1]) { assert.ok(washRadius(r) > prev, `monotonic at ${r}`); prev = washRadius(r); }
+    // the visible floor matches the inner material: a first reached unit is always seen
+    assert.equal(model.washExtent(0), 0);
+    assert.ok(model.washExtent(0.001) >= model.FILL_START + model.FILL_MIN_VISIBLE);
+    assert.equal(model.washExtent(1), tip);
+});
+
+test("petal wash comes from learning progress only: independent of mastery, same persisted data as the inner fill", () => {
+    const p = model.petalModels(course, null, null);
+    const tip = PETAL.outerRadius + PETAL.outerHalfWidth;
+    assert.equal(p[4].wash, 0, "chapter 5 untouched: neutral petal");
+    assert.ok(p[7].wash > model.FILL_START && p[7].wash < tip, "chapter 8 at 90%: partial");
+    assert.ok(p[13].wash > model.FILL_START && p[13].wash < p[7].wash, "chapter 14 at 25%: shorter than 90%, even though it is mastered");
+    assert.equal(p[2].wash, tip, "chapter 3 fully reached, mastery not earned: fully colored");
+    assert.equal(p[0].wash, tip, "chapter 1 fully reached and mastered: the same full color");
+    assert.equal(p[2].wash, p[0].wash, "mastery never changes the wash");
+    // same ratio as the inner fill and the complete flag: wash > 0 exactly when the inner fill exists
+    p.forEach((x) => assert.equal(x.wash > 0, x.fill > 0, `chapter ${x.chapterId}`));
+    p.forEach((x) => assert.equal(x.wash === tip, x.complete, `chapter ${x.chapterId}`));
+    // changing only mastery (same units, no records) leaves every wash unchanged
+    const noMastery = model.petalModels(courseLearning([...units(8, 9), ...units(14, 2), ...full(3), ...full(1)], []), null, null);
+    assert.deepEqual(noMastery.map((x) => x.wash), p.map((x) => x.wash));
+});
+
+test("petal wash rendering: one shared silhouette clip, theme variables, no duplicate geometry, reduced motion, forced colors", () => {
+    const pulse = source("LearningPulse.tsx");
+    const graphic = pulse.slice(pulse.indexOf("export function PulseGraphic"), pulse.indexOf("export function MasteryNode"));
+    assert.ok(graphic.includes("<clipPath id={`${id}p`}><path d={TRACK} /></clipPath>"), "the clip is the existing petal path, defined once");
+    assert.equal([...graphic.matchAll(/<clipPath/g)].length, 1, "one clip for all 19 petals");
+    const wash = graphic.slice(graphic.indexOf("{p.wash > 0 && ("), graphic.indexOf('<path d={SHEEN}'));
+    assert.ok(wash.includes('clipPath={url("p")}'), "clipped to the petal silhouette");
+    assert.ok(wash.includes("r={p.wash}"), "radius from the model's wash only");
+    assert.ok(!wash.includes("mastered"), "never reads mastery");
+    assert.ok(wash.includes("forced-colors:hidden"), "removed in forced colors (the inner fill keeps its system colors)");
+    assert.ok(pulse.includes('const WASH = "transition-[r,opacity] duration-500 ease-out motion-reduce:transition-none"'), "no motion for reduced-motion users");
+    assert.ok(graphic.indexOf("{p.wash > 0 && (") > graphic.indexOf("d={TRACK} fill=") && graphic.indexOf("{p.wash > 0 && (") < graphic.indexOf('<path d={SHEEN}'), "above the glass body, under the sheen and the inner fill");
+    const css = readFileSync(join(HERE, "..", "..", "globals.css"), "utf8");
+    assert.equal([...css.matchAll(/--lp-wash-in:/g)].length, 2, "tuned separately for Dark and Light");
+    assert.equal([...css.matchAll(/--lp-wash-edge:/g)].length, 2);
+});
+
+test("keyboard hint copy: group name and instructions exist in all six locales, distinct, without long dashes", () => {
+    const dash = [String.fromCharCode(0x2014), String.fromCharCode(0x2013)];
+    const keys = new Set<string>();
+    for (const l of LOCALES) {
+        const p = copies[l] as ChromeDict["pulse"] & { mapLabel: string; mapKeys: string };
+        assert.ok(p.mapLabel.trim().length > 1 && p.mapKeys.trim().length > 20, l);
+        for (const d of dash) assert.ok(!p.mapLabel.includes(d) && !p.mapKeys.includes(d), `${l} has no long dash`);
+        keys.add(p.mapKeys);
+    }
+    assert.equal(keys.size, 6, "each locale has its own text");
 });

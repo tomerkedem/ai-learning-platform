@@ -330,6 +330,12 @@
   --lp-fill-c: #8b5cf6;
   --lp-fill-core: rgb(240 249 255 / 0.7);
   --lp-fill-glow: rgb(56 189 248 / 0.5);
+  /* צבע כל העלה לפי ההתקדמות: שקיפויות לאורך העלה (בסיס, אמצע, קצה) וקו חזית רך. Dark: זוהר שקוף שנשאר זכוכית. */
+  --lp-wash-in: 0.66;
+  --lp-wash-mid: 0.52;
+  --lp-wash-out: 0.48;
+  --lp-wash-edge: rgb(186 230 253 / 0.7);
+  --lp-wash-filter: none;
   --lp-node-fill: #0b1430;
   --lp-node-empty: rgb(148 163 200 / 0.6);
   --lp-mastery: #34d399;
@@ -409,6 +415,12 @@
   --lp-fill-c: #7c3aed;
   --lp-fill-core: rgb(255 255 255 / 0.45);
   --lp-fill-glow: transparent;
+  /* Light: גוונים רוויים יותר על משטח בהיר, ולכן שקיפות נמוכה יותר וקו חזית כחול. */
+  --lp-wash-in: 0.64;
+  --lp-wash-mid: 0.52;
+  --lp-wash-out: 0.48;
+  --lp-wash-edge: rgb(30 64 175 / 0.7);
+  --lp-wash-filter: drop-shadow(0 1px 1.4px rgb(30 58 138 / 0.34));
   --lp-node-fill: #ffffff;
   --lp-node-empty: rgb(100 116 139 / 0.62);
   --lp-mastery: #059669;
