@@ -178,7 +178,7 @@ export const WordToNumberLab: React.FC = () => {
                                         type="button"
                                         onClick={() => resetTo(s.id)}
                                         aria-pressed={active}
-                                        className={`flex min-h-[44px] flex-col justify-center rounded-xl border px-3 py-1.5 text-start leading-tight transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
+                                        className={`flex min-h-[44px] flex-col justify-center rounded-xl border px-3 py-1.5 text-start leading-tight transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-cyan-400)_70%,transparent))] focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
                                             active ? `${sa.border} ${sa.bgTint}` : 'border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(40%_+_var(--bts-tint-mix)_*_0.6),transparent)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                         }`}
                                     >
@@ -193,7 +193,7 @@ export const WordToNumberLab: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={handleAutoType}
-                                    className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${a.border} ${a.bgTint} ${a.text} hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))]`}
+                                    className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl border px-3 py-2 text-sm font-bold transition-colors ${a.border} ${a.bgTint} ${a.text} hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-cyan-400)_70%,transparent))] focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))]`}
                                 >
                                     <Play size={14} /> {tx.typing.autoType}
                                     {isHe && <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.autoTypeLatin}</span>}
@@ -201,10 +201,10 @@ export const WordToNumberLab: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={handleReset}
-                                    className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(40%_+_var(--bts-tint-mix)_*_0.6),transparent)] px-3 py-2 text-sm font-bold text-[var(--bts-text-muted)] transition-colors hover:text-[var(--bts-text-body)] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))]"
+                                    className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(40%_+_var(--bts-tint-mix)_*_0.6),transparent)] px-3 py-2 text-sm font-bold text-[var(--bts-text-muted)] transition-colors hover:text-[var(--bts-text-body)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-cyan-400)_70%,transparent))] focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))]"
                                 >
                                     <RotateCcw size={14} /> {tx.typing.reset}
-                                    {isHe && <span className="text-[10px] font-medium uppercase opacity-70" dir="ltr">{tx.typing.resetLatin}</span>}
+                                    {isHe && <span className="text-[10px] font-medium uppercase" dir="ltr">{tx.typing.resetLatin}</span>}
                                 </button>
                             </div>
                         </div>
@@ -391,7 +391,7 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                                 type="button"
                                 onClick={() => onToggle(key === 'ids')}
                                 aria-pressed={active}
-                                className={`min-h-[44px] min-w-[44px] rounded-lg px-3.5 py-1 text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
+                                className={`min-h-[44px] min-w-[44px] rounded-lg px-3.5 py-1 text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-cyan-400)_70%,transparent))] focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
                                     active ? `${a.solid} ${a.solidText}` : 'text-[var(--bts-text-muted)] hover:text-[var(--bts-text-body)]'
                                 }`}
                             >
@@ -414,7 +414,7 @@ const IdSequenceViewer: React.FC<IdSequenceViewerProps> = ({ tokens, idView, sel
                                 key={`${tok}-${i}`}
                                 type="button"
                                 onClick={() => onSelect(tok)}
-                                className="flex flex-col items-center gap-1.5 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))]"
+                                className="flex flex-col items-center gap-1.5 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-cyan-400)_70%,transparent))] focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))]"
                             >
                                 {/* פאה מתחלפת: מילה <-> ID */}
                                 <span

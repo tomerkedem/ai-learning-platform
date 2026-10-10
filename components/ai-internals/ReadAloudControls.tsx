@@ -445,7 +445,7 @@ export function ReadAloudControls({
                                     <select
                                         value={ra.selectedVoiceURI ?? ''}
                                         onChange={(e) => ra.selectVoice(e.target.value || null)}
-                                        className="w-full max-w-full rounded-xl border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] px-3 py-2 text-sm text-[var(--bts-text-primary)] outline-none transition-colors focus:border-[var(--bts-brand-primary-strong)]/50"
+                                        className="w-full max-w-full rounded-xl border border-[var(--bts-border)] bg-[var(--bts-surface-inset)] px-3 py-2 text-sm text-[var(--bts-text-primary)] transition-colors focus:border-[var(--bts-brand-primary-strong)]/50"
                                     >
                                         <option value="">{labels.browserDefault}</option>
                                         {ra.voices.map((v) => (

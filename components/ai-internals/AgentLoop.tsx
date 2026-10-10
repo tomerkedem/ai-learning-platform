@@ -121,7 +121,7 @@ const EngineCore: React.FC<{
             <button
                 type="button"
                 onClick={onRun}
-                className="relative inline-flex items-center gap-1.5 rounded-full border border-cyan-300/55 bg-cyan-500/20 px-4 py-2 text-sm font-black text-white light:text-cyan-900! light:border-cyan-600/50 light:bg-cyan-500/15 shadow-[0_0_16px_-6px_rgba(34,211,238,0.6)] transition-all hover:scale-[1.04] hover:bg-cyan-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70"
+                className="relative inline-flex items-center gap-1.5 rounded-full border border-cyan-300/55 bg-cyan-500/20 px-4 py-2 text-sm font-black text-white light:text-cyan-900! light:border-cyan-600/50 light:bg-cyan-500/15 shadow-[0_0_16px_-6px_rgba(34,211,238,0.6)] transition-all hover:scale-[1.04] hover:bg-cyan-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-cyan-400)_70%,transparent))]"
             >
                 <Play size={14} className="fill-current" aria-hidden />
                 {completed ? replayLabel : runLabel}
@@ -471,7 +471,7 @@ export const AgentLoop: React.FC<{
                                         type="button"
                                         onClick={() => switchMode(m)}
                                         aria-pressed={on}
-                                        className={`relative z-10 flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-bold transition-colors duration-300 focus:outline-none focus-visible:ring-2 ${isA ? 'focus-visible:ring-purple-400/50' : 'focus-visible:ring-cyan-400/50'} ${on ? (isA ? 'text-[var(--bts-text-primary)]' : 'text-slate-950') : 'text-[var(--bts-text-muted)] hover:text-[var(--bts-text-secondary)]'}`}
+                                        className={`relative z-10 flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-bold transition-colors duration-300 focus:outline-none focus-visible:ring-2 ${isA ? 'focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-purple-400)_50%,transparent))]' : 'focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-cyan-400)_50%,transparent))]'} ${on ? (isA ? 'text-[var(--bts-text-primary)]' : 'text-slate-950') : 'text-[var(--bts-text-muted)] hover:text-[var(--bts-text-secondary)]'}`}
                                     >
                                         {on && (
                                             <motion.span

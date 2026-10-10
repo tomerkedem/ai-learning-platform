@@ -97,7 +97,7 @@ export const SemanticSpaceLab: React.FC<{ content: SemanticSpaceLabDict; dir: Di
                                 onClick={() => setExperiment(key)}
                                 aria-pressed={active}
                                 className={`inline-flex min-h-[44px] items-center rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${
-                                    active ? 'bg-violet-500 text-white' : 'text-[var(--bts-text-muted)] hover:text-[var(--bts-text-body)]'
+                                    active ? 'bg-violet-600 text-white' : 'text-[var(--bts-text-muted)] hover:text-[var(--bts-text-body)]'
                                 }`}
                             >
                                 {label}

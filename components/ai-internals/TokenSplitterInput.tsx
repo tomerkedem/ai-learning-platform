@@ -46,7 +46,7 @@ export const TokenSplitterInput: React.FC<TokenSplitterInputProps> = ({
                     placeholder={splitter.placeholder}
                     dir={dir}
                     aria-label={splitter.aria}
-                    className="w-full bg-transparent px-4 py-3 text-lg font-medium text-[var(--bts-text-primary)] placeholder:text-[var(--bts-text-faint)] focus:outline-none"
+                    className="w-full rounded-xl bg-transparent px-4 py-3 text-lg font-medium text-[var(--bts-text-primary)] placeholder:text-[var(--bts-text-faint)]"
                 />
             </div>
 

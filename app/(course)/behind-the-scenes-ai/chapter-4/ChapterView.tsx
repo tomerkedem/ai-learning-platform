@@ -97,7 +97,7 @@ const MeaningGuess: React.FC = () => {
                                             aria-label={`${opt.title}. ${opt.desc}`}
                                             whileHover={{ scale: reduce ? 1 : 1.015 }}
                                             whileTap={{ scale: reduce ? 1 : 0.985 }}
-                                            className="flex h-full w-full flex-col gap-2.5 rounded-2xl border border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-4 text-start transition-colors hover:border-violet-500/50 hover:bg-violet-900/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60"
+                                            className="flex h-full w-full flex-col gap-2.5 rounded-2xl border border-[var(--bts-border-mid)] bg-[color-mix(in_oklab,var(--bts-panel-from)_50%,transparent)] p-4 text-start transition-colors hover:border-violet-500/50 hover:bg-violet-900/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-violet-400)_60%,transparent))]"
                                         >
                                             <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--bts-divider-soft)] bg-[color-mix(in_oklab,var(--bts-panel-to)_50%,transparent)]">
                                                 <Icon size={18} className="text-violet-300" />
@@ -171,7 +171,7 @@ const LockQuestion: React.FC = () => {
                             key={opt}
                             type="button"
                             onClick={() => setChoice(i)}
-                            className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-start text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${cls}`}
+                            className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-start text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-violet-400)_60%,transparent))] focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${cls}`}
                         >
                             <span>{opt}</span>
                             {/* התשובה הנכונה מקבלת סימן ✓ גם כשלא נבחרה, כדי ש"מה נכון" לא יימסר בצבע בלבד */}

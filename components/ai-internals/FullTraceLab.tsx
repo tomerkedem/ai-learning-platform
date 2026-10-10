@@ -84,7 +84,7 @@ export const FullTraceLab: React.FC<FullTraceLabProps> = ({ data, dir, speechLoc
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
                 <div>
                     <div className="flex items-center gap-2 text-sm font-black text-white light:text-slate-900"><ShieldCheck size={18} />{data.heading}</div>
-                    <div className="mt-1 text-[11px] font-bold tracking-[0.16em] text-slate-500 light:text-slate-600" dir="ltr">{data.kicker}</div>
+                    <div className="mt-1 text-[11px] font-bold tracking-[0.16em] text-slate-400 light:text-slate-600" dir="ltr">{data.kicker}</div>
                 </div>
                 <div className="flex items-center gap-2">
                     <SpeakButton text={stageNarration} speechLocale={speechLocale} />
@@ -176,7 +176,7 @@ export const FullTraceLab: React.FC<FullTraceLabProps> = ({ data, dir, speechLoc
                 <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/10 light:border-slate-300 bg-slate-900/60 light:bg-white p-3 text-sm font-black text-white light:text-slate-900"><CheckCircle2 size={16} aria-hidden />{data.labels.output}: <span dir="ltr">{finalStatus}</span>{(approval === 'denied' || approval === 'rejected' || toolError === 'exhausted') && <CircleStop size={16} className="text-rose-300" aria-hidden />}</div>
             </section>
 
-            <p className="mt-4 text-xs leading-relaxed text-slate-500 light:text-slate-600"><ExternalLink size={12} className="me-1 inline" aria-hidden />{data.disclosure}</p>
+            <p className="mt-4 text-xs leading-relaxed text-slate-400 light:text-slate-600"><ExternalLink size={12} className="me-1 inline" aria-hidden />{data.disclosure}</p>
         </div>
         </div>
     );

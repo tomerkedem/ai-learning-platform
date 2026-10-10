@@ -80,7 +80,7 @@ export const GuessButton: React.FC<GuessButtonProps> = ({
                 </span>
             </>
         );
-        const ghostCls = `group inline-flex items-center justify-center gap-1.5 px-1 py-1 text-xs font-bold text-[var(--bts-text-muted)] no-underline transition-colors hover:text-[var(--bts-text-bright)] focus:outline-none focus-visible:text-[var(--bts-text-bright)] ${widthCls} ${className}`;
+        const ghostCls = `group inline-flex items-center justify-center gap-1.5 rounded-md px-1 py-1 text-xs font-bold text-[var(--bts-text-muted)] no-underline transition-colors hover:text-[var(--bts-text-bright)] focus-visible:text-[var(--bts-text-bright)] ${widthCls} ${className}`;
         return href ? (
             <Link href={href} aria-label={ariaLabel} className={ghostCls}>{ghostInner}</Link>
         ) : (

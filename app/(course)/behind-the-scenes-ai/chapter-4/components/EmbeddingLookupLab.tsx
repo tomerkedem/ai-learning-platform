@@ -114,7 +114,7 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                                 aria-pressed={isActive}
                                 // יעד מגע מלא (44px) וטקסט קריא. המצב הנבחר מועבר גם במשקל הגופן
                                 // ובמסגרת, ולא בצבע בלבד, בנוסף ל-aria-pressed.
-                                className={`inline-flex min-h-[44px] items-center rounded-xl border px-3.5 py-2 text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
+                                className={`inline-flex min-h-[44px] items-center rounded-xl border px-3.5 py-2 text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-cyan-400)_70%,transparent))] focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
                                     isActive
                                         ? 'border-cyan-400 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(25%_-_var(--bts-tint-mix)_*_0.125),transparent)] [--t-d:var(--color-cyan-900)] [--t-l:var(--color-cyan-500)] font-black text-cyan-100'
                                         : 'border-[var(--bts-border)] bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-track)_var(--bts-tint-mix),var(--color-slate-800))_calc(30%_+_var(--bts-tint-mix)_*_0.7),transparent)] font-medium text-[var(--bts-text-secondary)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
@@ -178,7 +178,7 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                                         // שורות הטבלה הן בורר מילה שני לאותו מצב, ולכן הן חושפות
                                         // גם הן aria-pressed. יעד מגע מלא וטבעת פוקוס נראית.
                                         aria-pressed={isActive}
-                                        className={`grid min-h-[44px] w-full grid-cols-[4.75rem_1fr] items-center gap-3 rounded-lg border px-2.5 py-1.5 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
+                                        className={`grid min-h-[44px] w-full grid-cols-[4.75rem_1fr] items-center gap-3 rounded-lg border px-2.5 py-1.5 text-start transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-cyan-400)_70%,transparent))] focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
                                             isActive ? 'border-cyan-400/50 bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-cyan-900)] [--t-l:var(--color-cyan-500)]' : 'border-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-700))_40%,transparent)] bg-[color-mix(in_oklab,var(--bts-panel-from)_30%,transparent)] hover:border-[color-mix(in_oklab,var(--bts-border-emphasis)_var(--bts-tint-mix),var(--color-slate-600))]'
                                         }`}
                                     >
@@ -217,7 +217,7 @@ export const EmbeddingLookupLab: React.FC<EmbeddingLookupLabProps> = ({ dir = 'r
                                         type="button"
                                         onClick={() => setLearned(key === 'learned')}
                                         aria-pressed={on}
-                                        className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
+                                        className={`inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-1 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-cyan-400)_70%,transparent))] focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_oklab,var(--bts-panel-to)_var(--bts-tint-mix),var(--color-slate-950))] ${
                                             on ? (key === 'learned' ? 'bg-emerald-500/25 text-emerald-100' : 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--bts-fill-strong)_var(--bts-tint-mix),var(--color-slate-600))_calc(40%_+_var(--bts-tint-mix)_*_0.6),transparent)] text-[var(--bts-text-bright)]') : 'text-[var(--bts-text-muted)] hover:text-[var(--bts-text-body)]'
                                         }`}
                                     >

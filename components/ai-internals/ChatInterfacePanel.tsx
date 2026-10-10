@@ -128,7 +128,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                     onBlur={() => onTokenHover(null)}
                     onClick={(e) => { e.stopPropagation(); onTokenHover(hl ? null : part); }}
                     aria-pressed={hl}
-                    className={`inline rounded border-0 bg-transparent p-0 font-[inherit] text-inherit transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 ${hl ? 'bg-slate-950/40 px-0.5 ring-1 ring-white/50' : 'hover:bg-slate-950/20'}`}
+                    className={`inline rounded border-0 bg-transparent p-0 font-[inherit] text-inherit transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-white)_80%,transparent))] ${hl ? 'bg-slate-950/40 px-0.5 ring-1 ring-white/50' : 'hover:bg-slate-950/20'}`}
                 >
                     {part}
                 </button>
@@ -283,7 +283,7 @@ export const ChatInterfacePanel: React.FC<ChatInterfacePanelProps> = ({
                         onChange={(e) => onInputChange(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder={ci.inputPlaceholder}
-                        className="flex-1 bg-transparent px-3 py-2 text-sm text-white light:text-slate-900 outline-none"
+                        className="flex-1 bg-transparent px-3 py-2 text-sm text-white light:text-slate-900"
                     />
                     <motion.button
                         type="button"

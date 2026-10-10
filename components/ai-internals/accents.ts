@@ -52,7 +52,7 @@ export const ACCENTS: Record<Accent, AccentStyle> = {
     },
     purple: {
         border: 'border-purple-500/40', text: 'text-purple-300', softText: 'text-purple-400/70', bgSoft: 'bg-purple-900/15', bgTint: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-purple-900)] [--t-l:var(--color-purple-500)]',
-        solid: 'bg-purple-500', solidText: 'text-white', barFill: 'bg-purple-500', barGradient: 'bg-gradient-to-l from-purple-400 to-fuchsia-500',
+        solid: 'bg-purple-600', solidText: 'text-white', barFill: 'bg-purple-500', barGradient: 'bg-gradient-to-l from-purple-400 to-fuchsia-500',
         dot: 'bg-purple-400', ringSoft: 'ring-purple-500/20', glow: 'shadow-[0_0_45px_-10px_rgba(192,132,252,0.55)]',
     },
     fuchsia: {
@@ -87,7 +87,7 @@ export const ACCENTS: Record<Accent, AccentStyle> = {
     },
     rose: {
         border: 'border-rose-500/40', text: 'text-rose-300', softText: 'text-rose-400/70', bgSoft: 'bg-rose-900/15', bgTint: 'bg-[color-mix(in_oklab,color-mix(in_oklab,var(--t-l)_var(--bts-tint-mix),var(--t-d))_calc(15%_-_var(--bts-tint-mix)_*_0.075),transparent)] [--t-d:var(--color-rose-900)] [--t-l:var(--color-rose-500)]',
-        solid: 'bg-rose-500', solidText: 'text-white', barFill: 'bg-rose-500', barGradient: 'bg-gradient-to-l from-rose-400 to-pink-500',
+        solid: 'bg-rose-600', solidText: 'text-white', barFill: 'bg-rose-500', barGradient: 'bg-gradient-to-l from-rose-400 to-pink-500',
         dot: 'bg-rose-400', ringSoft: 'ring-rose-500/20', glow: 'shadow-[0_0_45px_-10px_rgba(251,113,133,0.55)]',
     },
     slate: {

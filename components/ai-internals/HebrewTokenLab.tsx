@@ -128,7 +128,7 @@ export const HebrewTokenLab: React.FC = () => {
                                     onClick={() => toggleRow(i)}
                                     aria-pressed={isSplit}
                                     aria-label={`${row.word} - ${isSplit ? subword.ariaSplit : subword.ariaWhole}`}
-                                    className="group flex flex-wrap items-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60"
+                                    className="group flex flex-wrap items-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklab,var(--bts-focus-ring)_var(--bts-tint-mix),color-mix(in_oklab,var(--color-violet-400)_60%,transparent))]"
                                     dir={dir}
                                 >
                                     <motion.div layout className="flex flex-wrap items-center gap-2">

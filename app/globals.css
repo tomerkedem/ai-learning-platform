@@ -643,8 +643,9 @@
 
 @layer base {
   * { @apply border-border outline-ring/50; }
-  /* T3.2: טבעת-מיקוד קריאה ב-Light (הברירת-מחדל outline-ring/50 כמעט בלתי נראית על משטח בהיר). Dark: --bts-tint-mix=0%, זהה לערך הקודם. */
-  :focus-visible { outline-color: color-mix(in oklab, var(--bts-focus-ring) var(--bts-tint-mix), color-mix(in oklab, var(--ring) 50%, transparent)); }
+  /* טבעת-מיקוד גלובלית מפורשת (לא תלויה בסגנון ברירת-המחדל של הדפדפן) בשתי הערכות, באסימון --bts-focus-ring.
+     בשכבת base בכוונה: focus:outline-none / focus-visible:ring-* / focus-visible:outline-* של רכיבים (שכבת utilities) גוברים, אז אין טבעת כפולה. */
+  :focus-visible { outline-style: solid; outline-width: 2px; outline-offset: 2px; outline-color: var(--bts-focus-ring); }
   body { @apply bg-background text-foreground; }
   /* נקודות "המשך למידה" (ChapterLayout): היעד נעצר מתחת לכותרת הצפה, לפי גובהה הנמדד. scroll-mt-* מפורש על סעיף גובר. */
   [data-learning-unit], [data-chapter-quiz] { scroll-margin-top: var(--bts-sticky-top, 88px); }
@@ -1218,6 +1219,17 @@ html[data-contrast="more"] [data-theme="light"] {
 }
 html[data-contrast="more"] :focus-visible {
   outline-color: var(--bts-focus-ring);
+}
+
+/* מצב צבעים מאולצים (Windows High Contrast): טבעות ring הן box-shadow והדפדפן מסיר אותן, וביחד עם
+   outline-none לא נשאר חיווי פוקוס. כאן מצהירים outline מפורש בצבע מערכת. לא בשכבה, ולכן גובר גם
+   על focus:outline-none / focus-visible:outline-* של רכיבים (שכבת utilities) ואין טבעת כפולה:
+   ה-ring נעלם בצבעים מאולצים וה-outline הוא החיווי היחיד. */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
 }
 
 /* הפחתת תנועה: בחירת הלומד או העדפת מערכת ההפעלה, באותה התנהגות. אנימציות framer-motion
