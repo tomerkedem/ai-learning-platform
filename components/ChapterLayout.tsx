@@ -14,6 +14,7 @@ import { formatChapterLabel, formatNextChapterLabel, formatReadTime, parseReadTi
 import { ChevronRight, ChevronLeft, BookOpen, Trophy, Maximize2, Minimize2, Milestone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { EdgeRail, EdgePeekItem } from "@/components/ai-internals/EdgePeek";
+import { FloatingReadAloud } from "@/components/ai-internals/FloatingReadAloud";
 import { useLearningUnitTracking } from "@/app/(course)/behind-the-scenes-ai/useLearningUnitTracking";
 import { RESUME_HASH, resumeSelector, scrollToResumeTarget } from "@/app/(course)/behind-the-scenes-ai/learningPulseModel";
 import { pageArrowsAllowed, pageEscapeAllowed } from "@/components/courseShortcuts";
@@ -272,6 +273,17 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
     const isIntro = currentChapterId === 0;
     const isBtsAi = courseId === 'behind-the-scenes-ai';
 
+    // הרווח בין מקטעים הוא margin של המקטע, ולכן לחיצה ברווח פוגעת במעטפת המשותפת, ו-Tab הבא
+    // מתחיל מהפקד הראשון בתוכה (כפתור ההקראה בהירו) וגולל לראש הפרק. flow-root מכיל את ה-margin
+    // בתוך מעטפת של המקטע עצמו, ולכן Tab ממשיך לפקד הקרוב. לא עוטפים Fragment (אין לו תיבה) ולא את
+    // FloatingReadAloud (portal שלא מרנדר כלום במקום).
+    const sections = isBtsAi
+        ? React.Children.toArray(children).map((child) =>
+            React.isValidElement(child) && child.type !== React.Fragment && child.type !== FloatingReadAloud
+                ? <div key={child.key} className="flow-root">{child}</div>
+                : child)
+        : children;
+
     const isRTL = dir === 'rtl';
 
     const chapterNumDisplay = activeChapter.id === 0 ? t.chrome.intro : formatChapterLabel(locale, activeChapter.id);
@@ -304,7 +316,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
             {/* דילוג לתוכן: האלמנט הממוקד הראשון בעמוד, גלוי רק בפוקוס (כמו ב-InfoPage).
                 ממורכז: בפינה (start) הוא ישב מעל כותרת הסרגל ונראה כפריט בסרגל. */}
             <a
-                href="#chapter-main"
+                href="#chapter-main-start"
                 className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:inset-x-0 focus:mx-auto focus:w-fit focus:z-[200] focus:rounded-full focus:bg-[var(--bts-surface-elevated)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--bts-text-primary)] focus:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bts-focus-ring)]"
             >
                 {t.behindAi.infoPages.skipToContent}
@@ -442,7 +454,7 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                         בהדרגה עם רוחב החלון (clamp) במקום לקפוץ בנקודות-שבירה. במובייל נשמר הריפוד
                         הקיים (px-8). המחלקה bts-fluid מפעילה גם את קנה-המידה הנזיל של כותרת ההירו
                         (globals.css). מוגבל ל-behind-the-scenes-ai כדי לא לגעת בלומדות אחרות. */}
-                    <main id="chapter-main" tabIndex={-1} className={`mx-auto pb-32 focus:outline-none transition-[max-width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+                    <main id="chapter-main" className={`mx-auto pb-32 transition-[max-width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
                         ${isBtsAi
                             ? 'bts-fluid px-8 md:px-[clamp(1.75rem,0.3rem+2.8vw,3rem)] space-y-[clamp(3.5rem,2.2rem+3.5vw,6rem)]'
                             : 'px-8 md:px-12 space-y-24'}
@@ -451,8 +463,10 @@ export const ChapterLayout: React.FC<ChapterLayoutProps> = ({
                     `}>
                         
                         <div className="min-h-[50vh]">
+                            {/* יעד הפוקוס של קישור הדילוג. לא על ה-main עצמו: main עם tabIndex מקבל פוקוס בלחיצה על תוכן ריק, וה-Tab הבא מתחיל מתחילת הפרק וגולל אליו. */}
+                            <span id="chapter-main-start" tabIndex={-1} className="block h-0 w-0 focus:outline-none" />
                             <FocusModeContext.Provider value={isFocusMode}>
-                                {children}
+                                {sections}
                             </FocusModeContext.Provider>
                         </div>
 
